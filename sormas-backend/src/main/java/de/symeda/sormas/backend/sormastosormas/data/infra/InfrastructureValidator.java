@@ -326,32 +326,6 @@ public class InfrastructureValidator {
 
 	}
 
-	public void validateLocation(LocationDto address, String groupNameTag, ValidationErrors validationErrors) {
-		DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors = validateInfrastructure(
-			address.getContinent(),
-			address.getSubcontinent(),
-			address.getCountry(),
-			address.getRegion(),
-			address.getDistrict(),
-			address.getCommunity(),
-			address.getFacilityType(),
-			address.getFacility(),
-			address.getFacilityDetails(),
-			null,
-			null);
-
-		handleInfraStructure(infrastructureAndErrors, groupNameTag, validationErrors, (infrastructure -> {
-			address.setContinent(infrastructure.getContinent());
-			address.setSubcontinent(infrastructure.getSubcontinent());
-			address.setCountry(infrastructure.getCountry());
-			address.setRegion(infrastructure.region);
-			address.setDistrict(infrastructure.district);
-			address.setCommunity(infrastructure.community);
-			address.setFacility(infrastructure.facility);
-			address.setFacilityDetails(infrastructure.facilityDetails);
-		}));
-	}
-
 	public static class InfrastructureData {
 
 		private ContinentReferenceDto continent;

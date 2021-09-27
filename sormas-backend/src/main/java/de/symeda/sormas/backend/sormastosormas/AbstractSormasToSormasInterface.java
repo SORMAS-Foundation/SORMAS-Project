@@ -71,7 +71,7 @@ import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFa
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedData;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
-import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessorHelper;
+import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.AssociatedEntityWrapper;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.entities.SyncDataDto;
@@ -111,7 +111,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
 	@EJB
-	private ReceivedDataProcessorHelper dataProcessorHelper;
+	private Sormas2SormasDataValidator dataProcessorHelper;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
@@ -220,7 +220,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		List<PREVIEW> previewsToSave = new ArrayList<>(previews.size());
 
 		SormasToSormasOriginInfoDto originInfo = shareData.getOriginInfo();
-		ValidationErrors originInfoErrors = dataProcessorHelper.processOriginInfo(originInfo, entityCaptionTag);
+		ValidationErrors originInfoErrors = dataProcessorHelper.validateOriginInfo(originInfo, entityCaptionTag);
 		if (originInfoErrors.hasError()) {
 			validationErrors.add(new ValidationErrors(new ValidationErrorGroup(entityCaptionTag), originInfoErrors));
 		}

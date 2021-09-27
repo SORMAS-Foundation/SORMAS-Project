@@ -201,8 +201,7 @@ public class CaseDataView extends AbstractCaseView {
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
 			DocumentListComponent documentList =
 				new DocumentListComponent(DocumentRelatedEntityType.CASE, getCaseRef(), UserRight.CASE_EDIT, caze.isPseudonymized());
-			documentList.addStyleName(CssStyles.SIDE_COMPONENT);
-			layout.addComponent(documentList, DOCUMENTS_LOC);
+			layout.addComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, getCaseRef());

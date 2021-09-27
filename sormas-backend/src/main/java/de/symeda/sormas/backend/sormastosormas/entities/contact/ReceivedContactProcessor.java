@@ -34,7 +34,7 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
-import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessorHelper;
+import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 
 @Stateless
 @LocalBean
@@ -42,7 +42,7 @@ public class ReceivedContactProcessor
 	implements ReceivedDataProcessor<ContactDto, SormasToSormasContactDto, ProcessedContactData, SormasToSormasContactPreview> {
 
 	@EJB
-	private ReceivedDataProcessorHelper dataProcessorHelper;
+	private Sormas2SormasDataValidator dataValidator;
 
 	@Override
 	public ProcessedContactData processReceivedData(SormasToSormasContactDto receivedContact, ContactDto existingContact)
@@ -56,10 +56,10 @@ public class ReceivedContactProcessor
 
 		ValidationErrors contactValidationErrors = new ValidationErrors();
 
-		ValidationErrors originInfoErrors = dataProcessorHelper.processOriginInfo(originInfo, Captions.Contact);
+		ValidationErrors originInfoErrors = dataValidator.validateOriginInfo(originInfo, Captions.Contact);
 		contactValidationErrors.addAll(originInfoErrors);
 
-		ValidationErrors contactDataErrors = dataProcessorHelper.processContactData(contact, person, existingContact);
+		ValidationErrors contactDataErrors = dataValidator.validateContactData(contact, person, existingContact);
 		contactValidationErrors.addAll(contactDataErrors);
 
 		if (contactValidationErrors.hasError()) {
@@ -67,7 +67,7 @@ public class ReceivedContactProcessor
 		}
 
 		if (samples != null && samples.size() > 0) {
-			List<ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
+			List<ValidationErrors> sampleErrors = dataValidator.validateSamples(samples);
 			validationErrors.addAll(sampleErrors);
 		}
 
@@ -82,7 +82,7 @@ public class ReceivedContactProcessor
 	public SormasToSormasContactPreview processReceivedPreview(SormasToSormasContactPreview preview) throws SormasToSormasValidationException {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 
-		ValidationErrors contactErrors = dataProcessorHelper.processContactPreview(preview);
+		ValidationErrors contactErrors = dataValidator.validateContactPreview(preview);
 
 		if (contactErrors.hasError()) {
 			validationErrors.add(new ValidationErrors(buildContactValidationGroupName(preview), contactErrors));
