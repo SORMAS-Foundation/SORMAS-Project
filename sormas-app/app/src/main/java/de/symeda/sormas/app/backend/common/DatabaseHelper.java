@@ -2846,7 +2846,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				}
 
 			case 321:
-				currentVersion = 319;
+				currentVersion = 321;
 				getDao(Person.class).executeRaw("UPDATE person SET sex = 'UNKNOWN' WHERE sex IS NULL;");
 
 				//@formatter:on
