@@ -9,8 +9,8 @@ import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 
-public abstract class AbstractInfrastructureEjb<DTO extends InfrastructureAdo, SRV extends AbstractInfrastructureAdoService<DTO>>
-	extends AbstractBaseEjb<DTO, SRV> {
+public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, SRV extends AbstractInfrastructureAdoService<ADO>>
+	extends AbstractBaseEjb<ADO, SRV> {
 
 	protected FeatureConfigurationFacadeEjb featureConfiguration;
 
@@ -27,10 +27,10 @@ public abstract class AbstractInfrastructureEjb<DTO extends InfrastructureAdo, S
 	public void archive(String uuid) {
 		// todo this should be really in the parent but right now there the setter for archived is not available there
 		checkInfraDataLocked();
-		DTO dto = service.getByUuid(uuid);
-		if (dto != null) {
-			dto.setArchived(true);
-			service.ensurePersisted(dto);
+		ADO ado = service.getByUuid(uuid);
+		if (ado != null) {
+			ado.setArchived(true);
+			service.ensurePersisted(ado);
 		}
 	}
 
@@ -50,10 +50,10 @@ public abstract class AbstractInfrastructureEjb<DTO extends InfrastructureAdo, S
 	}
 
 	private void doDearchive(String uuid) {
-		DTO dto = service.getByUuid(uuid);
-		if (dto != null) {
-			dto.setArchived(false);
-			service.ensurePersisted(dto);
+		ADO ado = service.getByUuid(uuid);
+		if (ado != null) {
+			ado.setArchived(false);
+			service.ensurePersisted(ado);
 		}
 	}
 }

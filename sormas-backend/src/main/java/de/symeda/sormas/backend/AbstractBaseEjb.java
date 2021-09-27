@@ -4,7 +4,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 
 // todo should we use BaseAdoService?
-public abstract class AbstractBaseEjb<DTO extends AbstractDomainObject, SRV extends AdoServiceWithUserFilter<DTO>> {
+public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, SRV extends AdoServiceWithUserFilter<ADO>> {
 
 	protected SRV service;
 
