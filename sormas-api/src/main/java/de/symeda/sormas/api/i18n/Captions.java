@@ -338,10 +338,12 @@ public interface Captions {
 	String CaseData_postpartum = "CaseData.postpartum";
 	String CaseData_pregnant = "CaseData.pregnant";
 	String CaseData_previousInfectionDate = "CaseData.previousInfectionDate";
+	String CaseData_previousQuarantineTo = "CaseData.previousQuarantineTo";
 	String CaseData_prohibitionToWork = "CaseData.prohibitionToWork";
 	String CaseData_prohibitionToWorkFrom = "CaseData.prohibitionToWorkFrom";
 	String CaseData_prohibitionToWorkUntil = "CaseData.prohibitionToWorkUntil";
 	String CaseData_quarantine = "CaseData.quarantine";
+	String CaseData_quarantineChangeComment = "CaseData.quarantineChangeComment";
 	String CaseData_quarantineExtended = "CaseData.quarantineExtended";
 	String CaseData_quarantineFrom = "CaseData.quarantineFrom";
 	String CaseData_quarantineHelpNeeded = "CaseData.quarantineHelpNeeded";

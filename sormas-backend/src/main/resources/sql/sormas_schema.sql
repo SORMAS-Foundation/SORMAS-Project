@@ -7948,4 +7948,12 @@ ALTER TABLE vaccination_history DROP COLUMN vaccinemanufacturerdetails;
 
 INSERT INTO schema_version (version_number, comment) VALUES (405, 'Vaccination drop details columns #5843');
 
+-- 2021-09-23 - Change of quarantine end should be documented #6782
+ALTER TABLE cases ADD COLUMN previousquarantineto timestamp;
+ALTER TABLE cases ADD COLUMN quarantinechangecomment varchar(4096);
+ALTER TABLE cases_history ADD COLUMN previousquarantineto timestamp;
+ALTER TABLE cases_history ADD COLUMN quarantinechangecomment varchar(4096);
+
+INSERT INTO schema_version (version_number, comment) VALUES (406, 'Change of quarantine end should be documented #6782');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
