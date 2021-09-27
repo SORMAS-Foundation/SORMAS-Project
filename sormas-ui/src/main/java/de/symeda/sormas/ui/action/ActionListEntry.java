@@ -47,6 +47,7 @@ import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
 @SuppressWarnings("serial")
 public class ActionListEntry extends HorizontalLayout {
@@ -195,8 +196,7 @@ public class ActionListEntry extends HorizontalLayout {
 			// TODO: user rights?
 			DocumentListComponent documentList =
 				new DocumentListComponent(DocumentRelatedEntityType.ACTION, action.toReference(), UserRight.EVENT_EDIT, false);
-			documentList.addStyleName(CssStyles.SIDE_COMPONENT);
-			documentLayout.addComponent(documentList);
+			documentLayout.addComponent(new SideComponentLayout(documentList));
 		}
 	}
 
