@@ -369,6 +369,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setTestedDisease(source.getTestedDisease());
 		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
+		target.setTestedDiseaseVariantDetails(source.getTestedDiseaseVariantDetails());
 		target.setTypingId(source.getTypingId());
 		target.setTestType(source.getTestType());
 		target.setPcrTestSpecification(source.getPcrTestSpecification());
@@ -421,6 +422,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setTestedDisease(source.getTestedDisease());
 		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
+		target.setTestedDiseaseVariantDetails(source.getTestedDiseaseVariantDetails());
 		target.setTypingId(source.getTypingId());
 		target.setTestType(source.getTestType());
 		target.setPcrTestSpecification(source.getPcrTestSpecification());

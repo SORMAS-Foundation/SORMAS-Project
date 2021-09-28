@@ -1523,6 +1523,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		if (source.getCaze() != null) {
 			target.setDiseaseVariant(source.getCaze().getDiseaseVariant());
+			target.setDiseaseVariantDetails(source.getCaze().getDiseaseVariantDetails());
 		}
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
 

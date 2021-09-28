@@ -127,6 +127,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	public static final String TASKS = "tasks";
@@ -187,6 +188,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
 	private String diseaseDetails;
+	private String diseaseVariantDetails;
 	private User responsibleUser;
 	private String typeOfPlaceText;
 	private Double reportLat;
@@ -208,7 +210,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	private YesNoUnknown epidemiologicalEvidence;
 	private Map<EpidemiologicalEvidenceDetail, Boolean> epidemiologicalEvidenceDetails;
 	private YesNoUnknown laboratoryDiagnosticEvidence;
-	private Map<LaboratoryDiagnosticEvidenceDetail, Boolean>  laboratoryDiagnosticEvidenceDetails;
+	private Map<LaboratoryDiagnosticEvidenceDetail, Boolean> laboratoryDiagnosticEvidenceDetails;
 
 	private List<Task> tasks;
 	private List<EventGroup> eventGroups;
@@ -565,6 +567,15 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.diseaseDetails = diseaseDetails;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
+	}
+
 	@ManyToOne
 	public User getResponsibleUser() {
 		return responsibleUser;
@@ -779,7 +790,9 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 
 	@AuditedIgnore
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = EVENTS_EVENT_GROUPS_TABLE_NAME, joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "eventgroup_id"))
+	@JoinTable(name = EVENTS_EVENT_GROUPS_TABLE_NAME,
+		joinColumns = @JoinColumn(name = "event_id"),
+		inverseJoinColumns = @JoinColumn(name = "eventgroup_id"))
 	public List<EventGroup> getEventGroups() {
 		return eventGroups;
 	}

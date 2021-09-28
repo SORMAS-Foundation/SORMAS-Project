@@ -913,6 +913,7 @@ public interface Captions {
 	String DiseaseBurden_eventCount = "DiseaseBurden.eventCount";
 	String DiseaseBurden_outbreakDistrictCount = "DiseaseBurden.outbreakDistrictCount";
 	String DiseaseBurden_previousCaseCount = "DiseaseBurden.previousCaseCount";
+	String diseaseVariantDetails = "diseaseVariantDetails";
 	String district = "district";
 	String District_archived = "District.archived";
 	String District_epidCode = "District.epidCode";
@@ -1496,6 +1497,7 @@ public interface Captions {
 	String PathogenTest_testedDisease = "PathogenTest.testedDisease";
 	String PathogenTest_testedDiseaseDetails = "PathogenTest.testedDiseaseDetails";
 	String PathogenTest_testedDiseaseVariant = "PathogenTest.testedDiseaseVariant";
+	String PathogenTest_testedDiseaseVariantDetails = "PathogenTest.testedDiseaseVariantDetails";
 	String PathogenTest_testResult = "PathogenTest.testResult";
 	String PathogenTest_testResultText = "PathogenTest.testResultText";
 	String PathogenTest_testResultVerified = "PathogenTest.testResultVerified";
