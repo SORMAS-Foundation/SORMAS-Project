@@ -33,9 +33,11 @@ import java.util.Arrays;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.pojo.api.Request;
 import org.sormas.e2etests.state.ApiState;
 
+@Slf4j
 public class RestAssuredClient {
   private final Provider<RequestSpecification> requestSpecification;
   private final String environmentUrl;
@@ -64,7 +66,7 @@ public class RestAssuredClient {
             new RequestLoggingFilter(), new ResponseLoggingFilter(), new AllureRestAssured()
           };
     } else {
-      filters = new Filter[] {new RequestLoggingFilter(), new AllureRestAssured()};
+      filters = new Filter[] {new AllureRestAssured()};
     }
     return requestSpecification
         .get()
