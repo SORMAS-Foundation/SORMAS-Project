@@ -318,10 +318,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	@Override
 	public List<ImmunizationListEntryDto> getEntriesList(ImmunizationListCriteria criteria, Integer first, Integer max) {
 		Long personId = personService.getIdByUuid(criteria.getPerson().getUuid());
-		List<ImmunizationListEntryDto> resultsList = immunizationService.getEntriesList(personId, criteria.getDisease(), first, max);
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(ImmunizationListEntryDto.class, resultsList, ImmunizationListEntryDto::isInJurisdiction, null);
-		return resultsList;
+		return immunizationService.getEntriesList(personId, criteria.getDisease(), first, max);
 	}
 
 	public static ImmunizationDto toDto(Immunization entity) {
