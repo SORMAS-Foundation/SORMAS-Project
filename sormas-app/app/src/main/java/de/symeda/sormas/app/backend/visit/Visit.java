@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.app.backend.visit;
 
-import static de.symeda.sormas.api.EntityDto.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 

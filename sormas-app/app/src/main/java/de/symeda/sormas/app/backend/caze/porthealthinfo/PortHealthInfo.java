@@ -15,8 +15,9 @@
 
 package de.symeda.sormas.app.backend.caze.porthealthinfo;
 
-import static de.symeda.sormas.api.EntityDto.CHARACTER_LIMIT_BIG;
-import static de.symeda.sormas.api.EntityDto.CHARACTER_LIMIT_DEFAULT;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 
@@ -25,14 +26,13 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
 import de.symeda.sormas.api.caze.porthealthinfo.ConveyanceType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
+
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 @Entity(name = PortHealthInfo.TABLE_NAME)
 @DatabaseTable(tableName = PortHealthInfo.TABLE_NAME)
