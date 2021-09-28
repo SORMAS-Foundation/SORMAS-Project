@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.app.backend.sample;
 
-import static de.symeda.sormas.api.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
 import java.util.Date;
 
