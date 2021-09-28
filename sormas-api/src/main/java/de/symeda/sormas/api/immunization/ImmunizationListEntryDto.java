@@ -27,6 +27,8 @@ public class ImmunizationListEntryDto extends PseudonymizableIndexDto implements
 	private Date startDate;
 	private Date endDate;
 
+	private boolean isInJurisdiction;
+
 	public ImmunizationListEntryDto(
 		String uuid,
 		Disease disease,
@@ -34,7 +36,8 @@ public class ImmunizationListEntryDto extends PseudonymizableIndexDto implements
 		ImmunizationStatus immunizationStatus,
 		ImmunizationManagementStatus immunizationManagementStatus,
 		Date startDate,
-		Date endDate) {
+		Date endDate,
+		boolean isInJurisdiction) {
 
 		this.uuid = uuid;
 		this.disease = disease;
@@ -43,6 +46,7 @@ public class ImmunizationListEntryDto extends PseudonymizableIndexDto implements
 		this.immunizationManagementStatus = immunizationManagementStatus;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public String getUuid() {
@@ -108,5 +112,13 @@ public class ImmunizationListEntryDto extends PseudonymizableIndexDto implements
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public boolean isInJurisdiction() {
+		return isInJurisdiction;
+	}
+
+	public void setInJurisdiction(boolean inJurisdiction) {
+		isInJurisdiction = inJurisdiction;
 	}
 }

@@ -37,7 +37,8 @@ public class ImmunizationListEntryDtoTransformer implements ResultTransformer {
 			(ImmunizationStatus) objects[3],
 			(ImmunizationManagementStatus) objects[4],
 			(Date) objects[5],
-			(Date) objects[6]);
+			(Date) objects[6],
+			(Boolean) objects[7]);
 	}
 
 	@Override

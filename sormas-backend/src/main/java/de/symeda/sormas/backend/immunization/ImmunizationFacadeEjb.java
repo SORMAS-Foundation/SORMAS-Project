@@ -34,6 +34,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
@@ -308,13 +309,19 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@Override
 	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		return directoryImmunizationService.getIndexList(criteria, first, max, sortProperties);
+		List<ImmunizationIndexDto> resultsList = directoryImmunizationService.getIndexList(criteria, first, max, sortProperties);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(ImmunizationIndexDto.class, resultsList, ImmunizationIndexDto::isInJurisdiction, null);
+		return resultsList;
 	}
 
 	@Override
 	public List<ImmunizationListEntryDto> getEntriesList(ImmunizationListCriteria criteria, Integer first, Integer max) {
 		Long personId = personService.getIdByUuid(criteria.getPerson().getUuid());
-		return immunizationService.getEntriesList(personId, criteria.getDisease(), first, max);
+		List<ImmunizationListEntryDto> resultsList = immunizationService.getEntriesList(personId, criteria.getDisease(), first, max);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(ImmunizationListEntryDto.class, resultsList, ImmunizationListEntryDto::isInJurisdiction, null);
+		return resultsList;
 	}
 
 	public static ImmunizationDto toDto(Immunization entity) {
