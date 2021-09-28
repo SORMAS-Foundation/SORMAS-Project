@@ -31,7 +31,6 @@
         <import type="de.symeda.sormas.api.sample.PathogenTestResultType" />
         <import type="de.symeda.sormas.api.Disease" />
         <import type="de.symeda.sormas.api.disease.DiseaseVariant" />
-        <import type="java.lang.Boolean" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.sample.PathogenTest"/>
     </data>
@@ -101,7 +100,7 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/caseData_testedDiseaseVariantDetails"
+                    android:id="@+id/pathogenTest_testedDiseaseVariantDetails"
                     app:value="@={data.testedDiseaseVariantDetails}"
                     app:customizableEnumField="@{pathogenTestTestedDiseaseVariant}"
                     app:customizableEnumProperty="@{DiseaseVariant.HAS_DETAILS}"

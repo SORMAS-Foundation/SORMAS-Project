@@ -34,7 +34,6 @@
         <import type="de.symeda.sormas.api.event.TypeOfPlace" />
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
         <import type="de.symeda.sormas.api.disease.DiseaseVariant" />
-        <import type="java.lang.Boolean" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.event.Event"/>
         <variable name="multiDayEvent" type="Boolean"/>
@@ -222,7 +221,7 @@
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/event_diseaseVariantDetails"
                 app:value="@{data.diseaseVariantDetails}"
                 app:customizableEnumField="@{eventDiseaseVariant}"

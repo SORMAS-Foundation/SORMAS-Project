@@ -394,13 +394,13 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 		"customizableEnumValue" })
 	public static void setCustomizableEnumDependency(
 		ControlPropertyField<?> field,
-		ControlPropertyField<CustomizableEnum> customizableEnumField,
-		String property,
-		Object value) {
+		ControlPropertyField customizableEnumField,
+		String customizableEnumProperty,
+		Object customizableEnumValue) {
 
 		if (customizableEnumField != null) {
 			if (customizableEnumField.getValue() != null
-				&& ((CustomizableEnum) customizableEnumField.getValue()).matchPropertyValue(property, value)) {
+				&& ((CustomizableEnum) customizableEnumField.getValue()).matchPropertyValue(customizableEnumProperty, customizableEnumValue)) {
 				field.setVisibility(VISIBLE);
 			} else {
 				field.hideField(true);
@@ -408,7 +408,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 
 			customizableEnumField.addValueChangedListener(e -> {
 				if (customizableEnumField.getValue() != null
-					&& ((CustomizableEnum) customizableEnumField.getValue()).matchPropertyValue(property, value)) {
+					&& ((CustomizableEnum) customizableEnumField.getValue()).matchPropertyValue(customizableEnumProperty, customizableEnumValue)) {
 					field.setVisibility(VISIBLE);
 				} else {
 					field.hideField(true);

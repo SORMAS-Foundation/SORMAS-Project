@@ -45,7 +45,6 @@
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
         <import type="de.symeda.sormas.api.i18n.Strings" />
         <import type="de.symeda.sormas.api.disease.DiseaseVariant" />
-        <import type="java.lang.Boolean" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
         <variable name="caseEditData" type="de.symeda.sormas.app.caze.edit.CaseEditFragment" />
