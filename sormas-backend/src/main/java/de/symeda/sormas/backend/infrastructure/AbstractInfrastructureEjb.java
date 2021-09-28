@@ -91,4 +91,10 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
 		}
 	}
+
+	// todo this can be moved up easily, but I want to keep the diff small for now...
+	// todo service has a count() method, maybe this should be here?
+	public long count(CRITERIA criteria) {
+		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
+	}
 }

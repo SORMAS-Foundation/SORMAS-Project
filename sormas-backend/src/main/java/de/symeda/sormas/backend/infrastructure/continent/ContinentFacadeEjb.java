@@ -48,7 +48,6 @@ import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import de.symeda.sormas.backend.infrastructure.country.Country;
@@ -135,7 +134,7 @@ public class ContinentFacadeEjb
 			cq.where(filter).distinct(true);
 		}
 
-		if (sortProperties != null && sortProperties.size() > 0) {
+		if (sortProperties != null && !sortProperties.isEmpty()) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
@@ -196,11 +195,6 @@ public class ContinentFacadeEjb
 	}
 
 	@Override
-	public long count(ContinentCriteria criteria) {
-		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
-	}
-
-	@Override
 	public ContinentDto toDto(Continent entity) {
 		if (entity == null) {
 			return null;
@@ -257,7 +251,6 @@ public class ContinentFacadeEjb
 	public static class ContinentFacadeEjbLocal extends ContinentFacadeEjb {
 
 		public ContinentFacadeEjbLocal() {
-
 		}
 
 		@Inject

@@ -220,27 +220,6 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 	}
 
 	@Override
-	public long count(RegionCriteria criteria) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Region> root = cq.from(Region.class);
-
-		Predicate filter = null;
-
-		if (criteria != null) {
-			filter = service.buildCriteriaFilter(criteria, cb, root);
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.select(cb.count(root));
-		return em.createQuery(cq).getSingleResult();
-	}
-
-	@Override
 	public List<String> getAllUuids() {
 
 		if (userService.getCurrentUser() == null) {

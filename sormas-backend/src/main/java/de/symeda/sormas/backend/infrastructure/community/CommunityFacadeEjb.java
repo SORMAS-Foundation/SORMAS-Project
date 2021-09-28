@@ -148,8 +148,8 @@ public class CommunityFacadeEjb
 			cq.where(filter);
 		}
 
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
+		if (sortProperties != null && !sortProperties.isEmpty()) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
@@ -188,27 +188,6 @@ public class CommunityFacadeEjb
 		List<CommunityDto> communityList = getIndexList(communityCriteria, offset, size, sortProperties);
 		long totalElementCount = count(communityCriteria);
 		return new Page<>(communityList, offset, size, totalElementCount);
-	}
-
-	@Override
-	public long count(CommunityCriteria criteria) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Community> root = cq.from(Community.class);
-
-		Predicate filter = null;
-
-		if (criteria != null) {
-			filter = service.buildCriteriaFilter(criteria, cb, root);
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.select(cb.count(root));
-		return em.createQuery(cq).getSingleResult();
 	}
 
 	@Override
@@ -317,8 +296,7 @@ public class CommunityFacadeEjb
 		if (entity == null) {
 			return null;
 		}
-		CommunityReferenceDto dto = new CommunityReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
-		return dto;
+		return new CommunityReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
 	}
 
 	@Override

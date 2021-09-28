@@ -202,27 +202,6 @@ public class DistrictFacadeEjb
 	}
 
 	@Override
-	public long count(DistrictCriteria criteria) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<District> root = cq.from(District.class);
-
-		Predicate filter = null;
-
-		if (criteria != null) {
-			filter = service.buildCriteriaFilter(criteria, cb, root);
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.select(cb.count(root));
-		return em.createQuery(cq).getSingleResult();
-	}
-
-	@Override
 	public List<String> getAllUuids() {
 
 		if (userService.getCurrentUser() == null) {

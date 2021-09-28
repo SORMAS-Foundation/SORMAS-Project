@@ -176,26 +176,6 @@ public class CountryFacadeEjb
 	}
 
 	@Override
-	public long count(CountryCriteria criteria) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Country> root = cq.from(Country.class);
-
-		Predicate filter = null;
-
-		if (criteria != null) {
-			filter = service.buildCriteriaFilter(criteria, cb, root);
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.select(cb.count(root));
-		return em.createQuery(cq).getSingleResult();
-	}
-
-	@Override
 	public CountryDto save(CountryDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
 		checkInfraDataLocked();
 

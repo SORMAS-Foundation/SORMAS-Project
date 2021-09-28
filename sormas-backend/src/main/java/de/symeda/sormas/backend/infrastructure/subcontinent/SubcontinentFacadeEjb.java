@@ -227,12 +227,6 @@ public class SubcontinentFacadeEjb
 		return service.getByDefaultName(dto.getDefaultName(), true);
 	}
 
-	@Override
-	public long count(SubcontinentCriteria criteria) {
-		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
-	}
-
-	@Override
 	public SubcontinentDto toDto(Subcontinent entity) {
 		if (entity == null) {
 			return null;

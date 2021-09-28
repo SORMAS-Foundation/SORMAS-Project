@@ -90,21 +90,6 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, Area
 	}
 
 	@Override
-	public long count(AreaCriteria criteria) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Area> areaRoot = cq.from(Area.class);
-
-		Predicate filter = service.buildCriteriaFilter(criteria, cb, areaRoot);
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.select(cb.count(areaRoot));
-		return em.createQuery(cq).getSingleResult();
-	}
-
-	@Override
 	public AreaDto save(AreaDto dtoToSave, boolean allowMerge) {
 		return save(dtoToSave, allowMerge, Validations.importAreaAlreadyExists);
 	}
