@@ -30,7 +30,8 @@
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<swagger.version>2.1.6</swagger.version>
 		<bouncycastle.version>1.67</bouncycastle.version>
-		<keycloak.version>12.0.1</keycloak.version>
+		<keycloak.version>12.0.4</keycloak.version>
+		<resteasy.version>3.15.1.Final</resteasy.version>
 		<xdocreport.version>2.0.2</xdocreport.version>
 		<docx4j.version>8.3.1</docx4j.version>
 
@@ -640,6 +641,27 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>resteasy-client</artifactId>
+				<version>${resteasy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>resteasy-multipart-provider</artifactId>
+				<version>${resteasy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>resteasy-jackson2-provider</artifactId>
+				<version>${resteasy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>resteasy-jaxb-provider</artifactId>
+				<version>${resteasy.version}</version>
+			</dependency>
+
+			<dependency>
 				<groupId>org.keycloak</groupId>
 				<artifactId>keycloak-admin-client</artifactId>
 				<version>${keycloak.version}</version>
@@ -1141,8 +1163,9 @@
 	<repositories>
 		<repository>
 			<id>central</id>
-			<name>bintray</name>
-			<url>https://jcenter.bintray.com</url>
+			<name>Maven Central</name>
+			<layout>default</layout>
+			<url>https://repo1.maven.org/maven2</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -1167,6 +1190,14 @@
 			<id>osgeo</id>
 			<name>Open Source Geospatial Foundation Repository</name>
 			<url>https://repo.osgeo.org/repository/release/</url>
+		</repository>
+		<repository>
+			<id>bintray</id>
+			<name>bintray</name>
+			<url>https://jcenter.bintray.com</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 
