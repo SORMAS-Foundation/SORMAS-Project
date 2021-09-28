@@ -138,6 +138,8 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	public static final String VACCINATION_INFO = "vaccinationInfo";
 	public static final String FOLLOW_UP_STATUS_CHANGE_DATE = "followUpStatusChangeDate";
 	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
+	public static final String PREVIOUS_QUARANTINE_TO = "previousQuarantineTo";
+	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
 
 	private CaseReferenceDto caze;
 	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
@@ -317,6 +319,11 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	private VaccinationInfoDto vaccinationInfo;
 	private Date followUpStatusChangeDate;
 	private UserReferenceDto followUpStatusChangeUser;
+
+	private Date previousQuarantineTo;
+	@SensitiveData
+	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
+	private String quarantineChangeComment;
 
 	public static ContactDto build() {
 		final ContactDto contact = new ContactDto();
@@ -984,5 +991,21 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 
 	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
+	}
+
+	public Date getPreviousQuarantineTo() {
+		return previousQuarantineTo;
+	}
+
+	public void setPreviousQuarantineTo(Date previousQuarantineTo) {
+		this.previousQuarantineTo = previousQuarantineTo;
+	}
+
+	public String getQuarantineChangeComment() {
+		return quarantineChangeComment;
+	}
+
+	public void setQuarantineChangeComment(String quarantineChangeComment) {
+		this.quarantineChangeComment = quarantineChangeComment;
 	}
 }

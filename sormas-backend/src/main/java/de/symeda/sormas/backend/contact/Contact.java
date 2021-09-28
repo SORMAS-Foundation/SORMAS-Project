@@ -61,10 +61,10 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.epidata.EpiData;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
@@ -161,6 +161,8 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 	public static final String FOLLOW_UP_STATUS_CHANGE_DATE = "followUpStatusChangeDate";
 	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
 	public static final String SAMPLES = "samples";
+	public static final String PREVIOUS_QUARANTINE_TO = "previousQuarantineTo";
+	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -257,6 +259,9 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 	private List<ShareInfoContact> shareInfoContacts = new ArrayList<>(0);
 
 	private Contact duplicateOf;
+
+	private Date previousQuarantineTo;
+	private String quarantineChangeComment;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -584,7 +589,9 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 
 	/**
 	 * Extra setter for externalID needed to comply with the HasExternalData interface
-	 * @param externalId the value to be set for externalID
+	 * 
+	 * @param externalId
+	 *            the value to be set for externalID
 	 */
 	public void setExternalId(String externalId) {
 		this.externalID = externalId;
@@ -1032,5 +1039,23 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 
 	public void setDuplicateOf(Contact duplicateOf) {
 		this.duplicateOf = duplicateOf;
+	}
+
+	@Temporal(TemporalType.DATE)
+	public Date getPreviousQuarantineTo() {
+		return previousQuarantineTo;
+	}
+
+	public void setPreviousQuarantineTo(Date previousQuarantineTo) {
+		this.previousQuarantineTo = previousQuarantineTo;
+	}
+
+	@Column(length = COLUMN_LENGTH_BIG)
+	public String getQuarantineChangeComment() {
+		return quarantineChangeComment;
+	}
+
+	public void setQuarantineChangeComment(String quarantineChangeComment) {
+		this.quarantineChangeComment = quarantineChangeComment;
 	}
 }

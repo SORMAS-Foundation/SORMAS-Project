@@ -1818,7 +1818,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			} else {
 				quarantineFrom.clear();
 				quarantineTo.clear();
-				previousQuarantineTo.clear();
 				quarantineExtended.setValue(false);
 				quarantineReduced.setValue(false);
 				setVisible(
@@ -1828,6 +1827,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					CaseDataDto.PREVIOUS_QUARANTINE_TO,
 					CaseDataDto.QUARANTINE_CHANGE_COMMENT);
 			}
+		} else {
+			quarantineChangeComment.clear();
+			setVisible(false, CaseDataDto.PREVIOUS_QUARANTINE_TO, CaseDataDto.QUARANTINE_CHANGE_COMMENT);
 		}
 	}
 }

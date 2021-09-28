@@ -394,15 +394,21 @@ public class ContactFacadeEjb implements ContactFacade {
 				caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(entity.getCaze()), entity.getCaze(), internal);
 			}
 
-			onContactChanged(toDto(entity), internal);
+			onContactChanged(existingContactDto, entity, internal);
 		}
 
 		return toDto(entity);
 	}
 
-	public void onContactChanged(ContactDto contact, boolean syncShares) {
+	public void onContactChanged(ContactDto existingContact, Contact contact, boolean syncShares) {
 		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(new ShareTreeCriteria(contact.getUuid()));
+		}
+
+		if (existingContact != null
+			&& existingContact.getQuarantineTo() != null
+			&& !existingContact.getQuarantineTo().equals(contact.getQuarantineTo())) {
+			contact.setPreviousQuarantineTo(existingContact.getQuarantineTo());
 		}
 	}
 
@@ -637,6 +643,8 @@ public class ContactFacadeEjb implements ContactFacade {
 			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
 			joins.getReportingUser().get(User.ID),
 			joins.getFollowUpStatusChangeUser().get(User.ID),
+			contact.get(Contact.PREVIOUS_QUARANTINE_TO),
+			contact.get(Contact.QUARANTINE_CHANGE_COMMENT),
 			jurisdictionSelector(contactQueryContext));
 
 		cq.distinct(true);
@@ -1320,6 +1328,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(originInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
+		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
+		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
 
 		return target;
 	}
@@ -1582,6 +1592,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		if (source.getFollowUpStatusChangeUser() != null) {
 			target.setFollowUpStatusChangeUser(source.getFollowUpStatusChangeUser().toReference());
 		}
+		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
+		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
 
 		return target;
 	}

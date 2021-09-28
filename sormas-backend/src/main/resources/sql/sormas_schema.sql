@@ -7953,6 +7953,10 @@ ALTER TABLE cases ADD COLUMN previousquarantineto timestamp;
 ALTER TABLE cases ADD COLUMN quarantinechangecomment varchar(4096);
 ALTER TABLE cases_history ADD COLUMN previousquarantineto timestamp;
 ALTER TABLE cases_history ADD COLUMN quarantinechangecomment varchar(4096);
+ALTER TABLE contact ADD COLUMN previousquarantineto timestamp;
+ALTER TABLE contact ADD COLUMN quarantinechangecomment varchar(4096);
+ALTER TABLE contact_history ADD COLUMN previousquarantineto timestamp;
+ALTER TABLE contact_history ADD COLUMN quarantinechangecomment varchar(4096);
 
 INSERT INTO schema_version (version_number, comment) VALUES (406, 'Change of quarantine end should be documented #6782');
 

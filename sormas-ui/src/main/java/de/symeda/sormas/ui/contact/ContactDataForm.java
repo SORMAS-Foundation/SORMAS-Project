@@ -140,10 +140,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(ContactDto.RELATION_TO_CASE) +
                     fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
                     fluidRowLocs(ContactDto.DESCRIPTION) +
-					fluidRowLocs(6, CaseDataDto.PROHIBITION_TO_WORK, 3, CaseDataDto.PROHIBITION_TO_WORK_FROM, 3, CaseDataDto.PROHIBITION_TO_WORK_UNTIL) +
+					fluidRowLocs(6, ContactDto.PROHIBITION_TO_WORK, 3, ContactDto.PROHIBITION_TO_WORK_FROM, 3, ContactDto.PROHIBITION_TO_WORK_UNTIL) +
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
                     fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) +
+					fluidRowLocs(9, ContactDto.QUARANTINE_CHANGE_COMMENT, 3, ContactDto.PREVIOUS_QUARANTINE_TO) +
 					fluidRowLocs(ContactDto.QUARANTINE_EXTENDED) +
 					fluidRowLocs(ContactDto.QUARANTINE_REDUCED) +
 					fluidRowLocs(ContactDto.QUARANTINE_TYPE_DETAILS) +
@@ -160,7 +161,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
 					loc(FOLLOW_UP_STATUS_HEADING_LOC) +
                     fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
-					fluidRowLocs(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER) +
+					fluidRowLocs(ContactDto.FOLLOW_UP_STATUS_CHANGE_DATE, ContactDto.FOLLOW_UP_STATUS_CHANGE_USER) +
                     fluidRowLocs(ContactDto.FOLLOW_UP_UNTIL, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC, ContactDto.OVERWRITE_FOLLOW_UP_UTIL) +
                     fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
                     fluidRowLocs(ContactDto.CONTACT_OFFICER, "") + loc(GENERAL_COMMENT_LOC)
@@ -173,6 +174,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private Field<?> quarantine;
 	private DateField quarantineFrom;
 	private DateField quarantineTo;
+	private TextField quarantineChangeComment;
+	private DateField previousQuarantineTo;
 	private CheckBox quarantineExtended;
 	private CheckBox quarantineReduced;
 	private CheckBox quarantineOrderedVerbally;
@@ -319,6 +322,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				false,
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, quarantineTo.getCaption(), quarantineFrom.getCaption())));
+
+		quarantineChangeComment = addField(ContactDto.QUARANTINE_CHANGE_COMMENT);
+		previousQuarantineTo = addDateField(ContactDto.PREVIOUS_QUARANTINE_TO, DateField.class, -1);
+		setReadOnly(true, ContactDto.PREVIOUS_QUARANTINE_TO);
+		setVisible(false, ContactDto.QUARANTINE_CHANGE_COMMENT, ContactDto.PREVIOUS_QUARANTINE_TO);
 
 		quarantineOrderedVerbally = addField(ContactDto.QUARANTINE_ORDERED_VERBALLY, CheckBox.class);
 		CssStyles.style(quarantineOrderedVerbally, CssStyles.FORCE_CAPTION);
@@ -526,8 +534,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			ContactDto.REPORTING_USER,
 			ContactDto.CONTACT_STATUS,
 			ContactDto.FOLLOW_UP_STATUS,
-			CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE,
-			CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER);
+			ContactDto.FOLLOW_UP_STATUS_CHANGE_DATE,
+			ContactDto.FOLLOW_UP_STATUS_CHANGE_USER);
 
 		FieldHelper.setRequiredWhen(
 			getFieldGroup(),
@@ -536,8 +544,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			Arrays.asList(FollowUpStatus.CANCELED, FollowUpStatus.LOST));
 		FieldHelper.setVisibleWhenSourceNotNull(
 			getFieldGroup(),
-			Arrays.asList(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER),
-			CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE,
+			Arrays.asList(ContactDto.FOLLOW_UP_STATUS_CHANGE_DATE, ContactDto.FOLLOW_UP_STATUS_CHANGE_USER),
+			ContactDto.FOLLOW_UP_STATUS_CHANGE_DATE,
 			true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
@@ -655,12 +663,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			if (!isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY) && !isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
 				setVisible(
 					false,
-					CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT,
-					CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE,
-					CaseDataDto.QUARANTINE_ORDERED_VERBALLY,
-					CaseDataDto.QUARANTINE_ORDERED_VERBALLY_DATE,
-					CaseDataDto.QUARANTINE_OFFICIAL_ORDER_SENT,
-					CaseDataDto.QUARANTINE_OFFICIAL_ORDER_SENT_DATE);
+					ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT,
+					ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE,
+					ContactDto.QUARANTINE_ORDERED_VERBALLY,
+					ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE,
+					ContactDto.QUARANTINE_OFFICIAL_ORDER_SENT,
+					ContactDto.QUARANTINE_OFFICIAL_ORDER_SENT_DATE);
 			}
 		});
 
@@ -906,6 +914,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			640,
 			confirmed -> {
 				if (confirmed) {
+					setVisible(true, ContactDto.QUARANTINE_CHANGE_COMMENT);
 					quarantineExtendedCheckbox.setValue(true);
 					quarantineReducedCheckbox.setValue(false);
 					setVisible(true, ContactDto.QUARANTINE_EXTENDED);
@@ -953,6 +962,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			640,
 			confirmed -> {
 				if (confirmed) {
+					setVisible(true, ContactDto.QUARANTINE_CHANGE_COMMENT);
 					quarantineExtendedCheckbox.setValue(false);
 					quarantineReducedCheckbox.setValue(true);
 					setVisible(false, ContactDto.QUARANTINE_EXTENDED);
@@ -966,6 +976,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private void onQuarantineValueChange() {
 		QuarantineType quarantineType = (QuarantineType) quarantine.getValue();
 		if (QuarantineType.isQuarantineInEffect(quarantineType)) {
+			setVisible(previousQuarantineTo.getValue() != null, ContactDto.PREVIOUS_QUARANTINE_TO, ContactDto.QUARANTINE_CHANGE_COMMENT);
 			ContactDto contact = this.getInternalValue();
 			if (contact != null) {
 				quarantineFrom.setValue(contact.getQuarantineFrom());
@@ -976,19 +987,28 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				}
 				if (contact.isQuarantineExtended()) {
 					quarantineExtended.setValue(true);
-					setVisible(true, CaseDataDto.QUARANTINE_EXTENDED);
+					setVisible(true, ContactDto.QUARANTINE_EXTENDED);
 				}
 				if (contact.isQuarantineReduced()) {
 					quarantineReduced.setValue(true);
-					setVisible(true, CaseDataDto.QUARANTINE_REDUCED);
+					setVisible(true, ContactDto.QUARANTINE_REDUCED);
 				}
+			} else {
+				quarantineChangeComment.clear();
+				setVisible(false, ContactDto.PREVIOUS_QUARANTINE_TO, ContactDto.QUARANTINE_CHANGE_COMMENT);
 			}
 		} else {
 			quarantineFrom.clear();
 			quarantineTo.clear();
+			quarantineChangeComment.clear();
 			quarantineExtended.setValue(false);
 			quarantineReduced.setValue(false);
-			setVisible(false, CaseDataDto.QUARANTINE_REDUCED, CaseDataDto.QUARANTINE_EXTENDED);
+			setVisible(
+				false,
+				ContactDto.QUARANTINE_REDUCED,
+				ContactDto.QUARANTINE_EXTENDED,
+				ContactDto.PREVIOUS_QUARANTINE_TO,
+				ContactDto.QUARANTINE_CHANGE_COMMENT);
 		}
 	}
 

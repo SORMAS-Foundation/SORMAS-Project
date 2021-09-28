@@ -1115,7 +1115,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			// Call onContactChanged once for every contact
 			// Attention: this may lead to infinite recursion when not properly implemented
 			for (Contact personContact : personContacts) {
-				contactFacade.onContactChanged(ContactFacadeEjbLocal.toDto(personContact), syncShares);
+				contactFacade.onContactChanged(ContactFacadeEjbLocal.toDto(personContact), personContact, syncShares);
 			}
 
 			List<EventParticipant> personEventParticipants =
