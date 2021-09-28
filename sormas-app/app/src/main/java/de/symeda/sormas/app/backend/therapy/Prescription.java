@@ -15,9 +15,8 @@
 
 package de.symeda.sormas.app.backend.therapy;
 
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 
@@ -26,14 +25,15 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import de.symeda.sormas.api.therapy.TreatmentRoute;
 import de.symeda.sormas.api.therapy.TreatmentType;
 import de.symeda.sormas.api.therapy.TypeOfDrug;
 import de.symeda.sormas.app.backend.common.ParentAdo;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
-
-import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
-import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 @Entity(name = Prescription.TABLE_NAME)
 @DatabaseTable(tableName = Prescription.TABLE_NAME)
