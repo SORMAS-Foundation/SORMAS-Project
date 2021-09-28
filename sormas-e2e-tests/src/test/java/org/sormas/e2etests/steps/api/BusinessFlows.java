@@ -56,25 +56,11 @@ public class BusinessFlows implements En {
         "API: I create several new cases",
         () -> {
           List<Case> caseList = new ArrayList<>();
-          String uuid = UUID.randomUUID().toString();
-          Person person = personApiService.buildSimpleGeneratedPerson();
-          person = person.toBuilder().firstName(person.getFirstName() + uuid).build();
           for (int i = 0; i < number; i++) {
-            person =
-                person.toBuilder()
-                    .uuid(UUID.randomUUID().toString())
-                    .lastName(faker.name().lastName())
-                    .build();
-            apiState.setLastCreatedPerson(person);
+            Person person = personApiService.buildGeneratedPerson();
             personsHelper.createNewPerson(person);
-
+            apiState.setLastCreatedPerson(person);
             Case caze = caseApiService.buildGeneratedCase(apiState.getLastCreatedPerson());
-            caze =
-                caze.toBuilder()
-                    .outcome(CaseOutcome.getRandomOutcome())
-                    .disease(DiseasesValues.getRandomDiseaseName())
-                    .caseClassification(CaseClasification.getRandomClassification())
-                    .build();
             caseHelper.createCase(caze);
             caseList.add(caze);
           }
