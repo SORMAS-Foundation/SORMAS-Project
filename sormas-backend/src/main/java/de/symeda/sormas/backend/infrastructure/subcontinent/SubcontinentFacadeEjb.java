@@ -111,7 +111,11 @@ public class SubcontinentFacadeEjb extends AbstractInfrastructureEjb<Subcontinen
 	@Override
 	public List<SubcontinentReferenceDto> getAllActiveByContinent(String uuid) {
 		Continent continent = continentService.getByUuid(uuid);
-		return continent.getSubcontinents().stream().filter(d -> !d.isArchived()).map(SubcontinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
+		return continent.getSubcontinents()
+			.stream()
+			.filter(d -> !d.isArchived())
+			.map(SubcontinentFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -222,10 +226,7 @@ public class SubcontinentFacadeEjb extends AbstractInfrastructureEjb<Subcontinen
 
 	@Override
 	public SubcontinentDto save(@Valid SubcontinentDto dto, boolean allowMerge) {
-
-		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
-		}
+		checkInfraDataLocked();
 
 		Subcontinent subcontinent = service.getByUuid(dto.getUuid());
 

@@ -196,10 +196,7 @@ public class ContinentFacadeEjb extends AbstractInfrastructureEjb<Continent, Con
 
 	@Override
 	public ContinentDto save(@Valid ContinentDto dto, boolean allowMerge) {
-
-		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
-		}
+		checkInfraDataLocked();
 
 		Continent continent = service.getByUuid(dto.getUuid());
 

@@ -36,24 +36,17 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, S
 
 	public void dearchive(String uuid) {
 		checkInfraDataLocked();
-		doDearchive(uuid);
-	}
 
-	protected void dearchiveUnchecked(String uuid) {
-		doDearchive(uuid);
-	}
-
-	private void checkInfraDataLocked() {
-		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
-		}
-	}
-
-	private void doDearchive(String uuid) {
 		ADO ado = service.getByUuid(uuid);
 		if (ado != null) {
 			ado.setArchived(false);
 			service.ensurePersisted(ado);
+		}
+	}
+
+	protected void checkInfraDataLocked() {
+		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
 		}
 	}
 }

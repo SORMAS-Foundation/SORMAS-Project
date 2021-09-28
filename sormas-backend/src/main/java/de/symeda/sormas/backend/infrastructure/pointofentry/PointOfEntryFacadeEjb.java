@@ -215,9 +215,10 @@ public class PointOfEntryFacadeEjb extends AbstractInfrastructureEjb<PointOfEntr
 	}
 
 	@Override
-	public void dearchive(String uuid) {
-		super.dearchiveUnchecked(uuid);
+	protected void checkInfraDataLocked() {
+		// poe are excluded from infra. data locking for now...
 	}
+
 
 	@Override
 	public void validate(PointOfEntryDto pointOfEntry) throws ValidationRuntimeException {

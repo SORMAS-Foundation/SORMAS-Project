@@ -621,8 +621,8 @@ public class FacilityFacadeEjb extends AbstractInfrastructureEjb<Facility, Facil
 	}
 
 	@Override
-	public void dearchive(String uuid) {
-		super.dearchiveUnchecked(uuid);
+	protected void checkInfraDataLocked() {
+		// facilities are excluded from infra. data locking for now...
 	}
 
 	private void validateFacilityDto(FacilityDto dto) {

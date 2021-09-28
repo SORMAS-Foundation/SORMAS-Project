@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.common;
 
-// todo should we use BaseAdoService?
 public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, SRV extends AdoServiceWithUserFilter<ADO>> {
 
 	protected SRV service;
@@ -17,4 +16,6 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, SRV exte
 	public abstract void archive(String uuid);
 
 	public abstract void dearchive(String uuid);
+
+	// FIXME(@JonasCir) #6821: Add missing functions like save, getByUuid etc
 }

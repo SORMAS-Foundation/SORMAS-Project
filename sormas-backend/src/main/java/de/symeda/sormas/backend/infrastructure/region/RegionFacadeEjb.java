@@ -344,10 +344,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 
 	@Override
 	public RegionDto save(@Valid RegionDto dto, boolean allowMerge) throws ValidationRuntimeException {
-
-		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
-		}
+		checkInfraDataLocked();
 
 		Region region = service.getByUuid(dto.getUuid());
 

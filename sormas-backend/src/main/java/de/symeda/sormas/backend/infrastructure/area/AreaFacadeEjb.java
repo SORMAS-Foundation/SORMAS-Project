@@ -116,6 +116,7 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaService> 
 
 	@Override
 	public AreaDto save(@Valid AreaDto dto, boolean allowMerge) {
+		checkInfraDataLocked();
 		Area area = service.getByUuid(dto.getUuid());
 
 		if (area == null) {
