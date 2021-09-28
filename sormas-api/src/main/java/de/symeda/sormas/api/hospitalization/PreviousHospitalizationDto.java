@@ -29,6 +29,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
@@ -63,15 +64,15 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 	@SensitiveData
 	private FacilityReferenceDto healthFacility;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
 	private YesNoUnknown isolated;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String description;
 
 	private HospitalizationReasonType hospitalizationReason;
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherHospitalizationReason;
 
 	private YesNoUnknown intensiveCareUnit;

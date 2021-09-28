@@ -101,7 +101,7 @@ public class CaseDetailedTableViewSteps implements En {
               .assertThat(
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.DATE_OF_REPORT.toString()))
               .containsIgnoringCase(
-                  getDetaOfReportDateTime(apiState.getCreatedCase().getReportDate().toString()));
+                  getDateOfReportDateTime(apiState.getCreatedCase().getReportDate().toString()));
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
@@ -113,7 +113,7 @@ public class CaseDetailedTableViewSteps implements En {
                       CaseDetailedTableViewHeaders.FOLLOW_UP_UNTIL.toString()))
               .containsIgnoringCase(
                   getFollowUpUntilCaseDate(
-                      getDetaOfReportDateTime(
+                      getDateOfReportDateTime(
                           apiState.getCreatedCase().getReportDate().toString())));
           softly
               .assertThat(
@@ -184,7 +184,7 @@ public class CaseDetailedTableViewSteps implements En {
   <parameter> dateTimeString: represents the date time value read from Case created through API <parameter>
   */
 
-  public String getDetaOfReportDateTime(String dateTimeString) {
+  public String getDateOfReportDateTime(String dateTimeString) {
     SimpleDateFormat outputFormat = new SimpleDateFormat("M/dd/yyyy h:mm a");
     // because API request is sending local GMT and UI displays GMT+2 (server GMT)
     outputFormat.setTimeZone(TimeZone.getTimeZone("GMT+2"));
@@ -212,11 +212,10 @@ public class CaseDetailedTableViewSteps implements En {
       e.printStackTrace();
       log.error(PROCESS_ID_STRING + e.getMessage());
     }
-
     LocalDate date = parsedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     LocalDate addedDate = date.plusDays(14);
     Date finalDate = Date.from(addedDate.atStartOfDay(defaultZoneId).toInstant());
-
-    return outputFormat.format(finalDate);
+    String formattedDate = outputFormat.format(finalDate);
+    return (formattedDate.contains("/0")) ? formattedDate.replace("/0", "/") : formattedDate;
   }
 }

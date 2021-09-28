@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -68,6 +69,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -135,6 +137,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
@@ -207,6 +210,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.messaging.ManualMessageLogService;
+import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
@@ -235,6 +239,9 @@ import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
+import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.importexport.ExportHelper;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
@@ -305,6 +312,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.PatchHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
@@ -716,15 +724,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPerson().get(Person.EDUCATION_TYPE),
 				joins.getPerson().get(Person.EDUCATION_DETAILS), joins.getPerson().get(Person.OCCUPATION_TYPE),
 				joins.getPerson().get(Person.OCCUPATION_DETAILS), joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE), joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
-				// vaccination
-				caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES), caseRoot.get(Case.VACCINATION_INFO_SOURCE),
-				caseRoot.get(Case.FIRST_VACCINATION_DATE), caseRoot.get(Case.LAST_VACCINATION_DATE),
-				caseRoot.get(Case.VACCINE_NAME), caseRoot.get(Case.OTHER_VACCINE_NAME),
-				caseRoot.get(Case.VACCINE_MANUFACTURER), caseRoot.get(Case.OTHER_VACCINE_MANUFACTURER),
-				caseRoot.get(Case.VACCINE_INN), caseRoot.get(Case.VACCINE_BATCH_NUMBER),
-				caseRoot.get(Case.VACCINE_UNII_CODE), caseRoot.get(Case.VACCINE_ATC_CODE),
-				// postpartum
-				caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
+				caseRoot.get(Case.VACCINATION_STATUS), caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
 				eventCountSq,
 				caseRoot.get(Case.EXTERNAL_ID),
 				caseRoot.get(Case.EXTERNAL_TOKEN),
@@ -773,7 +773,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		if (!resultList.isEmpty()) {
 			Map<Long, Symptoms> symptoms = null;
-			if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseDataDto.SYMPTOMS)) {
+			if (ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.SYMPTOMS)) {
 				List<Symptoms> symptomsList = null;
 				CriteriaQuery<Symptoms> symptomsCq = cb.createQuery(Symptoms.class);
 				Root<Symptoms> symptomsRoot = symptomsCq.from(Symptoms.class);
@@ -784,16 +784,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 
 			Map<Long, Location> personAddresses = null;
-			if (exportConfiguration == null
-				|| exportConfiguration.getProperties().contains(PersonDto.ADDRESS)
-				|| exportConfiguration.getProperties().contains(CaseExportDto.ADDRESS_GPS_COORDINATES)) {
-				List<Location> personAddressesList = null;
+			if (ExportHelper.shouldExportFields(exportConfiguration, PersonDto.ADDRESS, CaseExportDto.ADDRESS_GPS_COORDINATES)) {
 				CriteriaQuery<Location> personAddressesCq = cb.createQuery(Location.class);
 				Root<Location> personAddressesRoot = personAddressesCq.from(Location.class);
 				Expression<String> personAddressesIdsExpr = personAddressesRoot.get(Location.ID);
 				personAddressesCq
 					.where(personAddressesIdsExpr.in(resultList.stream().map(CaseExportDto::getPersonAddressId).collect(Collectors.toList())));
-				personAddressesList = em.createQuery(personAddressesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				List<Location> personAddressesList =
+					em.createQuery(personAddressesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 				personAddresses = personAddressesList.stream().collect(Collectors.toMap(Location::getId, Function.identity()));
 			}
 
@@ -802,22 +800,22 @@ public class CaseFacadeEjb implements CaseFacade {
 			Map<Long, Integer> clinicalVisitCounts = null;
 			Map<Long, HealthConditions> healthConditions = null;
 			if (exportType == null || exportType == CaseExportType.CASE_MANAGEMENT) {
-				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.NUMBER_OF_PRESCRIPTIONS)) {
+				if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_PRESCRIPTIONS)) {
 					prescriptionCounts = prescriptionService.getPrescriptionCountByCases(resultCaseIds)
 						.stream()
 						.collect(Collectors.toMap(e -> (Long) e[0], e -> ((Long) e[1]).intValue()));
 				}
-				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.NUMBER_OF_TREATMENTS)) {
+				if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_TREATMENTS)) {
 					treatmentCounts = treatmentService.getTreatmentCountByCases(resultCaseIds)
 						.stream()
 						.collect(Collectors.toMap(e -> (Long) e[0], e -> ((Long) e[1]).intValue()));
 				}
-				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.NUMBER_OF_CLINICAL_VISITS)) {
+				if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_CLINICAL_VISITS)) {
 					clinicalVisitCounts = clinicalVisitService.getClinicalVisitCountByCases(resultCaseIds)
 						.stream()
 						.collect(Collectors.toMap(e -> (Long) e[0], e -> ((Long) e[1]).intValue()));
 				}
-				if (exportConfiguration == null || exportConfiguration.getProperties().contains(ClinicalCourseDto.HEALTH_CONDITIONS)) {
+				if (ExportHelper.shouldExportFields(exportConfiguration, ClinicalCourseDto.HEALTH_CONDITIONS)) {
 					List<HealthConditions> healthConditionsList = null;
 					CriteriaQuery<HealthConditions> healthConditionsCq = cb.createQuery(HealthConditions.class);
 					Root<HealthConditions> healthConditionsRoot = healthConditionsCq.from(HealthConditions.class);
@@ -830,7 +828,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 
 			Map<Long, PreviousHospitalization> firstPreviousHospitalizations = null;
-			if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.INITIAL_DETECTION_PLACE)) {
+			if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.INITIAL_DETECTION_PLACE)) {
 				List<PreviousHospitalization> prevHospsList = null;
 				CriteriaQuery<PreviousHospitalization> prevHospsCq = cb.createQuery(PreviousHospitalization.class);
 				Root<PreviousHospitalization> prevHospsRoot = prevHospsCq.from(PreviousHospitalization.class);
@@ -848,7 +846,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 
 			Map<Long, CaseClassification> sourceCaseClassifications = null;
-			if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.MAX_SOURCE_CASE_CLASSIFICATION)) {
+			if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.MAX_SOURCE_CASE_CLASSIFICATION)) {
 				sourceCaseClassifications = contactService.getSourceCaseClassifications(resultCaseIds)
 					.stream()
 					.collect(
@@ -857,16 +855,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 
 			List<Long> caseIdsWithOutbreak = null;
-			if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.ASSOCIATED_WITH_OUTBREAK)) {
+			if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.ASSOCIATED_WITH_OUTBREAK)) {
 				caseIdsWithOutbreak = outbreakService.getCaseIdsWithOutbreak(resultCaseIds);
 			}
 
 			Map<Long, List<Exposure>> exposures = null;
 			if ((exportType == null || exportType == CaseExportType.CASE_SURVEILLANCE)
-				&& (exportConfiguration == null
-					|| exportConfiguration.getProperties().contains(CaseExportDto.TRAVELED)
-					|| exportConfiguration.getProperties().contains(CaseExportDto.TRAVEL_HISTORY)
-					|| exportConfiguration.getProperties().contains(CaseExportDto.BURIAL_ATTENDED))) {
+				&& ExportHelper
+					.shouldExportFields(exportConfiguration, CaseExportDto.TRAVELED, CaseExportDto.TRAVEL_HISTORY, CaseExportDto.BURIAL_ATTENDED)) {
 				CriteriaQuery<Exposure> exposuresCq = cb.createQuery(Exposure.class);
 				Root<Exposure> exposuresRoot = exposuresCq.from(Exposure.class);
 				Join<Exposure, EpiData> exposuresEpiDataJoin = exposuresRoot.join(Exposure.EPI_DATA, JoinType.LEFT);
@@ -884,7 +880,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			Map<Long, List<Sample>> samples = null;
 			if ((exportType == null || exportType == CaseExportType.CASE_SURVEILLANCE)
-				&& (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.SAMPLE_INFORMATION))) {
+				&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.SAMPLE_INFORMATION)) {
 				List<Sample> samplesList = null;
 				CriteriaQuery<Sample> samplesCq = cb.createQuery(Sample.class);
 				Root<Sample> samplesRoot = samplesCq.from(Sample.class);
@@ -897,11 +893,12 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			List<VisitSummaryExportDetails> visitSummaries = null;
 			if (featureConfigurationFacade.isFeatureEnabled(FeatureType.CASE_FOLLOWUP)
-				&& (exportConfiguration == null
-					|| exportConfiguration.getProperties().contains(CaseExportDto.NUMBER_OF_VISITS)
-					|| exportConfiguration.getProperties().contains(CaseExportDto.LAST_COOPERATIVE_VISIT_DATE)
-					|| exportConfiguration.getProperties().contains(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMATIC)
-					|| exportConfiguration.getProperties().contains(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMS))) {
+				&& ExportHelper.shouldExportFields(
+					exportConfiguration,
+					CaseExportDto.NUMBER_OF_VISITS,
+					CaseExportDto.LAST_COOPERATIVE_VISIT_DATE,
+					CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMATIC,
+					CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMS)) {
 				CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
 				Root<Case> visitsCqRoot = visitsCq.from(Case.class);
 				Join<Case, Visit> visitsJoin = visitsCqRoot.join(Case.VISITS, JoinType.LEFT);
@@ -919,14 +916,38 @@ public class CaseFacadeEjb implements CaseFacade {
 				visitSummaries = em.createQuery(visitsCq).getResultList();
 			}
 
+			Map<Long, List<Immunization>> immunizations = null;
+			if ((exportType == null || exportType == CaseExportType.CASE_SURVEILLANCE)
+				&& (exportConfiguration == null
+					|| exportConfiguration.getProperties()
+						.stream()
+						.anyMatch(p -> StringUtils.equalsAny(p, ExportHelper.getVaccinationExportProperties())))) {
+				List<Immunization> immunizationList;
+				CriteriaQuery<Immunization> immunizationsCq = cb.createQuery(Immunization.class);
+				Root<Immunization> immunizationsCqRoot = immunizationsCq.from(Immunization.class);
+				Join<Immunization, Person> personJoin = immunizationsCqRoot.join(Immunization.PERSON, JoinType.LEFT);
+				Expression<String> personIdsExpr = personJoin.get(Person.ID);
+				immunizationsCq.where(
+					CriteriaBuilderHelper.and(
+						cb,
+						cb.or(
+							cb.equal(immunizationsCqRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION),
+							cb.equal(immunizationsCqRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION_RECOVERY)),
+						personIdsExpr.in(resultList.stream().map(CaseExportDto::getPersonId).collect(Collectors.toList()))));
+				immunizationsCq.select(immunizationsCqRoot);
+				immunizationList = em.createQuery(immunizationsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				immunizations = immunizationList.stream().collect(Collectors.groupingBy(i -> i.getPerson().getId()));
+			}
+
 			// Load latest events info
 			// Adding a second query here is not perfect, but selecting the last event with a criteria query
 			// doesn't seem to be possible and using a native query is not an option because of user filters
 			List<EventSummaryDetails> eventSummaries = null;
-			if (exportConfiguration == null
-				|| exportConfiguration.getProperties().contains(CaseExportDto.LATEST_EVENT_ID)
-				|| exportConfiguration.getProperties().contains(CaseExportDto.LATEST_EVENT_STATUS)
-				|| exportConfiguration.getProperties().contains(CaseExportDto.LATEST_EVENT_TITLE)) {
+			if (ExportHelper.shouldExportFields(
+				exportConfiguration,
+				CaseExportDto.LATEST_EVENT_ID,
+				CaseExportDto.LATEST_EVENT_STATUS,
+				CaseExportDto.LATEST_EVENT_TITLE)) {
 
 				eventSummaries = eventService.getEventSummaryDetailsByCases(resultCaseIds);
 			}
@@ -1045,7 +1066,38 @@ public class CaseFacadeEjb implements CaseFacade {
 						}
 					});
 				}
+				if (immunizations != null) {
+					Optional.ofNullable(immunizations.get(exportDto.getPersonId())).ifPresent(caseImmunizations -> {
+						List<Immunization> filteredImmunizations =
+							caseImmunizations.stream().filter(i -> i.getDisease() == exportDto.getDisease()).collect(Collectors.toList());
+						if (filteredImmunizations.size() > 0) {
+							filteredImmunizations.sort(Comparator.comparing(ImmunizationEntityHelper::getDateForComparison));
+							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
+							exportDto.setVaccinationDoses(String.valueOf(mostRecentImmunization.getNumberOfDoses()));
 
+							if (CollectionUtils.isNotEmpty(mostRecentImmunization.getVaccinations())) {
+								List<Vaccination> sortedVaccinations = mostRecentImmunization.getVaccinations()
+									.stream()
+									.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
+									.collect(Collectors.toList());
+								Vaccination firstVaccination = sortedVaccinations.get(0);
+								Vaccination lastVaccination = sortedVaccinations.get(sortedVaccinations.size() - 1);
+
+								exportDto.setFirstVaccinationDate(firstVaccination.getVaccinationDate());
+								exportDto.setLastVaccinationDate(lastVaccination.getVaccinationDate());
+								exportDto.setVaccineName(lastVaccination.getVaccineName());
+								exportDto.setOtherVaccineName(lastVaccination.getOtherVaccineName());
+								exportDto.setVaccineManufacturer(lastVaccination.getVaccineManufacturer());
+								exportDto.setOtherVaccineManufacturer(lastVaccination.getOtherVaccineManufacturer());
+								exportDto.setVaccinationInfoSource(lastVaccination.getVaccinationInfoSource());
+								exportDto.setVaccineAtcCode(lastVaccination.getVaccineAtcCode());
+								exportDto.setVaccineBatchNumber(lastVaccination.getVaccineBatchNumber());
+								exportDto.setVaccineUniiCode(lastVaccination.getVaccineUniiCode());
+								exportDto.setVaccineInn(lastVaccination.getVaccineInn());
+							}
+						}
+					});
+				}
 				if (visitSummaries != null) {
 					List<VisitSummaryExportDetails> visits =
 						visitSummaries.stream().filter(v -> v.getContactId() == exportDto.getId()).collect(Collectors.toList());
@@ -1982,61 +2034,58 @@ public class CaseFacadeEjb implements CaseFacade {
 		// Send an email to all responsible supervisors when the case classification has
 		// changed
 		if (existingCase != null && existingCase.getCaseClassification() != newCase.getCaseClassification()) {
-			List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
-				JurisdictionHelper.getCaseRegions(newCase),
-				UserRole.SURVEILLANCE_SUPERVISOR,
-				UserRole.ADMIN_SUPERVISOR,
-				UserRole.CASE_SUPERVISOR,
-				UserRole.CONTACT_SUPERVISOR);
-			for (User recipient : messageRecipients) {
-				try {
-					messagingService.sendMessage(
-						recipient,
-						MessageSubject.CASE_CLASSIFICATION_CHANGED,
-						String.format(
-							I18nProperties.getString(MessagingService.CONTENT_CASE_CLASSIFICATION_CHANGED),
-							DataHelper.getShortUuid(newCase.getUuid()),
-							newCase.getCaseClassification().toString()),
-						MessageType.EMAIL,
-						MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format(
-							"NotificationDeliveryFailedException when trying to notify supervisors about the change of a case classification. "
-								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-							recipient.getUuid()));
-				}
+
+			try {
+				messagingService.sendMessages(() -> {
+					List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
+						JurisdictionHelper.getCaseRegions(newCase),
+						UserRole.SURVEILLANCE_SUPERVISOR,
+						UserRole.ADMIN_SUPERVISOR,
+						UserRole.CASE_SUPERVISOR,
+						UserRole.CONTACT_SUPERVISOR);
+					final Map<User, String> mapToReturn = new HashMap<>();
+					messageRecipients.forEach(
+						user -> mapToReturn.put(
+							user,
+							String.format(
+								I18nProperties.getString(MessageContents.CONTENT_CASE_CLASSIFICATION_CHANGED),
+								DataHelper.getShortUuid(newCase.getUuid()),
+								newCase.getCaseClassification().toString())));
+					return mapToReturn;
+				}, MessageSubject.CASE_CLASSIFICATION_CHANGED, MessageType.EMAIL, MessageType.SMS);
+			} catch (NotificationDeliveryFailedException e) {
+				logger.error(
+					String
+						.format("NotificationDeliveryFailedException when trying to notify supervisors about the change of a case classification. "));
 			}
 		}
 
 		// Send an email to all responsible supervisors when the disease of an
 		// Unspecified VHF case has changed
 		if (existingCase != null && existingCase.getDisease() == Disease.UNSPECIFIED_VHF && existingCase.getDisease() != newCase.getDisease()) {
-			List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
-				JurisdictionHelper.getCaseRegions(newCase),
-				UserRole.SURVEILLANCE_SUPERVISOR,
-				UserRole.ADMIN_SUPERVISOR,
-				UserRole.CASE_SUPERVISOR,
-				UserRole.CONTACT_SUPERVISOR);
-			for (User recipient : messageRecipients) {
-				try {
-					messagingService.sendMessage(
-						recipient,
-						MessageSubject.DISEASE_CHANGED,
-						String.format(
-							I18nProperties.getString(MessagingService.CONTENT_DISEASE_CHANGED),
-							DataHelper.getShortUuid(newCase.getUuid()),
-							existingCase.getDisease().toString(),
-							newCase.getDisease().toString()),
-						MessageType.EMAIL,
-						MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format(
-							"NotificationDeliveryFailedException when trying to notify supervisors about the change of a case disease. "
-								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-							recipient.getUuid()));
-				}
+
+			try {
+				messagingService.sendMessages(() -> {
+					List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
+						JurisdictionHelper.getCaseRegions(newCase),
+						UserRole.SURVEILLANCE_SUPERVISOR,
+						UserRole.ADMIN_SUPERVISOR,
+						UserRole.CASE_SUPERVISOR,
+						UserRole.CONTACT_SUPERVISOR);
+					final Map<User, String> mapToReturn = new HashMap<>();
+					messageRecipients.forEach(
+						user -> mapToReturn.put(
+							user,
+							String.format(
+								I18nProperties.getString(MessageContents.CONTENT_DISEASE_CHANGED),
+								DataHelper.getShortUuid(newCase.getUuid()),
+								existingCase.getDisease().toString(),
+								newCase.getDisease().toString())));
+					return mapToReturn;
+				}, MessageSubject.DISEASE_CHANGED, MessageType.EMAIL, MessageType.SMS);
+			} catch (NotificationDeliveryFailedException e) {
+				logger.error(
+					String.format("NotificationDeliveryFailedException when trying to notify supervisors about the change of a case disease."));
 			}
 		}
 
@@ -2080,30 +2129,27 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	private void sendConfirmedCaseNotificationsForEvents(Case caze) {
-		Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
-		Map<String, User> responsibleUserByEventByEventUuid =
-			eventService.getAllEventUuidWithResponsibleUserByCaseAfterDateForNotification(caze, fromDate);
-		for (Map.Entry<String, User> entry : responsibleUserByEventByEventUuid.entrySet()) {
-			try {
-				messagingService.sendMessage(
-					entry.getValue(),
-					MessageSubject.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
+
+		try {
+			messagingService.sendMessages(() -> {
+						final Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
+						final Map<String, User> responsibleUserByEventByEventUuid =
+								eventService.getAllEventUuidWithResponsibleUserByCaseAfterDateForNotification(caze, fromDate);
+						final Map<User, String> mapToReturn  = new HashMap<>();
+						responsibleUserByEventByEventUuid.forEach((s, user) -> mapToReturn.put(user, String.format(
+								I18nProperties.getString(MessageContents.CONTENT_EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED),
+								DataHelper.getShortUuid(s),
+								caze.getDisease().getName(),
+								DataHelper.getShortUuid(caze.getUuid()))));
+						return mapToReturn;
+			}, MessageSubject.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
 					new Object[] {
-						caze.getDisease().getName() },
-					String.format(
-						I18nProperties.getString(MessagingService.CONTENT_EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED),
-						DataHelper.getShortUuid(entry.getKey()),
-						caze.getDisease().getName(),
-						DataHelper.getShortUuid(caze.getUuid())),
-					MessageType.EMAIL,
+							caze.getDisease().getName() }, MessageType.EMAIL,
 					MessageType.SMS);
-			} catch (NotificationDeliveryFailedException e) {
-				logger.error(
+		} catch (NotificationDeliveryFailedException e) {
+			logger.error(
 					String.format(
-						"NotificationDeliveryFailedException when trying to notify event responsible user about a newly confirmed case. "
-							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-						entry.getValue().getUuid()));
-			}
+						"NotificationDeliveryFailedException when trying to notify event responsible user about a newly confirmed case."));
 		}
 	}
 
@@ -2334,7 +2380,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		Case caze = caseService.getByUuid(caseUuid);
+		deleteCase(caze);
+	}
 
+	private void deleteCase(Case caze) throws ExternalSurveillanceToolException {
 		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && caze.getExternalID() != null && !caze.getExternalID().isEmpty()) {
 			List<CaseDataDto> casesWithSameExternalId = getByExternalId(caze.getExternalID());
@@ -2351,13 +2400,18 @@ public class CaseFacadeEjb implements CaseFacade {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete cases.");
 		}
 		List<String> deletedCasesUuids = new ArrayList<>();
-		for (String caseUuid : caseUuids) {
-			try {
-				deleteCase(caseUuid);
-				deletedCasesUuids.add(caseUuid);
-			} catch (ExternalSurveillanceToolException e) {
-				logger.error("The case with uuid:" + caseUuid + "could not be deleted");
-			}
+		List<Case> casesToBeDeleted = caseService.getByUuids(caseUuids);
+		if (casesToBeDeleted != null) {
+			casesToBeDeleted.forEach(caseToBeDeleted -> {
+				if (!caseToBeDeleted.isDeleted()) {
+					try {
+						deleteCase(caseToBeDeleted);
+						deletedCasesUuids.add(caseToBeDeleted.getUuid());
+					} catch (ExternalSurveillanceToolException e) {
+						logger.error("The case with uuid:" + caseToBeDeleted.getUuid() + "could not be deleted");
+					}
+				}
+			});
 		}
 		return deletedCasesUuids;
 	}
@@ -2571,22 +2625,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setSymptoms(SymptomsFacadeEjb.toDto(source.getSymptoms()));
 
 		target.setPregnant(source.getPregnant());
-		target.setVaccination(source.getVaccination());
-		target.setVaccinationDoses(source.getVaccinationDoses());
-		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
-		target.setVaccine(source.getVaccine());
+		target.setVaccinationStatus(source.getVaccinationStatus());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
-		target.setFirstVaccinationDate(source.getFirstVaccinationDate());
-		target.setLastVaccinationDate(source.getLastVaccinationDate());
-		target.setVaccineName(source.getVaccineName());
-		target.setOtherVaccineName(source.getOtherVaccineName());
-		target.setVaccineManufacturer(source.getVaccineManufacturer());
-		target.setOtherVaccineManufacturer(source.getOtherVaccineManufacturer());
-		target.setVaccineInn(source.getVaccineInn());
-		target.setVaccineBatchNumber(source.getVaccineBatchNumber());
-		target.setVaccineUniiCode(source.getVaccineUniiCode());
-		target.setVaccineAtcCode(source.getVaccineAtcCode());
+		target.setSmallpoxLastVaccinationDate(source.getSmallpoxLastVaccinationDate());
 
 		target.setEpidNumber(source.getEpidNumber());
 
@@ -2746,22 +2788,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setSymptoms(symptomsFacade.fromDto(source.getSymptoms(), checkChangeDate));
 
 		target.setPregnant(source.getPregnant());
-		target.setVaccination(source.getVaccination());
-		target.setVaccinationDoses(source.getVaccinationDoses());
-		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
-		target.setVaccine(source.getVaccine());
+		target.setVaccinationStatus(source.getVaccinationStatus());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
-		target.setFirstVaccinationDate(source.getFirstVaccinationDate());
-		target.setLastVaccinationDate(source.getLastVaccinationDate());
-		target.setVaccineName(source.getVaccineName());
-		target.setOtherVaccineName(source.getOtherVaccineName());
-		target.setVaccineManufacturer(source.getVaccineManufacturer());
-		target.setOtherVaccineManufacturer(source.getOtherVaccineManufacturer());
-		target.setVaccineInn(source.getVaccineInn());
-		target.setVaccineBatchNumber(source.getVaccineBatchNumber());
-		target.setVaccineUniiCode(source.getVaccineUniiCode());
-		target.setVaccineAtcCode(source.getVaccineAtcCode());
+		target.setSmallpoxLastVaccinationDate(source.getSmallpoxLastVaccinationDate());
 
 		target.setEpidNumber(source.getEpidNumber());
 
@@ -3159,28 +3189,26 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private void sendInvestigationDoneNotifications(Case caze) {
 
-		List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
-			JurisdictionHelper.getCaseRegions(caze),
-			UserRole.SURVEILLANCE_SUPERVISOR,
-			UserRole.ADMIN_SUPERVISOR,
-			UserRole.CASE_SUPERVISOR,
-			UserRole.CONTACT_SUPERVISOR);
-		for (User recipient : messageRecipients) {
-			try {
-				messagingService.sendMessage(
-					recipient,
-					MessageSubject.CASE_INVESTIGATION_DONE,
-					String
-						.format(I18nProperties.getString(MessagingService.CONTENT_CASE_INVESTIGATION_DONE), DataHelper.getShortUuid(caze.getUuid())),
-					MessageType.EMAIL,
-					MessageType.SMS);
-			} catch (NotificationDeliveryFailedException e) {
-				logger.error(
-					String.format(
-						"NotificationDeliveryFailedException when trying to notify supervisors about the completion of a case investigation. "
-							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-						recipient.getUuid()));
-			}
+		try {
+			messagingService.sendMessages(() -> {
+				final List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
+					JurisdictionHelper.getCaseRegions(caze),
+					UserRole.SURVEILLANCE_SUPERVISOR,
+					UserRole.ADMIN_SUPERVISOR,
+					UserRole.CASE_SUPERVISOR,
+					UserRole.CONTACT_SUPERVISOR);
+				final Map<User, String> mapToReturn = new HashMap<>();
+				messageRecipients.forEach(
+					user -> mapToReturn.put(
+						user,
+						String.format(
+							I18nProperties.getString(MessageContents.CONTENT_CASE_INVESTIGATION_DONE),
+							DataHelper.getShortUuid(caze.getUuid()))));
+				return mapToReturn;
+			}, MessageSubject.CASE_INVESTIGATION_DONE, MessageType.EMAIL, MessageType.SMS);
+		} catch (NotificationDeliveryFailedException e) {
+			logger.error(
+				String.format("NotificationDeliveryFailedException when trying to notify supervisors about the completion of a case investigation."));
 		}
 	}
 

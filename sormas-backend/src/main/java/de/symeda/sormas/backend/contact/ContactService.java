@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.contact;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -35,6 +36,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
@@ -51,6 +53,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -106,8 +109,6 @@ import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
-import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 
@@ -131,8 +132,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private ExposureService exposureService;
-	@EJB
-	private VaccinationInfoService vaccinationInfoService;
 	@EJB
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
@@ -202,7 +201,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Predicate dateFilter = changeDateFilter(cb, date, from);
 		dateFilter = cb.or(dateFilter, epiDataService.createChangeDateFilter(cb, from.join(Contact.EPI_DATA, JoinType.LEFT), date));
 		dateFilter = cb.or(dateFilter, healthConditionsService.createChangeDateFilter(cb, from.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT), date));
-		dateFilter = cb.or(dateFilter, vaccinationInfoService.createChangeDateFilter(cb, from.join(Contact.VACCINATION_INFO, JoinType.LEFT), date));
 		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SHARE_INFO_CONTACTS));
 
 		return dateFilter;
@@ -1083,9 +1081,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS), contactCriteria.getSymptomJournalStatus()));
 		}
-		if (contactCriteria.getVaccination() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.equal(joins.getVaccinationInfo().get(VaccinationInfo.VACCINATION), contactCriteria.getVaccination()));
+		if (contactCriteria.getVaccinationStatus() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.VACCINATION_STATUS), contactCriteria.getVaccinationStatus()));
 		}
 		if (contactCriteria.getRelationToCase() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.RELATION_TO_CASE), contactCriteria.getRelationToCase()));
@@ -1405,6 +1402,48 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	@Transactional(rollbackOn = Exception.class)
 	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		ExternalDataUtil.updateExternalData(externalData, this::getByUuids, this::ensurePersisted);
+	}
+
+	/**
+	 * Sets the vaccination status of all contacts of the specified person and disease with validFrom <= contact start date
+	 * and validUntil >= contact start date to VACCINATED.
+	 *
+	 * @param personId
+	 *            The ID of the immunization and contact person
+	 * @param disease
+	 *            The disease of the immunization and contacts
+	 * @param validFrom
+	 *            The date from which on the person is protected by the immunization
+	 * @param validUntil
+	 *            The date until which the person is protected by the immunization
+	 */
+	public void updateVaccinationStatuses(Long personId, Disease disease, Date validFrom, Date validUntil) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Contact> cu = cb.createCriteriaUpdate(Contact.class);
+		Root<Contact> root = cu.from(Contact.class);
+
+		cu.set(Contact.CHANGE_DATE, Timestamp.from(Instant.now()));
+		cu.set(root.get(Contact.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
+
+		Predicate validUntilPredicate = validUntil != null
+			? cb.or(
+				cb.and(cb.isNotNull(root.get(Contact.LAST_CONTACT_DATE)), cb.lessThanOrEqualTo(root.get(Contact.LAST_CONTACT_DATE), validUntil)),
+				cb.lessThanOrEqualTo(root.get(Contact.REPORT_DATE_TIME), validUntil))
+			: null;
+
+		cu.where(
+			CriteriaBuilderHelper.and(
+				cb,
+				cb.equal(root.get(Contact.PERSON), personId),
+				cb.equal(root.get(Contact.DISEASE), disease),
+				cb.or(
+					cb.and(
+						cb.isNotNull(root.get(Contact.LAST_CONTACT_DATE)),
+						cb.greaterThanOrEqualTo(root.get(Contact.LAST_CONTACT_DATE), validFrom)),
+					cb.greaterThanOrEqualTo(root.get(Contact.REPORT_DATE_TIME), validFrom)),
+				validUntilPredicate));
+
+		em.createQuery(cu).executeUpdate();
 	}
 
 }

@@ -28,6 +28,8 @@ import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -35,6 +37,9 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class VaccinationDto extends PseudonymizableDto {
 
+	public static final String I18N_PREFIX = "Vaccination";
+
+	public static final String UUID = "uuid";
 	public static final String IMMUNIZATION = "immunization";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
 	public static final String REPORT_DATE = "reportDate";
@@ -42,9 +47,8 @@ public class VaccinationDto extends PseudonymizableDto {
 	public static final String VACCINATION_DATE = "vaccinationDate";
 	public static final String VACCINE_NAME = "vaccineName";
 	public static final String OTHER_VACCINE_NAME = "otherVaccineName";
-	public static final String VACCINE_NAME_DETAILS = "vaccineNameDetails";
 	public static final String VACCINE_MANUFACTURER = "vaccineManufacturer";
-	public static final String VACCINE_MANUFACTURER_DETAILS = "vaccineManufacturerDetails";
+	public static final String OTHER_VACCINE_MANUFACTURER = "otherVaccineManufacturer";
 	public static final String VACCINE_TYPE = "vaccineType";
 	public static final String VACCINE_DOSE = "vaccineDose";
 	public static final String VACCINE_INN = "vaccineInn";
@@ -66,39 +70,43 @@ public class VaccinationDto extends PseudonymizableDto {
 	private Date vaccinationDate;
 	private Vaccine vaccineName;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherVaccineName;
-	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
-	private String vaccineNameDetails;
 	private VaccineManufacturer vaccineManufacturer;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherVaccineManufacturer;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
-	private String VaccineManufacturerDetails;
-	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String vaccineType;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String vaccineDose;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String vaccineInn;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String vaccineBatchNumber;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String vaccineUniiCode;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String vaccineAtcCode;
 	private VaccinationInfoSource vaccinationInfoSource;
 	private YesNoUnknown pregnant;
 	private Trimester trimester;
+
+	public static VaccinationDto build(UserReferenceDto user) {
+
+		VaccinationDto vaccinationDto = new VaccinationDto();
+		vaccinationDto.setUuid(DataHelper.createUuid());
+		vaccinationDto.setReportingUser(user);
+		vaccinationDto.setHealthConditions(HealthConditionsDto.build());
+
+		return vaccinationDto;
+	}
 
 	public ImmunizationReferenceDto getImmunization() {
 		return immunization;
@@ -156,14 +164,6 @@ public class VaccinationDto extends PseudonymizableDto {
 		this.otherVaccineName = otherVaccineName;
 	}
 
-	public String getVaccineNameDetails() {
-		return vaccineNameDetails;
-	}
-
-	public void setVaccineNameDetails(String vaccineNameDetails) {
-		this.vaccineNameDetails = vaccineNameDetails;
-	}
-
 	public VaccineManufacturer getVaccineManufacturer() {
 		return vaccineManufacturer;
 	}
@@ -178,14 +178,6 @@ public class VaccinationDto extends PseudonymizableDto {
 
 	public void setOtherVaccineManufacturer(String otherVaccineManufacturer) {
 		this.otherVaccineManufacturer = otherVaccineManufacturer;
-	}
-
-	public String getVaccineManufacturerDetails() {
-		return VaccineManufacturerDetails;
-	}
-
-	public void setVaccineManufacturerDetails(String vaccineManufacturerDetails) {
-		VaccineManufacturerDetails = vaccineManufacturerDetails;
 	}
 
 	public String getVaccineType() {

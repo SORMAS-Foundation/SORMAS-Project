@@ -35,6 +35,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
@@ -56,11 +57,13 @@ public class ImmunizationDto extends PseudonymizableDto {
 	public static final String END_DATE = "endDate";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String FACILITY_TYPE = "facilityType";
+	public static final String FIRST_VACCINATION_DATE = "firstVaccinationDate";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
-	public static final String IMMUNIZATION_MANAGEMENT_STATUS = "immunizationManagementStatus";
 	public static final String IMMUNIZATION_STATUS = "immunizationStatus";
 	public static final String LAST_INFECTION_DATE = "lastInfectionDate";
+	public static final String LAST_VACCINATION_DATE = "lastVaccinationDate";
+	public static final String IMMUNIZATION_MANAGEMENT_STATUS = "immunizationManagementStatus";
 	public static final String MEANS_OF_IMMUNIZATION = "meansOfImmunization";
 	public static final String MEANS_OF_IMMUNIZATION_DETAILS = "meansOfImmunizationDetails";
 	public static final String NUMBER_OF_DOSES = "numberOfDoses";
@@ -76,12 +79,13 @@ public class ImmunizationDto extends PseudonymizableDto {
 	public static final String START_DATE = "startDate";
 	public static final String VALID_FROM = "validFrom";
 	public static final String VALID_UNTIL = "validUntil";
+	public static final String VACCINATIONS = "vaccinations";
 
 	@Outbreaks
 	@Required
 	private Disease disease;
 	@Outbreaks
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	@Required
 	@EmbeddedPersonalData
@@ -94,11 +98,11 @@ public class ImmunizationDto extends PseudonymizableDto {
 	private ImmunizationStatus immunizationStatus;
 	@Required
 	private MeansOfImmunization meansOfImmunization;
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	@SensitiveData(mandatoryField = true)
 	private String meansOfImmunizationDetails;
 	private ImmunizationManagementStatus immunizationManagementStatus;
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	@SensitiveData(mandatoryField = true)
 	private String externalId;
 
@@ -121,7 +125,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 	@Outbreaks
 	@PersonalData
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
 
 	private Date startDate;
@@ -130,7 +134,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 	private YesNoUnknown previousInfection;
 
 	private Date lastInfectionDate;
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	@SensitiveData
 	private String additionalDetails;
 
@@ -153,6 +157,10 @@ public class ImmunizationDto extends PseudonymizableDto {
 		immunizationDto.setImmunizationManagementStatus(ImmunizationManagementStatus.SCHEDULED);
 
 		return immunizationDto;
+	}
+
+	public ImmunizationReferenceDto toReference() {
+		return new ImmunizationReferenceDto(getUuid(), toString(), getExternalId());
 	}
 
 	public Disease getDisease() {
@@ -394,4 +402,5 @@ public class ImmunizationDto extends PseudonymizableDto {
 	public void setVaccinations(List<VaccinationDto> vaccinations) {
 		this.vaccinations = vaccinations;
 	}
+
 }

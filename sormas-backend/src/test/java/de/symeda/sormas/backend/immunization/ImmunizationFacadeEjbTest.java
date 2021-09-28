@@ -17,13 +17,16 @@ package de.symeda.sormas.backend.immunization;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
@@ -32,6 +35,7 @@ import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -229,6 +233,8 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf2,
 			new DateTime(new Date()).minusDays(10).toDate(),
+			null,
+			null,
 			new DateTime(new Date()).plusDays(1).toDate());
 		ImmunizationDto acquiredImmunizationNoLongerValid = creator.createImmunization(
 			Disease.DENGUE,
@@ -239,6 +245,8 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf2,
 			new DateTime(new Date()).minusDays(10).toDate(),
+			null,
+			null,
 			new DateTime(new Date()).minusDays(2).toDate());
 
 		// immunizations before status automation update
@@ -365,4 +373,154 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		final List<ImmunizationDto> similarImmunizations = getImmunizationFacade().getSimilarImmunizations(criteria);
 		assertEquals(size, similarImmunizations.size());
 	}
+
+	@Test
+	public void testUpdateImmunizationStatusBasedOnVaccinationsOngoing(){
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+
+		final ImmunizationDto immunization = creator.createImmunizationDto(
+			Disease.DENGUE,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.NOT_ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.SCHEDULED,
+			rdcf1);
+
+		immunization.setNumberOfDoses(2);
+		immunization.setStartDate(DateHelper.subtractDays(new Date(), 1));
+		immunization.setVaccinations(Arrays.asList(creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto())));
+		getImmunizationFacade().save(immunization);
+
+		final ImmunizationDto immWithOneVac = getImmunizationFacade().getByUuid(immunization.getUuid());
+		Assert.assertEquals(1, immWithOneVac.getVaccinations().size());
+		Assert.assertEquals(ImmunizationManagementStatus.ONGOING, immWithOneVac.getImmunizationManagementStatus());
+		Assert.assertEquals(ImmunizationStatus.PENDING, immWithOneVac.getImmunizationStatus());
+	}
+
+	@Test
+	public void testUpdateImmunizationStatusBasedOnVaccinationsCompleted(){
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+
+		final ImmunizationDto immunization = creator.createImmunizationDto(
+			Disease.DENGUE,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.NOT_ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.SCHEDULED,
+			rdcf1);
+
+		immunization.setNumberOfDoses(2);
+		immunization.setStartDate(DateHelper.subtractDays(new Date(), 1));
+		immunization.setVaccinations(
+			Arrays.asList(
+				creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto()),
+				creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto())));
+		getImmunizationFacade().save(immunization);
+
+		final ImmunizationDto immWithTwoVac = getImmunizationFacade().getByUuid(immunization.getUuid());
+		Assert.assertEquals(2, immWithTwoVac.getVaccinations().size());
+		Assert.assertEquals(ImmunizationManagementStatus.COMPLETED, immWithTwoVac.getImmunizationManagementStatus());
+		Assert.assertEquals(ImmunizationStatus.ACQUIRED, immWithTwoVac.getImmunizationStatus());
+	}
+
+	// This is currently not executed because modifying immunizations leads to the entity not being attached to the persistence context anymore.
+	// This problem does not seem to occur on an actual server. See #6694
+//	@Test
+//	public void testUpdateVaccinationStatuses() {
+//		loginWith(nationalUser);
+//
+//		Date today = new Date();
+//		PersonDto person = creator.createPerson("John", "Doe");
+//		ImmunizationDto immunization = creator.createImmunization(
+//			Disease.EVD,
+//			person.toReference(),
+//			nationalUser.toReference(),
+//			ImmunizationStatus.NOT_ACQUIRED,
+//			MeansOfImmunization.VACCINATION,
+//			ImmunizationManagementStatus.ONGOING,
+//			rdcf1);
+//
+//		CaseDataDto caze = creator.createCase(nationalUser.toReference(), person.toReference(), rdcf1);
+//		CaseDataDto cazeDifferentDisease =
+//			creator.createCase(nationalUser.toReference(), person.toReference(), rdcf1, c -> c.setDisease(Disease.CORONAVIRUS));
+//		ContactDto contact = creator.createContact(nationalUser.toReference(), person.toReference(), Disease.EVD);
+//		ContactDto contactDifferentDisease = creator.createContact(nationalUser.toReference(), person.toReference(), Disease.CORONAVIRUS);
+//		EventDto event = creator.createEvent(nationalUser.toReference(), Disease.EVD);
+//		EventDto eventDifferentDisease = creator.createEvent(nationalUser.toReference(), Disease.CORONAVIRUS);
+//		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, nationalUser.toReference());
+//		EventParticipantDto eventParticipantDifferentDisease =
+//			creator.createEventParticipant(eventDifferentDisease.toReference(), person, nationalUser.toReference());
+//
+//		// Update immunization status to acquired, but leave valid from empty
+//		immunization.setImmunizationStatus(ImmunizationStatus.ACQUIRED);
+//		immunization = getImmunizationFacade().save(immunization);
+//		caze = getCaseFacade().getByUuid(caze.getUuid());
+//		contact = getContactFacade().getContactByUuid(contact.getUuid());
+//		eventParticipant = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid());
+//		assertNull(caze.getVaccinationStatus());
+//		assertNull(contact.getVaccinationStatus());
+//		assertNull(eventParticipant.getVaccinationStatus());
+//
+//		// Set valid from to a date after the onset/report dates
+//		immunization.setValidFrom(DateHelper.addDays(today, 5));
+//		immunization.setValidUntil(DateHelper.addDays(today, 8));
+//		immunization = getImmunizationFacade().save(immunization);
+//		caze = getCaseFacade().getByUuid(caze.getUuid());
+//		contact = getContactFacade().getContactByUuid(contact.getUuid());
+//		eventParticipant = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid());
+//		assertNull(caze.getVaccinationStatus());
+//		assertNull(contact.getVaccinationStatus());
+//		assertNull(eventParticipant.getVaccinationStatus());
+//
+//		// Set valid from and until to a date before the onset/report dates
+//		immunization.setValidFrom(DateHelper.addDays(today, 5));
+//		immunization.setValidUntil(DateHelper.addDays(today, 8));
+//		immunization = getImmunizationFacade().save(immunization);
+//		caze = getCaseFacade().getByUuid(caze.getUuid());
+//		contact = getContactFacade().getContactByUuid(contact.getUuid());
+//		eventParticipant = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid());
+//		assertNull(caze.getVaccinationStatus());
+//		assertNull(contact.getVaccinationStatus());
+//		assertNull(eventParticipant.getVaccinationStatus());
+//
+//		// Remove valid until date
+//		immunization.setValidUntil(null);
+//		immunization = getImmunizationFacade().save(immunization);
+//		caze = getCaseFacade().getByUuid(caze.getUuid());
+//		contact = getContactFacade().getContactByUuid(contact.getUuid());
+//		eventParticipant = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid());
+//		assertEquals(VaccinationStatus.VACCINATED, caze.getVaccinationStatus());
+//		assertEquals(VaccinationStatus.VACCINATED, contact.getVaccinationStatus());
+//		assertEquals(VaccinationStatus.VACCINATED, eventParticipant.getVaccinationStatus());
+//
+//		// Reset vaccination status and set valid until to a date after the onset/report dates
+//		caze.setVaccinationStatus(VaccinationStatus.UNVACCINATED);
+//		contact.setVaccinationStatus(VaccinationStatus.UNVACCINATED);
+//		eventParticipant.setVaccinationStatus(VaccinationStatus.UNVACCINATED);
+//		caze = getCaseFacade().saveCase(caze);
+//		contact = getContactFacade().saveContact(contact);
+//		eventParticipant = getEventParticipantFacade().saveEventParticipant(eventParticipant);
+//		assertEquals(VaccinationStatus.UNVACCINATED, caze.getVaccinationStatus());
+//		assertEquals(VaccinationStatus.UNVACCINATED, contact.getVaccinationStatus());
+//		assertEquals(VaccinationStatus.UNVACCINATED, eventParticipant.getVaccinationStatus());
+//		immunization.setValidUntil(DateHelper.addDays(today, 2));
+//		getImmunizationFacade().save(immunization);
+//		assertEquals(VaccinationStatus.VACCINATED, caze.getVaccinationStatus());
+//		assertEquals(VaccinationStatus.VACCINATED, contact.getVaccinationStatus());
+//		assertEquals(VaccinationStatus.VACCINATED, eventParticipant.getVaccinationStatus());
+//
+//		// Entities with different diseases must still have no vaccination status
+//		cazeDifferentDisease = getCaseFacade().getByUuid(cazeDifferentDisease.getUuid());
+//		contactDifferentDisease = getContactFacade().getContactByUuid(contactDifferentDisease.getUuid());
+//		eventParticipantDifferentDisease = getEventParticipantFacade().getEventParticipantByUuid(eventParticipantDifferentDisease.getUuid());
+//		assertNull(cazeDifferentDisease.getVaccinationStatus());
+//		assertNull(contactDifferentDisease.getVaccinationStatus());
+//		assertNull(eventParticipantDifferentDisease.getVaccinationStatus());
+//	}
 }

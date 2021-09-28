@@ -15,9 +15,7 @@
 
 package de.symeda.sormas.app.backend.immunization;
 
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,11 +26,15 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
@@ -43,9 +45,7 @@ import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
-
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import de.symeda.sormas.app.backend.vaccination.Vaccination;
 
 @Entity(name = Immunization.TABLE_NAME)
 @DatabaseTable(tableName = Immunization.TABLE_NAME)
@@ -54,46 +54,46 @@ public class Immunization extends PseudonymizableAdo {
 	public static final String TABLE_NAME = "immunization";
 	public static final String I18N_PREFIX = "ImmunizationData";
 
-    public static final String PERSON = "person";
-    public static final String DISEASE = "disease";
+	public static final String PERSON = "person";
+	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
-    public static final String RESPONSIBLE_REGION = "responsibleRegion";
+	public static final String RESPONSIBLE_REGION = "responsibleRegion";
 
-    public static final String POSITIVE_TEST_RESULT_DATE = "positivetestresultdate";
-    public static final String RECOVERY_DATE = "recoveryDate";
-    public static final String REPORT_DATE = "reportDate";
-    public static final String START_DATE = "startDate";
-    public static final String END_DATE = "endDate";
-    public static final String VALID_FROM = "validFrom";
-    public static final String VALID_UNTIL = "validUntil";
-    public static final String IMMUNIZATION_STATUS = "immunizationStatus";
-    public static final String MEANS_OF_IMMUNIZATION = "meansOfImmunization";
-    public static final String IMMUNIZATION_MANAGEMENT_STATUS = "immunizationManagementStatus";
+	public static final String POSITIVE_TEST_RESULT_DATE = "positivetestresultdate";
+	public static final String RECOVERY_DATE = "recoveryDate";
+	public static final String REPORT_DATE = "reportDate";
+	public static final String START_DATE = "startDate";
+	public static final String END_DATE = "endDate";
+	public static final String VALID_FROM = "validFrom";
+	public static final String VALID_UNTIL = "validUntil";
+	public static final String IMMUNIZATION_STATUS = "immunizationStatus";
+	public static final String MEANS_OF_IMMUNIZATION = "meansOfImmunization";
+	public static final String IMMUNIZATION_MANAGEMENT_STATUS = "immunizationManagementStatus";
 
 	public static final String HEALTH_FACILITY = "healthFacility_id";
 
-    @Enumerated(EnumType.STRING)
-    private Disease disease;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Enumerated(EnumType.STRING)
+	private Disease disease;
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String diseaseDetails;
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
-    private Person person;
-    @DatabaseField(dataType = DataType.DATE_LONG)
-    private Date reportDate;
-    @DatabaseField(foreign = true, foreignAutoRefresh = true)
-    private User reportingUser;
-    @DatabaseField
-    private boolean archived;
-    @Enumerated(EnumType.STRING)
-    private ImmunizationStatus immunizationStatus;
-    @Enumerated(EnumType.STRING)
-    private MeansOfImmunization meansOfImmunization;
-    @Column(columnDefinition = "text")
-    private String meansOfImmunizationDetails;
-    @Enumerated(EnumType.STRING)
-    private ImmunizationManagementStatus immunizationManagementStatus;
-    @Column(length = COLUMN_LENGTH_DEFAULT)
-    private String externalId;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
+	private Person person;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date reportDate;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private User reportingUser;
+	@DatabaseField
+	private boolean archived;
+	@Enumerated(EnumType.STRING)
+	private ImmunizationStatus immunizationStatus;
+	@Enumerated(EnumType.STRING)
+	private MeansOfImmunization meansOfImmunization;
+	@Column(columnDefinition = "text")
+	private String meansOfImmunizationDetails;
+	@Enumerated(EnumType.STRING)
+	private ImmunizationManagementStatus immunizationManagementStatus;
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	private String externalId;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Region responsibleRegion;
@@ -108,7 +108,7 @@ public class Immunization extends PseudonymizableAdo {
 	private FacilityType facilityType;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility healthFacility;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String healthFacilityDetails;
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
@@ -137,7 +137,7 @@ public class Immunization extends PseudonymizableAdo {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Case relatedCase;
 
-	private List<VaccinationEntity> vaccinations = new ArrayList<>();
+	private List<Vaccination> vaccinations = new ArrayList<>();
 
 	public Disease getDisease() {
 		return disease;
@@ -323,11 +323,11 @@ public class Immunization extends PseudonymizableAdo {
 		this.country = country;
 	}
 
-	public List<VaccinationEntity> getVaccinations() {
+	public List<Vaccination> getVaccinations() {
 		return vaccinations;
 	}
 
-	public void setVaccinations(List<VaccinationEntity> vaccinations) {
+	public void setVaccinations(List<Vaccination> vaccinations) {
 		this.vaccinations = vaccinations;
 	}
 
@@ -380,40 +380,40 @@ public class Immunization extends PseudonymizableAdo {
 	}
 
 	@Override
-    public String getI18nPrefix() {
-        return I18N_PREFIX;
-    }
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
+	}
 
-    public void update(Immunization immunization) {
-        this.setDiseaseDetails(immunization.getDiseaseDetails());
-        this.setPerson(immunization.getPerson());
-        this.setReportDate(immunization.getReportDate());
-        this.setReportingUser(immunization.getReportingUser());
-        this.setArchived(immunization.isArchived());
-        this.setImmunizationStatus(immunization.getImmunizationStatus());
-        this.setMeansOfImmunization(immunization.getMeansOfImmunization());
-        this.setMeansOfImmunizationDetails(immunization.getMeansOfImmunizationDetails());
-        this.setImmunizationManagementStatus(immunization.getImmunizationManagementStatus());
-        this.setExternalId(immunization.getExternalId());
-        this.setResponsibleRegion(immunization.getResponsibleRegion());
-        this.setResponsibleDistrict(immunization.getResponsibleDistrict());
-        this.setResponsibleCommunity(immunization.getResponsibleCommunity());
-        this.setCountry(immunization.getCountry());
-        this.setStartDate(immunization.getStartDate());
-        this.setEndDate(immunization.getEndDate());
-        this.setNumberOfDoses(immunization.getNumberOfDoses());
-        this.setPreviousInfection(immunization.getPreviousInfection());
-        this.setLastInfectionDate(immunization.getLastInfectionDate());
-        this.setAdditionalDetails(immunization.getAdditionalDetails());
-        this.setPositiveTestResultDate(immunization.getPositiveTestResultDate());
-        this.setRecoveryDate(immunization.getRecoveryDate());
-        this.setRelatedCase(immunization.getRelatedCase());
-        this.setFacilityType(immunization.getFacilityType());
-        this.setHealthFacility(immunization.getHealthFacility());
-        this.setHealthFacilityDetails(immunization.getHealthFacilityDetails());
-        this.setStartDate(immunization.getStartDate());
-        this.setEndDate(immunization.getEndDate());
-        this.setValidFrom(immunization.getValidFrom());
-        this.setValidUntil(immunization.getValidUntil());
-    }
+	public void update(Immunization immunization) {
+		this.setDiseaseDetails(immunization.getDiseaseDetails());
+		this.setPerson(immunization.getPerson());
+		this.setReportDate(immunization.getReportDate());
+		this.setReportingUser(immunization.getReportingUser());
+		this.setArchived(immunization.isArchived());
+		this.setImmunizationStatus(immunization.getImmunizationStatus());
+		this.setMeansOfImmunization(immunization.getMeansOfImmunization());
+		this.setMeansOfImmunizationDetails(immunization.getMeansOfImmunizationDetails());
+		this.setImmunizationManagementStatus(immunization.getImmunizationManagementStatus());
+		this.setExternalId(immunization.getExternalId());
+		this.setResponsibleRegion(immunization.getResponsibleRegion());
+		this.setResponsibleDistrict(immunization.getResponsibleDistrict());
+		this.setResponsibleCommunity(immunization.getResponsibleCommunity());
+		this.setCountry(immunization.getCountry());
+		this.setStartDate(immunization.getStartDate());
+		this.setEndDate(immunization.getEndDate());
+		this.setNumberOfDoses(immunization.getNumberOfDoses());
+		this.setPreviousInfection(immunization.getPreviousInfection());
+		this.setLastInfectionDate(immunization.getLastInfectionDate());
+		this.setAdditionalDetails(immunization.getAdditionalDetails());
+		this.setPositiveTestResultDate(immunization.getPositiveTestResultDate());
+		this.setRecoveryDate(immunization.getRecoveryDate());
+		this.setRelatedCase(immunization.getRelatedCase());
+		this.setFacilityType(immunization.getFacilityType());
+		this.setHealthFacility(immunization.getHealthFacility());
+		this.setHealthFacilityDetails(immunization.getHealthFacilityDetails());
+		this.setStartDate(immunization.getStartDate());
+		this.setEndDate(immunization.getEndDate());
+		this.setValidFrom(immunization.getValidFrom());
+		this.setValidUntil(immunization.getValidUntil());
+	}
 }

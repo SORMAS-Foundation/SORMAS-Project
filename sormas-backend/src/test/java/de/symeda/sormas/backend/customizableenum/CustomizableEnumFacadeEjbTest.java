@@ -28,6 +28,13 @@ public class CustomizableEnumFacadeEjbTest extends AbstractBeanTest {
 			entry.setDiseases(Arrays.asList(Disease.CORONAVIRUS));
 			entry.setCaption("BF.1.2 variant");
 			getCustomizableEnumValueService().ensurePersisted(entry);
+
+			entry = new CustomizableEnumValue();
+			entry.setDataType(CustomizableEnumType.DISEASE_VARIANT);
+			entry.setValue("GENERIC");
+			entry.setCaption("Variant 2");
+			getCustomizableEnumValueService().ensurePersisted(entry);
+
 			getCustomizableEnumFacade().loadData();
 		}
 
@@ -37,6 +44,10 @@ public class CustomizableEnumFacadeEjbTest extends AbstractBeanTest {
 	public void getEnumValues() {
 
 		List<CustomizableEnum> enumValues = getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, Disease.CORONAVIRUS);
+		assertEquals(2, enumValues.size());
+
+		enumValues = getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, null);
 		assertEquals(1, enumValues.size());
+
 	}
 }

@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import de.symeda.sormas.api.BaseFacade;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 @Remote

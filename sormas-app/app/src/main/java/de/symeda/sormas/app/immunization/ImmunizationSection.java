@@ -28,7 +28,8 @@ public enum ImmunizationSection
 	StatusElaborator {
 
 	IMMUNIZATION_INFO(R.string.caption_immunization_information, R.drawable.ic_drawer_immunization_24dp),
-	PERSON_INFO(R.string.caption_person_information, R.drawable.ic_person_black_24dp);
+	PERSON_INFO(R.string.caption_person_information, R.drawable.ic_person_black_24dp),
+	VACCINATIONS(R.string.caption_immunization_vaccinations, R.drawable.ic_drawer_vaccines_24);
 
 	private int friendlyNameResourceId;
 	private int iconResourceId;

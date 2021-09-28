@@ -15,7 +15,6 @@
 package de.symeda.sormas.ui.events;
 
 import static de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent.QUARANTINE_LOC;
-import static de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent.IMMUNIZATION_LOC;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
@@ -50,7 +49,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.components.SideComponentLayout;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
 public class EventParticipantDataView extends AbstractDetailView<EventParticipantReferenceDto> {
 
@@ -61,6 +60,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 	public static final String EDIT_LOC = "edit";
 	public static final String SAMPLES_LOC = "samples";
 	public static final String CONTACTS_LOC = "contacts";
+	public static final String IMMUNIZATION_LOC = "immunizations";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 
 	public static final String HTML_LAYOUT = LayoutUtil.fluidRow(

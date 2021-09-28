@@ -32,6 +32,7 @@ import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class FacilityDto extends EntityDto {
 
@@ -64,29 +65,29 @@ public class FacilityDto extends EntityDto {
 	public static final String TYPE = "type";
 	public static final String EXTERNAL_ID = "externalID";
 
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String city;
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String postalCode;
-	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String street;
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String houseNumber;
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String additionalInformation;
 	private AreaType areaType;
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String contactPersonFirstName;
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String contactPersonLastName;
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String contactPersonPhone;
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String contactPersonEmail;
 	@Min(value = -90, message = Validations.numberTooSmall)
 	@Max(value = 90, message = Validations.numberTooBig)
@@ -97,7 +98,7 @@ public class FacilityDto extends EntityDto {
 	private FacilityType type;
 	private boolean publicOwnership;
 	private boolean archived;
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
 
 	public FacilityDto(

@@ -40,19 +40,20 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.infrastructure.community.CommunityDto;
-import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -113,10 +114,15 @@ public class TestDataCreator {
 	}
 
 	public PersonDto createPerson(String firstName, String lastName) {
+		return createPerson(firstName, lastName, Sex.UNKNOWN);
+	}
+
+	public PersonDto createPerson(String firstName, String lastName, Sex sex) {
 
 		PersonDto cazePerson = PersonDto.build();
 		cazePerson.setFirstName(firstName);
 		cazePerson.setLastName(lastName);
+		cazePerson.setSex(sex);
 		cazePerson = FacadeProvider.getPersonFacade().savePerson(cazePerson);
 
 		return cazePerson;

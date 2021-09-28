@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.hospitalization;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 
@@ -35,9 +35,9 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 
 @Entity(name = "previoushospitalization")
@@ -141,7 +141,7 @@ public class PreviousHospitalization extends AbstractDomainObject {
 		this.isolated = isolated;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getDescription() {
 		return description;
 	}
@@ -160,7 +160,7 @@ public class PreviousHospitalization extends AbstractDomainObject {
 		this.hospitalization = hospitalization;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getHealthFacilityDetails() {
 		return healthFacilityDetails;
 	}

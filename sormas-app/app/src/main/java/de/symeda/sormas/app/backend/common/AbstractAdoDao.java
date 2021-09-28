@@ -324,7 +324,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 		return getLatestChangeDateJoinFromQuery(query);
 	}
 
-	private Date getLatestChangeDateJoinFromQuery(String query) {
+	protected Date getLatestChangeDateJoinFromQuery(String query) {
 		GenericRawResults<Object[]> maxChangeDateResult = queryRaw(
 			query,
 			new DataType[] {

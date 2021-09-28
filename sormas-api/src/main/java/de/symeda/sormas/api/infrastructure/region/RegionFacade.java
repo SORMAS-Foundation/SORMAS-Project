@@ -23,11 +23,11 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
+import de.symeda.sormas.api.infrastructure.GeoLocationFacade;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
-public interface RegionFacade extends InfrastructureBaseFacade<RegionDto, RegionIndexDto, RegionReferenceDto, RegionCriteria> {
+public interface RegionFacade extends GeoLocationFacade<RegionDto, RegionIndexDto, RegionReferenceDto, RegionCriteria> {
 
 	List<RegionReferenceDto> getAllActiveByServerCountry();
 
@@ -42,8 +42,6 @@ public interface RegionFacade extends InfrastructureBaseFacade<RegionDto, Region
 	RegionReferenceDto getRegionReferenceByUuid(String uuid);
 
 	RegionReferenceDto getRegionReferenceById(int id);
-
-	List<RegionReferenceDto> getReferencesByName(String name, boolean includeArchivedEntities);
 
 	List<RegionDto> getByName(String name, boolean includeArchivedEntities);
 

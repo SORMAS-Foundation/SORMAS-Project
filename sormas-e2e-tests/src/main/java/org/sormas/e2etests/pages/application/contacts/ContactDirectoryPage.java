@@ -35,7 +35,7 @@ public class ContactDirectoryPage {
       By.cssSelector("thead .v-grid-column-default-header-content");
   public static final By CONTACTS_DETAILED_FIRST_TABLE_ROW =
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
-  public static final By CONTACTS_DETAILED_TABLE_DATA = By.tagName("td");
+  public static final By CONTACTS_DETAILED_TABLE_DATA = By.cssSelector("[role=gridcell]");
   public static final By DISEASE_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(5)");
   public static final By FIRST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(8)");
   public static final By LAST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(9)");

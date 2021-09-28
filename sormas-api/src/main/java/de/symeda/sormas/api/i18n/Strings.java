@@ -32,6 +32,7 @@ public interface Strings {
 	String classificationGeneratedFor = "classificationGeneratedFor";
 	String classificationInfoNumberText = "classificationInfoNumberText";
 	String classificationInfoText = "classificationInfoText";
+	String classificationLastVaccinationDateWithin = "classificationLastVaccinationDateWithin";
 	String classificationNoneOf = "classificationNoneOf";
 	String classificationNotACase = "classificationNotACase";
 	String classificationNotWithin = "classificationNotWithin";
@@ -430,6 +431,7 @@ public interface Strings {
 	String headingDearchiveTravelEntry = "headingDearchiveTravelEntry";
 	String headingDearchivingNotPossible = "headingDearchivingNotPossible";
 	String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
+	String headingDeleteVaccinations = "headingDeleteVaccinations";
 	String headingDisableLineListing = "headingDisableLineListing";
 	String headingDiscardUnsavedChanges = "headingDiscardUnsavedChanges";
 	String headingDocumentCreated = "headingDocumentCreated";
@@ -579,6 +581,7 @@ public interface Strings {
 	String headingPointOfEntryImport = "headingPointOfEntryImport";
 	String headingPointOfEntryInformation = "headingPointOfEntryInformation";
 	String headingPrescriptionsDeleted = "headingPrescriptionsDeleted";
+	String headingPreviousHospitalizations = "headingPreviousHospitalizations";
 	String headingQuarantineForCases = "headingQuarantineForCases";
 	String headingRecovery = "headingRecovery";
 	String headingReduceQuarantine = "headingReduceQuarantine";
@@ -909,6 +912,7 @@ public interface Strings {
 	String messageCountryDearchivingNotPossible = "messageCountryDearchivingNotPossible";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
+	String messageDeleteImmunizationVaccinations = "messageDeleteImmunizationVaccinations";
 	String messageDeletionUnsupportedByExternalJournalWarning = "messageDeletionUnsupportedByExternalJournalWarning";
 	String messageDistrictArchived = "messageDistrictArchived";
 	String messageDistrictArchivingNotPossible = "messageDistrictArchivingNotPossible";
@@ -974,6 +978,7 @@ public interface Strings {
 	String messageImmunizationArchived = "messageImmunizationArchived";
 	String messageImmunizationDearchived = "messageImmunizationDearchived";
 	String messageImmunizationSaved = "messageImmunizationSaved";
+	String messageImmunizationSavedVaccinationStatusUpdated = "messageImmunizationSavedVaccinationStatusUpdated";
 	String messageImportCanceled = "messageImportCanceled";
 	String messageImportCanceledErrors = "messageImportCanceledErrors";
 	String messageImportError = "messageImportError";

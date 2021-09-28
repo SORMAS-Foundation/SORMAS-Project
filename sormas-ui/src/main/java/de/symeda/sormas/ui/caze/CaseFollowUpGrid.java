@@ -83,8 +83,8 @@ public class CaseFollowUpGrid extends FilteredGrid<CaseFollowUpDto, CaseCriteria
 	}
 
 	public void setVisitColumns(CaseCriteria criteria) {
-		Date referenceDate = criteria.getFollowUpUntilTo();
-		int interval = criteria.getFollowUpInterval();
+		Date referenceDate = criteria.getFollowUpVisitsTo();
+		int interval = criteria.getFollowUpVisitsInterval();
 
 		setDataProvider(referenceDate, interval - 1);
 		setCriteria(criteria);

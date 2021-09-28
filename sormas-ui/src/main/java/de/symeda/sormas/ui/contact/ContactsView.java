@@ -135,8 +135,8 @@ public class ContactsView extends AbstractView {
 		}
 
 		if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
-			if (criteria.getFollowUpUntilFrom() == null) {
-				criteria.setFollowUpInterval(followUpRangeInterval);
+			if (criteria.getFollowUpVisitsInterval() == null) {
+				criteria.setFollowUpVisitsInterval(followUpRangeInterval);
 				grid = new ContactFollowUpGrid(criteria, getClass());
 			} else {
 				grid = new ContactFollowUpGrid(criteria, getClass());
@@ -576,8 +576,8 @@ public class ContactsView extends AbstractView {
 
 	private void reloadGrid() {
 		((ContactFollowUpGrid) grid).setVisitColumns(criteria);
-		criteria.setFollowUpUntilTo(followUpToDate);
-		criteria.setFollowUpInterval(followUpRangeInterval);
+		criteria.setFollowUpVisitsTo(followUpToDate);
+		criteria.setFollowUpVisitsInterval(followUpRangeInterval);
 		((ContactFollowUpGrid) grid).reload();
 		updateStatusButtons();
 		buttonPreviousOrNextClick = false;
@@ -646,14 +646,14 @@ public class ContactsView extends AbstractView {
 		HorizontalLayout scrollLayout = new HorizontalLayout();
 		scrollLayout.setMargin(false);
 
-		DateField toReferenceDate = criteria.getFollowUpUntilTo() == null
+		DateField toReferenceDate = criteria.getFollowUpVisitsTo() == null
 			? new DateField(I18nProperties.getCaption(Captions.to), LocalDate.now())
-			: new DateField(I18nProperties.getCaption(Captions.to), DateHelper8.toLocalDate(criteria.getFollowUpUntilTo()));
+			: new DateField(I18nProperties.getCaption(Captions.to), DateHelper8.toLocalDate(criteria.getFollowUpVisitsTo()));
 
 		toReferenceDate.setId("toReferenceDateField");
-		LocalDate fromReferenceLocal = criteria.getFollowUpUntilFrom() == null
+		LocalDate fromReferenceLocal = criteria.getFollowUpVisitsFrom() == null
 			? DateHelper8.toLocalDate(DateHelper.subtractDays(DateHelper8.toDate(LocalDate.now()), followUpRangeInterval - 1))
-			: DateHelper8.toLocalDate(criteria.getFollowUpUntilFrom());
+			: DateHelper8.toLocalDate(criteria.getFollowUpVisitsFrom());
 
 		DateField fromReferenceDate = new DateField(I18nProperties.getCaption(Captions.from), fromReferenceLocal);
 		fromReferenceDate.setId("fromReferenceDateField");
@@ -671,9 +671,9 @@ public class ContactsView extends AbstractView {
 				followUpRangeInterval = newFollowUpRangeInterval;
 				buttonPreviousOrNextClick = true;
 				toReferenceDate.setValue(toReferenceDateValue.minusDays(followUpRangeInterval));
-				criteria.setFollowUpUntilTo(DateHelper8.toDate(toReferenceDate.getValue()));
+				criteria.setFollowUpVisitsTo(DateHelper8.toDate(toReferenceDate.getValue()));
 				fromReferenceDate.setValue(fromReferenceDateValue.minusDays(followUpRangeInterval));
-				criteria.setFollowUpInterval(followUpRangeInterval);
+				criteria.setFollowUpVisitsInterval(followUpRangeInterval);
 			} else {
 				Notification.show(
 					String.format(I18nProperties.getString(Strings.messageSelectedPeriodTooLong), MAX_FOLLOW_UP_VIEW_DAYS),
@@ -684,7 +684,7 @@ public class ContactsView extends AbstractView {
 
 		fromReferenceDate.addValueChangeListener(e -> {
 			Date newFromDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
-			if (newFromDate.equals(criteria.getFollowUpUntilFrom())) {
+			if (newFromDate.equals(criteria.getFollowUpVisitsFrom())) {
 				return;
 			}
 
@@ -698,17 +698,17 @@ public class ContactsView extends AbstractView {
 
 			if (newFollowUpRangeInterval <= MAX_FOLLOW_UP_VIEW_DAYS) {
 				applyingCriteria = true;
-				criteria.followUpUntilFrom(DateHelper.getStartOfDay(newFromDate));
+				criteria.setFollowUpVisitsFrom(DateHelper.getStartOfDay(newFromDate));
 				applyingCriteria = false;
 				followUpRangeInterval = newFollowUpRangeInterval;
-				criteria.setFollowUpInterval(followUpRangeInterval);
-				followUpToDate = criteria.getFollowUpUntilTo();
+				criteria.setFollowUpVisitsInterval(followUpRangeInterval);
+				followUpToDate = criteria.getFollowUpVisitsTo();
 				reloadGrid();
 			} else {
 				Notification.show(
 					String.format(I18nProperties.getString(Strings.messageSelectedPeriodTooLong), MAX_FOLLOW_UP_VIEW_DAYS),
 					Notification.Type.WARNING_MESSAGE);
-				fromReferenceDate.setValue(DateHelper8.toLocalDate(criteria.getFollowUpUntilFrom()));
+				fromReferenceDate.setValue(DateHelper8.toLocalDate(criteria.getFollowUpVisitsFrom()));
 			}
 		});
 		scrollLayout.addComponent(fromReferenceDate);
@@ -731,11 +731,11 @@ public class ContactsView extends AbstractView {
 				followUpToDate = newFollowUpToDate;
 				applyingCriteria = true;
 				criteria.reportDateTo(DateHelper.getEndOfDay(followUpToDate));
-				criteria.setFollowUpUntilTo(followUpToDate);
+				criteria.setFollowUpVisitsTo(followUpToDate);
 				applyingCriteria = false;
 				if (!buttonPreviousOrNextClick) {
 					followUpRangeInterval = newFollowUpRangeInterval;
-					criteria.setFollowUpInterval(followUpRangeInterval);
+					criteria.setFollowUpVisitsInterval(followUpRangeInterval);
 					reloadGrid();
 				}
 			} else {
@@ -761,9 +761,9 @@ public class ContactsView extends AbstractView {
 				followUpRangeInterval = newFollowUpRangeInterval;
 				buttonPreviousOrNextClick = true;
 				toReferenceDate.setValue(toReferenceDateValue.plusDays(followUpRangeInterval));
-				criteria.setFollowUpUntilTo(DateHelper8.toDate(toReferenceDate.getValue()));
+				criteria.setFollowUpVisitsTo(DateHelper8.toDate(toReferenceDate.getValue()));
 				fromReferenceDate.setValue(fromReferenceDateValue.plusDays(followUpRangeInterval));
-				criteria.setFollowUpInterval(followUpRangeInterval);
+				criteria.setFollowUpVisitsInterval(followUpRangeInterval);
 			} else {
 				Notification.show(
 					String.format(I18nProperties.getString(Strings.messageSelectedPeriodTooLong), MAX_FOLLOW_UP_VIEW_DAYS),

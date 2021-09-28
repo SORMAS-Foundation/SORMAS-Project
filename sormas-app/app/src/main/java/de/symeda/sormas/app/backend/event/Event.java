@@ -15,9 +15,8 @@
 
 package de.symeda.sormas.app.backend.event;
 
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 
@@ -28,6 +27,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
+
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
@@ -55,9 +58,6 @@ import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.app.backend.user.User;
-
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity(name = Event.TABLE_NAME)
 @DatabaseTable(tableName = Event.TABLE_NAME)
@@ -126,16 +126,16 @@ public class Event extends PseudonymizableAdo {
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date eventInvestigationEndDate;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String externalId;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String externalToken;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String eventTitle;
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	private String eventDesc;
 
 	@Enumerated(EnumType.STRING)
@@ -171,7 +171,7 @@ public class Event extends PseudonymizableAdo {
 	@Column(columnDefinition = "text")
 	private String meansOfTransportDetails;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String connectionNumber;
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
@@ -186,28 +186,28 @@ public class Event extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private InstitutionalPartnerType srcInstitutionalPartnerType;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String srcInstitutionalPartnerTypeDetails;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String srcFirstName;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String srcLastName;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String srcTelNo;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String srcEmail;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String srcMediaWebsite;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String srcMediaName;
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	private String srcMediaDetails;
 
 	@Enumerated(EnumType.STRING)
@@ -217,13 +217,13 @@ public class Event extends PseudonymizableAdo {
 	private String diseaseVariantString;
 	private DiseaseVariant diseaseVariant;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String diseaseDetails;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "surveillanceOfficer_id")
 	private User responsibleUser;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String typeOfPlaceText;
 
 	@DatabaseField

@@ -63,6 +63,8 @@ public interface TaskFacade {
 
 	void deleteTask(TaskDto taskDto);
 
+	List<String> deleteTasks(List<String> taskUuids);
+
 	long count(TaskCriteria criteria);
 
 	List<TaskIndexDto> getIndexList(TaskCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);

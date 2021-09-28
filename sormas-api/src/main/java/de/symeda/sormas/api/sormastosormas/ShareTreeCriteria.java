@@ -15,10 +15,10 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_UUID_MAX;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_UUID_MIN;
 import static de.symeda.sormas.api.HasUuid.UUID_REGEX;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_UUID_MAX;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_UUID_MIN;
 
 import java.io.Serializable;
 
@@ -33,9 +33,9 @@ public class ShareTreeCriteria implements Serializable {
 	private static final long serialVersionUID = 131837357088474316L;
 
 	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
-	@Size(min = COLUMN_LENGTH_UUID_MIN, max = COLUMN_LENGTH_UUID_MAX, message = Validations.textSizeNotInRange)
+	@Size(min = CHARACTER_LIMIT_UUID_MIN, max = CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
 	private String entityUuid;
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String exceptedOrganizationId;
 	private boolean forwardOnly;
 	@Valid

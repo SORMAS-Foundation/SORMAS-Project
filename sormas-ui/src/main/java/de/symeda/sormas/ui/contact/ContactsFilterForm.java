@@ -37,9 +37,9 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -73,7 +73,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		ContactCriteria.REPORTING_USER_ROLE,
 		ContactCriteria.FOLLOW_UP_UNTIL_TO,
 		ContactCriteria.SYMPTOM_JOURNAL_STATUS,
-		ContactCriteria.VACCINATION,
+		ContactCriteria.VACCINATION_STATUS,
 		ContactCriteria.RELATION_TO_CASE,
 		ContactCriteria.BIRTHDATE_YYYY,
 		ContactCriteria.BIRTHDATE_MM,
@@ -213,10 +213,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SYMPTOM_JOURNAL_STATUS),
 					240));
 		}
-		addField(
-			moreFiltersContainer,
-			FieldConfiguration
-				.withCaptionAndPixelSized(ContactCriteria.VACCINATION, I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus), 140));
+		addField(moreFiltersContainer, FieldConfiguration.pixelSized(ContactCriteria.VACCINATION_STATUS, 140));
 
 		addField(
 			moreFiltersContainer,

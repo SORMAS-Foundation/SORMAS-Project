@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 
@@ -113,7 +113,7 @@ public class PathogenTest extends CoreAdo {
 		this.testedDisease = testedDisease;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestedDiseaseDetails() {
 		return testedDiseaseDetails;
 	}
@@ -160,7 +160,7 @@ public class PathogenTest extends CoreAdo {
 		this.pcrTestSpecification = pcrTestSpecification;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestTypeText() {
 		return testTypeText;
 	}
@@ -189,7 +189,7 @@ public class PathogenTest extends CoreAdo {
 		this.lab = lab;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getLabDetails() {
 		return labDetails;
 	}
@@ -218,7 +218,7 @@ public class PathogenTest extends CoreAdo {
 		this.testResult = testResult;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getTestResultText() {
 		return testResultText;
 	}
@@ -245,7 +245,7 @@ public class PathogenTest extends CoreAdo {
 		this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSerotype() {
 		return serotype;
 	}

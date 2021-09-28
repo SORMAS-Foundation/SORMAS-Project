@@ -24,12 +24,12 @@ import java.util.Map;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
+import de.symeda.sormas.api.infrastructure.GeoLocationFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
-public interface DistrictFacade extends InfrastructureBaseFacade<DistrictDto, DistrictIndexDto, DistrictReferenceDto, DistrictCriteria> {
+public interface DistrictFacade extends GeoLocationFacade<DistrictDto, DistrictIndexDto, DistrictReferenceDto, DistrictCriteria> {
 
 	List<DistrictReferenceDto> getAllActiveByArea(String areaUuid);
 

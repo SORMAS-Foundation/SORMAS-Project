@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import org.jboss.weld.exceptions.UnsupportedOperationException;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,11 +32,18 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
+import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -47,8 +53,10 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
+import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 public class CaseClassificationLogicTest extends AbstractBeanTest {
@@ -494,7 +502,8 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		caze = getCaseFacade().saveCase(caze);
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 		caze.setOutcome(CaseOutcome.DECEASED);
-		caze.setLastVaccinationDate(DateHelper.subtractDays(new Date(), 1));
+		caze.setVaccinationStatus(VaccinationStatus.VACCINATED);
+		createImmunizationWithVaccination(caze, DateHelper.subtractDays(new Date(), 1));
 		caze = getCaseFacade().saveCase(caze);
 		createSampleTestsForAllTestTypesExcept(caze, Disease.YELLOW_FEVER, PathogenTestType.HISTOPATHOLOGY);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
@@ -525,7 +534,8 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 		creator.createPathogenTest(caze, Disease.YELLOW_FEVER, PathogenTestType.ISOLATION, PathogenTestResultType.POSITIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
-		caze.setLastVaccinationDate(DateHelper.subtractDays(new Date(), 1));
+		caze.setVaccinationStatus(VaccinationStatus.VACCINATED);
+		createImmunizationWithVaccination(caze, DateHelper.subtractDays(new Date(), 1));
 		caze = getCaseFacade().saveCase(caze);
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 	}
@@ -1246,7 +1256,8 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		CaseDataDto caze = buildSuspectCase(disease);
 		switch (disease) {
 		case YELLOW_FEVER:
-			caze.setLastVaccinationDate(DateHelper.subtractDays(new Date(), 31));
+			caze.setVaccinationStatus(VaccinationStatus.VACCINATED);
+			createImmunizationWithVaccination(caze, DateHelper.subtractDays(new Date(), 31));
 			break;
 		default:
 			throw new UnsupportedOperationException("Disease has no constant requirement or variation in confirmed definition");
@@ -1265,5 +1276,20 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 				creator.createPathogenTest(caze, testedDisease, testType, PathogenTestResultType.POSITIVE);
 			}
 		}
+	}
+
+	private void createImmunizationWithVaccination(CaseDataDto caze, Date vaccinationDate) {
+		ImmunizationDto immunization = creator.createImmunization(
+			caze.getDisease(),
+			caze.getPerson(),
+			caze.getReportingUser(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			new TestDataCreator.RDCF(caze.getRegion(), caze.getDistrict(), caze.getCommunity(), caze.getHealthFacility()));
+
+		VaccinationDto vaccination = creator.createVaccination(caze.getReportingUser(), immunization.toReference(), new HealthConditionsDto());
+		vaccination.setVaccinationDate(vaccinationDate);
+		getVaccinationFacade().save(vaccination);
 	}
 }
