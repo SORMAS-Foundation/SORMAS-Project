@@ -36,29 +36,19 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
-@SuppressWarnings("serial")
 public class TravelEntryListComponent extends SideComponent {
 
 	public static final String TRAVEL_ENTRIES_LOC = "travelEntries";
 
-	public TravelEntryListComponent(CaseReferenceDto caseReferenceDto, PersonReferenceDto personReferenceDto) {
+	public TravelEntryListComponent(TravelEntryCriteria travelEntryCriteria) {
 		super(I18nProperties.getString(Strings.entityTravelEntries));
 
-		if (caseReferenceDto != null && UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_CREATE)) {
+		if (travelEntryCriteria.getCase() != null && UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_CREATE)) {
 			Button createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.travelEntryNewTravelEntry));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(e -> ControllerProvider.getTravelEntryController().create(caseReferenceDto));
+			createButton.addClickListener(e -> ControllerProvider.getTravelEntryController().create(travelEntryCriteria.getCase()));
 			addCreateButton(createButton);
-		}
-
-		TravelEntryCriteria travelEntryCriteria = new TravelEntryCriteria();
-
-		if (caseReferenceDto != null) {
-			travelEntryCriteria.caze(caseReferenceDto);
-		}
-		if (personReferenceDto != null) {
-			travelEntryCriteria.person(personReferenceDto);
 		}
 
 		TravelEntryList travelEntryList = new TravelEntryList(travelEntryCriteria);
@@ -67,18 +57,22 @@ public class TravelEntryListComponent extends SideComponent {
 	}
 
 	public static void addTravelEntryListComponent(CustomLayout layout, PersonReferenceDto personReferenceDto) {
-		addTravelEntryListComponent(layout, null, personReferenceDto);
+		TravelEntryCriteria travelEntryCriteria = new TravelEntryCriteria();
+		travelEntryCriteria.person(personReferenceDto);
+		addTravelEntryListComponent(layout, travelEntryCriteria);
 	}
 
 	public static void addTravelEntryListComponent(CustomLayout layout, CaseReferenceDto caseReferenceDto) {
-		addTravelEntryListComponent(layout, caseReferenceDto, null);
+		TravelEntryCriteria travelEntryCriteria = new TravelEntryCriteria();
+		travelEntryCriteria.caze(caseReferenceDto);
+		addTravelEntryListComponent(layout, travelEntryCriteria);
 	}
 
-	private static void addTravelEntryListComponent(CustomLayout layout, CaseReferenceDto caseReferenceDto, PersonReferenceDto personReferenceDto) {
+	private static void addTravelEntryListComponent(CustomLayout layout, TravelEntryCriteria travelEntryCriteria) {
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
 			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TRAVEL_ENTRIES)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
-			layout.addComponent(new SideComponentLayout(new TravelEntryListComponent(caseReferenceDto, personReferenceDto)), TRAVEL_ENTRIES_LOC);
+			layout.addComponent(new SideComponentLayout(new TravelEntryListComponent(travelEntryCriteria)), TRAVEL_ENTRIES_LOC);
 		}
 	}
 }
