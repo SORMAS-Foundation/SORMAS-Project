@@ -101,46 +101,50 @@ public class CaseDirectorySteps implements En {
                         .isEqualTo(number)));
 
     When(
-        "^I search for cases created with the API",
+        "^I search for cases created with the API using Person's name",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CASE_RESET_FILTERS_BUTTON);
           int maximumNumberOfRows = 23;
           webDriverHelpers.waitUntilAListOfElementsIsPresent(
               CASE_GRID_RESULTS_ROWS, maximumNumberOfRows);
           webDriverHelpers.fillAndSubmitInWebElement(
-              NAME_UUID_EPID_NUMBER_LIKE_INPUT, apiState.getLastCreatedPerson().getFirstName());
+              NAME_UUID_EPID_NUMBER_LIKE_INPUT,
+              apiState.getLastCreatedPerson().getFirstName()
+                  + " "
+                  + apiState.getLastCreatedPerson().getLastName());
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
           webDriverHelpers.waitUntilAListOfElementsIsPresent(
               NAME_UUID_EPID_NUMBER_LIKE_INPUT, apiState.getCreatedCases().size());
-          //          Truth.assertThat(apiState.getCreatedCases().size())
-          //              .isEqualTo(webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS));
+          Truth.assertThat(apiState.getCreatedCases().size())
+              .isEqualTo(
+                  Integer.parseInt(
+                      webDriverHelpers.getTextFromPresentWebElement(TOTAL_CASES_COUNTER)));
         });
 
     Then(
-        "^I check the displayed Case Outcome filter dropdown",
-        () ->
-            Arrays.stream(CaseOutcome.values())
-                .forEach(
-                    outcome -> {
-                      webDriverHelpers.selectFromCombobox(
-                          CASE_OUTCOME_FILTER_COMBOBOX, outcome.getOutcome());
-                      webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
-                      webDriverHelpers.waitUntilAListOfElementsHasText(
-                          CASE_GRID_RESULTS_ROWS, outcome.getOutcome());
-                      assertHelpers.assertWithPoll15Second(
-                          () ->
-                              Truth.assertThat(
-                                      apiState.getCreatedCases().stream()
-                                          .filter(
-                                              sample ->
-                                                  sample
-                                                      .getOutcome()
-                                                      .contentEquals(outcome.toString()))
-                                          .count())
-                                  .isEqualTo(
-                                      webDriverHelpers.getNumberOfElements(
-                                          CASE_GRID_RESULTS_ROWS)));
-                    }));
+        "I apply Outcome of case filter {string}",
+        (String outcomeFilterOption) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_OUTCOME_FILTER_COMBOBOX, CaseOutcome.getValueFor(outcomeFilterOption));
+          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+        });
+
+    And(
+        "I check that all displayed cases have {string} in grid Case Classification column",
+        (String expectedValue) -> {
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              CASE_GRID_RESULTS_ROWS, CaseOutcome.getValueFor(expectedValue));
+          assertHelpers.assertWithPoll15Second(
+              () ->
+                  Truth.assertThat(
+                          apiState.getCreatedCases().stream()
+                              .filter(sample -> sample.getOutcome().contentEquals("NO_OUTCOME"))
+                              .count())
+                      .isEqualTo(
+                          Integer.valueOf(
+                              webDriverHelpers.getTextFromPresentWebElement(TOTAL_CASES_COUNTER))));
+        });
+    // TODO refactor method to use a specific outcome once the other fix is done
 
     Then(
         "^I check the displayed Case Classification filter dropdown",
@@ -169,29 +173,32 @@ public class CaseDirectorySteps implements En {
                     }));
 
     Then(
-        "^I check the displayed Disease filter dropdown",
-        () ->
-            Arrays.stream(DiseasesValues.values())
-                .forEach(
-                    aDisease -> {
-                      webDriverHelpers.selectFromCombobox(
-                          CASE_DISEASE_FILTER_COMBOBOX, aDisease.getDiseaseName());
-                      webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
-                      webDriverHelpers.waitUntilAListOfElementsHasText(
-                          CASE_GRID_RESULTS_ROWS, aDisease.getDiseaseName());
-                      assertHelpers.assertWithPoll15Second(
-                          () ->
-                              Truth.assertThat(
-                                      apiState.getCreatedCases().stream()
-                                          .filter(
-                                              sample ->
-                                                  sample
-                                                      .getDisease()
-                                                      .contentEquals(aDisease.toString()))
-                                          .count())
-                                  .isEqualTo(
-                                      webDriverHelpers.getNumberOfElements(
-                                          CASE_GRID_RESULTS_ROWS)));
-                    }));
+        "I apply Disease filter {string}",
+        (String diseaseFilterOption) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_DISEASE_FILTER_COMBOBOX, DiseasesValues.getCaptionFor(diseaseFilterOption));
+          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+        });
+
+    Then(
+        "I check that all displayed cases have {string} in grid Disease column",
+        (String expectedValue) -> {
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              CASE_GRID_RESULTS_ROWS, DiseasesValues.getCaptionFor(expectedValue));
+          assertHelpers.assertWithPoll15Second(
+              () ->
+                  Truth.assertThat(
+                          apiState.getCreatedCases().stream()
+                              .filter(
+                                  sample ->
+                                      sample
+                                          .getDisease()
+                                          .contentEquals(
+                                              DiseasesValues.CORONAVIRUS.getDiseaseName()))
+                              .count())
+                      .isEqualTo(
+                          Integer.valueOf(
+                              webDriverHelpers.getTextFromPresentWebElement(TOTAL_CASES_COUNTER))));
+        });
   }
 }

@@ -56,10 +56,10 @@ public class BusinessFlows implements En {
         "API: I create several new cases",
         () -> {
           List<Case> caseList = new ArrayList<>();
+          Person person = personApiService.buildGeneratedPerson();
+          personsHelper.createNewPerson(person);
+          apiState.setLastCreatedPerson(person);
           for (int i = 0; i < number; i++) {
-            Person person = personApiService.buildGeneratedPerson();
-            personsHelper.createNewPerson(person);
-            apiState.setLastCreatedPerson(person);
             Case caze = caseApiService.buildGeneratedCase(apiState.getLastCreatedPerson());
             caseHelper.createCase(caze);
             caseList.add(caze);
