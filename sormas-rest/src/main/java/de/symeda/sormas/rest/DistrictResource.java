@@ -60,7 +60,6 @@ public class DistrictResource extends EntityDtoResource {
 	@POST
 	@Path("/query")
 	public List<DistrictDto> getByUuids(List<String> uuids) {
-
 		List<DistrictDto> result = FacadeProvider.getDistrictFacade().getByUuids(uuids);
 		return result;
 	}
