@@ -237,6 +237,16 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	}
 
 	@Override
+	public List<TravelEntryIndexDto> getEntriesList(TravelEntryCriteria criteria, Integer first, Integer max) {
+		List<TravelEntryIndexDto> resultList = travelEntryService.getIndexList(criteria, first, max, null);
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(TravelEntryIndexDto.class, resultList, TravelEntryIndexDto::isInJurisdiction, null);
+
+		return resultList;
+	}
+
+	@Override
 	public void validate(TravelEntryDto travelEntryDto) {
 		if (travelEntryDto.getPerson() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPerson));

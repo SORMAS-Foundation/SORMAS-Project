@@ -47,7 +47,7 @@ public class TravelEntryList extends PaginationList<TravelEntryIndexDto> {
 	public void reload() {
 
 		List<TravelEntryIndexDto> travelEntries =
-			FacadeProvider.getTravelEntryFacade().getIndexList(travelEntryCriteria, 0, maxDisplayedEntries * 20, null);
+			FacadeProvider.getTravelEntryFacade().getEntriesList(travelEntryCriteria, 0, maxDisplayedEntries * 20);
 
 		setEntries(travelEntries);
 		if (!travelEntries.isEmpty()) {

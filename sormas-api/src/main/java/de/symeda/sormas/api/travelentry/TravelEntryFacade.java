@@ -28,4 +28,6 @@ public interface TravelEntryFacade extends BaseFacade<TravelEntryDto, TravelEntr
 	void deleteTravelEntry(String travelEntryUuid);
 
 	List<DeaContentEntry> getDeaContentOfLastTravelEntry();
+
+	List<TravelEntryIndexDto> getEntriesList(TravelEntryCriteria criteria, Integer first, Integer max);
 }
