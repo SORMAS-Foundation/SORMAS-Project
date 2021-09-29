@@ -50,16 +50,17 @@ public class TestHelper {
 	public static final String USER_UUID = "0123456789";
 	public static final String SECOND_USER_UUID = "0987654321";
 	public static final String INFORMANT_USER_UUID = "0192837465";
+	public static final String TEST_DATABASE_NAME = "test_sormas.db";
 
 	public static void initTestEnvironment(boolean setInformantAsActiveUser) {
 		// Initialize a testing context to not operate on the actual database
 		Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 		// Make sure that no database/user is still set from the last run
-		context.deleteDatabase(DatabaseHelper.DATABASE_NAME);
+		context.deleteDatabase(TEST_DATABASE_NAME);
 
 		ConfigProvider.clearUserLogin();
 		// Initialize the testing database
-		DatabaseHelper.init(context);
+		DatabaseHelper.init(context, TEST_DATABASE_NAME);
 		ConfigProvider.init(context);
 
 		ConfigProvider.setServerRestUrl("http://this-is-a-test-url-that-hopefully-doesnt-exist.com");

@@ -40,7 +40,7 @@ import androidx.test.runner.AndroidJUnit4;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
@@ -189,7 +189,7 @@ public class CaseBackendTest {
 		Case caze = TestEntityCreator.createCase();
 		assertThat(caze.isModified(), is(false));
 
-		caze.setVaccinationStatus(Vaccination.VACCINATED);
+		caze.setVaccinationStatus(VaccinationStatus.VACCINATED);
 
 		DatabaseHelper.getCaseDao().saveAndSnapshot(caze);
 		caze = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(caze.getUuid());
