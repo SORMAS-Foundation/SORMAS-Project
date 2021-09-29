@@ -25,6 +25,7 @@ import android.util.Log;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -67,6 +68,7 @@ public class TestHelper {
 
 		try {
 			insertInfrastructureData();
+			insertOtherAndNoneFacilities();
 			insertUsers(setInformantAsActiveUser);
 		} catch (SQLException e) {
 			Log.e(TestHelper.class.getSimpleName(), "Could not init test environment: " + e.getMessage());
@@ -212,5 +214,23 @@ public class TestHelper {
 		secondFacility.setLatitude(12.9327697753906D);
 		secondFacility.setLongitude(10.03450965881348D);
 		DatabaseHelper.getFacilityDao().create(secondFacility);
+	}
+
+	private static void insertOtherAndNoneFacilities() throws SQLException {
+		Facility otherFacility = new Facility();
+		otherFacility.setCreationDate(new Date());
+		otherFacility.setChangeDate(new Date());
+		otherFacility.setName("Other Facility");
+		otherFacility.setPublicOwnership(false);
+		otherFacility.setUuid(FacilityDto.OTHER_FACILITY_UUID);
+		DatabaseHelper.getFacilityDao().create(otherFacility);
+
+		Facility noneFacility = new Facility();
+		noneFacility.setCreationDate(new Date());
+		noneFacility.setChangeDate(new Date());
+		noneFacility.setName("None Facility");
+		noneFacility.setPublicOwnership(false);
+		noneFacility.setUuid(FacilityDto.NONE_FACILITY_UUID);
+		DatabaseHelper.getFacilityDao().create(noneFacility);
 	}
 }
