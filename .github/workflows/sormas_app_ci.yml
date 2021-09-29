@@ -48,8 +48,8 @@ jobs:
       
       - name: Validate gradle wrapper
         # Checks the integrity of the gradle-wrapper.jar https://github.com/gradle/wrapper-validation-action
-        uses: gradle/wrapper-validation-action@v1
         working-directory: ./sormas-app
+        uses: gradle/wrapper-validation-action@v1
 
       - name: Run gradle tests
         working-directory: ./sormas-app
