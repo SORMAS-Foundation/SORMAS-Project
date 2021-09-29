@@ -7,7 +7,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-// todo should we use BaseAdoService?
 public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO extends EntityDto, SRV extends AdoServiceWithUserFilter<ADO>> {
 
 	protected SRV service;
@@ -33,7 +32,6 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 
 	public abstract DTO save(@Valid DTO dtoToSave, boolean allowMerge);
 
-	// todo private
 	protected DTO persistEntity(DTO dto, ADO entityToPersist) {
 		entityToPersist = fillOrBuildEntity(dto, entityToPersist, true);
 		service.ensurePersisted(entityToPersist);

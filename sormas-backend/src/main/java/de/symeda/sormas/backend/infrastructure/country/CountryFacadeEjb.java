@@ -41,6 +41,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 
 import de.symeda.sormas.api.common.Page;
@@ -65,6 +66,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import org.apache.commons.lang.StringUtils;
 
 @Stateless(name = "CountryFacade")
 public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, CountryDto, CountryService, CountryCriteria> implements CountryFacade {
@@ -193,6 +195,10 @@ public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, Country
 	@Override
 	public CountryDto save(@Valid CountryDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
 		checkInfraDataLocked();
+
+		if (StringUtils.isBlank(dtoToSave.getIsoCode())) {
+			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
+		}
 
 		Country country = service.getByUuid(dtoToSave.getUuid());
 
