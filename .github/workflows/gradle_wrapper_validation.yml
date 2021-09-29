@@ -1,0 +1,25 @@
+# This workflow checks the integrity of the gradle-wrapper.jar files in the project
+# For more information see: https://github.com/gradle/wrapper-validation-action
+
+name: Validate Gradle Wrapper
+
+on:
+  push:
+    branches: [ development, master ]
+  pull_request:
+    branches: [ development ]
+
+jobs:
+  validation:
+    name: validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository (without token)
+        # Check if PR results from a fork: if yes, we cannot access the token.
+        # The token is only needed for privileged actions from within the repo, so no need
+        # to make it available on 3rd party PRs
+        if: ${{ !fromJSON(env.PRIVILEGED_RUN) }}
+        uses: actions/checkout@v2
+      
+      - name: Validate gradle wrapper
+        uses: gradle/wrapper-validation-action@v1

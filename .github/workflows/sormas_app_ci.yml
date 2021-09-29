@@ -46,17 +46,29 @@ jobs:
         with:
           java-version: ${{ env.JAVA }}
       
-      - name: Validate gradle wrapper
-        # Checks the integrity of the gradle-wrapper.jar https://github.com/gradle/wrapper-validation-action
-        uses: gradle/wrapper-validation-action@v1
+      - name: Cache Maven packages
+        # Check if PR results from the repository: if yes, it is safe to cache dependencies.
+        # This is to keep us safe from cache poisoning through 3rd party PRs.
+        if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
+        # FIXME(@JonasCir) #3733 remove '**/*.pom' once serverlib pom is renamed
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-java-${{ env.JAVA }}-m2-${{ hashFiles('**/pom.xml', '**/*.pom') }}
+          restore-keys: ${{ runner.os }}-java-${{ env.JAVA }}-m2
 
       - name: Run mvn install
         working-directory: ./sormas-base
-        run: mvn install
+        run: mvn install -DskipTests=true
 
-      - name: Run mvn install
-        working-directory: ./sormas-api
-        run: mvn install
+      - uses: actions/cache@v2
+        with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
 
       - name: Run gradle tests
         working-directory: ./sormas-app
