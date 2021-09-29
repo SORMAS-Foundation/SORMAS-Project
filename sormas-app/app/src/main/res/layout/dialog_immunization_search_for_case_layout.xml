@@ -10,7 +10,7 @@
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
         <import type="de.symeda.sormas.api.i18n.Strings" />
 
-        <variable name="searchField" type="String" />
+        <variable name="searchFieldContent" type="String" />
 
     </data>
 

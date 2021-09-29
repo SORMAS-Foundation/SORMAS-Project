@@ -8281,4 +8281,16 @@ ALTER TABLE person ALTER COLUMN sex SET NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (407, 'Make Person.sex required #6673');
 
+-- 2021-09-27 Add disease variant details #5935
+ALTER TABLE cases ADD COLUMN diseasevariantdetails varchar(512);
+ALTER TABLE cases_history ADD COLUMN diseasevariantdetails varchar(512);
+ALTER TABLE events ADD COLUMN diseasevariantdetails varchar(512);
+ALTER TABLE events_history ADD COLUMN diseasevariantdetails varchar(512);
+ALTER TABLE pathogentest ADD COLUMN testeddiseasevariantdetails varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN testeddiseasevariantdetails varchar(512);
+ALTER TABLE travelentry ADD COLUMN diseasevariantdetails text;
+ALTER TABLE travelentry_history ADD COLUMN diseasevariantdetails text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (408, 'Add disease variant details #5935');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

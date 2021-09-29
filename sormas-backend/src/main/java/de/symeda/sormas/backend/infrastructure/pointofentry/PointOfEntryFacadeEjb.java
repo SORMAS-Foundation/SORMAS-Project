@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -23,6 +24,8 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.common.Page;
@@ -50,13 +53,11 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "PointOfEntryFacade")
-public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
+public class PointOfEntryFacadeEjb extends AbstractInfrastructureEjb<PointOfEntry, PointOfEntryService> implements PointOfEntryFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
-	@EJB
-	private PointOfEntryService service;
 	@EJB
 	private RegionService regionService;
 	@EJB
@@ -65,6 +66,14 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	private DistrictFacadeEjbLocal districtFacade;
 	@EJB
 	private UserService userService;
+
+	public PointOfEntryFacadeEjb() {
+	}
+
+	@Inject
+	protected PointOfEntryFacadeEjb(PointOfEntryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
+		super(service, featureConfiguration);
+	}
 
 	public static PointOfEntryReferenceDto toReferenceDto(PointOfEntry entity) {
 
@@ -206,6 +215,12 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	}
 
 	@Override
+	protected void checkInfraDataLocked() {
+		// poe are excluded from infra. data locking for now...
+	}
+
+
+	@Override
 	public void validate(PointOfEntryDto pointOfEntry) throws ValidationRuntimeException {
 
 		if (StringUtils.isEmpty(pointOfEntry.getName())) {
@@ -319,22 +334,6 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	}
 
 	@Override
-	public void archive(String pointOfEntryUuid) {
-
-		PointOfEntry pointOfEntry = service.getByUuid(pointOfEntryUuid);
-		pointOfEntry.setArchived(true);
-		service.ensurePersisted(pointOfEntry);
-	}
-
-	@Override
-	public void dearchive(String pointOfEntryUuid) {
-
-		PointOfEntry pointOfEntry = service.getByUuid(pointOfEntryUuid);
-		pointOfEntry.setArchived(false);
-		service.ensurePersisted(pointOfEntry);
-	}
-
-	@Override
 	public boolean hasArchivedParentInfrastructure(Collection<String> pointOfEntryUuids) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -395,5 +394,12 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	@Stateless
 	public static class PointOfEntryFacadeEjbLocal extends PointOfEntryFacadeEjb {
 
+		public PointOfEntryFacadeEjbLocal() {
+		}
+
+		@Inject
+		protected PointOfEntryFacadeEjbLocal(PointOfEntryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
+			super(service, featureConfiguration);
+		}
 	}
 }

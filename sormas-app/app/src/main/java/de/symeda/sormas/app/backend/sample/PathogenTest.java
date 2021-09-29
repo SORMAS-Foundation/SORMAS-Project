@@ -78,6 +78,9 @@ public class PathogenTest extends PseudonymizableAdo {
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String testedDiseaseDetails;
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	private String testedDiseaseVariantDetails;
+
 	@Column
 	private String typingId;
 
@@ -182,6 +185,14 @@ public class PathogenTest extends PseudonymizableAdo {
 
 	public void setTestedDiseaseDetails(String testedDiseaseDetails) {
 		this.testedDiseaseDetails = testedDiseaseDetails;
+	}
+
+	public String getTestedDiseaseVariantDetails() {
+		return testedDiseaseVariantDetails;
+	}
+
+	public void setTestedDiseaseVariantDetails(String testedDiseaseVariantDetails) {
+		this.testedDiseaseVariantDetails = testedDiseaseVariantDetails;
 	}
 
 	public String getTypingId() {

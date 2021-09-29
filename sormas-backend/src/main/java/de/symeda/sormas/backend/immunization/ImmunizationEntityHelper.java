@@ -29,7 +29,7 @@ public final class ImmunizationEntityHelper {
 	public static Date getDateForComparison(Immunization immunization) {
 		return immunization.getEndDate() != null
 			? immunization.getEndDate()
-			: immunization.getStartDate() != null ? immunization.getEndDate() : immunization.getCreationDate();
+			: immunization.getStartDate() != null ? immunization.getStartDate() : immunization.getCreationDate();
 	}
 
 	public static Date getVaccinationDateForComparison(Vaccination vaccination) {

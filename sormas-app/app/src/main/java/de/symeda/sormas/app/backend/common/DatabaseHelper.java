@@ -182,7 +182,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 322;
+	public static final int DATABASE_VERSION = 323;
 
 	private static DatabaseHelper instance = null;
 
@@ -2826,6 +2826,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						" positiveTestResultDate timestamp," +
 						" recoveryDate timestamp," +
 						" relatedCase_id bigint REFERENCES cases(id))");
+				//@formatter:on
 
 			case 319:
 				currentVersion = 319;
@@ -2839,7 +2840,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 320;
 				GenericRawResults<String[]> tableColumns = getDao(User.class).queryRaw("pragma table_info(users)");
 				int nameColumnIndex = Arrays.asList(tableColumns.getColumnNames()).indexOf("name");
-				boolean columnAssociatedOfficeIdNotExists = tableColumns.getResults().stream().noneMatch(columnRowData -> "associatedOfficer_id".equals(columnRowData[nameColumnIndex]));
+				boolean columnAssociatedOfficeIdNotExists =
+					tableColumns.getResults().stream().noneMatch(columnRowData -> "associatedOfficer_id".equals(columnRowData[nameColumnIndex]));
 
 				if (columnAssociatedOfficeIdNotExists) {
 					getDao(User.class).executeRaw("ALTER TABLE users ADD COLUMN associatedOfficer_id bigint REFERENCES users(id);");
@@ -2849,7 +2851,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 321;
 				getDao(Person.class).executeRaw("UPDATE person SET sex = 'UNKNOWN' WHERE sex IS NULL;");
 
-				//@formatter:on
+			case 322:
+				currentVersion = 322;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN diseaseVariantDetails varchar(512);");
+				getDao(Case.class).executeRaw("ALTER TABLE events ADD COLUMN diseaseVariantDetails varchar(512);");
+				getDao(Case.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN testedDiseaseVariantDetails varchar(512);");
+
 				// ATTENTION: break should only be done after last version
 				break;
 
