@@ -2,7 +2,6 @@ package de.symeda.sormas.backend.infrastructure.pointofentry;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,8 +9,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -48,7 +45,6 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "PointOfEntryFacade")
@@ -57,8 +53,6 @@ public class PointOfEntryFacadeEjb
 	AbstractInfrastructureEjb<PointOfEntry, PointOfEntryDto, PointOfEntryDto, PointOfEntryReferenceDto, PointOfEntryService, PointOfEntryCriteria>
 	implements PointOfEntryFacade {
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
 	@EJB
 	private RegionService regionService;
 	@EJB
@@ -71,7 +65,7 @@ public class PointOfEntryFacadeEjb
 
 	@Inject
 	protected PointOfEntryFacadeEjb(PointOfEntryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(service, featureConfiguration, userService);
+		super(PointOfEntry.class, PointOfEntryDto.class, service, featureConfiguration, userService);
 	}
 
 	public static PointOfEntryReferenceDto toReferenceDto(PointOfEntry entity) {
@@ -95,29 +89,11 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
-	public List<PointOfEntryDto> getAllAfter(Date date) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<PointOfEntryDto> cq = cb.createQuery(PointOfEntryDto.class);
-		Root<PointOfEntry> pointOfEntry = cq.from(PointOfEntry.class);
-
-		selectDtoFields(cq, pointOfEntry);
-
-		Predicate filter = service.createChangeDateFilter(cb, pointOfEntry, date);
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	// Need to be in the same order as in the constructor
-	private void selectDtoFields(CriteriaQuery<PointOfEntryDto> cq, Root<PointOfEntry> root) {
+	protected void selectDtoFields(CriteriaQuery<PointOfEntryDto> cq, Root<PointOfEntry> root) {
 
 		Join<PointOfEntry, District> district = root.join(Facility.DISTRICT, JoinType.LEFT);
 		Join<PointOfEntry, Region> region = root.join(Facility.REGION, JoinType.LEFT);
-
+		// Needs to be in the same order as in the constructor
 		cq.multiselect(
 			root.get(PointOfEntry.CREATION_DATE),
 			root.get(PointOfEntry.CHANGE_DATE),

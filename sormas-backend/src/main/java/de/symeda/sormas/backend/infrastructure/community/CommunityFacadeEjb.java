@@ -16,7 +16,6 @@ package de.symeda.sormas.backend.infrastructure.community;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +25,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -58,7 +55,6 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "CommunityFacade")
@@ -66,8 +62,6 @@ public class CommunityFacadeEjb
 	extends AbstractInfrastructureEjb<Community, CommunityDto, CommunityDto, CommunityReferenceDto, CommunityService, CommunityCriteria>
 	implements CommunityFacade {
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
 	@EJB
 	private DistrictService districtService;
 
@@ -76,7 +70,7 @@ public class CommunityFacadeEjb
 
 	@Inject
 	protected CommunityFacadeEjb(CommunityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(service, featureConfiguration, userService);
+		super(Community.class, CommunityDto.class, service, featureConfiguration, userService);
 	}
 
 	@Override
@@ -87,29 +81,11 @@ public class CommunityFacadeEjb
 	}
 
 	@Override
-	public List<CommunityDto> getAllAfter(Date date) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<CommunityDto> cq = cb.createQuery(CommunityDto.class);
-		Root<Community> community = cq.from(Community.class);
-
-		selectDtoFields(cq, community);
-
-		Predicate filter = service.createChangeDateFilter(cb, community, date);
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	// Need to be in the same order as in the constructor
-	private void selectDtoFields(CriteriaQuery<CommunityDto> cq, Root<Community> root) {
+	protected void selectDtoFields(CriteriaQuery<CommunityDto> cq, Root<Community> root) {
 
 		Join<Community, District> district = root.join(Community.DISTRICT, JoinType.LEFT);
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
-
+		// Need to be in the same order as in the constructor
 		cq.multiselect(
 			root.get(Community.CREATION_DATE),
 			root.get(Community.CHANGE_DATE),

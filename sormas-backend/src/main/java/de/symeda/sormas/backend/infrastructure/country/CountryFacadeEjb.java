@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,8 +27,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -66,16 +63,12 @@ import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEj
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "CountryFacade")
 public class CountryFacadeEjb
 	extends AbstractInfrastructureEjb<Country, CountryDto, CountryIndexDto, CountryReferenceDto, CountryService, CountryCriteria>
 	implements CountryFacade {
-
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
 
 	@EJB
 	private ContinentService continentService;
@@ -90,7 +83,7 @@ public class CountryFacadeEjb
 
 	@Inject
 	protected CountryFacadeEjb(CountryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(service, featureConfiguration, userService);
+		super(Country.class, CountryDto.class, service, featureConfiguration, userService);
 	}
 
 	@Override
@@ -300,23 +293,6 @@ public class CountryFacadeEjb
 	}
 
 	@Override
-	public List<CountryDto> getAllAfter(Date date) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<CountryDto> cq = cb.createQuery(CountryDto.class);
-		Root<Country> country = cq.from(Country.class);
-
-		selectDtoFields(cq, country);
-
-		Predicate filter = service.createChangeDateFilter(cb, country, date);
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	@Override
 	public List<CountryReferenceDto> getAllActiveAsReference() {
 		return service.getAllActive(Country.ISO_CODE, true)
 			.stream()
@@ -347,11 +323,10 @@ public class CountryFacadeEjb
 		return QueryHelper.getFirstResult(em, cq) != null;
 	}
 
-	// Need to be in the same order as in the constructor
-	private void selectDtoFields(CriteriaQuery<CountryDto> cq, Root<Country> root) {
-
+	@Override
+	protected void selectDtoFields(CriteriaQuery<CountryDto> cq, Root<Country> root) {
 		Join<Country, Subcontinent> subcontinent = root.join(Country.SUBCONTINENT, JoinType.LEFT);
-
+		// Need to be in the same order as in the constructor
 		cq.multiselect(
 			root.get(Country.CREATION_DATE),
 			root.get(Country.CHANGE_DATE),

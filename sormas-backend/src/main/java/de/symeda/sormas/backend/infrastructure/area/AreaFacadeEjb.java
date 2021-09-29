@@ -2,15 +2,12 @@ package de.symeda.sormas.backend.infrastructure.area;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -31,7 +28,6 @@ import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -39,15 +35,12 @@ import org.apache.commons.collections.CollectionUtils;
 public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, AreaDto, AreaReferenceDto, AreaService, AreaCriteria>
 	implements AreaFacade {
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
-
 	public AreaFacadeEjb() {
 	}
 
 	@Inject
 	protected AreaFacadeEjb(AreaService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(service, featureConfiguration, userService);
+		super(Area.class, AreaDto.class, service, featureConfiguration, userService);
 	}
 
 	@Override
@@ -111,8 +104,8 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, Area
 	}
 
 	@Override
-	public List<AreaDto> getAllAfter(Date date) {
-		return service.getAll((cb, root) -> service.createChangeDateFilter(cb, root, date)).stream().map(this::toDto).collect(Collectors.toList());
+	protected void selectDtoFields(CriteriaQuery<AreaDto> cq, Root<Area> root) {
+		// we do not select DTO fields in getAllAfter query
 	}
 
 	@Override

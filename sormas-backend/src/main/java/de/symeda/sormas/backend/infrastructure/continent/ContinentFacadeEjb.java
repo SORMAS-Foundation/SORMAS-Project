@@ -18,7 +18,6 @@ package de.symeda.sormas.backend.infrastructure.continent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,8 +25,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -56,16 +53,12 @@ import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "ContinentFacade")
 public class ContinentFacadeEjb
 	extends AbstractInfrastructureEjb<Continent, ContinentDto, ContinentIndexDto, ContinentReferenceDto, ContinentService, ContinentCriteria>
 	implements ContinentFacade {
-
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
 
 	@EJB
 	private CountryService countryService;
@@ -77,7 +70,7 @@ public class ContinentFacadeEjb
 
 	@Inject
 	protected ContinentFacadeEjb(ContinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(service, featureConfiguration, userService);
+		super(Continent.class, ContinentDto.class, service, featureConfiguration, userService);
 	}
 
 	public static ContinentReferenceDto toReferenceDto(Continent entity) {
@@ -162,11 +155,6 @@ public class ContinentFacadeEjb
 	}
 
 	@Override
-	public List<ContinentDto> getAllAfter(Date date) {
-		return service.getAll((cb, root) -> service.createChangeDateFilter(cb, root, date)).stream().map(this::toDto).collect(Collectors.toList());
-	}
-
-	@Override
 	public List<ContinentReferenceDto> getAllActiveAsReference() {
 		return service.getAllActive(Continent.DEFAULT_NAME, true)
 			.stream()
@@ -178,6 +166,11 @@ public class ContinentFacadeEjb
 	@Override
 	public ContinentDto save(ContinentDto dtoToSave, boolean allowMerge) {
 		return save(dtoToSave, allowMerge, Validations.importContinentAlreadyExists);
+	}
+
+	@Override
+	protected void selectDtoFields(CriteriaQuery<ContinentDto> cq, Root<Continent> root) {
+		// we do not select DTO fields in getAllAfter query
 	}
 
 	@Override

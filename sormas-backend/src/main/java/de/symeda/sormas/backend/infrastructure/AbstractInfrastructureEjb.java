@@ -31,8 +31,13 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 		super();
 	}
 
-	protected AbstractInfrastructureEjb(SRV service, FeatureConfigurationFacadeEjb featureConfiguration, UserService userService) {
-		super(service, userService);
+	protected AbstractInfrastructureEjb(
+		Class<ADO> adoClass,
+		Class<DTO> dtoClass,
+		SRV service,
+		FeatureConfigurationFacadeEjb featureConfiguration,
+		UserService userService) {
+		super(adoClass, dtoClass, service, userService);
 		this.featureConfiguration = featureConfiguration;
 	}
 

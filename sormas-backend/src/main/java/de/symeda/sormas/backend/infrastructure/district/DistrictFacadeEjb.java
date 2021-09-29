@@ -16,7 +16,6 @@ package de.symeda.sormas.backend.infrastructure.district;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +25,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -64,7 +61,6 @@ import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "DistrictFacade")
@@ -72,8 +68,6 @@ public class DistrictFacadeEjb
 	extends AbstractInfrastructureEjb<District, DistrictDto, DistrictIndexDto, DistrictReferenceDto, DistrictService, DistrictCriteria>
 	implements DistrictFacade {
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
 	@EJB
 	private AreaService areaService;
 	@EJB
@@ -86,7 +80,7 @@ public class DistrictFacadeEjb
 
 	@Inject
 	protected DistrictFacadeEjb(DistrictService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(service, featureConfiguration, userService);
+		super(District.class, DistrictDto.class, service, featureConfiguration, userService);
 	}
 
 	@Override
@@ -103,34 +97,14 @@ public class DistrictFacadeEjb
 
 	@Override
 	public List<DistrictReferenceDto> getAllActiveByRegion(String regionUuid) {
-
 		Region region = regionService.getByUuid(regionUuid);
 		return region.getDistricts().stream().filter(d -> !d.isArchived()).map(DistrictFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<DistrictDto> getAllAfter(Date date) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DistrictDto> cq = cb.createQuery(DistrictDto.class);
-		Root<District> district = cq.from(District.class);
-
-		selectDtoFields(cq, district);
-
-		Predicate filter = service.createChangeDateFilter(cb, district, date);
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	// Need to be in the same order as in the constructor
-	private void selectDtoFields(CriteriaQuery<DistrictDto> cq, Root<District> root) {
-
+	protected void selectDtoFields(CriteriaQuery<DistrictDto> cq, Root<District> root) {
 		Join<District, Region> region = root.join(District.REGION, JoinType.LEFT);
-
+		// Need to be in the same order as in the constructor
 		cq.multiselect(
 			root.get(District.CREATION_DATE),
 			root.get(District.CHANGE_DATE),
