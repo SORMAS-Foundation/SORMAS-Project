@@ -429,7 +429,7 @@ public class CaseBackendTest {
 		Case caze = TestEntityCreator.createCase();
 		caze.setHealthFacility(null);
 
-		UserRole userRole = UserRole.HOSPITAL_INFORMANT;
+		UserRole userRole = UserRole.SURVEILLANCE_OFFICER;
 		Set<UserRole> userRoles = new HashSet<>();
 		userRoles.add(userRole);
 
@@ -452,6 +452,8 @@ public class CaseBackendTest {
 
 		ConfigProvider.getUser().setUserRoles(userRoles);
 		ConfigProvider.getUser().setUuid("");
+
+		User user = ConfigProvider.getUser();
 
 		assertFalse(CaseEditAuthorization.isCaseEditAllowed(caze));
 	}

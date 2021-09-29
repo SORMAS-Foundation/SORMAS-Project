@@ -474,8 +474,19 @@ public class CaseDao extends AbstractAdoDao<Case> {
 				}
 			}
 
+			boolean responsibleRegionChanged = !DataHelper.isSame(changedCase.getResponsibleRegion(), existingCase.getResponsibleRegion());
+			boolean regionChanged = !DataHelper.isSame(changedCase.getRegion(), existingCase.getRegion());
+
+			boolean responsibleDistrictChanged = !DataHelper.isSame(changedCase.getResponsibleDistrict(), existingCase.getResponsibleDistrict());
+			boolean districtChanged = !DataHelper.isSame(changedCase.getDistrict(), existingCase.getDistrict());
+
+			boolean responsibleCommunityChanged = !DataHelper.isSame(changedCase.getResponsibleCommunity(), existingCase.getResponsibleCommunity());
+			boolean communityChanged = !DataHelper.isSame(changedCase.getCommunity(), existingCase.getCommunity());
+
+			boolean facilityChanged = !DataHelper.isSame(changedCase.getHealthFacility(), existingCase.getHealthFacility());
+
 			// If the district has changed, assign a new surveillance officer and re-assign tasks
-			if (!DataHelper.isSame(changedCase.getResponsibleDistrict(), existingCase.getResponsibleDistrict())
+			if (responsibleDistrictChanged
 				|| (changedCase.getResponsibleDistrict() == null && !DataHelper.isSame(changedCase.getDistrict(), existingCase.getDistrict()))) {
 				List<User> districtOfficers = Collections.emptyList();
 
@@ -494,7 +505,15 @@ public class CaseDao extends AbstractAdoDao<Case> {
 				} else {
 					changedCase.setSurveillanceOfficer(null);
 				}
+			}
 
+			if (responsibleRegionChanged
+				|| responsibleDistrictChanged
+				|| responsibleCommunityChanged
+				|| regionChanged
+				|| districtChanged
+				|| communityChanged
+				|| facilityChanged) {
 				for (Task task : DatabaseHelper.getTaskDao().queryByCase(existingCase)) {
 					if (task.getTaskStatus() != TaskStatus.PENDING) {
 						continue;
@@ -508,46 +527,48 @@ public class CaseDao extends AbstractAdoDao<Case> {
 						continue;
 					}
 
-					if (changedCase.getSurveillanceOfficer() != null) {
-						task.setAssigneeUser(changedCase.getSurveillanceOfficer());
-					} else {
-						// TODO roles? what happens when there are no supervisors? assignee user cannot be null
-						List<User> survSupervisors = Collections.emptyList();
-						if (changedCase.getResponsibleRegion() != null) {
-							survSupervisors =
-								DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getResponsibleRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
-						}
-
-						if (survSupervisors.size() == 0) {
-							survSupervisors =
-								DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
-						}
-
-						if (survSupervisors.size() >= 1) {
-							task.setAssigneeUser(survSupervisors.get(0));
-						} else {
-							List<User> caseSupervisors = Collections.emptyList();
-							if (changedCase.getResponsibleRegion() != null) {
-								caseSupervisors =
-									DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getResponsibleRegion(), UserRole.CASE_SUPERVISOR);
-							}
-							if (caseSupervisors.size() == 0) {
-								caseSupervisors = DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getRegion(), UserRole.CASE_SUPERVISOR);
-							}
-
-							if (caseSupervisors.size() >= 1) {
-								task.setAssigneeUser(caseSupervisors.get(0));
-							} else {
-								task.setAssigneeUser(null);
-							}
-						}
-					}
+					assignOfficerOrSupervisorToTask(changedCase, task);
 
 					try {
 						DatabaseHelper.getTaskDao().saveAndSnapshot(task);
 					} catch (DaoException e) {
 						Log.e(getTableName(), "Failed to save an updated task in onCaseChanged");
 					}
+				}
+			}
+		}
+	}
+
+	private void assignOfficerOrSupervisorToTask(Case changedCase, Task task) {
+		if (changedCase.getSurveillanceOfficer() != null) {
+			task.setAssigneeUser(changedCase.getSurveillanceOfficer());
+		} else {
+			// TODO roles? what happens when there are no supervisors? assignee user cannot be null
+			List<User> survSupervisors = Collections.emptyList();
+			if (changedCase.getResponsibleRegion() != null) {
+				survSupervisors =
+					DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getResponsibleRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
+			}
+
+			if (survSupervisors.size() == 0) {
+				survSupervisors = DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
+			}
+
+			if (survSupervisors.size() >= 1) {
+				task.setAssigneeUser(survSupervisors.get(0));
+			} else {
+				List<User> caseSupervisors = Collections.emptyList();
+				if (changedCase.getResponsibleRegion() != null) {
+					caseSupervisors = DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getResponsibleRegion(), UserRole.CASE_SUPERVISOR);
+				}
+				if (caseSupervisors.size() == 0) {
+					caseSupervisors = DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getRegion(), UserRole.CASE_SUPERVISOR);
+				}
+
+				if (caseSupervisors.size() >= 1) {
+					task.setAssigneeUser(caseSupervisors.get(0));
+				} else {
+					task.setAssigneeUser(null);
 				}
 			}
 		}
