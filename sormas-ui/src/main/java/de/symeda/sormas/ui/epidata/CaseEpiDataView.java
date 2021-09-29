@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.epidata;
 
-import static de.symeda.sormas.ui.travelentry.travelentrylink.TravelEntryListComponent.TRAVEL_ENTRIES_LOC;
-
 import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
@@ -27,8 +25,12 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -39,6 +41,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
 @SuppressWarnings("serial")
 public class CaseEpiDataView extends AbstractCaseView {
@@ -47,6 +50,7 @@ public class CaseEpiDataView extends AbstractCaseView {
 
 	private static final String LOC_EPI_DATA = "epiData";
 	private static final String LOC_SOURCE_CONTACTS = "sourceContacts";
+	public static final String TRAVEL_ENTRIES_LOC = "travelEntries";
 
 	private CommitDiscardWrapperComponent<EpiDataForm> epiDataComponent;
 
@@ -114,7 +118,13 @@ public class CaseEpiDataView extends AbstractCaseView {
 		}
 		layout.addComponent(sourceContactsLayout, LOC_SOURCE_CONTACTS);
 
-		TravelEntryListComponent.addTravelEntryListComponent(layout, getCaseRef());
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TRAVEL_ENTRIES)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
+			TravelEntryCriteria travelEntryCriteria = new TravelEntryCriteria();
+			travelEntryCriteria.caze(getCaseRef());
+			layout.addComponent(new SideComponentLayout(new TravelEntryListComponent(travelEntryCriteria)), TRAVEL_ENTRIES_LOC);
+		}
 
 		setCaseEditPermission(container);
 	}
