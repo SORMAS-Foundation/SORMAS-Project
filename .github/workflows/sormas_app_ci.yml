@@ -1,0 +1,57 @@
+# This workflow will build a Java project with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Java CI with Maven
+
+env:
+  JAVA: 11
+  PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') || github.event.pull_request.head.repo.full_name == github.repository }}
+
+on:
+  push:
+    branches: [ development, master ]
+    paths:
+      - 'sormas-app/**'
+      - 'sormas-api/**'
+  pull_request:
+    branches: [ development ]
+    paths:
+      - 'sormas-app/**'
+      - 'sormas-api/**'
+
+jobs:
+  test:
+    name: mvn verify
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository (with token)
+        # Check if PR results from the repository: if yes, we have access to the secrets.
+        # The token is only needed for privileged actions from within the repo, so no need
+        # to make it available on 3rd party PRs
+        if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.SORMAS_VITAGROUP_TOKEN }}
+
+      - name: Checkout repository (without token)
+        # Check if PR results from a fork: if yes, we cannot access the token.
+        # The token is only needed for privileged actions from within the repo, so no need
+        # to make it available on 3rd party PRs
+        if: ${{ !fromJSON(env.PRIVILEGED_RUN) }}
+        uses: actions/checkout@v2
+
+      - name: Set up JDK ${{ env.JAVA }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ env.JAVA }}
+      
+      - name: Validate gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+        with:
+          path: ./sormas-app
+
+      - name: Run gradle tests
+        working-directory: ./sormas-app
+        run: ./gradlew test
+
