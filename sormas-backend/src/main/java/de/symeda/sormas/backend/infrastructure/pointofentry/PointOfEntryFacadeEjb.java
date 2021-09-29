@@ -192,7 +192,6 @@ public class PointOfEntryFacadeEjb extends AbstractInfrastructureEjb<PointOfEntr
 		// poe are excluded from infra. data locking for now...
 	}
 
-
 	@Override
 	public void validate(PointOfEntryDto pointOfEntry) throws ValidationRuntimeException {
 
@@ -325,6 +324,7 @@ public class PointOfEntryFacadeEjb extends AbstractInfrastructureEjb<PointOfEntr
 		return QueryHelper.getFirstResult(em, cq) != null;
 	}
 
+	@Override
 	protected PointOfEntry fillOrBuildEntity(@NotNull PointOfEntryDto source, PointOfEntry target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, PointOfEntry::new, checkChangeDate);
@@ -341,6 +341,7 @@ public class PointOfEntryFacadeEjb extends AbstractInfrastructureEjb<PointOfEntr
 		return target;
 	}
 
+	@Override
 	public PointOfEntryDto toDto(PointOfEntry entity) {
 
 		if (entity == null) {

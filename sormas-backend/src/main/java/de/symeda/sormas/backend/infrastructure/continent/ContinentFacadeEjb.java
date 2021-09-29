@@ -185,10 +185,6 @@ public class ContinentFacadeEjb extends AbstractInfrastructureEjb<Continent, Con
 	}
 
 	@Override
-	public ContinentDto save(@Valid ContinentDto dto) {
-		return save(dto, false);
-	}
-
 	public ContinentDto save(@Valid ContinentDto dtoToSave, boolean allowMerge) {
 		return save(dtoToSave, allowMerge, Validations.importContinentAlreadyExists);
 	}

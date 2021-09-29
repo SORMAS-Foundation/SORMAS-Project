@@ -328,6 +328,7 @@ public class FacilityFacadeEjb extends AbstractInfrastructureEjb<Facility, Facil
 			.collect(Collectors.toList());
 	}
 
+	@Override
 	public Page<FacilityIndexDto> getIndexPage(FacilityCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
 		List<FacilityIndexDto> facilityIndexList = getIndexList(criteria, offset, size, sortProperties);
 		long totalElementCount = count(criteria);
@@ -399,6 +400,7 @@ public class FacilityFacadeEjb extends AbstractInfrastructureEjb<Facility, Facil
 		return new FacilityReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
 	}
 
+	@Override
 	public FacilityDto toDto(Facility entity) {
 
 		if (entity == null) {
@@ -622,6 +624,7 @@ public class FacilityFacadeEjb extends AbstractInfrastructureEjb<Facility, Facil
 		}
 	}
 
+	@Override
 	protected Facility fillOrBuildEntity(@NotNull FacilityDto source, Facility target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, Facility::new, checkChangeDate);

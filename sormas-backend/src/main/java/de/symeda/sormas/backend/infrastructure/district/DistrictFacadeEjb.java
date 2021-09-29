@@ -355,6 +355,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		return new DistrictReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
 	}
 
+	@Override
 	public DistrictDto toDto(District entity) {
 
 		if (entity == null) {
@@ -393,6 +394,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		return dto;
 	}
 
+	@Override
 	protected District fillOrBuildEntity(@NotNull DistrictDto source, District target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, District::new, checkChangeDate);

@@ -229,6 +229,7 @@ public class SubcontinentFacadeEjb extends AbstractInfrastructureEjb<Subcontinen
 		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}
 
+	@Override
 	public SubcontinentDto toDto(Subcontinent entity) {
 		if (entity == null) {
 			return null;
@@ -262,14 +263,17 @@ public class SubcontinentFacadeEjb extends AbstractInfrastructureEjb<Subcontinen
 		return dto;
 	}
 
+	@Override
 	public List<SubcontinentReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
 		return service.getByExternalId(externalId, includeArchived).stream().map(SubcontinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
+	@Override
 	public List<SubcontinentReferenceDto> getReferencesByName(String caption, boolean includeArchived) {
 		return service.getByDefaultName(caption, includeArchived).stream().map(SubcontinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
+	@Override
 	protected Subcontinent fillOrBuildEntity(@NotNull SubcontinentDto source, Subcontinent target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Subcontinent::new, checkChangeDate);
 

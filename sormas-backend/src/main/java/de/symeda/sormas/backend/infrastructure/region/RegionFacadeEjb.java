@@ -41,8 +41,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionCriteria;
@@ -122,7 +120,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 
 	@Override
 	public List<RegionReferenceDto> getAllActiveAsReference() {
-		return service.getAllActive(Region.NAME, true).stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return service.getAllActive(Region.NAME, true).stream().map(RegionFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -181,7 +179,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 			cq.where(filter);
 		}
 
-		if (sortProperties != null && sortProperties.size() > 0) {
+		if (sortProperties != null && !sortProperties.isEmpty()) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
@@ -372,6 +370,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 		return em.createQuery(cq).getResultList().stream().map(RegionFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
+	@Override
 	protected Region fillOrBuildEntity(@NotNull RegionDto source, Region target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, Region::new, checkChangeDate);
