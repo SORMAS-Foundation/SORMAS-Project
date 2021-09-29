@@ -50,7 +50,11 @@ jobs:
         # Checks the integrity of the gradle-wrapper.jar https://github.com/gradle/wrapper-validation-action
         uses: gradle/wrapper-validation-action@v1
 
-      - name: Run mvn verify
+      - name: Run mvn install
+        working-directory: ./sormas-base
+        run: mvn install
+
+      - name: Run mvn install
         working-directory: ./sormas-api
         run: mvn install
 
