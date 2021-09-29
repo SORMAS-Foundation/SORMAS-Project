@@ -72,7 +72,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE = "onlyContactsSharingEventWithSourceCase";
 	public static final String ONLY_CONTACTS_FROM_OTHER_INSTANCES = "onlyContactsFromOtherInstances";
 	public static final String REPORTING_USER_LIKE = "reportingUserLike";
-	public static final String PERSON_UUID = "personUuid";
+	public static final String PERSON_LIKE = "personLike";
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -137,7 +137,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Date creationDateFrom;
 	private Date creationDateTo;
 	private String reportingUserLike;
-	private String personUuid;
+	private String personLike;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -696,11 +696,11 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.followUpVisitsInterval = followUpVisitsInterval;
 	}
 
-	public String getPersonUuid() {
-		return personUuid;
+	public String getPersonLike() {
+		return personLike;
 	}
 
-	public void setPersonUuid(String personUuid) {
-		this.personUuid = personUuid;
+	public void setPersonLike(String personLike) {
+		this.personLike = personLike;
 	}
 }

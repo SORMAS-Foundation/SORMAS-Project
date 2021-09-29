@@ -710,32 +710,35 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (caseCriteria.getDeleted() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DELETED), caseCriteria.getDeleted()));
 		}
-		if (!DataHelper.isNullOrEmpty(caseCriteria.getPersonUuid())) {
-			// We should allow short and long versions of the UUID so let's do a LIKE behaving like a "starts with"
-			filter = CriteriaBuilderHelper.and(
+		if (!DataHelper.isNullOrEmpty(caseCriteria.getPersonLike())) {
+			Predicate likeFilters = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
 				cb,
-				filter,
-				CriteriaBuilderHelper.ilikePrecise(cb, person.get(Person.UUID), caseCriteria.getPersonUuid() + "%"));
+				caseCriteria.getPersonLike(),
+				textFilter -> cb.or(
+					// We should allow short and long versions of the UUID so let's do a LIKE behaving like a "starts with"
+					CriteriaBuilderHelper.ilikePrecise(cb, person.get(Person.UUID), textFilter + "%"),
+					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
+					phoneNumberPredicate(
+						cb,
+						(Expression<String>) caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
+						textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
+					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
+
+			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 		}
 		if (!DataHelper.isNullOrEmpty(caseCriteria.getNameUuidEpidNumberLike())) {
 			Predicate likeFilters = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
 				cb,
 				caseCriteria.getNameUuidEpidNumberLike(),
 				textFilter -> cb.or(
-					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.UUID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.EPID_NUMBER), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, facility.get(Facility.NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.EXTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Case.HEALTH_FACILITY_DETAILS), textFilter),
-					phoneNumberPredicate(
-						cb,
-						(Expression<String>) caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
-					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Case.INTERNAL_TOKEN), textFilter)));
 
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);

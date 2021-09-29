@@ -1233,7 +1233,7 @@ public interface Strings {
 	String promptPersonsSearchField = "promptPersonsSearchField";
 	String promptPrescriptionTextFilter = "promptPrescriptionTextFilter";
 	String promptRegion = "promptRegion";
-	String promptRelatedPersonUuidField = "promptRelatedPersonUuidField";
+	String promptRelatedPersonLikeField = "promptRelatedPersonLikeField";
 	String promptSampleDateFrom = "promptSampleDateFrom";
 	String promptSampleDateTo = "promptSampleDateTo";
 	String promptSampleEpiWeekFrom = "promptSampleEpiWeekFrom";
