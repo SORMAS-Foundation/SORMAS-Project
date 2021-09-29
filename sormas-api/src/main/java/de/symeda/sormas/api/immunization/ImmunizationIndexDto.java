@@ -67,6 +67,8 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 	private String lastVaccineType;
 	private Date recoveryDate;
 
+	private boolean isInJurisdiction;
+
 	public ImmunizationIndexDto(
 		String uuid,
 		String personUuid,
@@ -82,7 +84,8 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 		Date startDate,
 		Date endDate,
 		String lastVaccineType,
-		Date recoveryDate) {
+		Date recoveryDate,
+		boolean isInJurisdiction) {
 
 		this.uuid = uuid;
 		this.personUuid = personUuid;
@@ -99,6 +102,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 		this.endDate = endDate;
 		this.lastVaccineType = lastVaccineType;
 		this.recoveryDate = recoveryDate;
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public String getUuid() {
@@ -219,5 +223,13 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 
 	public void setRecoveryDate(Date recoveryDate) {
 		this.recoveryDate = recoveryDate;
+	}
+
+	public boolean isInJurisdiction() {
+		return isInJurisdiction;
+	}
+
+	public void setInJurisdiction(boolean inJurisdiction) {
+		isInJurisdiction = inJurisdiction;
 	}
 }

@@ -15,8 +15,8 @@
 
 package de.symeda.sormas.app.backend.caze;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 
@@ -48,10 +48,7 @@ import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.ScreeningType;
 import de.symeda.sormas.api.caze.Trimester;
-import de.symeda.sormas.api.caze.Vaccination;
-import de.symeda.sormas.api.caze.VaccinationInfoSource;
-import de.symeda.sormas.api.caze.Vaccine;
-import de.symeda.sormas.api.caze.VaccineManufacturer;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -103,11 +100,12 @@ public class Case extends PseudonymizableAdo {
 	public static final String RESPONSIBLE_REGION = "responsibleRegion";
 	public static final String REGION = "region";
 	public static final String COMPLETENESS = "completeness";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	private Person person;
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	private String description;
 
 	@Enumerated(EnumType.STRING)
@@ -117,8 +115,11 @@ public class Case extends PseudonymizableAdo {
 	private String diseaseVariantString;
 	private DiseaseVariant diseaseVariant;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String diseaseDetails;
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	private String diseaseVariantDetails;
 
 	@Enumerated(EnumType.STRING)
 	private PlagueType plagueType;
@@ -143,7 +144,7 @@ public class Case extends PseudonymizableAdo {
 	private User classificationUser;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date classificationDate;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String classificationComment;
 
 	@Enumerated(EnumType.STRING)
@@ -181,13 +182,13 @@ public class Case extends PseudonymizableAdo {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility healthFacility;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String healthFacilityDetails;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private PointOfEntry pointOfEntry;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String pointOfEntryDetails;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -204,11 +205,11 @@ public class Case extends PseudonymizableAdo {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
 	private User surveillanceOfficer;
-	@Column(length = COLUMN_LENGTH_DEFAULT, name = "clinicianDetails")
+	@Column(length = CHARACTER_LIMIT_DEFAULT, name = "clinicianDetails")
 	private String clinicianName;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String clinicianPhone;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String clinicianEmail;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
 	private User caseOfficer;
@@ -217,16 +218,8 @@ public class Case extends PseudonymizableAdo {
 	private YesNoUnknown pregnant;
 
 	@Enumerated(EnumType.STRING)
-	private Vaccination vaccination;
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String vaccine;
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String vaccinationDoses;
-
-	@Enumerated(EnumType.STRING)
-	private VaccinationInfoSource vaccinationInfoSource;
+	@DatabaseField(columnName = "vaccination")
+	private VaccinationStatus vaccinationStatus;
 
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown smallpoxVaccinationScar;
@@ -234,41 +227,10 @@ public class Case extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown smallpoxVaccinationReceived;
 
-	@DatabaseField(dataType = DataType.DATE_LONG)
-	private Date firstVaccinationDate;
-
 	@DatabaseField(columnName = "vaccinationDate", dataType = DataType.DATE_LONG)
-	private Date lastVaccinationDate;
+	private Date smallpoxLastVaccinationDate;
 
-	@Enumerated(EnumType.STRING)
-	private Vaccine vaccineName;
-
-	@Column(columnDefinition = "text")
-	private String otherVaccineName;
-
-	@Enumerated(EnumType.STRING)
-	private VaccineManufacturer vaccineManufacturer;
-
-	@Column(columnDefinition = "text")
-	private String otherVaccineManufacturer;
-
-	@Column(columnDefinition = "text")
-	private String vaccineInn;
-
-	@Column(columnDefinition = "text")
-	private String vaccineBatchNumber;
-
-	@Column(columnDefinition = "text")
-	private String vaccineUniiCode;
-
-	@Column(columnDefinition = "text")
-	private String vaccineAtcCode;
-
-	@Deprecated
-	@DatabaseField(dataType = DataType.DATE_LONG)
-	private Date smallpoxVaccinationDate;
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String epidNumber;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -306,11 +268,11 @@ public class Case extends PseudonymizableAdo {
 	private Date outcomeDate;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown sequelae;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String sequelaeDetails;
 	@Enumerated(EnumType.STRING)
 	private HospitalWardType notifyingClinic;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String notifyingClinicDetails;
 
 	@Enumerated(EnumType.STRING)
@@ -323,27 +285,27 @@ public class Case extends PseudonymizableAdo {
 	@DatabaseField
 	private Float completeness;
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	private String additionalDetails;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String externalID;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String externalToken;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String internalToken;
 
 	@Enumerated(EnumType.STRING)
 	private QuarantineType quarantine;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String quarantineTypeDetails;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date quarantineFrom;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date quarantineTo;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String quarantineHelpNeeded;
 	@DatabaseField
 	private boolean quarantineOrderedVerbally;
@@ -359,11 +321,11 @@ public class Case extends PseudonymizableAdo {
 	private boolean quarantineReduced;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown quarantineHomePossible;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String quarantineHomePossibleComment;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown quarantineHomeSupplyEnsured;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String quarantineHomeSupplyEnsuredComment;
 	@DatabaseField
 	private boolean quarantineOfficialOrderSent;
@@ -383,11 +345,11 @@ public class Case extends PseudonymizableAdo {
 	private YesNoUnknown wasInQuarantineBeforeIsolation;
 	@Enumerated(EnumType.STRING)
 	private QuarantineReason quarantineReasonBeforeIsolation;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String quarantineReasonBeforeIsolationDetails;
 	@Enumerated(EnumType.STRING)
 	private EndOfIsolationReason endOfIsolationReason;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String endOfIsolationReasonDetails;
 	@DatabaseField
 	private boolean nosocomialOutbreak;
@@ -423,7 +385,7 @@ public class Case extends PseudonymizableAdo {
 	@DatabaseField
 	private boolean notACaseReasonOther;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String notACaseReasonDetails;
 	@DatabaseField
 	private Date followUpStatusChangeDate;
@@ -490,6 +452,14 @@ public class Case extends PseudonymizableAdo {
 
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	public PlagueType getPlagueType() {
@@ -692,36 +662,12 @@ public class Case extends PseudonymizableAdo {
 		this.pregnant = pregnant;
 	}
 
-	public Vaccination getVaccination() {
-		return vaccination;
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
 	}
 
-	public void setVaccination(Vaccination vaccination) {
-		this.vaccination = vaccination;
-	}
-
-	public String getVaccine() {
-		return vaccine;
-	}
-
-	public void setVaccine(String vaccine) {
-		this.vaccine = vaccine;
-	}
-
-	public String getVaccinationDoses() {
-		return vaccinationDoses;
-	}
-
-	public void setVaccinationDoses(String vaccinationDoses) {
-		this.vaccinationDoses = vaccinationDoses;
-	}
-
-	public VaccinationInfoSource getVaccinationInfoSource() {
-		return vaccinationInfoSource;
-	}
-
-	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
-		this.vaccinationInfoSource = vaccinationInfoSource;
+	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
+		this.vaccinationStatus = vaccinationStatus;
 	}
 
 	public YesNoUnknown getSmallpoxVaccinationScar() {
@@ -740,84 +686,12 @@ public class Case extends PseudonymizableAdo {
 		this.smallpoxVaccinationReceived = smallpoxVaccinationReceived;
 	}
 
-	public Date getFirstVaccinationDate() {
-		return firstVaccinationDate;
+	public Date getSmallpoxLastVaccinationDate() {
+		return smallpoxLastVaccinationDate;
 	}
 
-	public void setFirstVaccinationDate(Date firstVaccinationDate) {
-		this.firstVaccinationDate = firstVaccinationDate;
-	}
-
-	public Date getLastVaccinationDate() {
-		return lastVaccinationDate;
-	}
-
-	public void setLastVaccinationDate(Date lastVaccinationDate) {
-		this.lastVaccinationDate = lastVaccinationDate;
-	}
-
-	public Vaccine getVaccineName() {
-		return vaccineName;
-	}
-
-	public void setVaccineName(Vaccine vaccineName) {
-		this.vaccineName = vaccineName;
-	}
-
-	public String getOtherVaccineName() {
-		return otherVaccineName;
-	}
-
-	public void setOtherVaccineName(String otherVaccineName) {
-		this.otherVaccineName = otherVaccineName;
-	}
-
-	public VaccineManufacturer getVaccineManufacturer() {
-		return vaccineManufacturer;
-	}
-
-	public void setVaccineManufacturer(VaccineManufacturer vaccineManufacturer) {
-		this.vaccineManufacturer = vaccineManufacturer;
-	}
-
-	public String getOtherVaccineManufacturer() {
-		return otherVaccineManufacturer;
-	}
-
-	public void setOtherVaccineManufacturer(String otherVaccineManufacturer) {
-		this.otherVaccineManufacturer = otherVaccineManufacturer;
-	}
-
-	public String getVaccineInn() {
-		return vaccineInn;
-	}
-
-	public void setVaccineInn(String vaccineInn) {
-		this.vaccineInn = vaccineInn;
-	}
-
-	public String getVaccineBatchNumber() {
-		return vaccineBatchNumber;
-	}
-
-	public void setVaccineBatchNumber(String vaccineBatchNumber) {
-		this.vaccineBatchNumber = vaccineBatchNumber;
-	}
-
-	public String getVaccineUniiCode() {
-		return vaccineUniiCode;
-	}
-
-	public void setVaccineUniiCode(String vaccineUniiCode) {
-		this.vaccineUniiCode = vaccineUniiCode;
-	}
-
-	public String getVaccineAtcCode() {
-		return vaccineAtcCode;
-	}
-
-	public void setVaccineAtcCode(String vaccineAtcCode) {
-		this.vaccineAtcCode = vaccineAtcCode;
+	public void setSmallpoxLastVaccinationDate(Date smallpoxLastVaccinationDate) {
+		this.smallpoxLastVaccinationDate = smallpoxLastVaccinationDate;
 	}
 
 	public String getEpidNumber() {

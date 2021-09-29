@@ -73,9 +73,9 @@ public class ImmunizationListEntry extends HorizontalLayout {
 
 		HorizontalLayout managementStatusLayout = new HorizontalLayout();
 		Label managementStatusLabel = new Label(
-			I18nProperties.getPrefixCaption(ImmunizationListEntryDto.I18N_PREFIX, ImmunizationListEntryDto.MANAGEMENT_STATUS)
+			I18nProperties.getPrefixCaption(ImmunizationListEntryDto.I18N_PREFIX, ImmunizationListEntryDto.IMMUNIZATION_MANAGEMENT_STATUS)
 				+ SEPARATOR
-				+ DataHelper.toStringNullable(immunization.getManagementStatus()));
+				+ DataHelper.toStringNullable(immunization.getImmunizationManagementStatus()));
 		managementStatusLayout.addComponent(managementStatusLabel);
 		mainLayout.addComponent(managementStatusLayout);
 

@@ -1,6 +1,6 @@
 package de.symeda.sormas.api.campaign.form;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_SMALL;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
 
 import java.io.Serializable;
 import java.util.List;
@@ -16,7 +16,7 @@ public class CampaignFormTranslations implements Serializable {
 
 	private static final long serialVersionUID = 8326680921734712660L;
 
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String languageCode;
 	@Valid
 	private List<TranslationElement> translations;

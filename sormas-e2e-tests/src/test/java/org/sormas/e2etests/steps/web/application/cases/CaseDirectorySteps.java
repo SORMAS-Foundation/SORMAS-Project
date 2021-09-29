@@ -64,7 +64,11 @@ public class CaseDirectorySteps implements En {
                 NAME_UUID_EPID_NUMBER_LIKE_INPUT, EditCaseSteps.aCase.getUuid()));
     When(
         "I click on the DETAILED button from Case directory",
-        () -> webDriverHelpers.clickOnWebElementBySelector(CASE_DIRECTORY_DETAILED_RADIOBUTTON));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CASE_DIRECTORY_DETAILED_RADIOBUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              By.xpath(String.format(RESULTS_GRID_HEADER, "Sex")), 20);
+        });
 
     When(
         "I filter by CaseID on Case directory page",

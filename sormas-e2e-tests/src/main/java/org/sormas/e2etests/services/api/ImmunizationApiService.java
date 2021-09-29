@@ -24,8 +24,8 @@ import java.util.Calendar;
 import java.util.UUID;
 import org.sormas.e2etests.enums.CommunityUUIDs;
 import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.DistrictUUIDs;
-import org.sormas.e2etests.enums.RegionUUIDs;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.TestDataUser;
 import org.sormas.e2etests.enums.immunizations.ImmunizationManagementStatusValues;
 import org.sormas.e2etests.enums.immunizations.ImmunizationStatusValues;
@@ -60,8 +60,8 @@ public class ImmunizationApiService {
         .meansOfImmunization(MeansOfImmunizationValues.getRandomMeansOfImmunization())
         .immunizationManagementStatus(
             ImmunizationManagementStatusValues.getRandomImmunizationManagementStatus())
-        .responsibleRegion(RegionUUIDs.VoreingestellteBundeslander.toString())
-        .responsibleDistrict(DistrictUUIDs.VoreingestellterLandkreis.toString())
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getUuid())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getUuid())
         .responsibleCommunity(CommunityUUIDs.VoreingestellteGemeinde.toString())
         .build();
   }

@@ -256,7 +256,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person2 = creator.createPerson("James", "Smith", Sex.MALE, 1979, 5, 12);
 		PersonDto person3 = creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 5);
 		PersonDto person4 = creator.createPerson("Maria", "Garcia", Sex.FEMALE, 1984, 12, 2);
-		PersonDto person5 = creator.createPerson("Maria", "Garcia", null, 1984, 7, 12);
+		PersonDto person5 = creator.createPerson("Maria", "Garcia", Sex.UNKNOWN, 1984, 7, 12);
 		PersonDto person6 = creator.createPerson("Maria", "Garcia", Sex.FEMALE, 1984, null, null);
 		PersonDto person7 = creator.createPerson("James", "Smith", Sex.MALE, null, null, null);
 
@@ -610,6 +610,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person = new PersonDto();
 		person.setFirstName("Fname");
 		person.setLastName("Lname");
+		person.setSex(Sex.UNKNOWN);
 		person.setAddress(new LocationDto());
 		person.setAddresses(Collections.singletonList(new LocationDto()));
 

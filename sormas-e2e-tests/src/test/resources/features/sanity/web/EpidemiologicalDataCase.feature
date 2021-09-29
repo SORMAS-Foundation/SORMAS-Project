@@ -3,7 +3,11 @@ Feature: Epidemiological data coverage
 
   Scenario: Edit all fields from Epidemiological data tab
     Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     And API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     Given I log in with the user
     And I click on the Cases button from navbar
     When I am accessing via URL the Epidemiological data tab of the created case

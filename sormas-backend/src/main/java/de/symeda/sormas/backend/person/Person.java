@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.person;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -217,7 +217,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 	private List<Immunization> immunizations = new ArrayList<>();
 	private List<TravelEntry> travelEntries = new ArrayList<>();
 
-	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
+	@Column(nullable = false, length = CHARACTER_LIMIT_DEFAULT)
 	public String getFirstName() {
 		return firstName;
 	}
@@ -226,7 +226,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 		this.firstName = firstName;
 	}
 
-	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
+	@Column(nullable = false, length = CHARACTER_LIMIT_DEFAULT)
 	public String getLastName() {
 		return lastName;
 	}
@@ -244,7 +244,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 		this.salutation = salutation;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getOtherSalutation() {
 		return otherSalutation;
 	}
@@ -253,7 +253,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 		this.otherSalutation = otherSalutation;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getBirthName() {
 		return birthName;
 	}
@@ -262,7 +262,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 		this.birthName = birthName;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getNickname() {
 		return nickname;
 	}
@@ -482,7 +482,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 		this.armedForcesRelationType = armedForcesRelationType;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getMothersName() {
 		return mothersName;
 	}
@@ -491,7 +491,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 		this.mothersName = mothersName;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getFathersName() {
 		return fathersName;
 	}
@@ -500,7 +500,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 		this.fathersName = fathersName;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getNamesOfGuardians() {
 		return namesOfGuardians;
 	}
@@ -545,7 +545,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 		this.placeOfBirthFacility = placeOfBirthFacility;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getPlaceOfBirthFacilityDetails() {
 		return placeOfBirthFacilityDetails;
 	}

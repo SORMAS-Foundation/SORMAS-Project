@@ -98,7 +98,6 @@ import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ValidationUtils;
 import de.symeda.sormas.ui.utils.ViewMode;
-import de.symeda.sormas.ui.vaccination.VaccinationInfoForm;
 
 public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
@@ -110,7 +109,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private static final String CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC = "cancelOrResumeFollowUpBtnLoc";
 	private static final String LOST_FOLLOW_UP_BTN_LOC = "lostFollowUpBtnLoc";
 	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
-	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
 	private static final String EXTERNAL_TOKEN_WARNING_LOC = "externalTokenWarningLoc";
 	private static final String EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC = "expectedFollowUpUntilDateLoc";
 
@@ -154,8 +152,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					fluidRowLocs(ContactDto.END_OF_QUARANTINE_REASON, ContactDto.END_OF_QUARANTINE_REASON_DETAILS) +
 					locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
 					fluidRowLocs(ContactDto.HEALTH_CONDITIONS) +
-					loc(MEDICAL_INFORMATION_LOC) +
-					loc(ContactDto.VACCINATION_INFO) +
+					fluidRowLocs(ContactDto.VACCINATION_STATUS, "") +
 					fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
                     loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
 					loc(FOLLOW_UP_STATUS_HEADING_LOC) +
@@ -181,6 +178,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private NullableOptionGroup contactCategory;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
 	private TextField tfExpectedFollowUpUntilDate;
+	private CheckBox cbOverwriteFollowUpUntil;
+	private DateField dfFollowUpUntil;
 
 	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized) {
 		super(
@@ -411,7 +410,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			true);
 
 		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(6);
-
+		addField(ContactDto.VACCINATION_STATUS);
 		addField(ContactDto.RETURNING_TRAVELER, NullableOptionGroup.class);
 		addField(ContactDto.CASE_ID_EXTERNAL_SYSTEM, TextField.class);
 		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(4);
@@ -420,9 +419,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.FOLLOW_UP_STATUS_CHANGE_DATE);
 		addField(ContactDto.FOLLOW_UP_STATUS_CHANGE_USER);
 		addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(3);
-		DateField dfFollowUpUntil = addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
+		dfFollowUpUntil = addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
 		dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, quarantineTo, quarantineExtended, quarantineReduced));
-		CheckBox cbOverwriteFollowUpUntil = addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);
+		cbOverwriteFollowUpUntil = addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);
 		cbOverwriteFollowUpUntil.addValueChangeListener(e -> {
 			if (!(Boolean) e.getProperty().getValue()) {
 				dfFollowUpUntil.discard();
@@ -490,13 +489,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		HealthConditionsForm clinicalCourseForm = addField(ContactDto.HEALTH_CONDITIONS, HealthConditionsForm.class);
 		clinicalCourseForm.setCaption(null);
-
-		VaccinationInfoForm vaccinationForm = addField(ContactDto.VACCINATION_INFO, VaccinationInfoForm.class);
-		if (vaccinationForm.isVisibleAllowed()) {
-			Label medicalInformationCaptionLabel = new Label(I18nProperties.getString(Strings.headingMedicalInformation));
-			medicalInformationCaptionLabel.addStyleName(H3);
-			getContent().addComponent(medicalInformationCaptionLabel, MEDICAL_INFORMATION_LOC);
-		}
 
 		Label generalCommentLabel = new Label(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.ADDITIONAL_DETAILS));
 		generalCommentLabel.addStyleName(H3);
@@ -718,24 +710,19 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		if (followUpVisible && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
 			FollowUpStatus followUpStatus = statusField.getValue();
 			tfExpectedFollowUpUntilDate.setVisible(followUpStatus != FollowUpStatus.NO_FOLLOW_UP);
+			boolean followUpCanceledOrLost = followUpStatus == FollowUpStatus.CANCELED || followUpStatus == FollowUpStatus.LOST;
+			cbOverwriteFollowUpUntil.setReadOnly(followUpCanceledOrLost);
+			dfFollowUpUntil.setReadOnly(followUpCanceledOrLost || Boolean.TRUE != cbOverwriteFollowUpUntil.getValue());
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 
 				Button cancelButton = ButtonHelper.createButton(Captions.contactCancelFollowUp, event -> {
-					Field<FollowUpStatus> statusField1 = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
-					statusField1.setReadOnly(false);
-					statusField1.setValue(FollowUpStatus.CANCELED);
-					statusField1.setReadOnly(true);
-					updateFollowUpStatusComponents();
+					setFollowUpStatus(FollowUpStatus.CANCELED);
 				});
 				cancelButton.setWidth(100, Unit.PERCENTAGE);
 				getContent().addComponent(cancelButton, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 
 				Button lostButton = ButtonHelper.createButton(Captions.contactLostToFollowUp, event -> {
-					Field<FollowUpStatus> statusField12 = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
-					statusField12.setReadOnly(false);
-					statusField12.setValue(FollowUpStatus.LOST);
-					statusField12.setReadOnly(true);
-					updateFollowUpStatusComponents();
+					setFollowUpStatus(FollowUpStatus.LOST);
 				});
 				lostButton.setWidth(100, Unit.PERCENTAGE);
 				getContent().addComponent(lostButton, LOST_FOLLOW_UP_BTN_LOC);
@@ -743,17 +730,22 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			} else if (followUpStatus == FollowUpStatus.CANCELED || followUpStatus == FollowUpStatus.LOST) {
 
 				Button resumeButton = ButtonHelper.createButton(Captions.contactResumeFollowUp, event -> {
-					Field<FollowUpStatus> statusField13 = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
-					statusField13.setReadOnly(false);
-					statusField13.setValue(FollowUpStatus.FOLLOW_UP);
-					statusField13.setReadOnly(true);
-					updateFollowUpStatusComponents();
+					setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
 				}, CssStyles.FORCE_CAPTION);
 				resumeButton.setWidth(100, Unit.PERCENTAGE);
 
 				getContent().addComponent(resumeButton, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 			}
 		}
+	}
+
+	private void setFollowUpStatus(FollowUpStatus followUpStatus) {
+		Field<FollowUpStatus> statusField = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
+		statusField.setReadOnly(false);
+		statusField.setValue(followUpStatus);
+		statusField.setReadOnly(true);
+
+		updateFollowUpStatusComponents();
 	}
 
 	protected void updateLastContactDateValidator() {

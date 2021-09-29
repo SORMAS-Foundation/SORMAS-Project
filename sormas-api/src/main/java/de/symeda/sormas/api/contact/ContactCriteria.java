@@ -24,7 +24,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -51,7 +51,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String REPORTING_USER_ROLE = "reportingUserRole";
 	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
-	public static final String VACCINATION = "vaccination";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String RELATION_TO_CASE = "relationToCase";
 	public static final String QUARANTINE_TYPE = "quarantineType";
 	public static final String QUARANTINE_ORDERED_VERBALLY = "quarantineOrderedVerbally";
@@ -102,7 +102,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	 * even if a followUpUntilFrom is specified
 	 */
 	private SymptomJournalStatus symptomJournalStatus;
-	private Vaccination vaccination;
+	private VaccinationStatus vaccinationStatus;
 	private ContactRelation relationToCase;
 	private Date lastContactDateFrom;
 	private Date lastContactDateTo;
@@ -352,12 +352,12 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.symptomJournalStatus = symptomJournalStatus;
 	}
 
-	public Vaccination getVaccination() {
-		return vaccination;
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
 	}
 
-	public void setVaccination(Vaccination vaccination) {
-		this.vaccination = vaccination;
+	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
+		this.vaccinationStatus = vaccinationStatus;
 	}
 
 	public ContactRelation getRelationToCase() {

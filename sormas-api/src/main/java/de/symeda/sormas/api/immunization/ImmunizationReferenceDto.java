@@ -19,7 +19,10 @@ import de.symeda.sormas.api.ReferenceDto;
 
 public class ImmunizationReferenceDto extends ReferenceDto {
 
-	private final String externalId;
+	private String externalId;
+
+	public ImmunizationReferenceDto() {
+	}
 
 	public ImmunizationReferenceDto(String uuid, String caption, String externalId) {
 		super(uuid, caption);
@@ -28,5 +31,9 @@ public class ImmunizationReferenceDto extends ReferenceDto {
 
 	public String getExternalId() {
 		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 }

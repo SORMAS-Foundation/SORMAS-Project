@@ -119,6 +119,8 @@
     <string name="action_kex_lbds">LBDS Schlüsselaustausch</string>
     <string name="action_sync_person_lbds">LBDS Sync-Personen</string>
     <string name="action_sync_case_lbds">LBDS Sync-Fälle</string>
+    <string name="action_save_vaccination">Impfung speichern</string>
+    <string name="action_edit_vaccination">Impfung bearbeiten</string>
     <string name="caption_address">Adresse</string>
     <string name="caption_age">Alter</string>
     <string name="caption_attended_by">Besucht von</string>
@@ -238,6 +240,8 @@
     <string name="caption_latest_submission">Letzte Einreichung: %1$s</string>
     <string name="caption_settings_debug_url_lbds">LBDS Server Debug URL</string>
     <string name="caption_immunization_information">Immunisierungsdetails</string>
+    <string name="caption_immunization_vaccinations">Impfungen</string>
+    <string name="caption_vaccination_information">Impfinformationen</string>
     <string name="caption_new_immunization">Neue Immunisierung</string>
     <string name="caption_overwrite_immunization_management_status">Immunisierungs-Management-Status überschreiben</string>
     <string name="caption_searchCase">Fall suchen</string>
@@ -405,6 +409,9 @@
     <string name="heading_campaign_form_data_summary">Zusammenfassung der Kampagnendaten</string>
     <string name="heading_campaign_form_meta_select">Kampagnenformular auswählen</string>
     <string name="heading_case_place_of_stay">Aufenthaltsort</string>
+    <string name="heading_vaccination">Impfung</string>
+    <string name="heading_vaccination_edit">Impfung bearbeiten</string>
+    <string name="heading_vaccination_new">Neue Impfung</string>
     <string name="heading_search_for_case">Spezifischen Fall suchen</string>
     <string name="hint_add_to_empty_list">Fügen Sie einen neuen Eintrag hinzu, indem Sie das \"+\" Symbol oben rechts drücken.</string>
     <string name="hint_clear">Löschen</string>
@@ -635,4 +642,5 @@
     <string name="scan_field_sample_id">Scanbereich Proben ID</string>
     <string name="caption_facility_type_group">Kategorie der Einrichtung</string>
     <string name="caption_facility_type">Art der Einrichtung</string>
+    <string name="value_vaccine_date_unknown">Impfdatum N/A</string>
 </resources>

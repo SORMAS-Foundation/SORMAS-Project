@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
 import java.io.Serializable;
 
@@ -47,7 +47,7 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	private boolean pseudonymizeSensitiveData;
 
-	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String comment;
 
 	private boolean withAssociatedContacts;
