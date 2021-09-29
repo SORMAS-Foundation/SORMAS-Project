@@ -66,7 +66,8 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "CommunityFacade")
-public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, CommunityService> implements CommunityFacade {
+public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, CommunityDto, CommunityService, CommunityCriteria>
+	implements CommunityFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -223,11 +224,6 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 	}
 
 	@Override
-	public CommunityDto getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
-	}
-
-	@Override
 	public List<CommunityDto> getByUuids(List<String> uuids) {
 		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
@@ -262,36 +258,13 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 	}
 
 	@Override
-	public CommunityDto save(@Valid CommunityDto dto) throws ValidationRuntimeException {
-		return save(dto, false);
+	public CommunityDto save(@Valid CommunityDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
+		return save(dtoToSave, allowMerge, Validations.importCommunityAlreadyExists);
 	}
 
 	@Override
-	public CommunityDto save(@Valid CommunityDto dto, boolean allowMerge) throws ValidationRuntimeException {
-		checkInfraDataLocked();
-
-		if (dto.getDistrict() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
-		}
-
-		Community community = service.getByUuid(dto.getUuid());
-
-		if (community == null) {
-			List<CommunityReferenceDto> duplicates = getByName(dto.getName(), dto.getDistrict(), true);
-			if (!duplicates.isEmpty()) {
-				if (allowMerge) {
-					String uuid = duplicates.get(0).getUuid();
-					community = service.getByUuid(uuid);
-					CommunityDto dtoToMerge = getByUuid(uuid);
-					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
-				} else {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCommunityAlreadyExists));
-				}
-			}
-		}
-		community = fillOrBuildEntity(dto, community, true);
-		service.ensurePersisted(community);
-		return toDto(community);
+	protected List<Community> findDuplicates(CommunityDto dto) {
+		return service.getByName(dto.getName(), districtService.getByReferenceDto(dto.getDistrict()), true);
 	}
 
 	@Override
@@ -350,7 +323,8 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		return dto;
 	}
 
-	private CommunityDto toDto(Community entity) {
+	@Override
+	public CommunityDto toDto(Community entity) {
 
 		if (entity == null) {
 			return null;
@@ -368,8 +342,8 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		return dto;
 	}
 
-	private Community fillOrBuildEntity(@NotNull CommunityDto source, Community target, boolean checkChangeDate) {
-
+	@Override
+	protected Community fillOrBuildEntity(@NotNull CommunityDto source, Community target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Community::new, checkChangeDate);
 
 		target.setName(source.getName());
@@ -377,7 +351,6 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
-
 		return target;
 	}
 

@@ -70,7 +70,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "DistrictFacade")
-public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, DistrictService> implements DistrictFacade {
+public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, DistrictDto, DistrictService, DistrictCriteria> implements DistrictFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -94,21 +94,21 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 
 	@Override
 	public List<DistrictReferenceDto> getAllActiveAsReference() {
-		return service.getAllActive(District.NAME, true).stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return service.getAllActive(District.NAME, true).stream().map(DistrictFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<DistrictReferenceDto> getAllActiveByArea(String areaUuid) {
 
 		Area area = areaService.getByUuid(areaUuid);
-		return service.getAllActiveByArea(area).stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return service.getAllActiveByArea(area).stream().map(DistrictFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<DistrictReferenceDto> getAllActiveByRegion(String regionUuid) {
 
 		Region region = regionService.getByUuid(regionUuid);
-		return region.getDistricts().stream().filter(d -> !d.isArchived()).map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return region.getDistricts().stream().filter(d -> !d.isArchived()).map(DistrictFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -149,11 +149,6 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 	}
 
 	@Override
-	public DistrictDto getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
-	}
-
-	@Override
 	public List<DistrictIndexDto> getIndexList(DistrictCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -170,8 +165,8 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 			cq.where(filter);
 		}
 
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
+		if (sortProperties != null && !sortProperties.isEmpty()) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
@@ -250,7 +245,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 
 	@Override
 	public List<DistrictDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -283,37 +278,13 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 	}
 
 	@Override
-	public DistrictDto save(@Valid DistrictDto dto) throws ValidationRuntimeException {
-		return save(dto, false);
+	public DistrictDto save(@Valid DistrictDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
+		return save(dtoToSave, allowMerge, Validations.importDistrictAlreadyExists);
 	}
 
 	@Override
-	public DistrictDto save(@Valid DistrictDto dto, boolean allowMerge) throws ValidationRuntimeException {
-		checkInfraDataLocked();
-
-		if (dto.getRegion() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
-		}
-
-		District district = service.getByUuid(dto.getUuid());
-
-		if (district == null) {
-			List<DistrictReferenceDto> duplicates = getByName(dto.getName(), dto.getRegion(), true);
-			if (!duplicates.isEmpty()) {
-				if (allowMerge) {
-					String uuid = duplicates.get(0).getUuid();
-					district = service.getByUuid(uuid);
-					DistrictDto dtoToMerge = getDistrictByUuid(uuid);
-					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
-				} else {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importDistrictAlreadyExists));
-				}
-			}
-		}
-
-		district = fillOrBuildEntity(dto, district, true);
-		service.ensurePersisted(district);
-		return toDto(district);
+	protected List<District> findDuplicates(DistrictDto dto) {
+		return service.getByName(dto.getName(), regionService.getByReferenceDto(dto.getRegion()), true);
 	}
 
 	@Override
@@ -381,8 +352,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 			return null;
 		}
 
-		DistrictReferenceDto dto = new DistrictReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
-		return dto;
+		return new DistrictReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
 	}
 
 	public DistrictDto toDto(District entity) {
@@ -423,7 +393,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		return dto;
 	}
 
-	private District fillOrBuildEntity(@NotNull DistrictDto source, District target, boolean checkChangeDate) {
+	protected District fillOrBuildEntity(@NotNull DistrictDto source, District target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, District::new, checkChangeDate);
 
@@ -433,7 +403,6 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
-
 		return target;
 	}
 

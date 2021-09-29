@@ -72,7 +72,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "RegionFacade")
-public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionService> implements RegionFacade {
+public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto, RegionService, RegionCriteria> implements RegionFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -251,11 +251,6 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 	}
 
 	@Override
-	public RegionDto getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
-	}
-
-	@Override
 	public List<RegionDto> getByUuids(List<String> uuids) {
 		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
@@ -338,32 +333,13 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 	}
 
 	@Override
-	public RegionDto save(@Valid RegionDto dto) throws ValidationRuntimeException {
-		return save(dto, false);
+	public RegionDto save(@Valid RegionDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
+		return save(dtoToSave, allowMerge, Validations.importRegionAlreadyExists);
 	}
 
 	@Override
-	public RegionDto save(@Valid RegionDto dto, boolean allowMerge) throws ValidationRuntimeException {
-		checkInfraDataLocked();
-
-		Region region = service.getByUuid(dto.getUuid());
-
-		if (region == null) {
-			List<Region> duplicates = service.getByName(dto.getName(), true);
-			if (!duplicates.isEmpty()) {
-				if (allowMerge) {
-					region = duplicates.get(0);
-					RegionDto dtoToMerge = getByUuid(region.getUuid());
-					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
-				} else {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importRegionAlreadyExists));
-				}
-			}
-		}
-
-		region = fillOrBuildEntity(dto, region, true);
-		service.ensurePersisted(region);
-		return toDto(region);
+	protected List<Region> findDuplicates(RegionDto dto) {
+		return service.getByName(dto.getName(), true);
 	}
 
 	@Override
@@ -396,7 +372,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 		return em.createQuery(cq).getResultList().stream().map(RegionFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
-	private Region fillOrBuildEntity(@NotNull RegionDto source, Region target, boolean checkChangeDate) {
+	protected Region fillOrBuildEntity(@NotNull RegionDto source, Region target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, Region::new, checkChangeDate);
 

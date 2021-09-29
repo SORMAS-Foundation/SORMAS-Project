@@ -70,7 +70,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "CountryFacade")
-public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, CountryService> implements CountryFacade {
+public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, CountryDto, CountryService, CountryCriteria> implements CountryFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -112,7 +112,7 @@ public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, Country
 	@Override
 	public List<CountryReferenceDto> getAllActiveBySubcontinent(String uuid) {
 		Subcontinent subcontinent = subcontinentService.getByUuid(uuid);
-		return subcontinent.getCountries().stream().filter(d -> !d.isArchived()).map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return subcontinent.getCountries().stream().filter(d -> !d.isArchived()).map(CountryFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, Country
 		Continent continent = continentService.getByUuid(uuid);
 		return continent.getSubcontinents()
 			.stream()
-			.flatMap(subcontinent -> subcontinent.getCountries().stream().filter(d -> !d.isArchived()).map(f -> toReferenceDto(f)))
+			.flatMap(subcontinent -> subcontinent.getCountries().stream().filter(d -> !d.isArchived()).map(CountryFacadeEjb::toReferenceDto))
 			.collect(Collectors.toList());
 	}
 
@@ -140,7 +140,7 @@ public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, Country
 			cq.where(filter);
 		}
 
-		if (sortProperties != null && sortProperties.size() > 0) {
+		if (sortProperties != null && !sortProperties.isEmpty()) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
@@ -171,6 +171,7 @@ public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, Country
 		return QueryHelper.getResultList(em, cq, first, max, this::toIndexDto);
 	}
 
+	@Override
 	public Page<CountryIndexDto> getIndexPage(CountryCriteria countryCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
 		List<CountryIndexDto> countryIndexList = getIndexList(countryCriteria, offset, size, sortProperties);
 		long totalElementCount = count(countryCriteria);
@@ -198,37 +199,32 @@ public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, Country
 	}
 
 	@Override
-	public CountryDto save(@Valid CountryDto dto) throws ValidationRuntimeException {
-		return save(dto, false);
-	}
-
-	@Override
-	public CountryDto save(@Valid CountryDto dto, boolean allowMerge) throws ValidationRuntimeException {
+	public CountryDto save(@Valid CountryDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
 		checkInfraDataLocked();
-		
-		if (StringUtils.isBlank(dto.getIsoCode())) {
-			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
-		}
 
-		Country country = service.getByUuid(dto.getUuid());
+		Country country = service.getByUuid(dtoToSave.getUuid());
 
 		if (country == null) {
-			Optional<Country> byIsoCode = service.getByIsoCode(dto.getIsoCode(), true);
-			Optional<Country> byUnoCode = service.getByUnoCode(dto.getUnoCode(), true);
+			Optional<Country> byIsoCode = service.getByIsoCode(dtoToSave.getIsoCode(), true);
+			Optional<Country> byUnoCode = service.getByUnoCode(dtoToSave.getUnoCode(), true);
 			if (byIsoCode.isPresent() || byUnoCode.isPresent()) {
 				if (allowMerge) {
-					country = byIsoCode.isPresent() ? byIsoCode.get() : byUnoCode.get();
+					// todo no merging?
+					country = byIsoCode.orElseGet(byUnoCode::get);
 					CountryDto dtoToMerge = getCountryByUuid(country.getUuid());
-					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
+					dtoToSave = DtoHelper.copyDtoValues(dtoToMerge, dtoToSave, true);
 				} else {
 					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCountryAlreadyExists));
 				}
 			}
 		}
 
-		country = fillOrBuildEntity(dto, country, true);
-		service.ensurePersisted(country);
-		return toDto(country);
+		return persist(dtoToSave, country);
+	}
+
+	@Override
+	protected List<Country> findDuplicates(CountryDto dto) {
+		return Collections.emptyList();
 	}
 
 	public static CountryReferenceDto toReferenceDto(Country entity) {
@@ -251,6 +247,7 @@ public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, Country
 			entity.getIsoCode());
 	}
 
+	@Override
 	public CountryDto toDto(Country entity) {
 		if (entity == null) {
 			return null;
@@ -290,15 +287,18 @@ public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, Country
 		return dto;
 	}
 
+	@Override
 	public List<CountryReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
 		return service.getByExternalId(externalId, includeArchived).stream().map(CountryFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
+	@Override
 	public List<CountryReferenceDto> getReferencesByName(String caption, boolean includeArchived) {
 		return service.getByDefaultName(caption, includeArchived).stream().map(CountryFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
-	private Country fillOrBuildEntity(@NotNull CountryDto source, Country target, boolean checkChangeDate) {
+	@Override
+	protected Country fillOrBuildEntity(@NotNull CountryDto source, Country target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Country::new, checkChangeDate);
 
 		target.setDefaultName(source.getDefaultName());
@@ -310,7 +310,6 @@ public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, Country
 		if (subcontinent != null) {
 			target.setSubcontinent(subcontinentService.getByUuid(subcontinent.getUuid()));
 		}
-
 		return target;
 	}
 
@@ -329,11 +328,6 @@ public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, Country
 		}
 
 		return em.createQuery(cq).getResultList();
-	}
-
-	@Override
-	public CountryDto getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
 	}
 
 	@Override

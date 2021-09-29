@@ -40,7 +40,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
@@ -50,7 +49,6 @@ import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentIndexDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import de.symeda.sormas.backend.infrastructure.continent.Continent;
@@ -63,7 +61,8 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "SubcontinentFacade")
-public class SubcontinentFacadeEjb extends AbstractInfrastructureEjb<Subcontinent, SubcontinentService> implements SubcontinentFacade {
+public class SubcontinentFacadeEjb extends AbstractInfrastructureEjb<Subcontinent, SubcontinentDto, SubcontinentService, SubcontinentCriteria>
+	implements SubcontinentFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -139,11 +138,6 @@ public class SubcontinentFacadeEjb extends AbstractInfrastructureEjb<Subcontinen
 	}
 
 	@Override
-	public SubcontinentDto getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
-	}
-
-	@Override
 	public List<SubcontinentIndexDto> getIndexList(SubcontinentCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Subcontinent> cq = cb.createQuery(Subcontinent.class);
@@ -159,7 +153,7 @@ public class SubcontinentFacadeEjb extends AbstractInfrastructureEjb<Subcontinen
 			cq.where(filter);
 		}
 
-		if (sortProperties != null && sortProperties.size() > 0) {
+		if (sortProperties != null && !sortProperties.isEmpty()) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
@@ -220,34 +214,14 @@ public class SubcontinentFacadeEjb extends AbstractInfrastructureEjb<Subcontinen
 	}
 
 	@Override
-	public SubcontinentDto save(@Valid SubcontinentDto dto) {
-		return save(dto, false);
+	public SubcontinentDto save(@Valid SubcontinentDto dtoToSave, boolean allowMerge) {
+		checkInfraDataLocked();
+		return save(dtoToSave, allowMerge, Validations.importSubcontinentAlreadyExists);
 	}
 
 	@Override
-	public SubcontinentDto save(@Valid SubcontinentDto dto, boolean allowMerge) {
-		checkInfraDataLocked();
-
-		Subcontinent subcontinent = service.getByUuid(dto.getUuid());
-
-		if (subcontinent == null) {
-			List<SubcontinentReferenceDto> duplicates = getByDefaultName(dto.getDefaultName(), true);
-			if (!duplicates.isEmpty()) {
-				if (allowMerge) {
-					String uuid = duplicates.get(0).getUuid();
-					subcontinent = service.getByUuid(uuid);
-					SubcontinentDto dtoToMerge = getByUuid(uuid);
-					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
-				} else {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importSubcontinentAlreadyExists));
-				}
-			}
-		}
-
-		subcontinent = fillOrBuildEntity(dto, subcontinent, true);
-		service.ensurePersisted(subcontinent);
-
-		return toDto(subcontinent);
+	protected List<Subcontinent> findDuplicates(SubcontinentDto dto) {
+		return service.getByDefaultName(dto.getDefaultName(), true);
 	}
 
 	@Override
@@ -296,14 +270,13 @@ public class SubcontinentFacadeEjb extends AbstractInfrastructureEjb<Subcontinen
 		return service.getByDefaultName(caption, includeArchived).stream().map(SubcontinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
-	private Subcontinent fillOrBuildEntity(@NotNull SubcontinentDto source, Subcontinent target, boolean checkChangeDate) {
+	protected Subcontinent fillOrBuildEntity(@NotNull SubcontinentDto source, Subcontinent target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Subcontinent::new, checkChangeDate);
 
 		target.setDefaultName(source.getDefaultName());
 		target.setArchived(source.isArchived());
 		target.setExternalId(source.getExternalId());
 		target.setContinent(continentService.getByReferenceDto(source.getContinent()));
-
 		return target;
 	}
 

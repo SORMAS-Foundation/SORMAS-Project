@@ -1,6 +1,14 @@
 package de.symeda.sormas.backend.common;
 
-public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, SRV extends AdoServiceWithUserFilter<ADO>> {
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.backend.util.DtoHelper;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
+// todo should we use BaseAdoService?
+public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO extends EntityDto, SRV extends AdoServiceWithUserFilter<ADO>> {
 
 	protected SRV service;
 
@@ -18,4 +26,35 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, SRV exte
 	public abstract void dearchive(String uuid);
 
 	// FIXME(@JonasCir) #6821: Add missing functions like save, getByUuid etc
+
+	public DTO save(@Valid DTO dtoToSave) {
+		return save(dtoToSave, false);
+	}
+
+	public abstract DTO save(@Valid DTO dtoToSave, boolean allowMerge);
+
+	// todo private
+	protected DTO persist(DTO dto, ADO entityToPersist) {
+		entityToPersist = fillOrBuildEntity(dto, entityToPersist, true);
+		service.ensurePersisted(entityToPersist);
+		return toDto(entityToPersist);
+	}
+
+	protected DTO mergeAndSave(DTO dtoToSave, List<ADO> duplicates) {
+		ADO existingEntity = duplicates.get(0);
+		DTO existingDto = toDto(existingEntity);
+		DtoHelper.copyDtoValues(existingDto, dtoToSave, true);
+		return persist(dtoToSave, existingEntity);
+
+	}
+
+	public DTO getByUuid(String uuid) {
+		return toDto(service.getByUuid(uuid));
+	}
+
+	protected abstract List<ADO> findDuplicates(DTO dto);
+
+	protected abstract ADO fillOrBuildEntity(@NotNull DTO source, ADO target, boolean checkChangeDate);
+
+	public abstract DTO toDto(ADO ado);
 }
