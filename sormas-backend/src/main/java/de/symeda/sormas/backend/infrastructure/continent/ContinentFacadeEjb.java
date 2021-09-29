@@ -54,6 +54,7 @@ import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -75,8 +76,8 @@ public class ContinentFacadeEjb
 	}
 
 	@Inject
-	protected ContinentFacadeEjb(ContinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(service, featureConfiguration);
+	protected ContinentFacadeEjb(ContinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
+		super(service, featureConfiguration, userService);
 	}
 
 	public static ContinentReferenceDto toReferenceDto(Continent entity) {
@@ -166,16 +167,6 @@ public class ContinentFacadeEjb
 	}
 
 	@Override
-	public List<ContinentDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<String> getAllUuids() {
-		return service.getAllUuids();
-	}
-
-	@Override
 	public List<ContinentReferenceDto> getAllActiveAsReference() {
 		return service.getAllActive(Continent.DEFAULT_NAME, true)
 			.stream()
@@ -254,8 +245,11 @@ public class ContinentFacadeEjb
 		}
 
 		@Inject
-		protected ContinentFacadeEjbLocal(ContinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-			super(service, featureConfiguration);
+		protected ContinentFacadeEjbLocal(
+			ContinentService service,
+			FeatureConfigurationFacadeEjbLocal featureConfiguration,
+			UserService userService) {
+			super(service, featureConfiguration, userService);
 		}
 	}
 }

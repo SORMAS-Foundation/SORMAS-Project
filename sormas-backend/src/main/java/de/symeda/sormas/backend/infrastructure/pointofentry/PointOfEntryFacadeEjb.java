@@ -2,7 +2,6 @@ package de.symeda.sormas.backend.infrastructure.pointofentry;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,12 +20,12 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import org.apache.commons.collections.CollectionUtils;
+import de.symeda.sormas.backend.user.UserService;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.common.Page;
@@ -48,7 +47,6 @@ import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -61,22 +59,19 @@ public class PointOfEntryFacadeEjb
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
-
 	@EJB
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
 	@EJB
 	private DistrictFacadeEjbLocal districtFacade;
-	@EJB
-	private UserService userService;
 
 	public PointOfEntryFacadeEjb() {
 	}
 
 	@Inject
-	protected PointOfEntryFacadeEjb(PointOfEntryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(service, featureConfiguration);
+	protected PointOfEntryFacadeEjb(PointOfEntryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
+		super(service, featureConfiguration, userService);
 	}
 
 	public static PointOfEntryReferenceDto toReferenceDto(PointOfEntry entity) {
@@ -140,20 +135,6 @@ public class PointOfEntryFacadeEjb
 			root.get(PointOfEntry.LONGITUDE),
 			root.get(PointOfEntry.ACTIVE),
 			root.get(PointOfEntry.EXTERNAL_ID));
-	}
-
-	@Override
-	public List<String> getAllUuids() {
-
-		if (userService.getCurrentUser() == null) {
-			return Collections.emptyList();
-		}
-		return service.getAllUuids();
-	}
-
-	@Override
-	public List<PointOfEntryDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -374,8 +355,11 @@ public class PointOfEntryFacadeEjb
 		}
 
 		@Inject
-		protected PointOfEntryFacadeEjbLocal(PointOfEntryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-			super(service, featureConfiguration);
+		protected PointOfEntryFacadeEjbLocal(
+			PointOfEntryService service,
+			FeatureConfigurationFacadeEjbLocal featureConfiguration,
+			UserService userService) {
+			super(service, featureConfiguration, userService);
 		}
 	}
 }

@@ -16,7 +16,6 @@ package de.symeda.sormas.backend.infrastructure.region;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -76,9 +75,6 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
-
-	@EJB
-	private UserService userService;
 	@EJB
 	private PopulationDataFacadeEjbLocal populationDataFacade;
 	@EJB
@@ -92,8 +88,8 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 	}
 
 	@Inject
-	protected RegionFacadeEjb(RegionService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(service, featureConfiguration);
+	protected RegionFacadeEjb(RegionService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
+		super(service, featureConfiguration, userService);
 	}
 
 	@Override
@@ -217,21 +213,6 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 		List<RegionIndexDto> regionIndexList = getIndexList(regionCriteria, offset, size, sortProperties);
 		long totalElementCount = count(regionCriteria);
 		return new Page<>(regionIndexList, offset, size, totalElementCount);
-	}
-
-	@Override
-	public List<String> getAllUuids() {
-
-		if (userService.getCurrentUser() == null) {
-			return Collections.emptyList();
-		}
-
-		return service.getAllUuids();
-	}
-
-	@Override
-	public List<RegionDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -375,8 +356,8 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 		}
 
 		@Inject
-		protected RegionFacadeEjbLocal(RegionService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-			super(service, featureConfiguration);
+		protected RegionFacadeEjbLocal(RegionService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
+			super(service, featureConfiguration, userService);
 		}
 	}
 }

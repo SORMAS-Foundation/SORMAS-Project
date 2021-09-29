@@ -16,7 +16,6 @@ package de.symeda.sormas.backend.infrastructure.community;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -69,9 +68,6 @@ public class CommunityFacadeEjb
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
-
-	@EJB
-	private UserService userService;
 	@EJB
 	private DistrictService districtService;
 
@@ -79,8 +75,8 @@ public class CommunityFacadeEjb
 	}
 
 	@Inject
-	protected CommunityFacadeEjb(CommunityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(service, featureConfiguration);
+	protected CommunityFacadeEjb(CommunityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
+		super(service, featureConfiguration, userService);
 	}
 
 	@Override
@@ -188,21 +184,6 @@ public class CommunityFacadeEjb
 		List<CommunityDto> communityList = getIndexList(communityCriteria, offset, size, sortProperties);
 		long totalElementCount = count(communityCriteria);
 		return new Page<>(communityList, offset, size, totalElementCount);
-	}
-
-	@Override
-	public List<String> getAllUuids() {
-
-		if (userService.getCurrentUser() == null) {
-			return Collections.emptyList();
-		}
-
-		return service.getAllUuids();
-	}
-
-	@Override
-	public List<CommunityDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -338,8 +319,11 @@ public class CommunityFacadeEjb
 		}
 
 		@Inject
-		protected CommunityFacadeEjbLocal(CommunityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-			super(service, featureConfiguration);
+		protected CommunityFacadeEjbLocal(
+			CommunityService service,
+			FeatureConfigurationFacadeEjbLocal featureConfiguration,
+			UserService userService) {
+			super(service, featureConfiguration, userService);
 		}
 	}
 }

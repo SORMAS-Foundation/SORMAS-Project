@@ -16,7 +16,6 @@ package de.symeda.sormas.backend.infrastructure.district;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -75,9 +74,6 @@ public class DistrictFacadeEjb
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
-
-	@EJB
-	private UserService userService;
 	@EJB
 	private AreaService areaService;
 	@EJB
@@ -89,8 +85,8 @@ public class DistrictFacadeEjb
 	}
 
 	@Inject
-	protected DistrictFacadeEjb(DistrictService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(service, featureConfiguration);
+	protected DistrictFacadeEjb(DistrictService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
+		super(service, featureConfiguration, userService);
 	}
 
 	@Override
@@ -202,16 +198,6 @@ public class DistrictFacadeEjb
 	}
 
 	@Override
-	public List<String> getAllUuids() {
-
-		if (userService.getCurrentUser() == null) {
-			return Collections.emptyList();
-		}
-
-		return service.getAllUuids();
-	}
-
-	@Override
 	public int getCountByRegion(String regionUuid) {
 
 		Region region = regionService.getByUuid(regionUuid);
@@ -221,11 +207,6 @@ public class DistrictFacadeEjb
 	@Override
 	public DistrictDto getDistrictByUuid(String uuid) {
 		return toDto(service.getByUuid(uuid));
-	}
-
-	@Override
-	public List<DistrictDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -408,8 +389,8 @@ public class DistrictFacadeEjb
 		}
 
 		@Inject
-		protected DistrictFacadeEjbLocal(DistrictService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-			super(service, featureConfiguration);
+		protected DistrictFacadeEjbLocal(DistrictService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
+			super(service, featureConfiguration, userService);
 		}
 	}
 }

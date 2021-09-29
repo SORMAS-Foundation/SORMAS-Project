@@ -83,17 +83,14 @@ public class CountryFacadeEjb
 	private SubcontinentService subcontinentService;
 
 	@EJB
-	private UserService userService;
-
-	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 
 	public CountryFacadeEjb() {
 	}
 
 	@Inject
-	protected CountryFacadeEjb(CountryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(service, featureConfiguration);
+	protected CountryFacadeEjb(CountryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
+		super(service, featureConfiguration, userService);
 	}
 
 	@Override
@@ -320,19 +317,6 @@ public class CountryFacadeEjb
 	}
 
 	@Override
-	public List<CountryDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<String> getAllUuids() {
-		if (userService.getCurrentUser() == null) {
-			return Collections.emptyList();
-		}
-		return service.getAllUuids();
-	}
-
-	@Override
 	public List<CountryReferenceDto> getAllActiveAsReference() {
 		return service.getAllActive(Country.ISO_CODE, true)
 			.stream()
@@ -390,8 +374,8 @@ public class CountryFacadeEjb
 		}
 
 		@Inject
-		protected CountryFacadeEjbLocal(CountryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-			super(service, featureConfiguration);
+		protected CountryFacadeEjbLocal(CountryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
+			super(service, featureConfiguration, userService);
 		}
 	}
 }
