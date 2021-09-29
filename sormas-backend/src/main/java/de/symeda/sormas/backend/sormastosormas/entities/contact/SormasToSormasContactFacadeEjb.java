@@ -22,6 +22,7 @@ import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCont
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,9 +30,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import com.google.common.base.Functions;
-
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Strings;
@@ -130,11 +128,6 @@ public class SormasToSormasContactFacadeEjb
 	}
 
 	@Override
-	protected ValidationErrors validateSharedEntity(ContactDto entity) {
-		return validateSharedUuids(entity.getUuid(), entity.getCaze());
-	}
-
-	@Override
 	protected List<SormasToSormasShareInfo> getOrCreateShareInfos(Contact contact, SormasToSormasOptionsDto options, User user) {
 		String organizationId = options.getOrganization().getId();
 		SormasToSormasShareInfo eventShareInfo = contact.getSormasToSormasShares()
@@ -150,26 +143,7 @@ public class SormasToSormasContactFacadeEjb
 				.map(s -> ShareInfoHelper.createShareInfo(organizationId, s, SormasToSormasShareInfo::setSample));
 		}
 
-		return Stream.of(Stream.of(eventShareInfo), sampleShareInfos).flatMap(Functions.identity()).collect(Collectors.toList());
-	}
-
-	@Override
-	protected List<ContactDto> loadExistingEntities(List<String> uuids) {
-		return contactFacade.getByUuids(uuids);
-	}
-
-	private ValidationErrors validateSharedUuids(String uuid, CaseReferenceDto caze) {
-		ValidationErrors errors = new ValidationErrors();
-
-		if (contactFacade.exists(uuid)) {
-			errors.add(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasContactExists));
-		}
-
-		if (caze != null && !caseFacade.exists(caze.getUuid())) {
-			errors.add(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasContactCaseNotExists));
-		}
-
-		return errors;
+		return Stream.of(Stream.of(eventShareInfo), sampleShareInfos).flatMap(Function.identity()).collect(Collectors.toList());
 	}
 
 	@Override

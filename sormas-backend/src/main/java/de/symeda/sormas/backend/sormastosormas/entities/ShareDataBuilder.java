@@ -98,8 +98,6 @@ public class ShareDataBuilder {
 			if (s.getEventParticipant() != null) {
 				eventParticipants.add(eventParticipantShareDataBuilder.buildShareData(s.getEventParticipant(), requestInfo));
 			}
-
-			throw new RuntimeException("Unknown data in share info " + s.getUuid());
 		});
 
 		SormasToSormasDto dto = new SormasToSormasDto();
@@ -120,9 +118,6 @@ public class ShareDataBuilder {
 		List<SormasToSormasEventParticipantPreview> eventParticipants = new ArrayList<>();
 
 		requestInfo.getShares()
-			.stream()
-			// no preview for samples
-			.filter(s -> s.getSample() != null)
 			.forEach(s -> {
 				if (s.getCaze() != null) {
 					cases.add(caseShareDataBuilder.buildShareDataPreview(s.getCaze(), requestInfo));
@@ -130,7 +125,6 @@ public class ShareDataBuilder {
 
 				if (s.getContact() != null) {
 					contacts.add(contactShareDataBuilder.buildShareDataPreview(s.getContact(), requestInfo));
-
 				}
 
 				if (s.getEvent() != null) {
@@ -140,8 +134,6 @@ public class ShareDataBuilder {
 				if (s.getEventParticipant() != null) {
 					eventParticipants.add(eventParticipantShareDataBuilder.buildShareDataPreview(s.getEventParticipant(), requestInfo));
 				}
-
-				throw new RuntimeException("Unknown entity in share info " + s.getUuid());
 			});
 
 		return new ShareRequestPreviews(cases, contacts, events, eventParticipants);

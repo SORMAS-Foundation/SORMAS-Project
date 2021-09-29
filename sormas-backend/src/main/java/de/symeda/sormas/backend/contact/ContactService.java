@@ -201,7 +201,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Predicate dateFilter = changeDateFilter(cb, date, from);
 		dateFilter = cb.or(dateFilter, epiDataService.createChangeDateFilter(cb, from.join(Contact.EPI_DATA, JoinType.LEFT), date));
 		dateFilter = cb.or(dateFilter, healthConditionsService.createChangeDateFilter(cb, from.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT), date));
-		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SHARE_INFO_CONTACTS));
+		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SORMAS_TO_SORMAS_ORIGIN_INFO));
+		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SORMAS_TO_SORMAS_SHARES));
 
 		return dateFilter;
 	}

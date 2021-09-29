@@ -21,7 +21,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
@@ -33,20 +32,20 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
-import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessorHelper;
 
 @Stateless
 @LocalBean
-public class ReceivedContactProcessor
-	implements ReceivedDataProcessor<ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview> {
+public class ReceivedContactProcessor implements ReceivedDataProcessor<ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview> {
 
 	@EJB
 	private ReceivedDataProcessorHelper dataProcessorHelper;
 	@EJB
-	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
+	private ContactService contactService;
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 	@EJB
@@ -58,7 +57,7 @@ public class ReceivedContactProcessor
 		ContactDto contact = receivedContact.getEntity();
 		PersonDto person = receivedContact.getPerson();
 
-		ValidationErrors uuidError = validateSharedUuids(contact.getUuid(), contact.getCaze());
+		ValidationErrors uuidError = validateSharedUuid(contact.getUuid());
 		if (uuidError.hasError()) {
 			return uuidError;
 		}
@@ -68,7 +67,7 @@ public class ReceivedContactProcessor
 
 	@Override
 	public ValidationErrors processReceivedPreview(SormasToSormasContactPreview preview) {
-		ValidationErrors uuidError = validateSharedUuids(preview.getUuid(), preview.getCaze());
+		ValidationErrors uuidError = validateSharedUuid(preview.getUuid());
 		if (uuidError.hasError()) {
 			return uuidError;
 		}
@@ -99,15 +98,16 @@ public class ReceivedContactProcessor
 		return validationErrors;
 	}
 
-	private ValidationErrors validateSharedUuids(String uuid, CaseReferenceDto caze) {
+	private ValidationErrors validateSharedUuid(String uuid) {
 		ValidationErrors errors = new ValidationErrors();
 
-		if (contactFacade.exists(uuid)) {
-			errors.add(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasContactExists));
-		}
+		if (contactService.exists(
+			(cb, contactRoot) -> cb.and(
+				cb.equal(contactRoot.get(Contact.UUID), uuid),
+				cb.isNull(contactRoot.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+				cb.isEmpty(contactRoot.get(Contact.SORMAS_TO_SORMAS_SHARES))))) {
 
-		if (caze != null && !caseFacade.exists(caze.getUuid())) {
-			errors.add(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasContactCaseNotExists));
+			errors.add(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasContactExists));
 		}
 
 		return errors;

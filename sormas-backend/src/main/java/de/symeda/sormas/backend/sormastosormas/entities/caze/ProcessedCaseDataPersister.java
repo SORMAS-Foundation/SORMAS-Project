@@ -18,8 +18,6 @@ package de.symeda.sormas.backend.sormastosormas.entities.caze;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
 
-import java.util.function.Consumer;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -34,8 +32,6 @@ import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationEx
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
-import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersisterHelper;
-import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 
@@ -48,17 +44,16 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Sormas
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 	@EJB
-	private ProcessedDataPersisterHelper dataPersisterHelper;
-	@EJB
-	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
-	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
 
 	@Override
 	@Transactional(rollbackOn = {
 		Exception.class })
-	public void persistSharedData(SormasToSormasCaseDto processedData) throws SormasToSormasValidationException {
-		persistProcessedData(processedData, null, true);
+	public void persistSharedData(SormasToSormasCaseDto processedData, SormasToSormasOriginInfoDto originInfo)
+		throws SormasToSormasValidationException {
+		processedData.getEntity().setSormasToSormasOriginInfo(originInfo);
+
+		persistProcessedData(processedData, true);
 	}
 
 	@Override
@@ -67,11 +62,16 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Sormas
 	public void persistReturnedData(SormasToSormasCaseDto processedData, SormasToSormasOriginInfoDto originInfo)
 		throws SormasToSormasValidationException {
 
-		persistProcessedData(processedData, (caze) -> {
-			SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(caze.getUuid(), originInfo.getOrganizationId());
+		CaseDataDto caze = processedData.getEntity();
+		SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(caze.getUuid(), originInfo.getOrganizationId());
+		if (shareInfo != null) {
 			shareInfo.setOwnershipHandedOver(false);
 			shareInfoService.persist(shareInfo);
-		}, false);
+		} else {
+			caze.setSormasToSormasOriginInfo(originInfo);
+		}
+
+		persistProcessedData(processedData, false);
 	}
 
 	@Override
@@ -79,49 +79,35 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Sormas
 		Exception.class })
 	public void persistSyncData(SormasToSormasCaseDto processedData, SormasToSormasOriginInfoDto originInfo, ShareTreeCriteria shareTreeCriteria)
 		throws SormasToSormasValidationException {
-		persistProcessedData(processedData, (caze) -> {
-			SormasToSormasOriginInfoDto caseOriginInfo = caze.getSormasToSormasOriginInfo();
-			if (caseOriginInfo != null) {
-				caseOriginInfo.setOwnershipHandedOver(originInfo.isOwnershipHandedOver());
+		CaseDataDto caze = processedData.getEntity();
+		SormasToSormasShareInfo caseShareInfo = shareInfoService.getByCaseAndOrganization(caze.getUuid(), originInfo.getOrganizationId());
 
-				originInfoFacade.saveOriginInfo(caseOriginInfo);
-			} else {
-				SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(caze.getUuid(), originInfo.getOrganizationId());
+		if (caseShareInfo == null) {
+			caze.setSormasToSormasOriginInfo(originInfo);
+		}
 
-				shareInfo.setOwnershipHandedOver(!originInfo.isOwnershipHandedOver());
-
-				shareInfoService.ensurePersisted(shareInfo);
-			}
-		}, false);
-
-		caseFacade.syncSharesAsync(shareTreeCriteria);
+		persistProcessedData(processedData, false);
 	}
 
-	private void persistProcessedData(SormasToSormasCaseDto caseData, Consumer<CaseDataDto> afterSaveCase, boolean isCreate)
-		throws SormasToSormasValidationException {
+	private void persistProcessedData(SormasToSormasCaseDto caseData, boolean isCreate) throws SormasToSormasValidationException {
 		CaseDataDto caze = caseData.getEntity();
 
-		final CaseDataDto savedCase;
 		if (isCreate) {
 			// save person first during creation
 			handleValidationError(
 				() -> personFacade.savePerson(caseData.getPerson(), false, false),
 				Captions.Person,
 				buildCaseValidationGroupName(caze));
-			savedCase =
-				handleValidationError(() -> caseFacade.saveCase(caze, true, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
+
+			handleValidationError(() -> caseFacade.saveCase(caze, true, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
 		} else {
 			//save case first during update
-			savedCase =
-				handleValidationError(() -> caseFacade.saveCase(caze, true, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
+
+			handleValidationError(() -> caseFacade.saveCase(caze, true, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
 			handleValidationError(
 				() -> personFacade.savePerson(caseData.getPerson(), false, false),
 				Captions.Person,
 				buildCaseValidationGroupName(caze));
-		}
-
-		if (afterSaveCase != null) {
-			afterSaveCase.accept(savedCase);
 		}
 	}
 }

@@ -61,7 +61,8 @@ public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 	public static final String SAMPLES = "samples";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
-	public static final String SHARE_INFO_EVENT_PARTICIPANTS = "shareInfoEventParticipants";
+	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
 	private User reportingUser;
@@ -167,7 +168,7 @@ public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = SormasToSormasShareInfo.EVENT_PARTICIPANT, fetch = FetchType.LAZY)
 	@AuditedIgnore
 	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
 		return sormasToSormasShares;

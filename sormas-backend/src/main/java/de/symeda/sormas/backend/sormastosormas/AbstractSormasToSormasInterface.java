@@ -39,7 +39,6 @@ import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
@@ -258,7 +257,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		SormasToSormasEncryptedDataDto encryptedData =
 			sormasToSormasRestClient.post(organizationId, requestGetDataEndpoint, uuid, SormasToSormasEncryptedDataDto.class);
 
-		saveSharedEntities(encryptedData, shareRequest.getOriginInfo());
+		decryptAndPersist(encryptedData, data -> processedDataPersister.persistSharedData(data, shareRequest.getOriginInfo()));
 
 		// notify the sender that the request has been accepted
 		sormasToSormasRestClient.post(organizationId, REQUEST_ACCEPTED_ENDPOINT, uuid, null);
@@ -307,9 +306,9 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	}
 
 	@Override
-	public void saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData, SormasToSormasOriginInfoDto originInfo)
+	public void saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData)
 		throws SormasToSormasException, SormasToSormasValidationException {
-		decryptAndPersist(encryptedData, data -> processedDataPersister.persistSharedData(data), originInfo);
+		decryptAndPersist(encryptedData, data -> processedDataPersister.persistSharedData(data, data.getOriginInfo()));
 	}
 
 	@Override
@@ -359,7 +358,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	@Override
 	public void saveReturnedEntity(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
-		decryptAndPersist(encryptedData, data -> processedDataPersister.persistReturnedData(data, data.getOriginInfo()), null);
+		decryptAndPersist(encryptedData, data -> processedDataPersister.persistReturnedData(data, data.getOriginInfo()));
 	}
 
 	@Override
@@ -377,14 +376,18 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 					LOGGER.error("Failed to sync to [{}]", originInfo.getOrganizationId(), e);
 				}
 			},
-			((entity, shareRequestInfo, reShareCriteria, noForward) -> {
+			((entity, shareInfo, reShareCriteria, noForward) -> {
 				if (!noForward) {
 					// prevent stopping the iteration through the shares because of a failed sync operation
 					// sync with as much servers as possible
 					try {
-						syncEntityToShares(entity, shareRequestInfo, reShareCriteria, currentUser);
+						ShareRequestInfo latestRequestInfo = ShareInfoHelper
+							.getLatestRequest(shareInfo.getRequests().stream().filter(r -> r.getRequestStatus() == ShareRequestStatus.ACCEPTED))
+							.orElse(null);
+
+						syncEntityToShares(entity, latestRequestInfo, reShareCriteria, currentUser);
 					} catch (Exception e) {
-						LOGGER.error("Failed to sync to [{}]", shareRequestInfo.getShares().get(0).getOrganizationId(), e);
+						LOGGER.error("Failed to sync to [{}]", shareInfo.getOrganizationId(), e);
 					}
 				}
 			}));
@@ -396,8 +399,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		perisist(
 			syncData.getShareData(),
-			data -> processedDataPersister.persistSyncData(data, syncData.getShareData().getOriginInfo(), syncData.getCriteria()),
-			null);
+			data -> processedDataPersister.persistSyncData(data, syncData.getShareData().getOriginInfo(), syncData.getCriteria()));
 	}
 
 	@Override
@@ -421,16 +423,15 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	private void decryptAndPersist(
 		SormasToSormasEncryptedDataDto encryptedData,
-		Persister<SormasToSormasDto> persister,
-		SormasToSormasOriginInfoDto originInfo)
+		Persister<SormasToSormasDto> persister)
 		throws SormasToSormasException, SormasToSormasValidationException {
 
 		SormasToSormasDto receivedData = sormasToSormasEncryptionEjb.decryptAndVerify(encryptedData, SormasToSormasDto.class);
 
-		perisist(receivedData, persister, originInfo);
+		perisist(receivedData, persister);
 	}
 
-	private void perisist(@Valid SormasToSormasDto receivedData, Persister<SormasToSormasDto> persister, SormasToSormasOriginInfoDto originInfo)
+	private void perisist(@Valid SormasToSormasDto receivedData, Persister<SormasToSormasDto> persister)
 		throws SormasToSormasValidationException {
 		List<ValidationErrors> validationErrors = receivedDataProcessor.processReceivedData(receivedData);
 
@@ -454,21 +455,6 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	protected abstract Class<S[]> getShareDataClass();
 
 	protected abstract void validateEntitiesBeforeShare(List<ADO> entities, boolean handOverOwnership) throws SormasToSormasException;
-
-	protected abstract ValidationErrors validateSharedEntity(DTO entity);
-
-	protected abstract List<DTO> loadExistingEntities(List<String> uuids);
-
-	protected ValidationErrors validateExistingEntity(DTO entity, List<DTO> existingEntities) {
-		ValidationErrors errors = new ValidationErrors();
-
-		if (existingEntities.stream().noneMatch(e -> e.getUuid().equals(entity.getUuid()))) {
-			errors.add(new ValidationErrorGroup(entityCaptionTag), new ValidationErrorMessage(Validations.sormasToSormasReturnEntityNotExists));
-
-		}
-
-		return errors;
-	}
 
 	private void syncEntityToShares(ADO entity, ShareRequestInfo requestInfo, ShareTreeCriteria criteria, User currentUser)
 		throws SormasToSormasException {
@@ -567,10 +553,9 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 				// stop iteration and fail in case of error
 				throw new RuntimeException("Failed to get all shares form server [" + originInfo.getOrganizationId() + "]", e);
 			}
-		}, (entity, shareRequestInfo, reShareCriteria, noForward) -> {
+		}, (entity, shareInfo, reShareCriteria, noForward) -> {
 			try {
 				List<SormasToSormasShareTree> reShares = Collections.emptyList();
-				SormasToSormasShareInfo shareInfo = shareRequestInfo.getShares().get(0);
 
 				if (!noForward) {
 					SormasToSormasEncryptedDataDto encryptedShares = sormasToSormasRestClient.post(
@@ -590,7 +575,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			} catch (SormasToSormasException e) {
 				// stop iteration and fail in case of error
 				throw new RuntimeException(
-					"Failed to get all shares form server [" + shareRequestInfo.getShares().get(0).getOrganizationId() + "]",
+					"Failed to get all shares form server [" + shareInfo.getOrganizationId() + "]",
 					e);
 			}
 		});
@@ -631,12 +616,9 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 				noForward = noForward || s.getOrganizationId().equals(originInfo.getOrganizationId());
 			}
 
-			ShareRequestInfo latestRequestInfo =
-				ShareInfoHelper.getLatestRequest(s.getRequests().stream().filter(r -> r.getRequestStatus() == ShareRequestStatus.ACCEPTED))
-					.orElse(null);
 			walkReShare.walk(
 				entity,
-				latestRequestInfo,
+				s,
 				new ShareTreeCriteria(criteria.getEntityUuid(), criteria.getExceptedOrganizationId(), true),
 				noForward);
 		}
@@ -649,7 +631,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	private interface WalkReShare<ADO> {
 
-		void walk(ADO entity, ShareRequestInfo shareRequestInfo, ShareTreeCriteria criteria, boolean noForward);
+		void walk(ADO entity, SormasToSormasShareInfo shareInfo, ShareTreeCriteria criteria, boolean noForward);
 	}
 
 	private SormasToSormasShareTree findParentShare(List<SormasToSormasShareTree> shares, String ownOrganizationId) {

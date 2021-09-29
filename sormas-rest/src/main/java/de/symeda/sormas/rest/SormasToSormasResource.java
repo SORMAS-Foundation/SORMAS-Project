@@ -75,7 +75,7 @@ public class SormasToSormasResource {
 	@POST
 	@Path(SormasToSormasApiConstants.CASE_ENDPOINT)
 	public Response saveSharedCase(@Valid SormasToSormasEncryptedDataDto sharedCases) {
-		return handleVoidRequest(() -> FacadeProvider.getSormasToSormasCaseFacade().saveSharedEntities(sharedCases, null));
+		return handleVoidRequest(() -> FacadeProvider.getSormasToSormasCaseFacade().saveSharedEntities(sharedCases));
 	}
 
 	@PUT
@@ -111,7 +111,7 @@ public class SormasToSormasResource {
 	@POST
 	@Path(SormasToSormasApiConstants.CONTACT_ENDPOINT)
 	public Response saveSharedContact(@Valid SormasToSormasEncryptedDataDto sharedContacts) {
-		return handleVoidRequest(() -> FacadeProvider.getSormasToSormasContactFacade().saveSharedEntities(sharedContacts, null));
+		return handleVoidRequest(() -> FacadeProvider.getSormasToSormasContactFacade().saveSharedEntities(sharedContacts));
 	}
 
 	@PUT
@@ -147,7 +147,7 @@ public class SormasToSormasResource {
 	@POST
 	@Path(SormasToSormasApiConstants.EVENT_ENDPOINT)
 	public Response saveSharedEvents(@Valid SormasToSormasEncryptedDataDto sharedEvents) {
-		return handleVoidRequest(() -> FacadeProvider.getSormasToSormasEventFacade().saveSharedEntities(sharedEvents, null));
+		return handleVoidRequest(() -> FacadeProvider.getSormasToSormasEventFacade().saveSharedEntities(sharedEvents));
 	}
 
 	@PUT

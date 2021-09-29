@@ -946,6 +946,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			.add(clinicalCourse, ClinicalCourse.HEALTH_CONDITIONS)
 			.add(casePath, Case.MATERNAL_HISTORY)
 			.add(casePath, Case.PORT_HEALTH_INFO)
+			.add(casePath, Case.SORMAS_TO_SORMAS_ORIGIN_INFO)
 			.add(casePath, Case.SORMAS_TO_SORMAS_SHARES);
 
 		if (includeExtendedChangeDateFilters) {

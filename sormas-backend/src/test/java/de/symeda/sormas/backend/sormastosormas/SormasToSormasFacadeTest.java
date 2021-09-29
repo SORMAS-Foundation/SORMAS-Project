@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.eq;
 
 import java.io.File;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
@@ -53,6 +54,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -142,7 +144,6 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 	}
 
 	protected SormasToSormasShareInfo createShareInfo(
-		User sender,
 		String serverId,
 		boolean ownershipHandedOver,
 		Consumer<SormasToSormasShareInfo> setTarget) {
@@ -153,11 +154,6 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		shareInfo.setOrganizationId(serverId);
 
 		setTarget.accept(shareInfo);
-
-		ShareRequestInfo requestInfo = new ShareRequestInfo();
-		requestInfo.setUuid(DataHelper.createUuid());
-		requestInfo.setSender(sender);
-		requestInfo.setShares(Collections.singletonList(shareInfo));
 
 		return shareInfo;
 	}
@@ -167,6 +163,15 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		String serverId,
 		boolean ownershipHandedOver,
 		Consumer<SormasToSormasShareInfo> setTarget) {
+		return createShareRequestInfo(sender, serverId, ownershipHandedOver, ShareRequestStatus.PENDING, setTarget);
+	}
+
+	protected ShareRequestInfo createShareRequestInfo(
+		User sender,
+		String serverId,
+		boolean ownershipHandedOver,
+		ShareRequestStatus status,
+		Consumer<SormasToSormasShareInfo> setTarget) {
 
 		SormasToSormasShareInfo shareInfo = new SormasToSormasShareInfo();
 
@@ -178,7 +183,9 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		ShareRequestInfo requestInfo = new ShareRequestInfo();
 		requestInfo.setUuid(DataHelper.createUuid());
 		requestInfo.setSender(sender);
-		requestInfo.setShares(Collections.singletonList(shareInfo));
+		requestInfo.setRequestStatus(status);
+		requestInfo.setShares(new ArrayList<>());
+		requestInfo.getShares().add(shareInfo);
 
 		return requestInfo;
 	}
@@ -219,7 +226,7 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 	}
 
 	protected void mockS2Snetwork() throws SormasToSormasException {
-		Mockito.when(MockProducer.getSormasToSormasClient().get(Matchers.anyString(),eq("/sormasToSormas/cert"), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasClient().get(Matchers.anyString(), eq("/sormasToSormas/cert"), Matchers.any()))
 			.thenAnswer(invocation -> {
 				if (invocation.getArgument(0, String.class).equals(DEFAULT_SERVER_ID)) {
 					mockDefaultServerAccess();

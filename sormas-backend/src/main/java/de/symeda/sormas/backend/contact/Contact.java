@@ -156,8 +156,8 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 	public static final String RESULTING_CASE = "resultingCase";
 	public static final String RETURNING_TRAVELER = "returningTraveler";
 	public static final String SAMPLES = "samples";
-	public static final String SHARE_INFO_CONTACTS = "shareInfoContacts";
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 	public static final String TASKS = "tasks";
 	public static final String TRACING_APP = "tracingApp";
 	public static final String TRACING_APP_DETAILS = "tracingAppDetails";
@@ -943,7 +943,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 	}
 
 	@Override
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = SormasToSormasShareInfo.CONTACT, fetch = FetchType.LAZY)
 	@AuditedIgnore
 	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
 		return sormasToSormasShares;

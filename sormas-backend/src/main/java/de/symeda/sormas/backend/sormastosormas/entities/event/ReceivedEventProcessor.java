@@ -31,7 +31,8 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.event.EventFacadeEjb;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessorHelper;
@@ -48,7 +49,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 	@EJB
 	private InfrastructureValidator infraValidator;
 	@EJB
-	private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
+	private EventService eventService;
 
 	@Override
 	public ValidationErrors processReceivedData(SormasToSormasEventDto receivedEvent, EventDto existingEvent) {
@@ -101,7 +102,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 				null,
 				null);
 
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, validationErrors, infrastructureData -> {
+		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Event, validationErrors, infrastructureData -> {
 			eventLocation.setContinent(infrastructureData.getContinent());
 			eventLocation.setSubcontinent(infrastructureData.getSubcontinent());
 			eventLocation.setCountry(infrastructureData.getCountry());
@@ -117,7 +118,11 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 	private ValidationErrors validateSharedUuid(String uuid) {
 		ValidationErrors errors = new ValidationErrors();
 
-		if (eventFacade.exists(uuid)) {
+		if (eventService.exists(
+			(cb, eventRoot) -> cb.and(
+				cb.equal(eventRoot.get(Event.UUID), uuid),
+				cb.isNull(eventRoot.get(Event.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+				cb.isEmpty(eventRoot.get(Event.SORMAS_TO_SORMAS_SHARES))))) {
 			errors.add(new ValidationErrorGroup(Captions.Event), new ValidationErrorMessage(Validations.sormasToSormasEventExists));
 		}
 

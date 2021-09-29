@@ -157,6 +157,7 @@ public interface Validations {
 	String sormasToSormasCountry = "sormasToSormasCountry";
 	String sormasToSormasDistrict = "sormasToSormasDistrict";
 	String sormasToSormasEventExists = "sormasToSormasEventExists";
+	String sormasToSormasEventParticipantExists = "sormasToSormasEventParticipantExists";
 	String sormasToSormasFacility = "sormasToSormasFacility";
 	String sormasToSormasInfrastructure = "sormasToSormasInfrastructure";
 	String sormasToSormasLabMessageExists = "sormasToSormasLabMessageExists";

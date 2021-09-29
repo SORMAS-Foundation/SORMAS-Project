@@ -22,12 +22,16 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessorHelper;
@@ -40,10 +44,18 @@ public class ReceivedSampleProcessor implements ReceivedDataProcessor<SampleDto,
 	private ReceivedDataProcessorHelper dataProcessorHelper;
 	@EJB
 	private InfrastructureValidator infraValidator;
+	@EJB
+	private SampleService sampleService;
 
 	@Override
 	public ValidationErrors processReceivedData(SormasToSormasSampleDto sharedData, SampleDto existingData) {
 		SampleDto sample = sharedData.getEntity();
+
+		ValidationErrors uuidError = validateSharedUuid(sample.getUuid());
+		if (uuidError.hasError()) {
+			return uuidError;
+		}
+
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		dataProcessorHelper.updateReportingUser(sample, existingData);
@@ -83,5 +95,19 @@ public class ReceivedSampleProcessor implements ReceivedDataProcessor<SampleDto,
 	@Override
 	public ValidationErrors processReceivedPreview(Void sharedPreview) {
 		throw new RuntimeException("Samples preview not yet implemented");
+	}
+
+	private ValidationErrors validateSharedUuid(String uuid) {
+		ValidationErrors errors = new ValidationErrors();
+
+		if (sampleService.exists(
+			(cb, sampleRoot) -> cb.and(
+				cb.equal(sampleRoot.get(Sample.UUID), uuid),
+				cb.isNull(sampleRoot.get(Sample.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+				cb.isEmpty(sampleRoot.get(Sample.SORMAS_TO_SORMAS_SHARES))))) {
+			errors.add(new ValidationErrorGroup(Captions.Sample), new ValidationErrorMessage(Validations.sormasToSormasSampleExists));
+		}
+
+		return errors;
 	}
 }

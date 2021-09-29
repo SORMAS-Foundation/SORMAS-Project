@@ -108,6 +108,8 @@ public class Sample extends CoreAdo implements SormasToSormasEntity {
 	public static final String PATHOGENTESTS = "pathogenTests";
 	public static final String SAMPLING_REASON = "samplingReason";
 	public static final String SAMPLING_REASON_DETAILS = "samplingReasonDetails";
+	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 
 	private Case associatedCase;
 	private Contact associatedContact;
@@ -598,7 +600,7 @@ public class Sample extends CoreAdo implements SormasToSormasEntity {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = SormasToSormasShareInfo.SAMPLE, fetch = FetchType.LAZY)
 	@AuditedIgnore
 	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
 		return sormasToSormasShares;

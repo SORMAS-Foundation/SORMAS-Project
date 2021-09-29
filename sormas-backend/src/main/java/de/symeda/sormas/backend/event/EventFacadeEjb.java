@@ -110,7 +110,6 @@ import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoEvent;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
@@ -914,8 +913,7 @@ public class EventFacadeEjb implements EventFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Event> eventRoot = cq.from(Event.class);
-		Join<ShareInfoEvent, SormasToSormasShareInfo> sormasToSormasJoin =
-			eventRoot.join(Event.SHARE_INFO_EVENTS, JoinType.LEFT).join(ShareInfoEvent.SHARE_INFO, JoinType.LEFT);
+		Join<Event, SormasToSormasShareInfo> sormasToSormasJoin = eventRoot.join(Event.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT);
 
 		cq.select(eventRoot.get(Event.UUID));
 		cq.where(cb.and(eventRoot.get(Event.UUID).in(eventUuids), cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));

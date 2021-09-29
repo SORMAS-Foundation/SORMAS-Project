@@ -23,14 +23,13 @@ import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCase
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-
-import com.google.common.base.Functions;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -134,11 +133,6 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	}
 
 	@Override
-	protected ValidationErrors validateSharedEntity(CaseDataDto entity) {
-		return validateSharedUuid(entity.getUuid());
-	}
-
-	@Override
 	protected List<SormasToSormasShareInfo> getOrCreateShareInfos(Case caze, SormasToSormasOptionsDto options, User user) {
 		String organizationId = options.getOrganization().getId();
 		SormasToSormasShareInfo eventShareInfo = caze.getSormasToSormasShares()
@@ -162,22 +156,8 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 		}
 
 		return Stream.of(Stream.of(eventShareInfo), eventParticipantShareInfos, sampleShareInfos)
-			.flatMap(Functions.identity())
+			.flatMap(Function.identity())
 			.collect(Collectors.toList());
-	}
-
-	@Override
-	protected List<CaseDataDto> loadExistingEntities(List<String> uuids) {
-		return caseFacade.getByUuids(uuids);
-	}
-
-	private ValidationErrors validateSharedUuid(String uuid) {
-		ValidationErrors errors = new ValidationErrors();
-		if (caseFacade.exists(uuid)) {
-			errors.add(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasCaseExists));
-		}
-
-		return errors;
 	}
 
 	@Override

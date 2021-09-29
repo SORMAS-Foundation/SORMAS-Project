@@ -38,14 +38,18 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
@@ -57,6 +61,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -203,8 +208,8 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
 		shareData.setContacts(Collections.singletonList(new SormasToSormasContactDto(person, contact)));
 
-		SormasToSormasEncryptedDataDto encryptedData = encryptShareDataAsArray(shareData);
-		getSormasToSormasContactFacade().saveSharedEntities(encryptedData, null);
+		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
+		getSormasToSormasContactFacade().saveSharedEntities(encryptedData);
 
 		ContactDto savedContact = getContactFacade().getContactByUuid(contact.getUuid());
 
@@ -240,8 +245,8 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 		shareData.setContacts(Collections.singletonList(new SormasToSormasContactDto(person, contact)));
 		shareData.setSamples(Collections.singletonList(sample));
 
-		SormasToSormasEncryptedDataDto encryptedData = encryptShareDataAsArray(shareData);
-		getSormasToSormasContactFacade().saveSharedEntities(encryptedData, null);
+		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
+		getSormasToSormasContactFacade().saveSharedEntities(encryptedData);
 
 		ContactDto savedContact = getContactFacade().getContactByUuid(contact.getUuid());
 		SampleDto savedSample = getSampleFacade().getSampleByUuid(sample.getEntity().getUuid());
@@ -315,13 +320,17 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 		PersonDto contactPerson = creator.createPerson();
 		ContactDto contact = creator.createContact(officer, contactPerson.toReference());
 		SampleDto sharedSample = creator.createSample(contact.toReference(), officer, rdcf.localRdcf.facility, null);
-		SampleDto newSample = creator.createSample(contact.toReference(), officer, rdcf.localRdcf.facility, null);
+		SampleDto newSample = createRemoteSample(contact.toReference(), officer, rdcf.localRdcf.facility);
 
 		User officerUser = getUserService().getByReferenceDto(officer);
-		getSormasToSormasShareInfoService().persist(
-			createShareInfo(officerUser, DEFAULT_SERVER_ID, true, i -> i.setContact(getContactService().getByReferenceDto(contact.toReference()))));
-		getSormasToSormasShareInfoService().persist(
-			createShareInfo(
+		getShareRequestInfoService().persist(
+			createShareRequestInfo(
+				officerUser,
+				DEFAULT_SERVER_ID,
+				true,
+				i -> i.setContact(getContactService().getByReferenceDto(contact.toReference()))));
+		getShareRequestInfoService().persist(
+			createShareRequestInfo(
 				officerUser,
 				DEFAULT_SERVER_ID,
 				true,
@@ -342,7 +351,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 				new SormasToSormasSampleDto(sharedSample, Collections.emptyList(), Collections.emptyList()),
 				new SormasToSormasSampleDto(newSample, Collections.emptyList(), Collections.emptyList())));
 
-		SormasToSormasEncryptedDataDto encryptedData = encryptShareDataAsArray(shareData);
+		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
 
 		getSormasToSormasContactFacade().saveReturnedEntity(encryptedData);
 
@@ -381,9 +390,10 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 				c.setSormasToSormasOriginInfo(originInfo);
 			});
 
-		getSormasToSormasShareInfoService().persist(createShareInfo(getUserService().getByUuid(officer.getUuid()), SECOND_SERVER_ID, false, i -> {
-			i.setContact(getContactService().getByUuid(contact.getUuid()));
-		}));
+		getShareRequestInfoService().persist(
+			createShareRequestInfo(getUserService().getByUuid(officer.getUuid()), SECOND_SERVER_ID, false, ShareRequestStatus.ACCEPTED, i -> {
+				i.setContact(getContactService().getByUuid(contact.getUuid()));
+			}));
 
 		contact.setAdditionalDetails("Test updated details");
 
@@ -461,5 +471,17 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 		exposure.setAnimalCondition(AnimalCondition.PROCESSED);
 		contact.getEpiData().getExposures().add(exposure);
 		return contact;
+	}
+
+	protected SampleDto createRemoteSample(ContactReferenceDto associatedContact, UserReferenceDto reportingUser, FacilityReferenceDto lab) {
+
+		SampleDto sample = SampleDto.build(reportingUser, associatedContact);
+		sample.setSampleDateTime(new Date());
+		sample.setReportDateTime(new Date());
+		sample.setSampleMaterial(SampleMaterial.BLOOD);
+		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
+		sample.setLab(getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+
+		return sample;
 	}
 }

@@ -18,11 +18,10 @@ package de.symeda.sormas.backend.sormastosormas.entities.eventparticipant;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventParticipantValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
 
-import java.util.function.Consumer;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -33,6 +32,8 @@ import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationEx
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 
 @Stateless
 @LocalBean
@@ -44,38 +45,64 @@ public class ProcessedEventParticipantDataPersister implements ProcessedDataPers
 	@EJB
 	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
 
+	@EJB
+	private SormasToSormasShareInfoService shareInfoService;
+
 	@Override
-	public void persistSharedData(SormasToSormasEventParticipantDto processedData) throws SormasToSormasValidationException {
-		persistEventParticipant(processedData, null);
+	@Transactional(rollbackOn = {
+		Exception.class })
+	public void persistSharedData(SormasToSormasEventParticipantDto processedData, SormasToSormasOriginInfoDto originInfo)
+		throws SormasToSormasValidationException {
+		processedData.getEntity().setSormasToSormasOriginInfo(originInfo);
+
+		persistEventParticipant(processedData);
 	}
 
 	@Override
+	@Transactional(rollbackOn = {
+		Exception.class })
 	public void persistReturnedData(SormasToSormasEventParticipantDto processedData, SormasToSormasOriginInfoDto originInfo)
 		throws SormasToSormasValidationException {
-		persistEventParticipant(processedData, null);
+		EventParticipantDto eventParticipant = processedData.getEntity();
+		SormasToSormasShareInfo eventParticipantShareInfo =
+			shareInfoService.getByEventParticipantAndOrganization(eventParticipant.getUuid(), originInfo.getOrganizationId());
+
+		if (eventParticipantShareInfo != null) {
+			eventParticipantShareInfo.setOwnershipHandedOver(false);
+			shareInfoService.persist(eventParticipantShareInfo);
+		} else {
+			eventParticipant.setSormasToSormasOriginInfo(originInfo);
+		}
+
+		persistEventParticipant(processedData);
 	}
 
 	@Override
+	@Transactional(rollbackOn = {
+		Exception.class })
 	public void persistSyncData(
 		SormasToSormasEventParticipantDto processedData,
 		SormasToSormasOriginInfoDto originInfo,
 		ShareTreeCriteria shareTreeCriteria)
 		throws SormasToSormasValidationException {
-		persistEventParticipant(processedData, null);
+		EventParticipantDto eventParticipant = processedData.getEntity();
+		SormasToSormasShareInfo eventParticipantShareInfo =
+			shareInfoService.getByEventParticipantAndOrganization(eventParticipant.getUuid(), originInfo.getOrganizationId());
+
+		if (eventParticipantShareInfo == null) {
+			eventParticipant.setSormasToSormasOriginInfo(originInfo);
+		}
+
+		persistEventParticipant(processedData);
 	}
 
-	private void persistEventParticipant(SormasToSormasEventParticipantDto processedData, Consumer<EventParticipantDto> beforeSave)
-		throws SormasToSormasValidationException {
+	private void persistEventParticipant(SormasToSormasEventParticipantDto processedData) throws SormasToSormasValidationException {
 		EventParticipantDto eventParticipant = processedData.getEntity();
 
 		handleValidationError(
 			() -> personFacade.savePerson(eventParticipant.getPerson(), false, false),
 			Captions.EventParticipant,
 			buildEventParticipantValidationGroupName(eventParticipant));
-
-		if (beforeSave != null) {
-			beforeSave.accept(eventParticipant);
-		}
 
 		handleValidationError(
 			() -> eventParticipantFacade.saveEventParticipant(eventParticipant, false, false),

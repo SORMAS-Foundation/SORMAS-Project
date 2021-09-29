@@ -22,6 +22,9 @@ public class SormasToSormasEventParticipantDto extends SormasToSormasEntityDto<E
 
 	private static final long serialVersionUID = -3568483795717699454L;
 
+	public SormasToSormasEventParticipantDto() {
+	}
+
 	public SormasToSormasEventParticipantDto(EventParticipantDto entity) {
 		super(entity);
 	}

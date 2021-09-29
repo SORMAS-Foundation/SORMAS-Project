@@ -144,7 +144,8 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	public static final String PARENTERAL_TRANSMISSION_MODE = "parenteralTransmissionMode";
 	public static final String MEDICALLY_ASSOCIATED_TRANSMISSION_MODE = "medicallyAssociatedTransmissionMode";
 
-	public static final String SHARE_INFO_EVENTS = "shareInfoEvents";
+	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 
 	private Event superordinateEvent;
 	private List<Event> subordinateEvents;
@@ -759,7 +760,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.sormasToSormasOriginInfo = originInfo;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = SormasToSormasShareInfo.EVENT, fetch = FetchType.LAZY)
 	@AuditedIgnore
 	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
 		return sormasToSormasShares;

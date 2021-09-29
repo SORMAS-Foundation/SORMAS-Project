@@ -1585,7 +1585,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.sormasToSormasOriginInfo = originInfo;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = SormasToSormasShareInfo.CAZE, fetch = FetchType.LAZY)
 	@AuditedIgnore
 	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
 		return sormasToSormasShares;

@@ -1849,6 +1849,7 @@ public interface Captions {
 	String SormasToSormasOptions_withAssociatedContacts = "SormasToSormasOptions.withAssociatedContacts";
 	String SormasToSormasOptions_withEventParticipants = "SormasToSormasOptions.withEventParticipants";
 	String SormasToSormasOptions_withSamples = "SormasToSormasOptions.withSamples";
+	String sormasToSormasOriginInfo = "sormasToSormasOriginInfo";
 	String sormasToSormasOwnedBy = "sormasToSormasOwnedBy";
 	String SormasToSormasPerson_address = "SormasToSormasPerson.address";
 	String SormasToSormasPerson_birthdDate = "SormasToSormasPerson.birthdDate";
@@ -1874,7 +1875,6 @@ public interface Captions {
 	String SormasToSormasShareRequest_status = "SormasToSormasShareRequest.status";
 	String SormasToSormasShareRequest_uuid = "SormasToSormasShareRequest.uuid";
 	String sormasToSormasSync = "sormasToSormasSync";
-	String sormasToSormasOriginInfo = "sormasToSormasOriginInfo";
 	String statisticsAddFilter = "statisticsAddFilter";
 	String statisticsAttribute = "statisticsAttribute";
 	String statisticsAttributeSelect = "statisticsAttributeSelect";

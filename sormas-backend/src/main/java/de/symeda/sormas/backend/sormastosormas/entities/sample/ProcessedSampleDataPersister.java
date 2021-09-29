@@ -20,11 +20,10 @@ import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildSamp
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
 
-import java.util.function.Consumer;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
@@ -34,10 +33,12 @@ import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
-import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
-import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
+import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 
 @Stateless
 @LocalBean
@@ -46,34 +47,58 @@ public class ProcessedSampleDataPersister implements ProcessedDataPersister<Sorm
 	@EJB
 	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
 	@EJB
-	private PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal pathogenTestFacade;
+	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 	@EJB
-	private AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal additionalTestFacade;
+	private AdditionalTestFacadeEjbLocal additionalTestFacade;
+	@EJB
+	private SormasToSormasShareInfoService shareInfoService;
 
 	@Override
-	public void persistSharedData(SormasToSormasSampleDto processedData) throws SormasToSormasValidationException {
-		persistSample(processedData, null);
+	@Transactional(rollbackOn = {
+		Exception.class })
+	public void persistSharedData(SormasToSormasSampleDto processedData, SormasToSormasOriginInfoDto originInfo)
+		throws SormasToSormasValidationException {
+		processedData.getEntity().setSormasToSormasOriginInfo(originInfo);
+
+		persistSample(processedData);
 	}
 
 	@Override
+	@Transactional(rollbackOn = {
+		Exception.class })
 	public void persistReturnedData(SormasToSormasSampleDto processedData, SormasToSormasOriginInfoDto originInfo)
 		throws SormasToSormasValidationException {
-		persistSample(processedData, null);
+		SampleDto sample = processedData.getEntity();
+
+		SormasToSormasShareInfo sampleShareInfo = shareInfoService.getBySampleAndOrganization(sample.getUuid(), originInfo.getOrganizationId());
+		if (sampleShareInfo != null) {
+			sampleShareInfo.setOwnershipHandedOver(false);
+			shareInfoService.persist(sampleShareInfo);
+		} else {
+			sample.setSormasToSormasOriginInfo(originInfo);
+		}
+
+		persistSample(processedData);
 	}
 
 	@Override
+	@Transactional(rollbackOn = {
+		Exception.class })
 	public void persistSyncData(SormasToSormasSampleDto processedData, SormasToSormasOriginInfoDto originInfo, ShareTreeCriteria shareTreeCriteria)
 		throws SormasToSormasValidationException {
-		persistSample(processedData, null);
+		SampleDto sample = processedData.getEntity();
+		SormasToSormasShareInfo sampleShareInfo = shareInfoService.getBySampleAndOrganization(sample.getUuid(), originInfo.getOrganizationId());
+
+		if (sampleShareInfo == null) {
+			sample.setSormasToSormasOriginInfo(originInfo);
+		}
+
+		persistSample(processedData);
 	}
 
-	public void persistSample(SormasToSormasSampleDto processedData, Consumer<SampleDto> beforeSaveSample) throws SormasToSormasValidationException {
+	public void persistSample(SormasToSormasSampleDto processedData) throws SormasToSormasValidationException {
 
 		SampleDto sample = processedData.getEntity();
-
-		if (beforeSaveSample != null) {
-			beforeSaveSample.accept(sample);
-		}
 
 		handleValidationError(() -> sampleFacade.saveSample(sample, true, false, false), Captions.Sample, buildSampleValidationGroupName(sample));
 

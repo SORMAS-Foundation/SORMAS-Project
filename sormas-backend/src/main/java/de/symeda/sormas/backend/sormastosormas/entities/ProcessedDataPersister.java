@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities;
 
+import java.util.List;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -22,9 +24,20 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
+import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
+import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.ProcessedCaseDataPersister;
+import de.symeda.sormas.backend.sormastosormas.entities.contact.ProcessedContactDataPersister;
+import de.symeda.sormas.backend.sormastosormas.entities.event.ProcessedEventDataPersister;
+import de.symeda.sormas.backend.sormastosormas.entities.eventparticipant.ProcessedEventParticipantDataPersister;
+import de.symeda.sormas.backend.sormastosormas.entities.sample.ProcessedSampleDataPersister;
 
 @Stateless
 @LocalBean
@@ -32,26 +45,141 @@ public class ProcessedDataPersister {
 
 	@EJB
 	private ProcessedCaseDataPersister caseDataPersister;
+	@EJB
+	private ProcessedContactDataPersister contactDataPersister;
+	@EJB
+	private ProcessedSampleDataPersister sampleDataPersister;
+	@EJB
+	private ProcessedEventDataPersister eventDataPersister;
+	@EJB
+	private ProcessedEventParticipantDataPersister eventParticipantDataPersister;
 
-	public void persistSharedData(SormasToSormasDto processedData) throws SormasToSormasValidationException {
+	@EJB
+	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
+	@EJB
+	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
+	@EJB
+	private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
 
-		for (SormasToSormasCaseDto c : processedData.getCases()) {
-			caseDataPersister.persistSharedData(c);
+	public void persistSharedData(SormasToSormasDto processedData, SormasToSormasOriginInfoDto originInfo) throws SormasToSormasValidationException {
+
+		List<SormasToSormasCaseDto> cases = processedData.getCases();
+		if (cases != null) {
+			for (SormasToSormasCaseDto c : cases) {
+				caseDataPersister.persistSharedData(c, originInfo);
+			}
 		}
 
+		List<SormasToSormasContactDto> contacts = processedData.getContacts();
+		if (contacts != null) {
+			for (SormasToSormasContactDto c : contacts) {
+				contactDataPersister.persistSharedData(c, originInfo);
+			}
+		}
+
+		List<SormasToSormasEventDto> events = processedData.getEvents();
+		if (events != null) {
+			for (SormasToSormasEventDto e : events) {
+				eventDataPersister.persistSharedData(e, originInfo);
+			}
+		}
+
+		List<SormasToSormasEventParticipantDto> eventParticipants = processedData.getEventParticipants();
+		if (eventParticipants != null) {
+			for (SormasToSormasEventParticipantDto ep : eventParticipants) {
+				eventParticipantDataPersister.persistSharedData(ep, originInfo);
+			}
+		}
+
+		List<SormasToSormasSampleDto> samples = processedData.getSamples();
+		if (samples != null) {
+			for (SormasToSormasSampleDto s : samples) {
+				sampleDataPersister.persistSharedData(s, originInfo);
+			}
+		}
 	}
 
 	public void persistReturnedData(SormasToSormasDto processedData, SormasToSormasOriginInfoDto originInfoDto)
 		throws SormasToSormasValidationException {
-		for (SormasToSormasCaseDto c : processedData.getCases()) {
-			caseDataPersister.persistReturnedData(c, originInfoDto);
+		List<SormasToSormasCaseDto> cases = processedData.getCases();
+		if (cases != null) {
+			for (SormasToSormasCaseDto c : cases) {
+				caseDataPersister.persistReturnedData(c, originInfoDto);
+			}
+		}
+
+		List<SormasToSormasContactDto> contacts = processedData.getContacts();
+		if (contacts != null) {
+			for (SormasToSormasContactDto c : contacts) {
+				contactDataPersister.persistReturnedData(c, originInfoDto);
+			}
+		}
+
+		List<SormasToSormasEventDto> events = processedData.getEvents();
+		if (events != null) {
+			for (SormasToSormasEventDto e : events) {
+				eventDataPersister.persistReturnedData(e, originInfoDto);
+			}
+		}
+
+		List<SormasToSormasEventParticipantDto> eventParticipants = processedData.getEventParticipants();
+		if (eventParticipants != null) {
+			for (SormasToSormasEventParticipantDto ep : eventParticipants) {
+				eventParticipantDataPersister.persistReturnedData(ep, originInfoDto);
+			}
+		}
+
+		List<SormasToSormasSampleDto> samples = processedData.getSamples();
+		if (samples != null) {
+			for (SormasToSormasSampleDto s : samples) {
+				sampleDataPersister.persistReturnedData(s, originInfoDto);
+			}
 		}
 	}
 
 	public void persistSyncData(SormasToSormasDto processedData, SormasToSormasOriginInfoDto originInfoDto, ShareTreeCriteria shareTreeCriteria)
 		throws SormasToSormasValidationException {
-		for (SormasToSormasCaseDto c : processedData.getCases()) {
-			caseDataPersister.persistSyncData(c, originInfoDto, shareTreeCriteria);
+		List<SormasToSormasCaseDto> cases = processedData.getCases();
+		if (cases != null) {
+			for (SormasToSormasCaseDto c : cases) {
+				caseDataPersister.persistSyncData(c, originInfoDto, shareTreeCriteria);
+			}
+		}
+
+		List<SormasToSormasContactDto> contacts = processedData.getContacts();
+		if (contacts != null) {
+			for (SormasToSormasContactDto c : contacts) {
+				contactDataPersister.persistSyncData(c, originInfoDto, shareTreeCriteria);
+			}
+		}
+
+		List<SormasToSormasEventDto> events = processedData.getEvents();
+		if (events != null) {
+			for (SormasToSormasEventDto e : events) {
+				eventDataPersister.persistSyncData(e, originInfoDto, shareTreeCriteria);
+			}
+		}
+
+		List<SormasToSormasEventParticipantDto> eventParticipants = processedData.getEventParticipants();
+		if (eventParticipants != null) {
+			for (SormasToSormasEventParticipantDto ep : eventParticipants) {
+				eventParticipantDataPersister.persistSyncData(ep, originInfoDto, shareTreeCriteria);
+			}
+		}
+
+		List<SormasToSormasSampleDto> samples = processedData.getSamples();
+		if (samples != null) {
+			for (SormasToSormasSampleDto s : samples) {
+				sampleDataPersister.persistSyncData(s, originInfoDto, shareTreeCriteria);
+			}
+		}
+
+		if (cases != null) {
+			caseFacade.syncSharesAsync(shareTreeCriteria);
+		} else if (contacts != null) {
+			contactFacade.syncSharesAsync(shareTreeCriteria);
+		} else if (events != null) {
+			eventFacade.syncSharesAsync(shareTreeCriteria);
 		}
 	}
 }

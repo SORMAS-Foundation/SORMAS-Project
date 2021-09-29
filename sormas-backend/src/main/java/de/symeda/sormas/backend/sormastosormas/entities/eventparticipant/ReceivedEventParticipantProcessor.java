@@ -23,11 +23,15 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessorHelper;
@@ -41,12 +45,19 @@ public class ReceivedEventParticipantProcessor
 	private ReceivedDataProcessorHelper dataProcessorHelper;
 	@EJB
 	private InfrastructureValidator infraValidator;
+	@EJB
+	private EventParticipantService eventParticipantService;
 
 	@Override
 	public ValidationErrors processReceivedData(SormasToSormasEventParticipantDto receivedData, EventParticipantDto existingData) {
-		ValidationErrors validationErrors = new ValidationErrors();
-
 		EventParticipantDto eventParticipant = receivedData.getEntity();
+
+		ValidationErrors uuidError = validateSharedUuid(eventParticipant.getUuid());
+		if (uuidError.hasError()) {
+			return uuidError;
+		}
+
+		ValidationErrors validationErrors = new ValidationErrors();
 
 		ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(eventParticipant.getPerson());
 		validationErrors.addAll(personValidationErrors);
@@ -63,6 +74,27 @@ public class ReceivedEventParticipantProcessor
 
 	@Override
 	public ValidationErrors processReceivedPreview(SormasToSormasEventParticipantPreview eventParticipant) {
+		ValidationErrors uuidError = validateSharedUuid(eventParticipant.getUuid());
+		if (uuidError.hasError()) {
+			return uuidError;
+		}
+
 		return dataProcessorHelper.processPersonPreview(eventParticipant.getPerson());
+	}
+
+	private ValidationErrors validateSharedUuid(String uuid) {
+		ValidationErrors errors = new ValidationErrors();
+
+		if (eventParticipantService.exists(
+			(cb, epRoot) -> cb.and(
+				cb.equal(epRoot.get(EventParticipant.UUID), uuid),
+				cb.isNull(epRoot.get(EventParticipant.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+				cb.isEmpty(epRoot.get(EventParticipant.SORMAS_TO_SORMAS_SHARES))))) {
+			errors.add(
+				new ValidationErrorGroup(Captions.EventParticipant),
+				new ValidationErrorMessage(Validations.sormasToSormasEventParticipantExists));
+		}
+
+		return errors;
 	}
 }
