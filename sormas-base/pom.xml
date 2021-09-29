@@ -1192,6 +1192,7 @@
 			<url>https://repo.osgeo.org/repository/release/</url>
 		</repository>
 		<repository>
+			<!-- this repo is readOnly since 2021 and only listed for older artifacts that may not be found elsewhere -->
 			<id>bintray</id>
 			<name>bintray</name>
 			<url>https://jcenter.bintray.com</url>
