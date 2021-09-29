@@ -66,7 +66,7 @@ public class DistrictResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postCountries(@Valid List<DistrictDto> dtos) {
+	public List<PushResult> postDistricts(@Valid List<DistrictDto> dtos) {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getDistrictFacade()::save);
 		return result;
 	}

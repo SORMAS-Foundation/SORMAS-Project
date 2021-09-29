@@ -65,7 +65,7 @@ public class CommunityResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postCountries(@Valid List<CommunityDto> dtos) {
+	public List<PushResult> postCommunities(@Valid List<CommunityDto> dtos) {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getCommunityFacade()::save);
 		return result;
 	}
