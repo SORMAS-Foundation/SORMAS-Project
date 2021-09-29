@@ -45,7 +45,11 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: ${{ env.JAVA }}
-      
+
+      - name: Run mvn install
+        working-directory: ./sormas-base
+        run: mvn install -DskipTests=true
+
       - name: Cache Maven packages
         # Check if PR results from the repository: if yes, it is safe to cache dependencies.
         # This is to keep us safe from cache poisoning through 3rd party PRs.
@@ -57,10 +61,10 @@ jobs:
           key: ${{ runner.os }}-java-${{ env.JAVA }}-m2-${{ hashFiles('**/pom.xml', '**/*.pom') }}
           restore-keys: ${{ runner.os }}-java-${{ env.JAVA }}-m2
 
-      - name: Run mvn install
-        working-directory: ./sormas-base
-        run: mvn install -DskipTests=true
-
+      - name: Run gradle tests
+        working-directory: ./sormas-app
+        run: ./gradlew test
+        
       - uses: actions/cache@v2
         with:
           path: |
@@ -69,8 +73,4 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-
-      - name: Run gradle tests
-        working-directory: ./sormas-app
-        run: ./gradlew test
 

@@ -40,6 +40,11 @@ jobs:
         with:
           java-version: ${{ env.JAVA }}
 
+      - name: Run mvn verify
+        # FIXME(@JonasCir) see https://github.com/hzi-braunschweig/SORMAS-Project/issues/3730#issuecomment-745165678
+        working-directory: ./sormas-base
+        run: mvn verify -B -ntp
+        
       - name: Cache Maven packages
         # Check if PR results from the repository: if yes, it is safe to cache dependencies.
         # This is to keep us safe from cache poisoning through 3rd party PRs.
@@ -50,11 +55,6 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-java-${{ env.JAVA }}-m2-${{ hashFiles('**/pom.xml', '**/*.pom') }}
           restore-keys: ${{ runner.os }}-java-${{ env.JAVA }}-m2
-
-      - name: Run mvn verify
-        # FIXME(@JonasCir) see https://github.com/hzi-braunschweig/SORMAS-Project/issues/3730#issuecomment-745165678
-        working-directory: ./sormas-base
-        run: mvn verify -B -ntp
 
       - name: Commit external visits API spec to development
         # Privileged action needing a secret token. Since this only runs on development in our own repo
