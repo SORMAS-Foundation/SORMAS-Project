@@ -34,17 +34,17 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	public abstract DTO save(@Valid DTO dtoToSave, boolean allowMerge);
 
 	// todo private
-	protected DTO persist(DTO dto, ADO entityToPersist) {
+	protected DTO persistEntity(DTO dto, ADO entityToPersist) {
 		entityToPersist = fillOrBuildEntity(dto, entityToPersist, true);
 		service.ensurePersisted(entityToPersist);
 		return toDto(entityToPersist);
 	}
 
-	protected DTO mergeAndSave(DTO dtoToSave, List<ADO> duplicates) {
+	protected DTO mergeAndPersist(DTO dtoToSave, List<ADO> duplicates) {
 		ADO existingEntity = duplicates.get(0);
 		DTO existingDto = toDto(existingEntity);
 		DtoHelper.copyDtoValues(existingDto, dtoToSave, true);
-		return persist(dtoToSave, existingEntity);
+		return persistEntity(dtoToSave, existingEntity);
 
 	}
 

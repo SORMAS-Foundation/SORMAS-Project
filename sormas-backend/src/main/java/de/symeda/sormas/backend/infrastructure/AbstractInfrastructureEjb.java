@@ -38,13 +38,13 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 			List<ADO> duplicates = findDuplicates(dtoToSave);
 			if (!duplicates.isEmpty()) {
 				if (allowMerge) {
-					return mergeAndSave(dtoToSave, duplicates);
+					return mergeAndPersist(dtoToSave, duplicates);
 				} else {
 					throw new ValidationRuntimeException(I18nProperties.getValidationError(duplicateErrorMessage));
 				}
 			}
 		}
-		return persist(dtoToSave, existingEntity);
+		return persistEntity(dtoToSave, existingEntity);
 	}
 
 	@Override

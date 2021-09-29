@@ -41,9 +41,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
-import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -54,7 +52,6 @@ import de.symeda.sormas.api.infrastructure.country.CountryFacade;
 import de.symeda.sormas.api.infrastructure.country.CountryIndexDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
-import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -92,11 +89,6 @@ public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, Country
 	@Inject
 	protected CountryFacadeEjb(CountryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
 		super(service, featureConfiguration);
-	}
-
-	@Override
-	public CountryDto getCountryByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
 	}
 
 	@Override
@@ -211,7 +203,7 @@ public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, Country
 				if (allowMerge) {
 					// todo no merging?
 					country = byIsoCode.orElseGet(byUnoCode::get);
-					CountryDto dtoToMerge = getCountryByUuid(country.getUuid());
+					CountryDto dtoToMerge = getByUuid(country.getUuid());
 					dtoToSave = DtoHelper.copyDtoValues(dtoToMerge, dtoToSave, true);
 				} else {
 					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCountryAlreadyExists));
@@ -219,7 +211,7 @@ public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, Country
 			}
 		}
 
-		return persist(dtoToSave, country);
+		return persistEntity(dtoToSave, country);
 	}
 
 	@Override
