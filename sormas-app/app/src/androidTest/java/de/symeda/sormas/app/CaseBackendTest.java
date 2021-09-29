@@ -275,10 +275,8 @@ public class CaseBackendTest {
 
 		Case existingCase = caseDao.queryUuidWithEmbedded(caze.getUuid());
 		District secondDistrict = DatabaseHelper.getDistrictDao().queryUuid(TestHelper.SECOND_DISTRICT_UUID);
-		caze.setDistrict(secondDistrict);
 		caze.setResponsibleDistrict(secondDistrict);
 		Community secondCommunity = DatabaseHelper.getCommunityDao().queryUuid(TestHelper.SECOND_COMMUNITY_UUID);
-		caze.setCommunity(secondCommunity);
 		caze.setResponsibleCommunity(secondCommunity);
 		caze.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(TestHelper.SECOND_FACILITY_UUID));
 
@@ -290,9 +288,9 @@ public class CaseBackendTest {
 		doneTask = taskDao.queryUuid(doneTask.getUuid());
 
 		// Case should have the new region, district, community and facility set
-		assertEquals(caze.getRegion().getUuid(), TestHelper.REGION_UUID);
-		assertEquals(caze.getDistrict().getUuid(), TestHelper.SECOND_DISTRICT_UUID);
-		assertEquals(caze.getCommunity().getUuid(), TestHelper.SECOND_COMMUNITY_UUID);
+		assertEquals(caze.getResponsibleRegion().getUuid(), TestHelper.REGION_UUID);
+		assertEquals(caze.getResponsibleDistrict().getUuid(), TestHelper.SECOND_DISTRICT_UUID);
+		assertEquals(caze.getResponsibleCommunity().getUuid(), TestHelper.SECOND_COMMUNITY_UUID);
 		assertEquals(caze.getHealthFacility().getUuid(), TestHelper.SECOND_FACILITY_UUID);
 
 		// The case officer should have changed
@@ -427,13 +425,26 @@ public class CaseBackendTest {
 	}
 
 	@Test
+	public void testEditCasePermissionWhenFacilityDoesNotMatchAndCaseNotCreatedByUser() throws DaoException, SQLException {
+		Case caze = TestEntityCreator.createCase();
+		caze.setHealthFacility(null);
+
+		UserRole userRole = UserRole.HOSPITAL_INFORMANT;
+		Set<UserRole> userRoles = new HashSet<>();
+		userRoles.add(userRole);
+
+		ConfigProvider.getUser().setUserRoles(userRoles);
+		ConfigProvider.getUser().setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(TestHelper.FACILITY_UUID));
+		ConfigProvider.getUser().setUuid("");
+
+		assertFalse(CaseEditAuthorization.isCaseEditAllowed(caze));
+	}
+
+	@Test
 	public void testEditCasePermissionWhenDistrictDoesNotMatchAndCaseNotCreatedByUser() throws DaoException, SQLException {
 		Case caze = TestEntityCreator.createCase();
-		caze.setRegion(DatabaseHelper.getRegionDao().queryUuid(TestHelper.REGION_UUID));
 		District secondDistrict = DatabaseHelper.getDistrictDao().queryUuid(TestHelper.SECOND_DISTRICT_UUID);
-		caze.setDistrict(secondDistrict);
 		caze.setResponsibleDistrict(secondDistrict);
-		caze.setHealthFacility(null);
 
 		UserRole userRole = UserRole.SURVEILLANCE_OFFICER;
 		Set<UserRole> userRoles = new HashSet<>();
@@ -441,8 +452,6 @@ public class CaseBackendTest {
 
 		ConfigProvider.getUser().setUserRoles(userRoles);
 		ConfigProvider.getUser().setUuid("");
-
-		User user = ConfigProvider.getUser();
 
 		assertFalse(CaseEditAuthorization.isCaseEditAllowed(caze));
 	}

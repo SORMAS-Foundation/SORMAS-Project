@@ -96,9 +96,9 @@ public class TestEntityCreator {
 
 		Case caze = DatabaseHelper.getCaseDao().build(person);
 		caze.setDisease(disease);
-		caze.setRegion(region);
-		caze.setDistrict(district);
-		caze.setCommunity(community);
+		caze.setResponsibleRegion(region);
+		caze.setResponsibleDistrict(district);
+		caze.setResponsibleCommunity(community);
 		caze.setHealthFacility(facility);
 		caze.setFacilityType(FacilityType.HOSPITAL);
 		caze.setCaseClassification(caseClassification);
