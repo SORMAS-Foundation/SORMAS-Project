@@ -118,6 +118,9 @@ public class Case extends PseudonymizableAdo {
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String diseaseDetails;
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	private String diseaseVariantDetails;
+
 	@Enumerated(EnumType.STRING)
 	private PlagueType plagueType;
 
@@ -449,6 +452,14 @@ public class Case extends PseudonymizableAdo {
 
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	public PlagueType getPlagueType() {
