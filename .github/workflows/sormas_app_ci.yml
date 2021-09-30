@@ -4,7 +4,7 @@
 name: Java CI with Gradle
 
 env:
-  JAVA: 11
+  JAVA: 8
   PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') || github.event.pull_request.head.repo.full_name == github.repository }}
 
 on:
