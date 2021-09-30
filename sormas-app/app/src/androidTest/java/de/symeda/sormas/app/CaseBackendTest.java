@@ -40,7 +40,7 @@ import androidx.test.runner.AndroidJUnit4;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
@@ -66,6 +66,8 @@ import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
@@ -187,7 +189,7 @@ public class CaseBackendTest {
 		Case caze = TestEntityCreator.createCase();
 		assertThat(caze.isModified(), is(false));
 
-		caze.setVaccinationStatus(Vaccination.VACCINATED);
+		caze.setVaccinationStatus(VaccinationStatus.VACCINATED);
 
 		DatabaseHelper.getCaseDao().saveAndSnapshot(caze);
 		caze = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(caze.getUuid());
@@ -272,9 +274,12 @@ public class CaseBackendTest {
 		Task doneTask = TestEntityCreator.createCaseTask(caze, TaskStatus.DONE, user);
 
 		Case existingCase = caseDao.queryUuidWithEmbedded(caze.getUuid());
-		caze.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(TestHelper.SECOND_DISTRICT_UUID));
-		caze.setCommunity(DatabaseHelper.getCommunityDao().queryUuid(TestHelper.SECOND_COMMUNITY_UUID));
+		District secondDistrict = DatabaseHelper.getDistrictDao().queryUuid(TestHelper.SECOND_DISTRICT_UUID);
+		caze.setResponsibleDistrict(secondDistrict);
+		Community secondCommunity = DatabaseHelper.getCommunityDao().queryUuid(TestHelper.SECOND_COMMUNITY_UUID);
+		caze.setResponsibleCommunity(secondCommunity);
 		caze.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(TestHelper.SECOND_FACILITY_UUID));
+
 		caseDao.createPreviousHospitalizationAndUpdateHospitalization(caze, existingCase);
 		caseDao.saveAndSnapshot(caze);
 		caze = caseDao.queryUuidWithEmbedded(caze.getUuid());
@@ -283,9 +288,9 @@ public class CaseBackendTest {
 		doneTask = taskDao.queryUuid(doneTask.getUuid());
 
 		// Case should have the new region, district, community and facility set
-		assertEquals(caze.getRegion().getUuid(), TestHelper.REGION_UUID);
-		assertEquals(caze.getDistrict().getUuid(), TestHelper.SECOND_DISTRICT_UUID);
-		assertEquals(caze.getCommunity().getUuid(), TestHelper.SECOND_COMMUNITY_UUID);
+		assertEquals(caze.getResponsibleRegion().getUuid(), TestHelper.REGION_UUID);
+		assertEquals(caze.getResponsibleDistrict().getUuid(), TestHelper.SECOND_DISTRICT_UUID);
+		assertEquals(caze.getResponsibleCommunity().getUuid(), TestHelper.SECOND_COMMUNITY_UUID);
 		assertEquals(caze.getHealthFacility().getUuid(), TestHelper.SECOND_FACILITY_UUID);
 
 		// The case officer should have changed
@@ -420,13 +425,28 @@ public class CaseBackendTest {
 	}
 
 	@Test
-	public void testEditCasePermissionWhenRegionDoesNotMatchAndCaseNotCreatedByUser() throws DaoException, SQLException {
+	public void testEditCasePermissionWhenFacilityDoesNotMatchAndCaseNotCreatedByUser() throws DaoException, SQLException {
 		Case caze = TestEntityCreator.createCase();
-		caze.setRegion(null);
-		caze.setDistrict(null);
 		caze.setHealthFacility(null);
 
 		UserRole userRole = UserRole.HOSPITAL_INFORMANT;
+		Set<UserRole> userRoles = new HashSet<>();
+		userRoles.add(userRole);
+
+		ConfigProvider.getUser().setUserRoles(userRoles);
+		ConfigProvider.getUser().setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(TestHelper.FACILITY_UUID));
+		ConfigProvider.getUser().setUuid("");
+
+		assertFalse(CaseEditAuthorization.isCaseEditAllowed(caze));
+	}
+
+	@Test
+	public void testEditCasePermissionWhenDistrictDoesNotMatchAndCaseNotCreatedByUser() throws DaoException, SQLException {
+		Case caze = TestEntityCreator.createCase();
+		District secondDistrict = DatabaseHelper.getDistrictDao().queryUuid(TestHelper.SECOND_DISTRICT_UUID);
+		caze.setResponsibleDistrict(secondDistrict);
+
+		UserRole userRole = UserRole.SURVEILLANCE_OFFICER;
 		Set<UserRole> userRoles = new HashSet<>();
 		userRoles.add(userRole);
 

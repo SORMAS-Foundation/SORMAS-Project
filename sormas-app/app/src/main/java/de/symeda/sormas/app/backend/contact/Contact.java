@@ -66,6 +66,7 @@ public class Contact extends PseudonymizableAdo {
 	public static final String PERSON = "person_id";
 	public static final String CASE_UUID = "caseUuid";
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_COLUMN = "caseDisease";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String MULTI_DAY_CONTACT = "multiDayContact";
@@ -112,7 +113,7 @@ public class Contact extends PseudonymizableAdo {
 	private Person person;
 	@DatabaseField
 	private String caseUuid;
-	@DatabaseField(dataType = DataType.ENUM_STRING, columnName = "caseDisease")
+	@DatabaseField(dataType = DataType.ENUM_STRING, columnName = DISEASE_COLUMN)
 	private Disease disease;
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String diseaseDetails;
