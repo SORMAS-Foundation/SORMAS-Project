@@ -223,15 +223,12 @@ public class CaseController {
 			if (uuid == null) {
 				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null, null, false);
 				caseCreateComponent.addCommitListener(() -> {
-					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
-					updatedContact.setContactClassification(ContactClassification.CONFIRMED);
-					FacadeProvider.getContactFacade().saveContact(updatedContact);
-					if (updatedContact.getResultingCase() != null) {
-						String caseUuid = updatedContact.getResultingCase().getUuid();
+					if (contact.getResultingCase() != null) {
+						String caseUuid = contact.getResultingCase().getUuid();
 						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 						convertSamePersonContactsAndEventparticipants(
 							caze,
-							ContactLogic.getStartDate(updatedContact.getLastContactDate(), updatedContact.getReportDateTime()));
+							ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime()));
 					}
 				});
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
