@@ -48,7 +48,7 @@ public enum AgeGroup {
 		try {
 			return new IntegerRange(
 				Integer.valueOf(this.name().substring(this.name().indexOf("_") + 1, this.name().lastIndexOf("_"))),
-				Integer.valueOf(this.name().substring(this.name().lastIndexOf("_") + 1)));
+				Integer.valueOf(this.name().substring(this.name().lastIndexOf("_") + 1, this.name().length())));
 		} catch (NumberFormatException e) {
 			return null;
 		}
