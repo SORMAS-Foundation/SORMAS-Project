@@ -71,6 +71,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -95,6 +96,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private static final String RESPONSIBLE_JURISDICTION_HEADING_LOC = "responsibleJurisdictionHeadingLoc";
 	private static final String DIFFERENT_PLACE_OF_STAY_JURISDICTION = "differentPlaceOfStayJurisdiction";
 	private static final String PLACE_OF_STAY_HEADING_LOC = "placeOfStayHeadingLoc";
+	private static final String DIFFERENT_POINT_OF_ENTRY_JURISDICTION = "differentPointOfEntryJurisdiction";
+	private static final String POINT_OF_ENTRY_REGION = "pointOfEntryRegion";
+	private static final String POINT_OF_ENTRY_DISTRICT = "pointOfEntryDistrict";
 
 	private ComboBox birthDateDay;
 	private NullableOptionGroup facilityOrHome;
@@ -103,9 +107,16 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBox responsibleDistrictCombo;
 	private ComboBox responsibleCommunityCombo;
 	private CheckBox differentPlaceOfStayJurisdiction;
+	private CheckBox differentPointOfEntryJurisdiction;
 	private ComboBox districtCombo;
 	private ComboBox communityCombo;
 	private ComboBox facilityCombo;
+	private ComboBox pointOfEntryDistrictCombo;
+
+	// If a case is created form a TravelEntry, the variable convertedTravelEntry provides the
+	// necessary extra data. This variable is expected to be replaced in the implementation of
+	// issue #5910.
+	private TravelEntryDto convertedTravelEntry;
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
@@ -126,6 +137,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			+ fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY)
 			+ fluidRowLocs(FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE)
 			+ fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS)
+			+ fluidRowLocs(DIFFERENT_POINT_OF_ENTRY_JURISDICTION)
+			+ fluidRowLocs(POINT_OF_ENTRY_REGION, POINT_OF_ENTRY_DISTRICT)
 			+ fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
 			+ fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME)
 			+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
@@ -135,12 +148,16 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			+ fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS);
 	//@formatter:on
 
-	public CaseCreateForm() {
+	public CaseCreateForm(TravelEntryDto convertedTravelEntry) {
 
-		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
-
+		super(
+			CaseDataDto.class,
+			CaseDataDto.I18N_PREFIX,
+			false,
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
+		this.convertedTravelEntry = convertedTravelEntry;
+		addFields();
 		setWidth(720, Unit.PIXELS);
-
 		hideValidationUntilNextCommit();
 	}
 
@@ -270,9 +287,26 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrictCombo, responsibleCommunityCombo);
 
+		differentPointOfEntryJurisdiction = addCustomField(DIFFERENT_POINT_OF_ENTRY_JURISDICTION, Boolean.class, CheckBox.class);
+		differentPointOfEntryJurisdiction.addStyleName(VSPACE_3);
+
+		ComboBox pointOfEntryRegionCombo = addCustomField(POINT_OF_ENTRY_REGION, RegionReferenceDto.class, ComboBox.class);
+		pointOfEntryDistrictCombo = addCustomField(POINT_OF_ENTRY_DISTRICT, DistrictReferenceDto.class, ComboBox.class);
+		InfrastructureFieldsHelper.initInfrastructureFields(pointOfEntryRegionCombo, pointOfEntryDistrictCombo, null);
+
+		pointOfEntryDistrictCombo.addValueChangeListener(e -> updatePOEs());
+
+		// InfrastructureFieldsHelper.initInfrastructureFields(pointOfEntryRegionCombo, pointOfEntryDistrictCombo, null);
+
 		FieldHelper.setVisibleWhen(
 			differentPlaceOfStayJurisdiction,
 			Arrays.asList(region, districtCombo, communityCombo),
+			Collections.singletonList(Boolean.TRUE),
+			true);
+
+		FieldHelper.setVisibleWhen(
+			differentPointOfEntryJurisdiction,
+			Arrays.asList(pointOfEntryRegionCombo, pointOfEntryDistrictCombo),
 			Collections.singletonList(Boolean.TRUE),
 			true);
 
@@ -313,6 +347,26 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		cbPointOfEntry.setImmediate(true);
 		TextField tfPointOfEntryDetails = addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 		tfPointOfEntryDetails.setVisible(false);
+
+		if (convertedTravelEntry != null) {
+			differentPointOfEntryJurisdiction.setValue(true);
+			RegionReferenceDto regionReferenceDto = convertedTravelEntry.getPointOfEntryRegion() != null
+				? convertedTravelEntry.getPointOfEntryRegion()
+				: convertedTravelEntry.getResponsibleRegion();
+			pointOfEntryRegionCombo.setValue(regionReferenceDto);
+			DistrictReferenceDto districtReferenceDto = convertedTravelEntry.getPointOfEntryDistrict() != null
+				? convertedTravelEntry.getPointOfEntryDistrict()
+				: convertedTravelEntry.getResponsibleDistrict();
+			pointOfEntryDistrictCombo.setValue(districtReferenceDto);
+
+			differentPointOfEntryJurisdiction.setReadOnly(true);
+			pointOfEntryRegionCombo.setReadOnly(true);
+			pointOfEntryDistrictCombo.setReadOnly(true);
+			updatePOEs();
+			cbPointOfEntry.setReadOnly(true);
+			tfPointOfEntryDetails.setReadOnly(true);
+			ogCaseOrigin.setReadOnly(true);
+		}
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
@@ -367,8 +421,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		facilityType.addValueChangeListener(e -> updateFacility());
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
-		JurisdictionLevel userJurisditionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
-		if (userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY) {
+		JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
+		if (userJurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY) {
 			region.setReadOnly(true);
 			responsibleRegion.setReadOnly(true);
 			districtCombo.setReadOnly(true);
@@ -393,13 +447,15 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			ogCaseOrigin.addValueChangeListener(ev -> {
 				if (ev.getProperty().getValue() == CaseOrigin.IN_COUNTRY) {
 					setVisible(false, CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS);
+					differentPointOfEntryJurisdiction.setVisible(false);
 					setRequired(true, FACILITY_OR_HOME_LOC, FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE, CaseDataDto.HEALTH_FACILITY);
 					setRequired(false, CaseDataDto.POINT_OF_ENTRY);
 					updateFacilityFields(facilityCombo, facilityDetails);
 				} else {
 					setVisible(true, CaseDataDto.POINT_OF_ENTRY);
+					differentPointOfEntryJurisdiction.setVisible(true);
 					setRequired(true, CaseDataDto.POINT_OF_ENTRY);
-					if (userJurisditionLevel != JurisdictionLevel.HEALTH_FACILITY) {
+					if (userJurisdictionLevel != JurisdictionLevel.HEALTH_FACILITY) {
 						facilityOrHome.clear();
 						setRequired(false, FACILITY_OR_HOME_LOC, FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE, CaseDataDto.HEALTH_FACILITY);
 					}
@@ -549,9 +605,15 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	private void updatePOEs() {
 
-		DistrictReferenceDto districtDto = differentPlaceOfStayJurisdiction.getValue()
-			? (DistrictReferenceDto) districtCombo.getValue()
-			: (DistrictReferenceDto) responsibleDistrictCombo.getValue();
+		DistrictReferenceDto districtDto;
+
+		if (Boolean.TRUE.equals(differentPointOfEntryJurisdiction.getValue())) {
+			districtDto = (DistrictReferenceDto) pointOfEntryDistrictCombo.getValue();
+		} else if (Boolean.TRUE.equals(differentPlaceOfStayJurisdiction.getValue())) {
+			districtDto = (DistrictReferenceDto) districtCombo.getValue();
+		} else {
+			districtDto = (DistrictReferenceDto) responsibleDistrictCombo.getValue();
+		}
 
 		List<PointOfEntryReferenceDto> POEs = districtDto == null
 			? Collections.emptyList()
