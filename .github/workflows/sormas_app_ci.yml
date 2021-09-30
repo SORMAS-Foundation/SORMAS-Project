@@ -72,6 +72,6 @@ jobs:
 
       - name: Run gradle tests
         working-directory: ./sormas-app
-        run: ./gradlew :app:clean :app:assembleDebug :app:test
+        run: ./gradlew test
 
 
