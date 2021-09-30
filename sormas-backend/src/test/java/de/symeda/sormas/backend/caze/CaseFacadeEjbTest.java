@@ -51,6 +51,8 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
+import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -1290,6 +1292,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				c.setFollowUpComment("Test followup comment");
 			});
 		leadCase.setClinicianEmail("mail");
+		leadCase.getEpiData().setActivityAsCaseDetailsKnown(YesNoUnknown.NO);
 		getCaseFacade().saveCase(leadCase);
 		VisitDto leadVisit = creator.createVisit(leadCase.getDisease(), leadCase.getPerson(), leadCase.getReportDate());
 		leadVisit.getSymptoms().setAnorexiaAppetiteLoss(SymptomState.YES);
@@ -1337,6 +1340,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		TreatmentDto treatment = creator.createTreatment(otherCase);
 		PrescriptionDto prescription = creator.createPrescription(otherCase);
 		ClinicalVisitDto visit = creator.createClinicalVisit(otherCase);
+
+		otherCase.getEpiData().setActivityAsCaseDetailsKnown(YesNoUnknown.YES);
+		final ArrayList<ActivityAsCaseDto> otherActivitiesAsCase = new ArrayList<>();
+		ActivityAsCaseDto activityAsCaseDto = new ActivityAsCaseDto();
+		activityAsCaseDto.setActivityAsCaseType(ActivityAsCaseType.GATHERING);
+		otherActivitiesAsCase.add(activityAsCaseDto);
+		otherCase.getEpiData().setActivitiesAsCase(otherActivitiesAsCase);
+
 		getCaseFacade().saveCase(otherCase);
 		VisitDto otherVisit = creator.createVisit(otherCase.getDisease(), otherCase.getPerson(), otherCase.getReportDate());
 		otherVisit.getSymptoms().setAbdominalPain(SymptomState.YES);
@@ -1464,6 +1475,13 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		List<String> documentUuids = mergedDocuments.stream().map(DocumentDto::getUuid).collect(Collectors.toList());
 		assertTrue(documentUuids.contains(document.getUuid()));
 		assertTrue(documentUuids.contains(otherDocument.getUuid()));
+
+		// 10 Activities as case
+		final EpiDataDto epiData = mergedCase.getEpiData();
+		assertEquals(YesNoUnknown.YES, epiData.getActivityAsCaseDetailsKnown());
+		final List<ActivityAsCaseDto> activitiesAsCase = epiData.getActivitiesAsCase();
+		assertEquals(activitiesAsCase.size(), 1);
+		assertEquals(ActivityAsCaseType.GATHERING, activitiesAsCase.get(0).getActivityAsCaseType());
 	}
 
 	@Test
