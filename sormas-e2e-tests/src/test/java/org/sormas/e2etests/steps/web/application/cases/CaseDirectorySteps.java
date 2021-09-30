@@ -87,7 +87,7 @@ public class CaseDirectorySteps implements En {
           String caseUUID = apiState.getCreatedCase().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);
           By caseLocator = By.cssSelector(String.format(CASE_RESULTS_UUID_LOCATOR, caseUUID));
-          assertHelpers.assertWithPoll15Second(
+          assertHelpers.assertWithPoll20Second(
               () -> Truth.assertThat(webDriverHelpers.isElementVisibleWithTimeout(caseLocator, 5)));
           webDriverHelpers.clickOnWebElementBySelector(caseLocator);
         });
@@ -95,7 +95,7 @@ public class CaseDirectorySteps implements En {
     Then(
         "I check that number of displayed cas" + "es results is {int}",
         (Integer number) ->
-            assertHelpers.assertWithPoll15Second(
+            assertHelpers.assertWithPoll20Second(
                 () ->
                     Truth.assertThat(webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS))
                         .isEqualTo(number)));
@@ -134,7 +134,7 @@ public class CaseDirectorySteps implements En {
         (String expectedValue) -> {
           webDriverHelpers.waitUntilAListOfElementsHasText(
               CASE_GRID_RESULTS_ROWS, CaseOutcome.getValueFor(expectedValue));
-          assertHelpers.assertWithPoll15Second(
+          assertHelpers.assertWithPoll20Second(
               () ->
                   Truth.assertThat(
                           apiState.getCreatedCases().stream()
@@ -157,7 +157,7 @@ public class CaseDirectorySteps implements En {
                       webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
                       webDriverHelpers.waitUntilAListOfElementsHasText(
                           CASE_GRID_RESULTS_ROWS, clasification.getClassification());
-                      assertHelpers.assertWithPoll15Second(
+                      assertHelpers.assertWithPoll20Second(
                           () ->
                               Truth.assertThat(
                                       apiState.getCreatedCases().stream()
@@ -185,7 +185,7 @@ public class CaseDirectorySteps implements En {
         (String expectedValue) -> {
           webDriverHelpers.waitUntilAListOfElementsHasText(
               CASE_GRID_RESULTS_ROWS, DiseasesValues.getCaptionFor(expectedValue));
-          assertHelpers.assertWithPoll15Second(
+          assertHelpers.assertWithPoll20Second(
               () ->
                   Truth.assertThat(
                           apiState.getCreatedCases().stream()
