@@ -63,7 +63,7 @@ jobs:
 
       - name: Run gradle tests
         working-directory: ./sormas-app
-        run: ./gradlew test
+        run: ./gradlew :app:clean :app:assembleDebug :app:test
         
       - uses: actions/cache@v2
         with:
