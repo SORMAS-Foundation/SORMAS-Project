@@ -1425,10 +1425,7 @@
         &quot;disease&quot;: &quot;CORONAVIRUS&quot;,&#xd;
         &quot;followUpStatus&quot;: &quot;FOLLOW_UP&quot;,&#xd;
         &quot;relationToCase&quot;: &quot;SAME_HOUSEHOLD&quot;,&#xd;
-        &quot;uuid&quot;: &quot;${__UUID()}&quot;,&#xd;
-        &quot;vaccinationInfo&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;${__UUID()}&quot;&#xd;
-        }&#xd;
+        &quot;uuid&quot;: &quot;${__UUID()}&quot;&#xd;
     }&#xd;
 ]</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
@@ -1883,8 +1880,8 @@
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">1</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
-        <boolProp name="ThreadGroup.scheduler">true</boolProp>
-        <stringProp name="ThreadGroup.duration">100</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
@@ -3132,10 +3129,7 @@
         &quot;disease&quot;: &quot;CORONAVIRUS&quot;,&#xd;
         &quot;followUpStatus&quot;: &quot;FOLLOW_UP&quot;,&#xd;
         &quot;relationToCase&quot;: &quot;SAME_HOUSEHOLD&quot;,&#xd;
-        &quot;uuid&quot;: &quot;${__UUID()}&quot;,&#xd;
-        &quot;vaccinationInfo&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;${__UUID()}&quot;&#xd;
-        }&#xd;
+        &quot;uuid&quot;: &quot;${__UUID()}&quot;&#xd;
     }&#xd;
 ]</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
