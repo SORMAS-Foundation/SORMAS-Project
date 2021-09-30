@@ -70,6 +70,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Run gradle tests
+      - name: Run unit tests
         working-directory: ./sormas-app
-        run: ./gradlew test
+        run: ./gradlew :app:clean :app:assembleDebug :app:test :app:jacocoUnitTestReport
+      
+      - name: Run integration tests
+        uses: reactivecircus/android-emulator-runner@v2
+        working-directory: ./sormas-app
+        with:
+          api-level: 29
+          script: ./gradlew connectedAndroidTest
