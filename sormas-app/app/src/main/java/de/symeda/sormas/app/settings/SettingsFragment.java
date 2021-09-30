@@ -115,7 +115,7 @@ public class SettingsFragment extends BaseLandingFragment {
 			}
 		});
 
-		binding.setData(ConfigProvider.getUser());
+		binding.setData(DatabaseHelper.getUserDao().getByUsername(ConfigProvider.getUsername()));
 		Language initialLanguage = binding.getData() != null ? I18nProperties.getUserLanguage() : LocaleManager.getLanguagePref(getContext());
 		ValueChangeListener languageValueChangeListener = e -> {
 			Language currentLanguage = LocaleManager.getLanguagePref(getContext());
@@ -127,7 +127,8 @@ public class SettingsFragment extends BaseLandingFragment {
 			if (!LocaleManager.getLanguagePref(getContext()).equals(e.getValue())) {
 				try {
 					User user = binding.getData();
-					if (user != null) {
+					if (user != null && !newLanguage.equals(user.getLanguage())) {
+						user.setLanguage(newLanguage);
 						DatabaseHelper.getUserDao().saveAndSnapshot(user);
 					}
 					if (newLanguage != null) {

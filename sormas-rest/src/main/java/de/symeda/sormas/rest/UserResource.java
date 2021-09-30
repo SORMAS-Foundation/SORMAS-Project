@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -31,6 +32,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.user.UserCriteria;
@@ -46,7 +48,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @RolesAllowed("USER")
-public class UserResource {
+public class UserResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
@@ -76,4 +78,10 @@ public class UserResource {
 		return FacadeProvider.getUserFacade().getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
+	@POST
+	@Path("/push")
+	public List<PushResult> postUsers(@Valid List<UserDto> dtos) {
+		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getUserFacade()::saveUser);
+		return result;
+	}
 }

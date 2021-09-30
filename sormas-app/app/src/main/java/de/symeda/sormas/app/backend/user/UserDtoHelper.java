@@ -20,11 +20,22 @@ import java.util.Comparator;
 import java.util.List;
 
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
+import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDtoHelper;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
+import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
@@ -43,7 +54,7 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 
 	@Override
 	protected Class<UserDto> getDtoClass() {
-		throw new UnsupportedOperationException();
+		return UserDto.class;
 	}
 
 	@Override
@@ -58,7 +69,7 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 
 	@Override
 	protected Call<List<PushResult>> pushAll(List<UserDto> userDtos) throws NoConnectionException {
-		throw new UnsupportedOperationException("Can't change users in app");
+		return RetroProvider.getUserFacade().pushAll(userDtos);
 	}
 
 	protected void preparePulledResult(List<UserDto> result) {
@@ -103,9 +114,68 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 	}
 
 	@Override
-	protected void fillInnerFromAdo(UserDto userDto, User user) {
-		// TODO
-		throw new UnsupportedOperationException("Can't change users in app");
+	protected void fillInnerFromAdo(UserDto target, User source) {
+		target.setActive(source.isActive());
+		target.setUserName(source.getUserName());
+		target.setFirstName(source.getFirstName());
+		target.setLastName(source.getLastName());
+		target.setUserEmail(source.getUserEmail());
+		if (source.getUserRoles().size() > 0) {
+			target.setUserRoles(source.getUserRoles());
+		}
+
+		if (source.getRegion() != null) {
+			Region region = DatabaseHelper.getRegionDao().queryForId(source.getRegion().getId());
+			target.setRegion(RegionDtoHelper.toReferenceDto(region));
+		} else {
+			target.setRegion(null);
+		}
+
+		if (source.getDistrict() != null) {
+			District district = DatabaseHelper.getDistrictDao().queryForId(source.getDistrict().getId());
+			target.setDistrict(DistrictDtoHelper.toReferenceDto(district));
+		} else {
+			target.setDistrict(null);
+		}
+
+		if (source.getCommunity() != null) {
+			Community community = DatabaseHelper.getCommunityDao().queryForId(source.getCommunity().getId());
+			target.setCommunity(CommunityDtoHelper.toReferenceDto(community));
+		} else {
+			target.setCommunity(null);
+		}
+
+		if (source.getHealthFacility() != null) {
+			Facility facility = DatabaseHelper.getFacilityDao().queryForId(source.getHealthFacility().getId());
+			target.setHealthFacility(FacilityDtoHelper.toReferenceDto(facility));
+		} else {
+			target.setHealthFacility(null);
+		}
+
+		if (source.getPointOfEntry() != null) {
+			PointOfEntry pointOfEntry = DatabaseHelper.getPointOfEntryDao().queryForId(source.getPointOfEntry().getId());
+			target.setPointOfEntry(PointOfEntryDtoHelper.toReferenceDto(pointOfEntry));
+		} else {
+			target.setPointOfEntry(null);
+		}
+
+		if (source.getAssociatedOfficer() != null) {
+			User user = DatabaseHelper.getUserDao().queryForId(source.getAssociatedOfficer().getId());
+			target.setAssociatedOfficer(UserDtoHelper.toReferenceDto(user));
+		}
+		target.setLimitedDisease(source.getLimitedDisease());
+
+		if (source.getAddress() != null) {
+			if (target.getAddress() == null) {
+				target.setAddress(new LocationDto());
+			}
+			locationHelper.fillInnerFromAdo(target.getAddress(), source.getAddress());
+		} else {
+			target.setAddress(null);
+		}
+
+		target.setPhone(source.getPhone());
+		target.setLanguage(source.getLanguage());
 	}
 
 	public static UserReferenceDto toReferenceDto(User ado) {

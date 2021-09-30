@@ -17,6 +17,7 @@ package de.symeda.sormas.app.rest;
 
 import java.util.List;
 
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.user.UserDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -37,4 +38,7 @@ public interface UserFacadeRetro {
 
 	@GET("users/uuids")
 	Call<List<String>> pullUuids();
+
+	@POST("users/push")
+	Call<List<PushResult>> pushAll(@Body List<UserDto> dtos);
 }

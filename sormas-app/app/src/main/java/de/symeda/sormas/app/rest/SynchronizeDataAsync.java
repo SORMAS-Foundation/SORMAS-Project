@@ -15,18 +15,18 @@
 
 package de.symeda.sormas.app.rest;
 
-import android.content.Context;
-import android.os.AsyncTask;
-import android.util.Log;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.AddTrace;
 import com.google.firebase.perf.metrics.Trace;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
@@ -242,6 +242,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 	@AddTrace(name = "synchronizeChangedDataTrace")
 	private void synchronizeChangedData() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
+		UserDtoHelper userDtoHelper = new UserDtoHelper();
 		PersonDtoHelper personDtoHelper = new PersonDtoHelper();
 		CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
 		ImmunizationDtoHelper immunizationDtoHelper = new ImmunizationDtoHelper();
@@ -265,6 +266,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new DiseaseConfigurationDtoHelper().pullEntities(false);
 		new CustomizableEnumValueDtoHelper().pullEntities(false);
 
+		boolean usersNeedPull = userDtoHelper.pullAndPushEntities();
 		boolean personsNeedPull = personDtoHelper.pullAndPushEntities();
 		boolean casesNeedPull = caseDtoHelper.pullAndPushEntities();
 		boolean immunizationsNeedPull = immunizationDtoHelper.pullAndPushEntities();
@@ -284,6 +286,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		casesNeedPull |= clinicalVisitsNeedPull;
 
+		if (usersNeedPull)
+			userDtoHelper.pushEntities(false);
 		if (personsNeedPull)
 			personDtoHelper.pullEntities(true);
 		if (casesNeedPull)
@@ -497,7 +501,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			}
 
 			// Immunization
-			List<String> immunizationUuids = executeUuidCall(RetroProvider.getImmunizationFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+			List<String> immunizationUuids =
+				executeUuidCall(RetroProvider.getImmunizationFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
 			for (String immunizationUuid : immunizationUuids) {
 				DatabaseHelper.getImmunizationDao().deleteImmunizationAndAllDependingEntities(immunizationUuid);
 			}
@@ -544,6 +549,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// first push everything that has been CREATED by the user - otherwise this data my lose it's references to other entities.
 		// Example: Case is created using an existing person, meanwhile user loses access to the person
+		new UserDtoHelper().pushEntities(false);
 		new PersonDtoHelper().pushEntities(true);
 		new CaseDtoHelper().pushEntities(true);
 		new ImmunizationDtoHelper().pushEntities(true);
