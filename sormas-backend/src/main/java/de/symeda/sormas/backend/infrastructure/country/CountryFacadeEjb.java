@@ -208,20 +208,20 @@ public class CountryFacadeEjb implements CountryFacade {
 		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
 		}
-		if (dto.getUuid() != null) {
-			if (!userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
-				throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to edit country.");
-			}
-		} else {
-			if (!userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
-				throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to create country.");
-			}
-		}
+
 		if (StringUtils.isBlank(dto.getIsoCode())) {
 			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
 		}
 
 		Country country = countryService.getByUuid(dto.getUuid());
+
+		if (country != null && !userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to edit country.");
+		}
+
+		if (country == null && !userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to create country.");
+		}
 
 		if (country == null) {
 			Optional<Country> byIsoCode = countryService.getByIsoCode(dto.getIsoCode(), true);

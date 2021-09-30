@@ -289,21 +289,19 @@ public class DistrictFacadeEjb implements DistrictFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
 		}
 
-		if (dto.getUuid() != null) {
-			if (!userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
-				throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to edit district.");
-			}
-		} else {
-			if (!userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
-				throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to create district.");
-			}
-		}
-
 		if (dto.getRegion() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
 		}
 
 		District district = districtService.getByUuid(dto.getUuid());
+
+		if (district != null && !userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to edit district.");
+		}
+
+		if (district == null && !userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to create district.");
+		}
 
 		if (district == null) {
 			List<DistrictReferenceDto> duplicates = getByName(dto.getName(), dto.getRegion(), true);

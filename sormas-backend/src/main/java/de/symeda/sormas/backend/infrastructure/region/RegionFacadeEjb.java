@@ -362,18 +362,16 @@ public class RegionFacadeEjb implements RegionFacade {
 		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
 		}
-		if (dto.getUuid() != null) {
-			if (!userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
-				throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to edit region.");
-			}
-		} else {
-			if (!userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
-				throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to create region.");
-			}
-		}
 
 		Region region = regionService.getByUuid(dto.getUuid());
 
+		if (region != null && !userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to edit region.");
+		}
+
+		if (region == null && !userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to create region.");
+		}
 		if (region == null) {
 			List<Region> duplicates = regionService.getByName(dto.getName(), true);
 			if (!duplicates.isEmpty()) {

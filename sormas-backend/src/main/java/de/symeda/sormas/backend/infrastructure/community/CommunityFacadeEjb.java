@@ -287,21 +287,20 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
 		}
-		if (dto.getUuid() != null) {
-			if (!userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
-				throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to edit community.");
-			}
-		} else {
-			if (!userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
-				throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to create community.");
-			}
-		}
 
 		if (dto.getDistrict() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
 
 		Community community = communityService.getByUuid(dto.getUuid());
+
+		if (community != null && !userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to edit community.");
+		}
+
+		if (community == null && !userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to create community.");
+		}
 
 		if (community == null) {
 			List<CommunityReferenceDto> duplicates = getByName(dto.getName(), dto.getDistrict(), true);
