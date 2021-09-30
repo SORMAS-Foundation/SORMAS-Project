@@ -43,7 +43,6 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		this.userService = userService;
 	}
 
-	// FIXME(@JonasCir) #6821: Add missing functions like save, getByUuid etc
 
 	@Override
 	public DTO save(DTO dtoToSave) {
