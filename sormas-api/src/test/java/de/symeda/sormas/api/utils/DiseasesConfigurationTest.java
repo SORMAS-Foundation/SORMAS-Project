@@ -56,12 +56,12 @@ public class DiseasesConfigurationTest {
 	@Test
 	public void testIsDefined() {
 
-		assertFalse(DiseasesConfiguration.isDefinedAndNotMissing(TestClass.class, "testNone", Disease.NEW_INFLUENZA));
-		assertFalse(DiseasesConfiguration.isDefinedAndNotMissing(TestClass.class, "testEmpty", Disease.NEW_INFLUENZA));
-		assertFalse(DiseasesConfiguration.isDefinedAndNotMissing(TestClass.class, "testOne", Disease.NEW_INFLUENZA));
-		assertTrue(DiseasesConfiguration.isDefinedAndNotMissing(TestClass.class, "testOne", Disease.EVD));
-		assertFalse(DiseasesConfiguration.isDefinedAndNotMissing(TestClass.class, "testMultiple", Disease.NEW_INFLUENZA));
-		assertTrue(DiseasesConfiguration.isDefinedAndNotMissing(TestClass.class, "testMultiple", Disease.CHOLERA));
-		assertTrue(DiseasesConfiguration.isDefinedAndNotMissing(TestClass.class, "testMultiple", Disease.CSM));
+		assertFalse(DiseasesConfiguration.isDefined(TestClass.class, "testNone", Disease.NEW_INFLUENZA));
+		assertFalse(DiseasesConfiguration.isDefined(TestClass.class, "testEmpty", Disease.NEW_INFLUENZA));
+		assertFalse(DiseasesConfiguration.isDefined(TestClass.class, "testOne", Disease.NEW_INFLUENZA));
+		assertTrue(DiseasesConfiguration.isDefined(TestClass.class, "testOne", Disease.EVD));
+		assertFalse(DiseasesConfiguration.isDefined(TestClass.class, "testMultiple", Disease.NEW_INFLUENZA));
+		assertTrue(DiseasesConfiguration.isDefined(TestClass.class, "testMultiple", Disease.CHOLERA));
+		assertTrue(DiseasesConfiguration.isDefined(TestClass.class, "testMultiple", Disease.CSM));
 	}
 }

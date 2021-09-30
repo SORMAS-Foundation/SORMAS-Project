@@ -57,7 +57,7 @@ public @interface Diseases {
 				return true;
 			}
 
-			return isDefinedAndNotMissing(clazz, propertyName, disease);
+			return isDefined(clazz, propertyName, disease);
 		}
 
 		public static boolean isMissing(Class<?> clazz, String propertyName, Disease disease) {
@@ -75,7 +75,7 @@ public @interface Diseases {
 			return false;
 		}
 
-		public static boolean isDefinedAndNotMissing(Class<?> clazz, String propertyName, Disease disease) {
+		public static boolean isDefined(Class<?> clazz, String propertyName, Disease disease) {
 
 			if (!diseaseConfigCache.containsKey(clazz)) {
 				readDiseaseConfig(clazz);

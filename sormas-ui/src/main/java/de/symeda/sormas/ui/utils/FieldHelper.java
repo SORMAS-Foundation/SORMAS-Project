@@ -442,7 +442,7 @@ public final class FieldHelper {
 						continue;
 					}
 
-					if (disease == null || Diseases.DiseasesConfiguration.isDefinedAndNotMissing(SymptomsDto.class, targetField.getId(), disease)) {
+					if (disease == null || Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, targetField.getId(), disease)) {
 						targetField.setRequired(required);
 					}
 				}
@@ -457,7 +457,7 @@ public final class FieldHelper {
 						continue;
 					}
 
-					if (disease == null || Diseases.DiseasesConfiguration.isDefinedAndNotMissing(SymptomsDto.class, targetField.getId(), disease)) {
+					if (disease == null || Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, targetField.getId(), disease)) {
 						targetField.setRequired(required);
 					}
 				}
@@ -711,7 +711,7 @@ public final class FieldHelper {
 			boolean required = sourceValues.contains(getNullableSourceFieldValue(sourceField));
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
-				if (disease == null || Diseases.DiseasesConfiguration.isDefinedAndNotMissing(SymptomsDto.class, (String) targetPropertyId, disease)) {
+				if (disease == null || Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
 					if (required) {
 						addSoftRequiredStyle(targetField);
 					} else {
@@ -725,7 +725,7 @@ public final class FieldHelper {
 			boolean required = sourceValues.contains(getNullableSourceFieldValue(((Field) event.getProperty())));
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
-				if (disease == null || Diseases.DiseasesConfiguration.isDefinedAndNotMissing(SymptomsDto.class, (String) targetPropertyId, disease)) {
+				if (disease == null || Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class, (String) targetPropertyId, disease)) {
 					if (required) {
 						addSoftRequiredStyle(targetField);
 					} else {
