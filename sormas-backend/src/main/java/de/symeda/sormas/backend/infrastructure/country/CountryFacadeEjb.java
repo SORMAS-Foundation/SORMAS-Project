@@ -40,10 +40,10 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.feature.FeatureType;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryCriteria;
@@ -52,6 +52,7 @@ import de.symeda.sormas.api.infrastructure.country.CountryFacade;
 import de.symeda.sormas.api.infrastructure.country.CountryIndexDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -206,6 +207,15 @@ public class CountryFacadeEjb implements CountryFacade {
 
 		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
+		if (dto.getUuid() != null) {
+			if (!userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
+				throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to edit country.");
+			}
+		} else {
+			if (!userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
+				throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to create country.");
+			}
 		}
 		if (StringUtils.isBlank(dto.getIsoCode())) {
 			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
@@ -363,7 +373,6 @@ public class CountryFacadeEjb implements CountryFacade {
 
 		return em.createQuery(cq).getResultList();
 	}
-
 
 	@Override
 	public CountryDto getByUuid(String uuid) {

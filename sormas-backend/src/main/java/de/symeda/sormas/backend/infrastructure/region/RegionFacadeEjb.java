@@ -49,6 +49,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionIndexDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -360,6 +361,15 @@ public class RegionFacadeEjb implements RegionFacade {
 
 		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
+		if (dto.getUuid() != null) {
+			if (!userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
+				throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to edit region.");
+			}
+		} else {
+			if (!userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
+				throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to create region.");
+			}
 		}
 
 		Region region = regionService.getByUuid(dto.getUuid());

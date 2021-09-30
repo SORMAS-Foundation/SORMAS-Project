@@ -50,6 +50,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictFacade;
 import de.symeda.sormas.api.infrastructure.district.DistrictIndexDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -286,6 +287,16 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
+
+		if (dto.getUuid() != null) {
+			if (!userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
+				throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to edit district.");
+			}
+		} else {
+			if (!userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
+				throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to create district.");
+			}
 		}
 
 		if (dto.getRegion() == null) {

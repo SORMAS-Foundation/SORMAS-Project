@@ -49,6 +49,7 @@ import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -285,6 +286,15 @@ public class CommunityFacadeEjb implements CommunityFacade {
 
 		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
+		if (dto.getUuid() != null) {
+			if (!userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
+				throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to edit community.");
+			}
+		} else {
+			if (!userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
+				throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to create community.");
+			}
 		}
 
 		if (dto.getDistrict() == null) {
