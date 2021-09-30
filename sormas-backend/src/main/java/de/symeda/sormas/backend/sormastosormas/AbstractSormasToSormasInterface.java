@@ -71,6 +71,7 @@ import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.entities.SyncDataDto;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
 import de.symeda.sormas.backend.sormastosormas.share.ShareRequestData;
@@ -97,6 +98,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	private UserService userService;
 	@Inject
 	private SormasToSormasRestClient sormasToSormasRestClient;
+	@EJB
+	private SormasToSormasOriginInfoService originInfoService;
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
 	@EJB
@@ -280,8 +283,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		return sormasToSormasEncryptionEjb.signAndEncrypt(shareData, requestInfo.getShares().get(0).getOrganizationId());
 	}
 
-	@Override
-	public void shareEntities(List<String> entityUuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
+	private void shareEntities(List<String> entityUuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
 		User currentUser = userService.getCurrentUser();
 		List<ADO> entities = getEntityService().getByUuids(entityUuids);
 
@@ -289,12 +291,20 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		ensureConsistentOptions(options);
 
 		String requestUuid = DataHelper.createUuid();
-		ShareRequestInfo requestInfo = createShareRequestInfoForEntities(requestUuid, ShareRequestStatus.PENDING, options, entities, currentUser);
+		ShareRequestInfo requestInfo = createShareRequestInfoForEntities(requestUuid, ShareRequestStatus.ACCEPTED, options, entities, currentUser);
 		SormasToSormasDto dataToSend = shareDataBuilder.buildShareDataForRequest(requestInfo, currentUser);
 
 		sormasToSormasRestClient.post(options.getOrganization().getId(), saveEndpoint, dataToSend, null);
 
 		shareRequestInfoService.ensurePersisted(requestInfo);
+
+		entities.forEach(e -> {
+			SormasToSormasOriginInfo entityOriginInfo = e.getSormasToSormasOriginInfo();
+			if (entityOriginInfo != null) {
+				entityOriginInfo.setOwnershipHandedOver(!options.isHandOverOwnership());
+				originInfoService.ensurePersisted(entityOriginInfo);
+			}
+		});
 
 		try {
 			shareInfoService.handleOwnershipChangeInExternalSurvTool(requestInfo);

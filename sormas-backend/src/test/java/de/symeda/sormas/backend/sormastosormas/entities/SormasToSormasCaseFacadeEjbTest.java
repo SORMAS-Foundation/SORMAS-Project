@@ -155,7 +155,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 				return Response.noContent().build();
 			});
 
-		getSormasToSormasCaseFacade().shareEntities(Collections.singletonList(caze.getUuid()), options);
+		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
 
 		List<SormasToSormasShareInfoDto> shareInfoList =
 			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().caze(caze.toReference()), 0, 100);
@@ -202,7 +202,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 				return Response.noContent().build();
 			});
 
-		getSormasToSormasCaseFacade().shareEntities(Collections.singletonList(caze.getUuid()), options);
+		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
 
 		List<SormasToSormasShareInfoDto> shareInfoList =
 			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().contact(contact.toReference()), 0, 100);
@@ -279,7 +279,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 				return Response.noContent().build();
 			});
 
-		getSormasToSormasCaseFacade().shareEntities(Collections.singletonList(caze.getUuid()), options);
+		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
 
 		List<SormasToSormasShareInfoDto> shareInfoList =
 			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().sample(caseSample.toReference()), 0, 100);
@@ -549,7 +549,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 				return Response.noContent().build();
 			});
 
-		getSormasToSormasCaseFacade().shareEntities(Collections.singletonList(caze.getUuid()), options);
+		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
 	}
 
 	@Test
@@ -591,7 +591,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 				return Response.noContent().build();
 			});
 
-		getSormasToSormasCaseFacade().shareEntities(Collections.singletonList(caze.getUuid()), options);
+		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
 	}
 
 	@Test

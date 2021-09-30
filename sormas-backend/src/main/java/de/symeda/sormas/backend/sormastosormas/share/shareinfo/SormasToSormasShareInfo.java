@@ -67,7 +67,7 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 		requests = new ArrayList<>();
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Case getCaze() {
 		return caze;
 	}
@@ -76,7 +76,7 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 		this.caze = caze;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Contact getContact() {
 		return contact;
 	}
@@ -85,7 +85,7 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 		this.contact = contact;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Sample getSample() {
 		return sample;
 	}
@@ -94,7 +94,7 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 		this.sample = sample;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Event getEvent() {
 		return event;
 	}
@@ -103,7 +103,7 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 		this.event = event;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	public EventParticipant getEventParticipant() {
 		return eventParticipant;
 	}

@@ -120,7 +120,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 				return Response.noContent().build();
 			});
 
-		getSormasToSormasContactFacade().shareEntities(Collections.singletonList(contact.getUuid()), options);
+		getSormasToSormasContactFacade().share(Collections.singletonList(contact.getUuid()), options);
 
 		List<SormasToSormasShareInfoDto> shareInfoList =
 			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().contact(contact.toReference()), 0, 100);
@@ -183,7 +183,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 				return Response.noContent().build();
 			});
 
-		getSormasToSormasContactFacade().shareEntities(Collections.singletonList(contact.getUuid()), options);
+		getSormasToSormasContactFacade().share(Collections.singletonList(contact.getUuid()), options);
 
 		List<SormasToSormasShareInfoDto> shareInfoList =
 			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().sample(sample.toReference()), 0, 100);

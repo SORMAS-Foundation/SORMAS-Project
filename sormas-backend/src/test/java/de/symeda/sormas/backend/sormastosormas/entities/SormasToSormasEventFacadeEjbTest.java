@@ -147,7 +147,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 				return Response.noContent().build();
 			});
 
-		getSormasToSormasEventFacade().shareEntities(Collections.singletonList(event.getUuid()), options);
+		getSormasToSormasEventFacade().share(Collections.singletonList(event.getUuid()), options);
 
 		List<SormasToSormasShareInfoDto> shareInfoList =
 			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().event(event.toReference()), 0, 100);
@@ -225,7 +225,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 				return Response.noContent().build();
 			});
 
-		getSormasToSormasEventFacade().shareEntities(Collections.singletonList(event.getUuid()), options);
+		getSormasToSormasEventFacade().share(Collections.singletonList(event.getUuid()), options);
 
 		List<SormasToSormasShareInfoDto> shareInfoList =
 			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().event(event.toReference()), 0, 100);

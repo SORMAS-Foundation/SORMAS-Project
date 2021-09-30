@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.sormastosormas.share.sharerequest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
@@ -28,6 +29,13 @@ public class ShareRequestPreviews {
 	private final List<SormasToSormasContactPreview> contacts;
 	private final List<SormasToSormasEventPreview> events;
 	private final List<SormasToSormasEventParticipantPreview> eventParticipants;
+
+	public ShareRequestPreviews() {
+		cases = new ArrayList<>(0);
+		contacts = new ArrayList<>(0);
+		events = new ArrayList<>(0);
+		eventParticipants = new ArrayList<>(0);
+	}
 
 	public ShareRequestPreviews(
 		List<SormasToSormasCasePreview> cases,
