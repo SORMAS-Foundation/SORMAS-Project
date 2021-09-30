@@ -44,6 +44,7 @@ public class TravelEntryDto extends PseudonymizableDto {
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 
 	public static final String RECOVERED = "recovered";
 	public static final String VACCINATED = "vaccinated";
@@ -85,6 +86,9 @@ public class TravelEntryDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String diseaseVariantDetails;
 	private RegionReferenceDto responsibleRegion;
 	private DistrictReferenceDto responsibleDistrict;
 	private CommunityReferenceDto responsibleCommunity;
@@ -205,6 +209,14 @@ public class TravelEntryDto extends PseudonymizableDto {
 
 	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
+	}
+
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	public RegionReferenceDto getResponsibleRegion() {

@@ -73,18 +73,18 @@ import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
@@ -223,15 +223,12 @@ public class CaseController {
 			if (uuid == null) {
 				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null, null, false);
 				caseCreateComponent.addCommitListener(() -> {
-					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
-					updatedContact.setContactClassification(ContactClassification.CONFIRMED);
-					FacadeProvider.getContactFacade().saveContact(updatedContact);
-					if (updatedContact.getResultingCase() != null) {
-						String caseUuid = updatedContact.getResultingCase().getUuid();
+					if (contact.getResultingCase() != null) {
+						String caseUuid = contact.getResultingCase().getUuid();
 						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 						convertSamePersonContactsAndEventparticipants(
 							caze,
-							ContactLogic.getStartDate(updatedContact.getLastContactDate(), updatedContact.getReportDateTime()));
+							ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime()));
 					}
 				});
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
@@ -538,7 +535,7 @@ public class CaseController {
 			|| (convertedEventParticipant == null && convertedTravelEntry == null));
 		assert (unrelatedDisease == null || (convertedEventParticipant == null && convertedTravelEntry == null));
 
-		CaseCreateForm createForm = new CaseCreateForm();
+		CaseCreateForm createForm = new CaseCreateForm(convertedTravelEntry);
 
 		CaseDataDto caze;
 		PersonDto person;

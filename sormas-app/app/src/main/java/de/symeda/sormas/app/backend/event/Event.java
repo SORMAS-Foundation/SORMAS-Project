@@ -220,6 +220,9 @@ public class Event extends PseudonymizableAdo {
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String diseaseDetails;
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	private String diseaseVariantDetails;
+
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "surveillanceOfficer_id")
 	private User responsibleUser;
 
@@ -567,6 +570,14 @@ public class Event extends PseudonymizableAdo {
 
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	public User getResponsibleUser() {

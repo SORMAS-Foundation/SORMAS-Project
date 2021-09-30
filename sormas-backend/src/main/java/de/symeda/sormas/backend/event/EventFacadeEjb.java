@@ -105,9 +105,6 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.location.LocationFacadeEjb;
-import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
@@ -654,6 +651,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_VARIANT),
 			event.get(Event.DISEASE_DETAILS),
+			event.get(Event.DISEASE_VARIANT_DETAILS),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
 			event.get(Event.EVOLUTION_DATE),
@@ -1034,6 +1032,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setDisease(source.getDisease());
 		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
 		target.setResponsibleUser(UserFacadeEjb.toReferenceDto(source.getResponsibleUser()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
@@ -1162,6 +1161,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setDisease(source.getDisease());
 		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
 		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
