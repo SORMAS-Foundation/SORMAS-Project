@@ -618,8 +618,6 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		caseData.setResponsibleRegion(travelEntry.getResponsibleRegion());
 		caseData.setResponsibleDistrict(travelEntry.getResponsibleDistrict());
 		caseData.setResponsibleCommunity(travelEntry.getResponsibleCommunity());
-		caseData.setRegion(travelEntry.getPointOfEntryRegion());
-		caseData.setDistrict(travelEntry.getPointOfEntryDistrict());
 		caseData.setPointOfEntry(travelEntry.getPointOfEntry());
 		caseData.setPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
 		caseData.setReportDate(travelEntry.getReportDate());
