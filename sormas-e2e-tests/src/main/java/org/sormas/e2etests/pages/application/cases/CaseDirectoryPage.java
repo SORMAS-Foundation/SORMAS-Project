@@ -22,6 +22,7 @@ import org.openqa.selenium.By;
 
 public class CaseDirectoryPage {
   public static final By NEW_CASE_BUTTON = By.cssSelector("div#caseNewCase");
+  public static final By TOTAL_CASES_COUNTER = By.cssSelector(".badge");
   public static final By CASE_DIRECTORY_DETAILED_RADIOBUTTON =
       By.cssSelector("#contactsViewSwitcher span:nth-child(2)");
   public static final By CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT =
@@ -60,4 +61,5 @@ public class CaseDirectoryPage {
   public static final By CASE_CLASSIFICATION_COLUMNS =
       By.cssSelector("[role=rowgroup] tr>td:nth-child(7)");
   public static final String RESULTS_GRID_HEADER = "//div[contains(text(), '%s')]";
+  // TODO refactor the other headers based on the last one added
 }

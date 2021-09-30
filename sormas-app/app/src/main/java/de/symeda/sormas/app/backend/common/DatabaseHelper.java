@@ -187,10 +187,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private static DatabaseHelper instance = null;
 
 	public static void init(Context context) {
+		init(context, DATABASE_NAME);
+	}
+
+	public static void init(Context context, String databaseName) {
 		if (instance != null) {
 			Log.e(DatabaseHelper.class.getName(), "DatabaseHelper has already been initalized");
 		}
-		instance = new DatabaseHelper(context);
+		instance = new DatabaseHelper(context, databaseName);
 	}
 
 	private boolean clearingTables = false;
@@ -204,8 +208,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	private LbdsSyncDao lbdsSyncDao = null;
 
-	private DatabaseHelper(Context context) {
-		super(context, DATABASE_NAME, null, DATABASE_VERSION);//, R.raw.ormlite_config);
+	private DatabaseHelper(Context context, String databaseName) {
+		super(context, databaseName, null, DATABASE_VERSION);//, R.raw.ormlite_config);
 		this.context = context;
 		// HACK to make sure database is initialized - otherwise we could run into problems caused by threads
 		this.getReadableDatabase();

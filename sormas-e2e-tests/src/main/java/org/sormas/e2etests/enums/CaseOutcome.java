@@ -20,28 +20,35 @@ package org.sormas.e2etests.enums;
 
 import java.util.Random;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum CaseOutcome {
   NO_OUTCOME("No Outcome Yet"),
-  NOT_CLASSIFIED("Not yet classified"),
-  PENDING("Investigation pending"),
+  NOT_YET_CLASSIFIED("Not yet classified"),
+  INVESTIGATION_PENDING("Investigation pending"),
   DECEASED("Deceased"),
   RECOVERED("Recovered"),
-  UNKNOWN("Unknown"),
-  CORONAVIRUS("COVID-19"),
-  RESPONSIBLE_REGION("Voreingestellte Bundesl"),
-  RESPONSIBLE_DISTRICT("Voreingestellter Landkreis"),
-  HEALTH_FACILITY("Standard Einrichtung - Details");
+  UNKNOWN("Unknown");
+  // TODO refactor all these values to cover UI values and API values to have a common Enum for both
 
-  private final String outcome;
+  private final String name;
 
-  CaseOutcome(String outcomeCase) {
-    outcome = outcomeCase;
+  CaseOutcome(String name) {
+    this.name = name;
   }
 
   public static String getRandomOutcome() {
     Random random = new Random();
     return String.valueOf(CaseOutcome.values()[random.nextInt(values().length)]);
+  }
+
+  @SneakyThrows
+  public static String getValueFor(String option) {
+    CaseOutcome[] caseOutcomeOptions = CaseOutcome.values();
+    for (CaseOutcome value : caseOutcomeOptions) {
+      if (value.getName().equalsIgnoreCase(option)) return value.getName();
+    }
+    throw new Exception("Unable to find " + option + " value in CaseOutcome Enum");
   }
 }
