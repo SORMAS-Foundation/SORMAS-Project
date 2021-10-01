@@ -419,13 +419,13 @@ public class CaseBackendTest {
 	}
 
 	@Test
-	public void testEditCasePermissionWhenRegionMatch() throws DaoException, SQLException {
+	public void testEditCasePermissionWhenRegionMatch() {
 		Case caze = TestEntityCreator.createCase();
 		assertTrue(CaseEditAuthorization.isCaseEditAllowed(caze));
 	}
 
 	@Test
-	public void testEditCasePermissionWhenFacilityDoesNotMatchAndCaseNotCreatedByUser() throws DaoException, SQLException {
+	public void testEditCasePermissionWhenFacilityDoesNotMatchAndCaseNotCreatedByUser() {
 		Case caze = TestEntityCreator.createCase();
 		caze.setHealthFacility(null);
 
@@ -441,7 +441,7 @@ public class CaseBackendTest {
 	}
 
 	@Test
-	public void testEditCasePermissionWhenDistrictDoesNotMatchAndCaseNotCreatedByUser() throws DaoException, SQLException {
+	public void testEditCasePermissionWhenDistrictDoesNotMatchAndCaseNotCreatedByUser() {
 		Case caze = TestEntityCreator.createCase();
 		District secondDistrict = DatabaseHelper.getDistrictDao().queryUuid(TestHelper.SECOND_DISTRICT_UUID);
 		caze.setResponsibleDistrict(secondDistrict);
@@ -453,6 +453,166 @@ public class CaseBackendTest {
 		ConfigProvider.getUser().setUserRoles(userRoles);
 		ConfigProvider.getUser().setUuid("");
 
+		User user = ConfigProvider.getUser();
+
 		assertFalse(CaseEditAuthorization.isCaseEditAllowed(caze));
+	}
+
+	@Test
+	public void testTaskReassignmentAfterChangedCaseCommunity() throws DaoException {
+		CaseDao caseDao = DatabaseHelper.getCaseDao();
+		Case caze = TestEntityCreator.createCase();
+
+		caze.setRegion(caze.getResponsibleRegion());
+		caze.setDistrict(caze.getResponsibleDistrict());
+		caze.setCommunity(caze.getResponsibleCommunity());
+		caseDao.saveAndSnapshot(caze);
+
+		User user = ConfigProvider.getUser();
+		user.setCommunity(caze.getCommunity());
+
+		UserRole userRole = UserRole.COMMUNITY_OFFICER;
+		Set<UserRole> userRoles = new HashSet<>();
+		userRoles.add(userRole);
+		user.setUserRoles(userRoles);
+		DatabaseHelper.getUserDao().saveAndSnapshot(user);
+
+		TaskDao taskDao = DatabaseHelper.getTaskDao();
+		Task task = TestEntityCreator.createCaseTask(caze, TaskStatus.PENDING, user);
+
+		caze = caseDao.queryUuidBasic(caze.getUuid());
+		assertEquals(TestHelper.USER_UUID, caze.getSurveillanceOfficer().getUuid());
+
+		assertEquals(caze.getResponsibleRegion().getUuid(), TestHelper.REGION_UUID);
+		assertEquals(caze.getResponsibleDistrict().getUuid(), TestHelper.DISTRICT_UUID);
+		assertEquals(caze.getResponsibleCommunity().getUuid(), TestHelper.COMMUNITY_UUID);
+		assertEquals(caze.getRegion().getUuid(), TestHelper.REGION_UUID);
+		assertEquals(caze.getDistrict().getUuid(), TestHelper.DISTRICT_UUID);
+		assertEquals(caze.getCommunity().getUuid(), TestHelper.COMMUNITY_UUID);
+		assertEquals(caze.getHealthFacility().getUuid(), TestHelper.FACILITY_UUID);
+
+		task = taskDao.queryUuid(task.getUuid());
+		assertEquals(TestHelper.USER_UUID, task.getAssigneeUser().getUuid());
+
+		// ResponsibleDistrict and ResponsibleCommunity changed,
+		// but District and Community still in user's jurisdiction
+		District secondDistrict = DatabaseHelper.getDistrictDao().queryUuid(TestHelper.SECOND_DISTRICT_UUID);
+		Community secondCommunity = DatabaseHelper.getCommunityDao().queryUuid(TestHelper.SECOND_COMMUNITY_UUID);
+
+		caze.setResponsibleDistrict(secondDistrict);
+		caze.setResponsibleCommunity(secondCommunity);
+		caze.setDistrict(secondDistrict);
+		caseDao.saveAndSnapshot(caze);
+
+		task = taskDao.queryUuid(task.getUuid());
+		assertEquals(TestHelper.USER_UUID, task.getAssigneeUser().getUuid());
+
+		caze = caseDao.queryUuidBasic(caze.getUuid());
+		assertEquals(TestHelper.SECOND_USER_UUID, caze.getSurveillanceOfficer().getUuid());
+
+		// Case not in user's jurisdiction anymore
+		caze.setCommunity(null);
+		caseDao.saveAndSnapshot(caze);
+
+		task = taskDao.queryUuid(task.getUuid());
+		assertEquals(TestHelper.SECOND_USER_UUID, task.getAssigneeUser().getUuid());
+	}
+
+	@Test
+	public void testTaskReassignmentAfterChangedCaseDistrict() throws DaoException {
+		CaseDao caseDao = DatabaseHelper.getCaseDao();
+		Case caze = TestEntityCreator.createCase();
+
+		caze.setRegion(caze.getResponsibleRegion());
+		caze.setDistrict(caze.getResponsibleDistrict());
+		caze.setCommunity(caze.getResponsibleCommunity());
+		caseDao.saveAndSnapshot(caze);
+
+		User user = ConfigProvider.getUser();
+
+		UserRole userRole = UserRole.SURVEILLANCE_OFFICER;
+		Set<UserRole> userRoles = new HashSet<>();
+		userRoles.add(userRole);
+		user.setUserRoles(userRoles);
+		DatabaseHelper.getUserDao().saveAndSnapshot(user);
+
+		TaskDao taskDao = DatabaseHelper.getTaskDao();
+		Task task = TestEntityCreator.createCaseTask(caze, TaskStatus.PENDING, user);
+
+		assertEquals(caze.getResponsibleRegion().getUuid(), TestHelper.REGION_UUID);
+		assertEquals(caze.getResponsibleDistrict().getUuid(), TestHelper.DISTRICT_UUID);
+		assertEquals(caze.getResponsibleCommunity().getUuid(), TestHelper.COMMUNITY_UUID);
+		assertEquals(caze.getRegion().getUuid(), TestHelper.REGION_UUID);
+		assertEquals(caze.getDistrict().getUuid(), TestHelper.DISTRICT_UUID);
+		assertEquals(caze.getCommunity().getUuid(), TestHelper.COMMUNITY_UUID);
+		assertEquals(caze.getHealthFacility().getUuid(), TestHelper.FACILITY_UUID);
+
+		task = taskDao.queryUuid(task.getUuid());
+		assertEquals(TestHelper.USER_UUID, task.getAssigneeUser().getUuid());
+
+		// ResponsibleDistrict changed, but District still in user's jurisdiction
+		District secondDistrict = DatabaseHelper.getDistrictDao().queryUuid(TestHelper.SECOND_DISTRICT_UUID);
+		Community secondCommunity = DatabaseHelper.getCommunityDao().queryUuid(TestHelper.SECOND_COMMUNITY_UUID);
+
+		caze.setResponsibleDistrict(secondDistrict);
+		caze.setResponsibleCommunity(secondCommunity);
+		caseDao.saveAndSnapshot(caze);
+
+		task = taskDao.queryUuid(task.getUuid());
+		assertEquals(TestHelper.USER_UUID, task.getAssigneeUser().getUuid());
+
+		// Case not in user's jurisdiction anymore
+		caze.setDistrict(secondDistrict);
+		caze.setCommunity(null);
+		caseDao.saveAndSnapshot(caze);
+
+		task = taskDao.queryUuid(task.getUuid());
+		assertEquals(TestHelper.SECOND_USER_UUID, task.getAssigneeUser().getUuid());
+	}
+
+	@Test
+	public void testTaskReassignmentAfterChangedCaseFacility() throws DaoException {
+		CaseDao caseDao = DatabaseHelper.getCaseDao();
+		Case caze = TestEntityCreator.createCase();
+
+		User user = ConfigProvider.getUser();
+		user.setHealthFacility(caze.getHealthFacility());
+
+		UserRole userRole = UserRole.HOSPITAL_INFORMANT;
+		Set<UserRole> userRoles = new HashSet<>();
+		userRoles.add(userRole);
+		user.setUserRoles(userRoles);
+		DatabaseHelper.getUserDao().saveAndSnapshot(user);
+
+		TaskDao taskDao = DatabaseHelper.getTaskDao();
+		Task task = TestEntityCreator.createCaseTask(caze, TaskStatus.PENDING, user);
+
+		caze = caseDao.queryUuidBasic(caze.getUuid());
+		assertEquals(TestHelper.USER_UUID, caze.getSurveillanceOfficer().getUuid());
+
+		assertEquals(caze.getResponsibleRegion().getUuid(), TestHelper.REGION_UUID);
+		assertEquals(caze.getResponsibleDistrict().getUuid(), TestHelper.DISTRICT_UUID);
+		assertEquals(caze.getResponsibleCommunity().getUuid(), TestHelper.COMMUNITY_UUID);
+		assertEquals(caze.getHealthFacility().getUuid(), TestHelper.FACILITY_UUID);
+
+		task = taskDao.queryUuid(task.getUuid());
+		assertEquals(TestHelper.USER_UUID, task.getAssigneeUser().getUuid());
+
+		// Case not in user's jurisdiction anymore
+		caze.setResponsibleDistrict(DatabaseHelper.getDistrictDao().queryUuid(TestHelper.SECOND_DISTRICT_UUID));
+		caze.setCommunity(null);
+		caseDao.saveAndSnapshot(caze);
+
+		caze = caseDao.queryUuidBasic(caze.getUuid());
+		assertEquals(TestHelper.SECOND_USER_UUID, caze.getSurveillanceOfficer().getUuid());
+
+		task = taskDao.queryUuid(task.getUuid());
+		assertEquals(TestHelper.USER_UUID, task.getAssigneeUser().getUuid());
+
+		caze.setHealthFacility(null);
+		caseDao.saveAndSnapshot(caze);
+
+		task = taskDao.queryUuid(task.getUuid());
+		assertEquals(TestHelper.SECOND_USER_UUID, task.getAssigneeUser().getUuid());
 	}
 }

@@ -125,7 +125,7 @@ public class SamplesDirectorySteps implements En {
                       webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
                       webDriverHelpers.waitUntilAListOfElementsHasText(
                           FINAL_LABORATORY_RESULT, aSpecimen.getCondition());
-                      assertHelpers.assertWithPoll15Second(
+                      assertHelpers.assertWithPoll20Second(
                           () ->
                               Truth.assertThat(
                                       apiState.getCreatedSamples().stream()
@@ -151,7 +151,7 @@ public class SamplesDirectorySteps implements En {
                       webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
                       webDriverHelpers.waitUntilAListOfElementsHasText(
                           FINAL_LABORATORY_RESULT, caption.getCaptionEnglish());
-                      assertHelpers.assertWithPoll15Second(
+                      assertHelpers.assertWithPoll20Second(
                           () ->
                               Truth.assertThat(
                                       apiState.getCreatedSamples().stream()
@@ -178,7 +178,7 @@ public class SamplesDirectorySteps implements En {
     Then(
         "I check that number of displayed sample results is {int}",
         (Integer number) ->
-            assertHelpers.assertWithPoll15Second(
+            assertHelpers.assertWithPoll20Second(
                 () ->
                     Truth.assertThat(webDriverHelpers.getNumberOfElements(SAMPLE_GRID_RESULTS_ROWS))
                         .isEqualTo(number)));

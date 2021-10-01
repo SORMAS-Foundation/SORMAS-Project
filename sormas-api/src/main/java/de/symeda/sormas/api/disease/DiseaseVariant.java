@@ -42,26 +42,26 @@ public class DiseaseVariant extends CustomizableEnum implements Serializable {
 		}
 
 		Set<String> propertyKeys = properties.keySet();
-		for (String property : propertyKeys) {
-			if (property.equals(HAS_DETAILS)) {
+		for (String propertyKey : propertyKeys) {
+			if (propertyKey.equals(HAS_DETAILS)) {
 				hasDetails = (boolean) properties.get(HAS_DETAILS);
 			} else {
-				throw new IllegalArgumentException("Property " + property + " is not a member of DiseaseVariant");
+				throw new IllegalArgumentException("Property " + propertyKey + " is not a member of DiseaseVariant");
 			}
 		}
 	}
 
 	@Override
-	public boolean matchPropertyValue(String property, Object value) {
+	public boolean matchPropertyValue(String propertyKey, Object value) {
 
-		if (property == null || value == null) {
+		if (propertyKey == null || value == null) {
 			return false;
 		}
 
-		if (property.equals(HAS_DETAILS)) {
+		if (propertyKey.equals(HAS_DETAILS)) {
 			return value.equals(isHasDetails());
 		} else {
-			throw new IllegalArgumentException("Property " + property + " is not a member of DiseaseVariant");
+			throw new IllegalArgumentException("Property " + propertyKey + " is not a member of DiseaseVariant");
 		}
 	}
 
