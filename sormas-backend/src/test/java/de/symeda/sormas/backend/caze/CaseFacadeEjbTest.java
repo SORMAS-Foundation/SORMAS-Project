@@ -1485,6 +1485,53 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testCloneCaseActivityAsCaseIsCloned() throws IOException {
+
+		useNationalUserLogin();
+		// 1. Create
+
+		// Create aCase
+		UserDto user = creator.createUser("", "", "", "", "");
+		UserReferenceDto userReferenceDto = new UserReferenceDto(user.getUuid());
+		PersonDto person = creator.createPerson("Max", "Smith");
+		person.setBirthWeight(2);
+		getPersonFacade().savePerson(person);
+		PersonReferenceDto personReferenceDto = new PersonReferenceDto(person.getUuid());
+		RDCF rdcf = creator.createRDCF();
+		CaseDataDto aCase = creator.createCase(
+				userReferenceDto,
+				personReferenceDto,
+				Disease.CHOLERA,
+				CaseClassification.SUSPECT,
+				InvestigationStatus.PENDING,
+				new Date(),
+				rdcf,
+				(c) -> {
+					c.setAdditionalDetails("Test other additional details");
+					c.setFollowUpComment("Test other followup comment");
+				});
+		aCase.setClinicianName("name");
+
+		aCase.getEpiData().setActivityAsCaseDetailsKnown(YesNoUnknown.YES);
+		final ArrayList<ActivityAsCaseDto> otherActivitiesAsCase = new ArrayList<>();
+		ActivityAsCaseDto activityAsCaseDto = new ActivityAsCaseDto();
+		activityAsCaseDto.setActivityAsCaseType(ActivityAsCaseType.GATHERING);
+		otherActivitiesAsCase.add(activityAsCaseDto);
+		aCase.getEpiData().setActivitiesAsCase(otherActivitiesAsCase);
+
+		CaseDataDto caseDataDto = getCaseFacade().saveCase(aCase);
+
+		// 2. Clone
+		CaseDataDto clonedCase = getCaseFacade().cloneCase(caseDataDto);
+
+		final EpiDataDto epiData = clonedCase.getEpiData();
+		assertEquals(YesNoUnknown.YES, epiData.getActivityAsCaseDetailsKnown());
+		final List<ActivityAsCaseDto> activitiesAsCase = epiData.getActivitiesAsCase();
+		assertEquals(activitiesAsCase.size(), 1);
+		assertEquals(ActivityAsCaseType.GATHERING, activitiesAsCase.get(0).getActivityAsCaseType());
+	}
+
+		@Test
 	public void testDoesEpidNumberExist() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities();
