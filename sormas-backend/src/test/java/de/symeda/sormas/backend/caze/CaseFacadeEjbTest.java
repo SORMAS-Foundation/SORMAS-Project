@@ -587,11 +587,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 
 		Assert.assertEquals(3, getCaseFacade().getIndexList(null, 0, 100, null).size());
-		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().caseLike("Munich"), 0, 100, null).size());
-		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().caseLike("Last Name3"), 0, 100, null).size());
-		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().caseLike("20095"), 0, 100, null).size());
-		Assert.assertEquals(2, getCaseFacade().getIndexList(new CaseCriteria().caseLike("+49-31-901-820"), 0, 100, null).size());
-		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().caseLike("4930901822"), 0, 100, null).size());
+		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().personLike("Munich"), 0, 100, null).size());
+		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().personLike("Last Name3"), 0, 100, null).size());
+		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().personLike("20095"), 0, 100, null).size());
+		Assert.assertEquals(2, getCaseFacade().getIndexList(new CaseCriteria().personLike("+49-31-901-820"), 0, 100, null).size());
+		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().personLike("4930901822"), 0, 100, null).size());
 	}
 
 	@Test

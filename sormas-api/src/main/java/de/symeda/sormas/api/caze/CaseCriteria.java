@@ -722,4 +722,9 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public void setPersonLike(String personLike) {
 		this.personLike = personLike;
 	}
+
+	public CaseCriteria personLike(String personLike) {
+		setPersonLike(personLike);
+		return this;
+	}
 }
