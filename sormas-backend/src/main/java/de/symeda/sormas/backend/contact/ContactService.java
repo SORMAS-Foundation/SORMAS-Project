@@ -1139,7 +1139,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (!DataHelper.isNullOrEmpty(contactCriteria.getPersonLike())) {
 			Join<Contact, Person> person = joins.getPerson();
 			Join<Person, Location> location = joins.getAddress();
-			Join<Case, Person> casePerson = caze.join(Case.PERSON, JoinType.LEFT);
 			Predicate likeFilters = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
 				cb,
 				contactCriteria.getPersonLike(),
@@ -1153,20 +1152,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 						(Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
 						textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
-					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter),
-					// Let's also manage the person of the related case
-					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.UUID), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.FIRST_NAME), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(
-						cb,
-						(Expression<String>) contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter)));
+					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
 
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 		}
 
 		if (contactCriteria.getContactOrCaseLike() != null) {
+			Join<Case, Person> casePerson = caze.join(Case.PERSON, JoinType.LEFT);
 			String[] textFilters = contactCriteria.getContactOrCaseLike().split("\\s+");
 			for (String textFilter : textFilters) {
 				if (DataHelper.isNullOrEmpty(textFilter)) {
@@ -1182,7 +1174,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					CriteriaBuilderHelper.ilike(cb, caze.get(Case.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, caze.get(Case.EXTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.ilike(cb, caze.get(Case.INTERNAL_TOKEN), textFilter),
-					CriteriaBuilderHelper.ilike(cb, caze.get(Case.EPID_NUMBER), textFilter));
+					CriteriaBuilderHelper.ilike(cb, caze.get(Case.EPID_NUMBER), textFilter),
+					CriteriaBuilderHelper.ilikePrecise(cb, casePerson.get(Person.UUID), textFilter + "%"),
+					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.LAST_NAME), textFilter),
+					phoneNumberPredicate(
+						cb,
+						(Expression<String>) contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY),
+						textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
