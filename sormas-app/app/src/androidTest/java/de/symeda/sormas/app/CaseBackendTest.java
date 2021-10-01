@@ -480,6 +480,9 @@ public class CaseBackendTest {
 		TaskDao taskDao = DatabaseHelper.getTaskDao();
 		Task task = TestEntityCreator.createCaseTask(caze, TaskStatus.PENDING, user);
 
+		caze = caseDao.queryUuidBasic(caze.getUuid());
+		assertEquals(TestHelper.USER_UUID, caze.getSurveillanceOfficer().getUuid());
+
 		assertEquals(caze.getResponsibleRegion().getUuid(), TestHelper.REGION_UUID);
 		assertEquals(caze.getResponsibleDistrict().getUuid(), TestHelper.DISTRICT_UUID);
 		assertEquals(caze.getResponsibleCommunity().getUuid(), TestHelper.COMMUNITY_UUID);
@@ -498,10 +501,14 @@ public class CaseBackendTest {
 
 		caze.setResponsibleDistrict(secondDistrict);
 		caze.setResponsibleCommunity(secondCommunity);
+		caze.setDistrict(secondDistrict);
 		caseDao.saveAndSnapshot(caze);
 
 		task = taskDao.queryUuid(task.getUuid());
 		assertEquals(TestHelper.USER_UUID, task.getAssigneeUser().getUuid());
+
+		caze = caseDao.queryUuidBasic(caze.getUuid());
+		assertEquals(TestHelper.SECOND_USER_UUID, caze.getSurveillanceOfficer().getUuid());
 
 		// Case not in user's jurisdiction anymore
 		caze.setCommunity(null);
@@ -580,6 +587,9 @@ public class CaseBackendTest {
 		TaskDao taskDao = DatabaseHelper.getTaskDao();
 		Task task = TestEntityCreator.createCaseTask(caze, TaskStatus.PENDING, user);
 
+		caze = caseDao.queryUuidBasic(caze.getUuid());
+		assertEquals(TestHelper.USER_UUID, caze.getSurveillanceOfficer().getUuid());
+
 		assertEquals(caze.getResponsibleRegion().getUuid(), TestHelper.REGION_UUID);
 		assertEquals(caze.getResponsibleDistrict().getUuid(), TestHelper.DISTRICT_UUID);
 		assertEquals(caze.getResponsibleCommunity().getUuid(), TestHelper.COMMUNITY_UUID);
@@ -591,6 +601,14 @@ public class CaseBackendTest {
 		// Case not in user's jurisdiction anymore
 		caze.setResponsibleDistrict(DatabaseHelper.getDistrictDao().queryUuid(TestHelper.SECOND_DISTRICT_UUID));
 		caze.setCommunity(null);
+		caseDao.saveAndSnapshot(caze);
+
+		caze = caseDao.queryUuidBasic(caze.getUuid());
+		assertEquals(TestHelper.SECOND_USER_UUID, caze.getSurveillanceOfficer().getUuid());
+
+		task = taskDao.queryUuid(task.getUuid());
+		assertEquals(TestHelper.USER_UUID, task.getAssigneeUser().getUuid());
+
 		caze.setHealthFacility(null);
 		caseDao.saveAndSnapshot(caze);
 

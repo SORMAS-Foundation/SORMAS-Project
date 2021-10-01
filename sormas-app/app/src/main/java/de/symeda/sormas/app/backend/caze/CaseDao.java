@@ -487,7 +487,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
 			// If the case is moved from the surveillance officer's jurisdiction, assign a new surveillance officer
 			if (changedCase.getSurveillanceOfficer() == null
-				|| (responsibleDistrictChanged
+				|| ((responsibleDistrictChanged || districtChanged)
 					&& !DataHelper.isSame(changedCase.getResponsibleDistrict(), changedCase.getSurveillanceOfficer().getDistrict())
 					&& !DataHelper.isSame(changedCase.getDistrict(), changedCase.getSurveillanceOfficer().getDistrict()))) {
 				List<User> districtOfficers =
