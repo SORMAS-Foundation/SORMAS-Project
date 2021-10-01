@@ -213,7 +213,10 @@ public class WebDriverHelpers {
             .findElement(selector)
             .findElement(By.xpath("preceding-sibling::input"));
     comboboxInput.sendKeys(Keys.chord(Keys.BACK_SPACE));
-    String comboBoxItemWithText = "//td[@role='listitem']/span[ contains(text(), '" + text + "')]";
+    String comboBoxItemWithText =
+        "//td[@role='listitem']/span[ contains(text(), '"
+            + text
+            + "') or starts-with(text(), '\" + text + \"') ]";
     waitUntilIdentifiedElementIsVisibleAndClickable(comboboxInput);
     comboboxInput.sendKeys(text);
     waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestpopup"));
