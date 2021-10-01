@@ -1166,8 +1166,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 		}
 
-		if (contactCriteria.getNameUuidCaseLike() != null) {
-			String[] textFilters = contactCriteria.getNameUuidCaseLike().split("\\s+");
+		if (contactCriteria.getContactOrCaseLike() != null) {
+			String[] textFilters = contactCriteria.getContactOrCaseLike().split("\\s+");
 			for (String textFilter : textFilters) {
 				if (DataHelper.isNullOrEmpty(textFilter)) {
 					continue;

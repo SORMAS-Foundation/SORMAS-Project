@@ -181,7 +181,7 @@ public class CaseContactsView extends AbstractCaseView {
 		searchField.setWidth(150, Unit.PIXELS);
 		searchField.setNullRepresentation("");
 		searchField.setInputPrompt(I18nProperties.getString(Strings.promptContactsSearchField));
-		searchField.addTextChangeListener(e -> criteria.setNameUuidCaseLike(e.getText()));
+		searchField.addTextChangeListener(e -> criteria.setContactOrCaseLike(e.getText()));
 		topLayout.addComponent(searchField);
 
 		personLikeField = new TextField();
@@ -413,7 +413,7 @@ public class CaseContactsView extends AbstractCaseView {
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
 		personLikeField.setValue(criteria.getPersonLike());
-		searchField.setValue(criteria.getNameUuidCaseLike());
+		searchField.setValue(criteria.getContactOrCaseLike());
 		officerFilter.setValue(criteria.getContactOfficer());
 
 		applyingCriteria = false;

@@ -16,7 +16,7 @@ public class CaseCriteriaTest {
 		CaseCriteria criteria = new CaseCriteria();
 		DistrictReferenceDto district = new DistrictReferenceDto(DataHelper.createUuid(), null, null);
 		criteria.setDistrict(district);
-		criteria.setNameUuidEpidNumberLike("test AHSDBSD-ADS");
+		criteria.setCaseLike("test AHSDBSD-ADS");
 		criteria.setEventLike("test EVENT");
 		criteria.setDisease(Disease.CSM);
 

@@ -728,10 +728,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 		}
-		if (!DataHelper.isNullOrEmpty(caseCriteria.getNameUuidEpidNumberLike())) {
+		if (!DataHelper.isNullOrEmpty(caseCriteria.getCaseLike())) {
 			Predicate likeFilters = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
 				cb,
-				caseCriteria.getNameUuidEpidNumberLike(),
+				caseCriteria.getCaseLike(),
 				textFilter -> cb.or(
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.UUID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.EPID_NUMBER), textFilter),

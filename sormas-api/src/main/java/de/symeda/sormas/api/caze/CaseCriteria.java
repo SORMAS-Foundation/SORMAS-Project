@@ -55,7 +55,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public static final String WITH_REDUCED_QUARANTINE = "withReducedQuarantine";
 	public static final String CREATION_DATE_FROM = "creationDateFrom";
 	public static final String CREATION_DATE_TO = "creationDateTo";
-	public static final String NAME_UUID_EPID_NUMBER_LIKE = "nameUuidEpidNumberLike";
+	public static final String CASE_LIKE = "caseLike";
 	public static final String EVENT_LIKE = "eventLike";
 	public static final String ONLY_CASES_WITH_EVENTS = "onlyCasesWithEvents";
 	public static final String REPORTING_USER_LIKE = "reportingUserLike";
@@ -109,7 +109,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean withExtendedQuarantine;
 	private Boolean withReducedQuarantine;
 	private Boolean deleted = Boolean.FALSE;
-	private String nameUuidEpidNumberLike;
+	private String caseLike;
 	private String eventLike;
 	private Boolean onlyCasesWithEvents = Boolean.FALSE;
 	private String reportingUserLike;
@@ -434,18 +434,18 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	/**
 	 * returns all entries that match ALL of the passed words
 	 */
-	public void setNameUuidEpidNumberLike(String nameUuidEpidNumberLike) {
-		this.nameUuidEpidNumberLike = nameUuidEpidNumberLike;
+	public void setCaseLike(String caseLike) {
+		this.caseLike = caseLike;
 	}
 
-	public CaseCriteria nameUuidEpidNumberLike(String nameUuidEpidNumberLike) {
-		setNameUuidEpidNumberLike(nameUuidEpidNumberLike);
+	public CaseCriteria caseLike(String caseLike) {
+		setCaseLike(caseLike);
 		return this;
 	}
 
 	@IgnoreForUrl
-	public String getNameUuidEpidNumberLike() {
-		return nameUuidEpidNumberLike;
+	public String getCaseLike() {
+		return caseLike;
 	}
 
 	public void setEventLike(String eventLike) {

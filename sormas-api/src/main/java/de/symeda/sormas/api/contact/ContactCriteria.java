@@ -43,7 +43,7 @@ import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public static final String DISEASE_VARIANT = "diseaseVariant";
-	public static final String NAME_UUID_CASE_LIKE = "nameUuidCaseLike";
+	public static final String CONTACT_OR_CASE_LIKE = "contactOrCaseLike";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -108,7 +108,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Date lastContactDateFrom;
 	private Date lastContactDateTo;
 	private Boolean deleted = Boolean.FALSE;
-	private String nameUuidCaseLike;
+	private String contactOrCaseLike;
 	private EntityRelevanceStatus relevanceStatus;
 	private Boolean onlyHighPriorityContacts;
 	private ContactCategory contactCategory;
@@ -402,13 +402,13 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	/**
 	 * returns all entries that match ALL of the passed words
 	 */
-	public void setNameUuidCaseLike(String nameUuidCaseLike) {
-		this.nameUuidCaseLike = nameUuidCaseLike;
+	public void setContactOrCaseLike(String contactOrCaseLike) {
+		this.contactOrCaseLike = contactOrCaseLike;
 	}
 
 	@IgnoreForUrl
-	public String getNameUuidCaseLike() {
-		return nameUuidCaseLike;
+	public String getContactOrCaseLike() {
+		return contactOrCaseLike;
 	}
 
 	public Boolean getOnlyHighPriorityContacts() {

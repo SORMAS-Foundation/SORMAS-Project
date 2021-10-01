@@ -122,7 +122,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseDataDto.DISEASE_VARIANT,
 			CaseDataDto.CASE_CLASSIFICATION,
 			CaseDataDto.FOLLOW_UP_STATUS,
-			CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE,
+			CaseCriteria.CASE_LIKE,
 			CaseCriteria.PERSON_LIKE,
 			CaseCriteria.EVENT_LIKE };
 	}
@@ -153,7 +153,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		TextField searchField = addField(
 			FieldConfiguration
-				.withCaptionAndPixelSized(CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE, I18nProperties.getString(Strings.promptCasesSearchField), 200));
+				.withCaptionAndPixelSized(CaseCriteria.CASE_LIKE, I18nProperties.getString(Strings.promptCasesSearchField), 200));
 		searchField.setNullRepresentation("");
 
 		TextField personLikeField = addField(
@@ -786,13 +786,13 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	}
 
 	public void disableSearchAndReportingUser() {
-		getField(CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE).setEnabled(false);
+		getField(CaseCriteria.CASE_LIKE).setEnabled(false);
 		getField(CaseCriteria.EVENT_LIKE).setEnabled(false);
 		getField(CaseCriteria.REPORTING_USER_LIKE).setEnabled(false);
 	}
 
 	public void enableSearchAndReportingUser() {
-		getField(CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE).setEnabled(true);
+		getField(CaseCriteria.CASE_LIKE).setEnabled(true);
 		getField(CaseCriteria.EVENT_LIKE).setEnabled(true);
 		getField(CaseCriteria.REPORTING_USER_LIKE).setEnabled(true);
 	}

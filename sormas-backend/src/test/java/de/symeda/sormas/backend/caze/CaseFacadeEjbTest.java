@@ -587,11 +587,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 
 		Assert.assertEquals(3, getCaseFacade().getIndexList(null, 0, 100, null).size());
-		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("Munich"), 0, 100, null).size());
-		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("Last Name3"), 0, 100, null).size());
-		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("20095"), 0, 100, null).size());
-		Assert.assertEquals(2, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("+49-31-901-820"), 0, 100, null).size());
-		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("4930901822"), 0, 100, null).size());
+		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().caseLike("Munich"), 0, 100, null).size());
+		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().caseLike("Last Name3"), 0, 100, null).size());
+		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().caseLike("20095"), 0, 100, null).size());
+		Assert.assertEquals(2, getCaseFacade().getIndexList(new CaseCriteria().caseLike("+49-31-901-820"), 0, 100, null).size());
+		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().caseLike("4930901822"), 0, 100, null).size());
 	}
 
 	@Test
@@ -1633,29 +1633,29 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		CaseCriteria caseCriteria = new CaseCriteria();
 
-		caseCriteria.setNameUuidEpidNumberLike("internal");
+		caseCriteria.setCaseLike("internal");
 		List<CaseIndexDto> indexListFiltered = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
 		assertEquals(2, indexListFiltered.size());
 
-		caseCriteria.setNameUuidEpidNumberLike("Token");
+		caseCriteria.setCaseLike("Token");
 		indexListFiltered = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
 		assertEquals(2, indexListFiltered.size());
 
-		caseCriteria.setNameUuidEpidNumberLike("externalToken");
+		caseCriteria.setCaseLike("externalToken");
 		indexListFiltered = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
 		assertEquals(1, indexListFiltered.size());
 		assertThat(indexListFiltered.get(0).getUuid(), is(caze.getUuid()));
 
-		caseCriteria.setNameUuidEpidNumberLike("externalID");
+		caseCriteria.setCaseLike("externalID");
 		indexListFiltered = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
 		assertEquals(1, indexListFiltered.size());
 		assertThat(indexListFiltered.get(0).getUuid(), is(caze.getUuid()));
 
-		caseCriteria.setNameUuidEpidNumberLike("unmatchableString");
+		caseCriteria.setCaseLike("unmatchableString");
 		indexListFiltered = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
 		assertEquals(0, indexListFiltered.size());
 
-		caseCriteria.setNameUuidEpidNumberLike(caze.getUuid());
+		caseCriteria.setCaseLike(caze.getUuid());
 		indexListFiltered = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
 		assertEquals(1, indexListFiltered.size());
 		assertThat(indexListFiltered.get(0).getUuid(), is(caze.getUuid()));
