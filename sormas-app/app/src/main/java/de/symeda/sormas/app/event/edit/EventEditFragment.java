@@ -43,10 +43,10 @@ import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -296,23 +296,28 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
 	private void updateCustomizableEnumFields(FragmentEventEditLayoutBinding contentBinding) {
 		// Disease variant
+		DiseaseVariant selectedVariant = (DiseaseVariant) contentBinding.eventDiseaseVariant.getValue();
 		List<DiseaseVariant> diseaseVariants =
 			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
 		diseaseVariantList.clear();
 		diseaseVariantList.addAll(DataUtils.toItems(diseaseVariants));
 		contentBinding.eventDiseaseVariant.setSpinnerData(diseaseVariantList);
-		contentBinding.eventDiseaseVariant.setValue(null);
+		if (diseaseVariants.contains(selectedVariant)) {
+			contentBinding.eventDiseaseVariant.setValue(selectedVariant);
+		} else {
+			contentBinding.eventDiseaseVariant.setValue(null);
+		}
 		contentBinding.eventDiseaseVariant.setVisibility(diseaseVariants.isEmpty() ? GONE : VISIBLE);
 
 		// Specific risk
-		SpecificRisk selectedValue = (SpecificRisk) contentBinding.eventSpecificRisk.getValue();
+		SpecificRisk selectedRisk = (SpecificRisk) contentBinding.eventSpecificRisk.getValue();
 		List<SpecificRisk> specificRisks =
 			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, record.getDisease());
 		specificRiskList.clear();
 		specificRiskList.addAll(DataUtils.toItems(specificRisks));
 		contentBinding.eventSpecificRisk.setSpinnerData(specificRiskList);
-		if (specificRisks.contains(selectedValue)) {
-			contentBinding.eventSpecificRisk.setValue(selectedValue);
+		if (specificRisks.contains(selectedRisk)) {
+			contentBinding.eventSpecificRisk.setValue(selectedRisk);
 		} else {
 			contentBinding.eventSpecificRisk.setValue(null);
 		}

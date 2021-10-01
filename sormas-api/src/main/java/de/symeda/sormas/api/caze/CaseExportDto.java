@@ -125,6 +125,7 @@ public class CaseExportDto implements Serializable {
 	private Disease disease;
 	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
+	private String diseaseVariantDetails;
 	private String personUuid;
 	@PersonalData
 	@SensitiveData
@@ -337,7 +338,8 @@ public class CaseExportDto implements Serializable {
 	//@formatter:off
 	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId,
 						 long hospitalizationId, long healthConditionsId, String uuid, String epidNumber,
-						 Disease disease, DiseaseVariant diseaseVariant, String diseaseDetails, String personUuid, String firstName, String lastName, Salutation salutation, String otherSalutation, Sex sex, YesNoUnknown pregnant,
+						 Disease disease, DiseaseVariant diseaseVariant, String diseaseDetails, String diseaseVariantDetails,
+						 String personUuid, String firstName, String lastName, Salutation salutation, String otherSalutation, Sex sex, YesNoUnknown pregnant,
 						 Integer approximateAge, ApproximateAgeType approximateAgeType, Integer birthdateDD, Integer birthdateMM,
 						 Integer birthdateYYYY, Date reportDate, String region, String district, String community,
 						 FacilityType facilityType, String healthFacility, String healthFacilityUuid, String healthFacilityDetails, String pointOfEntry,
@@ -392,6 +394,7 @@ public class CaseExportDto implements Serializable {
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.diseaseVariant = diseaseVariant;
+		this.diseaseVariantDetails = diseaseVariantDetails;
 		this.personUuid = personUuid;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -640,6 +643,16 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.DISEASE_VARIANT_DETAILS)
+	@ExportGroup(ExportGroupType.CORE)
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	@Order(11)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
 	@ExportEntity(PersonDto.class)
 	@ExportProperty({
 		CaseDataDto.PERSON,
@@ -649,7 +662,7 @@ public class CaseExportDto implements Serializable {
 		return personUuid;
 	}
 
-	@Order(11)
+	@Order(12)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -662,7 +675,7 @@ public class CaseExportDto implements Serializable {
 		return firstName;
 	}
 
-	@Order(12)
+	@Order(13)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -675,7 +688,7 @@ public class CaseExportDto implements Serializable {
 		return lastName;
 	}
 
-	@Order(13)
+	@Order(14)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -689,7 +702,7 @@ public class CaseExportDto implements Serializable {
 		return salutation;
 	}
 
-	@Order(14)
+	@Order(15)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -703,7 +716,7 @@ public class CaseExportDto implements Serializable {
 		return otherSalutation;
 	}
 
-	@Order(15)
+	@Order(16)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -716,7 +729,7 @@ public class CaseExportDto implements Serializable {
 		return sex;
 	}
 
-	@Order(16)
+	@Order(17)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -726,7 +739,7 @@ public class CaseExportDto implements Serializable {
 		return pregnant;
 	}
 
-	@Order(17)
+	@Order(18)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -736,7 +749,7 @@ public class CaseExportDto implements Serializable {
 		return trimester;
 	}
 
-	@Order(18)
+	@Order(19)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -746,7 +759,7 @@ public class CaseExportDto implements Serializable {
 		return postpartum;
 	}
 
-	@Order(19)
+	@Order(20)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -759,7 +772,7 @@ public class CaseExportDto implements Serializable {
 		return approximateAge;
 	}
 
-	@Order(20)
+	@Order(21)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -772,7 +785,7 @@ public class CaseExportDto implements Serializable {
 		return ageGroup;
 	}
 
-	@Order(21)
+	@Order(22)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -783,7 +796,7 @@ public class CaseExportDto implements Serializable {
 		return birthdate;
 	}
 
-	@Order(22)
+	@Order(23)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -793,7 +806,7 @@ public class CaseExportDto implements Serializable {
 		return reportDate;
 	}
 
-	@Order(23)
+	@Order(24)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -803,7 +816,7 @@ public class CaseExportDto implements Serializable {
 		return responsibleRegion;
 	}
 
-	@Order(24)
+	@Order(25)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -813,7 +826,7 @@ public class CaseExportDto implements Serializable {
 		return responsibleDistrict;
 	}
 
-	@Order(25)
+	@Order(26)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -823,7 +836,7 @@ public class CaseExportDto implements Serializable {
 		return responsibleCommunity;
 	}
 
-	@Order(26)
+	@Order(27)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -833,7 +846,7 @@ public class CaseExportDto implements Serializable {
 		return region;
 	}
 
-	@Order(27)
+	@Order(28)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -843,7 +856,7 @@ public class CaseExportDto implements Serializable {
 		return district;
 	}
 
-	@Order(28)
+	@Order(29)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -853,7 +866,7 @@ public class CaseExportDto implements Serializable {
 		return community;
 	}
 
-	@Order(29)
+	@Order(30)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -863,7 +876,7 @@ public class CaseExportDto implements Serializable {
 		return facilityType;
 	}
 
-	@Order(30)
+	@Order(31)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -873,7 +886,7 @@ public class CaseExportDto implements Serializable {
 		return healthFacility;
 	}
 
-	@Order(31)
+	@Order(32)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -883,7 +896,7 @@ public class CaseExportDto implements Serializable {
 		return healthFacilityDetails;
 	}
 
-	@Order(32)
+	@Order(33)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -893,7 +906,7 @@ public class CaseExportDto implements Serializable {
 		return pointOfEntry;
 	}
 
-	@Order(33)
+	@Order(34)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -903,7 +916,7 @@ public class CaseExportDto implements Serializable {
 		return pointOfEntryDetails;
 	}
 
-	@Order(34)
+	@Order(35)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -913,7 +926,7 @@ public class CaseExportDto implements Serializable {
 		return initialDetectionPlace;
 	}
 
-	@Order(37)
+	@Order(36)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(CaseDataDto.CASE_CLASSIFICATION)
@@ -922,7 +935,7 @@ public class CaseExportDto implements Serializable {
 		return caseClassification;
 	}
 
-	@Order(38)
+	@Order(37)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -932,7 +945,7 @@ public class CaseExportDto implements Serializable {
 		return clinicalConfirmation;
 	}
 
-	@Order(39)
+	@Order(38)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -942,7 +955,7 @@ public class CaseExportDto implements Serializable {
 		return epidemiologicalConfirmation;
 	}
 
-	@Order(40)
+	@Order(39)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })

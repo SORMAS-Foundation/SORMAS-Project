@@ -178,6 +178,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private NullableOptionGroup contactCategory;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
 	private TextField tfExpectedFollowUpUntilDate;
+	private CheckBox cbOverwriteFollowUpUntil;
+	private DateField dfFollowUpUntil;
 
 	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized) {
 		super(
@@ -417,9 +419,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.FOLLOW_UP_STATUS_CHANGE_DATE);
 		addField(ContactDto.FOLLOW_UP_STATUS_CHANGE_USER);
 		addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(3);
-		DateField dfFollowUpUntil = addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
+		dfFollowUpUntil = addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
 		dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, quarantineTo, quarantineExtended, quarantineReduced));
-		CheckBox cbOverwriteFollowUpUntil = addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);
+		cbOverwriteFollowUpUntil = addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);
 		cbOverwriteFollowUpUntil.addValueChangeListener(e -> {
 			if (!(Boolean) e.getProperty().getValue()) {
 				dfFollowUpUntil.discard();
@@ -708,24 +710,19 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		if (followUpVisible && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
 			FollowUpStatus followUpStatus = statusField.getValue();
 			tfExpectedFollowUpUntilDate.setVisible(followUpStatus != FollowUpStatus.NO_FOLLOW_UP);
+			boolean followUpCanceledOrLost = followUpStatus == FollowUpStatus.CANCELED || followUpStatus == FollowUpStatus.LOST;
+			cbOverwriteFollowUpUntil.setReadOnly(followUpCanceledOrLost);
+			dfFollowUpUntil.setReadOnly(followUpCanceledOrLost || Boolean.TRUE != cbOverwriteFollowUpUntil.getValue());
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 
 				Button cancelButton = ButtonHelper.createButton(Captions.contactCancelFollowUp, event -> {
-					Field<FollowUpStatus> statusField1 = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
-					statusField1.setReadOnly(false);
-					statusField1.setValue(FollowUpStatus.CANCELED);
-					statusField1.setReadOnly(true);
-					updateFollowUpStatusComponents();
+					setFollowUpStatus(FollowUpStatus.CANCELED);
 				});
 				cancelButton.setWidth(100, Unit.PERCENTAGE);
 				getContent().addComponent(cancelButton, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 
 				Button lostButton = ButtonHelper.createButton(Captions.contactLostToFollowUp, event -> {
-					Field<FollowUpStatus> statusField12 = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
-					statusField12.setReadOnly(false);
-					statusField12.setValue(FollowUpStatus.LOST);
-					statusField12.setReadOnly(true);
-					updateFollowUpStatusComponents();
+					setFollowUpStatus(FollowUpStatus.LOST);
 				});
 				lostButton.setWidth(100, Unit.PERCENTAGE);
 				getContent().addComponent(lostButton, LOST_FOLLOW_UP_BTN_LOC);
@@ -733,17 +730,22 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			} else if (followUpStatus == FollowUpStatus.CANCELED || followUpStatus == FollowUpStatus.LOST) {
 
 				Button resumeButton = ButtonHelper.createButton(Captions.contactResumeFollowUp, event -> {
-					Field<FollowUpStatus> statusField13 = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
-					statusField13.setReadOnly(false);
-					statusField13.setValue(FollowUpStatus.FOLLOW_UP);
-					statusField13.setReadOnly(true);
-					updateFollowUpStatusComponents();
+					setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
 				}, CssStyles.FORCE_CAPTION);
 				resumeButton.setWidth(100, Unit.PERCENTAGE);
 
 				getContent().addComponent(resumeButton, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 			}
 		}
+	}
+
+	private void setFollowUpStatus(FollowUpStatus followUpStatus) {
+		Field<FollowUpStatus> statusField = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
+		statusField.setReadOnly(false);
+		statusField.setValue(followUpStatus);
+		statusField.setReadOnly(true);
+
+		updateFollowUpStatusComponents();
 	}
 
 	protected void updateLastContactDateValidator() {
