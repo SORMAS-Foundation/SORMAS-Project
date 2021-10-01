@@ -191,6 +191,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.backend.activityascase.ActivityAsCaseService;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb.MaternalHistoryFacadeEjbLocal;
@@ -225,6 +226,7 @@ import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
+import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
@@ -436,6 +438,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	private DocumentService documentService;
 	@EJB
 	private SurveillanceReportService surveillanceReportService;
+	@EJB
+	private EpiDataService epiDataService;
+	@EJB
+	private ActivityAsCaseService activityAsCaseService;
 	@EJB
 	private SurveillanceReportFacadeEjb.SurveillanceReportFacadeEjbLocal surveillanceReportFacade;
 	@EJB
@@ -3454,6 +3460,17 @@ public class CaseFacadeEjb implements CaseFacade {
 			surveillanceReportDto.setCaze(leadCase.toReference());
 			surveillanceReportFacade.saveSurveillanceReport(surveillanceReportDto);
 		});
+
+		// 10 Activity as case
+		final EpiData otherEpiData = otherCase.getEpiData();
+		if (otherEpiData != null
+			&& YesNoUnknown.YES == otherEpiData.getActivityAsCaseDetailsKnown()
+			&& CollectionUtils.isNotEmpty(otherEpiData.getActivitiesAsCase())) {
+
+			final EpiData leadEpiData = leadCase.getEpiData();
+			leadEpiData.setActivityAsCaseDetailsKnown(YesNoUnknown.YES);
+			epiDataService.ensurePersisted(leadEpiData);
+		}
 	}
 
 	private void copyDtoValues(CaseDataDto leadCaseData, CaseDataDto otherCaseData, boolean cloning) {
