@@ -184,7 +184,7 @@ public class SymptomsTabSteps implements En {
 
   public void selectMaximumBodyTemperatureInCCombobox(String maximumBodyTemperatureInCCombobox) {
     webDriverHelpers.selectFromCombobox(
-        MAXIMUM_BODY_TEMPERATURE_IN_C_COMBOBOX, maximumBodyTemperatureInCCombobox.substring(0, 4));
+        MAXIMUM_BODY_TEMPERATURE_IN_C_COMBOBOX, maximumBodyTemperatureInCCombobox);
   }
 
   public void selectSourceOfBodyTemperature(String sourceOfBodyTemperature) {
