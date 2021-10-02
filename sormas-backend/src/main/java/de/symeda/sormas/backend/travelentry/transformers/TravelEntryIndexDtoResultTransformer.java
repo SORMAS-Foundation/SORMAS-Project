@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.hibernate.transform.ResultTransformer;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 
 public class TravelEntryIndexDtoResultTransformer implements ResultTransformer {
@@ -24,9 +23,7 @@ public class TravelEntryIndexDtoResultTransformer implements ResultTransformer {
 			(boolean) objects[8],
 			(boolean) objects[9],
 			(Date) objects[10],
-			(Date) objects[11],
-			(Disease) objects[12],
-			(boolean) objects[13]);
+			(boolean) objects[11]);
 	}
 
 	@Override

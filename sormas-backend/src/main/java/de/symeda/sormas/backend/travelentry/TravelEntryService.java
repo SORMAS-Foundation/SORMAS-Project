@@ -85,8 +85,6 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 			travelEntry.get(TravelEntry.VACCINATED),
 			travelEntry.get(TravelEntry.TESTED_NEGATIVE),
 			travelEntry.get(TravelEntry.QUARANTINE_TO),
-			travelEntry.get(TravelEntry.REPORT_DATE),
-			travelEntry.get(TravelEntry.DISEASE),
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(travelEntryQueryContext)),
 			travelEntry.get(TravelEntry.CHANGE_DATE));
 

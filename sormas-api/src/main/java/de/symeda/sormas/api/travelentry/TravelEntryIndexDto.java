@@ -5,7 +5,6 @@ import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
@@ -24,8 +23,6 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 	public static final String VACCINATED = "vaccinated";
 	public static final String TESTED_NEGATIVE = "testedNegative";
 	public static final String QUARANTINE_TO = "quarantineTo";
-	public static final String REPORT_DATE = "reportDate";
-	public static final String DISEASE = "disease";
 
 	private String uuid;
 	private String externalId;
@@ -43,8 +40,6 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 	private boolean vaccinated;
 	private boolean testedNegative;
 	private Date quarantineTo;
-	private Date reportDate;
-	private Disease disease;
 
 	private boolean isInJurisdiction;
 
@@ -60,8 +55,6 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 		boolean vaccinated,
 		boolean testedNegative,
 		Date quarantineTo,
-		Date reportDate,
-		Disease disease,
 		boolean isInJurisdiction) {
 		this.uuid = uuid;
 		this.externalId = externalId;
@@ -73,8 +66,6 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 		this.vaccinated = vaccinated;
 		this.testedNegative = testedNegative;
 		this.quarantineTo = quarantineTo;
-		this.reportDate = reportDate;
-		this.disease = disease;
 		this.isInJurisdiction = isInJurisdiction;
 	}
 
@@ -156,22 +147,6 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
-	}
-
-	public Date getReportDate() {
-		return reportDate;
-	}
-
-	public void setReportDate(Date reportDate) {
-		this.reportDate = reportDate;
-	}
-
-	public Disease getDisease() {
-		return disease;
-	}
-
-	public void setDisease(Disease disease) {
-		this.disease = disease;
 	}
 
 	public boolean isInJurisdiction() {
