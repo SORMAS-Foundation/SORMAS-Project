@@ -3,8 +3,6 @@ package de.symeda.sormas.api.travelentry;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.apache.commons.lang3.StringUtils;
-
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
@@ -50,7 +48,6 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 		String personLastName,
 		String homeDistrictName,
 		String pointOfEntryName,
-		String pointOfEntryDetails,
 		boolean recovered,
 		boolean vaccinated,
 		boolean testedNegative,
@@ -61,7 +58,7 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
 		this.homeDistrictName = homeDistrictName;
-		this.pointOfEntryName = StringUtils.isNotBlank(pointOfEntryDetails) ? pointOfEntryDetails : pointOfEntryName;
+		this.pointOfEntryName = pointOfEntryName;
 		this.recovered = recovered;
 		this.vaccinated = vaccinated;
 		this.testedNegative = testedNegative;
