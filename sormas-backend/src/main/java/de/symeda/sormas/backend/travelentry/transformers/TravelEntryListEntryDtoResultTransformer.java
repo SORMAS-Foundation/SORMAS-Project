@@ -8,7 +8,7 @@ import org.hibernate.transform.ResultTransformer;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.travelentry.TravelEntryListEntryDto;
 
-public class TravelEntryListEntryDtoTransformer implements ResultTransformer {
+public class TravelEntryListEntryDtoResultTransformer implements ResultTransformer {
 
 	@Override
 	public Object transformTuple(Object[] objects, String[] strings) {

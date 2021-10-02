@@ -62,7 +62,6 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 		Date quarantineTo,
 		Date reportDate,
 		Disease disease,
-		Date changeDate,
 		boolean isInJurisdiction) {
 		this.uuid = uuid;
 		this.externalId = externalId;

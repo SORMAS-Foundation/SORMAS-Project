@@ -40,11 +40,11 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
-import de.symeda.sormas.backend.travelentry.transformers.TravelEntryListEntryDtoTransformer;
+import de.symeda.sormas.backend.travelentry.transformers.TravelEntryIndexDtoResultTransformer;
+import de.symeda.sormas.backend.travelentry.transformers.TravelEntryListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
-import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
@@ -61,7 +61,7 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 
 	public List<TravelEntryIndexDto> getIndexList(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<TravelEntryIndexDto> cq = cb.createQuery(TravelEntryIndexDto.class);
+		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<TravelEntry> travelEntry = cq.from(TravelEntry.class);
 
 		TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, travelEntry);
@@ -87,8 +87,8 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 			travelEntry.get(TravelEntry.QUARANTINE_TO),
 			travelEntry.get(TravelEntry.REPORT_DATE),
 			travelEntry.get(TravelEntry.DISEASE),
-			travelEntry.get(TravelEntry.CHANGE_DATE),
-			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(travelEntryQueryContext)));
+			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(travelEntryQueryContext)),
+			travelEntry.get(TravelEntry.CHANGE_DATE));
 
 		Predicate filter = createUserFilter(travelEntryQueryContext);
 		if (criteria != null) {
@@ -137,7 +137,9 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 
 		cq.distinct(true);
 
-		return QueryHelper.getResultList(em, cq, first, max);
+		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
+			.setResultTransformer(new TravelEntryIndexDtoResultTransformer())
+			.getResultList();
 	}
 
 	public long count(TravelEntryCriteria criteria, boolean ignoreUserFilter) {
@@ -194,7 +196,7 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 		cq.distinct(true);
 
 		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
-			.setResultTransformer(new TravelEntryListEntryDtoTransformer())
+			.setResultTransformer(new TravelEntryListEntryDtoResultTransformer())
 			.getResultList();
 	}
 
