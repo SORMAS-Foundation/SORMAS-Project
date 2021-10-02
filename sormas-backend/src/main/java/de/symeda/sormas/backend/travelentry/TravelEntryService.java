@@ -161,7 +161,7 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	public List<TravelEntryListEntryDto> getEntriesList(TravelEntryCriteria criteria, Integer first, Integer max) {
+	public List<TravelEntryListEntryDto> getEntriesList(Long personId, String caseUuid, Integer first, Integer max) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<TravelEntry> travelEntry = cq.from(TravelEntry.class);
@@ -179,14 +179,10 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(travelEntryQueryContext)),
 			travelEntry.get(TravelEntry.CHANGE_DATE));
 
-		Predicate filter = createUserFilter(travelEntryQueryContext);
-		if (criteria != null) {
-			final Predicate criteriaFilter = buildCriteriaFilter(criteria, travelEntryQueryContext);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-		}
+		final Predicate criteriaFilter = buildListEntryCriteriaFilter(personId, caseUuid, travelEntryQueryContext);
 
-		if (filter != null) {
-			cq.where(filter);
+		if (criteriaFilter != null) {
+			cq.where(criteriaFilter);
 		}
 
 		cq.orderBy(cb.desc(travelEntry.get(TravelEntry.CHANGE_DATE)));
@@ -388,6 +384,28 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 		}
 
 		filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
+		return filter;
+	}
+
+	private Predicate buildListEntryCriteriaFilter(Long personId, String caseUuid, TravelEntryQueryContext travelEntryQueryContext) {
+
+		final TravelEntryJoins joins = (TravelEntryJoins) travelEntryQueryContext.getJoins();
+		final CriteriaBuilder cb = travelEntryQueryContext.getCriteriaBuilder();
+		final From<?, TravelEntry> from = travelEntryQueryContext.getRoot();
+		Join<TravelEntry, Case> resultingCase = joins.getResultingCase();
+
+		Predicate filter = createUserFilter(travelEntryQueryContext);
+
+		if (personId != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(TravelEntry.PERSON_ID), personId));
+		}
+
+		if (caseUuid != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(resultingCase.get(Case.UUID), caseUuid));
+		}
+
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(TravelEntry.DELETED)));
+
 		return filter;
 	}
 }
