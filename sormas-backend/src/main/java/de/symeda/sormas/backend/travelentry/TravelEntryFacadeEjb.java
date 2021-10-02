@@ -239,14 +239,12 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 
 	@Override
 	public List<TravelEntryListEntryDto> getEntriesList(TravelEntryCriteria criteria, Integer first, Integer max) {
-		List<TravelEntryIndexDto> entries = travelEntryService.getIndexList(criteria, first, max, null);
+		List<TravelEntryListEntryDto> entries = travelEntryService.getEntriesList(criteria, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(TravelEntryIndexDto.class, entries, TravelEntryIndexDto::isInJurisdiction, null);
+		pseudonymizer.pseudonymizeDtoCollection(TravelEntryListEntryDto.class, entries, TravelEntryListEntryDto::isInJurisdiction, null);
 
-		return entries.stream()
-			.map(entry -> new TravelEntryListEntryDto(entry.getUuid(), entry.getReportDate(), entry.getDisease(), entry.getPointOfEntryName()))
-			.collect(Collectors.toList());
+		return entries;
 	}
 
 	@Override

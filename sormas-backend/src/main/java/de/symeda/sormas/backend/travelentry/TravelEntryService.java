@@ -24,6 +24,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
+import de.symeda.sormas.api.travelentry.TravelEntryListEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -39,6 +40,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
+import de.symeda.sormas.backend.travelentry.transformers.TravelEntryListEntryDtoTransformer;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -157,6 +159,43 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 
 		cq.select(cb.countDistinct(travelEntry));
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	public List<TravelEntryListEntryDto> getEntriesList(TravelEntryCriteria criteria, Integer first, Integer max) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		final Root<TravelEntry> travelEntry = cq.from(TravelEntry.class);
+
+		final TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, travelEntry);
+
+		final TravelEntryJoins<TravelEntry> joins = (TravelEntryJoins<TravelEntry>) travelEntryQueryContext.getJoins();
+		final Join<TravelEntry, PointOfEntry> pointOfEntry = joins.getPointOfEntry();
+
+		cq.multiselect(
+			travelEntry.get(TravelEntry.UUID),
+			travelEntry.get(TravelEntry.REPORT_DATE),
+			travelEntry.get(TravelEntry.DISEASE),
+			pointOfEntry.get(PointOfEntry.NAME),
+			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(travelEntryQueryContext)),
+			travelEntry.get(TravelEntry.CHANGE_DATE));
+
+		Predicate filter = createUserFilter(travelEntryQueryContext);
+		if (criteria != null) {
+			final Predicate criteriaFilter = buildCriteriaFilter(criteria, travelEntryQueryContext);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.orderBy(cb.desc(travelEntry.get(TravelEntry.CHANGE_DATE)));
+
+		cq.distinct(true);
+
+		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
+			.setResultTransformer(new TravelEntryListEntryDtoTransformer())
+			.getResultList();
 	}
 
 	public boolean inJurisdictionOrOwned(TravelEntry travelEntry) {
