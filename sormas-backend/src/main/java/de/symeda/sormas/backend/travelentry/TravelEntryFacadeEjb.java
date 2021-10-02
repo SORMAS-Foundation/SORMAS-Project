@@ -19,6 +19,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
+import de.symeda.sormas.api.travelentry.TravelEntryListEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -237,13 +238,15 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	}
 
 	@Override
-	public List<TravelEntryIndexDto> getEntriesList(TravelEntryCriteria criteria, Integer first, Integer max) {
-		List<TravelEntryIndexDto> resultList = travelEntryService.getIndexList(criteria, first, max, null);
+	public List<TravelEntryListEntryDto> getEntriesList(TravelEntryCriteria criteria, Integer first, Integer max) {
+		List<TravelEntryIndexDto> entries = travelEntryService.getIndexList(criteria, first, max, null);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(TravelEntryIndexDto.class, resultList, TravelEntryIndexDto::isInJurisdiction, null);
+		pseudonymizer.pseudonymizeDtoCollection(TravelEntryIndexDto.class, entries, TravelEntryIndexDto::isInJurisdiction, null);
 
-		return resultList;
+		return entries.stream()
+			.map(entry -> new TravelEntryListEntryDto(entry.getUuid(), entry.getReportDate(), entry.getDisease(), entry.getPointOfEntryName()))
+			.collect(Collectors.toList());
 	}
 
 	@Override

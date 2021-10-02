@@ -29,5 +29,5 @@ public interface TravelEntryFacade extends BaseFacade<TravelEntryDto, TravelEntr
 
 	List<DeaContentEntry> getDeaContentOfLastTravelEntry();
 
-	List<TravelEntryIndexDto> getEntriesList(TravelEntryCriteria criteria, Integer first, Integer max);
+	List<TravelEntryListEntryDto> getEntriesList(TravelEntryCriteria criteria, Integer first, Integer max);
 }

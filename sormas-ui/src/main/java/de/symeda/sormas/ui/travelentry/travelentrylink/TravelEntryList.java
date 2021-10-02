@@ -24,13 +24,13 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
-import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
+import de.symeda.sormas.api.travelentry.TravelEntryListEntryDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
-public class TravelEntryList extends PaginationList<TravelEntryIndexDto> {
+public class TravelEntryList extends PaginationList<TravelEntryListEntryDto> {
 
 	private static final long serialVersionUID = -534579406662710137L;
 
@@ -46,7 +46,7 @@ public class TravelEntryList extends PaginationList<TravelEntryIndexDto> {
 	@Override
 	public void reload() {
 
-		List<TravelEntryIndexDto> travelEntries =
+		List<TravelEntryListEntryDto> travelEntries =
 			FacadeProvider.getTravelEntryFacade().getEntriesList(travelEntryCriteria, 0, maxDisplayedEntries * 20);
 
 		setEntries(travelEntries);
@@ -61,7 +61,7 @@ public class TravelEntryList extends PaginationList<TravelEntryIndexDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
-		for (TravelEntryIndexDto travelEntry : getDisplayedEntries()) {
+		for (TravelEntryListEntryDto travelEntry : getDisplayedEntries()) {
 			TravelEntryListEntry listEntry = new TravelEntryListEntry(travelEntry);
 
 			addEditButton(listEntry);

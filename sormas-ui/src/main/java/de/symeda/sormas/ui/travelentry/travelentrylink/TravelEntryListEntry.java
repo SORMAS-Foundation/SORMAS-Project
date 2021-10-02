@@ -24,7 +24,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
+import de.symeda.sormas.api.travelentry.TravelEntryListEntryDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -34,10 +34,10 @@ public class TravelEntryListEntry extends HorizontalLayout {
 
 	public static final String SEPARATOR = ": ";
 
-	private final TravelEntryIndexDto travelEntry;
+	private final TravelEntryListEntryDto travelEntry;
 	private Button editButton;
 
-	public TravelEntryListEntry(TravelEntryIndexDto travelEntry) {
+	public TravelEntryListEntry(TravelEntryListEntryDto travelEntry) {
 
 		this.travelEntry = travelEntry;
 
@@ -62,7 +62,7 @@ public class TravelEntryListEntry extends HorizontalLayout {
 		uuidReportDateLayout.addComponent(travelEntryUuidLabel);
 
 		Label reportDateLabel = new Label(
-			I18nProperties.getPrefixCaption(TravelEntryIndexDto.I18N_PREFIX, TravelEntryIndexDto.REPORT_DATE)
+			I18nProperties.getPrefixCaption(TravelEntryListEntryDto.I18N_PREFIX, TravelEntryListEntryDto.REPORT_DATE)
 				+ SEPARATOR
 				+ DateFormatHelper.formatDate(travelEntry.getReportDate()));
 		uuidReportDateLayout.addComponent(reportDateLabel);
@@ -105,7 +105,7 @@ public class TravelEntryListEntry extends HorizontalLayout {
 		}
 	}
 
-	public TravelEntryIndexDto getTravelEntry() {
+	public TravelEntryListEntryDto getTravelEntry() {
 		return travelEntry;
 	}
 }
