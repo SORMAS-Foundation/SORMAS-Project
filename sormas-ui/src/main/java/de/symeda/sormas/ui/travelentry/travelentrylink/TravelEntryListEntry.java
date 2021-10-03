@@ -20,7 +20,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -29,8 +28,9 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 
-public class TravelEntryListEntry extends HorizontalLayout {
+public class TravelEntryListEntry extends SideComponentField {
 
 	public static final String SEPARATOR = ": ";
 
@@ -40,18 +40,6 @@ public class TravelEntryListEntry extends HorizontalLayout {
 	public TravelEntryListEntry(TravelEntryListEntryDto travelEntry) {
 
 		this.travelEntry = travelEntry;
-
-		setMargin(false);
-		setSpacing(true);
-		setWidth(100, Unit.PERCENTAGE);
-		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
-
-		VerticalLayout mainLayout = new VerticalLayout();
-		mainLayout.setWidth(100, Unit.PERCENTAGE);
-		mainLayout.setMargin(false);
-		mainLayout.setSpacing(false);
-		addComponent(mainLayout);
-		setExpandRatio(mainLayout, 1);
 
 		HorizontalLayout uuidReportDateLayout = new HorizontalLayout();
 		uuidReportDateLayout.setMargin(false);
@@ -70,7 +58,7 @@ public class TravelEntryListEntry extends HorizontalLayout {
 		uuidReportDateLayout.setWidthFull();
 		uuidReportDateLayout.setComponentAlignment(travelEntryUuidLabel, Alignment.MIDDLE_LEFT);
 		uuidReportDateLayout.setComponentAlignment(reportDateLabel, Alignment.MIDDLE_RIGHT);
-		mainLayout.addComponent(uuidReportDateLayout);
+		addComponentToField(uuidReportDateLayout);
 
 		HorizontalLayout diseasePointOfEntryLayout = new HorizontalLayout();
 		diseasePointOfEntryLayout.setMargin(false);
@@ -87,7 +75,7 @@ public class TravelEntryListEntry extends HorizontalLayout {
 		diseasePointOfEntryLayout.setWidthFull();
 		diseasePointOfEntryLayout.setComponentAlignment(diseaseLabel, Alignment.MIDDLE_LEFT);
 		diseasePointOfEntryLayout.setComponentAlignment(pointOfEntryLabel, Alignment.MIDDLE_RIGHT);
-		mainLayout.addComponent(diseasePointOfEntryLayout);
+		addComponentToField(diseasePointOfEntryLayout);
 	}
 
 	public void addEditListener(Button.ClickListener editClickListener) {
