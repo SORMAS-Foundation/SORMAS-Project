@@ -80,7 +80,8 @@ public class TravelEntryListEntry extends HorizontalLayout {
 		CssStyles.style(diseaseLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 		diseasePointOfEntryLayout.addComponent(diseaseLabel);
 
-		Label pointOfEntryLabel = new Label(travelEntry.getPointOfEntryName());
+		Label pointOfEntryLabel =
+			new Label(I18nProperties.getPrefixCaption(TravelEntryListEntryDto.POINT_OF_ENTRY_I18N_PREFIX, travelEntry.getPointOfEntryName()));
 		diseasePointOfEntryLayout.addComponent(pointOfEntryLabel);
 
 		diseasePointOfEntryLayout.setWidthFull();
