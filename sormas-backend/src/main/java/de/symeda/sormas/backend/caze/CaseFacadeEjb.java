@@ -624,6 +624,42 @@ public class CaseFacadeEjb implements CaseFacade {
 		return cases;
 	}
 
+	@Override
+	public List<CaseIndexDto> getEntriesList(CaseCriteria caseCriteria, Integer first, Integer max) {
+
+		CriteriaQuery<CaseIndexDto> cq = listQueryBuilder.buildIndexCriteria(caseCriteria, null);
+
+		List<CaseIndexDto> cases = QueryHelper.getResultList(em, cq, first, max);
+		List<Long> caseIds = cases.stream().map(CaseIndexDto::getId).collect(Collectors.toList());
+
+		Map<String, ExternalShareInfoCountAndLatestDate> survToolShareCountAndDates = null;
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
+			survToolShareCountAndDates = externalShareInfoService.getCaseShareCountAndLatestDate(caseIds)
+				.stream()
+				.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
+		}
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		for (CaseIndexDto caze : cases) {
+			if (survToolShareCountAndDates != null) {
+				ExternalShareInfoCountAndLatestDate survToolShareCountAndDate = survToolShareCountAndDates.get(caze.getUuid());
+
+				if (survToolShareCountAndDate != null) {
+					caze.setSurveillanceToolShareCount(survToolShareCountAndDate.getCount());
+					caze.setSurveillanceToolLastShareDate(survToolShareCountAndDate.getLatestDate());
+					caze.setSurveillanceToolStatus(survToolShareCountAndDate.getLatestStatus());
+				}
+			}
+
+			Boolean isInJurisdiction = caze.getInJurisdiction();
+			pseudonymizer.pseudonymizeDto(CaseIndexDto.class, caze, isInJurisdiction, (c) -> {
+				pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, caze.getAgeAndBirthDate(), isInJurisdiction, null);
+			});
+		}
+
+		return cases;
+	}
+
 	public CaseDataDto postUpdate(String uuid, JsonNode caseDataDtoJson) {
 		CaseDataDto existingCaseDto = getCaseDataWithoutPseudonyimization(uuid);
 		PatchHelper.postUpdate(caseDataDtoJson, existingCaseDto);
@@ -2132,24 +2168,28 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		try {
 			messagingService.sendMessages(() -> {
-						final Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
-						final Map<String, User> responsibleUserByEventByEventUuid =
-								eventService.getAllEventUuidWithResponsibleUserByCaseAfterDateForNotification(caze, fromDate);
-						final Map<User, String> mapToReturn  = new HashMap<>();
-						responsibleUserByEventByEventUuid.forEach((s, user) -> mapToReturn.put(user, String.format(
-								I18nProperties.getString(MessageContents.CONTENT_EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED),
-								DataHelper.getShortUuid(s),
-								caze.getDisease().getName(),
-								DataHelper.getShortUuid(caze.getUuid()))));
-						return mapToReturn;
-			}, MessageSubject.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
-					new Object[] {
-							caze.getDisease().getName() }, MessageType.EMAIL,
-					MessageType.SMS);
+				final Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
+				final Map<String, User> responsibleUserByEventByEventUuid =
+					eventService.getAllEventUuidWithResponsibleUserByCaseAfterDateForNotification(caze, fromDate);
+				final Map<User, String> mapToReturn = new HashMap<>();
+				responsibleUserByEventByEventUuid.forEach(
+					(s, user) -> mapToReturn.put(
+						user,
+						String.format(
+							I18nProperties.getString(MessageContents.CONTENT_EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED),
+							DataHelper.getShortUuid(s),
+							caze.getDisease().getName(),
+							DataHelper.getShortUuid(caze.getUuid()))));
+				return mapToReturn;
+			},
+				MessageSubject.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
+				new Object[] {
+					caze.getDisease().getName() },
+				MessageType.EMAIL,
+				MessageType.SMS);
 		} catch (NotificationDeliveryFailedException e) {
 			logger.error(
-					String.format(
-						"NotificationDeliveryFailedException when trying to notify event responsible user about a newly confirmed case."));
+				String.format("NotificationDeliveryFailedException when trying to notify event responsible user about a newly confirmed case."));
 		}
 	}
 

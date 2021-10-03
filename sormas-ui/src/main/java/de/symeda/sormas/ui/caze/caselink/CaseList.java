@@ -30,7 +30,7 @@ public class CaseList extends PaginationList<CaseIndexDto> {
 
 	@Override
 	public void reload() {
-		List<CaseIndexDto> caseIndexDtos = FacadeProvider.getCaseFacade().getIndexList(caseCriteria, 0, maxDisplayedEntries * 20, null);
+		List<CaseIndexDto> caseIndexDtos = FacadeProvider.getCaseFacade().getEntriesList(caseCriteria, 0, maxDisplayedEntries * 20);
 
 		setEntries(caseIndexDtos);
 		if (!caseIndexDtos.isEmpty()) {
