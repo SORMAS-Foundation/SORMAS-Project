@@ -40,6 +40,7 @@ public class TravelEntryListService extends BaseTravelEntryService {
 			travelEntry.get(TravelEntry.REPORT_DATE),
 			travelEntry.get(TravelEntry.DISEASE),
 			pointOfEntry.get(PointOfEntry.NAME),
+			travelEntry.get(TravelEntry.POINT_OF_ENTRY_DETAILS),
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(travelEntryQueryContext)),
 			travelEntry.get(TravelEntry.CHANGE_DATE));
 

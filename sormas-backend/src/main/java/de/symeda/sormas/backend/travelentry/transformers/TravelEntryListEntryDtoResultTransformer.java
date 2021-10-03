@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.travelentry.transformers;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.transform.ResultTransformer;
 
 import de.symeda.sormas.api.Disease;
@@ -12,7 +13,9 @@ public class TravelEntryListEntryDtoResultTransformer implements ResultTransform
 
 	@Override
 	public Object transformTuple(Object[] objects, String[] strings) {
-		return new TravelEntryListEntryDto((String) objects[0], (Date) objects[1], (Disease) objects[2], (String) objects[3], (Boolean) objects[4]);
+		String pointOfEntryDetails = objects[4] != null ? (String) objects[4] : null;
+		String pointOfEntryName = StringUtils.isNotBlank(pointOfEntryDetails) ? pointOfEntryDetails : (String) objects[3];
+		return new TravelEntryListEntryDto((String) objects[0], (Date) objects[1], (Disease) objects[2], pointOfEntryName, (Boolean) objects[5]);
 	}
 
 	@Override
