@@ -65,7 +65,7 @@ public interface CaseFacade {
 
 	List<CaseIndexDto> getIndexList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	List<CaseIndexDto> getEntriesList(CaseCriteria caseCriteria, Integer first, Integer max);
+	List<CaseListEntryDto> getEntriesList(CaseCriteria caseCriteria, Integer first, Integer max);
 
 	Page<CaseIndexDto> getIndexPage(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
