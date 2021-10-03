@@ -23,7 +23,7 @@ import com.vaadin.ui.Label;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
+import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryListEntryDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -36,18 +36,18 @@ public class TravelEntryList extends PaginationList<TravelEntryListEntryDto> {
 
 	private static final int MAX_DISPLAYED_ENTRIES = 5;
 
-	private final TravelEntryCriteria travelEntryCriteria;
+	private final TravelEntryListCriteria travelEntryListCriteria;
 
-	public TravelEntryList(TravelEntryCriteria travelEntryCriteria) {
+	public TravelEntryList(TravelEntryListCriteria travelEntryListCriteria) {
 		super(MAX_DISPLAYED_ENTRIES);
-		this.travelEntryCriteria = travelEntryCriteria;
+		this.travelEntryListCriteria = travelEntryListCriteria;
 	}
 
 	@Override
 	public void reload() {
 
 		List<TravelEntryListEntryDto> travelEntries =
-			FacadeProvider.getTravelEntryFacade().getEntriesList(travelEntryCriteria, 0, maxDisplayedEntries * 20);
+			FacadeProvider.getTravelEntryFacade().getEntriesList(travelEntryListCriteria, 0, maxDisplayedEntries * 20);
 
 		setEntries(travelEntries);
 		if (!travelEntries.isEmpty()) {

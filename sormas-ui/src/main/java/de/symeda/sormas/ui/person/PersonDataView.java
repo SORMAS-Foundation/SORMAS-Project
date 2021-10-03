@@ -11,7 +11,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
+import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
@@ -113,9 +113,8 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TRAVEL_ENTRIES)
 			&& currentUser != null
 			&& currentUser.hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
-			TravelEntryCriteria travelEntryCriteria = new TravelEntryCriteria();
-			travelEntryCriteria.person(getReference());
-			layout.addComponent(new SideComponentLayout(new TravelEntryListComponent(travelEntryCriteria)), TRAVEL_ENTRIES_LOC);
+			TravelEntryListCriteria travelEntryListCriteria = new TravelEntryListCriteria.Builder().withPerson(getReference()).build();
+			layout.addComponent(new SideComponentLayout(new TravelEntryListComponent(travelEntryListCriteria)), TRAVEL_ENTRIES_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)

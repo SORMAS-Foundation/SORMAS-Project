@@ -19,6 +19,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
+import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryListEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -242,14 +243,14 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	}
 
 	@Override
-	public List<TravelEntryListEntryDto> getEntriesList(TravelEntryCriteria criteria, Integer first, Integer max) {
+	public List<TravelEntryListEntryDto> getEntriesList(TravelEntryListCriteria criteria, Integer first, Integer max) {
 		Long personId = null;
 		String caseUuid = null;
-		if (criteria.getPerson() != null) {
-			personId = personService.getIdByUuid(criteria.getPerson().getUuid());
+		if (criteria.getPersonReferenceDto() != null) {
+			personId = personService.getIdByUuid(criteria.getPersonReferenceDto().getUuid());
 		}
-		if (criteria.getCase() != null) {
-			caseUuid = criteria.getCase().getUuid();
+		if (criteria.getCaseReferenceDto() != null) {
+			caseUuid = criteria.getCaseReferenceDto().getUuid();
 		}
 		List<TravelEntryListEntryDto> entries = travelEntryListService.getEntriesList(personId, caseUuid, first, max);
 

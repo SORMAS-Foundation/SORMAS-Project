@@ -22,7 +22,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
+import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -31,19 +31,19 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class TravelEntryListComponent extends SideComponent {
 
-	public TravelEntryListComponent(TravelEntryCriteria travelEntryCriteria) {
+	public TravelEntryListComponent(TravelEntryListCriteria travelEntryListCriteria) {
 		super(I18nProperties.getString(Strings.entityTravelEntries));
 
 		UserProvider currentUser = UserProvider.getCurrent();
-		if (travelEntryCriteria.getCase() != null && currentUser != null && currentUser.hasUserRight(UserRight.TRAVEL_ENTRY_CREATE)) {
+		if (travelEntryListCriteria.getCaseReferenceDto() != null && currentUser != null && currentUser.hasUserRight(UserRight.TRAVEL_ENTRY_CREATE)) {
 			Button createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.travelEntryNewTravelEntry));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(e -> ControllerProvider.getTravelEntryController().create(travelEntryCriteria.getCase()));
+			createButton.addClickListener(e -> ControllerProvider.getTravelEntryController().create(travelEntryListCriteria.getCaseReferenceDto()));
 			addCreateButton(createButton);
 		}
 
-		TravelEntryList travelEntryList = new TravelEntryList(travelEntryCriteria);
+		TravelEntryList travelEntryList = new TravelEntryList(travelEntryListCriteria);
 		addComponent(travelEntryList);
 		travelEntryList.reload();
 	}
