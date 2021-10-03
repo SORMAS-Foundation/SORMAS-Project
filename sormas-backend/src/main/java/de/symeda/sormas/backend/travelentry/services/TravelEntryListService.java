@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.travelentry;
+package de.symeda.sormas.backend.travelentry.services;
 
 import java.util.List;
 
@@ -15,12 +15,15 @@ import de.symeda.sormas.api.travelentry.TravelEntryListEntryDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
+import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.travelentry.transformers.TravelEntryListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 
 @Stateless
 @LocalBean
-public class TravelEntryListService extends TravelEntryService {
+public class TravelEntryListService extends BaseTravelEntryService {
 
 	public List<TravelEntryListEntryDto> getEntriesList(Long personId, String caseUuid, Integer first, Integer max) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -72,7 +75,7 @@ public class TravelEntryListService extends TravelEntryService {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(resultingCase.get(Case.UUID), caseUuid));
 		}
 
-		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(TravelEntry.DELETED)));
+		filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
 
 		return filter;
 	}

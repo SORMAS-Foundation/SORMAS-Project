@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.travelentry;
+package de.symeda.sormas.backend.travelentry.services;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,7 +30,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -39,23 +38,18 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
+import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.travelentry.transformers.TravelEntryIndexDtoResultTransformer;
-import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 
 @Stateless
 @LocalBean
-public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
+public class TravelEntryService extends BaseTravelEntryService {
 
-	@EJB
-	private UserService userService;
 	@EJB
 	private TaskService taskService;
-
-	public TravelEntryService() {
-		super(TravelEntry.class);
-	}
 
 	public List<TravelEntryIndexDto> getIndexList(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -168,26 +162,8 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	public Predicate inJurisdictionOrOwned(TravelEntryQueryContext qc) {
-		final User currentUser = userService.getCurrentUser();
-		return TravelEntryJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
-	}
-
-	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, TravelEntry> travelEntryPath) {
-		return inJurisdictionOrOwned(new TravelEntryQueryContext(cb, cq, travelEntryPath));
-	}
-
-	public Predicate createUserFilter(TravelEntryQueryContext travelEntryQueryContext) {
-		return inJurisdictionOrOwned(travelEntryQueryContext);
-	}
-
 	public Predicate createActiveTravelEntriesFilter(CriteriaBuilder cb, From<?, TravelEntry> root) {
 		return cb.and(cb.isFalse(root.get(TravelEntry.ARCHIVED)), cb.isFalse(root.get(TravelEntry.DELETED)));
-	}
-
-	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, TravelEntry> root) {
-		return cb.isFalse(root.get(TravelEntry.DELETED));
 	}
 
 	public List<TravelEntry> getAllActiveAfter(Date date) {
