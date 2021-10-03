@@ -47,6 +47,8 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	@EJB
 	TravelEntryService travelEntryService;
 	@EJB
+	TravelEntryListService travelEntryListService;
+	@EJB
 	private PersonService personService;
 	@EJB
 	private UserService userService;
@@ -247,7 +249,7 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		if (criteria.getCase() != null) {
 			caseUuid = criteria.getCase().getUuid();
 		}
-		List<TravelEntryListEntryDto> entries = travelEntryService.getEntriesList(personId, caseUuid, first, max);
+		List<TravelEntryListEntryDto> entries = travelEntryListService.getEntriesList(personId, caseUuid, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(TravelEntryListEntryDto.class, entries, TravelEntryListEntryDto::isInJurisdiction, null);
