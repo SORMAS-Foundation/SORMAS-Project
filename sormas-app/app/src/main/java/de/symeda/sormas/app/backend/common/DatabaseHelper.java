@@ -291,6 +291,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
+	public static void clearConfigTable() {
+		try {
+			TableUtils.clearTable(DatabaseHelper.getCaseDao().getConnectionSource(), Config.class);
+		} catch (SQLException e) {
+			Log.e(DatabaseHelper.class.getName(), "Can't clear config table", e);
+			throw new RuntimeException(e);
+		}
+	}
+
 	/**
 	 * This is called when the database is first created. Usually you should call createTable statements here to build
 	 * the tables that will store your data.
