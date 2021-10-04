@@ -51,6 +51,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactListEntryDto;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
@@ -784,7 +785,7 @@ public class ContactController {
 		return editView;
 	}
 
-	public void deleteContact(ContactIndexDto contact, Runnable callback) {
+	public void deleteContact(ContactListEntryDto contact, Runnable callback) {
 		VaadinUiUtil.showDeleteConfirmationWindow(
 			String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getString(Strings.entityContact)),
 			() -> {
