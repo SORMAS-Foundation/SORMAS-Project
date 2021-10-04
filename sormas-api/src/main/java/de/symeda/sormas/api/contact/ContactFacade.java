@@ -35,7 +35,6 @@ import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 
@@ -72,7 +71,7 @@ public interface ContactFacade {
 
 	List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	List<ContactListEntryDto> getEntriesList(PersonReferenceDto personReferenceDto, Integer first, Integer max);
+	List<ContactListEntryDto> getEntriesList(String personUuid, Integer first, Integer max);
 
 	Page<ContactIndexDto> getIndexPage(ContactCriteria contactCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 

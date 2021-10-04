@@ -70,7 +70,6 @@ import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -1449,8 +1448,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		em.createQuery(cu).executeUpdate();
 	}
 
-	public List<ContactListEntryDto> getEntriesList(PersonReferenceDto personReferenceDto, Integer first, Integer max) {
-		if (personReferenceDto == null) {
+	public List<ContactListEntryDto> getEntriesList(Long personId, Integer first, Integer max) {
+		if (personId == null) {
 			return Collections.emptyList();
 		}
 
@@ -1469,14 +1468,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(contactQueryContext)),
 			contact.get(Contact.CHANGE_DATE));
 
-		ContactCriteria contactCriteria = new ContactCriteria();
-		contactCriteria.setPerson(personReferenceDto);
-		contactCriteria.setIncludeContactsFromOtherJurisdictions(true);
-
-		final Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, contactQueryContext);
-		if (criteriaFilter != null) {
-			cq.where(criteriaFilter);
-		}
+		Predicate filter = cb.equal(contact.get(Contact.PERSON_ID), personId);
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(contact.get(Contact.DELETED)));
+		cq.where(filter);
 
 		cq.orderBy(cb.desc(contact.get(Contact.CHANGE_DATE)));
 

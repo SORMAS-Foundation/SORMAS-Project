@@ -19,19 +19,18 @@ public class ContactList extends PaginationList<ContactListEntryDto> {
 
 	private static final int MAX_DISPLAYED_ENTRIES = 5;
 
-	private final PersonReferenceDto personReferenceDto;
+	private final String personUuid;
 	private final Label noContactLabel;
 
 	public ContactList(PersonReferenceDto personReferenceDto) {
 		super(MAX_DISPLAYED_ENTRIES);
-		this.personReferenceDto = personReferenceDto;
+		this.personUuid = personReferenceDto != null ? personReferenceDto.getUuid() : null;
 		noContactLabel = new Label(I18nProperties.getCaption(Captions.personNoContactLinkedToPerson));
 	}
 
 	@Override
 	public void reload() {
-		List<ContactListEntryDto> contactIndexDtoList =
-			FacadeProvider.getContactFacade().getEntriesList(personReferenceDto, 0, maxDisplayedEntries * 20);
+		List<ContactListEntryDto> contactIndexDtoList = FacadeProvider.getContactFacade().getEntriesList(personUuid, 0, maxDisplayedEntries * 20);
 
 		setEntries(contactIndexDtoList);
 		if (!contactIndexDtoList.isEmpty()) {

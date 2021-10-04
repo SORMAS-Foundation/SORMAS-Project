@@ -1143,9 +1143,10 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<ContactListEntryDto> getEntriesList(PersonReferenceDto personReferenceDto, Integer first, Integer max) {
+	public List<ContactListEntryDto> getEntriesList(String personUuid, Integer first, Integer max) {
 
-		List<ContactListEntryDto> entries = contactService.getEntriesList(personReferenceDto, first, max);
+		Long personId = personFacade.getPersonIdByUuid(personUuid);
+		List<ContactListEntryDto> entries = contactService.getEntriesList(personId, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(ContactListEntryDto.class, entries, ContactListEntryDto::isInJurisdiction, null);

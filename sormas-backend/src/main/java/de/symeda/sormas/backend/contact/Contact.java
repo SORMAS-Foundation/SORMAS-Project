@@ -124,6 +124,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 	public static final String MULTI_DAY_CONTACT = "multiDayContact";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	public static final String PERSON = "person";
+	public static final String PERSON_ID = "personId";
 	public static final String PROHIBITION_TO_WORK = "prohibitionToWork";
 	public static final String PROHIBITION_TO_WORK_FROM = "prohibitionToWorkFrom";
 	public static final String PROHIBITION_TO_WORK_UNTIL = "prohibitionToWorkUntil";
@@ -273,6 +274,17 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		Disease.OTHER })
 	@Outbreaks
 	private VaccinationStatus vaccinationStatus;
+
+	private Long personId;
+
+	@Column(name = "person_id", updatable = false, insertable = false)
+	public Long getPersonId() {
+		return personId;
+	}
+
+	public void setPersonId(Long personId) {
+		this.personId = personId;
+	}
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
