@@ -21,27 +21,41 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.contact.ContactListEntryDto;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
-import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 
-public class ContactListEntry extends SideComponentField {
+@SuppressWarnings("serial")
+public class ContactListEntry extends HorizontalLayout {
 
-	private final ContactListEntryDto contact;
+	private final ContactIndexDto contact;
 	private Button editButton;
 	private Button deleteButton;
 
-	public ContactListEntry(ContactListEntryDto contact) {
+	public ContactListEntry(ContactIndexDto contact) {
 
 		this.contact = contact;
+
+		setMargin(false);
+		setSpacing(true);
+		setWidth(100, Unit.PERCENTAGE);
+		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
+
+		HorizontalLayout mainLayout = new HorizontalLayout();
+		mainLayout.setWidth(100, Unit.PERCENTAGE);
+		mainLayout.setMargin(false);
+		mainLayout.setSpacing(false);
+		addComponent(mainLayout);
+		setExpandRatio(mainLayout, 1);
 
 		VerticalLayout leftLayout = new VerticalLayout();
 		leftLayout.setMargin(false);
@@ -65,11 +79,11 @@ public class ContactListEntry extends SideComponentField {
 
 		if (contact.getLastContactDate() != null) {
 			Label lastContactDate = new Label(
-				I18nProperties.getPrefixCaption(ContactListEntryDto.I18N_PREFIX, ContactListEntryDto.LAST_CONTACT_DATE) + ": "
+				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.LAST_CONTACT_DATE) + ": "
 					+ DateFormatHelper.formatDate(contact.getLastContactDate()));
 			leftLayout.addComponent(lastContactDate);
 		}
-		addComponentToField(leftLayout);
+		mainLayout.addComponent(leftLayout);
 	}
 
 	public void addEditListener(int rowIndex, ClickListener editClickListener) {
@@ -108,7 +122,7 @@ public class ContactListEntry extends SideComponentField {
 		deleteButton.addClickListener(deleteClickListener);
 	}
 
-	public ContactListEntryDto getContact() {
+	public ContactIndexDto getContact() {
 		return contact;
 	}
 }

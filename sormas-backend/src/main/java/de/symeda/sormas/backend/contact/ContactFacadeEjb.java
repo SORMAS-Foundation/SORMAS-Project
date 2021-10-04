@@ -80,7 +80,6 @@ import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactFollowUpDto;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.contact.ContactListEntryDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
@@ -1143,7 +1142,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<ContactListEntryDto> getEntriesList(ContactCriteria contactCriteria, Integer first, Integer max) {
+	public List<ContactIndexDto> getEntriesList(ContactCriteria contactCriteria, Integer first, Integer max) {
 
 		CriteriaQuery<ContactIndexDto> query = listCriteriaBuilder.buildIndexCriteria(contactCriteria, null);
 		List<ContactIndexDto> dtos = QueryHelper.getResultList(em, query, first, max);
@@ -1155,14 +1154,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 		});
 
-		return dtos.stream()
-			.map(
-				entry -> new ContactListEntryDto(
-					entry.getUuid(),
-					entry.getContactClassification(),
-					entry.getContactStatus(),
-					entry.getLastContactDate()))
-			.collect(Collectors.toList());
+		return dtos;
 	}
 
 	@Override
