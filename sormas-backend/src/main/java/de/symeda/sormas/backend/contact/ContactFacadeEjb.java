@@ -1145,12 +1145,24 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Override
 	public List<ContactListEntryDto> getEntriesList(ContactCriteria contactCriteria, Integer first, Integer max) {
 
-		List<ContactListEntryDto> entries = contactService.getEntriesList(contactCriteria, first, max);
+		CriteriaQuery<ContactIndexDto> query = listCriteriaBuilder.buildIndexCriteria(contactCriteria, null);
+		List<ContactIndexDto> dtos = QueryHelper.getResultList(em, query, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(ContactListEntryDto.class, entries, ContactListEntryDto::isInJurisdiction, null);
+		pseudonymizer.pseudonymizeDtoCollection(ContactIndexDto.class, dtos, ContactIndexDto::getInJurisdiction, (c, isInJurisdiction) -> {
+			if (c.getCaze() != null) {
+				pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), c.getCaseInJurisdiction(), null);
+			}
+		});
 
-		return entries;
+		return dtos.stream()
+			.map(
+				entry -> new ContactListEntryDto(
+					entry.getUuid(),
+					entry.getContactClassification(),
+					entry.getContactStatus(),
+					entry.getLastContactDate()))
+			.collect(Collectors.toList());
 	}
 
 	@Override
