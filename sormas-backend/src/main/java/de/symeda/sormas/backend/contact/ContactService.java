@@ -57,6 +57,7 @@ import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactListEntryDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -84,6 +85,7 @@ import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.contact.transformers.ContactListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
@@ -1444,6 +1446,37 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				validUntilPredicate));
 
 		em.createQuery(cu).executeUpdate();
+	}
+
+	public List<ContactListEntryDto> getEntriesList(ContactCriteria contactCriteria, Integer first, Integer max) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		final Root<Contact> contact = cq.from(Contact.class);
+
+		ContactQueryContext<Contact> contactQueryContext = new ContactQueryContext<>(cb, cq, contact);
+
+		cq.multiselect(
+			contact.get(Contact.UUID),
+			contact.get(Contact.CONTACT_CLASSIFICATION),
+			contact.get(Contact.CONTACT_STATUS),
+			contact.get(Contact.LAST_CONTACT_DATE),
+			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(contactQueryContext)),
+			contact.get(Contact.CHANGE_DATE));
+
+		if (contactCriteria != null) {
+			final Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, contactQueryContext);
+			if (criteriaFilter != null) {
+				cq.where(criteriaFilter);
+			}
+		}
+
+		cq.orderBy(cb.desc(contact.get(Contact.CHANGE_DATE)));
+
+		cq.distinct(true);
+
+		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
+			.setResultTransformer(new ContactListEntryDtoResultTransformer())
+			.getResultList();
 	}
 
 }
