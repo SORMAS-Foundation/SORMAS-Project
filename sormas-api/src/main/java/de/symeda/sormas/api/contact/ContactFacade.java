@@ -71,8 +71,6 @@ public interface ContactFacade {
 
 	List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	List<ContactIndexDto> getEntriesList(ContactCriteria contactCriteria, Integer first, Integer max);
-
 	Page<ContactIndexDto> getIndexPage(ContactCriteria contactCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
 	List<ContactIndexDetailedDto> getIndexDetailedList(
