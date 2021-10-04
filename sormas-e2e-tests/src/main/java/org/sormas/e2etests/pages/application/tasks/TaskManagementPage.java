@@ -21,6 +21,7 @@ package org.sormas.e2etests.pages.application.tasks;
 import org.openqa.selenium.By;
 
 public class TaskManagementPage {
+  public static final By RESULTS_COUNTER = By.cssSelector(".badge");
   public static final By NEW_TASK_BUTTON = By.cssSelector("div#taskNewTask");
   public static final By GENERAL_SEARCH_INPUT = By.cssSelector("input#freeText");
   public static final String EDIT_BUTTON_XPATH_BY_TEXT =

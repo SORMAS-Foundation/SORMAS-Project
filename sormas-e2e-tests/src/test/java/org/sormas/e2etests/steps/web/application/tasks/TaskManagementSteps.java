@@ -94,7 +94,8 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(GENERAL_SEARCH_INPUT);
           webDriverHelpers.fillAndSubmitInWebElement(
               GENERAL_SEARCH_INPUT, apiState.getCreatedContact().getUuid());
-          webDriverHelpers.waitUntilNumberOfElementsIsReduceToGiven(TABLE_ROW, displayedResults);
+          webDriverHelpers.waitUntilElementsHasText(
+              RESULTS_COUNTER, String.valueOf(displayedResults));
         });
 
     When(
@@ -171,11 +172,9 @@ public class TaskManagementSteps implements En {
                               getLocalDateTimeFromColumns(
                                   tableRow.get(ColumnHeaders.DUE_DATE.toString())))
                           .assignedTo(tableRow.get(ColumnHeaders.ASSIGNED_TO.toString()))
+                          .taskStatus(tableRow.get(ColumnHeaders.TASK_STATUS.toString()))
                           .commentsOnExecution(
                               tableRow.get(ColumnHeaders.COMMENTS_ON_EXECUTION.toString()))
-                          .commentsOnTask(tableRow.get(ColumnHeaders.COMMENTS_ON_TASK.toString()))
-                          .taskStatus(tableRow.get(ColumnHeaders.TASK_STATUS.toString()))
-                          .createdBy(tableRow.get(ColumnHeaders.CREATED_BY.toString()))
                           .build()));
         });
   }
