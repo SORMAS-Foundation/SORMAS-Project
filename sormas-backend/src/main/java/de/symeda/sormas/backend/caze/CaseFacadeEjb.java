@@ -628,39 +628,12 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public List<CaseListEntryDto> getEntriesList(CaseCriteria caseCriteria, Integer first, Integer max) {
 
-		CriteriaQuery<CaseIndexDto> cq = listQueryBuilder.buildIndexCriteria(caseCriteria, null);
-
-		List<CaseIndexDto> cases = QueryHelper.getResultList(em, cq, first, max);
-		List<Long> caseIds = cases.stream().map(CaseIndexDto::getId).collect(Collectors.toList());
-
-		Map<String, ExternalShareInfoCountAndLatestDate> survToolShareCountAndDates = null;
-		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
-			survToolShareCountAndDates = externalShareInfoService.getCaseShareCountAndLatestDate(caseIds)
-				.stream()
-				.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
-		}
+		List<CaseListEntryDto> entries = caseService.getEntriesList(caseCriteria, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		for (CaseIndexDto caze : cases) {
-			if (survToolShareCountAndDates != null) {
-				ExternalShareInfoCountAndLatestDate survToolShareCountAndDate = survToolShareCountAndDates.get(caze.getUuid());
+		pseudonymizer.pseudonymizeDtoCollection(CaseListEntryDto.class, entries, CaseListEntryDto::isInJurisdiction, null);
 
-				if (survToolShareCountAndDate != null) {
-					caze.setSurveillanceToolShareCount(survToolShareCountAndDate.getCount());
-					caze.setSurveillanceToolLastShareDate(survToolShareCountAndDate.getLatestDate());
-					caze.setSurveillanceToolStatus(survToolShareCountAndDate.getLatestStatus());
-				}
-			}
-
-			Boolean isInJurisdiction = caze.getInJurisdiction();
-			pseudonymizer.pseudonymizeDto(CaseIndexDto.class, caze, isInJurisdiction, (c) -> {
-				pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, caze.getAgeAndBirthDate(), isInJurisdiction, null);
-			});
-		}
-
-		return cases.stream()
-			.map(entry -> new CaseListEntryDto(entry.getUuid(), entry.getReportDate(), entry.getDisease(), entry.getCaseClassification()))
-			.collect(Collectors.toList());
+		return entries;
 	}
 
 	public CaseDataDto postUpdate(String uuid, JsonNode caseDataDtoJson) {

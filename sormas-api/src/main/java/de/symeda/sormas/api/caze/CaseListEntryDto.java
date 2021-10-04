@@ -17,11 +17,14 @@ public class CaseListEntryDto extends PseudonymizableIndexDto implements Seriali
 	private Disease disease;
 	private CaseClassification caseClassification;
 
-	public CaseListEntryDto(String uuid, Date reportDate, Disease disease, CaseClassification caseClassification) {
+	private boolean isInJurisdiction;
+
+	public CaseListEntryDto(String uuid, Date reportDate, Disease disease, CaseClassification caseClassification, boolean isInJurisdiction) {
 		this.uuid = uuid;
 		this.reportDate = reportDate;
 		this.disease = disease;
 		this.caseClassification = caseClassification;
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public String getUuid() {
@@ -54,5 +57,13 @@ public class CaseListEntryDto extends PseudonymizableIndexDto implements Seriali
 
 	public void setCaseClassification(CaseClassification caseClassification) {
 		this.caseClassification = caseClassification;
+	}
+
+	public boolean isInJurisdiction() {
+		return isInJurisdiction;
+	}
+
+	public void setInJurisdiction(boolean inJurisdiction) {
+		isInJurisdiction = inJurisdiction;
 	}
 }

@@ -55,6 +55,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -84,6 +85,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
+import de.symeda.sormas.backend.caze.transformers.CaseListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
@@ -1326,6 +1328,37 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		cq.where(cb.equal(caseRoot.get(Case.EXTERNAL_ID), externalId), cb.equal(caseRoot.get(Case.DELETED), Boolean.FALSE));
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public List<CaseListEntryDto> getEntriesList(CaseCriteria caseCriteria, Integer first, Integer max) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		final Root<Case> caze = cq.from(Case.class);
+
+		CaseQueryContext<Case> caseQueryContext = new CaseQueryContext<>(cb, cq, caze);
+
+		cq.multiselect(
+			caze.get(Case.UUID),
+			caze.get(Case.REPORT_DATE),
+			caze.get(Case.DISEASE),
+			caze.get(Case.CASE_CLASSIFICATION),
+			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(caseQueryContext)),
+			caze.get(Case.CHANGE_DATE));
+
+		if (caseCriteria != null) {
+			final Predicate criteriaFilter = createCriteriaFilter(caseCriteria, caseQueryContext);
+			if (criteriaFilter != null) {
+				cq.where(criteriaFilter);
+			}
+		}
+
+		cq.orderBy(cb.desc(caze.get(Case.CHANGE_DATE)));
+
+		cq.distinct(true);
+
+		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
+			.setResultTransformer(new CaseListEntryDtoResultTransformer())
+			.getResultList();
 	}
 
 	@Transactional(rollbackOn = Exception.class)
