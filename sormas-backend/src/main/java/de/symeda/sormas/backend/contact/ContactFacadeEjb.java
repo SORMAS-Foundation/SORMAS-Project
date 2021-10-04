@@ -550,6 +550,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			contact.get(Contact.FIRST_CONTACT_DATE),
 			contact.get(Contact.LAST_CONTACT_DATE),
 			contact.get(Contact.CREATION_DATE),
+			joins.getPerson().get(Person.UUID),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			joins.getPerson().get(Person.SALUTATION),

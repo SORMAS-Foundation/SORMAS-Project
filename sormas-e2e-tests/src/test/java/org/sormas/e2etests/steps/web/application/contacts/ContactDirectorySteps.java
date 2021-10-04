@@ -92,7 +92,7 @@ public class ContactDirectorySteps implements En {
     Then(
         "I check that number of displayed contact results is (\\d+)",
         (Integer number) ->
-            assertHelpers.assertWithPoll15Second(
+            assertHelpers.assertWithPoll20Second(
                 () ->
                     Truth.assertThat(
                             webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS))

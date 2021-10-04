@@ -21,7 +21,10 @@ package org.sormas.e2etests.services.api;
 import com.google.inject.Inject;
 import java.util.Date;
 import java.util.UUID;
+import org.sormas.e2etests.enums.CommunityUUIDs;
 import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.TestDataUser;
 import org.sormas.e2etests.pojo.api.*;
 
@@ -37,12 +40,16 @@ public class CaseApiService {
         .pseudonymized(false)
         .uuid(UUID.randomUUID().toString())
         .reportDate(new Date())
-        .reportingUser(ReportingUser.builder().uuid("QLW4AN-TGWLRA-3UQVEM-WCDFCIVM").build())
-        .district(District.builder().uuid("SZ75BK-5OUMFU-V2DTKG-5BYACHFE").build())
-        .region(Region.builder().uuid("RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY").build())
-        .responsibleDistrict(District.builder().uuid("SZ75BK-5OUMFU-V2DTKG-5BYACHFE").build())
-        .responsibleRegion(Region.builder().uuid("RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY").build())
-        .community(Community.builder().uuid("QWK33J-XYN3DE-5CSXFJ-MMFOKNKM").build())
+        .reportingUser(ReportingUser.builder().uuid(TestDataUser.REST_AUTOMATION.getUuid()).build())
+        .district(
+            District.builder().uuid(DistrictsValues.VoreingestellterLandkreis.getUuid()).build())
+        .region(Region.builder().uuid(RegionsValues.VoreingestellteBundeslander.getUuid()).build())
+        .responsibleDistrict(
+            District.builder().uuid(DistrictsValues.VoreingestellterLandkreis.getUuid()).build())
+        .responsibleRegion(
+            Region.builder().uuid(RegionsValues.VoreingestellteBundeslander.getUuid()).build())
+        .community(
+            Community.builder().uuid(CommunityUUIDs.VoreingestellteGemeinde.getUuid()).build())
         .followUpStatus("FOLLOW_UP")
         .person(
             Person.builder()

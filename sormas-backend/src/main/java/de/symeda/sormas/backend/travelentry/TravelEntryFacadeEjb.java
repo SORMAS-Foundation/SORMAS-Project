@@ -298,6 +298,7 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		dto.setDisease(entity.getDisease());
 		dto.setDiseaseDetails(entity.getDiseaseDetails());
 		dto.setDiseaseVariant(entity.getDiseaseVariant());
+		dto.setDiseaseVariantDetails(entity.getDiseaseVariantDetails());
 		dto.setResponsibleRegion(RegionFacadeEjb.toReferenceDto(entity.getResponsibleRegion()));
 		dto.setResponsibleDistrict(DistrictFacadeEjb.toReferenceDto(entity.getResponsibleDistrict()));
 		dto.setResponsibleCommunity(CommunityFacadeEjb.toReferenceDto(entity.getResponsibleCommunity()));
@@ -344,6 +345,7 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setDiseaseVariant(source.getDiseaseVariant());
+		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
 		target.setResponsibleRegion(regionService.getByReferenceDto(source.getResponsibleRegion()));
 		target.setResponsibleDistrict(districtService.getByReferenceDto(source.getResponsibleDistrict()));
 		target.setResponsibleCommunity(communityService.getByReferenceDto(source.getResponsibleCommunity()));

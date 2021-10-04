@@ -58,7 +58,7 @@ public class WebDriverHelpers {
 
   public void waitForPageLoaded() {
 
-    assertHelpers.assertWithPoll15Second(
+    assertHelpers.assertWithPoll20Second(
         () ->
             assertThat(baseSteps.getDriver().executeScript("return document.readyState").toString())
                 .isEqualTo("complete"));
@@ -90,7 +90,7 @@ public class WebDriverHelpers {
           },
           seconds);
     } else if (selector instanceof WebElement) {
-      assertHelpers.assertWithPoll15Second(
+      assertHelpers.assertWithPoll20Second(
           () -> {
             scrollToElement(selector);
             assertWithMessage("The element was not enabled")
@@ -122,7 +122,7 @@ public class WebDriverHelpers {
           },
           seconds);
     } else if (selector instanceof WebElement) {
-      assertHelpers.assertWithPoll15Second(
+      assertHelpers.assertWithPoll20Second(
           () -> {
             assertWithMessage(selector.getClass().getSimpleName() + "is still enabled")
                 .that(((WebElement) selector).isEnabled())
@@ -213,7 +213,10 @@ public class WebDriverHelpers {
             .findElement(selector)
             .findElement(By.xpath("preceding-sibling::input"));
     comboboxInput.sendKeys(Keys.chord(Keys.BACK_SPACE));
-    String comboBoxItemWithText = "//td[@role='listitem']/span[ contains(text(), '" + text + "')]";
+    String comboBoxItemWithText =
+        "//td[@role='listitem']/span[ contains(text(), '"
+            + text
+            + "') or starts-with(text(), '\" + text + \"') ]";
     waitUntilIdentifiedElementIsVisibleAndClickable(comboboxInput);
     comboboxInput.sendKeys(text);
     waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestpopup"));
@@ -264,7 +267,7 @@ public class WebDriverHelpers {
   }
 
   public void checkWebElementContainsText(By selector, String text) {
-    assertHelpers.assertWithPoll15Second(
+    assertHelpers.assertWithPoll20Second(
         () -> assertThat(baseSteps.getDriver().findElement(selector).getText()).contains(text));
   }
 
@@ -311,13 +314,13 @@ public class WebDriverHelpers {
     waitUntilIdentifiedElementIsPresent(selector);
     try {
       if (selector instanceof WebElement) {
-        assertHelpers.assertWithPoll15Second(
+        assertHelpers.assertWithPoll20Second(
             () -> {
               javascriptExecutor.executeScript(SCROLL_TO_WEB_ELEMENT_SCRIPT, selector);
               assertThat(((WebElement) selector).isDisplayed()).isTrue();
             });
       } else {
-        assertHelpers.assertWithPoll15Second(
+        assertHelpers.assertWithPoll20Second(
             () -> {
               javascriptExecutor.executeScript(
                   SCROLL_TO_WEB_ELEMENT_SCRIPT, baseSteps.getDriver().findElement((By) selector));
@@ -331,7 +334,7 @@ public class WebDriverHelpers {
 
   private WebElement getWebElementByText(By selector, Predicate<WebElement> webElementPredicate) {
     waitForPageLoaded();
-    assertHelpers.assertWithPoll15Second(
+    assertHelpers.assertWithPoll20Second(
         () -> {
           waitUntilIdentifiedElementIsVisibleAndClickable(selector);
           assertThat(
@@ -356,6 +359,19 @@ public class WebDriverHelpers {
             assertThat(webElements.size()).isAtLeast(2);
             assertThat(
                 webElements.stream().allMatch(webElement -> webElement.getText().equals(text)));
+          },
+          3);
+    } catch (Throwable ignored) {
+    }
+  }
+
+  public void waitUntilElementsHasText(By selector, String text) {
+    waitForPageLoaded();
+    try {
+      assertHelpers.assertWithPoll(
+          () -> {
+            WebElement webElement = baseSteps.getDriver().findElement(selector);
+            assertThat(webElement.getText()).isEqualTo(text);
           },
           3);
     } catch (Throwable ignored) {
@@ -456,22 +472,22 @@ public class WebDriverHelpers {
 
   public void waitUntilIdentifiedElementIsPresent(final Object selector) {
     if (selector instanceof WebElement) {
-      assertHelpers.assertWithPoll15Second(() -> assertThat(selector).isNotNull());
+      assertHelpers.assertWithPoll20Second(() -> assertThat(selector).isNotNull());
     } else {
-      assertHelpers.assertWithPoll15Second(
+      assertHelpers.assertWithPoll20Second(
           () -> assertThat(getNumberOfElements((By) selector) > 0).isTrue());
     }
   }
 
   public void waitUntilWebElementHasAttributeWithValue(
       final By selector, String attribute, String value) {
-    assertHelpers.assertWithPoll15Second(
+    assertHelpers.assertWithPoll20Second(
         () -> assertThat(getAttributeFromWebElement(selector, attribute)).isEqualTo(value));
   }
 
   public void waitUntilANumberOfElementsAreVisibleAndClickable(By selector, int number) {
     waitUntilIdentifiedElementIsVisibleAndClickable(selector, 15);
-    assertHelpers.assertWithPoll15Second(
+    assertHelpers.assertWithPoll20Second(
         () ->
             assertWithMessage("Number of identified element should be %s", number)
                 .that(getNumberOfElements(selector))
@@ -480,7 +496,7 @@ public class WebDriverHelpers {
 
   public void waitUntilNumberOfElementsIsReduceToGiven(By selector, int given) {
     waitUntilIdentifiedElementIsVisibleAndClickable(selector, 15);
-    assertHelpers.assertWithPoll15Second(
+    assertHelpers.assertWithPoll20Second(
         () ->
             assertWithMessage("Number of identified element should be %s", given)
                 .that(getNumberOfElements(selector))
@@ -489,7 +505,7 @@ public class WebDriverHelpers {
 
   public void waitUntilNumberOfElementsIsExactlyOrLess(By selector, int given) {
     waitUntilIdentifiedElementIsVisibleAndClickable(selector, 15);
-    assertHelpers.assertWithPoll15Second(
+    assertHelpers.assertWithPoll20Second(
         () ->
             assertWithMessage("Number of identified element should be %s", given)
                 .that(getNumberOfElements(selector))
@@ -498,7 +514,7 @@ public class WebDriverHelpers {
 
   public void waitUntilNumberOfElementsIsExactly(By selector, int given) {
     waitUntilIdentifiedElementIsVisibleAndClickable(selector, 15);
-    assertHelpers.assertWithPoll15Second(
+    assertHelpers.assertWithPoll20Second(
         () ->
             assertWithMessage("Number of identified element should be %s", given)
                 .that(getNumberOfElements(selector))

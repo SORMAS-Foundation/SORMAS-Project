@@ -182,15 +182,19 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 322;
+	public static final int DATABASE_VERSION = 323;
 
 	private static DatabaseHelper instance = null;
 
 	public static void init(Context context) {
+		init(context, DATABASE_NAME);
+	}
+
+	public static void init(Context context, String databaseName) {
 		if (instance != null) {
 			Log.e(DatabaseHelper.class.getName(), "DatabaseHelper has already been initalized");
 		}
-		instance = new DatabaseHelper(context);
+		instance = new DatabaseHelper(context, databaseName);
 	}
 
 	private boolean clearingTables = false;
@@ -204,8 +208,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	private LbdsSyncDao lbdsSyncDao = null;
 
-	private DatabaseHelper(Context context) {
-		super(context, DATABASE_NAME, null, DATABASE_VERSION);//, R.raw.ormlite_config);
+	private DatabaseHelper(Context context, String databaseName) {
+		super(context, databaseName, null, DATABASE_VERSION);//, R.raw.ormlite_config);
 		this.context = context;
 		// HACK to make sure database is initialized - otherwise we could run into problems caused by threads
 		this.getReadableDatabase();
@@ -284,6 +288,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			throw new RuntimeException(e);
 		} finally {
 			instance.clearingTables = false;
+		}
+	}
+
+	public static void clearConfigTable() {
+		try {
+			TableUtils.clearTable(DatabaseHelper.getCaseDao().getConnectionSource(), Config.class);
+		} catch (SQLException e) {
+			Log.e(DatabaseHelper.class.getName(), "Can't clear config table", e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -2826,6 +2839,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						" positiveTestResultDate timestamp," +
 						" recoveryDate timestamp," +
 						" relatedCase_id bigint REFERENCES cases(id))");
+				//@formatter:on
 
 			case 319:
 				currentVersion = 319;
@@ -2839,7 +2853,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 320;
 				GenericRawResults<String[]> tableColumns = getDao(User.class).queryRaw("pragma table_info(users)");
 				int nameColumnIndex = Arrays.asList(tableColumns.getColumnNames()).indexOf("name");
-				boolean columnAssociatedOfficeIdNotExists = tableColumns.getResults().stream().noneMatch(columnRowData -> "associatedOfficer_id".equals(columnRowData[nameColumnIndex]));
+				boolean columnAssociatedOfficeIdNotExists =
+					tableColumns.getResults().stream().noneMatch(columnRowData -> "associatedOfficer_id".equals(columnRowData[nameColumnIndex]));
 
 				if (columnAssociatedOfficeIdNotExists) {
 					getDao(User.class).executeRaw("ALTER TABLE users ADD COLUMN associatedOfficer_id bigint REFERENCES users(id);");
@@ -2849,7 +2864,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 321;
 				getDao(Person.class).executeRaw("UPDATE person SET sex = 'UNKNOWN' WHERE sex IS NULL;");
 
-				//@formatter:on
+			case 322:
+				currentVersion = 322;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN diseaseVariantDetails varchar(512);");
+				getDao(Case.class).executeRaw("ALTER TABLE events ADD COLUMN diseaseVariantDetails varchar(512);");
+				getDao(Case.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN testedDiseaseVariantDetails varchar(512);");
+
 				// ATTENTION: break should only be done after last version
 				break;
 

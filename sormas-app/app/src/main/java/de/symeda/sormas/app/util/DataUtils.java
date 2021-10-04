@@ -17,15 +17,16 @@ package de.symeda.sormas.app.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.Month;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 
@@ -54,7 +55,7 @@ public class DataUtils {
 			list.add(new Item<E>("", null));
 		}
 
-		for (E enumConstant: enumConstants) {
+		for (E enumConstant : enumConstants) {
 			boolean visible = true;
 			if (checkers != null) {
 				visible = checkers.isVisible(clazz, enumConstant.name());
@@ -142,5 +143,13 @@ public class DataUtils {
 		if (currentlySelected != null) {
 			birthdateDD.setValue(currentlySelected);
 		}
+	}
+
+	public static <T> T getRandomCandidate(List<T> candidates) {
+		if (CollectionUtils.isEmpty(candidates)) {
+			return null;
+		}
+
+		return candidates.get(new Random().nextInt(candidates.size()));
 	}
 }

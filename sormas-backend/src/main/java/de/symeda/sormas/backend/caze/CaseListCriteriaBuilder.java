@@ -182,6 +182,7 @@ public class CaseListCriteriaBuilder {
 			root.get(Case.EXTERNAL_ID),
 			root.get(Case.EXTERNAL_TOKEN),
 			root.get(Case.INTERNAL_TOKEN),
+			joins.getPerson().get(Person.UUID),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			root.get(Case.DISEASE),

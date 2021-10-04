@@ -70,6 +70,7 @@ public class TravelEntry extends CoreAdo {
 	private Disease disease;
 	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
+	private String diseaseVariantDetails;
 	private Region responsibleRegion;
 	private District responsibleDistrict;
 	private Community responsibleCommunity;
@@ -188,6 +189,15 @@ public class TravelEntry extends CoreAdo {
 
 	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	@ManyToOne()

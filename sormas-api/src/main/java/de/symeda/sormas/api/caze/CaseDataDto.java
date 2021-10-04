@@ -94,6 +94,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String DENGUE_FEVER_TYPE = "dengueFeverType";
 	public static final String RABIES_TYPE = "rabiesType";
@@ -212,6 +213,9 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	@Outbreaks
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
+	@Outbreaks
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String diseaseVariantDetails;
 	@Diseases({
 		Disease.PLAGUE })
 	@Outbreaks
@@ -614,8 +618,6 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		caseData.setResponsibleRegion(travelEntry.getResponsibleRegion());
 		caseData.setResponsibleDistrict(travelEntry.getResponsibleDistrict());
 		caseData.setResponsibleCommunity(travelEntry.getResponsibleCommunity());
-		caseData.setRegion(travelEntry.getPointOfEntryRegion());
-		caseData.setDistrict(travelEntry.getPointOfEntryDistrict());
 		caseData.setPointOfEntry(travelEntry.getPointOfEntry());
 		caseData.setPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
 		caseData.setReportDate(travelEntry.getReportDate());
@@ -762,6 +764,14 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	public PlagueType getPlagueType() {

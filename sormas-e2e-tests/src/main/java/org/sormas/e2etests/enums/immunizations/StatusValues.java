@@ -18,24 +18,31 @@
 
 package org.sormas.e2etests.enums.immunizations;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import lombok.Getter;
 
 @Getter
-public enum ImmunizationStatusValues {
+public enum StatusValues {
   PENDING("PENDING"),
   ACQUIRED("ACQUIRED"),
   NOT_ACQUIRED("NOT_ACQUIRED"),
-  EXPIRED("EXPIRED");
+  EXPIRED("EXPIRED"),
+
+  DONE("DONE");
 
   private final String value;
 
-  ImmunizationStatusValues(String value) {
+  StatusValues(String value) {
     this.value = value;
   }
 
   public static String getRandomImmunizationStatus() {
     Random random = new Random();
-    return String.valueOf(ImmunizationStatusValues.values()[random.nextInt(values().length)].value);
+    List<String> values =
+        Arrays.asList(
+            PENDING.toString(), ACQUIRED.toString(), NOT_ACQUIRED.toString(), EXPIRED.toString());
+    return values.get(random.nextInt(values.size()));
   }
 }

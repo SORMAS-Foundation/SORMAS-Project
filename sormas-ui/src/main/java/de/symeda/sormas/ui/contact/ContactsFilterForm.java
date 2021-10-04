@@ -112,7 +112,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			ContactIndexDto.CASE_CLASSIFICATION,
 			ContactIndexDto.CONTACT_CATEGORY,
 			ContactIndexDto.FOLLOW_UP_STATUS,
-			ContactCriteria.NAME_UUID_CASE_LIKE,
+			ContactCriteria.CONTACT_OR_CASE_LIKE,
+			ContactCriteria.PERSON_LIKE,
 			ContactCriteria.EVENT_LIKE };
 	}
 
@@ -142,8 +143,13 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
 		TextField searchField = addField(
 			FieldConfiguration
-				.withCaptionAndPixelSized(ContactCriteria.NAME_UUID_CASE_LIKE, I18nProperties.getString(Strings.promptContactsSearchField), 200));
+				.withCaptionAndPixelSized(ContactCriteria.CONTACT_OR_CASE_LIKE, I18nProperties.getString(Strings.promptContactsSearchField), 200));
 		searchField.setNullRepresentation("");
+
+		TextField personLikeField = addField(
+			FieldConfiguration
+				.withCaptionAndPixelSized(ContactCriteria.PERSON_LIKE, I18nProperties.getString(Strings.promptRelatedPersonLikeField), 200));
+		personLikeField.setNullRepresentation("");
 
 		TextField eventSearchField = addField(
 			FieldConfiguration
@@ -553,7 +559,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	}
 
 	public void setSearchFieldEnabled(boolean enabled) {
-		this.getField(ContactCriteria.NAME_UUID_CASE_LIKE).setEnabled(enabled);
+		this.getField(ContactCriteria.CONTACT_OR_CASE_LIKE).setEnabled(enabled);
 		this.getField(ContactCriteria.EVENT_LIKE).setEnabled(enabled);
 	}
 
