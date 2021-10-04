@@ -38,4 +38,5 @@ public class Task {
   Contact contact;
   String assigneeReply;
   String creatorComment;
+  String commentsOnExecution;
 }

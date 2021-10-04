@@ -32,5 +32,6 @@ Feature: Tasks functionalities
     Given I log in as a Surveillance Officer
     And I click on the Tasks button from navbar
     And I search last created task by API using Contact UUID and wait for 2 results to be displayed
+    And I identify the last created task row
     And I collect the task column objects
     Then I am checking if all the fields are correctly displayed in the Task Management table

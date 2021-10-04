@@ -28,8 +28,6 @@ import cucumber.api.java8.En;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.SoftAssertions;
@@ -45,7 +43,8 @@ public class TaskManagementSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   private final BaseSteps baseSteps;
-  private List<Task> taskTableRows;
+  private Task actualTask;
+  private int specificTaskRowIndex;
 
   @Inject
   public TaskManagementSteps(
@@ -102,11 +101,7 @@ public class TaskManagementSteps implements En {
         "^I am checking if all the fields are correctly displayed in the Task Management table$",
         () -> {
           org.sormas.e2etests.pojo.api.Task expectedTask = apiState.getCreatedTask();
-          Task actualTask =
-              taskTableRows.stream()
-                  .filter(not(task -> task.getCommentsOnExecution().isEmpty()))
-                  .findFirst()
-                  .orElseThrow();
+
           softly
               .assertThat(apiState.getCreatedContact().getUuid())
               .containsIgnoringCase(
@@ -153,77 +148,42 @@ public class TaskManagementSteps implements En {
     When(
         "^I collect the task column objects$",
         () -> {
-          List<Map<String, String>> tableRowsData = getTableRowsData();
-          taskTableRows = new ArrayList<>();
-          tableRowsData.forEach(
-              tableRow ->
-                  taskTableRows.add(
-                      Task.builder()
-                          .associatedLink(tableRow.get(ColumnHeaders.ASSOCIATED_LINK.toString()))
-                          .taskContext(tableRow.get(ColumnHeaders.TASK_CONTEXT.toString()))
-                          .taskType(tableRow.get(ColumnHeaders.TASK_TYPE.toString()))
-                          .region(tableRow.get(ColumnHeaders.REGION.toString()))
-                          .district(tableRow.get(ColumnHeaders.DISTRICT.toString()))
-                          .priority(tableRow.get(ColumnHeaders.PRIORITY.toString()))
-                          .suggestedStartDateTime(
-                              getLocalDateTimeFromColumns(
-                                  tableRow.get(ColumnHeaders.SUGGESTED_START.toString())))
-                          .dueDateDateTime(
-                              getLocalDateTimeFromColumns(
-                                  tableRow.get(ColumnHeaders.DUE_DATE.toString())))
-                          .assignedTo(tableRow.get(ColumnHeaders.ASSIGNED_TO.toString()))
-                          .taskStatus(tableRow.get(ColumnHeaders.TASK_STATUS.toString()))
-                          .commentsOnExecution(
-                              tableRow.get(ColumnHeaders.COMMENTS_ON_EXECUTION.toString()))
-                          .build()));
+          WebElement taskRow =
+              baseSteps
+                  .getDriver()
+                  .findElement(By.xpath(String.format(TABLE_ROW, specificTaskRowIndex)));
+          actualTask =
+              Task.builder()
+                  .associatedLink(
+                      taskRow.findElement(By.xpath(String.format(TABLE_COLUMN, 2))).getText())
+                  .taskContext(
+                      taskRow.findElement(By.xpath(String.format(TABLE_COLUMN, 3))).getText())
+                  .taskType(taskRow.findElement(By.xpath(String.format(TABLE_COLUMN, 4))).getText())
+                  .region(taskRow.findElement(By.xpath(String.format(TABLE_COLUMN, 5))).getText())
+                  .district(taskRow.findElement(By.xpath(String.format(TABLE_COLUMN, 6))).getText())
+                  .priority(taskRow.findElement(By.xpath(String.format(TABLE_COLUMN, 7))).getText())
+                  .suggestedStartDateTime(
+                      getLocalDateTimeFromColumns(
+                          taskRow.findElement(By.xpath(String.format(TABLE_COLUMN, 8))).getText()))
+                  .dueDateDateTime(
+                      getLocalDateTimeFromColumns(
+                          taskRow.findElement(By.xpath(String.format(TABLE_COLUMN, 9))).getText()))
+                  .assignedTo(
+                      taskRow.findElement(By.xpath(String.format(TABLE_COLUMN, 10))).getText())
+                  .commentsOnExecution(
+                      taskRow.findElement(By.xpath(String.format(TABLE_COLUMN, 11))).getText())
+                  .taskStatus(
+                      taskRow.findElement(By.xpath(String.format(TABLE_COLUMN, 14))).getText())
+                  .build();
         });
-  }
 
-  private List<Map<String, String>> getTableRowsData() {
-    Map<String, Integer> headers = extractColumnHeadersHashMap();
-    List<WebElement> tableRows = getTableRows();
-    List<HashMap<Integer, String>> tableDataList = new ArrayList<>();
-    tableRows.forEach(
-        table -> {
-          HashMap<Integer, String> indexWithData = new HashMap<>();
-          AtomicInteger atomicInt = new AtomicInteger();
-          List<WebElement> tableData = table.findElements(TABLE_DATA);
-          tableData.forEach(
-              dataText -> {
-                webDriverHelpers.scrollToElementUntilIsVisible(dataText);
-                indexWithData.put(atomicInt.getAndIncrement(), dataText.getText());
-              });
-          tableDataList.add(indexWithData);
+    Then(
+        "I identify the last created task row",
+        () -> {
+          List<WebElement> allTableRows =
+              baseSteps.getDriver().findElements(By.xpath("//tr[@role='row']"));
+          specificTaskRowIndex = allTableRows.size();
         });
-    List<Map<String, String>> tableObjects = new ArrayList<>();
-    tableDataList.forEach(
-        row -> {
-          ConcurrentHashMap<String, String> objects = new ConcurrentHashMap<>();
-          headers.forEach((headerText, index) -> objects.put(headerText, row.get(index)));
-          tableObjects.add(objects);
-        });
-    return tableObjects;
-  }
-
-  private List<WebElement> getTableRows() {
-    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(COLUMN_HEADERS_TEXT);
-    return baseSteps.getDriver().findElements(TABLE_ROW);
-  }
-
-  private Map<String, Integer> extractColumnHeadersHashMap() {
-    AtomicInteger atomicInt = new AtomicInteger();
-    HashMap<String, Integer> headerHashmap = new HashMap<>();
-    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(COLUMN_HEADERS_TEXT);
-    webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(COLUMN_HEADERS_TEXT);
-    baseSteps
-        .getDriver()
-        .findElements(COLUMN_HEADERS_TEXT)
-        .forEach(
-            webElement -> {
-              webDriverHelpers.scrollToElementUntilIsVisible(webElement);
-              headerHashmap.put(webElement.getText(), atomicInt.getAndIncrement());
-            });
-    return headerHashmap;
   }
 
   private LocalDateTime getLocalDateTimeFromColumns(String date) {

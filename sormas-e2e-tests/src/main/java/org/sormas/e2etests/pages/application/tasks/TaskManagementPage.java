@@ -28,6 +28,6 @@ public class TaskManagementPage {
       "//td[contains(text(),'%s')]/../td/span[contains(@class, 'v-icon-edit')]";
   public static final By COLUMN_HEADERS_TEXT =
       By.cssSelector("thead .v-grid-column-default-header-content");
-  public static final By TABLE_ROW = By.cssSelector("div.v-grid-tablewrapper tbody tr");
-  public static final By TABLE_DATA = By.tagName("td");
+  public static final String TABLE_ROW = "(//tr[@role='row'])[%s]";
+  public static final String TABLE_COLUMN = "//td[%s]";
 }
