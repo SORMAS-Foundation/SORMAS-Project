@@ -12,7 +12,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.travelentry.TravelEntryListEntryDto;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
@@ -64,7 +63,6 @@ public class TravelEntryListService extends BaseTravelEntryService {
 		final TravelEntryJoins joins = (TravelEntryJoins) travelEntryQueryContext.getJoins();
 		final CriteriaBuilder cb = travelEntryQueryContext.getCriteriaBuilder();
 		final From<?, TravelEntry> from = travelEntryQueryContext.getRoot();
-		Join<TravelEntry, Case> resultingCase = joins.getResultingCase();
 
 		Predicate filter = createUserFilter(travelEntryQueryContext);
 
