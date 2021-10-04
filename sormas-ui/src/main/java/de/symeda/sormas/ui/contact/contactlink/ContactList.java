@@ -30,8 +30,7 @@ public class ContactList extends PaginationList<ContactIndexDto> {
 
 	@Override
 	public void reload() {
-		List<ContactIndexDto> contactIndexDtoList =
-			FacadeProvider.getContactFacade().getIndexList(contactCriteria, 0, maxDisplayedEntries * 20, null);
+		List<ContactIndexDto> contactIndexDtoList = FacadeProvider.getContactFacade().getEntriesList(contactCriteria, 0, maxDisplayedEntries * 20);
 
 		setEntries(contactIndexDtoList);
 		if (!contactIndexDtoList.isEmpty()) {
@@ -46,10 +45,11 @@ public class ContactList extends PaginationList<ContactIndexDto> {
 	@Override
 	protected void drawDisplayedEntries() {
 		List<ContactIndexDto> displayedEntries = getDisplayedEntries();
+		UserProvider currentUser = UserProvider.getCurrent();
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			final ContactIndexDto contactIndexDto = displayedEntries.get(i);
 			final ContactListEntry listEntry = new ContactListEntry(contactIndexDto);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
+			if (currentUser != null && currentUser.hasUserRight(UserRight.CASE_EDIT)) {
 				listEntry.addEditListener(
 					i,
 					(Button.ClickListener) event -> ControllerProvider.getContactController()
