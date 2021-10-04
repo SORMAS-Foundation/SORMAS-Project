@@ -56,6 +56,7 @@ public class TravelEntry extends CoreAdo {
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 	public static final String RESULTING_CASE = "resultingCase";
+	public static final String RESULTING_CASE_ID = "resultingCaseId";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String RECOVERED = "recovered";
 	public static final String VACCINATED = "vaccinated";
@@ -104,6 +105,7 @@ public class TravelEntry extends CoreAdo {
 	private Date quarantineOfficialOrderSentDate;
 
 	private Long personId;
+	private Long resultingCaseId;
 
 	@Column(name = "person_id", updatable = false, insertable = false)
 	public Long getPersonId() {
@@ -261,6 +263,15 @@ public class TravelEntry extends CoreAdo {
 
 	public void setPointOfEntryDetails(String pointOfEntryDetails) {
 		this.pointOfEntryDetails = pointOfEntryDetails;
+	}
+
+	@Column(name = "resultingcase_id", updatable = false, insertable = false)
+	public Long getResultingCaseId() {
+		return resultingCaseId;
+	}
+
+	public void setResultingCaseId(Long resultingCaseId) {
+		this.resultingCaseId = resultingCaseId;
 	}
 
 	@ManyToOne()

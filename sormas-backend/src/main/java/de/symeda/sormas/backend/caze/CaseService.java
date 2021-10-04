@@ -46,6 +46,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1370,6 +1371,24 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
 			.setResultTransformer(new CaseListEntryDtoResultTransformer())
 			.getResultList();
+	}
+
+	public Long getIdByUuid(@NotNull String uuid) {
+
+		if (uuid == null) {
+			return null;
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		ParameterExpression<String> uuidParam = cb.parameter(String.class, AbstractDomainObject.UUID);
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Case> from = cq.from(Case.class);
+		cq.select(from.get(AbstractDomainObject.ID));
+		cq.where(cb.equal(from.get(AbstractDomainObject.UUID), uuidParam));
+
+		TypedQuery<Long> q = em.createQuery(cq).setParameter(uuidParam, uuid);
+
+		return q.getResultList().stream().findFirst().orElse(null);
 	}
 
 	@Transactional(rollbackOn = Exception.class)

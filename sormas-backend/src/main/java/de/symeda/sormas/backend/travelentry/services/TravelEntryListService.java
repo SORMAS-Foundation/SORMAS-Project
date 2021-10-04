@@ -25,7 +25,7 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 @LocalBean
 public class TravelEntryListService extends BaseTravelEntryService {
 
-	public List<TravelEntryListEntryDto> getEntriesList(Long personId, String caseUuid, Integer first, Integer max) {
+	public List<TravelEntryListEntryDto> getEntriesList(Long personId, Long caseId, Integer first, Integer max) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<TravelEntry> travelEntry = cq.from(TravelEntry.class);
@@ -44,7 +44,7 @@ public class TravelEntryListService extends BaseTravelEntryService {
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(travelEntryQueryContext)),
 			travelEntry.get(TravelEntry.CHANGE_DATE));
 
-		final Predicate criteriaFilter = buildListEntryCriteriaFilter(personId, caseUuid, travelEntryQueryContext);
+		final Predicate criteriaFilter = buildListEntryCriteriaFilter(personId, caseId, travelEntryQueryContext);
 
 		if (criteriaFilter != null) {
 			cq.where(criteriaFilter);
@@ -59,7 +59,7 @@ public class TravelEntryListService extends BaseTravelEntryService {
 			.getResultList();
 	}
 
-	private Predicate buildListEntryCriteriaFilter(Long personId, String caseUuid, TravelEntryQueryContext travelEntryQueryContext) {
+	private Predicate buildListEntryCriteriaFilter(Long personId, Long caseId, TravelEntryQueryContext travelEntryQueryContext) {
 
 		final TravelEntryJoins joins = (TravelEntryJoins) travelEntryQueryContext.getJoins();
 		final CriteriaBuilder cb = travelEntryQueryContext.getCriteriaBuilder();
@@ -72,8 +72,8 @@ public class TravelEntryListService extends BaseTravelEntryService {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(TravelEntry.PERSON_ID), personId));
 		}
 
-		if (caseUuid != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(resultingCase.get(Case.UUID), caseUuid));
+		if (caseId != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(TravelEntry.RESULTING_CASE_ID), caseId));
 		}
 
 		filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
