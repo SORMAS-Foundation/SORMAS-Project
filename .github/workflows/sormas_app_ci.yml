@@ -23,6 +23,9 @@ jobs:
   test:
     name: gradle test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        api-level: [24, 28, 29]
 
     steps:
       - name: Checkout repository (with token)
@@ -74,9 +77,31 @@ jobs:
         working-directory: ./sormas-app
         run: ./gradlew :app:clean :app:assembleDebug :app:test :app:jacocoUnitTestReport
       
+      - name: AVD cache
+        uses: actions/cache@v2
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ matrix.api-level }}
+      
+      - name: create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          script: echo "Generated AVD snapshot for caching."
+
       - name: Run integration tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 28
+          api-level: ${{ matrix.api-level }}
           working-directory: ./sormas-app
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
           script: ./gradlew connectedAndroidTest
