@@ -19,18 +19,18 @@ public class CaseList extends PaginationList<CaseListEntryDto> {
 
 	private static final int MAX_DISPLAYED_ENTRIES = 5;
 
-	private final PersonReferenceDto personReferenceDto;
+	private final String personUuid;
 	private final Label noCaseLabel;
 
 	public CaseList(PersonReferenceDto personReferenceDto) {
 		super(MAX_DISPLAYED_ENTRIES);
-		this.personReferenceDto = personReferenceDto;
+		this.personUuid = personReferenceDto != null ? personReferenceDto.getUuid() : null;
 		noCaseLabel = new Label(I18nProperties.getCaption(Captions.personNoCaseLinkedToPerson));
 	}
 
 	@Override
 	public void reload() {
-		List<CaseListEntryDto> caseIndexDtos = FacadeProvider.getCaseFacade().getEntriesList(personReferenceDto, 0, maxDisplayedEntries * 20);
+		List<CaseListEntryDto> caseIndexDtos = FacadeProvider.getCaseFacade().getEntriesList(personUuid, 0, maxDisplayedEntries * 20);
 
 		setEntries(caseIndexDtos);
 		if (!caseIndexDtos.isEmpty()) {

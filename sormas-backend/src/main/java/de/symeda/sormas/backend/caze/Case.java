@@ -112,6 +112,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	public static final String SYSTEM_CASE_CLASSIFICATION = "systemCaseClassification";
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PERSON = "person";
+	public static final String PERSON_ID = "personId";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
@@ -388,6 +389,17 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	private List<ExternalShareInfo> externalShares = new ArrayList<>(0);
 
 	private CaseReferenceDefinition caseReferenceDefinition;
+
+	private Long personId;
+
+	@Column(name = "person_id", updatable = false, insertable = false)
+	public Long getPersonId() {
+		return personId;
+	}
+
+	public void setPersonId(Long personId) {
+		this.personId = personId;
+	}
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
