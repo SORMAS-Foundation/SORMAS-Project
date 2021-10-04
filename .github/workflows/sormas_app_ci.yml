@@ -77,6 +77,6 @@ jobs:
       - name: Run integration tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 24
+          api-level: 28
           working-directory: ./sormas-app
           script: ./gradlew connectedAndroidTest
