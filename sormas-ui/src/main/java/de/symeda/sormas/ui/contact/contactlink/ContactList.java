@@ -7,7 +7,7 @@ import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
-import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactListEntryDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -16,7 +16,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
-public class ContactList extends PaginationList<ContactIndexDto> {
+public class ContactList extends PaginationList<ContactListEntryDto> {
 
 	private final ContactCriteria contactCriteria = new ContactCriteria();
 	private final Label noContactLabel;
@@ -30,7 +30,8 @@ public class ContactList extends PaginationList<ContactIndexDto> {
 
 	@Override
 	public void reload() {
-		List<ContactIndexDto> contactIndexDtoList = FacadeProvider.getContactFacade().getEntriesList(contactCriteria, 0, maxDisplayedEntries * 20);
+		List<ContactListEntryDto> contactIndexDtoList =
+			FacadeProvider.getContactFacade().getEntriesList(contactCriteria, 0, maxDisplayedEntries * 20);
 
 		setEntries(contactIndexDtoList);
 		if (!contactIndexDtoList.isEmpty()) {
@@ -44,16 +45,16 @@ public class ContactList extends PaginationList<ContactIndexDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
-		List<ContactIndexDto> displayedEntries = getDisplayedEntries();
+		List<ContactListEntryDto> displayedEntries = getDisplayedEntries();
 		UserProvider currentUser = UserProvider.getCurrent();
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
-			final ContactIndexDto contactIndexDto = displayedEntries.get(i);
-			final ContactListEntry listEntry = new ContactListEntry(contactIndexDto);
+			final ContactListEntryDto contactListEntryDto = displayedEntries.get(i);
+			final ContactListEntry listEntry = new ContactListEntry(contactListEntryDto);
 			if (currentUser != null && currentUser.hasUserRight(UserRight.CASE_EDIT)) {
 				listEntry.addEditListener(
 					i,
 					(Button.ClickListener) event -> ControllerProvider.getContactController()
-						.navigateToData(listEntry.getContactIndexDto().getUuid()));
+						.navigateToData(listEntry.getContactListEntryDto().getUuid()));
 			}
 
 			listLayout.addComponent(listEntry);
