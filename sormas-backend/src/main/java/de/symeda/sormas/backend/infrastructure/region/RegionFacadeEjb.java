@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -54,6 +55,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb;
@@ -71,13 +73,11 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "RegionFacade")
-public class RegionFacadeEjb implements RegionFacade {
+public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionService> implements RegionFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
-	@EJB
-	private RegionService regionService;
 	@EJB
 	private UserService userService;
 	@EJB
@@ -88,8 +88,14 @@ public class RegionFacadeEjb implements RegionFacade {
 	private CountryService countryService;
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
-	@EJB
-	private FeatureConfigurationFacadeEjbLocal featureConfiguration;
+
+	public RegionFacadeEjb() {
+	}
+
+	@Inject
+	protected RegionFacadeEjb(RegionService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
+		super(service, featureConfiguration);
+	}
 
 	@Override
 	public List<RegionReferenceDto> getAllActiveByServerCountry() {
@@ -117,7 +123,7 @@ public class RegionFacadeEjb implements RegionFacade {
 
 	@Override
 	public List<RegionReferenceDto> getAllActiveAsReference() {
-		return regionService.getAllActive(Region.NAME, true).stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return service.getAllActive(Region.NAME, true).stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -129,7 +135,7 @@ public class RegionFacadeEjb implements RegionFacade {
 
 		selectDtoFields(cq, region);
 
-		Predicate filter = regionService.createChangeDateFilter(cb, region, date);
+		Predicate filter = service.createChangeDateFilter(cb, region, date);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -170,7 +176,7 @@ public class RegionFacadeEjb implements RegionFacade {
 
 		Predicate filter = null;
 		if (criteria != null) {
-			filter = regionService.buildCriteriaFilter(criteria, cb, region);
+			filter = service.buildCriteriaFilter(criteria, cb, region);
 		}
 		if (filter != null) {
 			cq.where(filter);
@@ -224,7 +230,7 @@ public class RegionFacadeEjb implements RegionFacade {
 		Predicate filter = null;
 
 		if (criteria != null) {
-			filter = regionService.buildCriteriaFilter(criteria, cb, root);
+			filter = service.buildCriteriaFilter(criteria, cb, root);
 		}
 
 		if (filter != null) {
@@ -242,27 +248,27 @@ public class RegionFacadeEjb implements RegionFacade {
 			return Collections.emptyList();
 		}
 
-		return regionService.getAllUuids();
+		return service.getAllUuids();
 	}
 
 	@Override
 	public RegionDto getByUuid(String uuid) {
-		return toDto(regionService.getByUuid(uuid));
+		return toDto(service.getByUuid(uuid));
 	}
 
 	@Override
 	public List<RegionDto> getByUuids(List<String> uuids) {
-		return regionService.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public RegionReferenceDto getRegionReferenceByUuid(String uuid) {
-		return toReferenceDto(regionService.getByUuid(uuid));
+		return toReferenceDto(service.getByUuid(uuid));
 	}
 
 	@Override
 	public RegionReferenceDto getRegionReferenceById(int id) {
-		return toReferenceDto(regionService.getById(id));
+		return toReferenceDto(service.getById(id));
 	}
 
 	@Override
@@ -279,30 +285,11 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 
 	@Override
-	public void archive(String regionUuid) {
-		Region region = regionService.getByUuid(regionUuid);
-		region.setArchived(true);
-		regionService.ensurePersisted(region);
-	}
-
-	@Override
-	public void dearchive(String regionUuid) {
-
-		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
-		}
-
-		Region region = regionService.getByUuid(regionUuid);
-		region.setArchived(false);
-		regionService.ensurePersisted(region);
-	}
-
-	@Override
 	public boolean isUsedInOtherInfrastructureData(Collection<String> regionUuids) {
 
-		return regionService.isUsedInInfrastructureData(regionUuids, District.REGION, District.class)
-			|| regionService.isUsedInInfrastructureData(regionUuids, Facility.REGION, Facility.class)
-			|| regionService.isUsedInInfrastructureData(regionUuids, PointOfEntry.REGION, PointOfEntry.class);
+		return service.isUsedInInfrastructureData(regionUuids, District.REGION, District.class)
+			|| service.isUsedInInfrastructureData(regionUuids, Facility.REGION, Facility.class)
+			|| service.isUsedInInfrastructureData(regionUuids, PointOfEntry.REGION, PointOfEntry.class);
 	}
 
 	public static RegionReferenceDto toReferenceDto(Region entity) {
@@ -358,12 +345,9 @@ public class RegionFacadeEjb implements RegionFacade {
 
 	@Override
 	public RegionDto save(@Valid RegionDto dto, boolean allowMerge) throws ValidationRuntimeException {
+		checkInfraDataLocked();
 
-		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
-		}
-
-		Region region = regionService.getByUuid(dto.getUuid());
+		Region region = service.getByUuid(dto.getUuid());
 
 		if (region != null && !userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to edit region.");
@@ -373,7 +357,7 @@ public class RegionFacadeEjb implements RegionFacade {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to create region.");
 		}
 		if (region == null) {
-			List<Region> duplicates = regionService.getByName(dto.getName(), true);
+			List<Region> duplicates = service.getByName(dto.getName(), true);
 			if (!duplicates.isEmpty()) {
 				if (allowMerge) {
 					region = duplicates.get(0);
@@ -386,22 +370,22 @@ public class RegionFacadeEjb implements RegionFacade {
 		}
 
 		region = fillOrBuildEntity(dto, region, true);
-		regionService.ensurePersisted(region);
+		service.ensurePersisted(region);
 		return toDto(region);
 	}
 
 	@Override
 	public List<RegionReferenceDto> getReferencesByName(String name, boolean includeArchivedEntities) {
-		return regionService.getByName(name, includeArchivedEntities).stream().map(RegionFacadeEjb::toReferenceDto).collect(Collectors.toList());
+		return service.getByName(name, includeArchivedEntities).stream().map(RegionFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	public List<RegionDto> getByName(String name, boolean includeArchivedEntities) {
-		return regionService.getByName(name, includeArchivedEntities).stream().map(this::toDto).collect(Collectors.toList());
+		return service.getByName(name, includeArchivedEntities).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<RegionReferenceDto> getByExternalId(String externalId, boolean includeArchivedEntities) {
-		return regionService.getByExternalId(externalId, includeArchivedEntities)
+		return service.getByExternalId(externalId, includeArchivedEntities)
 			.stream()
 			.map(RegionFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -412,7 +396,7 @@ public class RegionFacadeEjb implements RegionFacade {
 		CriteriaQuery<Region> cq = cb.createQuery(Region.class);
 		Root<Region> root = cq.from(Region.class);
 
-		Predicate basicFilter = regionService.createBasicFilter(cb, root);
+		Predicate basicFilter = service.createBasicFilter(cb, root);
 		cq.where(CriteriaBuilderHelper.and(cb, basicFilter, buildPredicate.apply(cb, root)));
 
 		cq.orderBy(cb.asc(root.get(Region.NAME)));
@@ -439,5 +423,12 @@ public class RegionFacadeEjb implements RegionFacade {
 	@Stateless
 	public static class RegionFacadeEjbLocal extends RegionFacadeEjb {
 
+		public RegionFacadeEjbLocal() {
+		}
+
+		@Inject
+		protected RegionFacadeEjbLocal(RegionService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
+			super(service, featureConfiguration);
+		}
 	}
 }

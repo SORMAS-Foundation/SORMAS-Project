@@ -36,6 +36,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 
 	public static final String UUID = "uuid";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
+	public static final String PERSON_UUID = "personUuid";
 	public static final String PERSON_FIRST_NAME = "firstName";
 	public static final String PERSON_LAST_NAME = "lastName";
 	public static final String CAZE = "caze";
@@ -60,6 +61,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	public static final String COMMUNITY_UUID = "communityUuid";
 
 	private String uuid;
+	private String personUuid;
 	@PersonalData
 	private String firstName;
 	@PersonalData
@@ -93,7 +95,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	private ContactJurisdictionFlagsDto contactJurisdictionFlagsDto;
 
 	//@formatter:off
-	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
+	public ContactIndexDto(String uuid, String personUuid, String personFirstName, String personLastName, String cazeUuid,
 						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionName,
 						   String districtName, Date lastContactDate, ContactCategory contactCategory,
 						   ContactProximity contactProximity, ContactClassification contactClassification, ContactStatus contactStatus, Float completeness,
@@ -108,6 +110,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	//@formatter:on
 
 		this.uuid = uuid;
+		this.personUuid = personUuid;
 		this.firstName = personFirstName;
 		this.lastName = personLastName;
 
@@ -148,6 +151,14 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	public String getPersonUuid() {
+		return personUuid;
+	}
+
+	public void setPersonUuid(String personUuid) {
+		this.personUuid = personUuid;
 	}
 
 	public String getFirstName() {
