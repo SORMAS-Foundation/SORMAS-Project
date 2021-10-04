@@ -13,17 +13,21 @@ public class ContactListEntryDto extends PseudonymizableIndexDto implements Seri
 	private ContactClassification contactClassification;
 	private ContactCategory contactCategory;
 
+	private boolean isInJurisdiction;
+
 	public ContactListEntryDto(
 		String uuid,
 		ContactStatus contactStatus,
 		Disease disease,
 		ContactClassification contactClassification,
-		ContactCategory contactCategory) {
+		ContactCategory contactCategory,
+		boolean isInJurisdiction) {
 		this.uuid = uuid;
 		this.contactStatus = contactStatus;
 		this.disease = disease;
 		this.contactClassification = contactClassification;
 		this.contactCategory = contactCategory;
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public String getUuid() {
@@ -64,5 +68,13 @@ public class ContactListEntryDto extends PseudonymizableIndexDto implements Seri
 
 	public void setContactCategory(ContactCategory contactCategory) {
 		this.contactCategory = contactCategory;
+	}
+
+	public boolean isInJurisdiction() {
+		return isInJurisdiction;
+	}
+
+	public void setInJurisdiction(boolean inJurisdiction) {
+		isInJurisdiction = inJurisdiction;
 	}
 }
