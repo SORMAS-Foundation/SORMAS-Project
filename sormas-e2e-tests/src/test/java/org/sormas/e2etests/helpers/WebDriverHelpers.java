@@ -365,6 +365,19 @@ public class WebDriverHelpers {
     }
   }
 
+  public void waitUntilElementsHasText(By selector, String text) {
+    waitForPageLoaded();
+    try {
+      assertHelpers.assertWithPoll(
+          () -> {
+            WebElement webElement = baseSteps.getDriver().findElement(selector);
+            assertThat(webElement.getText()).isEqualTo(text);
+          },
+          3);
+    } catch (Throwable ignored) {
+    }
+  }
+
   public void waitUntilAListOfElementsIsPresent(By selector, int number) {
     waitForPageLoaded();
     try {
