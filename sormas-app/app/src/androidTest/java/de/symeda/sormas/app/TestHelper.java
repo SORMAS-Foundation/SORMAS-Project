@@ -56,12 +56,13 @@ public class TestHelper {
 	public static void initTestEnvironment(boolean setInformantAsActiveUser) {
 		// Initialize a testing context to not operate on the actual database
 		Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-		// Make sure that no database/user is still set from the last run
-		context.deleteDatabase(TEST_DATABASE_NAME);
 
-		ConfigProvider.clearUserLogin();
 		// Initialize the testing database
 		DatabaseHelper.init(context, TEST_DATABASE_NAME);
+		// Make sure that no database/user is still set from the last run
+		DatabaseHelper.clearTables(true);
+		DatabaseHelper.clearConfigTable();
+		ConfigProvider.clearUserLogin();
 		ConfigProvider.init(context);
 
 		ConfigProvider.setServerRestUrl("http://this-is-a-test-url-that-hopefully-doesnt-exist.com");
