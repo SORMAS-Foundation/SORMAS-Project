@@ -1,5 +1,5 @@
-# This workflow will test the sormas-app project with Gradle
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+# This workflow will test the sormas-app project with Gradle and running the AVD emulator
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle and https://github.com/ReactiveCircus/android-emulator-runner
 
 name: Java CI with Gradle
 
@@ -21,7 +21,7 @@ on:
 
 jobs:
   test:
-    name: gradle test
+    name: android app test
     runs-on: ubuntu-latest
     strategy:
       matrix:
