@@ -626,9 +626,9 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseListEntryDto> getEntriesList(CaseCriteria caseCriteria, Integer first, Integer max) {
+	public List<CaseListEntryDto> getEntriesList(PersonReferenceDto personReferenceDto, Integer first, Integer max) {
 
-		List<CaseListEntryDto> entries = caseService.getEntriesList(caseCriteria, first, max);
+		List<CaseListEntryDto> entries = caseService.getEntriesList(personReferenceDto, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(CaseListEntryDto.class, entries, CaseListEntryDto::isInJurisdiction, null);

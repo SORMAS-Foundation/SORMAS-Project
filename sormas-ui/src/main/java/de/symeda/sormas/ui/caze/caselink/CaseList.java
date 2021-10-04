@@ -6,7 +6,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -18,19 +17,20 @@ import de.symeda.sormas.ui.utils.PaginationList;
 
 public class CaseList extends PaginationList<CaseListEntryDto> {
 
-	private final CaseCriteria caseCriteria = new CaseCriteria();
+	private static final int MAX_DISPLAYED_ENTRIES = 5;
+
+	private final PersonReferenceDto personReferenceDto;
 	private final Label noCaseLabel;
 
-	public CaseList(PersonReferenceDto personRef) {
-		super(5);
-		caseCriteria.setPerson(personRef);
-		caseCriteria.setIncludeCasesFromOtherJurisdictions(true);
+	public CaseList(PersonReferenceDto personReferenceDto) {
+		super(MAX_DISPLAYED_ENTRIES);
+		this.personReferenceDto = personReferenceDto;
 		noCaseLabel = new Label(I18nProperties.getCaption(Captions.personNoCaseLinkedToPerson));
 	}
 
 	@Override
 	public void reload() {
-		List<CaseListEntryDto> caseIndexDtos = FacadeProvider.getCaseFacade().getEntriesList(caseCriteria, 0, maxDisplayedEntries * 20);
+		List<CaseListEntryDto> caseIndexDtos = FacadeProvider.getCaseFacade().getEntriesList(personReferenceDto, 0, maxDisplayedEntries * 20);
 
 		setEntries(caseIndexDtos);
 		if (!caseIndexDtos.isEmpty()) {
