@@ -103,11 +103,11 @@ public class MergeContactsFilterComponent extends VerticalLayout {
 		firstRowLayout.addComponent(cbDisease);
 
 		tfSearch = new TextField();
-		tfSearch.setId(ContactCriteria.NAME_UUID_CASE_LIKE);
+		tfSearch.setId(ContactCriteria.CONTACT_OR_CASE_LIKE);
 		tfSearch.setWidth(200, Unit.PIXELS);
 		CssStyles.style(tfSearch, CssStyles.FORCE_CAPTION);
 		tfSearch.setPlaceholder(I18nProperties.getString(Strings.promptContactsSearchField));
-		binder.bind(tfSearch, ContactCriteria.NAME_UUID_CASE_LIKE);
+		binder.bind(tfSearch, ContactCriteria.CONTACT_OR_CASE_LIKE);
 		firstRowLayout.addComponent(tfSearch);
 
 		eventSearch = new TextField();
