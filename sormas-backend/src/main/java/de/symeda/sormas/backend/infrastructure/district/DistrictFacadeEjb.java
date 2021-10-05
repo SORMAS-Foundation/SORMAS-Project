@@ -68,6 +68,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "DistrictFacade")
 public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, DistrictDto, DistrictService, DistrictCriteria> implements DistrictFacade {

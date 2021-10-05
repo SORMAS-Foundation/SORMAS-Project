@@ -59,6 +59,7 @@ import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "SubcontinentFacade")
 public class SubcontinentFacadeEjb extends AbstractInfrastructureEjb<Subcontinent, SubcontinentDto, SubcontinentService, SubcontinentCriteria>

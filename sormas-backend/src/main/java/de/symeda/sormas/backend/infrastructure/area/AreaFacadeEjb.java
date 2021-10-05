@@ -32,6 +32,7 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "AreaFacade")
 public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, AreaService, AreaCriteria> implements AreaFacade {
