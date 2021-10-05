@@ -165,7 +165,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 			cq.where(filter);
 		}
 
-		if (sortProperties != null && !sortProperties.isEmpty()) {
+		if (CollectionUtils.isNotEmpty(sortProperties)) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;

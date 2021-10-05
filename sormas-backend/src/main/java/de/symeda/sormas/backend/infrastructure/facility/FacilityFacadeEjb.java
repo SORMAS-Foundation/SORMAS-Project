@@ -458,7 +458,7 @@ public class FacilityFacadeEjb extends AbstractInfrastructureEjb<Facility, Facil
 			cq.where(filter);
 		}
 
-		if (sortProperties != null && !sortProperties.isEmpty()) {
+		if (CollectionUtils.isNotEmpty(sortProperties)) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
