@@ -35,7 +35,8 @@ import de.symeda.sormas.backend.util.QueryHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "AreaFacade")
-public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, AreaService, AreaCriteria> implements AreaFacade {
+public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, AreaDto, AreaReferenceDto, AreaService, AreaCriteria>
+	implements AreaFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -104,7 +105,7 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, Area
 	}
 
 	@Override
-	public AreaDto save(@Valid AreaDto dtoToSave, boolean allowMerge) {
+	public AreaDto save(AreaDto dtoToSave, boolean allowMerge) {
 		return save(dtoToSave, allowMerge, Validations.importAreaAlreadyExists);
 	}
 

@@ -187,7 +187,7 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	}
 
 	@Override
-	public TravelEntryDto save(@Valid TravelEntryDto dto) {
+	public TravelEntryDto save(TravelEntryDto dto) {
 		TravelEntry existingTravelEntry = dto.getUuid() != null ? travelEntryService.getByUuid(dto.getUuid()) : null;
 		TravelEntryDto existingDto = toDto(existingTravelEntry);
 

@@ -246,7 +246,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	}
 
 	@Override
-	public ImmunizationDto save(@Valid ImmunizationDto dto) {
+	public ImmunizationDto save(ImmunizationDto dto) {
 		Immunization existingImmunization = immunizationService.getByUuid(dto.getUuid());
 		ImmunizationDto existingDto = toDto(existingImmunization);
 
