@@ -22,7 +22,7 @@ on:
 jobs:
   test:
     name: android app test
-    runs-on: ubuntu-latest
+    runs-on: macos-11
     strategy:
       matrix:
         api-level: [29]
