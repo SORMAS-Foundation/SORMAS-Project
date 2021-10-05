@@ -27,7 +27,7 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 		this.featureConfiguration = featureConfiguration;
 	}
 
-	protected DTO save(DTO dtoToSave, boolean allowMerge, String duplicateErrorMessage) {
+	protected DTO save(DTO dtoToSave, boolean allowMerge, String duplicateErrorMessageProperty) {
 		checkInfraDataLocked();
 		if (dtoToSave == null) {
 			return null;
@@ -40,7 +40,7 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 				if (allowMerge) {
 					return mergeAndPersist(dtoToSave, duplicates);
 				} else {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(duplicateErrorMessage));
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(duplicateErrorMessageProperty));
 				}
 			}
 		}

@@ -207,7 +207,7 @@ public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, Country
 			Optional<Country> byUnoCode = service.getByUnoCode(dtoToSave.getUnoCode(), true);
 			if (byIsoCode.isPresent() || byUnoCode.isPresent()) {
 				if (allowMerge) {
-					// todo no merging?
+					// FIXME(#6880) This save method looks fairly nonstandard and does not duplicate merging
 					country = byIsoCode.orElseGet(byUnoCode::get);
 					CountryDto dtoToMerge = getByUuid(country.getUuid());
 					dtoToSave = DtoHelper.copyDtoValues(dtoToMerge, dtoToSave, true);

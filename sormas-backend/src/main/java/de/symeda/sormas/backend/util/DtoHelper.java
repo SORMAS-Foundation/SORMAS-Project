@@ -146,6 +146,7 @@ public final class DtoHelper {
 	}
 
 	// todo this really should return void. Taking a target/receiver argument and then return it anyways does not make sense
+	// FIXME(#6880)
 	public static <T extends AbstractDomainObject> T fillOrBuildEntity(EntityDto source, T target, Supplier<T> newEntity, boolean checkChangeDate) {
 		if (target == null) {
 			target = newEntity.get();
