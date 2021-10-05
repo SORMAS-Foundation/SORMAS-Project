@@ -20,23 +20,22 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.area.AreaCriteria;
 import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.api.infrastructure.area.AreaFacade;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "AreaFacade")
-public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaService> implements AreaFacade {
+public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, AreaService, AreaCriteria> implements AreaFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -55,11 +54,6 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaService> 
 	}
 
 	@Override
-	public AreaDto getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
-	}
-
-	@Override
 	public List<AreaDto> getIndexList(AreaCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Area> cq = cb.createQuery(Area.class);
@@ -70,7 +64,7 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaService> 
 			cq.where(filter);
 		}
 
-		if (sortProperties != null && sortProperties.size() > 0) {
+		if (CollectionUtils.isNotEmpty(sortProperties)) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
@@ -110,31 +104,13 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaService> 
 	}
 
 	@Override
-	public AreaDto save(@Valid AreaDto dto) {
-		return save(dto, false);
+	public AreaDto save(@Valid AreaDto dtoToSave, boolean allowMerge) {
+		return save(dtoToSave, allowMerge, Validations.importAreaAlreadyExists);
 	}
 
 	@Override
-	public AreaDto save(@Valid AreaDto dto, boolean allowMerge) {
-		checkInfraDataLocked();
-		Area area = service.getByUuid(dto.getUuid());
-
-		if (area == null) {
-			List<Area> duplicates = service.getByName(dto.getName(), true);
-			if (!duplicates.isEmpty()) {
-				if (allowMerge) {
-					area = duplicates.get(0);
-					AreaDto dtoToMerge = getByUuid(area.getUuid());
-					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
-				} else {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importAreaAlreadyExists));
-				}
-			}
-		}
-
-		area = fromDto(dto, area, true);
-		service.ensurePersisted(area);
-		return toDto(area);
+	protected List<Area> findDuplicates(AreaDto dto) {
+		return service.getByName(dto.getName(), true);
 	}
 
 	@Override
@@ -162,13 +138,13 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaService> 
 		return service.getAllUuids();
 	}
 
-	public Area fromDto(@NotNull AreaDto source, Area target, boolean checkChangeDate) {
+	@Override
+	public Area fillOrBuildEntity(@NotNull AreaDto source, Area target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Area::new, checkChangeDate);
 
 		target.setName(source.getName());
 		target.setExternalId(source.getExternalId());
 		target.setArchived(source.isArchived());
-
 		return target;
 	}
 
@@ -178,6 +154,7 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaService> 
 		return service.getByExternalId(externalId, includeArchivedEntities).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
+	@Override
 	public AreaDto toDto(Area source) {
 		if (source == null) {
 			return null;

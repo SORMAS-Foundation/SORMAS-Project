@@ -1,16 +1,20 @@
 package de.symeda.sormas.backend.infrastructure;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 
-public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, SRV extends AbstractInfrastructureAdoService<ADO>>
-	extends AbstractBaseEjb<ADO, SRV> {
+import java.util.List;
+
+public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, DTO extends EntityDto, SRV extends AbstractInfrastructureAdoService<ADO, CRITERIA>, CRITERIA extends BaseCriteria>
+	extends AbstractBaseEjb<ADO, DTO, SRV> {
 
 	protected FeatureConfigurationFacadeEjb featureConfiguration;
 
@@ -21,6 +25,26 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, S
 	protected AbstractInfrastructureEjb(SRV service, FeatureConfigurationFacadeEjb featureConfiguration) {
 		super(service);
 		this.featureConfiguration = featureConfiguration;
+	}
+
+	protected DTO save(DTO dtoToSave, boolean allowMerge, String duplicateErrorMessageProperty) {
+		checkInfraDataLocked();
+		if (dtoToSave == null) {
+			return null;
+		}
+		ADO existingEntity = service.getByUuid(dtoToSave.getUuid());
+
+		if (existingEntity == null) {
+			List<ADO> duplicates = findDuplicates(dtoToSave);
+			if (!duplicates.isEmpty()) {
+				if (allowMerge) {
+					return mergeAndPersist(dtoToSave, duplicates);
+				} else {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(duplicateErrorMessageProperty));
+				}
+			}
+		}
+		return persistEntity(dtoToSave, existingEntity);
 	}
 
 	@Override

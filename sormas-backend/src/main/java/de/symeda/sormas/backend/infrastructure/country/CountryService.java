@@ -22,7 +22,7 @@ import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
 
 @Stateless
 @LocalBean
-public class CountryService extends AbstractInfrastructureAdoService<Country> {
+public class CountryService extends AbstractInfrastructureAdoService<Country, CountryCriteria> {
 
 	public CountryService() {
 		super(Country.class);

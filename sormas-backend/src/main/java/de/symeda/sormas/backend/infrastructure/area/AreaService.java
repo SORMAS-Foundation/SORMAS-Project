@@ -21,7 +21,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
 @Stateless
 @LocalBean
-public class AreaService extends AbstractInfrastructureAdoService<Area> {
+public class AreaService extends AbstractInfrastructureAdoService<Area, AreaCriteria> {
 
 	public AreaService() {
 		super(Area.class);
