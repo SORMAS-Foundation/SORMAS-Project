@@ -22,7 +22,7 @@ on:
 jobs:
   test:
     name: android app test
-    runs-on: macos-11
+    runs-on: macos-latest
     strategy:
       matrix:
         api-level: [29]
@@ -91,6 +91,8 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
+          profile: Nexus 6
+          arch: x86_64
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
@@ -100,9 +102,11 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
-          working-directory: ./sormas-app
+          profile: Nexus 6
+          arch: x86_64
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
+          working-directory: ./sormas-app
           script: ./gradlew connectedAndroidTest
-          profile: Nexus 6
+          
