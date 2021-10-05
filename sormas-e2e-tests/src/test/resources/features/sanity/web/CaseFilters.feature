@@ -5,7 +5,7 @@ Feature: Case filter functionality
     Given API: I create several new cases
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    And I log in with the user
+    And I log in with National User
     And I click on the Cases button from navbar
     When I search for cases created with the API using Person's name
     Then I apply Outcome of case filter "No Outcome Yet"
