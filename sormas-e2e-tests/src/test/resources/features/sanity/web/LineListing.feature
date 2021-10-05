@@ -2,7 +2,7 @@
 Feature: Contacts end to end tests
 
   Scenario: Create cases using Line Listing feature and validate the entries.
-    Given I log in with the user
+    Given I log in with National User
     When I click on the Contacts button from navbar
     Then I click on Line Listing button
     And I create a new Contact with specific data through Line Listing

@@ -8,7 +8,7 @@ Feature: Case view tests
     When API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Then I log in with the user
+    Then I log in with National User
     Given I click on the Cases button from navbar
     When I click on the DETAILED button from Case directory
     And I filter by CaseID on Case directory page

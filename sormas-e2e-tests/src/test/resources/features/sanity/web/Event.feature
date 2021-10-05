@@ -90,7 +90,7 @@ Feature: Create events
     And I check that Action created from Event tab is correctly displayed in Event Actions tab
 
   Scenario: Add a New action from Event Actions tab and verify the fields.
-    Given I log in with the user
+    Given I log in with National User
     Given API: I create a new event
     Then I navigate to Event Action tab for created Event
     And I click on New Action from Event Actions tab
@@ -101,7 +101,7 @@ Feature: Create events
 
 
   Scenario: Add a New action for an Event and verify the Action in EventActions table
-      Given I log in with the user
+      Given I log in with National User
       Given API: I create a new event
       Then I navigate to Event Action tab for created Event
       And I click on New Action from Event Actions tab
@@ -115,7 +115,7 @@ Feature: Create events
 
   Scenario: Add a Task from event and verify the fields
     Given API: I create a new event
-    Given I log in with the user
+    Given I log in with National User
      When I am accessing the event tab using the created event via api
      Then I click on New Task from event tab
       And I create a new task with specific data for an event
@@ -126,7 +126,7 @@ Feature: Create events
 
   Scenario: Add a New Groups Event from event and verify the fields
     Given API: I create a new event
-    Given I log in with the user
+    Given I log in with National User
      When I am accessing the event tab using the created event via api
       And I click on link event group
       And I create a new event group
