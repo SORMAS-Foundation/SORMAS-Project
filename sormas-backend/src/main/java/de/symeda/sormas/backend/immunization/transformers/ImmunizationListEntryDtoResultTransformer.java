@@ -26,7 +26,7 @@ import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 
-public class ImmunizationListEntryDtoTransformer implements ResultTransformer {
+public class ImmunizationListEntryDtoResultTransformer implements ResultTransformer {
 
 	@Override
 	public Object transformTuple(Object[] objects, String[] strings) {

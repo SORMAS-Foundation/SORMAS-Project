@@ -48,7 +48,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.immunization.joins.ImmunizationJoins;
-import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryDtoTransformer;
+import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -96,7 +96,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		cq.distinct(true);
 
 		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
-			.setResultTransformer(new ImmunizationListEntryDtoTransformer())
+			.setResultTransformer(new ImmunizationListEntryDtoResultTransformer())
 			.getResultList();
 	}
 

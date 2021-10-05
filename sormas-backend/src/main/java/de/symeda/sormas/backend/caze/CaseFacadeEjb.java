@@ -96,6 +96,7 @@ import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseFollowUpDto;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -628,6 +629,18 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		return cases;
+	}
+
+	@Override
+	public List<CaseListEntryDto> getEntriesList(String personUuid, Integer first, Integer max) {
+
+		Long personId = personFacade.getPersonIdByUuid(personUuid);
+		List<CaseListEntryDto> entries = caseService.getEntriesList(personId, first, max);
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(CaseListEntryDto.class, entries, CaseListEntryDto::isInJurisdiction, null);
+
+		return entries;
 	}
 
 	public CaseDataDto postUpdate(String uuid, JsonNode caseDataDtoJson) {
@@ -1251,7 +1264,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> caze = cq.from(Case.class);
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		filter = CriteriaBuilderHelper.and(cb, filter, caseService.createCriteriaFilter(criteria, caseQueryContext));
@@ -2138,24 +2150,28 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		try {
 			messagingService.sendMessages(() -> {
-						final Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
-						final Map<String, User> responsibleUserByEventByEventUuid =
-								eventService.getAllEventUuidWithResponsibleUserByCaseAfterDateForNotification(caze, fromDate);
-						final Map<User, String> mapToReturn  = new HashMap<>();
-						responsibleUserByEventByEventUuid.forEach((s, user) -> mapToReturn.put(user, String.format(
-								I18nProperties.getString(MessageContents.CONTENT_EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED),
-								DataHelper.getShortUuid(s),
-								caze.getDisease().getName(),
-								DataHelper.getShortUuid(caze.getUuid()))));
-						return mapToReturn;
-			}, MessageSubject.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
-					new Object[] {
-							caze.getDisease().getName() }, MessageType.EMAIL,
-					MessageType.SMS);
+				final Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
+				final Map<String, User> responsibleUserByEventByEventUuid =
+					eventService.getAllEventUuidWithResponsibleUserByCaseAfterDateForNotification(caze, fromDate);
+				final Map<User, String> mapToReturn = new HashMap<>();
+				responsibleUserByEventByEventUuid.forEach(
+					(s, user) -> mapToReturn.put(
+						user,
+						String.format(
+							I18nProperties.getString(MessageContents.CONTENT_EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED),
+							DataHelper.getShortUuid(s),
+							caze.getDisease().getName(),
+							DataHelper.getShortUuid(caze.getUuid()))));
+				return mapToReturn;
+			},
+				MessageSubject.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
+				new Object[] {
+					caze.getDisease().getName() },
+				MessageType.EMAIL,
+				MessageType.SMS);
 		} catch (NotificationDeliveryFailedException e) {
 			logger.error(
-					String.format(
-						"NotificationDeliveryFailedException when trying to notify event responsible user about a newly confirmed case."));
+				String.format("NotificationDeliveryFailedException when trying to notify event responsible user about a newly confirmed case."));
 		}
 	}
 

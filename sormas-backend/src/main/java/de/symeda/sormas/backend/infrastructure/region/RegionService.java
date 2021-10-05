@@ -41,7 +41,7 @@ import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryF
 
 @Stateless
 @LocalBean
-public class RegionService extends AbstractInfrastructureAdoService<Region> {
+public class RegionService extends AbstractInfrastructureAdoService<Region, RegionCriteria> {
 
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
