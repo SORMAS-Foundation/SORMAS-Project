@@ -85,4 +85,4 @@ jobs:
 
       - name: Run integration tests
         working-directory: ./sormas-app
-        uses: ./gradlew connectedAndroidTest
+        run: ./gradlew connectedAndroidTest
