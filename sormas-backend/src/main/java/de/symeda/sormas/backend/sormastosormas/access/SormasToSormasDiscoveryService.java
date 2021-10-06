@@ -62,9 +62,8 @@ public class SormasToSormasDiscoveryService {
 
 		try {
 			String key = String.format(configFacadeEjb.getS2SConfig().getKeyPrefixTemplate(), id);
-			EtcdCentralClient.KeyValue result = centralClient.getWithPrefix(key).get(0);
+			SormasServerDescriptor descriptor = centralClient.get(key, SormasServerDescriptor.class);
 
-			SormasServerDescriptor descriptor = buildSormasServerDescriptor(result);
 			LOGGER.info("Fetched SormasServerDescriptor for {}.", id);
 			return descriptor;
 
@@ -82,15 +81,12 @@ public class SormasToSormasDiscoveryService {
 		}
 
 		try {
-			final String ownKey = String.format(sormasToSormasConfig.getKeyPrefixTemplate(), sormasToSormasConfig.getId());
 			final String keyPrefix = String.format(sormasToSormasConfig.getKeyPrefixTemplate(), "");
-			List<SormasServerDescriptor> availableServers = centralClient.getWithPrefix(keyPrefix)
+			List<SormasServerDescriptor> availableServers = centralClient.getWithPrefix(keyPrefix, SormasServerDescriptor.class)
 				.stream()
 				.filter(
 					// this ensures that the own key (i.e., /s2s/$instance_id) is removed from the list
-					kv -> !kv.getKey().equals(ownKey))
-				.map(this::buildSormasServerDescriptor)
-				.filter(Objects::nonNull)
+					d -> !d.getId().equals(sormasToSormasConfig.getId()))
 				.collect(Collectors.toList());
 
 			LOGGER.info("All available SormasServerDescriptors have been collected.");
@@ -102,15 +98,4 @@ public class SormasToSormasDiscoveryService {
 		}
 	}
 
-	private SormasServerDescriptor buildSormasServerDescriptor(EtcdCentralClient.KeyValue kv) {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
-		mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-		try {
-			return mapper.readValue(kv.getValue(), SormasServerDescriptor.class);
-		} catch (JsonProcessingException e) {
-			LOGGER.error("Could not serialize server descriptor.");
-			return null;
-		}
-	}
 }

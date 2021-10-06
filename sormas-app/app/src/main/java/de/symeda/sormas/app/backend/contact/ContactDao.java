@@ -93,7 +93,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 			Where where = qb.where();
 			where.and(where.eq(Contact.PERSON, person), where.eq(AbstractDomainObject.SNAPSHOT, false));
 			if (disease != null) {
-				where.and(where, where.eq(Contact.DISEASE, disease));
+				where.and(where, where.eq(Contact.DISEASE_COLUMN, disease));
 			}
 			qb.orderBy(Contact.LOCAL_CHANGE_DATE, false);
 			return (int) qb.countOf();

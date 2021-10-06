@@ -27,6 +27,7 @@ import javax.validation.Valid;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -87,7 +88,8 @@ public interface EventParticipantFacade {
 		Collection<String> selectedRows,
 		int first,
 		int max,
-		Language userLanguage);
+		Language userLanguage,
+		ExportConfigurationDto exportConfiguration);
 
 	List<EventParticipantDto> getByEventUuids(List<String> eventUuids);
 

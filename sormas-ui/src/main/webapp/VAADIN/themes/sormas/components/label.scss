@@ -165,5 +165,13 @@
 	&.v-label-text-align-right {
 		text-align: right;
 	}
+
+	&.v-label-caption-truncated, .caption-truncated {
+		width: 100%;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+		display: block;
+	}
   }
 }

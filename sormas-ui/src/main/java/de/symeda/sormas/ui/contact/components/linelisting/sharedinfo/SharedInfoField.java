@@ -37,21 +37,23 @@ public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
 
 	public SharedInfoField(CaseReferenceDto caseReferenceDto, Disease initialDiseaseValue) {
 		caseSelector = caseReferenceDto != null
-				? new CaseSelector(caseReferenceDto)
-				: new CaseSelector(I18nProperties.getString(Strings.infoNoSourceCaseSelectedLineListing));
+			? new CaseSelector(caseReferenceDto)
+			: new CaseSelector(I18nProperties.getString(Strings.infoNoSourceCaseSelectedLineListing));
 		disease = new ComboBox<>(I18nProperties.getCaption(Captions.lineListingDiseaseOfSourceCase));
 		region = new ComboBox<>(I18nProperties.getCaption(Captions.region));
 		district = new ComboBox<>(I18nProperties.getCaption(Captions.district));
 
-		this.initialDiseaseValue  = initialDiseaseValue;
+		this.initialDiseaseValue = initialDiseaseValue;
 	}
 
 	public SharedInfoField(CaseDataDto caseDataDto) {
-		this(caseDataDto == null ? null : caseDataDto.toReference(), caseDataDto == null ? null : caseDataDto.getDisease());
+		this(
+			caseDataDto == null ? null : caseDataDto.toReference(),
+			caseDataDto == null ? FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease() : caseDataDto.getDisease());
 	}
 
 	public SharedInfoField(EventDto eventDto) {
-		this(null, eventDto == null ? null : eventDto.getDisease());
+		this(null, eventDto == null ? FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease() : eventDto.getDisease());
 	}
 
 	@Override

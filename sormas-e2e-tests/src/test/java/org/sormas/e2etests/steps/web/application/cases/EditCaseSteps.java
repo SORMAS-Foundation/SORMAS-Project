@@ -89,7 +89,8 @@ public class EditCaseSteps implements En {
         () -> aCase = collectCasePersonUuid());
 
     When(
-        "I click on New Task", () -> webDriverHelpers.clickOnWebElementBySelector(NEW_TASK_BUTTON));
+        "I click on New Task from Case page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(NEW_TASK_BUTTON));
 
     When(
         "I click on first edit Task",

@@ -75,4 +75,5 @@ public class UserResource {
 		@QueryParam("size") int size) {
 		return FacadeProvider.getUserFacade().getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
+
 }

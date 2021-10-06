@@ -45,6 +45,8 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
@@ -65,9 +67,6 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
@@ -75,10 +74,17 @@ import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.importexport.ExportType;
+import de.symeda.sormas.api.infrastructure.PopulationDataDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
-import de.symeda.sormas.api.infrastructure.PopulationDataDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
 import de.symeda.sormas.api.labmessage.TestReportDto;
@@ -88,10 +94,6 @@ import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.infrastructure.community.CommunityDto;
-import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
@@ -121,12 +123,12 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.continent.Continent;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 
@@ -193,7 +195,27 @@ public class TestDataCreator {
 	}
 
 	public PersonDto createPerson(String firstName, String lastName) {
-		return createPerson(firstName, lastName, null);
+		return createPerson(firstName, lastName, Sex.UNKNOWN, null);
+	}
+
+	public PersonDto createPerson(String firstName, String lastName, Sex sex) {
+		return createPerson(firstName, lastName, sex, null);
+	}
+
+	public PersonDto createPerson(String firstName, String lastName, Sex sex, Consumer<PersonDto> customConfig) {
+
+		PersonDto person = PersonDto.build();
+		person.setFirstName(firstName);
+		person.setLastName(lastName);
+		person.setSex(sex);
+
+		if (customConfig != null) {
+			customConfig.accept(person);
+		}
+
+		person = beanTest.getPersonFacade().savePerson(person);
+
+		return person;
 	}
 
 	public PersonDto createPerson(String firstName, String lastName, Consumer<PersonDto> customConfig) {
@@ -201,6 +223,7 @@ public class TestDataCreator {
 		PersonDto person = PersonDto.build();
 		person.setFirstName(firstName);
 		person.setLastName(lastName);
+		person.setSex(Sex.UNKNOWN);
 
 		if (customConfig != null) {
 			customConfig.accept(person);
@@ -298,7 +321,7 @@ public class TestDataCreator {
 		RDCFEntities rdcf = createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user =
 			createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = createPerson("Case", "Person");
+		PersonDto cazePerson = createPerson("Case", "Person", Sex.UNKNOWN);
 		return createCase(
 			user.toReference(),
 			cazePerson.toReference(),
@@ -413,10 +436,14 @@ public class TestDataCreator {
 		ImmunizationManagementStatus immunizationManagementStatus,
 		RDCF rdcf,
 		Date startDate,
+		Date endDate,
+		Date validFromDate,
 		Date validUntilDate) {
 		ImmunizationDto immunization =
 			createImmunizationDto(disease, person, reportingUser, immunizationStatus, meansOfImmunization, immunizationManagementStatus, rdcf);
 		immunization.setStartDate(startDate);
+		immunization.setEndDate(endDate);
+		immunization.setValidFrom(validFromDate);
 		immunization.setValidUntil(validUntilDate);
 
 		return beanTest.getImmunizationFacade().save(immunization);
@@ -437,7 +464,7 @@ public class TestDataCreator {
 	}
 
 	@NotNull
-	private ImmunizationDto createImmunizationDto(
+	public ImmunizationDto createImmunizationDto(
 		Disease disease,
 		PersonReferenceDto person,
 		UserReferenceDto reportingUser,
@@ -461,7 +488,16 @@ public class TestDataCreator {
 		return immunization;
 	}
 
-	public VaccinationDto createVaccinationEntity(
+	public VaccinationDto createVaccination(
+		UserReferenceDto reportingUser,
+		ImmunizationReferenceDto immunization,
+		HealthConditionsDto healthConditions) {
+
+		return createVaccination(reportingUser, immunization, healthConditions, new Date(), null, null);
+	}
+
+	@NotNull
+	public VaccinationDto createVaccinationDto(
 		UserReferenceDto reportingUser,
 		ImmunizationReferenceDto immunization,
 		HealthConditionsDto healthConditions) {
@@ -472,22 +508,26 @@ public class TestDataCreator {
 
 		vaccination.setImmunization(immunization);
 		vaccination.setHealthConditions(healthConditions);
-
-		return beanTest.getVaccinationFacade().save(vaccination);
+		return vaccination;
 	}
 
-	public VaccinationDto createVaccinationEntity(
+	public VaccinationDto createVaccination(
 		UserReferenceDto reportingUser,
 		ImmunizationReferenceDto immunization,
 		HealthConditionsDto healthConditions,
-		String vaccineType) {
+		Date vaccinationDate,
+		Vaccine vaccine,
+		VaccineManufacturer vaccineManufacturer) {
+
 		VaccinationDto vaccination = new VaccinationDto();
 		vaccination.setUuid(DataHelper.createUuid());
 		vaccination.setReportingUser(reportingUser);
 		vaccination.setReportDate(new Date());
 		vaccination.setVaccinationDate(new Date());
-		vaccination.setVaccineType(vaccineType);
+		vaccination.setVaccineName(vaccine);
+		vaccination.setVaccineManufacturer(vaccineManufacturer);
 
+		vaccination.setVaccinationDate(vaccinationDate);
 		vaccination.setImmunization(immunization);
 		vaccination.setHealthConditions(healthConditions);
 
@@ -570,6 +610,14 @@ public class TestDataCreator {
 
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, Disease disease) {
 		return createContact(reportingUser, null, contactPerson, null, new Date(), null, disease, null);
+	}
+
+	public ContactDto createContact(
+		UserReferenceDto reportingUser,
+		PersonReferenceDto contactPerson,
+		Disease disease,
+		Consumer<ContactDto> customConfig) {
+		return createContact(reportingUser, null, contactPerson, null, new Date(), null, disease, null, customConfig);
 	}
 
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, Date reportDateTime) {
@@ -724,6 +772,24 @@ public class TestDataCreator {
 	public EventDto createEvent(UserReferenceDto reportingUser) {
 
 		return createEvent(reportingUser, new Date());
+	}
+
+	public EventDto createEvent(UserReferenceDto reportingUser, Disease disease) {
+		return createEvent(
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"title",
+			"description",
+			"firstname",
+			"lastname",
+			null,
+			null,
+			new Date(),
+			new Date(),
+			reportingUser,
+			null,
+			disease,
+			null);
 	}
 
 	public EventDto createEvent(UserReferenceDto reportingUser, Date eventDate) {

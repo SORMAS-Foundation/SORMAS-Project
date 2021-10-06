@@ -15,8 +15,8 @@
 
 package de.symeda.sormas.backend.sormastosormas.origin;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.List;
 
@@ -80,7 +80,7 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	private List<Sample> samples;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
+	@Column(length = CHARACTER_LIMIT_DEFAULT, nullable = false)
 	public String getOrganizationId() {
 		return organizationId;
 	}
@@ -89,7 +89,7 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 		this.organizationId = organizationId;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
+	@Column(length = CHARACTER_LIMIT_DEFAULT, nullable = false)
 	public String getSenderName() {
 		return senderName;
 	}
@@ -98,7 +98,7 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 		this.senderName = senderName;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSenderEmail() {
 		return senderEmail;
 	}
@@ -107,7 +107,7 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 		this.senderEmail = senderEmail;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSenderPhoneNumber() {
 		return senderPhoneNumber;
 	}
@@ -161,7 +161,7 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 		this.request = request;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getComment() {
 		return comment;
 	}

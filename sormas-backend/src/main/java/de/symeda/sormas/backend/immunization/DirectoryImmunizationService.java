@@ -85,6 +85,7 @@ public class DirectoryImmunizationService extends AbstractCoreAdoService<Directo
 			person.get(Person.UUID),
 			person.get(Person.FIRST_NAME),
 			person.get(Person.LAST_NAME),
+			immunization.get(Immunization.DISEASE),
 			person.get(Person.APPROXIMATE_AGE),
 			person.get(Person.APPROXIMATE_AGE_TYPE),
 			person.get(Person.BIRTHDATE_DD),
@@ -99,8 +100,8 @@ public class DirectoryImmunizationService extends AbstractCoreAdoService<Directo
 			immunization.get(Immunization.END_DATE),
 			lastVaccineType.get(LastVaccineType.VACCINE_TYPE),
 			immunization.get(Immunization.RECOVERY_DATE),
-			immunization.get(Immunization.CHANGE_DATE),
-			JurisdictionHelper.booleanSelector(cb, createUserFilter(directoryImmunizationQueryContext)));
+			JurisdictionHelper.booleanSelector(cb, createUserFilter(directoryImmunizationQueryContext)),
+			immunization.get(Immunization.CHANGE_DATE));
 
 		buildWhereCondition(criteria, cb, cq, directoryImmunizationQueryContext);
 
@@ -110,6 +111,7 @@ public class DirectoryImmunizationService extends AbstractCoreAdoService<Directo
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case ImmunizationIndexDto.UUID:
+				case ImmunizationIndexDto.DISEASE:
 				case ImmunizationIndexDto.MEANS_OF_IMMUNIZATION:
 				case ImmunizationIndexDto.IMMUNIZATION_STATUS:
 				case ImmunizationIndexDto.START_DATE:

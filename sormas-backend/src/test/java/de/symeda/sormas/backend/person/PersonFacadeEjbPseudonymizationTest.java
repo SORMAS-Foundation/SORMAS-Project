@@ -234,26 +234,36 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetContactPersonOutsideJurisdiction() {
-		loginWith(districtUser2);
-
+		loginWith(districtUser1);
 		person = createPerson();
 		ContactDto contact =
 			creator.createContact(districtUser1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf1);
+
+		loginWith(districtUser2);
 		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
 
+		loginWith(districtUser1);
 		CaseDataDto caze = creator.createCase(districtUser1.toReference(), creator.createPerson().toReference(), rdcf2);
 		contact.setCaze(caze.toReference());
 		contact = getContactFacade().saveContact(contact);
+
+		loginWith(districtUser2);
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 
+		loginWith(districtUser1);
 		contact.setRegion(rdcf2.region);
 		contact.setDistrict(rdcf2.district);
 		contact = getContactFacade().saveContact(contact);
+
+		loginWith(districtUser2);
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 
+		loginWith(districtUser1);
 		contact.setRegion(null);
 		contact.setDistrict(null);
 		contact = getContactFacade().saveContact(contact);
+
+		loginWith(districtUser2);
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 

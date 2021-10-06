@@ -35,7 +35,7 @@ import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DefaultUserHelper;
+import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.rest.security.config.KeycloakConfigResolver;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -109,7 +109,7 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 	private AuthenticationStatus validateRequestS2S(HttpMessageContext context) {
 
 		return context.notifyContainerAboutLogin(
-			() -> DefaultUserHelper.SORMAS_TO_SORMAS_USER_NAME,
+			() -> DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME,
 			new HashSet<>(Collections.singletonList(UserRole.SORMAS_TO_SORMAS_CLIENT.name())));
 	}
 }

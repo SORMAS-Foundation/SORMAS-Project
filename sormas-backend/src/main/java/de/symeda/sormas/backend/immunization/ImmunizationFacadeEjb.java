@@ -30,17 +30,18 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
+import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
@@ -48,7 +49,6 @@ import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.user.UserRight;
@@ -57,6 +57,8 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
@@ -77,8 +79,8 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.backend.vaccination.VaccinationEntity;
-import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
+import de.symeda.sormas.backend.vaccination.Vaccination;
+import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb.VaccinationFacadeEjbLocal;
 
 @Stateless(name = "ImmunizationFacade")
 public class ImmunizationFacadeEjb implements ImmunizationFacade {
@@ -104,9 +106,11 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	@EJB
 	private CountryService countryService;
 	@EJB
-	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
+	private VaccinationFacadeEjbLocal vaccinationFacade;
 	@EJB
-	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
+	private ContactService contactService;
+	@EJB
+	private EventParticipantService eventParticipantService;
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 	@EJB
@@ -243,7 +247,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@Override
 	public ImmunizationDto save(@Valid ImmunizationDto dto) {
-		Immunization existingImmunization = dto.getUuid() != null ? immunizationService.getByUuid(dto.getUuid()) : null;
+		Immunization existingImmunization = immunizationService.getByUuid(dto.getUuid());
 		ImmunizationDto existingDto = toDto(existingImmunization);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
@@ -252,7 +256,10 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		validate(dto);
 
 		existingImmunization = fillOrBuildEntity(dto, existingImmunization);
+		immunizationService.updateImmunizationStatusBasedOnVaccinations(existingImmunization);
 		immunizationService.ensurePersisted(existingImmunization);
+
+		updateVaccinationStatuses(existingImmunization, existingDto);
 
 		return convertToDto(existingImmunization, pseudonymizer);
 	}
@@ -302,15 +309,19 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@Override
 	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		return directoryImmunizationService.getIndexList(criteria, first, max, sortProperties);
+		List<ImmunizationIndexDto> resultsList = directoryImmunizationService.getIndexList(criteria, first, max, sortProperties);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(ImmunizationIndexDto.class, resultsList, ImmunizationIndexDto::isInJurisdiction, null);
+		return resultsList;
 	}
 
 	@Override
-	public List<ImmunizationListEntryDto> getEntriesList(ImmunizationCriteria criteria, Integer first, Integer max) {
-		return immunizationService.getEntriesList(criteria, first, max);
+	public List<ImmunizationListEntryDto> getEntriesList(ImmunizationListCriteria criteria, Integer first, Integer max) {
+		Long personId = personService.getIdByUuid(criteria.getPerson().getUuid());
+		return immunizationService.getEntriesList(personId, criteria.getDisease(), first, max);
 	}
 
-	public ImmunizationDto toDto(Immunization entity) {
+	public static ImmunizationDto toDto(Immunization entity) {
 		if (entity == null) {
 			return null;
 		}
@@ -348,8 +359,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		dto.setRelatedCase(CaseFacadeEjb.toReferenceDto(entity.getRelatedCase()));
 
 		List<VaccinationDto> vaccinationDtos = new ArrayList<>();
-		for (VaccinationEntity vaccinationEntity : entity.getVaccinations()) {
-			VaccinationDto vaccinationDto = vaccinationFacade.toDto(vaccinationEntity);
+		for (Vaccination vaccination : entity.getVaccinations()) {
+			VaccinationDto vaccinationDto = VaccinationFacadeEjbLocal.toDto(vaccination);
 			vaccinationDtos.add(vaccinationDto);
 		}
 		dto.setVaccinations(vaccinationDtos);
@@ -390,11 +401,11 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		target.setValidUntil(source.getValidUntil());
 		target.setRelatedCase(caseService.getByReferenceDto(source.getRelatedCase()));
 
-		List<VaccinationEntity> vaccinationEntities = new ArrayList<>();
+		List<Vaccination> vaccinationEntities = new ArrayList<>();
 		for (VaccinationDto vaccinationDto : source.getVaccinations()) {
-			VaccinationEntity vaccinationEntity = vaccinationFacade.fromDto(vaccinationDto, true);
-			vaccinationEntity.setImmunization(target);
-			vaccinationEntities.add(vaccinationEntity);
+			Vaccination vaccination = vaccinationFacade.fromDto(vaccinationDto, true);
+			vaccination.setImmunization(target);
+			vaccinationEntities.add(vaccination);
 		}
 		target.getVaccinations().clear();
 		target.getVaccinations().addAll(vaccinationEntities);
@@ -408,7 +419,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	}
 
 	@Override
-	public Boolean linkRecoveryImmunizationToSearchedCase(String specificCaseSearchValue, ImmunizationDto immunization){
+	public Boolean linkRecoveryImmunizationToSearchedCase(String specificCaseSearchValue, ImmunizationDto immunization) {
 
 		CaseCriteria criteria = new CaseCriteria();
 		criteria.setPerson(immunization.getPerson());
@@ -419,19 +430,18 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 		if (foundCaseUuid != null) {
 			CaseDataDto caseDataDto = caseFacade.getCaseDataByUuid(foundCaseUuid);
-			List<String> samples = sampleFacade
-					.getByCaseUuids(Collections.singletonList(caseDataDto.getUuid()))
-					.stream()
-					.map(EntityDto::getUuid)
-					.collect(Collectors.toList());
+			List<String> samples = sampleFacade.getByCaseUuids(Collections.singletonList(caseDataDto.getUuid()))
+				.stream()
+				.map(EntityDto::getUuid)
+				.collect(Collectors.toList());
 			List<PathogenTestDto> pathogenTestDto = pathogenTestFacade.getBySampleUuids(samples);
 			PathogenTestDto relevantPathogenTest = pathogenTestDto.stream()
-					.filter(
-							pathogenTest -> pathogenTest.getTestedDisease().equals(caseDataDto.getDisease())
-									&& PathogenTestResultType.POSITIVE.equals(pathogenTest.getTestResult()))
-					.sorted(Comparator.comparing(PathogenTestDto::getTestDateTime))
-					.findFirst()
-					.orElse(null);
+				.filter(
+					pathogenTest -> pathogenTest.getTestedDisease().equals(caseDataDto.getDisease())
+						&& PathogenTestResultType.POSITIVE.equals(pathogenTest.getTestResult()))
+				.sorted(Comparator.comparing(PathogenTestDto::getTestDateTime))
+				.findFirst()
+				.orElse(null);
 
 			immunization.setRelatedCase(new CaseReferenceDto(foundCaseUuid));
 			if (relevantPathogenTest != null) {
@@ -455,7 +465,33 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 			return true;
 		}
 		return false;
-	};
+	}
+
+	protected void updateVaccinationStatuses(Immunization updatedImmunization, ImmunizationDto currentImmunization) {
+		if ((updatedImmunization.getMeansOfImmunization() == MeansOfImmunization.VACCINATION
+			|| updatedImmunization.getMeansOfImmunization() == MeansOfImmunization.VACCINATION_RECOVERY)
+			&& (currentImmunization == null && updatedImmunization.getImmunizationStatus() == ImmunizationStatus.ACQUIRED)
+			|| (currentImmunization != null
+				&& updatedImmunization.getImmunizationStatus() == ImmunizationStatus.ACQUIRED
+				&& currentImmunization.getImmunizationStatus() != ImmunizationStatus.ACQUIRED
+				&& updatedImmunization.getValidFrom() != null)) {
+			caseService.updateVaccinationStatuses(
+				updatedImmunization.getPerson().getId(),
+				updatedImmunization.getDisease(),
+				updatedImmunization.getValidFrom(),
+				updatedImmunization.getValidUntil());
+			contactService.updateVaccinationStatuses(
+				updatedImmunization.getPerson().getId(),
+				updatedImmunization.getDisease(),
+				updatedImmunization.getValidFrom(),
+				updatedImmunization.getValidUntil());
+			eventParticipantService.updateVaccinationStatuses(
+				updatedImmunization.getPerson().getId(),
+				updatedImmunization.getDisease(),
+				updatedImmunization.getValidFrom(),
+				updatedImmunization.getValidUntil());
+		}
+	}
 
 	@LocalBean
 	@Stateless

@@ -54,6 +54,9 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -79,15 +82,19 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
+import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -103,6 +110,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitIndexDto;
@@ -115,8 +123,8 @@ import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
@@ -590,8 +598,12 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			null,
 			new Date(),
 			new Date(),
-			null);
-		updateContactJurisdictionAndCase(contactSameJurisdictionDiffUserNoCase.getUuid(), regionReferenceDto, districtReferenceDto, null);
+			null,
+			null,
+			c -> {
+				c.setRegion(regionReferenceDto);
+				c.setDistrict(districtReferenceDto);
+			});
 
 		// 5) contact created by different user, jurisdiction different from main user, no case linked
 		PersonDto contactPersonDiffJurisdictionDiffUserNoCase = creator.createPerson("contactDiffJurisdictionDiffUserNoCase", "Person5");
@@ -614,12 +626,11 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			null,
 			new Date(),
 			new Date(),
-			null);
-		updateContactJurisdictionAndCase(
-			contactDiffJurisdictionDiffUserCaseSameJurisdiction.getUuid(),
 			null,
 			null,
-			new CaseReferenceDto(caze.getUuid()));
+			c -> {
+				c.setCaze(new CaseReferenceDto(caze.getUuid()));
+			});
 
 		// includeContactsFromOtherJurisdictionsFilter = false - return 1, 3, 4, 6
 		// includeContactsFromOtherJurisdictionsFilter = true - return 1, 2, 3, 4, 6
@@ -1012,6 +1023,52 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);
 
+		ImmunizationDto immunization = creator.createImmunization(
+			contact.getDisease(),
+			contact.getPerson(),
+			contact.getReportingUser(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf,
+			DateHelper.subtractDays(new Date(), 10),
+			DateHelper.subtractDays(new Date(), 5),
+			DateHelper.subtractDays(new Date(), 1),
+			null);
+		creator.createImmunization(
+			contact.getDisease(),
+			contact.getPerson(),
+			contact.getReportingUser(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf,
+			DateHelper.subtractDays(new Date(), 8),
+			DateHelper.subtractDays(new Date(), 7),
+			null,
+			null);
+		VaccinationDto firstVaccination = creator.createVaccination(
+			contact.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			DateHelper.subtractDays(new Date(), 7),
+			Vaccine.OXFORD_ASTRA_ZENECA,
+			VaccineManufacturer.ASTRA_ZENECA);
+		creator.createVaccination(
+			contact.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			DateHelper.subtractDays(new Date(), 4),
+			Vaccine.MRNA_1273,
+			VaccineManufacturer.MODERNA);
+		VaccinationDto thirdVaccination = creator.createVaccination(
+			contact.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			new Date(),
+			Vaccine.COMIRNATY,
+			VaccineManufacturer.BIONTECH_PFIZER);
+
 		List<ContactExportDto> results;
 		results = getContactFacade().getExportList(null, Collections.emptySet(), 0, 100, null, Language.EN);
 
@@ -1028,6 +1085,10 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("Test number", exportDto.getHouseNumber());
 		assertEquals("Test information", exportDto.getAdditionalInformation());
 		assertEquals("1234", exportDto.getPostalCode());
+		assertEquals(VaccinationStatus.VACCINATED, exportDto.getVaccinationStatus());
+		assertEquals(thirdVaccination.getVaccineName(), exportDto.getVaccineName());
+		assertEquals(firstVaccination.getVaccinationDate(), exportDto.getFirstVaccinationDate());
+		assertEquals(thirdVaccination.getVaccinationDate(), exportDto.getLastVaccinationDate());
 
 		assertNotNull(exportDto.getLastCooperativeVisitDate());
 		assertTrue(StringUtils.isNotEmpty(exportDto.getLastCooperativeVisitSymptoms()));

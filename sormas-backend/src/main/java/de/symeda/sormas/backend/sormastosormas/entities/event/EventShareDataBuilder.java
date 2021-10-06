@@ -85,12 +85,14 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 	@Override
 	public ShareData<Event, SormasToSormasEventPreview> buildShareDataPreview(Event event, User user, SormasToSormasOptionsDto options)
 		throws SormasToSormasException {
-		SormasToSormasEventPreview eventPreview = getEventPreview(event);
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(options.isPseudonymizePersonalData(), options.isPseudonymizeSensitiveData());
+
+		SormasToSormasEventPreview eventPreview = getEventPreview(event, pseudonymizer);
 
 		List<EventParticipant> eventParticipants = Collections.emptyList();
 		if (options.isWithEventParticipants()) {
 			eventParticipants = eventParticipantService.getAllActiveByEvent(event);
-			eventPreview.setEventParticipants(getEventParticipantPreviews(eventParticipants));
+			eventPreview.setEventParticipants(getEventParticipantPreviews(eventParticipants, pseudonymizer));
 		}
 
 		ShareData<Event, SormasToSormasEventPreview> shareData = new ShareData<>(event, eventPreview);
@@ -171,7 +173,7 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 		}).collect(Collectors.toList());
 	}
 
-	private SormasToSormasEventPreview getEventPreview(Event event) {
+	private SormasToSormasEventPreview getEventPreview(Event event, Pseudonymizer pseudonymizer) {
 		SormasToSormasEventPreview preview = new SormasToSormasEventPreview();
 
 		preview.setUuid(event.getUuid());
@@ -182,15 +184,19 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 		preview.setDiseaseDetails(event.getDiseaseDetails());
 		preview.setEventLocation(LocationFacadeEjb.toDto(event.getEventLocation()));
 
+		pseudonymizer.pseudonymizeDto(SormasToSormasEventPreview.class, preview, false, null);
+
 		return preview;
 	}
 
-	private List<SormasToSormasEventParticipantPreview> getEventParticipantPreviews(List<EventParticipant> eventParticipants) {
+	private List<SormasToSormasEventParticipantPreview> getEventParticipantPreviews(List<EventParticipant> eventParticipants, Pseudonymizer pseudonymizer) {
 		return eventParticipants.stream().map(eventParticipant -> {
 			SormasToSormasEventParticipantPreview preview = new SormasToSormasEventParticipantPreview();
 
 			preview.setUuid(eventParticipant.getUuid());
 			preview.setPerson(dataBuilderHelper.getPersonPreview(eventParticipant.getPerson()));
+
+			pseudonymizer.pseudonymizeDto(SormasToSormasEventParticipantPreview.class, preview, false,null);
 
 			return preview;
 		}).collect(Collectors.toList());

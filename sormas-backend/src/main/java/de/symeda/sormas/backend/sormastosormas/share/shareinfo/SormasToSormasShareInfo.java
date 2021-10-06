@@ -15,8 +15,8 @@
 
 package de.symeda.sormas.backend.sormastosormas.share.shareinfo;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,7 +140,7 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 		this.eventParticipants = eventParticipants;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
+	@Column(length = CHARACTER_LIMIT_DEFAULT, nullable = false)
 	public String getOrganizationId() {
 		return organizationId;
 	}
@@ -213,7 +213,7 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 		this.pseudonymizedSensitiveData = pseudonymizedSensitiveData;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getComment() {
 		return comment;
 	}

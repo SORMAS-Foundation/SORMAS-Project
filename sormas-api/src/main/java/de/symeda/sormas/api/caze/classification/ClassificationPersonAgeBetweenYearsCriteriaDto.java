@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze.classification;
 
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -44,7 +45,7 @@ public class ClassificationPersonAgeBetweenYearsCriteriaDto extends Classificati
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests, List<EventDto> events) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests, List<EventDto> events, Date lastVaccinationDate) {
 		Integer approximateAge = ApproximateAgeHelper.getAgeYears(person.getApproximateAge(), person.getApproximateAgeType());
 		if (approximateAge == null) {
 			return false;

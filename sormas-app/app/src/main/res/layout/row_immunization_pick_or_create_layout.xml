@@ -21,6 +21,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+        <import type="de.symeda.sormas.api.utils.DataHelper" />
         <import type="de.symeda.sormas.api.immunization.ImmunizationDto" />
         <import type="de.symeda.sormas.api.person.PersonDto" />
 
@@ -42,6 +43,15 @@
         android:background="@drawable/selector_list_section_row_background"
         android:elevation="2dp"
         android:onClickListener="@{(view) -> callback.onClick(view, data)}">
+
+        <de.symeda.sormas.app.component.controls.ControlTextReadField
+            android:id="@+id/immunization_uuid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="top"
+            android:textSize="@dimen/row_entry_secondary_text_size"
+            android:textColor="@color/row_entry_secondary_text"
+            app:value="@{DataHelper.getShortUuid(data.uuid)}" />
 
         <TextView
             android:id="@+id/report_date"

@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.api.travelentry;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -30,9 +30,9 @@ public class DeaContentEntry implements Serializable, Comparable<DeaContentEntry
 
 	private static final long serialVersionUID = -9182801671706246792L;
 
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String caption;
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String value;
 
 	public DeaContentEntry(){ }

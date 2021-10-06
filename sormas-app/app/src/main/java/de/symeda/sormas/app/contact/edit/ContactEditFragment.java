@@ -24,6 +24,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -97,8 +98,6 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
 	private void setUpFieldVisibilities(FragmentContactEditLayoutBinding contentBinding) {
 		setFieldVisibilitiesAndAccesses(ContactDto.class, contentBinding.mainContent);
-		// TODO [vaccination info] integrate vaccination info
-//		setFieldVisibilitiesAndAccesses(VaccinationInfoDto.class, contentBinding.vaccinationInfoEditLayout.mainContent);
 
 		if (record.getResultingCaseUuid() != null) {
 			contentBinding.createCase.setVisibility(GONE);
@@ -144,11 +143,6 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
 		contentBinding.contactQuarantineExtended.setVisibility(record.isQuarantineExtended() ? VISIBLE : GONE);
 		contentBinding.contactQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE);
-
-		// TODO [vaccination info] integrate vaccination info
-//		if (!isVisibleAllowed(VaccinationInfoDto.class, contentBinding.vaccinationInfoEditLayout.vaccinationInfoVaccination)) {
-//			contentBinding.medicalInformationHeader.setVisibility(GONE);
-//		}
 	}
 
 	// Overrides
@@ -195,6 +189,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		contentBinding.setData(record);
 		contentBinding.setCaze(sourceCase);
 		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
+		contentBinding.setVaccinationStatusClass(VaccinationStatus.class);
 
 		InfrastructureFieldsDependencyHandler.instance.initializeRegionFields(
 			contentBinding.contactRegion,
@@ -401,8 +396,6 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
 	@Override
 	public void onAfterLayoutBinding(FragmentContactEditLayoutBinding contentBinding) {
-		// TODO [vaccination info] integrate vaccination info
-//		VaccinationInfoEditFragment.setUpLayoutBinding(this, record.getVaccinationInfo(), contentBinding.vaccinationInfoEditLayout);
 		setUpFieldVisibilities(contentBinding);
 
 		// Initialize ControlSpinnerFields

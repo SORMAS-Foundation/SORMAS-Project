@@ -4,7 +4,9 @@ Feature: Case Classification functionality
   Scenario: Case Classification for a suspect case
     Given API: I create a new person
     And API: I create a new case
-    And I log in with the user
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And I log in with National User
     And I click on the Cases button from navbar
     And I open the last created Case via API
     And I navigate to symptoms tab

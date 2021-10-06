@@ -6,8 +6,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -16,21 +15,22 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
-public class CaseList extends PaginationList<CaseIndexDto> {
+public class CaseList extends PaginationList<CaseListEntryDto> {
 
-	private final CaseCriteria caseCriteria = new CaseCriteria();
+	private static final int MAX_DISPLAYED_ENTRIES = 5;
+
+	private final String personUuid;
 	private final Label noCaseLabel;
 
-	public CaseList(PersonReferenceDto personRef) {
-		super(5);
-		caseCriteria.setPerson(personRef);
-		caseCriteria.setIncludeCasesFromOtherJurisdictions(true);
+	public CaseList(PersonReferenceDto personReferenceDto) {
+		super(MAX_DISPLAYED_ENTRIES);
+		this.personUuid = personReferenceDto != null ? personReferenceDto.getUuid() : null;
 		noCaseLabel = new Label(I18nProperties.getCaption(Captions.personNoCaseLinkedToPerson));
 	}
 
 	@Override
 	public void reload() {
-		List<CaseIndexDto> caseIndexDtos = FacadeProvider.getCaseFacade().getIndexList(caseCriteria, 0, maxDisplayedEntries * 20, null);
+		List<CaseListEntryDto> caseIndexDtos = FacadeProvider.getCaseFacade().getEntriesList(personUuid, 0, maxDisplayedEntries * 20);
 
 		setEntries(caseIndexDtos);
 		if (!caseIndexDtos.isEmpty()) {
@@ -44,14 +44,15 @@ public class CaseList extends PaginationList<CaseIndexDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
-		List<CaseIndexDto> displayedEntries = getDisplayedEntries();
+		UserProvider currentUser = UserProvider.getCurrent();
+		List<CaseListEntryDto> displayedEntries = getDisplayedEntries();
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
-			final CaseIndexDto caze = displayedEntries.get(i);
+			final CaseListEntryDto caze = displayedEntries.get(i);
 			final CaseListEntry listEntry = new CaseListEntry(caze);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
+			if (currentUser != null && currentUser.hasUserRight(UserRight.CASE_EDIT)) {
 				listEntry.addEditListener(
 					i,
-					(Button.ClickListener) event -> ControllerProvider.getCaseController().navigateToCase(listEntry.getCaseIndexDto().getUuid()));
+					(Button.ClickListener) event -> ControllerProvider.getCaseController().navigateToCase(listEntry.getCaseListEntryDto().getUuid()));
 			}
 
 			listLayout.addComponent(listEntry);

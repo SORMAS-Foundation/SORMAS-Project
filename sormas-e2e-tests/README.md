@@ -73,7 +73,7 @@ can be taken as a base for living documentation and executable specification.
 
 ```gherkin
   Scenario: Create a new event
-Given I log in with the user
+Given I log in with National User
 And I click on the Events button from navbar
 When I click on the NEW EVENT button
 Then I create a new event

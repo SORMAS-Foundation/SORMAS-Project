@@ -62,13 +62,14 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -260,7 +261,11 @@ public class ContactController {
 	}
 
 	public void navigateToData(String contactUuid, boolean openTab) {
-		String navigationState = ContactDataView.VIEW_NAME + "/" + contactUuid;
+		navigateToView(ContactDataView.VIEW_NAME , contactUuid, openTab);
+	}
+
+	public void navigateToView(String viewName, String contactUuid, boolean openTab) {
+		String navigationState = viewName + "/" + contactUuid;
 		if (openTab) {
 			SormasUI.get().getPage().open(SormasUI.get().getPage().getLocation().getRawPath() + "#!" + navigationState, "_blank", false);
 		} else {
@@ -380,6 +385,11 @@ public class ContactController {
 		createComponent.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				final ContactDto dto = createForm.getValue();
+				if (asSourceContact && caze != null) {
+					CaseDataDto caseDto = FacadeProvider.getCaseFacade().getByUuid(caze.getUuid());
+					caseDto.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
+					FacadeProvider.getCaseFacade().saveCase(caseDto);
+				}
 				if (asSourceContact && alternativeCallback != null && casePerson != null) {
 					selectOrCreateContact(dto, casePerson, selectedContactUuid -> {
 						if (selectedContactUuid != null) {

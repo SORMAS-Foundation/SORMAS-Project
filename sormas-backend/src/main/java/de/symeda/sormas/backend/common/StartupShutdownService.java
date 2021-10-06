@@ -71,7 +71,7 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DefaultUserHelper;
+import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
@@ -229,7 +229,7 @@ public class StartupShutdownService {
 		Region region = null;
 		if (regionService.count() == 0) {
 			region = new Region();
-			region.setUuid(DataHelper.createUuid());
+			region.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.REGION.ordinal()));
 			region.setName(I18nProperties.getCaption(Captions.defaultRegion, "Default Region"));
 			region.setEpidCode("DEF-REG");
 			region.setDistricts(new ArrayList<District>());
@@ -240,7 +240,7 @@ public class StartupShutdownService {
 		District district = null;
 		if (districtService.count() == 0) {
 			district = new District();
-			district.setUuid(DataHelper.createUuid());
+			district.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.DISTRICT.ordinal()));
 			district.setName(I18nProperties.getCaption(Captions.defaultDistrict, "Default District"));
 			if (region == null) {
 				region = regionService.getAll().get(0);
@@ -256,7 +256,7 @@ public class StartupShutdownService {
 		Community community = null;
 		if (communityService.count() == 0) {
 			community = new Community();
-			community.setUuid(DataHelper.createUuid());
+			community.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.COMMUNITY.ordinal()));
 			community.setName(I18nProperties.getCaption(Captions.defaultCommunity, "Default Community"));
 			if (district == null) {
 				district = districtService.getAll().get(0);
@@ -341,7 +341,7 @@ public class StartupShutdownService {
 					UserRole.ADMIN,
 					"ad",
 					"min",
-					DefaultUserHelper.ADMIN_USERNAME_AND_PASSWORD,
+					DefaultEntityHelper.ADMIN_USERNAME_AND_PASSWORD,
 					u -> {});
 			//@formatter:on
 
@@ -351,7 +351,8 @@ public class StartupShutdownService {
 				return;
 			}
 
-			Region region = regionService.getAll().get(0);
+			Region region =
+				regionService.getByUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.REGION.ordinal()));
 			District district = region.getDistricts().get(0);
 			Community community = district.getCommunities().get(0);
 			List<Facility> healthFacilities = facilityService.getActiveFacilitiesByCommunityAndType(community, FacilityType.HOSPITAL, false, false);
@@ -367,7 +368,7 @@ public class StartupShutdownService {
 				UserRole.SURVEILLANCE_SUPERVISOR,
 				"Surveillance",
 				"Supervisor",
-				DefaultUserHelper.SURV_SUP_USERNAME_AND_PASSWORD,
+				DefaultEntityHelper.SURV_SUP_USERNAME_AND_PASSWORD,
 				u -> u.setRegion(region));
 
 			// Create Case Supervisor
@@ -375,7 +376,7 @@ public class StartupShutdownService {
 				UserRole.CASE_SUPERVISOR,
 				"Case",
 				"Supervisor",
-				DefaultUserHelper.CASE_SUP_USERNAME_AND_PASSWORD,
+				DefaultEntityHelper.CASE_SUP_USERNAME_AND_PASSWORD,
 				u -> u.setRegion(region));
 
 			// Create Contact Supervisor
@@ -383,7 +384,7 @@ public class StartupShutdownService {
 				UserRole.CONTACT_SUPERVISOR,
 				"Contact",
 				"Supervisor",
-				DefaultUserHelper.CONT_SUP_USERNAME_AND_PASSWORD,
+				DefaultEntityHelper.CONT_SUP_USERNAME_AND_PASSWORD,
 				u -> u.setRegion(region));
 
 			// Create Point of Entry Supervisor
@@ -391,7 +392,7 @@ public class StartupShutdownService {
 				UserRole.POE_SUPERVISOR,
 				"Point of Entry",
 				"Supervisor",
-				DefaultUserHelper.POE_SUP_USERNAME_AND_PASSWORD,
+				DefaultEntityHelper.POE_SUP_USERNAME_AND_PASSWORD,
 				u -> u.setRegion(region));
 
 			// Create Laboratory Officer
@@ -399,7 +400,7 @@ public class StartupShutdownService {
 				UserRole.LAB_USER,
 				"Laboratory",
 				"Officer",
-				DefaultUserHelper.LAB_OFF_USERNAME_AND_PASSWORD,
+				DefaultEntityHelper.LAB_OFF_USERNAME_AND_PASSWORD,
 				u -> u.setLaboratory(laboratory));
 
 			// Create Event Officer
@@ -407,7 +408,7 @@ public class StartupShutdownService {
 				UserRole.EVENT_OFFICER,
 				"Event",
 				"Officer",
-				DefaultUserHelper.EVE_OFF_USERNAME_AND_PASSWORD,
+				DefaultEntityHelper.EVE_OFF_USERNAME_AND_PASSWORD,
 				u -> u.setRegion(region));
 
 			// Create National User
@@ -416,7 +417,7 @@ public class StartupShutdownService {
 					UserRole.NATIONAL_USER,
 					"National",
 					"User",
-					DefaultUserHelper.NAT_USER_USERNAME_AND_PASSWORD,
+					DefaultEntityHelper.NAT_USER_USERNAME_AND_PASSWORD,
 					u -> {});
 			//@formatter:on
 
@@ -426,7 +427,7 @@ public class StartupShutdownService {
 					UserRole.NATIONAL_CLINICIAN,
 					"National",
 					"Clinician",
-					DefaultUserHelper.NAT_CLIN_USERNAME_AND_PASSWORD,
+					DefaultEntityHelper.NAT_CLIN_USERNAME_AND_PASSWORD,
 					u -> {});
 			//@formatter:on
 
@@ -436,7 +437,7 @@ public class StartupShutdownService {
 				UserRole.SURVEILLANCE_OFFICER,
 				"Surveillance",
 				"Officer",
-				DefaultUserHelper.SURV_OFF_USERNAME_AND_PASSWORD,
+				DefaultEntityHelper.SURV_OFF_USERNAME_AND_PASSWORD,
 				u -> {
 					u.setRegion(region);
 					u.setDistrict(district);
@@ -449,7 +450,7 @@ public class StartupShutdownService {
 					UserRole.HOSPITAL_INFORMANT,
 					"Hospital",
 					"Informant",
-					DefaultUserHelper.HOSP_INF_USERNAME_AND_PASSWORD,
+					DefaultEntityHelper.HOSP_INF_USERNAME_AND_PASSWORD,
 					u -> {
 						u.setRegion(region);
 						u.setDistrict(district);
@@ -464,7 +465,7 @@ public class StartupShutdownService {
 					UserRole.COMMUNITY_OFFICER,
 					"Community",
 					"Officer",
-					DefaultUserHelper.COMM_OFF_USERNAME_AND_PASSWORD,
+					DefaultEntityHelper.COMM_OFF_USERNAME_AND_PASSWORD,
 					u -> {
 						u.setRegion(region);
 						u.setDistrict(district);
@@ -478,7 +479,7 @@ public class StartupShutdownService {
 					UserRole.POE_INFORMANT,
 					"Poe",
 					"Informant",
-					DefaultUserHelper.POE_INF_USERNAME_AND_PASSWORD,
+					DefaultEntityHelper.POE_INF_USERNAME_AND_PASSWORD,
 					u -> {
 						u.setUserName("PoeInf");
 						u.setRegion(region);
@@ -503,7 +504,6 @@ public class StartupShutdownService {
 		userService.persist(user);
 		userUpdateEvent.fire(new UserUpdateEvent(user));
 		return user;
-
 	}
 
 	private void createOrUpdateSormasToSormasUser() {
@@ -515,7 +515,7 @@ public class StartupShutdownService {
 
 			createOrUpdateDefaultUser(
 				Collections.singleton(UserRole.SORMAS_TO_SORMAS_CLIENT),
-				DefaultUserHelper.SORMAS_TO_SORMAS_USER_NAME,
+				DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME,
 				new String(pwd),
 				"Sormas to Sormas",
 				"Client");

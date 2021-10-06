@@ -23,9 +23,9 @@ import org.openqa.selenium.By;
 public class EditCasePage {
   public static final By FOLLOW_UP_BUTTON = By.cssSelector("[id='tab-cases-visits'] a");
   public static final By SYMPTOMS_BUTTON = By.cssSelector("[id='tab-cases-symptoms']");
-  public static final By REGION_INPUT = By.cssSelector("#region input");
-  public static final By DISTRICT_INPUT = By.cssSelector("#district input");
-  public static final By COMMUNITY_INPUT = By.cssSelector("#community input");
+  public static final By REGION_INPUT = By.cssSelector("#responsibleRegion input");
+  public static final By DISTRICT_INPUT = By.cssSelector("#responsibleDistrict input");
+  public static final By COMMUNITY_INPUT = By.cssSelector("#responsibleCommunity input");
   public static final By PLACE_OF_STAY_SELECTED_VALUE =
       By.cssSelector("#facilityOrHome input[checked] + label");
   public static final By PLACE_DESCRIPTION_INPUT = By.cssSelector("#healthFacilityDetails");
@@ -95,4 +95,5 @@ public class EditCasePage {
   public static final By SAVE_BUTTON = By.id("commit");
   public static final By DELETE_BUTTON = By.id("delete");
   public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
+  public static final By CASE_SAVED_POPUP = By.xpath("//*[contains(text(), 'Case saved')]");
 }

@@ -7,6 +7,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class CampaignFormMetaDto extends EntityDto {
 
@@ -16,11 +17,11 @@ public class CampaignFormMetaDto extends EntityDto {
 	public static final String LANGUAGE_CODE = "languageCode";
 	public static final String CAMPAIGN_FORM_ELEMENTS = "campaignFormElements";
 
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String formId;
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String formName;
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String languageCode;
 	@Valid
 	private List<CampaignFormElement> campaignFormElements;

@@ -1,8 +1,8 @@
 @Sanity @Task @UI
 Feature: Create Tasks
 
-  Scenario: Create and check a new case data
-	Given I log in with the user
+  Scenario: Create and check a new task data
+	Given I log in with National User
 	And I click on the Tasks button from navbar
 	And I click on the NEW TASK button
 	When I create a new task with specific data

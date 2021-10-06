@@ -1,10 +1,9 @@
 package de.symeda.sormas.backend.labmessage;
 
-import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.backend.common.CoreAdo;
-import de.symeda.sormas.backend.sample.PathogenTest;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+
+import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,11 +16,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import java.util.Date;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_SMALL;
+import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.sample.PathogenTest;
 
 @Entity(name = TestReport.TABLE_NAME)
 @Audited
@@ -69,7 +69,7 @@ public class TestReport extends CoreAdo {
 		this.labMessage = labMessage;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestLabName() {
 		return testLabName;
 	}
@@ -78,7 +78,7 @@ public class TestReport extends CoreAdo {
 		this.testLabName = testLabName;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestLabExternalId() {
 		return testLabExternalId;
 	}
@@ -87,7 +87,7 @@ public class TestReport extends CoreAdo {
 		this.testLabExternalId = testLabExternalId;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestLabPostalCode() {
 		return testLabPostalCode;
 	}
@@ -96,7 +96,7 @@ public class TestReport extends CoreAdo {
 		this.testLabPostalCode = testLabPostalCode;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestLabCity() {
 		return testLabCity;
 	}
@@ -141,7 +141,7 @@ public class TestReport extends CoreAdo {
 		this.testResultVerified = testResultVerified;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getTestResultText() {
 		return testResultText;
 	}
@@ -159,7 +159,6 @@ public class TestReport extends CoreAdo {
 		this.pathogenTest = pathogenTest;
 	}
 
-	@Column(length = COLUMN_LENGTH_SMALL)
 	public String getTypingId() {
 		return typingId;
 	}
@@ -168,7 +167,7 @@ public class TestReport extends CoreAdo {
 		this.typingId = typingId;
 	}
 
-	@Column(length = COLUMN_LENGTH_SMALL)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalId() {
 		return externalId;
 	}

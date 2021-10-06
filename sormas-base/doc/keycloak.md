@@ -7,7 +7,7 @@ Current version is: Keycloak 12
 
 ## Setup
 
-To set up Keycloak check the guide here [Keycloak Setup](../../SERVER_SETUP.md#keycloak-server)
+To set up Keycloak check the guide here [Keycloak Setup](../../docs/SERVER_SETUP.md#keycloak-server)
 
 ## SORMAS Realm
 

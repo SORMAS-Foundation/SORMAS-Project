@@ -1,8 +1,8 @@
 package de.symeda.sormas.api.feature;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_UUID_MAX;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_UUID_MIN;
 import static de.symeda.sormas.api.HasUuid.UUID_REGEX;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_UUID_MAX;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_UUID_MIN;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -25,14 +25,14 @@ public class FeatureConfigurationIndexDto implements Serializable {
 	public static final String END_DATE = "endDate";
 
 	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
-	@Size(min = COLUMN_LENGTH_UUID_MIN, max = COLUMN_LENGTH_UUID_MAX, message = Validations.textSizeNotInRange)
+	@Size(min = CHARACTER_LIMIT_UUID_MIN, max = CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
 	private String uuid;
 	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
-	@Size(min = COLUMN_LENGTH_UUID_MIN, max = COLUMN_LENGTH_UUID_MAX, message = Validations.textSizeNotInRange)
+	@Size(min = CHARACTER_LIMIT_UUID_MIN, max = CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
 	private String regionUuid;
 	private String regionName;
 	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
-	@Size(min = COLUMN_LENGTH_UUID_MIN, max = COLUMN_LENGTH_UUID_MAX, message = Validations.textSizeNotInRange)
+	@Size(min = CHARACTER_LIMIT_UUID_MIN, max = CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
 	private String districtUuid;
 	private String districtName;
 	private Disease disease;

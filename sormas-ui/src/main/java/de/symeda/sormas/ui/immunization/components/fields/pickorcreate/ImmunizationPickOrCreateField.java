@@ -19,6 +19,7 @@ public class ImmunizationPickOrCreateField extends CustomField<String> {
 
 	public static final String KEEP_IMMUNIZATION = "keepImmunization";
 	public static final String OVERWRITE_IMMUNIZATION = "overwriteImmunization";
+	public static final String CREATE_NEW_IMMUNIZATION = "createNewImmunization";
 
 	private final ImmunizationDto newImmunization;
 	private final ImmunizationDto similarImmunization;
@@ -32,6 +33,7 @@ public class ImmunizationPickOrCreateField extends CustomField<String> {
 		this.similarImmunization = similarImmunizations.isEmpty() ? null : similarImmunizations.get(0);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected Component initContent() {
 
@@ -61,9 +63,14 @@ public class ImmunizationPickOrCreateField extends CustomField<String> {
 			new ImmunizationPickOrCreateOption(OVERWRITE_IMMUNIZATION, I18nProperties.getCaption(Captions.immunizationOverwriteImmunization));
 		mainLayout.addComponent(overwriteImmunization);
 
+		ImmunizationPickOrCreateOption createNewImmunization =
+			new ImmunizationPickOrCreateOption(CREATE_NEW_IMMUNIZATION, I18nProperties.getCaption(Captions.immunizationCreateNewImmunization));
+		mainLayout.addComponent(createNewImmunization);
+
 		keepImmunization.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
 				overwriteImmunization.setValue(null);
+				createNewImmunization.setValue(null);
 				doSetValue(null);
 				if (selectionChangeCallback != null) {
 					selectionChangeCallback.accept(true);
@@ -74,7 +81,19 @@ public class ImmunizationPickOrCreateField extends CustomField<String> {
 		overwriteImmunization.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
 				keepImmunization.setValue(null);
+				createNewImmunization.setValue(null);
 				doSetValue(similarImmunization.getUuid());
+				if (selectionChangeCallback != null) {
+					selectionChangeCallback.accept(true);
+				}
+			}
+		});
+
+		createNewImmunization.addValueChangeListener(e -> {
+			if (e.getProperty().getValue() != null) {
+				overwriteImmunization.setValue(null);
+				keepImmunization.setValue(null);
+				doSetValue(newImmunization.getUuid());
 				if (selectionChangeCallback != null) {
 					selectionChangeCallback.accept(true);
 				}

@@ -66,7 +66,9 @@ public class ContactShareDataBuilder implements ShareDataBuilder<Contact, Sormas
 	@Override
 	public ShareData<Contact, SormasToSormasContactPreview> buildShareDataPreview(Contact contact, User user, SormasToSormasOptionsDto options)
 		throws SormasToSormasException {
-		SormasToSormasContactPreview contactPreview = dataBuilderHelper.getContactPreview(contact);
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(options.isPseudonymizePersonalData(), options.isPseudonymizeSensitiveData());
+
+		SormasToSormasContactPreview contactPreview = dataBuilderHelper.getContactPreview(contact, pseudonymizer);
 
 		return new ShareData<>(contact, contactPreview);
 	}

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/base_layout"
+    android:descendantFocusability="beforeDescendants">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+
+        <import type="de.symeda.sormas.app.component.dialog.AbstractDialog" />
+
+        <variable
+            name="data"
+            type="java.lang.Object" />
+
+        <variable
+            name="config"
+            type="de.symeda.sormas.app.component.dialog.DialogViewConfig" />
+
+        <variable
+            name="dialog"
+            type="de.symeda.sormas.app.component.dialog.AbstractDialog" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/dialog_panel_horizontal_padding"
+        android:paddingRight="@dimen/dialog_panel_horizontal_padding"
+        android:visibility="@{dialog.isButtonPanelVisible? View.VISIBLE : View.GONE}">
+
+        <de.symeda.sormas.app.component.controls.ControlButton
+            android:id="@+id/button_negative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_toStartOf="@+id/button_positive"
+            android:text="@{config.negativeButtonText}"
+            android:visibility="@{dialog.isNegativeButtonVisible? View.VISIBLE : View.GONE}"
+            app:buttonType="@{dialog.negativeButtonType}"
+            app:iconStart="@{config.negativeButtonIcon}"
+            app:rounded="@{dialog.isRounded}"
+            app:slim="true" />
+
+        <de.symeda.sormas.app.component.controls.ControlButton
+            android:id="@+id/button_positive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="end"
+            android:layout_marginStart="@dimen/control_spacing_slim"
+            android:text="@{config.positiveButtonText}"
+            android:visibility="@{dialog.isPositiveButtonVisible? View.VISIBLE : View.GONE}"
+            app:buttonType="@{dialog.positiveButtonType}"
+            app:iconStart="@{config.positiveButtonIcon}"
+            app:rounded="@{dialog.isRounded}"
+            app:slim="true" />
+
+    </RelativeLayout>
+</layout>
