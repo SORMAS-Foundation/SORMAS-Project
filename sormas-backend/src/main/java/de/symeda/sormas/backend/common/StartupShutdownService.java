@@ -193,8 +193,6 @@ public class StartupShutdownService {
 
 		createDefaultInfrastructureData();
 
-		syncWithCentral();
-
 		facilityService.createConstantFacilities();
 
 		pointOfEntryService.createConstantPointsOfEntry();
@@ -220,6 +218,8 @@ public class StartupShutdownService {
 
 		configFacade.validateAppUrls();
 		configFacade.validateExternalUrls();
+
+		syncWithCentral();
 	}
 
 	private void createDefaultInfrastructureData() {
