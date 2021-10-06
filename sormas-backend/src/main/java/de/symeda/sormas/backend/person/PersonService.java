@@ -59,14 +59,15 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -76,16 +77,18 @@ import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
+import de.symeda.sormas.backend.event.EventUserFilterCriteria;
 import de.symeda.sormas.backend.geocoding.GeocodingService;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
-import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
@@ -228,11 +231,20 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		// 1. Define filters per association lazy to avoid superfluous joins
 		final Supplier<Predicate> caseFilter = () -> CriteriaBuilderHelper
 			.and(cb, caseService.createUserFilter(cb, cq, joins.getCaze()), caseService.createDefaultFilter(cb, joins.getCaze()));
-		final Supplier<Predicate> contactFilter = () -> CriteriaBuilderHelper
-			.and(cb, contactService.createUserFilter(cb, cq, joins.getContact()), contactService.createDefaultFilter(cb, joins.getContact()));
+		final Supplier<Predicate> contactFilter = () -> {
+			final Predicate contactUserFilter = contactService.createUserFilterForJoin(
+				new ContactQueryContext(cb, cq, joins.getContact()),
+				new ContactCriteria().includeContactsFromOtherJurisdictions(false));
+			return CriteriaBuilderHelper.and(cb, contactUserFilter, contactService.createDefaultFilter(cb, joins.getContact()));
+		};
 		final Supplier<Predicate> eventParticipantFilter = () -> CriteriaBuilderHelper.and(
 			cb,
-			eventParticipantService.createUserFilter(cb, cq, joins.getEventParticipant()),
+			eventParticipantService.createUserFilterForJoin(
+				cb,
+				cq,
+				joins.getEventParticipant(),
+				new EventUserFilterCriteria().includeUserCaseAndEventParticipantFilter(false)
+					.forceRegionJurisdiction(true)),
 			eventParticipantService.createDefaultFilter(cb, joins.getEventParticipant()));
 		final Supplier<Predicate> immunizationFilter = () -> CriteriaBuilderHelper.and(
 			cb,
