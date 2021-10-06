@@ -30,7 +30,7 @@ import de.symeda.sormas.backend.infrastructure.region.RegionService;
 
 @Stateless
 @LocalBean
-public class PointOfEntryService extends AbstractInfrastructureAdoService<PointOfEntry> {
+public class PointOfEntryService extends AbstractInfrastructureAdoService<PointOfEntry, PointOfEntryCriteria> {
 
 	@EJB
 	private RegionService regionService;

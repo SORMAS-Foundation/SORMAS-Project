@@ -78,7 +78,9 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "FacilityFacade")
-public class FacilityFacadeEjb extends AbstractInfrastructureEjb<Facility, FacilityService> implements FacilityFacade {
+public class FacilityFacadeEjb
+	extends AbstractInfrastructureEjb<Facility, FacilityDto, FacilityIndexDto, FacilityReferenceDto, FacilityService, FacilityCriteria>
+	implements FacilityFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -266,13 +268,8 @@ public class FacilityFacadeEjb extends AbstractInfrastructureEjb<Facility, Facil
 	}
 
 	@Override
-	public FacilityDto getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
-	}
-
-	@Override
 	public List<FacilityDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -329,10 +326,11 @@ public class FacilityFacadeEjb extends AbstractInfrastructureEjb<Facility, Facil
 	public List<FacilityReferenceDto> getByExternalIdAndType(String id, FacilityType type, boolean includeArchivedEntities) {
 		return service.getFacilitiesByExternalIdAndType(id, type, includeArchivedEntities)
 			.stream()
-			.map(f -> toReferenceDto(f))
+			.map(FacilityFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
 
+	@Override
 	public Page<FacilityIndexDto> getIndexPage(FacilityCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
 		List<FacilityIndexDto> facilityIndexList = getIndexList(criteria, offset, size, sortProperties);
 		long totalElementCount = count(criteria);
@@ -355,7 +353,7 @@ public class FacilityFacadeEjb extends AbstractInfrastructureEjb<Facility, Facil
 				type,
 				includeArchivedEntities)
 			.stream()
-			.map(f -> toReferenceDto(f))
+			.map(FacilityFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
 
@@ -363,7 +361,7 @@ public class FacilityFacadeEjb extends AbstractInfrastructureEjb<Facility, Facil
 	public List<FacilityReferenceDto> getLaboratoriesByName(String name, boolean includeArchivedEntities) {
 		return service.getFacilitiesByNameAndType(name, null, null, FacilityType.LABORATORY, includeArchivedEntities)
 			.stream()
-			.map(f -> toReferenceDto(f))
+			.map(FacilityFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
 
@@ -404,7 +402,8 @@ public class FacilityFacadeEjb extends AbstractInfrastructureEjb<Facility, Facil
 		return new FacilityReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
 	}
 
-	private FacilityDto toDto(Facility entity) {
+	@Override
+	public FacilityDto toDto(Facility entity) {
 
 		if (entity == null) {
 			return null;
@@ -461,8 +460,8 @@ public class FacilityFacadeEjb extends AbstractInfrastructureEjb<Facility, Facil
 			cq.where(filter);
 		}
 
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
+		if (CollectionUtils.isNotEmpty(sortProperties)) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
@@ -590,34 +589,19 @@ public class FacilityFacadeEjb extends AbstractInfrastructureEjb<Facility, Facil
 	}
 
 	@Override
-	public FacilityDto save(@Valid FacilityDto dto) throws ValidationRuntimeException {
-		return save(dto, false);
+	public FacilityDto save(FacilityDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
+		validateFacilityDto(dtoToSave);
+		return save(dtoToSave, allowMerge, Validations.importFacilityAlreadyExists);
 	}
 
 	@Override
-	public FacilityDto save(@Valid FacilityDto dto, boolean allowMerge) throws ValidationRuntimeException {
-
-		validateFacilityDto(dto);
-
-		Facility facility = service.getByUuid(dto.getUuid());
-
-		if (facility == null) {
-			List<FacilityReferenceDto> duplicates = getByNameAndType(dto.getName(), dto.getDistrict(), dto.getCommunity(), dto.getType(), true);
-			if (!duplicates.isEmpty()) {
-				if (allowMerge) {
-					String uuid = duplicates.get(0).getUuid();
-					facility = service.getByUuid(uuid);
-					FacilityDto dtoToMerge = getByUuid(uuid);
-					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
-				} else {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importFacilityAlreadyExists));
-				}
-			}
-		}
-
-		facility = fillOrBuildEntity(dto, facility, true);
-		service.ensurePersisted(facility);
-		return toDto(facility);
+	protected List<Facility> findDuplicates(FacilityDto dto) {
+		return service.getFacilitiesByNameAndType(
+			dto.getName(),
+			districtService.getByReferenceDto(dto.getDistrict()),
+			communityService.getByReferenceDto(dto.getCommunity()),
+			dto.getType(),
+			true);
 	}
 
 	@Override
@@ -642,7 +626,8 @@ public class FacilityFacadeEjb extends AbstractInfrastructureEjb<Facility, Facil
 		}
 	}
 
-	private Facility fillOrBuildEntity(@NotNull FacilityDto source, Facility target, boolean checkChangeDate) {
+	@Override
+	protected Facility fillOrBuildEntity(@NotNull FacilityDto source, Facility target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, Facility::new, checkChangeDate);
 
@@ -668,7 +653,6 @@ public class FacilityFacadeEjb extends AbstractInfrastructureEjb<Facility, Facil
 		target.setType(source.getType());
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
-
 		return target;
 	}
 

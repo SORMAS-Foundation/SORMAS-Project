@@ -17,68 +17,34 @@ package de.symeda.sormas.ui.travelentry.travelentrylink;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.CountryHelper;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
+import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
-import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
-@SuppressWarnings("serial")
 public class TravelEntryListComponent extends SideComponent {
 
-	public static final String TRAVEL_ENTRIES_LOC = "travelEntries";
-
-	public TravelEntryListComponent(CaseReferenceDto caseReferenceDto, PersonReferenceDto personReferenceDto) {
+	public TravelEntryListComponent(TravelEntryListCriteria travelEntryListCriteria) {
 		super(I18nProperties.getString(Strings.entityTravelEntries));
 
-		if (caseReferenceDto != null && UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_CREATE)) {
+		UserProvider currentUser = UserProvider.getCurrent();
+		if (travelEntryListCriteria.getCaseReferenceDto() != null && currentUser != null && currentUser.hasUserRight(UserRight.TRAVEL_ENTRY_CREATE)) {
 			Button createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.travelEntryNewTravelEntry));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(e -> ControllerProvider.getTravelEntryController().create(caseReferenceDto));
+			createButton.addClickListener(e -> ControllerProvider.getTravelEntryController().create(travelEntryListCriteria.getCaseReferenceDto()));
 			addCreateButton(createButton);
 		}
 
-		TravelEntryCriteria travelEntryCriteria = new TravelEntryCriteria();
-
-		if (caseReferenceDto != null) {
-			travelEntryCriteria.caze(caseReferenceDto);
-		}
-		if (personReferenceDto != null) {
-			travelEntryCriteria.person(personReferenceDto);
-		}
-
-		TravelEntryList travelEntryList = new TravelEntryList(travelEntryCriteria);
+		TravelEntryList travelEntryList = new TravelEntryList(travelEntryListCriteria);
 		addComponent(travelEntryList);
 		travelEntryList.reload();
-	}
-
-	public static void addTravelEntryListComponent(CustomLayout layout, PersonReferenceDto personReferenceDto) {
-		addTravelEntryListComponent(layout, null, personReferenceDto);
-	}
-
-	public static void addTravelEntryListComponent(CustomLayout layout, CaseReferenceDto caseReferenceDto) {
-		addTravelEntryListComponent(layout, caseReferenceDto, null);
-	}
-
-	private static void addTravelEntryListComponent(CustomLayout layout, CaseReferenceDto caseReferenceDto, PersonReferenceDto personReferenceDto) {
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
-			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TRAVEL_ENTRIES)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
-			layout.addComponent(new SideComponentLayout(new TravelEntryListComponent(caseReferenceDto, personReferenceDto)), TRAVEL_ENTRIES_LOC);
-		}
 	}
 }

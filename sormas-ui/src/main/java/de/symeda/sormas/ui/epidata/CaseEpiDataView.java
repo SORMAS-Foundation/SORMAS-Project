@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.epidata;
 
-import static de.symeda.sormas.ui.travelentry.travelentrylink.TravelEntryListComponent.TRAVEL_ENTRIES_LOC;
-
 import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
@@ -27,8 +25,12 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -39,14 +41,15 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
-@SuppressWarnings("serial")
 public class CaseEpiDataView extends AbstractCaseView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/epidata";
 
 	private static final String LOC_EPI_DATA = "epiData";
 	private static final String LOC_SOURCE_CONTACTS = "sourceContacts";
+	public static final String TRAVEL_ENTRIES_LOC = "travelEntries";
 
 	private CommitDiscardWrapperComponent<EpiDataForm> epiDataComponent;
 
@@ -75,11 +78,11 @@ public class CaseEpiDataView extends AbstractCaseView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
-		boolean sourceContactsVisible = UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW);
+		UserProvider currentUser = UserProvider.getCurrent();
+		boolean sourceContactsVisible = currentUser != null && currentUser.hasUserRight(UserRight.CONTACT_VIEW);
 		VerticalLayout sourceContactsLayout = new VerticalLayout();
-		Consumer<Boolean> sourceContactsToggleCallback = (visible) -> {
-			sourceContactsLayout.setVisible(visible != null && sourceContactsVisible ? visible : false);
-		};
+		Consumer<Boolean> sourceContactsToggleCallback =
+			(visible) -> sourceContactsLayout.setVisible(visible != null && sourceContactsVisible ? visible : false);
 
 		epiDataComponent = ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid(), sourceContactsToggleCallback);
 		epiDataComponent.setMargin(false);
@@ -96,7 +99,7 @@ public class CaseEpiDataView extends AbstractCaseView {
 			sourceContactList.addStyleName(CssStyles.SIDE_COMPONENT);
 			sourceContactsLayout.addComponent(sourceContactList);
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
+			if (currentUser.hasUserRight(UserRight.CONTACT_CREATE)) {
 				sourceContactList.addStyleName(CssStyles.VSPACE_NONE);
 				Label contactCreationDisclaimer = new Label(
 					VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewContactDiscardsChanges),
@@ -114,7 +117,13 @@ public class CaseEpiDataView extends AbstractCaseView {
 		}
 		layout.addComponent(sourceContactsLayout, LOC_SOURCE_CONTACTS);
 
-		TravelEntryListComponent.addTravelEntryListComponent(layout, getCaseRef());
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TRAVEL_ENTRIES)
+			&& currentUser != null
+			&& currentUser.hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
+			TravelEntryListCriteria travelEntryListCriteria = new TravelEntryListCriteria.Builder().withCase(getCaseRef()).build();
+			layout.addComponent(new SideComponentLayout(new TravelEntryListComponent(travelEntryListCriteria)), TRAVEL_ENTRIES_LOC);
+		}
 
 		setCaseEditPermission(container);
 	}

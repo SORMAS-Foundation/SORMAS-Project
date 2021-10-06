@@ -17,9 +17,8 @@ import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 public interface InfrastructureBaseFacade<DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, CRITERIA extends BaseCriteria>
 	extends BaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
 
-
 	// todo investigate if we can move the save function up the hierarchy
-	DTO save(@Valid DTO dto, boolean allowMerge);
+	DTO save(DTO dto, boolean allowMerge);
 
 	List<REF_DTO> getByExternalId(String externalId, boolean includeArchivedEntities);
 

@@ -69,9 +69,12 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "DistrictFacade")
-public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, DistrictService> implements DistrictFacade {
+public class DistrictFacadeEjb
+	extends AbstractInfrastructureEjb<District, DistrictDto, DistrictIndexDto, DistrictReferenceDto, DistrictService, DistrictCriteria>
+	implements DistrictFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -95,21 +98,21 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 
 	@Override
 	public List<DistrictReferenceDto> getAllActiveAsReference() {
-		return service.getAllActive(District.NAME, true).stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return service.getAllActive(District.NAME, true).stream().map(DistrictFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<DistrictReferenceDto> getAllActiveByArea(String areaUuid) {
 
 		Area area = areaService.getByUuid(areaUuid);
-		return service.getAllActiveByArea(area).stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return service.getAllActiveByArea(area).stream().map(DistrictFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<DistrictReferenceDto> getAllActiveByRegion(String regionUuid) {
 
 		Region region = regionService.getByUuid(regionUuid);
-		return region.getDistricts().stream().filter(d -> !d.isArchived()).map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return region.getDistricts().stream().filter(d -> !d.isArchived()).map(DistrictFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -171,8 +174,8 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 			cq.where(filter);
 		}
 
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
+		if (CollectionUtils.isNotEmpty(sortProperties)) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
@@ -251,7 +254,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 
 	@Override
 	public List<DistrictDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -284,8 +287,8 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 	}
 
 	@Override
-	public DistrictDto save(@Valid DistrictDto dto) throws ValidationRuntimeException {
-		return save(dto, false);
+	public DistrictDto save(DistrictDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
+		return save(dtoToSave, allowMerge, Validations.importDistrictAlreadyExists);
 	}
 
 	@Override
@@ -323,6 +326,11 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		district = fillOrBuildEntity(dto, district, true);
 		service.ensurePersisted(district);
 		return toDto(district);
+	}
+
+	@Override
+	protected List<District> findDuplicates(DistrictDto dto) {
+		return service.getByName(dto.getName(), regionService.getByReferenceDto(dto.getRegion()), true);
 	}
 
 	@Override
@@ -390,10 +398,10 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 			return null;
 		}
 
-		DistrictReferenceDto dto = new DistrictReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
-		return dto;
+		return new DistrictReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
 	}
 
+	@Override
 	public DistrictDto toDto(District entity) {
 
 		if (entity == null) {
@@ -432,7 +440,8 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		return dto;
 	}
 
-	private District fillOrBuildEntity(@NotNull DistrictDto source, District target, boolean checkChangeDate) {
+	@Override
+	protected District fillOrBuildEntity(@NotNull DistrictDto source, District target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, District::new, checkChangeDate);
 

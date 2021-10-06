@@ -67,7 +67,9 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "CommunityFacade")
-public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, CommunityService> implements CommunityFacade {
+public class CommunityFacadeEjb
+	extends AbstractInfrastructureEjb<Community, CommunityDto, CommunityDto, CommunityReferenceDto, CommunityService, CommunityCriteria>
+	implements CommunityFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -263,8 +265,8 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 	}
 
 	@Override
-	public CommunityDto save(@Valid CommunityDto dto) throws ValidationRuntimeException {
-		return save(dto, false);
+	public CommunityDto save(CommunityDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
+		return save(dtoToSave, allowMerge, Validations.importCommunityAlreadyExists);
 	}
 
 	@Override
@@ -301,6 +303,11 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		community = fillOrBuildEntity(dto, community, true);
 		service.ensurePersisted(community);
 		return toDto(community);
+	}
+
+	@Override
+	protected List<Community> findDuplicates(CommunityDto dto) {
+		return service.getByName(dto.getName(), districtService.getByReferenceDto(dto.getDistrict()), true);
 	}
 
 	@Override
@@ -359,7 +366,8 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		return dto;
 	}
 
-	private CommunityDto toDto(Community entity) {
+	@Override
+	public CommunityDto toDto(Community entity) {
 
 		if (entity == null) {
 			return null;
@@ -377,8 +385,8 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		return dto;
 	}
 
-	private Community fillOrBuildEntity(@NotNull CommunityDto source, Community target, boolean checkChangeDate) {
-
+	@Override
+	protected Community fillOrBuildEntity(@NotNull CommunityDto source, Community target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Community::new, checkChangeDate);
 
 		target.setName(source.getName());
@@ -386,7 +394,6 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
-
 		return target;
 	}
 
