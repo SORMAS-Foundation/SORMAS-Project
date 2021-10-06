@@ -71,7 +71,9 @@ import de.symeda.sormas.backend.util.QueryHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "DistrictFacade")
-public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, DistrictDto, DistrictService, DistrictCriteria> implements DistrictFacade {
+public class DistrictFacadeEjb
+	extends AbstractInfrastructureEjb<District, DistrictDto, DistrictIndexDto, DistrictReferenceDto, DistrictService, DistrictCriteria>
+	implements DistrictFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -279,7 +281,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 	}
 
 	@Override
-	public DistrictDto save(@Valid DistrictDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
+	public DistrictDto save(DistrictDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
 		return save(dtoToSave, allowMerge, Validations.importDistrictAlreadyExists);
 	}
 

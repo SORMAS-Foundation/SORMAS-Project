@@ -66,7 +66,8 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "CommunityFacade")
-public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, CommunityDto, CommunityService, CommunityCriteria>
+public class CommunityFacadeEjb
+	extends AbstractInfrastructureEjb<Community, CommunityDto, CommunityDto, CommunityReferenceDto, CommunityService, CommunityCriteria>
 	implements CommunityFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -258,7 +259,7 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 	}
 
 	@Override
-	public CommunityDto save(@Valid CommunityDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
+	public CommunityDto save(CommunityDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
 		return save(dtoToSave, allowMerge, Validations.importCommunityAlreadyExists);
 	}
 

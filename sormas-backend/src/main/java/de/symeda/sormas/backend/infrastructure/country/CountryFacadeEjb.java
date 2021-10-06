@@ -70,7 +70,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 @Stateless(name = "CountryFacade")
-public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, CountryDto, CountryService, CountryCriteria> implements CountryFacade {
+public class CountryFacadeEjb
+	extends AbstractInfrastructureEjb<Country, CountryDto, CountryIndexDto, CountryReferenceDto, CountryService, CountryCriteria>
+	implements CountryFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -194,7 +196,7 @@ public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, Country
 	}
 
 	@Override
-	public CountryDto save(@Valid CountryDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
+	public CountryDto save(CountryDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
 		checkInfraDataLocked();
 
 		if (StringUtils.isBlank(dtoToSave.getIsoCode())) {
