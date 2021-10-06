@@ -37,8 +37,9 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.Validations;
@@ -48,7 +49,6 @@ import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionIndexDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -60,6 +60,7 @@ import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.area.AreaService;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -68,7 +69,6 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
-import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "RegionFacade")
 public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto, RegionIndexDto, RegionReferenceDto, RegionService, RegionCriteria>
@@ -335,37 +335,6 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 	@Override
 	public RegionDto save(RegionDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
 		return save(dtoToSave, allowMerge, Validations.importRegionAlreadyExists);
-	}
-
-	@Override
-	public RegionDto save(@Valid RegionDto dto, boolean allowMerge) throws ValidationRuntimeException {
-		checkInfraDataLocked();
-
-		Region region = getByUuid(dto.getUuid());
-
-		if (region != null && !userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to edit region.");
-		}
-
-		if (region == null && !userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to create region.");
-		}
-		if (region == null) {
-			List<Region> duplicates = service.getByName(dto.getName(), true);
-			if (!duplicates.isEmpty()) {
-				if (allowMerge) {
-					region = duplicates.get(0);
-					RegionDto dtoToMerge = getByUuid(region.getUuid());
-					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
-				} else {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importRegionAlreadyExists));
-				}
-			}
-		}
-
-		region = fillOrBuildEntity(dto, region, true);
-		service.ensurePersisted(region);
-		return toDto(region);
 	}
 
 	@Override

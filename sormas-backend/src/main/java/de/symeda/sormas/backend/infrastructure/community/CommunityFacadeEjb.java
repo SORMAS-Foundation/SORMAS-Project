@@ -37,20 +37,16 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -226,11 +222,6 @@ public class CommunityFacadeEjb
 	}
 
 	@Override
-	public CommunityDto getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
-	}
-
-	@Override
 	public List<CommunityDto> getByUuids(List<String> uuids) {
 		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
@@ -267,42 +258,6 @@ public class CommunityFacadeEjb
 	@Override
 	public CommunityDto save(CommunityDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
 		return save(dtoToSave, allowMerge, Validations.importCommunityAlreadyExists);
-	}
-
-	@Override
-	public CommunityDto save(@Valid CommunityDto dto, boolean allowMerge) throws ValidationRuntimeException {
-		checkInfraDataLocked();
-
-		if (dto.getDistrict() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
-		}
-
-		Community community = service.getByUuid(dto.getUuid());
-
-		if (community != null && !userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to edit community.");
-		}
-
-		if (community == null && !userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to create community.");
-		}
-
-		if (community == null) {
-			List<CommunityReferenceDto> duplicates = getByName(dto.getName(), dto.getDistrict(), true);
-			if (!duplicates.isEmpty()) {
-				if (allowMerge) {
-					String uuid = duplicates.get(0).getUuid();
-					community = service.getByUuid(uuid);
-					CommunityDto dtoToMerge = getByUuid(uuid);
-					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
-				} else {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCommunityAlreadyExists));
-				}
-			}
-		}
-		community = fillOrBuildEntity(dto, community, true);
-		service.ensurePersisted(community);
-		return toDto(community);
 	}
 
 	@Override

@@ -37,13 +37,12 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictCriteria;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
@@ -51,7 +50,6 @@ import de.symeda.sormas.api.infrastructure.district.DistrictFacade;
 import de.symeda.sormas.api.infrastructure.district.DistrictIndexDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -69,7 +67,6 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
-import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "DistrictFacade")
 public class DistrictFacadeEjb
@@ -150,11 +147,6 @@ public class DistrictFacadeEjb
 			region.get(Region.NAME),
 			region.get(Region.EXTERNAL_ID),
 			root.get(District.EXTERNAL_ID));
-	}
-
-	@Override
-	public DistrictDto getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
 	}
 
 	@Override
@@ -292,43 +284,6 @@ public class DistrictFacadeEjb
 	}
 
 	@Override
-	public DistrictDto save(@Valid DistrictDto dto, boolean allowMerge) throws ValidationRuntimeException {
-		checkInfraDataLocked();
-
-		if (dto.getRegion() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
-		}
-
-		District district = service.getByUuid(dto.getUuid());
-
-		if (district != null && !userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to edit district.");
-		}
-
-		if (district == null && !userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to create district.");
-		}
-
-		if (district == null) {
-			List<DistrictReferenceDto> duplicates = getByName(dto.getName(), dto.getRegion(), true);
-			if (!duplicates.isEmpty()) {
-				if (allowMerge) {
-					String uuid = duplicates.get(0).getUuid();
-					district = service.getByUuid(uuid);
-					DistrictDto dtoToMerge = getDistrictByUuid(uuid);
-					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
-				} else {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importDistrictAlreadyExists));
-				}
-			}
-		}
-
-		district = fillOrBuildEntity(dto, district, true);
-		service.ensurePersisted(district);
-		return toDto(district);
-	}
-
-	@Override
 	protected List<District> findDuplicates(DistrictDto dto) {
 		return service.getByName(dto.getName(), regionService.getByReferenceDto(dto.getRegion()), true);
 	}
@@ -451,7 +406,6 @@ public class DistrictFacadeEjb
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
-
 		return target;
 	}
 
