@@ -111,7 +111,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private boolean viaLims;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalId;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {

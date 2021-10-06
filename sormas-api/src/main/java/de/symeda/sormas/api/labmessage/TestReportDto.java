@@ -45,7 +45,7 @@ public class TestReportDto extends EntityDto {
 	private String testResultText;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String typingId;
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalId;
 
 	private PathogenTestReferenceDto pathogenTest;
