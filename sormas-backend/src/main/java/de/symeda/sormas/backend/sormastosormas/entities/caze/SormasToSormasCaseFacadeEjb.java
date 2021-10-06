@@ -63,7 +63,7 @@ import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasSha
 import de.symeda.sormas.backend.user.User;
 
 @Stateless(name = "SormasToSormasCaseFacade")
-public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface<Case, CaseDataDto, SormasToSormasCaseDto, ProcessedCaseData>
+public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface<Case, CaseDataDto, SormasToSormasCaseDto>
 	implements SormasToSormasCaseFacade {
 
 	public static final String CASE_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CASE_REQUEST_ENDPOINT;

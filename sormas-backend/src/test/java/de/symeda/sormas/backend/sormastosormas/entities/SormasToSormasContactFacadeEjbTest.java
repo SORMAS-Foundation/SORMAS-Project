@@ -300,7 +300,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 					.put(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 			.thenAnswer(invocation -> Response.noContent().build());
 
-		getSormasToSormasContactFacade().returnEntity(contact.getUuid(), options);
+		getSormasToSormasContactFacade().share(Collections.singletonList(contact.getUuid()), options);
 
 		// contact ownership should be lost
 		ContactDto sharedContact = getContactFacade().getContactByUuid(contact.getUuid());
@@ -353,7 +353,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 
 		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
 
-		getSormasToSormasContactFacade().saveReturnedEntity(encryptedData);
+		getSormasToSormasContactFacade().saveSharedEntities(encryptedData);
 
 		ContactDto returnedContact = getContactFacade().getContactByUuid(contact.getUuid());
 		assertThat(returnedContact.getQuarantine(), is(QuarantineType.HOTEL));

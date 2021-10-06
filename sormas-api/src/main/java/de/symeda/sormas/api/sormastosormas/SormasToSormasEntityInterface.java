@@ -39,10 +39,6 @@ public interface SormasToSormasEntityInterface {
 
 	void saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;
 
-	void returnEntity(String entityUuid, @Valid SormasToSormasOptionsDto options) throws SormasToSormasException;
-
-	void saveReturnedEntity(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;
-
 	void syncShares(ShareTreeCriteria criteria);
 
 	void saveSyncedEntity(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;

@@ -40,7 +40,7 @@ import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
-public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, SormasToSormasEventDto, SormasToSormasEventPreview> {
+public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, SormasToSormasEventDto, SormasToSormasEventPreview, Event> {
 
 	@EJB
 	private UserService userService;
@@ -52,7 +52,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 	private EventService eventService;
 
 	@Override
-	public ValidationErrors processReceivedData(SormasToSormasEventDto receivedEvent, EventDto existingEvent) {
+	public ValidationErrors processReceivedData(SormasToSormasEventDto receivedEvent, Event existingEvent) {
 		ValidationErrors uuidError = validateSharedUuid(receivedEvent.getEntity().getUuid());
 		if (uuidError.hasError()) {
 			return (uuidError);
@@ -77,14 +77,14 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 		return validationErrors;
 	}
 
-	private ValidationErrors processEventData(EventDto event, EventDto existingEvent) {
+	private ValidationErrors processEventData(EventDto event, Event existingEvent) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		dataProcessorHelper.updateReportingUser(event, existingEvent);
-		if (existingEvent == null) {
+		if (existingEvent == null || existingEvent.getResponsibleUser() == null) {
 			event.setResponsibleUser(userService.getCurrentUser().toReference());
 		} else {
-			event.setResponsibleUser(existingEvent.getResponsibleUser());
+			event.setResponsibleUser(existingEvent.getResponsibleUser().toReference());
 		}
 
 		LocationDto eventLocation = event.getEventLocation();

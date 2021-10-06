@@ -17,9 +17,6 @@ package de.symeda.sormas.backend.sormastosormas.entities;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -27,12 +24,7 @@ import javax.ejb.Stateless;
 
 import org.apache.commons.collections.CollectionUtils;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
@@ -42,11 +34,6 @@ import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
-import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
-import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
-import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.ValidationHelper;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessorHelper;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.ReceivedCaseProcessor;
@@ -72,18 +59,8 @@ public class ReceivedDataProcessor {
 	private ReceivedEventProcessor eventProcessor;
 	@EJB
 	private ReceivedEventParticipantProcessor eventParticipantProcessor;
-	@EJB
-	private CaseFacadeEjbLocal caseFacade;
-	@EJB
-	private ContactFacadeEjbLocal contactFacade;
-	@EJB
-	private SampleFacadeEjbLocal sampleFacade;
-	@EJB
-	private EventFacadeEjbLocal eventFacade;
-	@EJB
-	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 
-	public List<ValidationErrors> processReceivedData(SormasToSormasDto receivedData) {
+	public List<ValidationErrors> processReceivedData(SormasToSormasDto receivedData, ShareDataExistingEntities existingEntities) {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 
 		SormasToSormasOriginInfoDto originInfo = receivedData.getOriginInfo();
@@ -94,12 +71,8 @@ public class ReceivedDataProcessor {
 
 		List<SormasToSormasCaseDto> cases = receivedData.getCases();
 		if (CollectionUtils.isNotEmpty(cases)) {
-			Map<String, CaseDataDto> existingCases =
-				caseFacade.getByUuids(cases.stream().map(SormasToSormasCaseDto::getEntity).map(CaseDataDto::getUuid).collect(Collectors.toList()))
-					.stream()
-					.collect(Collectors.toMap(CaseDataDto::getUuid, Function.identity()));
 			cases.forEach(c -> {
-				ValidationErrors caseErrors = caseProcessor.processReceivedData(c, existingCases.get(c.getEntity().getUuid()));
+				ValidationErrors caseErrors = caseProcessor.processReceivedData(c, existingEntities.getCases().get(c.getEntity().getUuid()));
 
 				if (caseErrors.hasError()) {
 					validationErrors.add(new ValidationErrors(ValidationHelper.buildCaseValidationGroupName(c.getEntity()), caseErrors));
@@ -109,12 +82,8 @@ public class ReceivedDataProcessor {
 
 		List<SormasToSormasContactDto> contacts = receivedData.getContacts();
 		if (CollectionUtils.isNotEmpty(contacts)) {
-			Map<String, ContactDto> existingContacts = contactFacade
-				.getByUuids(contacts.stream().map(SormasToSormasContactDto::getEntity).map(ContactDto::getUuid).collect(Collectors.toList()))
-				.stream()
-				.collect(Collectors.toMap(ContactDto::getUuid, Function.identity()));
 			contacts.forEach(c -> {
-				ValidationErrors contactErrors = contactProcessor.processReceivedData(c, existingContacts.get(c.getEntity().getUuid()));
+				ValidationErrors contactErrors = contactProcessor.processReceivedData(c, existingEntities.getContacts().get(c.getEntity().getUuid()));
 
 				if (contactErrors.hasError()) {
 					validationErrors.add(new ValidationErrors(ValidationHelper.buildContactValidationGroupName(c.getEntity()), contactErrors));
@@ -124,12 +93,8 @@ public class ReceivedDataProcessor {
 
 		List<SormasToSormasEventDto> events = receivedData.getEvents();
 		if (CollectionUtils.isNotEmpty(events)) {
-			Map<String, EventDto> existingEvents =
-				eventFacade.getByUuids(events.stream().map(SormasToSormasEventDto::getEntity).map(EventDto::getUuid).collect(Collectors.toList()))
-					.stream()
-					.collect(Collectors.toMap(EventDto::getUuid, Function.identity()));
 			events.forEach(e -> {
-				ValidationErrors eventErrors = eventProcessor.processReceivedData(e, existingEvents.get(e.getEntity().getUuid()));
+				ValidationErrors eventErrors = eventProcessor.processReceivedData(e, existingEntities.getEvents().get(e.getEntity().getUuid()));
 
 				if (eventErrors.hasError()) {
 					validationErrors.add(new ValidationErrors(ValidationHelper.buildEventValidationGroupName(e.getEntity()), eventErrors));
@@ -139,18 +104,9 @@ public class ReceivedDataProcessor {
 
 		List<SormasToSormasEventParticipantDto> eventParticipants = receivedData.getEventParticipants();
 		if (CollectionUtils.isNotEmpty(eventParticipants)) {
-			Map<String, EventParticipantDto> existingEventParticipants =
-				eventParticipantFacade
-					.getByUuids(
-						eventParticipants.stream()
-							.map(SormasToSormasEventParticipantDto::getEntity)
-							.map(EventParticipantDto::getUuid)
-							.collect(Collectors.toList()))
-					.stream()
-					.collect(Collectors.toMap(EventParticipantDto::getUuid, Function.identity()));
 			eventParticipants.forEach(ep -> {
 				ValidationErrors eventParticipantErrors =
-					eventParticipantProcessor.processReceivedData(ep, existingEventParticipants.get(ep.getEntity().getUuid()));
+					eventParticipantProcessor.processReceivedData(ep, existingEntities.getEventParticipants().get(ep.getEntity().getUuid()));
 
 				if (eventParticipantErrors.hasError()) {
 					validationErrors
@@ -161,12 +117,8 @@ public class ReceivedDataProcessor {
 
 		List<SormasToSormasSampleDto> samples = receivedData.getSamples();
 		if (CollectionUtils.isNotEmpty(samples)) {
-			Map<String, SampleDto> existingSamples =
-				sampleFacade.getByUuids(samples.stream().map(SormasToSormasSampleDto::getEntity).map(SampleDto::getUuid).collect(Collectors.toList()))
-					.stream()
-					.collect(Collectors.toMap(SampleDto::getUuid, Function.identity()));
 			samples.forEach(s -> {
-				ValidationErrors contactErrors = sampleProcessor.processReceivedData(s, existingSamples.get(s.getEntity().getUuid()));
+				ValidationErrors contactErrors = sampleProcessor.processReceivedData(s, existingEntities.getSamples().get(s.getEntity().getUuid()));
 
 				if (contactErrors.hasError()) {
 					validationErrors.add(new ValidationErrors(ValidationHelper.buildSampleValidationGroupName(s.getEntity()), contactErrors));

@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -31,14 +33,20 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
@@ -48,8 +56,12 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareTree;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
+import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
+import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
@@ -58,15 +70,25 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantService;
+import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedData;
 import de.symeda.sormas.backend.sormastosormas.entities.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.entities.ReceivedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.ShareDataBuilder;
+import de.symeda.sormas.backend.sormastosormas.entities.ShareDataExistingEntities;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.entities.SyncDataDto;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
@@ -87,7 +109,7 @@ import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormas
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
-public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomainObject & SormasToSormasEntity, DTO extends EntityDto & de.symeda.sormas.api.utils.SormasToSormasEntityDto, S extends SormasToSormasEntityDto<DTO>, PROCESSED extends ProcessedData<DTO>>
+public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomainObject & SormasToSormasEntity, DTO extends EntityDto & de.symeda.sormas.api.utils.SormasToSormasEntityDto, S extends SormasToSormasEntityDto<DTO>>
 	implements SormasToSormasEntityInterface {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSormasToSormasInterface.class);
@@ -122,6 +144,16 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	private ReceivedDataProcessor receivedDataProcessor;
 	@EJB
 	private ProcessedDataPersister processedDataPersister;
+	@EJB
+	private CaseService caseService;
+	@EJB
+	private ContactService contactService;
+	@EJB
+	private EventService eventService;
+	@EJB
+	private EventParticipantService eventParticipantService;
+	@EJB
+	private SampleService sampleService;
 
 	private final String requestEndpoint;
 	private final String requestRejectEndpoint;
@@ -190,7 +222,16 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		sormasToSormasRestClient
 			.post(options.getOrganization().getId(), requestEndpoint, new ShareRequestData(requestUuid, previewsToSend, originInfo), null);
 
+		// remove shares to the origin
 		shareRequestInfoService.ensurePersisted(shareRequestInfo);
+
+		entities.forEach(e -> {
+			SormasToSormasOriginInfo entityOriginInfo = e.getSormasToSormasOriginInfo();
+			if (entityOriginInfo != null) {
+				entityOriginInfo.setOwnershipHandedOver(!options.isHandOverOwnership());
+				originInfoService.ensurePersisted(entityOriginInfo);
+			}
+		});
 	}
 
 	protected void ensureConsistentOptions(SormasToSormasOptionsDto options) {
@@ -260,7 +301,9 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		SormasToSormasEncryptedDataDto encryptedData =
 			sormasToSormasRestClient.post(organizationId, requestGetDataEndpoint, uuid, SormasToSormasEncryptedDataDto.class);
 
-		decryptAndPersist(encryptedData, data -> processedDataPersister.persistSharedData(data, shareRequest.getOriginInfo()));
+		decryptAndPersist(
+			encryptedData,
+			(data, existingData) -> processedDataPersister.persistSharedData(data, shareRequest.getOriginInfo(), existingData));
 
 		// notify the sender that the request has been accepted
 		sormasToSormasRestClient.post(organizationId, REQUEST_ACCEPTED_ENDPOINT, uuid, null);
@@ -316,59 +359,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	}
 
 	@Override
-	public void saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData)
-		throws SormasToSormasException, SormasToSormasValidationException {
-		decryptAndPersist(encryptedData, data -> processedDataPersister.persistSharedData(data, data.getOriginInfo()));
-	}
-
-	@Override
-	public void returnEntity(String entityUuid, SormasToSormasOptionsDto options) throws SormasToSormasException {
-
-		// TODO - return
-//		User currentUser = userService.getCurrentUser();
-//
-//		ADO entity = getEntityService().getByUuid(entityUuid);
-//
-//		SormasToSormasOriginInfo originInfo = entity.getSormasToSormasOriginInfo();
-//		options.setHandOverOwnership(true);
-//		if (originInfo.getContacts().size() > 0) {
-//			options.setWithAssociatedContacts(true);
-//		}
-//		if (originInfo.getSamples().size() > 0) {
-//			options.setWithSamples(true);
-//		}
-//		if (originInfo.getEventParticipants().size() > 0) {
-//			options.setWithEventParticipants(true);
-//		}
-//
-//		validateEntitiesBeforeShare(Collections.singletonList(entity), options.isHandOverOwnership());
-//
-//		ShareData<ADO, S> shareData = getShareDataBuilder().buildShareData(entity, currentUser, options);
-//
-//		sormasToSormasRestClient.put(options.getOrganization().getId(), saveEndpoint, Collections.singletonList(shareData.getDto()), null);
-//
-//		originInfo.setOwnershipHandedOver(false);
-//		originInfoService.persist(originInfo);
-//
-//		SormasToSormasShareInfo shareToOrigin =
-//			getShareInfoByEntityAndOrganization(Collections.singletonList(shareData.getEntity().getUuid()), originInfo.getOrganizationId());
-//		if (shareToOrigin != null) {
-//			shareToOrigin.setOwnershipHandedOver(true);
-//			shareInfoService.persist(shareToOrigin);
-//		}
-//
-//		try {
-//			shareInfoService.handleOwnershipChangeInExternalSurvTool(originInfo);
-//		} catch (ExternalSurveillanceToolException e) {
-//			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
-//
-//			throw SormasToSormasException.fromStringPropertyWithWarning(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool);
-//		}
-	}
-
-	@Override
-	public void saveReturnedEntity(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
-		decryptAndPersist(encryptedData, data -> processedDataPersister.persistReturnedData(data, data.getOriginInfo()));
+	public void saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
+		decryptAndPersist(encryptedData, (data, existingData) -> processedDataPersister.persistSharedData(data, data.getOriginInfo(), existingData));
 	}
 
 	@Override
@@ -409,7 +401,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		perisist(
 			syncData.getShareData(),
-			data -> processedDataPersister.persistSyncData(data, syncData.getShareData().getOriginInfo(), syncData.getCriteria()));
+			(data, existingData) -> processedDataPersister.persistSyncData(data, syncData.getShareData().getOriginInfo(), syncData.getCriteria()));
 	}
 
 	@Override
@@ -426,14 +418,12 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		return sormasToSormasEncryptionEjb.signAndEncrypt(shares, encryptedCriteria.getSenderId());
 	}
 
-	private interface Persister<PROCESSED> {
+	private interface Persister {
 
-		void call(PROCESSED data) throws SormasToSormasValidationException;
+		void call(SormasToSormasDto data, ShareDataExistingEntities existingEntities) throws SormasToSormasValidationException;
 	}
 
-	private void decryptAndPersist(
-		SormasToSormasEncryptedDataDto encryptedData,
-		Persister<SormasToSormasDto> persister)
+	private void decryptAndPersist(SormasToSormasEncryptedDataDto encryptedData, Persister persister)
 		throws SormasToSormasException, SormasToSormasValidationException {
 
 		SormasToSormasDto receivedData = sormasToSormasEncryptionEjb.decryptAndVerify(encryptedData, SormasToSormasDto.class);
@@ -441,15 +431,68 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		perisist(receivedData, persister);
 	}
 
-	private void perisist(@Valid SormasToSormasDto receivedData, Persister<SormasToSormasDto> persister)
-		throws SormasToSormasValidationException {
-		List<ValidationErrors> validationErrors = receivedDataProcessor.processReceivedData(receivedData);
+	private void perisist(@Valid SormasToSormasDto receivedData, Persister persister) throws SormasToSormasValidationException {
+		ShareDataExistingEntities existingEntities = loadExistingEntities(receivedData);
+		List<ValidationErrors> validationErrors = receivedDataProcessor.processReceivedData(receivedData, existingEntities);
 
 		if (validationErrors.size() > 0) {
 			throw new SormasToSormasValidationException(validationErrors);
 		}
 
-		persister.call(receivedData);
+		persister.call(receivedData, existingEntities);
+	}
+
+	private ShareDataExistingEntities loadExistingEntities(SormasToSormasDto receivedData) {
+		Map<String, Case> existingCases = Collections.emptyMap();
+		if (CollectionUtils.isNotEmpty(receivedData.getCases())) {
+			existingCases = caseService
+				.getByUuids(
+					receivedData.getCases().stream().map(SormasToSormasCaseDto::getEntity).map(CaseDataDto::getUuid).collect(Collectors.toList()))
+				.stream()
+				.collect(Collectors.toMap(Case::getUuid, Function.identity()));
+		}
+
+		Map<String, Contact> existingContacts = Collections.emptyMap();
+		if (CollectionUtils.isNotEmpty(receivedData.getContacts())) {
+			existingContacts = contactService.getByUuids(
+				receivedData.getContacts().stream().map(SormasToSormasContactDto::getEntity).map(ContactDto::getUuid).collect(Collectors.toList()))
+				.stream()
+				.collect(Collectors.toMap(Contact::getUuid, Function.identity()));
+		}
+
+		Map<String, Event> existingEvents = Collections.emptyMap();
+		if (CollectionUtils.isNotEmpty(receivedData.getEvents())) {
+			existingEvents = eventService
+				.getByUuids(
+					receivedData.getEvents().stream().map(SormasToSormasEventDto::getEntity).map(EventDto::getUuid).collect(Collectors.toList()))
+				.stream()
+				.collect(Collectors.toMap(Event::getUuid, Function.identity()));
+		}
+
+		Map<String, EventParticipant> existingEventParticipants = Collections.emptyMap();
+		if (CollectionUtils.isNotEmpty(receivedData.getEventParticipants())) {
+			existingEventParticipants =
+				eventParticipantService
+					.getByUuids(
+						receivedData.getEventParticipants()
+							.stream()
+							.map(SormasToSormasEventParticipantDto::getEntity)
+							.map(EventParticipantDto::getUuid)
+							.collect(Collectors.toList()))
+					.stream()
+					.collect(Collectors.toMap(EventParticipant::getUuid, Function.identity()));
+		}
+
+		Map<String, Sample> existingSamples = Collections.emptyMap();
+		if (CollectionUtils.isNotEmpty(receivedData.getSamples())) {
+			existingSamples = sampleService
+				.getByUuids(
+					receivedData.getSamples().stream().map(SormasToSormasSampleDto::getEntity).map(SampleDto::getUuid).collect(Collectors.toList()))
+				.stream()
+				.collect(Collectors.toMap(Sample::getUuid, Function.identity()));
+		}
+
+		return new ShareDataExistingEntities(existingCases, existingContacts, existingEvents, existingEventParticipants, existingSamples);
 	}
 
 	private ValidationErrorGroup buildEntityValidationGroupName(HasUuid entity) {
@@ -584,9 +627,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 						reShares));
 			} catch (SormasToSormasException e) {
 				// stop iteration and fail in case of error
-				throw new RuntimeException(
-					"Failed to get all shares form server [" + shareInfo.getOrganizationId() + "]",
-					e);
+				throw new RuntimeException("Failed to get all shares form server [" + shareInfo.getOrganizationId() + "]", e);
 			}
 		});
 
@@ -626,11 +667,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 				noForward = noForward || s.getOrganizationId().equals(originInfo.getOrganizationId());
 			}
 
-			walkReShare.walk(
-				entity,
-				s,
-				new ShareTreeCriteria(criteria.getEntityUuid(), criteria.getExceptedOrganizationId(), true),
-				noForward);
+			walkReShare.walk(entity, s, new ShareTreeCriteria(criteria.getEntityUuid(), criteria.getExceptedOrganizationId(), true), noForward);
 		}
 	}
 

@@ -58,7 +58,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Stateless(name = "SormasToSormasContactFacade")
 public class SormasToSormasContactFacadeEjb
-	extends AbstractSormasToSormasInterface<Contact, ContactDto, SormasToSormasContactDto, ProcessedContactData>
+	extends AbstractSormasToSormasInterface<Contact, ContactDto, SormasToSormasContactDto>
 	implements SormasToSormasContactFacade {
 
 	private static final String CONTACT_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CONTACT_REQUEST_ENDPOINT;

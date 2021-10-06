@@ -41,7 +41,7 @@ import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcess
 
 @Stateless
 @LocalBean
-public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto, SormasToSormasCaseDto, SormasToSormasCasePreview> {
+public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto, SormasToSormasCaseDto, SormasToSormasCasePreview, Case> {
 
 	@EJB
 	private ReceivedDataProcessorHelper dataProcessorHelper;
@@ -51,7 +51,7 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 	private CaseService caseService;
 
 	@Override
-	public ValidationErrors processReceivedData(SormasToSormasCaseDto receivedCase, CaseDataDto existingCaseData) {
+	public ValidationErrors processReceivedData(SormasToSormasCaseDto receivedCase, Case existingCase) {
 
 		CaseDataDto caze = receivedCase.getEntity();
 		PersonDto person = receivedCase.getPerson();
@@ -61,7 +61,7 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 			return uuidError;
 		}
 
-		return processCaseData(caze, person, existingCaseData);
+		return processCaseData(caze, person, existingCase);
 	}
 
 	@Override
@@ -105,14 +105,14 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 		return validationErrors;
 	}
 
-	private ValidationErrors processCaseData(CaseDataDto caze, PersonDto person, CaseDataDto existingCaseData) {
+	private ValidationErrors processCaseData(CaseDataDto caze, PersonDto person, Case existingCase) {
 		ValidationErrors caseValidationErrors = new ValidationErrors();
 
 		ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(person);
 		caseValidationErrors.addAll(personValidationErrors);
 
 		caze.setPerson(person.toReference());
-		dataProcessorHelper.updateReportingUser(caze, existingCaseData);
+		dataProcessorHelper.updateReportingUser(caze, existingCase);
 
 		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
 			infraValidator.validateInfrastructure(caze);

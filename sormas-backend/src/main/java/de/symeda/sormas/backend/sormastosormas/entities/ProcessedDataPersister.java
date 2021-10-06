@@ -63,78 +63,42 @@ public class ProcessedDataPersister {
 	@EJB
 	private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
 
-	public void persistSharedData(SormasToSormasDto processedData, SormasToSormasOriginInfoDto originInfo) throws SormasToSormasValidationException {
-
-		List<SormasToSormasCaseDto> cases = processedData.getCases();
-		if (CollectionUtils.isNotEmpty(cases)) {
-			for (SormasToSormasCaseDto c : cases) {
-				caseDataPersister.persistSharedData(c, originInfo);
-			}
-		}
-
-		List<SormasToSormasContactDto> contacts = processedData.getContacts();
-		if (CollectionUtils.isNotEmpty(contacts)) {
-			for (SormasToSormasContactDto c : contacts) {
-				contactDataPersister.persistSharedData(c, originInfo);
-			}
-		}
-
-		List<SormasToSormasEventDto> events = processedData.getEvents();
-		if (CollectionUtils.isNotEmpty(events)) {
-			for (SormasToSormasEventDto e : events) {
-				eventDataPersister.persistSharedData(e, originInfo);
-			}
-		}
-
-		List<SormasToSormasEventParticipantDto> eventParticipants = processedData.getEventParticipants();
-		if (CollectionUtils.isNotEmpty(eventParticipants)) {
-			for (SormasToSormasEventParticipantDto ep : eventParticipants) {
-				eventParticipantDataPersister.persistSharedData(ep, originInfo);
-			}
-		}
-
-		List<SormasToSormasSampleDto> samples = processedData.getSamples();
-		if (CollectionUtils.isNotEmpty(samples)) {
-			for (SormasToSormasSampleDto s : samples) {
-				sampleDataPersister.persistSharedData(s, originInfo);
-			}
-		}
-	}
-
-	public void persistReturnedData(SormasToSormasDto processedData, SormasToSormasOriginInfoDto originInfoDto)
+	public void persistSharedData(SormasToSormasDto processedData, SormasToSormasOriginInfoDto originInfo, ShareDataExistingEntities existingEntities)
 		throws SormasToSormasValidationException {
+
 		List<SormasToSormasCaseDto> cases = processedData.getCases();
 		if (CollectionUtils.isNotEmpty(cases)) {
 			for (SormasToSormasCaseDto c : cases) {
-				caseDataPersister.persistReturnedData(c, originInfoDto);
+				caseDataPersister.persistSharedData(c, originInfo, existingEntities.getCases().get(c.getEntity().getUuid()));
 			}
 		}
 
 		List<SormasToSormasContactDto> contacts = processedData.getContacts();
 		if (CollectionUtils.isNotEmpty(contacts)) {
 			for (SormasToSormasContactDto c : contacts) {
-				contactDataPersister.persistReturnedData(c, originInfoDto);
+				contactDataPersister.persistSharedData(c, originInfo, existingEntities.getContacts().get(c.getEntity().getUuid()));
 			}
 		}
 
 		List<SormasToSormasEventDto> events = processedData.getEvents();
 		if (CollectionUtils.isNotEmpty(events)) {
 			for (SormasToSormasEventDto e : events) {
-				eventDataPersister.persistReturnedData(e, originInfoDto);
+				eventDataPersister.persistSharedData(e, originInfo, existingEntities.getEvents().get(e.getEntity().getUuid()));
 			}
 		}
 
 		List<SormasToSormasEventParticipantDto> eventParticipants = processedData.getEventParticipants();
 		if (CollectionUtils.isNotEmpty(eventParticipants)) {
 			for (SormasToSormasEventParticipantDto ep : eventParticipants) {
-				eventParticipantDataPersister.persistReturnedData(ep, originInfoDto);
+				eventParticipantDataPersister
+					.persistSharedData(ep, originInfo, existingEntities.getEventParticipants().get(ep.getEntity().getUuid()));
 			}
 		}
 
 		List<SormasToSormasSampleDto> samples = processedData.getSamples();
 		if (CollectionUtils.isNotEmpty(samples)) {
 			for (SormasToSormasSampleDto s : samples) {
-				sampleDataPersister.persistReturnedData(s, originInfoDto);
+				sampleDataPersister.persistSharedData(s, originInfo, existingEntities.getSamples().get(s.getEntity().getUuid()));
 			}
 		}
 	}
@@ -144,35 +108,35 @@ public class ProcessedDataPersister {
 		List<SormasToSormasCaseDto> cases = processedData.getCases();
 		if (CollectionUtils.isNotEmpty(cases)) {
 			for (SormasToSormasCaseDto c : cases) {
-				caseDataPersister.persistSyncData(c, originInfoDto, shareTreeCriteria);
+				caseDataPersister.persistSyncData(c, originInfoDto);
 			}
 		}
 
 		List<SormasToSormasContactDto> contacts = processedData.getContacts();
 		if (CollectionUtils.isNotEmpty(contacts)) {
 			for (SormasToSormasContactDto c : contacts) {
-				contactDataPersister.persistSyncData(c, originInfoDto, shareTreeCriteria);
+				contactDataPersister.persistSyncData(c, originInfoDto);
 			}
 		}
 
 		List<SormasToSormasEventDto> events = processedData.getEvents();
 		if (CollectionUtils.isNotEmpty(events)) {
 			for (SormasToSormasEventDto e : events) {
-				eventDataPersister.persistSyncData(e, originInfoDto, shareTreeCriteria);
+				eventDataPersister.persistSyncData(e, originInfoDto);
 			}
 		}
 
 		List<SormasToSormasEventParticipantDto> eventParticipants = processedData.getEventParticipants();
 		if (CollectionUtils.isNotEmpty(eventParticipants)) {
 			for (SormasToSormasEventParticipantDto ep : eventParticipants) {
-				eventParticipantDataPersister.persistSyncData(ep, originInfoDto, shareTreeCriteria);
+				eventParticipantDataPersister.persistSyncData(ep, originInfoDto);
 			}
 		}
 
 		List<SormasToSormasSampleDto> samples = processedData.getSamples();
 		if (CollectionUtils.isNotEmpty(samples)) {
 			for (SormasToSormasSampleDto s : samples) {
-				sampleDataPersister.persistSyncData(s, originInfoDto, shareTreeCriteria);
+				sampleDataPersister.persistSyncData(s, originInfoDto);
 			}
 		}
 

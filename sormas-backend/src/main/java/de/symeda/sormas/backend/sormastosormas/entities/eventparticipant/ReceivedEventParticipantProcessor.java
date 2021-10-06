@@ -39,7 +39,8 @@ import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcess
 @Stateless
 @LocalBean
 public class ReceivedEventParticipantProcessor
-	implements ReceivedDataProcessor<EventParticipantDto, SormasToSormasEventParticipantDto, SormasToSormasEventParticipantPreview> {
+	implements
+	ReceivedDataProcessor<EventParticipantDto, SormasToSormasEventParticipantDto, SormasToSormasEventParticipantPreview, EventParticipant> {
 
 	@EJB
 	private ReceivedDataProcessorHelper dataProcessorHelper;
@@ -49,7 +50,7 @@ public class ReceivedEventParticipantProcessor
 	private EventParticipantService eventParticipantService;
 
 	@Override
-	public ValidationErrors processReceivedData(SormasToSormasEventParticipantDto receivedData, EventParticipantDto existingData) {
+	public ValidationErrors processReceivedData(SormasToSormasEventParticipantDto receivedData, EventParticipant existingData) {
 		EventParticipantDto eventParticipant = receivedData.getEntity();
 
 		ValidationErrors uuidError = validateSharedUuid(eventParticipant.getUuid());

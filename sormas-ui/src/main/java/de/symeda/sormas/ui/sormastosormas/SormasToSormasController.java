@@ -99,27 +99,6 @@ public class SormasToSormasController {
 			SormasToSormasOptionsForm.forEvent(allShares));
 	}
 
-	public void returnCase(CaseDataDto caze) {
-		handleReturn(
-			options -> FacadeProvider.getSormasToSormasCaseFacade().returnEntity(caze.getUuid(), options),
-			SormasToSormasOptionsForm.forCase(null),
-			caze.getSormasToSormasOriginInfo());
-	}
-
-	public void returnContact(ContactDto contact) {
-		handleReturn(
-			(options) -> FacadeProvider.getSormasToSormasContactFacade().returnEntity(contact.getUuid(), options),
-			SormasToSormasOptionsForm.forContact(null),
-			contact.getSormasToSormasOriginInfo());
-	}
-
-	public void returnEvent(EventDto event) {
-		handleReturn(
-			(options) -> FacadeProvider.getSormasToSormasEventFacade().returnEntity(event.getUuid(), options),
-			SormasToSormasOptionsForm.forEvent(null),
-			event.getSormasToSormasOriginInfo());
-	}
-
 	public void shareLabMessage(LabMessageDto labMessage, Runnable callback) {
 		handleShareWithOptions((options) -> {
 			FacadeProvider.getSormasToSormasLabMessageFacade().sendLabMessages(Collections.singletonList(labMessage.getUuid()), options);

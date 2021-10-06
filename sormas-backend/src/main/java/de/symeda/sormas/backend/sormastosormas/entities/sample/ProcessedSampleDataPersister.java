@@ -23,18 +23,16 @@ import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleVal
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
@@ -42,7 +40,7 @@ import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasSha
 
 @Stateless
 @LocalBean
-public class ProcessedSampleDataPersister implements ProcessedDataPersister<SormasToSormasSampleDto> {
+public class ProcessedSampleDataPersister extends ProcessedDataPersister<SampleDto, SormasToSormasSampleDto, Sample> {
 
 	@EJB
 	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
@@ -54,45 +52,22 @@ public class ProcessedSampleDataPersister implements ProcessedDataPersister<Sorm
 	private SormasToSormasShareInfoService shareInfoService;
 
 	@Override
-	@Transactional(rollbackOn = {
-		Exception.class })
-	public void persistSharedData(SormasToSormasSampleDto processedData, SormasToSormasOriginInfoDto originInfo)
-		throws SormasToSormasValidationException {
-		processedData.getEntity().setSormasToSormasOriginInfo(originInfo);
+	protected SormasToSormasShareInfoService getShareInfoService() {
+		return shareInfoService;
+	}
 
+	@Override
+	public void persistSharedData(SormasToSormasSampleDto processedData, Sample existingSample) throws SormasToSormasValidationException {
 		persistSample(processedData);
 	}
 
 	@Override
-	@Transactional(rollbackOn = {
-		Exception.class })
-	public void persistReturnedData(SormasToSormasSampleDto processedData, SormasToSormasOriginInfoDto originInfo)
-		throws SormasToSormasValidationException {
-		SampleDto sample = processedData.getEntity();
-
-		SormasToSormasShareInfo sampleShareInfo = shareInfoService.getBySampleAndOrganization(sample.getUuid(), originInfo.getOrganizationId());
-		if (sampleShareInfo != null) {
-			sampleShareInfo.setOwnershipHandedOver(false);
-			shareInfoService.persist(sampleShareInfo);
-		} else {
-			sample.setSormasToSormasOriginInfo(originInfo);
-		}
-
-		persistSample(processedData);
+	protected SormasToSormasShareInfo getShareInfoByEntityAndOrganization(SampleDto entity, String organizationId) {
+		return shareInfoService.getBySampleAndOrganization(entity.getUuid(), organizationId);
 	}
 
 	@Override
-	@Transactional(rollbackOn = {
-		Exception.class })
-	public void persistSyncData(SormasToSormasSampleDto processedData, SormasToSormasOriginInfoDto originInfo, ShareTreeCriteria shareTreeCriteria)
-		throws SormasToSormasValidationException {
-		SampleDto sample = processedData.getEntity();
-		SormasToSormasShareInfo sampleShareInfo = shareInfoService.getBySampleAndOrganization(sample.getUuid(), originInfo.getOrganizationId());
-
-		if (sampleShareInfo == null) {
-			sample.setSormasToSormasOriginInfo(originInfo);
-		}
-
+	public void persistSyncData(SormasToSormasSampleDto processedData) throws SormasToSormasValidationException {
 		persistSample(processedData);
 	}
 

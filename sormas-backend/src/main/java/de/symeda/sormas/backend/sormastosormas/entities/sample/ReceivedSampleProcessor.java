@@ -38,7 +38,7 @@ import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcess
 
 @Stateless
 @LocalBean
-public class ReceivedSampleProcessor implements ReceivedDataProcessor<SampleDto, SormasToSormasSampleDto, Void> {
+public class ReceivedSampleProcessor implements ReceivedDataProcessor<SampleDto, SormasToSormasSampleDto, Void, Sample> {
 
 	@EJB
 	private ReceivedDataProcessorHelper dataProcessorHelper;
@@ -48,7 +48,7 @@ public class ReceivedSampleProcessor implements ReceivedDataProcessor<SampleDto,
 	private SampleService sampleService;
 
 	@Override
-	public ValidationErrors processReceivedData(SormasToSormasSampleDto sharedData, SampleDto existingData) {
+	public ValidationErrors processReceivedData(SormasToSormasSampleDto sharedData, Sample existingData) {
 		SampleDto sample = sharedData.getEntity();
 
 		ValidationErrors uuidError = validateSharedUuid(sample.getUuid());

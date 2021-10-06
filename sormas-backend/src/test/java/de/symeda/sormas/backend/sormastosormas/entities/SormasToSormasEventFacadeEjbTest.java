@@ -416,12 +416,12 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		Mockito
 			.when(
 				MockProducer.getSormasToSormasClient()
-					.put(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 			.thenAnswer(invocation -> Response.noContent().build());
 
-		getSormasToSormasEventFacade().returnEntity(event.getUuid(), options);
+		getSormasToSormasEventFacade().share(Collections.singletonList(event.getUuid()), options);
 
-		// contact ownership should be lost
+		// event ownership should be lost
 		EventDto sharedEvent = getEventFacade().getEventByUuid(event.getUuid(), false);
 		assertThat(sharedEvent.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
 
@@ -472,7 +472,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
 		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
 
-		getSormasToSormasEventFacade().saveReturnedEntity(encryptedData);
+		getSormasToSormasEventFacade().saveSharedEntities(encryptedData);
 
 		EventDto returnedEvent = getEventFacade().getEventByUuid(event.getUuid(), false);
 		assertThat(returnedEvent.getEventDesc(), is("Test updated description"));

@@ -31,7 +31,6 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
@@ -40,19 +39,17 @@ import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcess
 
 @Stateless
 @LocalBean
-public class ReceivedContactProcessor implements ReceivedDataProcessor<ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview> {
+public class ReceivedContactProcessor implements ReceivedDataProcessor<ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview, Contact> {
 
 	@EJB
 	private ReceivedDataProcessorHelper dataProcessorHelper;
 	@EJB
 	private ContactService contactService;
 	@EJB
-	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
-	@EJB
 	private InfrastructureValidator infraValidator;
 
 	@Override
-	public ValidationErrors processReceivedData(SormasToSormasContactDto receivedContact, ContactDto existingContact) {
+	public ValidationErrors processReceivedData(SormasToSormasContactDto receivedContact, Contact existingContact) {
 
 		ContactDto contact = receivedContact.getEntity();
 		PersonDto person = receivedContact.getPerson();
@@ -75,7 +72,7 @@ public class ReceivedContactProcessor implements ReceivedDataProcessor<ContactDt
 		return processContactPreview(preview);
 	}
 
-	private ValidationErrors processContactData(ContactDto contact, PersonDto person, ContactDto existingContact) {
+	private ValidationErrors processContactData(ContactDto contact, PersonDto person, Contact existingContact) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(person);

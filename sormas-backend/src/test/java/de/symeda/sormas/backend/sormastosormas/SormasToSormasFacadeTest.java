@@ -33,6 +33,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -90,6 +92,14 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
 		mockDefaultServerAccess();
+
+		FeatureConfigurationIndexDto featureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, isAcceptRejectFeatureEnabled(), null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT);
+	}
+
+	protected boolean isAcceptRejectFeatureEnabled() {
+		return false;
 	}
 
 	protected SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(String serverId, boolean ownershipHandedOver) {
