@@ -77,15 +77,31 @@ jobs:
         working-directory: ./sormas-app
         run: ./gradlew :app:clean :app:assembleDebug :app:test :app:jacocoUnitTestReport
 
-      - name: Create Android image
-        run: $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-AVD_${{ matrix.api-level }};default;x86"
+      - name: AVD cache
+        uses: actions/cache@v2
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ matrix.api-level }}
       
-      - name: Create the AVD
-        run: $ANDROID_HOME/tools/bin/avdmanager create avd -n AVD_${{ matrix.api-level }} -k 'system-images;android-${{ matrix.api-level }};default;x86'
-        
-      - name: Start the emulator
-        run: emulator -avd AVD_${{ matrix.api-level }} -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+      - name: Create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          script: echo "Generated AVD snapshot for caching."
 
       - name: Run integration tests
-        working-directory: ./sormas-app
-        run: ./gradlew connectedAndroidTest
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          working-directory: ./sormas-app
+          script: ./gradlew connectedAndroidTest
