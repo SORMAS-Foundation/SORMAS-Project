@@ -77,8 +77,8 @@ jobs:
         working-directory: ./sormas-app
         run: ./gradlew :app:clean :app:assembleDebug :app:test :app:jacocoUnitTestReport
       
-      - name: Create the emulator
-        run: android create avd -n AVD_${{ matrix.api-level }} -t ${{ matrix.api-level }}
+      - name: Create the AVD
+        run: android create avd -n AVD_${{ matrix.api-level }} -k 'system-images;android-${{ matrix.api-level }};x86'
         
       - name: Start the emulator
         run: emulator -avd AVD_${{ matrix.api-level }} -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
