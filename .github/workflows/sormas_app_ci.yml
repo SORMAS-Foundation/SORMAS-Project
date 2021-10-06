@@ -78,7 +78,7 @@ jobs:
         run: ./gradlew :app:clean :app:assembleDebug :app:test :app:jacocoUnitTestReport
       
       - name: Create the AVD
-        run: avdmanager create avd -n AVD_${{ matrix.api-level }} -k 'system-images;android-${{ matrix.api-level }};default;x86'
+        run: $ANDROID_HOME/tools/bin/avdmanager create avd -n AVD_${{ matrix.api-level }} -k 'system-images;android-${{ matrix.api-level }};default;x86'
         
       - name: Start the emulator
         run: emulator -avd AVD_${{ matrix.api-level }} -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
