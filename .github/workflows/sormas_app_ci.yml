@@ -25,7 +25,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        api-level: [24, 25, 26, 27, 28]
+        api-level: [24, 25, 26, 27, 28, 29]
 
     steps:
       - name: Checkout repository (with token)
@@ -77,8 +77,11 @@ jobs:
         working-directory: ./sormas-app
         run: ./gradlew :app:clean :app:assembleDebug :app:test :app:jacocoUnitTestReport
       
-      - name: Start emulator
-        run: emulator -list-avds
+      - name: Create the emulator
+        run: android create avd -n AVD_${{ matrix.api-level }} -t ${{ matrix.api-level }}
+        
+      - name: Start the emulator
+        run: emulator -avd AVD_${{ matrix.api-level }} -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
 
       - name: Run integration tests
         uses: reactivecircus/android-emulator-runner@v2
