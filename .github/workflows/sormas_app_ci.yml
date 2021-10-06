@@ -117,7 +117,7 @@ jobs:
         # The memory footprint of newer android versions (>= 29) and the limitations of the GitHub provided machines is usually resulting in timeout when starting the emulator
         api-level: [24, 25, 26, 27, 28, 29]
     steps:
-     - name: Checkout repository (with token)
+      - name: Checkout repository (with token)
         # Check if PR results from the repository: if yes, we have access to the secrets.
         # The token is only needed for privileged actions from within the repo, so no need
         # to make it available on 3rd party PRs
