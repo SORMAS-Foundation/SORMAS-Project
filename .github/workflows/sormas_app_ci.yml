@@ -84,12 +84,5 @@ jobs:
         run: emulator -avd AVD_${{ matrix.api-level }} -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
 
       - name: Run integration tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: true
-          working-directory: ./sormas-app
-          script: ./gradlew connectedAndroidTest
-          
+        working-directory: ./sormas-app
+        uses: ./gradlew connectedAndroidTest
