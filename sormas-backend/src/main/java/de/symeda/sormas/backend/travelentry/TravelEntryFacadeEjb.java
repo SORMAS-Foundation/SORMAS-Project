@@ -187,7 +187,7 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	}
 
 	@Override
-	public TravelEntryDto save(TravelEntryDto dto) {
+	public TravelEntryDto save(TravelEntryDto dto, boolean allowMerge) {
 		TravelEntry existingTravelEntry = dto.getUuid() != null ? travelEntryService.getByUuid(dto.getUuid()) : null;
 		TravelEntryDto existingDto = toDto(existingTravelEntry);
 
@@ -200,6 +200,11 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		travelEntryService.ensurePersisted(existingTravelEntry);
 
 		return convertToDto(existingTravelEntry, pseudonymizer);
+	}
+
+	@Override
+	public TravelEntryDto save(TravelEntryDto dto) {
+		return save(dto, false);
 	}
 
 	public TravelEntryDto convertToDto(TravelEntry source, Pseudonymizer pseudonymizer) {

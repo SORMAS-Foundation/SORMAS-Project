@@ -36,8 +36,6 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		return save(dtoToSave, false);
 	}
 
-	public abstract DTO save(@Valid DTO dtoToSave, boolean allowMerge);
-
 	protected DTO persistEntity(DTO dto, ADO entityToPersist) {
 		entityToPersist = fillOrBuildEntity(dto, entityToPersist, true);
 		service.ensurePersisted(entityToPersist);
