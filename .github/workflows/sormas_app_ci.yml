@@ -78,7 +78,7 @@ jobs:
         run: ./gradlew :app:clean :app:assembleDebug :app:test :app:jacocoUnitTestReport
 
       - name: Create Android image
-        run: sdkmanager "system-images;android-AVD_${{ matrix.api-level }};default;x86"
+        run: $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-AVD_${{ matrix.api-level }};default;x86"
       
       - name: Create the AVD
         run: $ANDROID_HOME/tools/bin/avdmanager create avd -n AVD_${{ matrix.api-level }} -k 'system-images;android-${{ matrix.api-level }};default;x86'
