@@ -246,7 +246,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	}
 
 	@Override
-	public ImmunizationDto save(ImmunizationDto dto) {
+	public ImmunizationDto save(ImmunizationDto dto, boolean allowMerge) {
 		Immunization existingImmunization = immunizationService.getByUuid(dto.getUuid());
 		ImmunizationDto existingDto = toDto(existingImmunization);
 
@@ -262,6 +262,11 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		updateVaccinationStatuses(existingImmunization, existingDto);
 
 		return convertToDto(existingImmunization, pseudonymizer);
+	}
+
+	@Override
+	public ImmunizationDto save(ImmunizationDto dto) {
+		return save(dto, false);
 	}
 
 	public ImmunizationDto convertToDto(Immunization source, Pseudonymizer pseudonymizer) {
