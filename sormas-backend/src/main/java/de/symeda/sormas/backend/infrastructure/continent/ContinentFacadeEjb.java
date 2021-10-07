@@ -60,7 +60,8 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "ContinentFacade")
-public class ContinentFacadeEjb extends AbstractInfrastructureEjb<Continent, ContinentDto, ContinentService, ContinentCriteria>
+public class ContinentFacadeEjb
+	extends AbstractInfrastructureEjb<Continent, ContinentDto, ContinentIndexDto, ContinentReferenceDto, ContinentService, ContinentCriteria>
 	implements ContinentFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -185,7 +186,7 @@ public class ContinentFacadeEjb extends AbstractInfrastructureEjb<Continent, Con
 	}
 
 	@Override
-	public ContinentDto save(@Valid ContinentDto dtoToSave, boolean allowMerge) {
+	public ContinentDto save(ContinentDto dtoToSave, boolean allowMerge) {
 		return save(dtoToSave, allowMerge, Validations.importContinentAlreadyExists);
 	}
 

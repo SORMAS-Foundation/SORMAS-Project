@@ -71,7 +71,8 @@ import de.symeda.sormas.backend.util.QueryHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "RegionFacade")
-public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto, RegionService, RegionCriteria> implements RegionFacade {
+public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto, RegionIndexDto, RegionReferenceDto, RegionService, RegionCriteria>
+	implements RegionFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -332,7 +333,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 	}
 
 	@Override
-	public RegionDto save(@Valid RegionDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
+	public RegionDto save(RegionDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
 		return save(dtoToSave, allowMerge, Validations.importRegionAlreadyExists);
 	}
 
