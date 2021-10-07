@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.sormastosormas.share;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
@@ -89,6 +91,8 @@ public class ShareDataBuilderHelper {
 
 		pseudonymiePerson(personDto, pseudonymizedPersonalData, pseudonymizedSensitiveData);
 
+		resetIgnoredProperties(personDto, personDto.getClass());
+
 		return personDto;
 	}
 
@@ -106,6 +110,8 @@ public class ShareDataBuilderHelper {
 		contactDto.setContactOfficer(null);
 		contactDto.setResultingCaseUser(null);
 		contactDto.setSormasToSormasOriginInfo(null);
+
+		resetIgnoredProperties(contactDto, ContactDto.class);
 
 		return contactDto;
 	}
@@ -133,6 +139,7 @@ public class ShareDataBuilderHelper {
 		return samples.stream().map(s -> {
 			SampleDto sampleDto = sampleFacade.convertToDto(s, pseudonymizer);
 			sampleDto.setSormasToSormasOriginInfo(null);
+			resetIgnoredProperties(sampleDto, SampleDto.class);
 
 			return new SormasToSormasSampleDto(
 				sampleDto,
@@ -208,5 +215,18 @@ public class ShareDataBuilderHelper {
 
 		return options;
 
+	}
+
+	public void resetIgnoredProperties(Object dto, Class<?> dtoType) {
+		for (Field field : dtoType.getDeclaredFields()) {
+			if (field.isAnnotationPresent(S2SIgnoreProperty.class)) {
+				//TODO: check if configuration is deactivated
+				try {
+					field.set(dto, null);
+				} catch (IllegalAccessException e) {
+					//TODO: add logger
+				}
+			}
+		}
 	}
 }

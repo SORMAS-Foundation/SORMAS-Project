@@ -151,12 +151,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 		PersonDto personDto = dataBuilderHelper.getPersonDto(caze.getPerson(), pseudonymizer, pseudonymizePersonalData, pseudonymizeSensitiveData);
 		CaseDataDto cazeDto = getCazeDto(caze, pseudonymizer);
 
-		// external tokens ("Aktenzeichen") are not globally unique in Germany due to SurvNet, therefore, do not
-		// transmit the token to other GAs, but let them generate their own token based on their local, configurable
-		// format
-		if (!configFacadeEjb.getS2SConfig().getRetainCaseExternalToken()) {
-			cazeDto.setExternalToken(null);
-		}
+		dataBuilderHelper.resetIgnoredProperties(cazeDto, CaseDataDto.class);
 
 		SormasToSormasCaseDto caseData = new SormasToSormasCaseDto(personDto, cazeDto, originInfo);
 		ShareData<Case, SormasToSormasCaseDto> shareData = new ShareData<>(caze, caseData);

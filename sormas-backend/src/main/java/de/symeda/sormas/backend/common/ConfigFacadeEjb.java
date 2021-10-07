@@ -138,13 +138,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String SORMAS2SORMAS_TRUSTSTORE_NAME = "sormas2sormas.truststoreName";
 	public static final String SORMAS2SORMAS_TRUSTSTORE_PASS = "sormas2sormas.truststorePass";
 
+	public static final String SORMAS2SORMAS_IGNORE_EXTERNAL_ID = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID;
+	public static final String SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN;
+	public static final String SORMAS2SORMAS_IGNORE_GENERAL_COMMENT = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_GENERAL_COMMENT;
+	public static final String SORMAS2SORMAS_IGNORE_INTERNAL_ID = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_ID;
+
 	private static final String SORMAS2SORMAS_OIDC_REALM = "sormas2sormas.oidc.realm";
 	private static final String SORMAS2SORMAS_OIDC_CLIENT_ID = "sormas2sormas.oidc.clientId";
 	private static final String SORMAS2SORMAS_OIDC_CLIENT_SECRET = "sormas2sormas.oidc.clientSecret";
 
 	private static final String SORMAS2SORMAS_ETCD_KEY_PREFIX = "sormas2sormas.etcd.keyPrefix";
-
-	private static final String SORMAS2SORMAS_RETAIN_CASE_EXTERNAL_TOKEN = "sormas2sormas.retainCaseExternalToken";
 
 	private static final String EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL = "survnet.url";
 
@@ -516,13 +519,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setTruststoreName(getProperty(SORMAS2SORMAS_TRUSTSTORE_NAME, null));
 		config.setTruststorePass(getProperty(SORMAS2SORMAS_TRUSTSTORE_PASS, null));
 		config.setRootCaAlias(getProperty(SORMAS2SORMAS_ROOT_CA_ALIAS, null));
-		config.setRetainCaseExternalToken(getBoolean(SORMAS2SORMAS_RETAIN_CASE_EXTERNAL_TOKEN, true));
 		config.setId(getProperty(SORMAS2SORMAS_ID, null));
 		config.setOidcServer(getProperty(CENTRAL_OIDC_URL, null));
 		config.setOidcRealm(getProperty(SORMAS2SORMAS_OIDC_REALM, null));
 		config.setOidcClientId(getProperty(SORMAS2SORMAS_OIDC_CLIENT_ID, null));
 		config.setOidcClientSecret(getProperty(SORMAS2SORMAS_OIDC_CLIENT_SECRET, null));
 		config.setKeyPrefix(getProperty(SORMAS2SORMAS_ETCD_KEY_PREFIX, null));
+		config.getIgnoreProperties().put(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, getBoolean(SORMAS2SORMAS_IGNORE_EXTERNAL_ID, true));
+		config.getIgnoreProperties().put(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, getBoolean(SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, true));
+		config.getIgnoreProperties().put(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_GENERAL_COMMENT, getBoolean(SORMAS2SORMAS_IGNORE_GENERAL_COMMENT, true));
+		config.getIgnoreProperties().put(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_ID, getBoolean(SORMAS2SORMAS_IGNORE_INTERNAL_ID, true));
 		return config;
 	}
 
