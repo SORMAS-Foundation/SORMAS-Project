@@ -38,7 +38,6 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPre
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
@@ -70,8 +69,6 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 	private SampleService sampleService;
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
-	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 
 	public ShareData<Case, SormasToSormasCaseDto> buildShareData(Case caze, User user, SormasToSormasOptionsDto options) {
 
@@ -151,7 +148,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 		PersonDto personDto = dataBuilderHelper.getPersonDto(caze.getPerson(), pseudonymizer, pseudonymizePersonalData, pseudonymizeSensitiveData);
 		CaseDataDto cazeDto = getCazeDto(caze, pseudonymizer);
 
-		dataBuilderHelper.resetIgnoredProperties(cazeDto, CaseDataDto.class);
+		dataBuilderHelper.clearIgnoredProperties(cazeDto, CaseDataDto.class);
 
 		SormasToSormasCaseDto caseData = new SormasToSormasCaseDto(personDto, cazeDto, originInfo);
 		ShareData<Case, SormasToSormasCaseDto> shareData = new ShareData<>(caze, caseData);

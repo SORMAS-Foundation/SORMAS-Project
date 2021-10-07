@@ -30,6 +30,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
@@ -55,10 +56,14 @@ import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Stateless
 @LocalBean
 public class ShareDataBuilderHelper {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ShareDataBuilderHelper.class);
 
 	@EJB
 	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
@@ -91,7 +96,7 @@ public class ShareDataBuilderHelper {
 
 		pseudonymiePerson(personDto, pseudonymizedPersonalData, pseudonymizedSensitiveData);
 
-		resetIgnoredProperties(personDto, personDto.getClass());
+		clearIgnoredProperties(personDto, personDto.getClass());
 
 		return personDto;
 	}
@@ -111,7 +116,7 @@ public class ShareDataBuilderHelper {
 		contactDto.setResultingCaseUser(null);
 		contactDto.setSormasToSormasOriginInfo(null);
 
-		resetIgnoredProperties(contactDto, ContactDto.class);
+		clearIgnoredProperties(contactDto, ContactDto.class);
 
 		return contactDto;
 	}
@@ -139,7 +144,7 @@ public class ShareDataBuilderHelper {
 		return samples.stream().map(s -> {
 			SampleDto sampleDto = sampleFacade.convertToDto(s, pseudonymizer);
 			sampleDto.setSormasToSormasOriginInfo(null);
-			resetIgnoredProperties(sampleDto, SampleDto.class);
+			clearIgnoredProperties(sampleDto, SampleDto.class);
 
 			return new SormasToSormasSampleDto(
 				sampleDto,
@@ -217,14 +222,19 @@ public class ShareDataBuilderHelper {
 
 	}
 
-	public void resetIgnoredProperties(Object dto, Class<?> dtoType) {
+	public void clearIgnoredProperties(Object dto, Class<?> dtoType) {
+		SormasToSormasConfig s2SConfig = configFacadeEjb.getS2SConfig();
 		for (Field field : dtoType.getDeclaredFields()) {
 			if (field.isAnnotationPresent(S2SIgnoreProperty.class)) {
-				//TODO: check if configuration is deactivated
-				try {
-					field.set(dto, null);
-				} catch (IllegalAccessException e) {
-					//TODO: add logger
+				String s2sConfigProperty = field.getAnnotation(S2SIgnoreProperty.class).configProperty();
+				if (s2SConfig.getIgnoreProperties().get(s2sConfigProperty)) {
+					try {
+						field.setAccessible(true);
+						field.set(dto, null);
+						field.setAccessible(false);
+					} catch (IllegalAccessException e) {
+						LOGGER.error("Could not clear field {} for {}", field.getName(), dtoType.getSimpleName());
+					}
 				}
 			}
 		}
