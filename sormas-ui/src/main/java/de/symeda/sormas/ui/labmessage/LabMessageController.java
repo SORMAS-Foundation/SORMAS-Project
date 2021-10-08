@@ -766,7 +766,7 @@ public class LabMessageController {
 		PathogenTestDto pathogenTestDto,
 		Window window) {
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
-			ControllerProvider.getPathogenTestController().getPathogenTestCreateComponent(sampleDto.toReference(), 0, () -> {
+			ControllerProvider.getPathogenTestController().getPathogenTestCreateComponent(sampleDto, 0, () -> {
 				window.close();
 			}, (savedPathogenTestDto, runnable) -> {
 				runnable.run();
