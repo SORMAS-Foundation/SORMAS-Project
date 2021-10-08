@@ -317,6 +317,13 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			false,
 			null);
 
+		ogCaseOrigin.addValueChangeListener(e -> {
+			boolean pointOfEntryRegionDistrictVisible =
+				CaseOrigin.POINT_OF_ENTRY.equals(ogCaseOrigin.getValue()) && Boolean.TRUE.equals(differentPointOfEntryJurisdiction.getValue());
+			pointOfEntryRegionCombo.setVisible(pointOfEntryRegionDistrictVisible);
+			pointOfEntryDistrictCombo.setVisible(pointOfEntryRegionDistrictVisible);
+		});
+
 		facilityOrHome =
 			addCustomField(FACILITY_OR_HOME_LOC, TypeOfPlace.class, NullableOptionGroup.class, I18nProperties.getCaption(Captions.casePlaceOfStay));
 		facilityOrHome.removeAllItems();
@@ -381,7 +388,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
 
 			updateFacility();
-			updatePOEs();
+			if (!Boolean.TRUE.equals(differentPointOfEntryJurisdiction.getValue())) {
+				updatePOEs();
+			}
 		});
 		communityCombo.addValueChangeListener(e -> {
 			updateFacility();
@@ -467,11 +476,12 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		// jurisdiction field valuechangelisteners
 		responsibleDistrictCombo.addValueChangeListener(e -> {
 			Boolean differentPlaceOfStay = differentPlaceOfStayJurisdiction.getValue();
-			if (differentPlaceOfStay == null || Boolean.FALSE.equals(differentPlaceOfStay)) {
+			if (!Boolean.TRUE.equals(differentPlaceOfStay)) {
 				updateFacility();
+				if (!Boolean.TRUE.equals(differentPointOfEntryJurisdiction.getValue())) {
+					updatePOEs();
+				}
 			}
-
-			updatePOEs();
 		});
 		responsibleCommunityCombo.addValueChangeListener((e) -> {
 			Boolean differentPlaceOfStay = differentPlaceOfStayJurisdiction.getValue();
@@ -482,7 +492,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		differentPlaceOfStayJurisdiction.addValueChangeListener(e -> {
 			updateFacility();
-			updatePOEs();
+			if (!Boolean.TRUE.equals(differentPointOfEntryJurisdiction.getValue())) {
+				updatePOEs();
+			}
 		});
 
 		// Set initial visibilities & accesses
@@ -605,20 +617,23 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	private void updatePOEs() {
 
-		DistrictReferenceDto districtDto;
+		ComboBox comboBoxPOE = (ComboBox) getField(CaseDataDto.POINT_OF_ENTRY);
+		if (!comboBoxPOE.isReadOnly()) {
+			DistrictReferenceDto districtDto;
 
-		if (Boolean.TRUE.equals(differentPointOfEntryJurisdiction.getValue())) {
-			districtDto = (DistrictReferenceDto) pointOfEntryDistrictCombo.getValue();
-		} else if (Boolean.TRUE.equals(differentPlaceOfStayJurisdiction.getValue())) {
-			districtDto = (DistrictReferenceDto) districtCombo.getValue();
-		} else {
-			districtDto = (DistrictReferenceDto) responsibleDistrictCombo.getValue();
+			if (Boolean.TRUE.equals(differentPointOfEntryJurisdiction.getValue())) {
+				districtDto = (DistrictReferenceDto) pointOfEntryDistrictCombo.getValue();
+			} else if (Boolean.TRUE.equals(differentPlaceOfStayJurisdiction.getValue())) {
+				districtDto = (DistrictReferenceDto) districtCombo.getValue();
+			} else {
+				districtDto = (DistrictReferenceDto) responsibleDistrictCombo.getValue();
+			}
+
+			List<PointOfEntryReferenceDto> POEs = districtDto == null
+				? Collections.emptyList()
+				: FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), true);
+			FieldHelper.updateItems(comboBoxPOE, POEs);
 		}
-
-		List<PointOfEntryReferenceDto> POEs = districtDto == null
-			? Collections.emptyList()
-			: FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), true);
-		FieldHelper.updateItems((ComboBox) getField(CaseDataDto.POINT_OF_ENTRY), POEs);
 	}
 
 	private void updateListOfDays(Integer selectedYear, Integer selectedMonth) {
