@@ -13,6 +13,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class PointOfEntryDto extends EntityDto {
 
@@ -40,7 +41,7 @@ public class PointOfEntryDto extends EntityDto {
 	public static final String EXTERNAL_ID = "externalID";
 
 	private PointOfEntryType pointOfEntryType;
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String name;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -52,7 +53,7 @@ public class PointOfEntryDto extends EntityDto {
 	private Double longitude;
 	private boolean active;
 	private boolean archived;
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
 
 	public PointOfEntryDto(

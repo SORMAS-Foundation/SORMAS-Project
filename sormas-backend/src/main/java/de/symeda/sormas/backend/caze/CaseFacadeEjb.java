@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -95,6 +96,7 @@ import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseFollowUpDto;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -190,6 +192,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.backend.activityascase.ActivityAsCaseService;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb.MaternalHistoryFacadeEjbLocal;
@@ -209,6 +212,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.messaging.ManualMessageLogService;
+import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
@@ -223,6 +227,7 @@ import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
+import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
@@ -435,6 +440,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	@EJB
 	private SurveillanceReportService surveillanceReportService;
 	@EJB
+	private EpiDataService epiDataService;
+	@EJB
+	private ActivityAsCaseService activityAsCaseService;
+	@EJB
 	private SurveillanceReportFacadeEjb.SurveillanceReportFacadeEjbLocal surveillanceReportFacade;
 	@EJB
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
@@ -622,6 +631,18 @@ public class CaseFacadeEjb implements CaseFacade {
 		return cases;
 	}
 
+	@Override
+	public List<CaseListEntryDto> getEntriesList(String personUuid, Integer first, Integer max) {
+
+		Long personId = personFacade.getPersonIdByUuid(personUuid);
+		List<CaseListEntryDto> entries = caseService.getEntriesList(personId, first, max);
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(CaseListEntryDto.class, entries, CaseListEntryDto::isInJurisdiction, null);
+
+		return entries;
+	}
+
 	public CaseDataDto postUpdate(String uuid, JsonNode caseDataDtoJson) {
 		CaseDataDto existingCaseDto = getCaseDataWithoutPseudonyimization(uuid);
 		PatchHelper.postUpdate(caseDataDtoJson, existingCaseDto);
@@ -670,7 +691,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getEpiData().get(EpiData.ID), joins.getSymptoms().get(Symptoms.ID), joins.getHospitalization().get(Hospitalization.ID),
 				joins.getHealthConditions().get(HealthConditions.ID), caseRoot.get(Case.UUID),
 				caseRoot.get(Case.EPID_NUMBER), caseRoot.get(Case.DISEASE), caseRoot.get(Case.DISEASE_VARIANT), caseRoot.get(Case.DISEASE_DETAILS),
-				joins.getPerson().get(Person.FIRST_NAME), joins.getPerson().get(Person.LAST_NAME),
+				caseRoot.get(Case.DISEASE_VARIANT_DETAILS), joins.getPerson().get(Person.UUID), joins.getPerson().get(Person.FIRST_NAME), joins.getPerson().get(Person.LAST_NAME),
 				joins.getPerson().get(Person.SALUTATION), joins.getPerson().get(Person.OTHER_SALUTATION), joins.getPerson().get(Person.SEX),
 				caseRoot.get(Case.PREGNANT), joins.getPerson().get(Person.APPROXIMATE_AGE),
 				joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE), joins.getPerson().get(Person.BIRTHDATE_DD),
@@ -1243,7 +1264,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> caze = cq.from(Case.class);
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		filter = CriteriaBuilderHelper.and(cb, filter, caseService.createCriteriaFilter(criteria, caseQueryContext));
@@ -2032,61 +2052,58 @@ public class CaseFacadeEjb implements CaseFacade {
 		// Send an email to all responsible supervisors when the case classification has
 		// changed
 		if (existingCase != null && existingCase.getCaseClassification() != newCase.getCaseClassification()) {
-			List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
-				JurisdictionHelper.getCaseRegions(newCase),
-				UserRole.SURVEILLANCE_SUPERVISOR,
-				UserRole.ADMIN_SUPERVISOR,
-				UserRole.CASE_SUPERVISOR,
-				UserRole.CONTACT_SUPERVISOR);
-			for (User recipient : messageRecipients) {
-				try {
-					messagingService.sendMessage(
-						recipient,
-						MessageSubject.CASE_CLASSIFICATION_CHANGED,
-						String.format(
-							I18nProperties.getString(MessagingService.CONTENT_CASE_CLASSIFICATION_CHANGED),
-							DataHelper.getShortUuid(newCase.getUuid()),
-							newCase.getCaseClassification().toString()),
-						MessageType.EMAIL,
-						MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format(
-							"NotificationDeliveryFailedException when trying to notify supervisors about the change of a case classification. "
-								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-							recipient.getUuid()));
-				}
+
+			try {
+				messagingService.sendMessages(() -> {
+					List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
+						JurisdictionHelper.getCaseRegions(newCase),
+						UserRole.SURVEILLANCE_SUPERVISOR,
+						UserRole.ADMIN_SUPERVISOR,
+						UserRole.CASE_SUPERVISOR,
+						UserRole.CONTACT_SUPERVISOR);
+					final Map<User, String> mapToReturn = new HashMap<>();
+					messageRecipients.forEach(
+						user -> mapToReturn.put(
+							user,
+							String.format(
+								I18nProperties.getString(MessageContents.CONTENT_CASE_CLASSIFICATION_CHANGED),
+								DataHelper.getShortUuid(newCase.getUuid()),
+								newCase.getCaseClassification().toString())));
+					return mapToReturn;
+				}, MessageSubject.CASE_CLASSIFICATION_CHANGED, MessageType.EMAIL, MessageType.SMS);
+			} catch (NotificationDeliveryFailedException e) {
+				logger.error(
+					String
+						.format("NotificationDeliveryFailedException when trying to notify supervisors about the change of a case classification. "));
 			}
 		}
 
 		// Send an email to all responsible supervisors when the disease of an
 		// Unspecified VHF case has changed
 		if (existingCase != null && existingCase.getDisease() == Disease.UNSPECIFIED_VHF && existingCase.getDisease() != newCase.getDisease()) {
-			List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
-				JurisdictionHelper.getCaseRegions(newCase),
-				UserRole.SURVEILLANCE_SUPERVISOR,
-				UserRole.ADMIN_SUPERVISOR,
-				UserRole.CASE_SUPERVISOR,
-				UserRole.CONTACT_SUPERVISOR);
-			for (User recipient : messageRecipients) {
-				try {
-					messagingService.sendMessage(
-						recipient,
-						MessageSubject.DISEASE_CHANGED,
-						String.format(
-							I18nProperties.getString(MessagingService.CONTENT_DISEASE_CHANGED),
-							DataHelper.getShortUuid(newCase.getUuid()),
-							existingCase.getDisease().toString(),
-							newCase.getDisease().toString()),
-						MessageType.EMAIL,
-						MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format(
-							"NotificationDeliveryFailedException when trying to notify supervisors about the change of a case disease. "
-								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-							recipient.getUuid()));
-				}
+
+			try {
+				messagingService.sendMessages(() -> {
+					List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
+						JurisdictionHelper.getCaseRegions(newCase),
+						UserRole.SURVEILLANCE_SUPERVISOR,
+						UserRole.ADMIN_SUPERVISOR,
+						UserRole.CASE_SUPERVISOR,
+						UserRole.CONTACT_SUPERVISOR);
+					final Map<User, String> mapToReturn = new HashMap<>();
+					messageRecipients.forEach(
+						user -> mapToReturn.put(
+							user,
+							String.format(
+								I18nProperties.getString(MessageContents.CONTENT_DISEASE_CHANGED),
+								DataHelper.getShortUuid(newCase.getUuid()),
+								existingCase.getDisease().toString(),
+								newCase.getDisease().toString())));
+					return mapToReturn;
+				}, MessageSubject.DISEASE_CHANGED, MessageType.EMAIL, MessageType.SMS);
+			} catch (NotificationDeliveryFailedException e) {
+				logger.error(
+					String.format("NotificationDeliveryFailedException when trying to notify supervisors about the change of a case disease."));
 			}
 		}
 
@@ -2130,30 +2147,31 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	private void sendConfirmedCaseNotificationsForEvents(Case caze) {
-		Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
-		Map<String, User> responsibleUserByEventByEventUuid =
-			eventService.getAllEventUuidWithResponsibleUserByCaseAfterDateForNotification(caze, fromDate);
-		for (Map.Entry<String, User> entry : responsibleUserByEventByEventUuid.entrySet()) {
-			try {
-				messagingService.sendMessage(
-					entry.getValue(),
-					MessageSubject.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
-					new Object[] {
-						caze.getDisease().getName() },
-					String.format(
-						I18nProperties.getString(MessagingService.CONTENT_EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED),
-						DataHelper.getShortUuid(entry.getKey()),
-						caze.getDisease().getName(),
-						DataHelper.getShortUuid(caze.getUuid())),
-					MessageType.EMAIL,
-					MessageType.SMS);
-			} catch (NotificationDeliveryFailedException e) {
-				logger.error(
-					String.format(
-						"NotificationDeliveryFailedException when trying to notify event responsible user about a newly confirmed case. "
-							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-						entry.getValue().getUuid()));
-			}
+
+		try {
+			messagingService.sendMessages(() -> {
+				final Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
+				final Map<String, User> responsibleUserByEventByEventUuid =
+					eventService.getAllEventUuidWithResponsibleUserByCaseAfterDateForNotification(caze, fromDate);
+				final Map<User, String> mapToReturn = new HashMap<>();
+				responsibleUserByEventByEventUuid.forEach(
+					(s, user) -> mapToReturn.put(
+						user,
+						String.format(
+							I18nProperties.getString(MessageContents.CONTENT_EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED),
+							DataHelper.getShortUuid(s),
+							caze.getDisease().getName(),
+							DataHelper.getShortUuid(caze.getUuid()))));
+				return mapToReturn;
+			},
+				MessageSubject.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
+				new Object[] {
+					caze.getDisease().getName() },
+				MessageType.EMAIL,
+				MessageType.SMS);
+		} catch (NotificationDeliveryFailedException e) {
+			logger.error(
+				String.format("NotificationDeliveryFailedException when trying to notify event responsible user about a newly confirmed case."));
 		}
 	}
 
@@ -2575,6 +2593,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setDisease(source.getDisease());
 		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
 		target.setRabiesType(source.getRabiesType());
@@ -2731,6 +2750,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setDisease(source.getDisease());
 		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
 		target.setRabiesType(source.getRabiesType());
@@ -3193,28 +3213,26 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private void sendInvestigationDoneNotifications(Case caze) {
 
-		List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
-			JurisdictionHelper.getCaseRegions(caze),
-			UserRole.SURVEILLANCE_SUPERVISOR,
-			UserRole.ADMIN_SUPERVISOR,
-			UserRole.CASE_SUPERVISOR,
-			UserRole.CONTACT_SUPERVISOR);
-		for (User recipient : messageRecipients) {
-			try {
-				messagingService.sendMessage(
-					recipient,
-					MessageSubject.CASE_INVESTIGATION_DONE,
-					String
-						.format(I18nProperties.getString(MessagingService.CONTENT_CASE_INVESTIGATION_DONE), DataHelper.getShortUuid(caze.getUuid())),
-					MessageType.EMAIL,
-					MessageType.SMS);
-			} catch (NotificationDeliveryFailedException e) {
-				logger.error(
-					String.format(
-						"NotificationDeliveryFailedException when trying to notify supervisors about the completion of a case investigation. "
-							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-						recipient.getUuid()));
-			}
+		try {
+			messagingService.sendMessages(() -> {
+				final List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
+					JurisdictionHelper.getCaseRegions(caze),
+					UserRole.SURVEILLANCE_SUPERVISOR,
+					UserRole.ADMIN_SUPERVISOR,
+					UserRole.CASE_SUPERVISOR,
+					UserRole.CONTACT_SUPERVISOR);
+				final Map<User, String> mapToReturn = new HashMap<>();
+				messageRecipients.forEach(
+					user -> mapToReturn.put(
+						user,
+						String.format(
+							I18nProperties.getString(MessageContents.CONTENT_CASE_INVESTIGATION_DONE),
+							DataHelper.getShortUuid(caze.getUuid()))));
+				return mapToReturn;
+			}, MessageSubject.CASE_INVESTIGATION_DONE, MessageType.EMAIL, MessageType.SMS);
+		} catch (NotificationDeliveryFailedException e) {
+			logger.error(
+				String.format("NotificationDeliveryFailedException when trying to notify supervisors about the completion of a case investigation."));
 		}
 	}
 
@@ -3458,6 +3476,17 @@ public class CaseFacadeEjb implements CaseFacade {
 			surveillanceReportDto.setCaze(leadCase.toReference());
 			surveillanceReportFacade.saveSurveillanceReport(surveillanceReportDto);
 		});
+
+		// 10 Activity as case
+		final EpiData otherEpiData = otherCase.getEpiData();
+		if (otherEpiData != null
+			&& YesNoUnknown.YES == otherEpiData.getActivityAsCaseDetailsKnown()
+			&& CollectionUtils.isNotEmpty(otherEpiData.getActivitiesAsCase())) {
+
+			final EpiData leadEpiData = leadCase.getEpiData();
+			leadEpiData.setActivityAsCaseDetailsKnown(YesNoUnknown.YES);
+			epiDataService.ensurePersisted(leadEpiData);
+		}
 	}
 
 	private void copyDtoValues(CaseDataDto leadCaseData, CaseDataDto otherCaseData, boolean cloning) {

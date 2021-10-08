@@ -19,6 +19,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -43,6 +44,7 @@ public class TravelEntryDto extends PseudonymizableDto {
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 
 	public static final String RECOVERED = "recovered";
 	public static final String VACCINATED = "vaccinated";
@@ -81,9 +83,12 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private boolean deleted;
 	private Disease disease;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String diseaseVariantDetails;
 	private RegionReferenceDto responsibleRegion;
 	private DistrictReferenceDto responsibleDistrict;
 	private CommunityReferenceDto responsibleCommunity;
@@ -91,11 +96,11 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private DistrictReferenceDto pointOfEntryDistrict;
 	private PointOfEntryReferenceDto pointOfEntry;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String pointOfEntryDetails;
 	@EmbeddedPersonalData
 	private CaseReferenceDto resultingCase;
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String externalId;
 	private boolean recovered;
 	private boolean vaccinated;
@@ -105,12 +110,12 @@ public class TravelEntryDto extends PseudonymizableDto {
 
 	private QuarantineType quarantine;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String quarantineHelpNeeded;
 	private boolean quarantineOrderedVerbally;
 	private boolean quarantineOrderedOfficialDocument;
@@ -118,11 +123,11 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private Date quarantineOrderedOfficialDocumentDate;
 	private YesNoUnknown quarantineHomePossible;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String quarantineHomePossibleComment;
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String quarantineHomeSupplyEnsuredComment;
 	private boolean quarantineExtended;
 	private boolean quarantineReduced;
@@ -204,6 +209,14 @@ public class TravelEntryDto extends PseudonymizableDto {
 
 	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
+	}
+
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	public RegionReferenceDto getResponsibleRegion() {

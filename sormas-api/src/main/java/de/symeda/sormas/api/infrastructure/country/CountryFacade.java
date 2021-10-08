@@ -12,8 +12,6 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface CountryFacade extends GeoLocationFacade<CountryDto, CountryIndexDto, CountryReferenceDto, CountryCriteria> {
 
-	CountryDto getCountryByUuid(String uuid);
-
 	List<CountryReferenceDto> getByDefaultName(String name, boolean includeArchivedEntities);
 
 	CountryDto getByIsoCode(String isoCode, boolean includeArchivedEntities);

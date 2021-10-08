@@ -55,6 +55,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -102,6 +103,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		PersonDto personDto = PersonDto.build();
 		personDto.setFirstName("Guy");
 		personDto.setLastName("Debord");
+		personDto.setSex(Sex.UNKNOWN);
 		personDto.setBirthdateYYYY(1931);
 		personDto.setBirthdateMM(12);
 		personDto.setBirthdateDD(28);

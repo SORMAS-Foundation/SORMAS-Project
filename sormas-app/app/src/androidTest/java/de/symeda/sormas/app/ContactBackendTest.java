@@ -93,6 +93,8 @@ public class ContactBackendTest {
 		mergeContact.setDiseaseDetails(contact.getDiseaseDetails());
 		mergeContact.setId(null);
 		mergeContact.getPerson().getAddress().setId(null);
+		mergeContact.getEpiData().setId(null);
+		mergeContact.getHealthConditions().setId(null);
 
 		mergeContact.setDescription("ServerDescription");
 

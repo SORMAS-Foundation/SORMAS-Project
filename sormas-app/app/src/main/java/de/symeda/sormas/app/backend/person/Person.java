@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.app.backend.person;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,6 +31,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import androidx.databinding.Bindable;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -77,19 +78,19 @@ public class Person extends PseudonymizableAdo {
 	private String lastName;
 	@Enumerated(EnumType.STRING)
 	private Salutation salutation;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String otherSalutation;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String birthName;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String nickname;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String mothersMaidenName;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String mothersName;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String fathersName;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String namesOfGuardians;
 	@Column
 	private Integer birthdateDD;
@@ -114,7 +115,7 @@ public class Person extends PseudonymizableAdo {
 	private FacilityType placeOfBirthFacilityType;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility placeOfBirthFacility;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String placeOfBirthFacilityDetails;
 
 	@Column
@@ -142,23 +143,23 @@ public class Person extends PseudonymizableAdo {
 	private Date deathDate;
 	@Enumerated(EnumType.STRING)
 	private DeathPlaceType deathPlaceType;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String deathPlaceDescription;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date burialDate;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String burialPlaceDescription;
 	@Enumerated(EnumType.STRING)
 	private BurialConductor burialConductor;
 
 	@Enumerated(EnumType.STRING)
 	private EducationType educationType;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String educationDetails;
 
 	@Enumerated(EnumType.STRING)
 	private OccupationType occupationType;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String occupationDetails;
 	@Enumerated
 	private ArmedForcesRelationType armedForcesRelationType;
@@ -171,13 +172,13 @@ public class Person extends PseudonymizableAdo {
 	private List<Location> addresses = new ArrayList<>();
 	private List<PersonContactDetail> personContactDetails = new ArrayList<>();
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String externalId;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String externalToken;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String internalToken;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)

@@ -38,7 +38,8 @@ public class ImmunizationIndexDtoResultTransformer implements ResultTransformer 
 			(Date) objects[15],
 			(Date) objects[16],
 			(String) objects[17],
-			(Date) objects[18]);
+			(Date) objects[18],
+			(Boolean) objects[19]);
 	}
 
 	@Override

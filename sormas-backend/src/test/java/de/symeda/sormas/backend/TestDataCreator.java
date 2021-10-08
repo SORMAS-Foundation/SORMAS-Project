@@ -195,7 +195,27 @@ public class TestDataCreator {
 	}
 
 	public PersonDto createPerson(String firstName, String lastName) {
-		return createPerson(firstName, lastName, null);
+		return createPerson(firstName, lastName, Sex.UNKNOWN, null);
+	}
+
+	public PersonDto createPerson(String firstName, String lastName, Sex sex) {
+		return createPerson(firstName, lastName, sex, null);
+	}
+
+	public PersonDto createPerson(String firstName, String lastName, Sex sex, Consumer<PersonDto> customConfig) {
+
+		PersonDto person = PersonDto.build();
+		person.setFirstName(firstName);
+		person.setLastName(lastName);
+		person.setSex(sex);
+
+		if (customConfig != null) {
+			customConfig.accept(person);
+		}
+
+		person = beanTest.getPersonFacade().savePerson(person);
+
+		return person;
 	}
 
 	public PersonDto createPerson(String firstName, String lastName, Consumer<PersonDto> customConfig) {
@@ -203,6 +223,7 @@ public class TestDataCreator {
 		PersonDto person = PersonDto.build();
 		person.setFirstName(firstName);
 		person.setLastName(lastName);
+		person.setSex(Sex.UNKNOWN);
 
 		if (customConfig != null) {
 			customConfig.accept(person);
@@ -300,7 +321,7 @@ public class TestDataCreator {
 		RDCFEntities rdcf = createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user =
 			createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = createPerson("Case", "Person");
+		PersonDto cazePerson = createPerson("Case", "Person", Sex.UNKNOWN);
 		return createCase(
 			user.toReference(),
 			cazePerson.toReference(),

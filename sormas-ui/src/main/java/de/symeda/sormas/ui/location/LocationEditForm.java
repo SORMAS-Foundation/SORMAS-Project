@@ -106,13 +106,11 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			fluidRowLocs(LocationDto.POSTAL_CODE, LocationDto.CITY, LocationDto.AREA_TYPE),
 			fluidRowLocs(LocationDto.CONTACT_PERSON_FIRST_NAME, LocationDto.CONTACT_PERSON_LAST_NAME),
 			fluidRowLocs(LocationDto.CONTACT_PERSON_PHONE, LocationDto.CONTACT_PERSON_EMAIL),
-			fluidRow(
-				loc(LocationDto.DETAILS),
-				fluidRow(
-					fluidColumnLoc(2, 0, GEO_BUTTONS_LOC),
-					fluidColumnLoc(3, 0, LocationDto.LATITUDE),
-					fluidColumnLoc(3, 0, LocationDto.LONGITUDE),
-					fluidColumnLoc(4, 0, LocationDto.LAT_LON_ACCURACY))));
+			fluidRow(fluidColumnLoc(4, 0, LocationDto.DETAILS),
+							fluidColumnLoc(2, 0, GEO_BUTTONS_LOC),
+							fluidColumnLoc(2, 0, LocationDto.LATITUDE),
+							fluidColumnLoc(2, 0, LocationDto.LONGITUDE),
+							fluidColumnLoc(2, 0, LocationDto.LAT_LON_ACCURACY)));
 
 	private MapPopupView leafletMapPopup;
 	private ComboBox addressType;

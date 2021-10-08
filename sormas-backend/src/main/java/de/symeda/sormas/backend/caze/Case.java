@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -112,9 +112,11 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	public static final String SYSTEM_CASE_CLASSIFICATION = "systemCaseClassification";
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PERSON = "person";
+	public static final String PERSON_ID = "personId";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String RABIES_TYPE = "rabiesType";
 	public static final String HEALTH_FACILITY = "healthFacility";
@@ -228,6 +230,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
 	private String diseaseDetails;
+	private String diseaseVariantDetails;
 	private PlagueType plagueType;
 	private DengueFeverType dengueFeverType;
 	private RabiesType rabiesType;
@@ -389,6 +392,17 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 
 	private CaseReferenceDefinition caseReferenceDefinition;
 
+	private Long personId;
+
+	@Column(name = "person_id", updatable = false, insertable = false)
+	public Long getPersonId() {
+		return personId;
+	}
+
+	public void setPersonId(Long personId) {
+		this.personId = personId;
+	}
+
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
 	public Person getPerson() {
@@ -399,7 +413,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.person = person;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getDescription() {
 		return description;
 	}
@@ -427,13 +441,22 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.diseaseVariant = diseaseVariant;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
 
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -510,7 +533,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.classificationDate = classificationDate;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getClassificationComment() {
 		return classificationComment;
 	}
@@ -611,7 +634,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.healthFacility = healthFacility;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getHealthFacilityDetails() {
 		return healthFacilityDetails;
 	}
@@ -629,7 +652,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.surveillanceOfficer = surveillanceOfficer;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT, name = "cliniciandetails")
+	@Column(length = CHARACTER_LIMIT_DEFAULT, name = "cliniciandetails")
 	public String getClinicianName() {
 		return clinicianName;
 	}
@@ -638,7 +661,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.clinicianName = clinicianName;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getClinicianPhone() {
 		return clinicianPhone;
 	}
@@ -647,7 +670,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.clinicianPhone = clinicianPhone;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getClinicianEmail() {
 		return clinicianEmail;
 	}
@@ -878,7 +901,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.smallpoxLastVaccinationDate = smallpoxLastVaccinationDate;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getEpidNumber() {
 		return epidNumber;
 	}
@@ -995,7 +1018,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.sequelae = sequelae;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSequelaeDetails() {
 		return sequelaeDetails;
 	}
@@ -1013,7 +1036,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.notifyingClinic = notifyingClinic;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getNotifyingClinicDetails() {
 		return notifyingClinicDetails;
 	}
@@ -1086,7 +1109,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.pointOfEntry = pointOfEntry;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getPointOfEntryDetails() {
 		return pointOfEntryDetails;
 	}
@@ -1112,7 +1135,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.additionalDetails = additionalDetails;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalID() {
 		return externalID;
 	}
@@ -1141,7 +1164,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.externalID = externalId;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalToken() {
 		return externalToken;
 	}
@@ -1177,7 +1200,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.quarantine = quarantine;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getQuarantineTypeDetails() {
 		return quarantineTypeDetails;
 	}
@@ -1204,7 +1227,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.quarantineTo = quarantineTo;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getQuarantineHelpNeeded() {
 		return quarantineHelpNeeded;
 	}
@@ -1258,7 +1281,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.quarantineHomePossible = quarantineHomePossible;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getQuarantineHomePossibleComment() {
 		return quarantineHomePossibleComment;
 	}
@@ -1276,7 +1299,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.quarantineHomeSupplyEnsured = quarantineHomeSupplyEnsured;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getQuarantineHomeSupplyEnsuredComment() {
 		return quarantineHomeSupplyEnsuredComment;
 	}
@@ -1348,7 +1371,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.followUpStatus = followUpStatus;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getFollowUpComment() {
 		return followUpComment;
 	}
@@ -1429,7 +1452,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.quarantineReasonBeforeIsolation = quarantineReasonBeforeIsolation;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getQuarantineReasonBeforeIsolationDetails() {
 		return quarantineReasonBeforeIsolationDetails;
 	}
@@ -1447,7 +1470,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.endOfIsolationReason = endOfIsolationReason;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getEndOfIsolationReasonDetails() {
 		return endOfIsolationReasonDetails;
 	}
@@ -1555,7 +1578,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.notACaseReasonOther = notACaseReasonOther;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getNotACaseReasonDetails() {
 		return notACaseReasonDetails;
 	}

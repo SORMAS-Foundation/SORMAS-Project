@@ -120,8 +120,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 					fluidRowLocs(4,EventDto.EVENT_INVESTIGATION_START_DATE, 4, EventDto.EVENT_INVESTIGATION_END_DATE) +
 					fluidRow(
 							fluidColumnLoc(6, 0, EventDto.DISEASE),
-							fluidColumnLoc(6, 0, EventDto.DISEASE_DETAILS),
-							fluidColumnLoc(6, 0, EventDto.DISEASE_VARIANT)) +
+							fluidColumnLoc(6, 0, EventDto.DISEASE_DETAILS)) +
+					fluidRowLocs(EventDto.DISEASE_VARIANT, EventDto.DISEASE_VARIANT_DETAILS) +
 					fluidRowLocs(EventDto.EXTERNAL_ID, EventDto.EXTERNAL_TOKEN) +
 					fluidRowLocs(EventDto.INTERNAL_TOKEN, EXTERNAL_TOKEN_WARNING_LOC) +
 					fluidRowLocs(EventDto.EVENT_TITLE) +
@@ -160,10 +160,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private List<UserReferenceDto> responsibleUserSurveillanceSupervisors;
 	private EpidemiologicalEvidenceCheckBoxTree epidemiologicalEvidenceCheckBoxTree;
 	private LaboratoryDiagnosticEvidenceCheckBoxTree laboratoryDiagnosticEvidenceCheckBoxTree;
-	private ComboBox diseaseField;
-	private ComboBox diseaseVariantField;
-	private DateField reportDate;
-	private DateTimeField startDate;
 
 	public EventDataForm(boolean create, boolean isPseudonymized) {
 		super(
@@ -214,11 +210,13 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		getContent().addComponent(locationHeadingLabel, LOCATION_HEADING_LOC);
 
 		addField(EventDto.UUID, TextField.class);
-		diseaseField = addDiseaseField(EventDto.DISEASE, false, isCreateForm);
+		ComboBox diseaseField = addDiseaseField(EventDto.DISEASE, false, isCreateForm);
 		addField(EventDto.DISEASE_DETAILS, TextField.class);
-		diseaseVariantField = addField(EventDto.DISEASE_VARIANT, ComboBox.class);
+		ComboBox diseaseVariantField = addField(EventDto.DISEASE_VARIANT, ComboBox.class);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		addFields(EventDto.EXTERNAL_ID);
+		TextField diseaseVariantDetailsField = addField(EventDto.DISEASE_VARIANT_DETAILS, TextField.class);
+		diseaseVariantDetailsField.setVisible(false);
 
 		TextField externalTokenField = addField(EventDto.EXTERNAL_TOKEN);
 		Label externalTokenWarningLabel = new Label(I18nProperties.getString(Strings.messageEventExternalTokenWarning));
@@ -227,7 +225,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		addField(EventDto.INTERNAL_TOKEN);
 
-		startDate = addField(EventDto.START_DATE, DateTimeField.class);
+		DateTimeField startDate = addField(EventDto.START_DATE, DateTimeField.class);
 		CheckBox multiDayCheckbox = addField(EventDto.MULTI_DAY_EVENT, CheckBox.class);
 		DateTimeField endDate = addField(EventDto.END_DATE, DateTimeField.class);
 		initEventDateValidation(startDate, endDate, multiDayCheckbox);
@@ -347,7 +345,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			}
 		});
 
-		reportDate = addField(EventDto.REPORT_DATE_TIME, DateField.class);
+		DateField reportDate = addField(EventDto.REPORT_DATE_TIME, DateField.class);
 		addField(EventDto.REPORTING_USER, ComboBox.class);
 		addField(EventDto.TRANSREGIONAL_OUTBREAK, NullableOptionGroup.class);
 
@@ -432,6 +430,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			FieldHelper.updateItems(specificRiskField, specificRiskValues);
 			specificRiskField.setVisible(isVisibleAllowed(EventDto.SPECIFIC_RISK) && CollectionUtils.isNotEmpty(specificRiskValues));
 		});
+		diseaseVariantField.addValueChangeListener(
+			e -> diseaseVariantDetailsField
+				.setVisible(((DiseaseVariant) e.getProperty().getValue()).matchPropertyValue(DiseaseVariant.HAS_DETAILS, true)));
 
 		setRequired(true, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_TITLE, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 

@@ -441,6 +441,10 @@ public final class ConfigProvider {
 			int passwordByteLength = cipherStream.read(passwordBytes);
 			cipherStream.close();
 
+			if (passwordByteLength <= 0) {
+				return null;
+			}
+
 			String result = new String(passwordBytes, 0, passwordByteLength, "UTF-8");
 			return result;
 

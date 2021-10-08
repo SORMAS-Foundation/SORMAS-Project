@@ -9,12 +9,18 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 
+import org.junit.Before;
 import org.junit.Test;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.app.TestHelper;
 
 public class ConfigProviderTest {
+
+	@Before
+	public void initTest() {
+		TestHelper.initTestEnvironment(false);
+	}
 
 	@Test
 	public void setCurrentAppDownloadId() {

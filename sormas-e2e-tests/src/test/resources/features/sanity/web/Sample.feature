@@ -2,7 +2,7 @@
 Feature: Sample Functionalities
 
   Scenario: Edit a new Sample
-    Given I log in with the user
+    Given I log in with National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data
@@ -29,7 +29,7 @@ Feature: Sample Functionalities
     Given API: I create a new person
     And API: I create a new case
     And API: I create a new sample
-    When I log in with the user
+    When I log in with National User
     And I click on the Sample button from navbar
     And I am accessing the created sample via api
     And I click on the new pathogen test from the Edit Sample page
@@ -37,7 +37,7 @@ Feature: Sample Functionalities
     Then I check that the created Pathogen is correctly displayed
 
   Scenario: Delete created sample
-    Given I log in with the user
+    Given I log in with National User
     Given API: I create a new case
     Given API: I create a new sample
     When I click on the Sample button from navbar

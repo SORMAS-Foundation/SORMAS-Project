@@ -8273,4 +8273,33 @@ UPDATE featureconfiguration SET enabled = true, changedate = now() WHERE feature
 /* End of vaccination refactoring */
 
 INSERT INTO schema_version (version_number, comment) VALUES (406, 'Vaccination refactoring #5909');
+
+-- 2021-09-16 - Make Person.sex required #6673
+UPDATE person SET sex = 'UNKNOWN' WHERE sex IS NULL;
+ALTER TABLE person ALTER COLUMN sex DROP DEFAULT;
+ALTER TABLE person ALTER COLUMN sex SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (407, 'Make Person.sex required #6673');
+
+-- 2021-09-27 Add disease variant details #5935
+ALTER TABLE cases ADD COLUMN diseasevariantdetails varchar(512);
+ALTER TABLE cases_history ADD COLUMN diseasevariantdetails varchar(512);
+ALTER TABLE events ADD COLUMN diseasevariantdetails varchar(512);
+ALTER TABLE events_history ADD COLUMN diseasevariantdetails varchar(512);
+ALTER TABLE pathogentest ADD COLUMN testeddiseasevariantdetails varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN testeddiseasevariantdetails varchar(512);
+ALTER TABLE travelentry ADD COLUMN diseasevariantdetails text;
+ALTER TABLE travelentry_history ADD COLUMN diseasevariantdetails text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (408, 'Add disease variant details #5935');
+
+-- 2021-10-06 - Add PathogenTest.externalId and transfer it from lab messages #5713
+ALTER TABLE pathogentest ADD COLUMN externalid varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN externalid varchar(512);
+
+ALTER TABLE testreport ADD COLUMN externalid varchar(512);
+ALTER TABLE testreport_history ADD COLUMN externalid varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (409, 'Add PathogenTest.externalId and transfer it from lab messages #5713');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

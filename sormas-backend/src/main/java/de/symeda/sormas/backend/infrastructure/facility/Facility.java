@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.infrastructure.facility;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,9 +26,9 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 
+import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -116,7 +116,7 @@ public class Facility extends InfrastructureAdo {
 		this.community = community;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getCity() {
 		return city;
 	}
@@ -125,7 +125,7 @@ public class Facility extends InfrastructureAdo {
 		this.city = city;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getPostalCode() {
 		return postalCode;
 	}
@@ -134,7 +134,7 @@ public class Facility extends InfrastructureAdo {
 		this.postalCode = postalCode;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getStreet() {
 		return street;
 	}
@@ -143,7 +143,7 @@ public class Facility extends InfrastructureAdo {
 		this.street = street;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getHouseNumber() {
 		return houseNumber;
 	}
@@ -152,7 +152,7 @@ public class Facility extends InfrastructureAdo {
 		this.houseNumber = houseNumber;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getAdditionalInformation() {
 		return additionalInformation;
 	}
@@ -239,7 +239,7 @@ public class Facility extends InfrastructureAdo {
 		this.publicOwnership = publicOwnership;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalID() {
 		return externalID;
 	}
