@@ -72,6 +72,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -229,8 +230,10 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final PersonJoins joins = (PersonJoins) personQueryContext.getJoins();
 
 		// 1. Define filters per association lazy to avoid superfluous joins
-		final Supplier<Predicate> caseFilter = () -> CriteriaBuilderHelper
-			.and(cb, caseService.createUserFilter(cb, cq, joins.getCaze()), caseService.createDefaultFilter(cb, joins.getCaze()));
+		final Supplier<Predicate> caseFilter = () -> CriteriaBuilderHelper.and(
+			cb,
+			caseService.createUserFilter(cb, cq, joins.getCaze(), new CaseUserFilterCriteria()),
+			caseService.createDefaultFilter(cb, joins.getCaze()));
 		final Supplier<Predicate> contactFilter = () -> {
 			final Predicate contactUserFilter = contactService.createUserFilterForJoin(
 				new ContactQueryContext(cb, cq, joins.getContact()),
