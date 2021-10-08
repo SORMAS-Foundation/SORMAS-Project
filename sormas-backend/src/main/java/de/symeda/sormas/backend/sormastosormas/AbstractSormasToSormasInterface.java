@@ -46,6 +46,7 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
@@ -224,14 +225,6 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		// remove shares to the origin
 		shareRequestInfoService.ensurePersisted(shareRequestInfo);
-
-		entities.forEach(e -> {
-			SormasToSormasOriginInfo entityOriginInfo = e.getSormasToSormasOriginInfo();
-			if (entityOriginInfo != null) {
-				entityOriginInfo.setOwnershipHandedOver(!options.isHandOverOwnership());
-				originInfoService.ensurePersisted(entityOriginInfo);
-			}
-		});
 	}
 
 	protected void ensureConsistentOptions(SormasToSormasOptionsDto options) {
@@ -576,7 +569,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 						buildEntityValidationGroupName(uuid),
 						ValidationErrors.create(
 							new ValidationErrorGroup(entityCaptionTag),
-							new ValidationErrorMessage(Strings.errorSormasToSormasOwnershipAlreadyHandedOver))))
+							new ValidationErrorMessage(Validations.sormasToSormasOwnershipAlreadyHandedOver))))
 				.collect(Collectors.toList());
 
 			throw SormasToSormasException.fromStringProperty(errors, Strings.errorSormasToSormasShare);

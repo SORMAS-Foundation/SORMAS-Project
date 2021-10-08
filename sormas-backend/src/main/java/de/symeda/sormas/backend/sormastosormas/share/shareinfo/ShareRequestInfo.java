@@ -40,6 +40,7 @@ public class ShareRequestInfo extends AbstractDomainObject {
 
 	public static final String SHARE_REQUEST_INFO_SHARE_INFO_TABLE = "sharerequestinfo_shareinfo";
 
+	public static final String SHARES = "shares";
 	public static final String REQUEST_STATUS = "requestStatus";
 	public static final String SHARE_REQUEST_INFO_SHARE_INFO_JOIN_COLUMN = "sharerequestinfo_id";
 	public static final String SHARE_REQUEST_INFO_SHARE_INFO_INVERS_JOIN_COLUMN = "shareinfo_id";

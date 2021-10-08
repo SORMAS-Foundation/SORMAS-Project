@@ -199,7 +199,7 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 	private ValidationErrors validateSharedUuid(String uuid) {
 		ValidationErrors errors = new ValidationErrors();
 		if (caseService.exists(
-			(cb, caseRoot) -> cb.and(
+			(cb, caseRoot, cq) -> cb.and(
 				cb.equal(caseRoot.get(Case.UUID), uuid),
 				cb.isNull(caseRoot.get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO)),
 				cb.isEmpty(caseRoot.get(Case.SORMAS_TO_SORMAS_SHARES))))) {

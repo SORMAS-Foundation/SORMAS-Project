@@ -30,6 +30,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
@@ -122,14 +123,28 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 
 	private boolean isOwnerShipHandedOver(String associatedObjectField, AbstractDomainObject associatedObject) {
 		return exists(
-			(cb, root) -> cb.and(
+			(cb, root, cq) -> cb.and(
 				cb.equal(root.get(associatedObjectField), associatedObject),
-				getOwnershipHandedOverFilter(cb, root, ShareRequestStatus.ACCEPTED)));
+				getOwnershipHandedOverFilter(cq, cb, root, ShareRequestStatus.ACCEPTED)));
 	}
 
-	private Predicate getOwnershipHandedOverFilter(CriteriaBuilder cb, Root<SormasToSormasShareInfo> root, ShareRequestStatus requestStatus) {
+	private Predicate getOwnershipHandedOverFilter(
+		CriteriaQuery<?> cq,
+		CriteriaBuilder cb,
+		Root<SormasToSormasShareInfo> root,
+		ShareRequestStatus requestStatus) {
+		Subquery<Number> latestRequestDateQuery = cq.subquery(Number.class);
+		Root<ShareRequestInfo> shareRequestInfoRoot = latestRequestDateQuery.from(ShareRequestInfo.class);
+		latestRequestDateQuery.select(cb.max(shareRequestInfoRoot.get(ShareRequestInfo.CREATION_DATE)));
+		latestRequestDateQuery.where(
+			cb.equal(
+				shareRequestInfoRoot.join(ShareRequestInfo.SHARES, JoinType.LEFT).get(SormasToSormasShareInfo.ID),
+				root.get(SormasToSormasShareInfo.ID)));
+
+		Join<Object, Object> requests = root.join(SormasToSormasShareInfo.REQUESTS, JoinType.LEFT);
 		return cb.and(
-			cb.equal(root.join(SormasToSormasShareInfo.REQUESTS, JoinType.LEFT).get(ShareRequestInfo.REQUEST_STATUS), requestStatus),
+			cb.equal(requests.get(ShareRequestInfo.REQUEST_STATUS), requestStatus),
+			cb.equal(requests.get(ShareRequestInfo.CREATION_DATE), latestRequestDateQuery),
 			cb.isTrue(root.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER)));
 	}
 
@@ -153,10 +168,7 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		return getByOrganization(SormasToSormasShareInfo.SAMPLE, sampleUuid, organizationId);
 	}
 
-	public SormasToSormasShareInfo getByOrganization(
-		String associatedObjectField,
-		String associatedObjectUuid,
-		String organizationId) {
+	public SormasToSormasShareInfo getByOrganization(String associatedObjectField, String associatedObjectUuid, String organizationId) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SormasToSormasShareInfo> cq = cb.createQuery(SormasToSormasShareInfo.class);
 		Root<SormasToSormasShareInfo> from = cq.from(SormasToSormasShareInfo.class);
@@ -202,7 +214,7 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		Join<SormasToSormasShareInfo, AbstractDomainObject> associatedObjectJoin = root.join(associatedObjectField, JoinType.LEFT);
 
 		query.select(associatedObjectJoin.get(AbstractDomainObject.UUID));
-		query.where(associatedObjectJoin.in(associatedObjects), cb.and(getOwnershipHandedOverFilter(cb, root, ShareRequestStatus.PENDING)));
+		query.where(associatedObjectJoin.in(associatedObjects), cb.and(getOwnershipHandedOverFilter(query, cb, root, ShareRequestStatus.PENDING)));
 
 		return em.createQuery(query).getResultList();
 	}

@@ -99,7 +99,7 @@ public class ReceivedContactProcessor implements ReceivedDataProcessor<ContactDt
 		ValidationErrors errors = new ValidationErrors();
 
 		if (contactService.exists(
-			(cb, contactRoot) -> cb.and(
+			(cb, contactRoot, cq) -> cb.and(
 				cb.equal(contactRoot.get(Contact.UUID), uuid),
 				cb.isNull(contactRoot.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO)),
 				cb.isEmpty(contactRoot.get(Contact.SORMAS_TO_SORMAS_SHARES))))) {

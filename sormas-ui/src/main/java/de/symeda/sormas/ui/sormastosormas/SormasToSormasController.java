@@ -43,7 +43,8 @@ import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareTree;
+import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
+import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestIndexDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
@@ -64,10 +65,11 @@ public class SormasToSormasController {
 	}
 
 	public void shareCaseFromDetailsPage(CaseDataDto caze) {
-		List<SormasToSormasShareTree> allShares = FacadeProvider.getSormasToSormasCaseFacade().getAllShares(caze.getUuid());
+		List<SormasToSormasShareInfoDto> currentShares = FacadeProvider.getSormasToSormasShareInfoFacade()
+			.getIndexList(new SormasToSormasShareInfoCriteria().caze(caze.toReference()), null, null);
 		shareToSormasFromDetailPage(
 			(options) -> FacadeProvider.getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options),
-			SormasToSormasOptionsForm.forCase(allShares));
+			SormasToSormasOptionsForm.forCase(currentShares));
 	}
 
 	public void shareSelectedCases(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
@@ -78,10 +80,11 @@ public class SormasToSormasController {
 	}
 
 	public void shareContactFromDetailsPage(ContactDto contact) {
-		List<SormasToSormasShareTree> allShares = FacadeProvider.getSormasToSormasContactFacade().getAllShares(contact.getUuid());
+		List<SormasToSormasShareInfoDto> currentShares = FacadeProvider.getSormasToSormasShareInfoFacade()
+			.getIndexList(new SormasToSormasShareInfoCriteria().contact(contact.toReference()), null, null);
 		shareToSormasFromDetailPage(
 			(options) -> FacadeProvider.getSormasToSormasContactFacade().share(Collections.singletonList(contact.getUuid()), options),
-			SormasToSormasOptionsForm.forContact(allShares));
+			SormasToSormasOptionsForm.forContact(currentShares));
 	}
 
 	public void shareSelectedContacts(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
@@ -92,11 +95,12 @@ public class SormasToSormasController {
 	}
 
 	public void shareEventFromDetailsPage(EventDto event) {
-		List<SormasToSormasShareTree> allShares = FacadeProvider.getSormasToSormasEventFacade().getAllShares(event.getUuid());
+		List<SormasToSormasShareInfoDto> currentShares = FacadeProvider.getSormasToSormasShareInfoFacade()
+			.getIndexList(new SormasToSormasShareInfoCriteria().event(event.toReference()), null, null);
 
 		shareToSormasFromDetailPage(
 			(options) -> FacadeProvider.getSormasToSormasEventFacade().share(Collections.singletonList(event.getUuid()), options),
-			SormasToSormasOptionsForm.forEvent(allShares));
+			SormasToSormasOptionsForm.forEvent(currentShares));
 	}
 
 	public void shareLabMessage(LabMessageDto labMessage, Runnable callback) {

@@ -119,7 +119,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 		ValidationErrors errors = new ValidationErrors();
 
 		if (eventService.exists(
-			(cb, eventRoot) -> cb.and(
+			(cb, eventRoot, cq) -> cb.and(
 				cb.equal(eventRoot.get(Event.UUID), uuid),
 				cb.isNull(eventRoot.get(Event.SORMAS_TO_SORMAS_ORIGIN_INFO)),
 				cb.isEmpty(eventRoot.get(Event.SORMAS_TO_SORMAS_SHARES))))) {

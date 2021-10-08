@@ -1804,7 +1804,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Override
 	public boolean doesExternalTokenExist(String externalToken, String contactUuid) {
 		return contactService.exists(
-			(cb, contactRoot) -> CriteriaBuilderHelper.and(
+			(cb, contactRoot, cq) -> CriteriaBuilderHelper.and(
 				cb,
 				cb.equal(contactRoot.get(Contact.EXTERNAL_TOKEN), externalToken),
 				cb.notEqual(contactRoot.get(Contact.UUID), contactUuid),
@@ -2093,7 +2093,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			completeness += 0.1f;
 		}
 		if (sampleService
-			.exists((cb, root) -> cb.and(sampleService.createDefaultFilter(cb, root), cb.equal(root.get(Sample.ASSOCIATED_CONTACT), contact)))) {
+			.exists((cb, root, cq) -> cb.and(sampleService.createDefaultFilter(cb, root), cb.equal(root.get(Sample.ASSOCIATED_CONTACT), contact)))) {
 			completeness += 0.15f;
 		}
 		if (contact.getPerson().getBirthdateYYYY() != null || contact.getPerson().getApproximateAge() != null) {

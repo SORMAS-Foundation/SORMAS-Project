@@ -128,7 +128,12 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 		if (options.isWithEventParticipants()) {
 			eventParticipants = eventParticipantService.getAllActiveByEvent(event);
 			eventParticipantShareInfos = eventParticipants.stream()
-				.map(ep -> ShareInfoHelper.createShareInfo(organizationId, ep, SormasToSormasShareInfo::setEventParticipant));
+				.map(
+					ep -> ep.getSormasToSormasShares()
+						.stream()
+						.filter(share -> share.getOrganizationId().equals(organizationId))
+						.findFirst()
+						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, ep, SormasToSormasShareInfo::setEventParticipant)));
 		}
 
 		Stream<SormasToSormasShareInfo> sampleShareInfos = Stream.empty();
@@ -136,7 +141,13 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 			List<String> eventParticipantUuids = eventParticipants.stream().map(EventParticipant::getUuid).collect(Collectors.toList());
 			sampleShareInfos = sampleService.getByEventParticipantUuids(eventParticipantUuids)
 				.stream()
-				.map(s -> ShareInfoHelper.createShareInfo(organizationId, s, SormasToSormasShareInfo::setSample));
+				.map(
+					s -> s.getSormasToSormasShares()
+						.stream()
+						.filter(share -> share.getOrganizationId().equals(organizationId))
+						.findFirst()
+						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, s, SormasToSormasShareInfo::setSample)));
+
 		}
 
 		return Stream.of(Stream.of(eventShareInfo), eventParticipantShareInfos, sampleShareInfos)

@@ -135,29 +135,38 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	@Override
 	protected List<SormasToSormasShareInfo> getOrCreateShareInfos(Case caze, SormasToSormasOptionsDto options, User user) {
 		String organizationId = options.getOrganization().getId();
-		SormasToSormasShareInfo eventShareInfo = caze.getSormasToSormasShares()
+		SormasToSormasShareInfo cazeShareInfo = caze.getSormasToSormasShares()
 			.stream()
 			.filter(s -> s.getOrganizationId().equals(organizationId))
 			.findFirst()
 			.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, caze, SormasToSormasShareInfo::setCaze));
 
-		Stream<SormasToSormasShareInfo> eventParticipantShareInfos = Stream.empty();
+		Stream<SormasToSormasShareInfo> contactShareInfos = Stream.empty();
 		List<Contact> contacts = Collections.emptyList();
 		if (options.isWithAssociatedContacts()) {
 			contacts = contactService.findBy(new ContactCriteria().caze(caze.toReference()), user);
-			eventParticipantShareInfos =
-				contacts.stream().map(c -> ShareInfoHelper.createShareInfo(organizationId, c, SormasToSormasShareInfo::setContact));
+
+			contactShareInfos = contacts.stream()
+				.map(
+					c -> c.getSormasToSormasShares()
+						.stream()
+						.filter(s -> s.getOrganizationId().equals(organizationId))
+						.findFirst()
+						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, c, SormasToSormasShareInfo::setContact)));
 		}
 
 		Stream<SormasToSormasShareInfo> sampleShareInfos = Stream.empty();
-		if (contacts.size() > 0 && options.isWithSamples()) {
+		if (options.isWithSamples()) {
 			sampleShareInfos = getAssociatedSamples(caze.toReference(), contacts, user).stream()
-				.map(s -> ShareInfoHelper.createShareInfo(organizationId, s, SormasToSormasShareInfo::setSample));
+				.map(
+					s -> s.getSormasToSormasShares()
+						.stream()
+						.filter(share -> share.getOrganizationId().equals(organizationId))
+						.findFirst()
+						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, s, SormasToSormasShareInfo::setSample)));
 		}
 
-		return Stream.of(Stream.of(eventShareInfo), eventParticipantShareInfos, sampleShareInfos)
-			.flatMap(Function.identity())
-			.collect(Collectors.toList());
+		return Stream.of(Stream.of(cazeShareInfo), contactShareInfos, sampleShareInfos).flatMap(Function.identity()).collect(Collectors.toList());
 	}
 
 	@Override

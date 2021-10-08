@@ -57,8 +57,7 @@ import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasSha
 import de.symeda.sormas.backend.user.User;
 
 @Stateless(name = "SormasToSormasContactFacade")
-public class SormasToSormasContactFacadeEjb
-	extends AbstractSormasToSormasInterface<Contact, ContactDto, SormasToSormasContactDto>
+public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterface<Contact, ContactDto, SormasToSormasContactDto>
 	implements SormasToSormasContactFacade {
 
 	private static final String CONTACT_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CONTACT_REQUEST_ENDPOINT;
@@ -140,7 +139,12 @@ public class SormasToSormasContactFacadeEjb
 		if (options.isWithSamples()) {
 			sampleShareInfos = sampleService.findBy(new SampleCriteria().contact(contact.toReference()), user)
 				.stream()
-				.map(s -> ShareInfoHelper.createShareInfo(organizationId, s, SormasToSormasShareInfo::setSample));
+				.map(
+					s -> s.getSormasToSormasShares()
+						.stream()
+						.filter(share -> share.getOrganizationId().equals(organizationId))
+						.findFirst()
+						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, s, SormasToSormasShareInfo::setSample)));
 		}
 
 		return Stream.of(Stream.of(eventShareInfo), sampleShareInfos).flatMap(Function.identity()).collect(Collectors.toList());

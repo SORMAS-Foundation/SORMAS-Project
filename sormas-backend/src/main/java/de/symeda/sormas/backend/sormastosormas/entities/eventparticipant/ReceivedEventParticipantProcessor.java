@@ -87,7 +87,7 @@ public class ReceivedEventParticipantProcessor
 		ValidationErrors errors = new ValidationErrors();
 
 		if (eventParticipantService.exists(
-			(cb, epRoot) -> cb.and(
+			(cb, epRoot, cq) -> cb.and(
 				cb.equal(epRoot.get(EventParticipant.UUID), uuid),
 				cb.isNull(epRoot.get(EventParticipant.SORMAS_TO_SORMAS_ORIGIN_INFO)),
 				cb.isEmpty(epRoot.get(EventParticipant.SORMAS_TO_SORMAS_SHARES))))) {

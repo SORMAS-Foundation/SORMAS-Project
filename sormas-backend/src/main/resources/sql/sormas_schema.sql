@@ -8370,5 +8370,10 @@ $$ LANGUAGE plpgsql;
 DROP TABLE sormastosormasshareinfo_entities;
 DELETE FROM sormastosormasshareinfo WHERE caze_id IS NULL and contact_id IS NULL and event_id IS NULL and eventparticipant_id IS NULL and sample_id is null;
 
+ALTER TABLE sormastosormassharerequest ADD COLUMN eventParticipants json;
+ALTER TABLE sormastosormassharerequest ALTER COLUMN eventParticipants TYPE json USING eventParticipants::json;
+ALTER TABLE sormastosormassharerequest_history ADD COLUMN eventParticipants json;
+ALTER TABLE sormastosormassharerequest_history ALTER COLUMN eventParticipants TYPE json USING eventParticipants::json;
+
 INSERT INTO schema_version (version_number, comment) VALUES (407, '[S2S] re-share data with the same organization #6639');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -101,7 +101,7 @@ public class ReceivedSampleProcessor implements ReceivedDataProcessor<SampleDto,
 		ValidationErrors errors = new ValidationErrors();
 
 		if (sampleService.exists(
-			(cb, sampleRoot) -> cb.and(
+			(cb, sampleRoot, cq) -> cb.and(
 				cb.equal(sampleRoot.get(Sample.UUID), uuid),
 				cb.isNull(sampleRoot.get(Sample.SORMAS_TO_SORMAS_ORIGIN_INFO)),
 				cb.isEmpty(sampleRoot.get(Sample.SORMAS_TO_SORMAS_SHARES))))) {

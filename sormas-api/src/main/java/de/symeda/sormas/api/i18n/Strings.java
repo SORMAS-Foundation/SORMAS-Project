@@ -292,7 +292,6 @@ public interface Strings {
 	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
 	String errorSormasToSormasInvalidRequestMethod = "errorSormasToSormasInvalidRequestMethod";
 	String errorSormasToSormasLoadShares = "errorSormasToSormasLoadShares";
-	String errorSormasToSormasOwnershipAlreadyHandedOver = "errorSormasToSormasOwnershipAlreadyHandedOver";
 	String errorSormasToSormasRejectNotPending = "errorSormasToSormasRejectNotPending";
 	String errorSormasToSormasRequestToken = "errorSormasToSormasRequestToken";
 	String errorSormasToSormasResult = "errorSormasToSormasResult";

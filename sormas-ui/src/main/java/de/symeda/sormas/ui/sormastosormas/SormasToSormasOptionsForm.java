@@ -34,7 +34,6 @@ import com.vaadin.v7.ui.TextArea;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareTree;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -55,14 +54,14 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	private final List<String> customOptions;
 
-	private List<SormasToSormasShareTree> currentShares;
+	private List<SormasToSormasShareInfoDto> currentShares;
 
 	private final boolean hasOptions;
 
-	private final BiConsumer<SormasToSormasOptionsForm, SormasToSormasShareInfoDto> updateCustomOptionssByPreviousShare;
+	private final BiConsumer<SormasToSormasOptionsForm, SormasToSormasShareInfoDto> updateCustomOptionsByPreviousShare;
 	private final Consumer<SormasToSormasOptionsForm> customFieldDependencies;
 
-	public static SormasToSormasOptionsForm forCase(List<SormasToSormasShareTree> currentShares) {
+	public static SormasToSormasOptionsForm forCase(List<SormasToSormasShareInfoDto> currentShares) {
 		return new SormasToSormasOptionsForm(
 			currentShares,
 			true,
@@ -88,13 +87,13 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 				});
 	}
 
-	public static SormasToSormasOptionsForm forContact(List<SormasToSormasShareTree> currentShares) {
+	public static SormasToSormasOptionsForm forContact(List<SormasToSormasShareInfoDto> currentShares) {
 		return new SormasToSormasOptionsForm(currentShares, true, Collections.singletonList(SormasToSormasOptionsDto.WITH_SAMPLES), (f, s) -> {
 			((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_SAMPLES)).setValue(s.isWithSamples());
 		}, null);
 	}
 
-	public static SormasToSormasOptionsForm forEvent(List<SormasToSormasShareTree> currentShares) {
+	public static SormasToSormasOptionsForm forEvent(List<SormasToSormasShareInfoDto> currentShares) {
 		return new SormasToSormasOptionsForm(
 			currentShares,
 			true,
@@ -116,16 +115,16 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 	}
 
 	private SormasToSormasOptionsForm(
-		List<SormasToSormasShareTree> currentShares,
+		List<SormasToSormasShareInfoDto> currentShares,
 		boolean hasOptions,
 		List<String> customOptions,
-		BiConsumer<SormasToSormasOptionsForm, SormasToSormasShareInfoDto> updateCustomOptionssByPreviousShare,
+		BiConsumer<SormasToSormasOptionsForm, SormasToSormasShareInfoDto> updateCustomOptionsByPreviousShare,
 		Consumer<SormasToSormasOptionsForm> customFieldDependencies) {
 		super(SormasToSormasOptionsDto.class, SormasToSormasOptionsDto.I18N_PREFIX, false);
 
 		this.customOptions = customOptions == null ? Collections.emptyList() : customOptions;
 		this.currentShares = currentShares == null ? Collections.emptyList() : currentShares;
-		this.updateCustomOptionssByPreviousShare = updateCustomOptionssByPreviousShare;
+		this.updateCustomOptionsByPreviousShare = updateCustomOptionsByPreviousShare;
 		this.customFieldDependencies = customFieldDependencies;
 		this.hasOptions = hasOptions;
 
@@ -169,8 +168,8 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 					pseudonimyzePersonalData.setValue(s.isPseudonymizedPersonalData());
 					pseudonimyzePersonalData.setValue(s.isPseudonymizedSensitiveData());
 
-					if (updateCustomOptionssByPreviousShare != null) {
-						updateCustomOptionssByPreviousShare.accept(this, s);
+					if (updateCustomOptionsByPreviousShare != null) {
+						updateCustomOptionsByPreviousShare.accept(this, s);
 					}
 				});
 			});
@@ -231,16 +230,10 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		});
 	}
 
-	private static Optional<SormasToSormasShareInfoDto> findShareByOrganization(List<SormasToSormasShareTree> shares, String organizationId) {
-		for (SormasToSormasShareTree share : shares) {
-			if (share.getShare().getTargetDescriptor().getId().equals(organizationId)) {
-				return Optional.of(share.getShare());
-			} else if (share.getReShares() != null) {
-				Optional<SormasToSormasShareInfoDto> reShare = findShareByOrganization(share.getReShares(), organizationId);
-
-				if (reShare.isPresent()) {
-					return reShare;
-				}
+	private static Optional<SormasToSormasShareInfoDto> findShareByOrganization(List<SormasToSormasShareInfoDto> shares, String organizationId) {
+		for (SormasToSormasShareInfoDto share : shares) {
+			if (share.getTargetDescriptor().getId().equals(organizationId)) {
+				return Optional.of(share);
 			}
 		}
 

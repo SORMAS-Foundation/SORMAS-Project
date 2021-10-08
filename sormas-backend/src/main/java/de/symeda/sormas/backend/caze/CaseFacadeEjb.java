@@ -3125,7 +3125,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public boolean doesExternalTokenExist(String externalToken, String caseUuid) {
 		return caseService.exists(
-			(cb, caseRoot) -> CriteriaBuilderHelper.and(
+			(cb, caseRoot, cq) -> CriteriaBuilderHelper.and(
 				cb,
 				cb.equal(caseRoot.get(Case.EXTERNAL_TOKEN), externalToken),
 				cb.notEqual(caseRoot.get(Case.UUID), caseUuid),
@@ -3542,7 +3542,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		final Join<Sample, Case> caseJoin = sampleRoot.join(Sample.ASSOCIATED_CASE, JoinType.INNER);
 		final Predicate casePredicate = criteriaBuilder.equal(caseJoin.get(AbstractDomainObject.UUID), caseUuid);
 		final Predicate testPositivityPredicate = criteriaBuilder.equal(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.POSITIVE);
-		return sampleService.exists((cb, root) -> cb.and(casePredicate, testPositivityPredicate));
+		return sampleService.exists((cb, root, cq) -> cb.and(casePredicate, testPositivityPredicate));
 	}
 
 	@Override
