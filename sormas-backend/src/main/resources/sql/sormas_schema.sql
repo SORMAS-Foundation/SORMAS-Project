@@ -8293,6 +8293,15 @@ ALTER TABLE travelentry_history ADD COLUMN diseasevariantdetails text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (408, 'Add disease variant details #5935');
 
+-- 2021-10-06 - Add PathogenTest.externalId and transfer it from lab messages #5713
+ALTER TABLE pathogentest ADD COLUMN externalid varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN externalid varchar(512);
+
+ALTER TABLE testreport ADD COLUMN externalid varchar(512);
+ALTER TABLE testreport_history ADD COLUMN externalid varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (409, 'Add PathogenTest.externalId and transfer it from lab messages #5713');
+
 -- 2021-09-30 Make contact classification required in the API and backend #6828
 UPDATE contact set contactclassification = 'UNCONFIRMED' where contactclassification IS NULL;
 ALTER TABLE contact ALTER COLUMN contactclassification SET NOT NULL;
@@ -8302,5 +8311,5 @@ ALTER TABLE cases ALTER COLUMN responsibleRegion_id SET NOT NULL;
 ALTER TABLE cases ALTER COLUMN responsibleDistrict_id SET NOT NULL;
 ALTER TABLE cases ALTER COLUMN healthfacility_id SET NOT NULL;
 
-INSERT INTO schema_version (version_number, comment) VALUES (409, 'Make contact classification required in the API and backend #6828');
+INSERT INTO schema_version (version_number, comment) VALUES (410, 'Make contact classification required in the API and backend #6828');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
