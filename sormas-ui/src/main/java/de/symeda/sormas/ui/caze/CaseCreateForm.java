@@ -317,6 +317,13 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			false,
 			null);
 
+		ogCaseOrigin.addValueChangeListener(e -> {
+			boolean pointOfEntryRegionDistrictVisible =
+				CaseOrigin.POINT_OF_ENTRY.equals(ogCaseOrigin.getValue()) && Boolean.TRUE.equals(differentPointOfEntryJurisdiction.getValue());
+			pointOfEntryRegionCombo.setVisible(pointOfEntryRegionDistrictVisible);
+			pointOfEntryDistrictCombo.setVisible(pointOfEntryRegionDistrictVisible);
+		});
+
 		facilityOrHome =
 			addCustomField(FACILITY_OR_HOME_LOC, TypeOfPlace.class, NullableOptionGroup.class, I18nProperties.getCaption(Captions.casePlaceOfStay));
 		facilityOrHome.removeAllItems();
