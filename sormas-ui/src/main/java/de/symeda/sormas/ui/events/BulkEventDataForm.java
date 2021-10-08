@@ -38,14 +38,18 @@ public class BulkEventDataForm extends AbstractEditForm<EventDto> {
 
 	private static final String EVENT_STATUS_CHECKBOX = "eventStatusCheckbox";
 	private static final String EVENT_INVESTIGATION_STATUS_CHECKBOX = "eventInvestigationStatusCheckbox";
+	private static final String EVENT_MANAGEMENT_STATUS_CHECKBOX = "eventManagementStatusCheckbox";
 
 	private static final String HTML_LAYOUT = fluidRowLocsCss(VSPACE_4, EVENT_STATUS_CHECKBOX)
 		+ fluidRowLocs(EventDto.EVENT_STATUS)
 		+ fluidRowLocsCss(VSPACE_4, EVENT_INVESTIGATION_STATUS_CHECKBOX)
-		+ fluidRowLocs(EventDto.EVENT_INVESTIGATION_STATUS);
+		+ fluidRowLocs(EventDto.EVENT_INVESTIGATION_STATUS)
+		+ fluidRowLocsCss(VSPACE_4, EVENT_MANAGEMENT_STATUS_CHECKBOX)
+		+ fluidRowLocs(EventDto.EVENT_MANAGEMENT_STATUS);
 
 	private CheckBox eventStatusCheckBox;
 	private CheckBox eventInvestigationStatusCheckbox;
+	private CheckBox eventManagementStatusCheckbox;
 
 	public BulkEventDataForm() {
 		super(EventDto.class, EventDto.I18N_PREFIX);
@@ -80,6 +84,21 @@ public class BulkEventDataForm extends AbstractEditForm<EventDto> {
 		eventInvestigationStatusCheckbox.addValueChangeListener(e -> {
 			eventInvestigationStatus.setEnabled((boolean) e.getProperty().getValue());
 		});
+
+		eventManagementStatusCheckbox = new CheckBox(I18nProperties.getCaption(Captions.bulkEventManagementStatus));
+		getContent().addComponent(eventManagementStatusCheckbox, EVENT_MANAGEMENT_STATUS_CHECKBOX);
+		NullableOptionGroup eventManagementStatus = addField(EventDto.EVENT_MANAGEMENT_STATUS, NullableOptionGroup.class);
+		eventManagementStatus.setEnabled(false);
+
+		FieldHelper.setRequiredWhen(
+			getFieldGroup(),
+			eventManagementStatusCheckbox,
+			Arrays.asList(EventDto.EVENT_MANAGEMENT_STATUS),
+			Arrays.asList(true));
+
+		eventManagementStatusCheckbox.addValueChangeListener(e -> {
+			eventManagementStatus.setEnabled((boolean) e.getProperty().getValue());
+		});
 	}
 
 	@Override
@@ -93,5 +112,9 @@ public class BulkEventDataForm extends AbstractEditForm<EventDto> {
 
 	public CheckBox getEventInvestigationStatusCheckbox() {
 		return eventInvestigationStatusCheckbox;
+	}
+
+	public CheckBox getEventManagementStatusCheckbox() {
+		return eventManagementStatusCheckbox;
 	}
 }

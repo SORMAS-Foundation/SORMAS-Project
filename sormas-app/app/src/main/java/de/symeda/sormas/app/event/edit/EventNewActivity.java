@@ -134,7 +134,7 @@ public class EventNewActivity extends BaseEditActivity<Event> {
 
 		if (caseUuid != null) {
 			Case linkedCase = DatabaseHelper.getCaseDao().getByReferenceDto(new CaseReferenceDto(caseUuid));
-			if (!eventToSave.getDisease().equals(linkedCase.getDisease())) {
+			if (eventToSave.getDisease() != null && !eventToSave.getDisease().equals(linkedCase.getDisease())) {
 				NotificationHelper
 					.showNotification(this, WARNING, getString(R.string.message_Event_and_Case_disease_mismatch) + " " + linkedCase.getDisease());
 				return;

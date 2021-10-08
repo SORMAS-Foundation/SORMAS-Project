@@ -23,31 +23,30 @@ import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
-import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.location.AreaType;
+import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonExportDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -55,8 +54,11 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private TestDataCreator.RDCF rdcf1;
 	private TestDataCreator.RDCF rdcf2;
-	private UserDto user1;
-	private UserDto user2;
+	private UserDto districtUser1;
+	private UserDto districtUser2;
+	private UserDto regionUser2;
+	private UserDto communityUser2;
+	private UserDto facilityUser2;
 	private PersonDto person;
 
 	@Override
@@ -64,136 +66,266 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		super.init();
 
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1");
-		user1 = creator
+		districtUser1 = creator
 			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2");
-		user2 = creator
+		districtUser2 = creator
 			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
 
-		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
-	}
-
-	@Before()
-	public void beforeEach() {
-		person = createPerson();
+		regionUser2 = creator.createUser(
+			rdcf2.region.getUuid(),
+			rdcf2.district.getUuid(),
+			rdcf2.community.getUuid(),
+			rdcf2.facility.getUuid(),
+			"Surv",
+			"Sup2",
+			UserRole.SURVEILLANCE_SUPERVISOR);
+		communityUser2 = creator.createUser(
+			rdcf2.region.getUuid(),
+			rdcf2.district.getUuid(),
+			rdcf2.community.getUuid(),
+			rdcf2.facility.getUuid(),
+			"Comm",
+			"Off2",
+			UserRole.COMMUNITY_OFFICER);
+		facilityUser2 = creator.createUser(
+			rdcf2.region.getUuid(),
+			rdcf2.district.getUuid(),
+			rdcf2.community.getUuid(),
+			rdcf2.facility.getUuid(),
+			"Hosp",
+			"Inf2",
+			UserRole.HOSPITAL_INFORMANT);
 	}
 
 	@Test
 	public void testGetCasePersonInSameJurisdiction() {
+		loginWith(districtUser2);
 
-		creator.createCase(user1.toReference(), person.toReference(), rdcf2);
+		person = createPerson();
+
+		creator.createCase(districtUser1.toReference(), person.toReference(), rdcf2);
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test
 	public void testGetCasePersonOutsideJurisdiction() {
-		creator.createCase(user1.toReference(), person.toReference(), rdcf1);
+		loginWith(districtUser2);
+
+		person = createPerson();
+		creator.createCase(districtUser1.toReference(), person.toReference(), rdcf1);
 
 		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test
-	public void testUpdateCasePersonInJurisdiction() {
+	public void testGetCasePersonInSamePlaceOfStayJurisdiction() {
+		loginWith(districtUser2);
 
-		creator.createCase(user1.toReference(), person.toReference(), rdcf2);
+		person = createPerson();
+		creator.createCase(districtUser1.toReference(), person.toReference(), rdcf1, c -> {
+			c.setRegion(rdcf2.region);
+			c.setDistrict(rdcf2.district);
+			c.setCommunity(rdcf2.community);
+			c.setHealthFacility(rdcf2.facility);
+		});
+
+		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
+	}
+
+	@Test
+	public void testGetCasePersonOutsideResponsibleJurisdiction() {
+		loginWith(districtUser2);
+
+		person = createPerson();
+		creator.createCase(districtUser1.toReference(), person.toReference(), rdcf1, c -> {
+			c.setResponsibleRegion(rdcf1.region);
+			c.setResponsibleDistrict(rdcf1.district);
+			c.setResponsibleCommunity(rdcf1.community);
+		});
+
+		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
+	}
+
+	@Test
+	public void testGetCasePersonInSamePlaceOfStayJurisdictionOnRegionLevel() {
+		loginWith(regionUser2);
+
+		person = createPerson();
+		creator.createCase(districtUser1.toReference(), person.toReference(), rdcf1, c -> {
+			c.setRegion(rdcf2.region);
+			c.setDistrict(rdcf2.district);
+			c.setCommunity(rdcf2.community);
+			c.setHealthFacility(rdcf2.facility);
+		});
+
+		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
+	}
+
+	@Test
+	public void testGetCasePersonInSamePlaceOfStayJurisdictionOnCommunityLevel() {
+		loginWith(communityUser2);
+
+		person = createPerson();
+		creator.createCase(districtUser1.toReference(), person.toReference(), rdcf1, c -> {
+			c.setRegion(rdcf2.region);
+			c.setDistrict(rdcf2.district);
+			c.setCommunity(rdcf2.community);
+			c.setHealthFacility(rdcf2.facility);
+		});
+
+		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
+	}
+
+	@Test
+	public void testGetCasePersonInPlaceOfStayJurisdictionOnFacilityLevel() {
+		loginWith(facilityUser2);
+
+		person = createPerson();
+		creator.createCase(districtUser1.toReference(), person.toReference(), rdcf1, c -> {
+			c.setRegion(rdcf2.region);
+			c.setDistrict(rdcf2.district);
+			c.setCommunity(rdcf2.community);
+			c.setHealthFacility(rdcf2.facility);
+		});
+
+		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
+	}
+
+	@Test
+	public void testUpdateCasePersonInJurisdiction() {
+		loginWith(districtUser2);
+
+		person = createPerson();
+		creator.createCase(districtUser1.toReference(), person.toReference(), rdcf2);
 		updatePerson(false);
 		assertPersonUpdated();
 	}
 
 	@Test
 	public void testUpdateCasePersonOutsideJurisdiction() {
+		loginWith(districtUser2);
 
-		creator.createCase(user1.toReference(), person.toReference(), rdcf1);
+		person = createPerson();
+		creator.createCase(districtUser1.toReference(), person.toReference(), rdcf1);
 		updatePerson(true);
 		assertPersonNotUpdated();
 	}
 
 	@Test
 	public void testUpdateCasePersonInJurisdictionWithPseudonymizedDto() {
+		loginWith(districtUser2);
 
-		creator.createCase(user1.toReference(), person.toReference(), rdcf2);
+		person = createPerson();
+		creator.createCase(districtUser1.toReference(), person.toReference(), rdcf2);
 		updatePersonPseudonymizedDto();
 		assertPersonNotUpdated();
 	}
 
 	@Test
 	public void testGetContactPersonInSameJurisdiction() {
+		loginWith(districtUser2);
 
-		creator.createContact(user1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf2);
+		person = createPerson();
+		creator.createContact(districtUser1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf2);
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test
 	public void testGetContactPersonOutsideJurisdiction() {
-
+		loginWith(districtUser1);
+		person = createPerson();
 		ContactDto contact =
-			creator.createContact(user1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf1);
+			creator.createContact(districtUser1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf1);
+
+		loginWith(districtUser2);
 		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
 
-		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson().toReference(), rdcf2);
+		loginWith(districtUser1);
+		CaseDataDto caze = creator.createCase(districtUser1.toReference(), creator.createPerson().toReference(), rdcf2);
 		contact.setCaze(caze.toReference());
 		contact = getContactFacade().saveContact(contact);
-		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
 
+		loginWith(districtUser2);
+		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
+
+		loginWith(districtUser1);
 		contact.setRegion(rdcf2.region);
 		contact.setDistrict(rdcf2.district);
 		contact = getContactFacade().saveContact(contact);
+
+		loginWith(districtUser2);
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 
+		loginWith(districtUser1);
 		contact.setRegion(null);
 		contact.setDistrict(null);
 		contact = getContactFacade().saveContact(contact);
+
+		loginWith(districtUser2);
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test
 	public void testUpdateContactPersonInJurisdiction() {
+		loginWith(districtUser2);
 
-		creator.createContact(user1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf2);
+		person = createPerson();
+		creator.createContact(districtUser1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf2);
 		updatePerson(false);
 		assertPersonUpdated();
 	}
 
 	@Test
 	public void testUpdateContactPersonOutsideJurisdiction() {
+		loginWith(districtUser2);
 
-		creator.createContact(user1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf1);
+		person = createPerson();
+		creator.createContact(districtUser1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf1);
 		updatePerson(true);
 		assertPersonNotUpdated();
 	}
 
 	@Test
 	public void testGetEventParticipantPersonInSameJurisdiction() {
+		loginWith(districtUser2);
 
-		EventDto event = creator.createEvent(user2.toReference());
-		creator.createEventParticipant(event.toReference(), person, user2.toReference());
+		person = createPerson();
+		EventDto event = creator.createEvent(districtUser2.toReference());
+		creator.createEventParticipant(event.toReference(), person, districtUser2.toReference());
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test
 	public void testGetEventParticipantPersonOutsideJurisdiction() {
+		loginWith(districtUser2);
 
-		EventDto event = creator.createEvent(user1.toReference());
-		creator.createEventParticipant(event.toReference(), person, user1.toReference());
+		person = createPerson();
+		EventDto event = creator.createEvent(districtUser1.toReference());
+		creator.createEventParticipant(event.toReference(), person, districtUser1.toReference());
 //		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test
 	public void testUpdateEventParticipantPersonInJurisdiction() {
+		loginWith(districtUser2);
 
-		EventDto event = creator.createEvent(user2.toReference());
-		creator.createEventParticipant(event.toReference(), person, user2.toReference());
+		person = createPerson();
+		EventDto event = creator.createEvent(districtUser2.toReference());
+		creator.createEventParticipant(event.toReference(), person, districtUser2.toReference());
 		updatePerson(false);
 		assertPersonUpdated();
 	}
 
 	@Test
 	public void testUpdateEventParticipantPersonOutsideJurisdiction() {
+		loginWith(districtUser2);
 
-		EventDto event = creator.createEvent(user1.toReference());
-		creator.createEventParticipant(event.toReference(), person, user1.toReference());
+		person = createPerson();
+		EventDto event = creator.createEvent(districtUser1.toReference());
+		creator.createEventParticipant(event.toReference(), person, districtUser1.toReference());
 //		updatePerson(true);
 //		assertPersonNotUpdated();
 		// pseudonymization disabled for now
@@ -203,8 +335,10 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	@Test
 	public void testPseudonymizeGetByUuids() {
+		loginWith(districtUser2);
 
-		creator.createCase(user1.toReference(), person.toReference(), rdcf2);
+		person = createPerson();
+		creator.createCase(districtUser1.toReference(), person.toReference(), rdcf2);
 		PersonDto person2 = createPerson();
 		List<PersonDto> persons = getPersonFacade().getByUuids(Arrays.asList(person.getUuid(), person2.getUuid()));
 		assertNotPseudonymized(persons.stream().filter(p -> p.getUuid().equals(person.getUuid())).findFirst().get());
@@ -213,13 +347,16 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	@Test
 	public void testPseudonymizeGetAllAfter() {
+		loginWith(districtUser2);
 
-		creator.createCase(user1.toReference(), person.toReference(), rdcf2);
+		person = createPerson();
+		creator.createCase(districtUser1.toReference(), person.toReference(), rdcf2);
 
 		PersonDto person2 = createPerson();
 		//create redonly case with person2 --> person2 should be pseudonymized
-		CaseDataDto caze = creator.createCase(user1.toReference(), person2.toReference(), rdcf1);
-		creator.createContact(user2.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		CaseDataDto caze = creator.createCase(districtUser1.toReference(), person2.toReference(), rdcf1);
+		creator
+			.createContact(districtUser2.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, 2019);
@@ -227,6 +364,32 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		assertNotPseudonymized(persons.stream().filter(p -> p.getUuid().equals(person.getUuid())).findFirst().get());
 		assertPseudonymised(persons.stream().filter(p -> p.getUuid().equals(person2.getUuid())).findFirst().get());
+	}
+
+	@Test
+	public void testPseudonymizeExportList() {
+		loginWith(districtUser2);
+
+		person = createPerson();
+		creator.createCase(districtUser1.toReference(), person.toReference(), rdcf2);
+
+		PersonDto person2 = createPerson();
+		//create readonly case with person2 --> person2 should be pseudonymized
+		CaseDataDto caze = creator.createCase(districtUser1.toReference(), person2.toReference(), rdcf1);
+		creator
+			.createContact(districtUser2.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+
+		List<PersonExportDto> exportList = getPersonFacade().getExportList(new PersonCriteria(), 0, 100);
+
+		PersonExportDto exportedPerson = exportList.stream().filter(p -> p.getUuid().equals(person.getUuid())).findFirst().get();
+		assertThat(exportedPerson.getFirstName(), is("James"));
+		assertThat(exportedPerson.getLastName(), is("Smith"));
+		assertThat(exportedPerson.getBirthdate().getDateOfBirthDD(), is(1));
+
+		PersonExportDto exportedPerson2 = exportList.stream().filter(p -> p.getUuid().equals(person2.getUuid())).findFirst().get();
+		assertThat(exportedPerson2.getFirstName(), is("Confidential"));
+		assertThat(exportedPerson2.getLastName(), is("Confidential"));
+		assertThat(exportedPerson2.getBirthdate().getDateOfBirthDD(), is(nullValue()));
 	}
 
 	private PersonDto createPerson() {

@@ -22,6 +22,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -62,17 +63,17 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.Year;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.GeoLatLon;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.geo.GeoLatLon;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCountDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
@@ -82,8 +83,8 @@ import de.symeda.sormas.api.statistics.StatisticsHelper;
 import de.symeda.sormas.api.statistics.StatisticsHelper.StatisticsKeyComparator;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.map.LeafletMap;
@@ -94,6 +95,7 @@ import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisu
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 
 public class StatisticsView extends AbstractStatisticsView {
 
@@ -434,8 +436,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		StreamResource streamResource = DownloadUtil.createGridExportStreamResource(
 			statisticsCaseGrid.getContainerDataSource(),
 			statisticsCaseGrid.getColumns(),
-			"sormas_statistics",
-			"sormas_statistics_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			ExportEntityName.STATISTICS);
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
 		fileDownloader.extend(exportButton);
 	}
@@ -628,7 +629,11 @@ public class StatisticsView extends AbstractStatisticsView {
 					seriesValue = value.getIncidence(incidenceDivisor);
 				}
 				Object seriesId = value.getRowKey();
-				hcjs.append("['").append(StringEscapeUtils.escapeEcmaScript(seriesCaptions.get(seriesId))).append("',").append(seriesValue).append("],");
+				hcjs.append("['")
+					.append(StringEscapeUtils.escapeEcmaScript(seriesCaptions.get(seriesId)))
+					.append("',")
+					.append(seriesValue)
+					.append("],");
 			});
 			if (unknownSeriesElement != null) {
 				Object seriesValue;
@@ -726,23 +731,25 @@ public class StatisticsView extends AbstractStatisticsView {
 		}
 		hcjs.append("],");
 
+		//@formatter:off
 		hcjs.append("exporting: {\n" +
-				"        buttons: {\n" +
-				"            contextButton: {\n" +
-				"                menuItems: [\n" +
-				"                    'printChart',\n" +
-				"                    'separator',\n" +
-				"                    'downloadPNG',\n" +
-				"                    'downloadJPEG',\n" +
-				"                    'downloadPDF',\n" +
-				"                    'downloadSVG',\n" +
-				"                    'downloadCSV',\n" +
-				"                    'downloadXLS'\n" +
-				"                ]\n" +
-				"            }\n" +
-				"        }\n" +
-				"    }");
+						"        buttons: {\n" +
+						"            contextButton: {\n" +
+						"                menuItems: [\n" +
+						"                    'printChart',\n" +
+						"                    'separator',\n" +
+						"                    'downloadPNG',\n" +
+						"                    'downloadJPEG',\n" +
+						"                    'downloadPDF',\n" +
+						"                    'downloadSVG',\n" +
+						"                    'downloadCSV',\n" +
+						"                    'downloadXLS'\n" +
+						"                ]\n" +
+						"            }\n" +
+						"        }\n" +
+						"    }");
 		hcjs.append("};");
+		//@formatter:on
 
 		chart.setHcjs(hcjs.toString());
 		resultsLayout.addComponent(chart);
@@ -858,9 +865,9 @@ public class StatisticsView extends AbstractStatisticsView {
 			LeafletMapUtil.addOtherCountriesOverlay(map);
 		}
 
-		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveAsReference();
+		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveByServerCountry();
 
-		List<LeafletPolygon> outlinePolygones = new ArrayList<LeafletPolygon>();
+		List<LeafletPolygon> outlinePolygones = new ArrayList<>();
 
 		// draw outlines of all regions
 		for (RegionReferenceDto region : regions) {
@@ -870,23 +877,20 @@ public class StatisticsView extends AbstractStatisticsView {
 				continue;
 			}
 
-			for (int part = 0; part < regionShape.length; part++) {
-				GeoLatLon[] regionShapePart = regionShape[part];
+			// fillOpacity is used, so we can still hover the region
+			Arrays.stream(regionShape).forEach(regionShapePart -> {
 				LeafletPolygon polygon = new LeafletPolygon();
 				polygon.setCaption(region.getCaption());
-				// fillOpacity is used, so we can still hover the region
 				polygon.setOptions("{\"weight\": 1, \"color\": '#888', \"fillOpacity\": 0.02}");
 				polygon.setLatLons(regionShapePart);
 				outlinePolygones.add(polygon);
-			}
+			});
 		}
 
 		map.addPolygonGroup("outlines", outlinePolygones);
 
 		if (!showCaseIncidence || !caseIncidencePossible) {
-			resultData.sort((a, b) -> {
-				return Integer.compare(a.getCaseCount(), b.getCaseCount());
-			});
+			resultData.sort(Comparator.comparingInt(StatisticsCaseCountDto::getCaseCount));
 		} else {
 			resultData.sort((a, b) -> {
 				BigDecimal incidenceA = a.getIncidence(incidenceDivisor);
@@ -937,10 +941,10 @@ public class StatisticsView extends AbstractStatisticsView {
 			GeoLatLon[][] shape;
 			switch (visualizationComponent.getVisualizationMapType()) {
 			case REGIONS:
-				shape = FacadeProvider.getGeoShapeProvider().getRegionShape(new RegionReferenceDto(shapeUuid));
+				shape = FacadeProvider.getGeoShapeProvider().getRegionShape(new RegionReferenceDto(shapeUuid, null, null));
 				break;
 			case DISTRICTS:
-				shape = FacadeProvider.getGeoShapeProvider().getDistrictShape(new DistrictReferenceDto(shapeUuid));
+				shape = FacadeProvider.getGeoShapeProvider().getDistrictShape(new DistrictReferenceDto(shapeUuid, null, null));
 				break;
 			default:
 				throw new IllegalArgumentException(visualizationComponent.getVisualizationMapType().toString());
@@ -976,11 +980,40 @@ public class StatisticsView extends AbstractStatisticsView {
 					polygon.setCaption(regionOrDistrict.getCaption() + "<br>" + regionOrDistrictValue);
 				}
 				// fillOpacity is used, so we can still hover the region
-				polygon.setOptions("{\"stroke\": false, \"color\": '" + fillColor + "', \"fillOpacity\": " + fillOpacity + "}");
+				polygon.setOptions(
+					"{\"stroke\": true, \"color\": '#000000', \"weight\": 1, \"fillColor\": '" + fillColor + "', \"fillOpacity\": " + fillOpacity
+						+ "}");
 				polygon.setLatLons(shapePart);
 				resultPolygons.add(polygon);
 			}
 		}
+		// sort polygon array, so that polygons which are completely contained by another appear on top
+		List<Integer[]> indexesToSwap = new ArrayList<>();
+		for (int poly1index = 0; poly1index < resultPolygons.size(); poly1index++) {
+			LeafletPolygon poly1 = resultPolygons.get(poly1index);
+			for (int poly2index = poly1index; poly2index < resultPolygons.size(); poly2index++) {
+				LeafletPolygon poly2 = resultPolygons.get(poly2index);
+				if (poly1index == poly2index) {
+					continue;
+				}
+				// get maximum latitude and longitude of each polygon
+				// if the max/min values of poly1 are completely inside those of poly2, switch both
+				if (poly1.getMaxLatLon()[0] < poly2.getMaxLatLon()[0]
+					&& poly1.getMinLatLon()[0] > poly2.getMinLatLon()[0]
+					&& poly1.getMaxLatLon()[1] < poly2.getMaxLatLon()[1]
+					&& poly1.getMinLatLon()[1] > poly2.getMinLatLon()[1]) {
+					// make sure not to change the list we are currently iterating over
+					indexesToSwap.add(
+						new Integer[] {
+							poly1index,
+							poly2index });
+				}
+			}
+		}
+		for (Integer[] swaps : indexesToSwap) {
+			Collections.swap(resultPolygons, swaps[0], swaps[1]);
+		}
+
 		map.addPolygonGroup("results", resultPolygons);
 
 		mapLayout.addComponent(map);
@@ -1023,7 +1056,10 @@ public class StatisticsView extends AbstractStatisticsView {
 			caseIncidencePossible = !hasIncidenceIncompatibleFilter() && !visualizationComponent.hasIncidenceIncompatibleGrouping();
 			missingPopulationDataNames = null;
 
-			if (caseIncidencePossible && !visualizationComponent.hasRegionGrouping() && !visualizationComponent.hasDistrictGrouping()) {
+			if (caseIncidencePossible
+				&& !visualizationComponent.hasRegionGrouping()
+				&& !visualizationComponent.hasDistrictGrouping()
+				&& !visualizationComponent.hasCommunityGrouping()) {
 				// we don't have a territorial grouping, so the system will sum up the population of all regions.
 				// make sure the user is informed about regions with missing population data
 
@@ -1038,7 +1074,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				if (hasMissingPopulationData) {
 					caseIncidencePossible = false;
 					List<String> missingPopulationDataNamesList = FacadeProvider.getRegionFacade().getNamesByIds(missingPopulationDataRegionIds);
-					missingPopulationDataNames = StringEscapeUtils.escapeEcmaScript(String.join(", ", missingPopulationDataNamesList));
+					missingPopulationDataNames = HtmlHelper.cleanHtml(String.join(", ", missingPopulationDataNamesList));
 				}
 			}
 
@@ -1134,8 +1170,7 @@ public class StatisticsView extends AbstractStatisticsView {
 		for (StatisticsFilterComponent filterComponent : filterComponents) {
 			if (filterComponent.getSelectedAttribute() == StatisticsCaseAttribute.JURISDICTION) {
 				StatisticsFilterJurisdictionElement filterElement = (StatisticsFilterJurisdictionElement) filterComponent.getFilterElement();
-				if (CollectionUtils.isNotEmpty(filterElement.getSelectedCommunities())
-					|| CollectionUtils.isNotEmpty(filterElement.getSelectedHealthFacilities())) {
+				if (CollectionUtils.isNotEmpty(filterElement.getSelectedHealthFacilities())) {
 					return true;
 				}
 			}

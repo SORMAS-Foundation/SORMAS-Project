@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.ObservesAsync;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.WebApplicationException;
@@ -179,9 +180,16 @@ public class KeycloakService {
                 createUser(keycloak.get(), newUser);
             }
         } catch (Exception e) {
-            userUpdateEvent.getExceptionCallback().accept(e.getMessage());
+            if (userUpdateEvent.getExceptionCallback() != null) {
+                userUpdateEvent.getExceptionCallback().accept(e.getMessage());
+            }
             logger.error(e.getMessage(), e);
         }
+    }
+
+    public void handleUserUpdateEventAsync(@ObservesAsync UserUpdateEvent userUpdateEvent) {
+        logger.debug("Handling userUpdateEvent asynchronously for user {}", userUpdateEvent.getNewUser().getUuid());
+        handleUserUpdateEvent(userUpdateEvent);
     }
 
     /**

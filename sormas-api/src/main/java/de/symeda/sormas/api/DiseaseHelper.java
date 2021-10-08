@@ -17,7 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.api;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -55,5 +58,16 @@ public final class DiseaseHelper {
 		}
 
 		return disease != Disease.OTHER ? disease.toShortString() : DataHelper.toStringNullable(diseaseDetails);
+	}
+
+	public static String toString(Disease disease, String diseaseDetails, DiseaseVariant diseaseVariant) {
+		return String.format("%s %s", toString(disease, diseaseDetails), variantInBrackets(diseaseVariant));
+	}
+
+	/**
+	 * @return The disease variant caption in parenthesis or an empty string if the disease variant is null
+	 */
+	public static String variantInBrackets(DiseaseVariant diseaseVariant) {
+		return diseaseVariant == null ? StringUtils.EMPTY : String.format("(%s)", diseaseVariant.getCaption());
 	}
 }

@@ -1,0 +1,3 @@
+This property is empty and is not displayed: 
+This property is empty and is not replaced: $notReplaced
+This property is not empty and is replaced: thisIsDisplayed

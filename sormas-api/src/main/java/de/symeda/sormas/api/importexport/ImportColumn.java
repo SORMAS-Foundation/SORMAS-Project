@@ -23,7 +23,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -126,6 +127,8 @@ public class ImportColumn {
 			return I18nProperties.getString(Strings.date) + ": dd/MM/yyyy";
 		} else if (FacilityReferenceDto.class.isAssignableFrom(fieldType)) {
 			return I18nProperties.getString(Strings.infoFacilityCsvImport);
+		} else if (EventReferenceDto.class.isAssignableFrom(fieldType)) {
+			return String.format(I18nProperties.getString(Strings.uuidOf), DataHelper.getHumanClassCaption(fieldType));
 		} else if (ReferenceDto.class.isAssignableFrom(fieldType)) {
 			return String.format(I18nProperties.getString(Strings.nameOf), DataHelper.getHumanClassCaption(fieldType));
 		} else if (Disease.class.isAssignableFrom(fieldType)) {

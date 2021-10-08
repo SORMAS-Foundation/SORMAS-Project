@@ -47,7 +47,7 @@ public class ClinicalCourseFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(user.toReference(), casePerson.toReference(), rdcf);
 		creator.createClinicalVisit(caze);
 
-		List<ClinicalVisitIndexDto> results = getClinicalVisitFacade().getIndexList(null);
+		List<ClinicalVisitIndexDto> results = getClinicalVisitFacade().getIndexList(null, null, null, null);
 
 		assertEquals(1, results.size());
 	}

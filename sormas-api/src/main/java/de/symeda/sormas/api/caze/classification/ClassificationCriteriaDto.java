@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.caze.classification;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -26,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 
@@ -48,14 +50,21 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 		name = "ClassificationPathogenTestNegativeResultCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationPathogenTestOtherPositiveResultCriteriaDto.class,
 		name = "ClassificationPathogenTestOtherPositiveResultCriteriaDto"),
-	@JsonSubTypes.Type(value = ClassificationXOfCriteriaDto.class, name = "ClassificationXOfCriteriaDto"), })
+	@JsonSubTypes.Type(value = ClassificationXOfCriteriaDto.class, name = "ClassificationXOfCriteriaDto"),
+	@JsonSubTypes.Type(value = ClassificationAllSymptomsCriteriaDto.class, name = "ClassificationAllSymptomsCriteriaDto"),
+	@JsonSubTypes.Type(value = ClassificationEventClusterCriteriaDto.class, name = "ClassificationEventClusterCriteriaDto") })
 public abstract class ClassificationCriteriaDto implements Serializable {
 
 	protected String type = getClass().getSimpleName();
 
 	private static final long serialVersionUID = -3686569295881034008L;
 
-	public abstract boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests);
+	public abstract boolean eval(
+		CaseDataDto caze,
+		PersonDto person,
+		List<PathogenTestDto> pathogenTests,
+		List<EventDto> events,
+		Date lastVaccinationDate);
 
 	public abstract String buildDescription();
 

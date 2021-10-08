@@ -36,4 +36,7 @@ public interface InfoFacadeRetro {
 
 	@GET("info/locale")
 	Call<String> getLocale();
+
+	@GET("info/countryname")
+	Call<String> getCountryName();
 }

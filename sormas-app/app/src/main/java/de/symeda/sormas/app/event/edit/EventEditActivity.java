@@ -25,6 +25,7 @@ import android.os.AsyncTask;
 import android.view.Menu;
 
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -147,6 +148,12 @@ public class EventEditActivity extends BaseEditActivity<Event> {
 		} catch (ValidationException e) {
 			NotificationHelper.showNotification(this, ERROR, e.getMessage());
 			return;
+		}
+
+		if (eventToSave.getTypeOfPlace() == TypeOfPlace.OTHER) {
+			eventToSave.getEventLocation().setFacility(null);
+			eventToSave.getEventLocation().setFacilityDetails(null);
+			eventToSave.getEventLocation().setFacilityType(null);
 		}
 
 		saveTask = new SavingAsyncTask(getRootView(), eventToSave) {

@@ -24,14 +24,21 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Transient;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
@@ -55,14 +62,24 @@ public class PathogenTest extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private PathogenTestType testType;
 
+	@Enumerated(EnumType.STRING)
+	private PCRTestSpecification pcrTestSpecification;
+
 	@Column
 	private String testTypeText;
 
 	@Enumerated(EnumType.STRING)
 	private Disease testedDisease;
 
+	@Column(name = "testedDiseaseVariant")
+	private String testedDiseaseVariantString;
+	private DiseaseVariant testedDiseaseVariant;
+
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String testedDiseaseDetails;
+
+	@Column
+	private String typingId;
 
 	@Enumerated(EnumType.STRING)
 	@Column
@@ -86,6 +103,9 @@ public class PathogenTest extends PseudonymizableAdo {
 	@DatabaseField
 	private Float cqValue;
 
+	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
+	private Date reportDate;
+
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility lab;
 
@@ -94,6 +114,9 @@ public class PathogenTest extends PseudonymizableAdo {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User labUser;
+
+	@Column
+	private boolean viaLims;
 
 	public Sample getSample() {
 		return sample;
@@ -111,6 +134,14 @@ public class PathogenTest extends PseudonymizableAdo {
 		this.testType = testType;
 	}
 
+	public PCRTestSpecification getPcrTestSpecification() {
+		return pcrTestSpecification;
+	}
+
+	public void setPcrTestSpecification(PCRTestSpecification pcrTestSpecification) {
+		this.pcrTestSpecification = pcrTestSpecification;
+	}
+
 	public Disease getTestedDisease() {
 		return testedDisease;
 	}
@@ -119,12 +150,46 @@ public class PathogenTest extends PseudonymizableAdo {
 		this.testedDisease = testedDisease;
 	}
 
+	public String getTestedDiseaseVariantString() {
+		return testedDiseaseVariantString;
+	}
+
+	public void setTestedDiseaseVariantString(String testedDiseaseVariantString) {
+		this.testedDiseaseVariantString = testedDiseaseVariantString;
+	}
+
+	@Transient
+	public DiseaseVariant getTestedDiseaseVariant() {
+		if (StringUtils.isBlank(testedDiseaseVariantString)) {
+			return null;
+		} else {
+			return DatabaseHelper.getCustomizableEnumValueDao().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, testedDiseaseVariantString);
+		}
+	}
+
+	public void setTestedDiseaseVariant(DiseaseVariant testedDiseaseVariant) {
+		this.testedDiseaseVariant = testedDiseaseVariant;
+		if (testedDiseaseVariant == null) {
+			testedDiseaseVariantString = null;
+		} else {
+			testedDiseaseVariantString = testedDiseaseVariant.getValue();
+		}
+	}
+
 	public String getTestedDiseaseDetails() {
 		return testedDiseaseDetails;
 	}
 
 	public void setTestedDiseaseDetails(String testedDiseaseDetails) {
 		this.testedDiseaseDetails = testedDiseaseDetails;
+	}
+
+	public String getTypingId() {
+		return typingId;
+	}
+
+	public void setTypingId(String typingId) {
+		this.typingId = typingId;
 	}
 
 	public PathogenTestResultType getTestResult() {
@@ -213,6 +278,22 @@ public class PathogenTest extends PseudonymizableAdo {
 
 	public void setCqValue(Float cqValue) {
 		this.cqValue = cqValue;
+	}
+
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+
+	public boolean isViaLims() {
+		return viaLims;
+	}
+
+	public void setViaLims(boolean viaLims) {
+		this.viaLims = viaLims;
 	}
 
 	@Override

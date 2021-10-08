@@ -22,113 +22,132 @@ import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 
 import java.util.Date;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
+import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
-public class ContactDto extends PseudonymizableDto {
+public class ContactDto extends PseudonymizableDto implements SormasToSormasEntityDto {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
 	public static final String I18N_PREFIX = "Contact";
 
-	public static final String PERSON = "person";
+	public static final String ADDITIONAL_DETAILS = "additionalDetails";
+	public static final String CARE_FOR_PEOPLE_OVER_60 = "careForPeopleOver60";
+	public static final String CASE_ID_EXTERNAL_SYSTEM = "caseIdExternalSystem";
+	public static final String CASE_OR_EVENT_INFORMATION = "caseOrEventInformation";
 	public static final String CAZE = "caze";
-	public static final String REPORT_DATE_TIME = "reportDateTime";
-	public static final String REPORTING_USER = "reportingUser";
-	public static final String MULTI_DAY_CONTACT = "multiDayContact";
-	public static final String FIRST_CONTACT_DATE = "firstContactDate";
-	public static final String LAST_CONTACT_DATE = "lastContactDate";
+	public static final String COMMUNITY = "community";
+	public static final String CONTACT_CATEGORY = "contactCategory";
+	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String CONTACT_IDENTIFICATION_SOURCE = "contactIdentificationSource";
 	public static final String CONTACT_IDENTIFICATION_SOURCE_DETAILS = "contactIdentificationSourceDetails";
-	public static final String TRACING_APP = "tracingApp";
-	public static final String TRACING_APP_DETAILS = "tracingAppDetails";
-	public static final String CONTACT_PROXIMITY = "contactProximity";
-	public static final String CONTACT_CLASSIFICATION = "contactClassification";
-	public static final String CONTACT_STATUS = "contactStatus";
-	public static final String FOLLOW_UP_STATUS = "followUpStatus";
-	public static final String FOLLOW_UP_COMMENT = "followUpComment";
-	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String CONTACT_OFFICER = "contactOfficer";
+	public static final String CONTACT_PROXIMITY = "contactProximity";
+	public static final String CONTACT_PROXIMITY_DETAILS = "contactProximityDetails";
+	public static final String CONTACT_STATUS = "contactStatus";
 	public static final String DESCRIPTION = "description";
-	public static final String RELATION_TO_CASE = "relationToCase";
-	public static final String RELATION_DESCRIPTION = "relationDescription";
-	public static final String REPORT_LAT = "reportLat";
-	public static final String REPORT_LON = "reportLon";
-	public static final String RESULTING_CASE = "resultingCase";
-	public static final String RESULTING_CASE_USER = "resultingCaseUser";
-	public static final String VISITS = "visits";
+	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String DISEASE_VARIANT = "diseaseVariant";
+	public static final String DISTRICT = "district";
+	public static final String END_OF_QUARANTINE_REASON = "endOfQuarantineReason";
+	public static final String END_OF_QUARANTINE_REASON_DETAILS = "endOfQuarantineReasonDetails";
+	public static final String EPI_DATA = "epiData";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String EXTERNAL_TOKEN = "externalToken";
-	public static final String REGION = "region";
-	public static final String DISTRICT = "district";
-	public static final String COMMUNITY = "community";
+	public static final String FIRST_CONTACT_DATE = "firstContactDate";
+	public static final String FOLLOW_UP_COMMENT = "followUpComment";
+	public static final String FOLLOW_UP_STATUS = "followUpStatus";
+	public static final String FOLLOW_UP_STATUS_CHANGE_DATE = "followUpStatusChangeDate";
+	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
+	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
+	public static final String HEALTH_CONDITIONS = "healthConditions";
 	public static final String HIGH_PRIORITY = "highPriority";
 	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE = "immunosuppressiveTherapyBasicDisease";
 	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS = "immunosuppressiveTherapyBasicDiseaseDetails";
-	public static final String CARE_FOR_PEOPLE_OVER_60 = "careForPeopleOver60";
-	public static final String QUARANTINE = "quarantine";
-	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
-	public static final String QUARANTINE_FROM = "quarantineFrom";
-	public static final String QUARANTINE_TO = "quarantineTo";
-	public static final String DISEASE = "disease";
-	public static final String DISEASE_DETAILS = "diseaseDetails";
-	public static final String CASE_ID_EXTERNAL_SYSTEM = "caseIdExternalSystem";
-	public static final String CASE_OR_EVENT_INFORMATION = "caseOrEventInformation";
-	public static final String CONTACT_PROXIMITY_DETAILS = "contactProximityDetails";
-	public static final String CONTACT_CATEGORY = "contactCategory";
+	public static final String INTERNAL_TOKEN = "internalToken";
+	public static final String LAST_CONTACT_DATE = "lastContactDate";
+	public static final String MULTI_DAY_CONTACT = "multiDayContact";
 	public static final String OVERWRITE_FOLLOW_UP_UTIL = "overwriteFollowUpUntil";
+	public static final String PERSON = "person";
+	public static final String PROHIBITION_TO_WORK = "prohibitionToWork";
+	public static final String PROHIBITION_TO_WORK_FROM = "prohibitionToWorkFrom";
+	public static final String PROHIBITION_TO_WORK_UNTIL = "prohibitionToWorkUntil";
+	public static final String QUARANTINE = "quarantine";
+	public static final String QUARANTINE_EXTENDED = "quarantineExtended";
+	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
-	public static final String QUARANTINE_ORDERED_VERBALLY = "quarantineOrderedVerbally";
-	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT = "quarantineOrderedOfficialDocument";
-	public static final String QUARANTINE_ORDERED_VERBALLY_DATE = "quarantineOrderedVerballyDate";
-	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE = "quarantineOrderedOfficialDocumentDate";
 	public static final String QUARANTINE_HOME_POSSIBLE = "quarantineHomePossible";
 	public static final String QUARANTINE_HOME_POSSIBLE_COMMENT = "quarantineHomePossibleComment";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
-	public static final String QUARANTINE_EXTENDED = "quarantineExtended";
-	public static final String QUARANTINE_REDUCED = "quarantineReduced";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT = "quarantineOfficialOrderSent";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
-	public static final String ADDITIONAL_DETAILS = "additionalDetails";
-	public static final String EPI_DATA = "epiData";
-	public static final String HEALTH_CONDITIONS = "healthConditions";
-	public static final String END_OF_QUARANTINE_REASON = "endOfQuarantineReason";
-	public static final String END_OF_QUARANTINE_REASON_DETAILS = "endOfQuarantineReasonDetails";
-	public static final String RETURNING_TRAVELER = "returningTraveler";
-
-	public static final String PROHIBITION_TO_WORK = "prohibitionToWork";
-	public static final String PROHIBITION_TO_WORK_FROM = "prohibitionToWorkFrom";
-	public static final String PROHIBITION_TO_WORK_UNTIL = "prohibitionToWorkUntil";
-
+	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT = "quarantineOrderedOfficialDocument";
+	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE = "quarantineOrderedOfficialDocumentDate";
+	public static final String QUARANTINE_ORDERED_VERBALLY = "quarantineOrderedVerbally";
+	public static final String QUARANTINE_ORDERED_VERBALLY_DATE = "quarantineOrderedVerballyDate";
+	public static final String QUARANTINE_REDUCED = "quarantineReduced";
+	public static final String QUARANTINE_TO = "quarantineTo";
+	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
+	public static final String REGION = "region";
+	public static final String RELATION_DESCRIPTION = "relationDescription";
+	public static final String RELATION_TO_CASE = "relationToCase";
 	public static final String REPORTING_DISTRICT = "reportingDistrict";
+	public static final String REPORTING_USER = "reportingUser";
+	public static final String REPORT_DATE_TIME = "reportDateTime";
+	public static final String REPORT_LAT = "reportLat";
+	public static final String REPORT_LON = "reportLon";
+	public static final String RESULTING_CASE = "resultingCase";
+	public static final String RESULTING_CASE_USER = "resultingCaseUser";
+	public static final String RETURNING_TRAVELER = "returningTraveler";
+	public static final String TRACING_APP = "tracingApp";
+	public static final String TRACING_APP_DETAILS = "tracingAppDetails";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
+	public static final String VISITS = "visits";
 
 	private CaseReferenceDto caze;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String caseIdExternalSystem;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
 	private String caseOrEventInformation;
 	private Disease disease;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
+	private DiseaseVariant diseaseVariant;
 
 	@Required
 	private Date reportDateTime;
@@ -136,9 +155,13 @@ public class ContactDto extends PseudonymizableDto {
 	private UserReferenceDto reportingUser;
 	@SensitiveData
 	@Pseudonymizer(LatitudePseudonymizer.class)
+	@Min(value = -90, message = Validations.numberTooSmall)
+	@Max(value = 90, message = Validations.numberTooBig)
 	private Double reportLat;
 	@SensitiveData
 	@Pseudonymizer(LongitudePseudonymizer.class)
+	@Min(value = -180, message = Validations.numberTooSmall)
+	@Max(value = 180, message = Validations.numberTooBig)
 	private Double reportLon;
 
 	private Float reportLatLonAccuracy;
@@ -155,45 +178,54 @@ public class ContactDto extends PseudonymizableDto {
 	private ContactIdentificationSource contactIdentificationSource;
 	@HideForCountriesExcept
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String contactIdentificationSourceDetails;
 	@HideForCountriesExcept
 	private TracingApp tracingApp;
 	@HideForCountriesExcept
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String tracingAppDetails;
 	private ContactProximity contactProximity;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String contactProximityDetails;
 	private ContactCategory contactCategory;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
 	private String followUpComment;
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
 	private String description;
 	private ContactRelation relationToCase;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String relationDescription;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
-	@HideForCountriesExcept(countries = {
-			COUNTRY_CODE_GERMANY,
-			COUNTRY_CODE_SWITZERLAND })
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String externalToken;
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	private String internalToken;
 
 	private boolean highPriority;
 	private YesNoUnknown immunosuppressiveTherapyBasicDisease;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String immunosuppressiveTherapyBasicDiseaseDetails;
 	private YesNoUnknown careForPeopleOver60;
 
 	private QuarantineType quarantine;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
@@ -210,6 +242,7 @@ public class ContactDto extends PseudonymizableDto {
 	private UserReferenceDto resultingCaseUser;
 
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String quarantineHelpNeeded;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
@@ -231,11 +264,13 @@ public class ContactDto extends PseudonymizableDto {
 	private YesNoUnknown quarantineHomePossible;
 	@HideForCountriesExcept
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String quarantineHomePossibleComment;
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@HideForCountriesExcept
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String quarantineHomeSupplyEnsuredComment;
 	private boolean quarantineExtended;
 	private boolean quarantineReduced;
@@ -248,9 +283,12 @@ public class ContactDto extends PseudonymizableDto {
 		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOfficialOrderSentDate;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
 	private String additionalDetails;
 	private EpiDataDto epiData;
+	@Valid
 	private HealthConditionsDto healthConditions;
+	@Valid
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
 	private boolean ownershipHandedOver;
 	private YesNoUnknown returningTraveler;
@@ -261,6 +299,7 @@ public class ContactDto extends PseudonymizableDto {
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_SWITZERLAND })
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String endOfQuarantineReasonDetails;
 
 	@HideForCountriesExcept
@@ -272,6 +311,24 @@ public class ContactDto extends PseudonymizableDto {
 
 	@HideForCountriesExcept
 	private DistrictReferenceDto reportingDistrict;
+
+	private Date followUpStatusChangeDate;
+	private UserReferenceDto followUpStatusChangeUser;
+
+	@Diseases({
+		Disease.AFP,
+		Disease.GUINEA_WORM,
+		Disease.MEASLES,
+		Disease.POLIO,
+		Disease.YELLOW_FEVER,
+		Disease.CSM,
+		Disease.RABIES,
+		Disease.UNSPECIFIED_VHF,
+		Disease.ANTHRAX,
+		Disease.CORONAVIRUS,
+		Disease.OTHER })
+	@Outbreaks
+	private VaccinationStatus vaccinationStatus;
 
 	public static ContactDto build() {
 		final ContactDto contact = new ContactDto();
@@ -294,24 +351,25 @@ public class ContactDto extends PseudonymizableDto {
 	}
 
 	public static ContactDto build(CaseDataDto caze) {
-		return build(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails());
+		return build(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails(), caze.getDiseaseVariant());
 	}
 
-	public static ContactDto build(CaseReferenceDto caze, Disease disease, String diseaseDetails) {
+	public static ContactDto build(CaseReferenceDto caze, Disease disease, String diseaseDetails, DiseaseVariant diseaseVariant) {
 		final ContactDto contact = build();
-		contact.assignCase(caze, disease, diseaseDetails);
+		contact.assignCase(caze, disease, diseaseDetails, diseaseVariant);
 
 		return contact;
 	}
 
 	public void assignCase(CaseDataDto caze) {
-		assignCase(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails());
+		assignCase(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails(), caze.getDiseaseVariant());
 	}
 
-	public void assignCase(CaseReferenceDto caze, Disease disease, String diseaseDetails) {
+	public void assignCase(CaseReferenceDto caze, Disease disease, String diseaseDetails, DiseaseVariant diseaseVariant) {
 		setCaze(caze);
 		setDisease(disease);
 		setDiseaseDetails(diseaseDetails);
+		setDiseaseVariant(diseaseVariant);
 	}
 
 	public PersonReferenceDto getPerson() {
@@ -506,6 +564,10 @@ public class ContactDto extends PseudonymizableDto {
 		this.followUpComment = followUpComment;
 	}
 
+	public void addToFollowUpComment(String comment) {
+		followUpComment = DataHelper.joinStrings("\n", followUpComment, comment);
+	}
+
 	public Float getReportLatLonAccuracy() {
 		return reportLatLonAccuracy;
 	}
@@ -555,10 +617,20 @@ public class ContactDto extends PseudonymizableDto {
 		this.externalID = externalID;
 	}
 
-	public String getExternalToken() { return externalToken; }
+	public String getExternalToken() {
+		return externalToken;
+	}
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;
+	}
+
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
 	}
 
 	public RegionReferenceDto getRegion() {
@@ -817,14 +889,18 @@ public class ContactDto extends PseudonymizableDto {
 		this.healthConditions = healthConditions;
 	}
 
+	@Override
+	@ImportIgnore
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
 
+	@Override
 	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
 
+	@Override
 	public boolean isOwnershipHandedOver() {
 		return ownershipHandedOver;
 	}
@@ -887,5 +963,37 @@ public class ContactDto extends PseudonymizableDto {
 
 	public void setReturningTraveler(YesNoUnknown returningTraveler) {
 		this.returningTraveler = returningTraveler;
+	}
+
+	public Date getFollowUpStatusChangeDate() {
+		return followUpStatusChangeDate;
+	}
+
+	public void setFollowUpStatusChangeDate(Date followUpStatusChangeDate) {
+		this.followUpStatusChangeDate = followUpStatusChangeDate;
+	}
+
+	public UserReferenceDto getFollowUpStatusChangeUser() {
+		return followUpStatusChangeUser;
+	}
+
+	public void setFollowUpStatusChangeUser(UserReferenceDto followUpStatusChangeUser) {
+		this.followUpStatusChangeUser = followUpStatusChangeUser;
+	}
+
+	public DiseaseVariant getDiseaseVariant() {
+		return diseaseVariant;
+	}
+
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
+	}
+
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
+	}
+
+	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
+		this.vaccinationStatus = vaccinationStatus;
 	}
 }

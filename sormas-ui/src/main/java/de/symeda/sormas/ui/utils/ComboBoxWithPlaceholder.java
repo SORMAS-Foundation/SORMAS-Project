@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -28,6 +29,11 @@ public class ComboBoxWithPlaceholder extends ComboBox {
 	private static final long serialVersionUID = 27751677500982303L;
 
 	PlaceholderReferenceDto placeholder = null;
+
+	public ComboBoxWithPlaceholder() {
+		super();
+		this.setFilteringMode(FilteringMode.CONTAINS);
+	}
 
 	@Override
 	public boolean removeAllItems() throws UnsupportedOperationException {

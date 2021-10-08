@@ -1,0 +1,38 @@
+site_name: SORMAS Project
+repo_name: 'hzi-braunschweig/SORMAS-Project'
+repo_url: 'https://github.com/hzi-braunschweig/SORMAS-Project'
+
+theme:
+  name: material
+  features:
+    - tabs
+extra:
+  version: 0.10
+  palette:
+    primary: 'cyan'
+  social:
+    - icon: 'fontawesome/brands/github-alt'
+      link: 'https://github.com/hzi-braunschweig/SORMAS-Project'
+plugins:
+  - search:
+      separator: '[\s]+'
+
+nav:
+  - Official Website: "https://sormas.org"
+  - Home: index.md
+  - Contributing: CONTRIBUTING.md
+  - Demo App: DEMO_APP.md
+  - REST: sormas-rest/README.md
+  - Development Environment: DEVELOPMENT_ENVIRONMENT.md
+  - Cargo Server: sormas-cargoserver/README.md
+  - Keycloak: sormas-base/doc/keycloak.md
+  - Keycloak Service Provider: sormas-keycloak-service-provider/README.md
+  - I18n: I18N.md
+  - Security: SECURITY.md
+  - Customization: SERVER_CUSTOMIZATION.md
+  - Development Setup: SERVER_DEV_SETUP.md
+  - Setup: SERVER_SETUP.md
+  - Update: SERVER_UPDATE.md
+  - Diseases: SOP_DISEASES.md
+  - Licensing: ADDING_LICENSE.md
+  - Acknowledgements: 3RD_PARTY_ACK.md

@@ -13,7 +13,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -31,7 +31,7 @@ public class LineListingRegionsLayout extends CssLayout {
 		this.regionNames = new HashMap<>();
 		this.regions = new TreeMap<>((r1, r2) -> regionNames.get(r1).compareTo(regionNames.get(r2)));
 
-		for (RegionReferenceDto region : FacadeProvider.getRegionFacade().getAllActiveAsReference()) {
+		for (RegionReferenceDto region : FacadeProvider.getRegionFacade().getAllActiveByServerCountry()) {
 			regionNames.put(region.getUuid(), region.toString());
 			regions.put(region.getUuid(), new ArrayList<>());
 		}
@@ -54,7 +54,7 @@ public class LineListingRegionsLayout extends CssLayout {
 				captionBuilder.append(" (").append(regions.get(regionUuid).size()).append(")");
 			}
 
-			Button configButton = ButtonHelper.createButtonWithCaption("region-" + regionUuid, captionBuilder.toString(), e -> {
+			Button configButton = ButtonHelper.createButton("region-" + regionUuid, captionBuilder.toString(), e -> {
 				SormasUI.get()
 					.getNavigator()
 					.navigateTo(LineListingConfigurationView.VIEW_NAME + "/" + regionUuid + "/?disease=" + disease.getName());

@@ -36,6 +36,8 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedAttribute;
 import de.symeda.sormas.api.Disease;
@@ -44,19 +46,20 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 
-@Entity(name = "users")
+@Entity(name = User.TABLE_NAME)
 @Audited
 public class User extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -629432920970152112L;
 
+	public static final String TABLE_NAME = "users";
 	public static final String TABLE_NAME_USERROLES = "users_userroles";
 
 	public static final String USER_NAME = "userName";
@@ -206,7 +209,7 @@ public class User extends AbstractDomainObject {
 		this.region = region;
 	}
 
-	@ElementCollection(fetch = FetchType.LAZY)
+	@ElementCollection(fetch = FetchType.EAGER)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name = TABLE_NAME_USERROLES,
 		joinColumns = @JoinColumn(name = "user_id", referencedColumnName = User.ID, nullable = false),
@@ -331,5 +334,17 @@ public class User extends AbstractDomainObject {
 	@Transient
 	public JurisdictionLevel getJurisdictionLevel() {
 		return UserRole.getJurisdictionLevel(this.getUserRoles());
+	}
+
+	public static String buildCaptionForNotification(User user) {
+		if (user == null) {
+			return "-";
+		}
+
+		String caption = user.getFirstName() + " " + user.getLastName();
+		if (StringUtils.isNotEmpty(user.getUserEmail())) {
+			caption += " (" + user.getUserEmail() + ")";
+		}
+		return caption;
 	}
 }

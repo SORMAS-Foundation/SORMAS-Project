@@ -2,7 +2,11 @@ package de.symeda.sormas.api.clinicalcourse;
 
 import java.util.Date;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -22,12 +26,15 @@ public class ClinicalVisitDto extends PseudonymizableDto {
 	public static final String VISITING_PERSON = "visitingPerson";
 
 	private ClinicalCourseReferenceDto clinicalCourse;
+	@Valid
 	private SymptomsDto symptoms;
 	private Disease disease;
 	private Date visitDateTime;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String visitingPerson;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String visitRemarks;
 
 	public static ClinicalVisitDto build(ClinicalCourseReferenceDto clinicalCourse, Disease disease) {

@@ -15,6 +15,19 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import android.util.Log;
+
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.googlecode.openbeans.PropertyDescriptor;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.support.ConnectionSource;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
@@ -27,24 +40,13 @@ import java.util.concurrent.Callable;
 
 import javax.persistence.NonUniqueResultException;
 
-import org.apache.commons.lang3.StringUtils;
-
-import com.googlecode.openbeans.PropertyDescriptor;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
-import com.j256.ormlite.support.ConnectionSource;
-
-import android.util.Log;
-
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.util.MetaProperty;
 
 /**
  * Some methods are copied from {@link com.j256.ormlite.dao.RuntimeExceptionDao}.
@@ -252,6 +254,17 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 		}
 	}
 
+	public List<ADO> queryActiveForAll() {
+		try {
+			QueryBuilder<ADO, Long> builder = queryBuilder();
+			Where<ADO, Long> where = builder.where();
+			where.and(where.eq(AbstractDomainObject.SNAPSHOT, false), where.eq(InfrastructureAdo.ARCHIVED, false));
+			return builder.query();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public ADO getByReferenceDto(ReferenceDto dto) {
 		if (dto == null) {
 			return null;
@@ -311,7 +324,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 		return getLatestChangeDateJoinFromQuery(query);
 	}
 
-	private Date getLatestChangeDateJoinFromQuery(String query) {
+	protected Date getLatestChangeDateJoinFromQuery(String query) {
 		GenericRawResults<Object[]> maxChangeDateResult = queryRaw(
 			query,
 			new DataType[] {
@@ -622,9 +635,11 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 				// we now have to write the value from source into target and base
 				// there are four types of properties:
 
-				// 1. embedded domain objects like a Location or Symptoms
-				// -> call merge for the object
-				if (AdoPropertyHelper.hasEmbeddedAnnotation(property)) {
+				if (property.getReadMethod().isAnnotationPresent(MetaProperty.class)) {
+					property.getWriteMethod().invoke(current, property.getReadMethod().invoke(source));
+					// 1. embedded domain objects like a Location or Symptoms
+					// -> call merge for the object
+				} else if (AdoPropertyHelper.hasEmbeddedAnnotation(property)) {
 
 					// get the embedded entity
 					AbstractDomainObject embeddedSource = (AbstractDomainObject) property.getReadMethod().invoke(source);
@@ -669,15 +684,19 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 									+ "'");
 
 							conflictStringBuilder.append(I18nProperties.getCaption(source.getI18nPrefix() + "." + property.getName()));
-							conflictStringBuilder.append("<br/><i>");
-							conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
-							conflictStringBuilder.append("</i>");
-							conflictStringBuilder.append(DataHelper.toStringNullable(currentFieldValue));
-							conflictStringBuilder.append("<br/><i>");
-							conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_server));
-							conflictStringBuilder.append("</i>");
-							conflictStringBuilder.append(DataHelper.toStringNullable(sourceFieldValue));
-							conflictStringBuilder.append("<br/>");
+
+							// don't show the details of conflicts in json raw data to the user
+							if (!property.getReadMethod().isAnnotationPresent(JsonRawValue.class)) {
+								conflictStringBuilder.append("<br/><i>");
+								conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_yours));
+								conflictStringBuilder.append("</i>");
+								conflictStringBuilder.append(DataHelper.toStringNullable(currentFieldValue));
+								conflictStringBuilder.append("<br/><i>");
+								conflictStringBuilder.append(DatabaseHelper.getContext().getResources().getString(R.string.synclog_server));
+								conflictStringBuilder.append("</i>");
+								conflictStringBuilder.append(DataHelper.toStringNullable(sourceFieldValue));
+								conflictStringBuilder.append("<br/>");
+							}
 						}
 
 						// update snapshot
@@ -730,6 +749,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 					// merge all collection elements - do this after saving because elements reference their parent
 					Collection<AbstractDomainObject> currentCollection = (Collection<AbstractDomainObject>) property.getReadMethod().invoke(current);
 					Collection<AbstractDomainObject> sourceCollection = (Collection<AbstractDomainObject>) property.getReadMethod().invoke(source);
+					// todo - override not merge for manytomany collections
 					mergeCollection(currentCollection, sourceCollection, current);
 				}
 
@@ -1294,5 +1314,40 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 	 */
 	public ConnectionSource getConnectionSource() {
 		return dao.getConnectionSource();
+	}
+
+	// dao utilities
+
+	protected <T extends AbstractDomainObject> void addDateFromCriteria(
+		List<Where<T, Long>> whereStatements,
+		Where<T, Long> where,
+		Date dateFrom,
+		String date)
+		throws SQLException {
+		if (dateFrom != null) {
+			whereStatements.add(where.ge(date, DateHelper.getStartOfDay(dateFrom)));
+		}
+	}
+
+	protected <T extends AbstractDomainObject> void addDateToCriteria(
+		List<Where<T, Long>> whereStatements,
+		Where<T, Long> where,
+		Date dateTo,
+		String date)
+		throws SQLException {
+		if (dateTo != null) {
+			whereStatements.add(where.le(date, DateHelper.getEndOfDay(dateTo)));
+		}
+	}
+
+	protected <T extends AbstractDomainObject> void addEqualsCriteria(
+		List<Where<T, Long>> whereStatements,
+		Where<T, Long> where,
+		Object criteriaValue,
+		String columnName)
+		throws SQLException {
+		if (criteriaValue != null) {
+			whereStatements.add(where.eq(columnName, criteriaValue));
+		}
 	}
 }

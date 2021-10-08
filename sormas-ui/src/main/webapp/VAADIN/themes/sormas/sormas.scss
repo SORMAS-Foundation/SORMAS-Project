@@ -12,6 +12,7 @@ $s-primary-color: #005A9C;
 $s-secondary-color: #6591C4;
 $s-critical-color: rgb(200, 0, 0);
 $s-critical-transparent-color: rgba(200, 0, 0, 0.7);
+$s-critical-more-transparent-color: rgba(200, 0, 0, 0.5);
 $s-important-color: rgb(190, 105, 0);
 $s-important-transparent-color: rgba(190, 105, 0, 0.7);
 $s-warning-color: $s-important-color;
@@ -101,6 +102,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
 @import "views/about.scss";
 @import "views/dashboard.scss";
 @import "views/disease.scss";
+@import "views/lab-message.scss";
 @import "views/login.scss";
 @import "views/configuration.scss";
 @import "views/statistics.scss";
@@ -165,6 +167,7 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   @include sormas-configuration-view;
   @include sormas-dashboard-view;
   @include sormas-disease-styles;
+  @include sormas-lab-message-view;
   @include sormas-login-view;
   @include sormas-statistics-view;
   @include sormas-view;

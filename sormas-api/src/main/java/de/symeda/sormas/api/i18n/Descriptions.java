@@ -10,6 +10,7 @@ public interface Descriptions {
 	 * 1. java:S115: Violation of name convention for constants of this class is accepted: Close as false positive.
 	 */
 
+	String Campaign_calculatedBasedOn = "Campaign.calculatedBasedOn";
 	String Campaign_campaignPhase = "Campaign.campaignPhase";
 	String CaseData_caseClassification = "CaseData.caseClassification";
 	String CaseData_clinicianDetails = "CaseData.clinicianDetails";
@@ -20,6 +21,8 @@ public interface Descriptions {
 	String CaseData_reportLat = "CaseData.reportLat";
 	String CaseData_reportLatLonAccuracy = "CaseData.reportLatLonAccuracy";
 	String CaseData_reportLon = "CaseData.reportLon";
+	String CaseData_vaccineInn = "CaseData.vaccineInn";
+	String CaseData_vaccineUniiCode = "CaseData.vaccineUniiCode";
 	String CaseHospitalization_admissionDate = "CaseHospitalization.admissionDate";
 	String CaseHospitalization_isolated = "CaseHospitalization.isolated";
 	String CasePreviousHospitalization_admissionDate = "CasePreviousHospitalization.admissionDate";
@@ -30,8 +33,11 @@ public interface Descriptions {
 	String Contact_region = "Contact.region";
 	String Contact_relationToCase = "Contact.relationToCase";
 	String descCaseFilterCasesWithCaseManagementData = "descCaseFilterCasesWithCaseManagementData";
+	String descCaseFilterCasesWithReinfection = "descCaseFilterCasesWithReinfection";
 	String descCaseFilterExcludeSharedCases = "descCaseFilterExcludeSharedCases";
 	String descCaseFilterIncludeCasesFromOtherJurisdictions = "descCaseFilterIncludeCasesFromOtherJurisdictions";
+	String descCaseFilterOnlyCasesWithFulfilledReferenceDefinition = "descCaseFilterOnlyCasesWithFulfilledReferenceDefinition";
+	String descCaseFilterOnlyFromOtherInstances = "descCaseFilterOnlyFromOtherInstances";
 	String descCaseFilterPortHealthWithoutFacility = "descCaseFilterPortHealthWithoutFacility";
 	String descCaseFilterRelatedToEvent = "descCaseFilterRelatedToEvent";
 	String descCaseFilterWithExtendedQuarantine = "descCaseFilterWithExtendedQuarantine";
@@ -84,6 +90,7 @@ public interface Descriptions {
 	String Event_endDate = "Event.endDate";
 	String Event_eventDesc = "Event.eventDesc";
 	String Event_eventStatus = "Event.eventStatus";
+	String Event_infectionPathCertainty = "Event.infectionPathCertainty";
 	String Event_srcEmail = "Event.srcEmail";
 	String Event_srcFirstName = "Event.srcFirstName";
 	String Event_srcLastName = "Event.srcLastName";
@@ -124,6 +131,7 @@ public interface Descriptions {
 	String Person_phone = "Person.phone";
 	String Person_presentCondition = "Person.presentCondition";
 	String Person_sex = "Person.sex";
+	String Sample_associatedLabMessages = "Sample.associatedLabMessages";
 	String Sample_sampleDateTime = "Sample.sampleDateTime";
 	String Symptoms_alteredConsciousness = "Symptoms.alteredConsciousness";
 	String Symptoms_bloodInStool = "Symptoms.bloodInStool";

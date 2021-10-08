@@ -39,6 +39,7 @@ import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.data.util.PropertyValueGenerator;
 import com.vaadin.v7.ui.Grid;
 import com.vaadin.v7.ui.renderers.HtmlRenderer;
+
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -60,14 +61,23 @@ public final class VaadinUiUtil {
 	}
 
 	public static Window showSimplePopupWindow(String caption, String contentText) {
-		return showSimplePopupWindow(caption, contentText, ContentMode.TEXT);
+		return showSimplePopupWindow(caption, contentText, ContentMode.TEXT, null);
 	}
 
 	public static Window showSimplePopupWindow(String caption, String contentText, ContentMode contentMode) {
+		return showSimplePopupWindow(caption, contentText, contentMode, null);
+	}
+
+	public static Window showSimplePopupWindow(String caption, String contentText, ContentMode contentMode, Integer width) {
 		Window window = new Window(null);
 		window.setModal(true);
 		window.setSizeUndefined();
 		window.setResizable(false);
+
+		if (width != null) {
+			window.setWidth(width, Unit.PIXELS);
+		}
+
 		window.center();
 
 		VerticalLayout popupLayout = new VerticalLayout();
@@ -328,30 +338,64 @@ public final class VaadinUiUtil {
 		return requestTaskComponent;
 	}
 
-    public static HorizontalLayout createInfoComponent(String htmlContent) {
-        return createIconComponent(htmlContent, "img/info-icon.png");
+	public static HorizontalLayout createInfoComponent(String htmlContent) {
+		return createIconComponent(htmlContent, "img/info-icon.png", 35);
 
-    }
+	}
 
-    public static HorizontalLayout createWarningComponent(String htmlContent) {
-        return createIconComponent(htmlContent, "img/warning-icon.png");
+	public static HorizontalLayout createWarningComponent(String htmlContent) {
+		return createWarningComponent(htmlContent, 35);
+	}
 
-    }
+	public static HorizontalLayout createWarningComponent(String htmlContent, int iconSize) {
+		return createIconComponent(htmlContent, "img/warning-icon.png", iconSize);
 
-    public static HorizontalLayout createIconComponent(String htmlContent, String iconName) {
-        HorizontalLayout infoLayout = new HorizontalLayout();
-        infoLayout.setWidth(100, Unit.PERCENTAGE);
-        infoLayout.setSpacing(true);
-        Image icon = new Image(null, new ThemeResource(iconName));
-        icon.setHeight(35, Unit.PIXELS);
-        icon.setWidth(35, Unit.PIXELS);
-        infoLayout.addComponent(icon);
-        infoLayout.setComponentAlignment(icon, Alignment.MIDDLE_LEFT);
-        Label infoLabel = new Label(htmlContent, ContentMode.HTML);
-        infoLabel.setWidth(100, Unit.PERCENTAGE);
-        infoLayout.addComponent(infoLabel);
-        infoLayout.setExpandRatio(infoLabel, 1);
-        CssStyles.style(infoLayout, CssStyles.VSPACE_3);
-        return infoLayout;
-    }
+	}
+
+	public static HorizontalLayout createErrorComponent(String htmlContent) {
+		return createErrorComponent(htmlContent, 35);
+	}
+
+	public static HorizontalLayout createErrorComponent(String htmlContent, int iconSize) {
+		return createIconComponent(htmlContent, "img/error-icon.png", iconSize);
+
+	}
+
+	public static HorizontalLayout createIconComponent(String htmlContent, String iconName, int iconSize) {
+		HorizontalLayout infoLayout = new HorizontalLayout();
+		infoLayout.setWidth(100, Unit.PERCENTAGE);
+		infoLayout.setSpacing(true);
+		Image icon = new Image(null, new ThemeResource(iconName));
+		icon.setHeight(iconSize, Unit.PIXELS);
+		icon.setWidth(iconSize, Unit.PIXELS);
+		infoLayout.addComponent(icon);
+		infoLayout.setComponentAlignment(icon, Alignment.MIDDLE_LEFT);
+		Label infoLabel = new Label(htmlContent, ContentMode.HTML);
+		infoLabel.setWidth(100, Unit.PERCENTAGE);
+		infoLayout.addComponent(infoLabel);
+		infoLayout.setExpandRatio(infoLabel, 1);
+		CssStyles.style(infoLayout, CssStyles.VSPACE_3);
+		return infoLayout;
+	}
+
+	public static VerticalLayout createWarningLayout() {
+		VerticalLayout warningLayout = new VerticalLayout();
+		warningLayout.setMargin(true);
+		Image warningIcon = new Image(null, new ThemeResource("img/warning-icon.png"));
+		warningIcon.setHeight(35, Unit.PIXELS);
+		warningIcon.setWidth(35, Unit.PIXELS);
+		warningLayout.addComponentAsFirst(warningIcon);
+		CssStyles.style(warningLayout, CssStyles.ALIGN_CENTER);
+		return warningLayout;
+	}
+
+	public static void showWarningPopup(String message) {
+		VerticalLayout warningLayout = createWarningLayout();
+		Window popupWindow = VaadinUiUtil.showPopupWindow(warningLayout);
+		Label infoLabel = new Label(message);
+		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+		warningLayout.addComponent(infoLabel);
+		popupWindow.addCloseListener(e -> popupWindow.close());
+		popupWindow.setWidth(400, Unit.PIXELS);
+	}
 }

@@ -15,11 +15,6 @@
 
 package de.symeda.sormas.app;
 
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-
-import java.util.List;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,12 +26,17 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.OnRebindCallback;
 import androidx.databinding.ViewDataBinding;
 
+import java.util.List;
+
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
+
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, TActivityRootData extends AbstractDomainObject> extends BaseFragment {
 
@@ -238,7 +238,11 @@ public abstract class BaseReadFragment<TBinding extends ViewDataBinding, TData, 
 		return true;
 	}
 
-//    @Override
+	public View getRootView() {
+		return rootView;
+	}
+
+	//    @Override
 //    public void onDestroy() {
 //        super.onDestroy();
 //

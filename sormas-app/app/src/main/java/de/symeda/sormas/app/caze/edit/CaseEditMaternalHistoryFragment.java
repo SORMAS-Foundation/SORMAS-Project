@@ -27,7 +27,8 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentCaseEditMaternalHistoryLayoutBinding;
-import de.symeda.sormas.app.util.InfrastructureHelper;
+import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 
 public class CaseEditMaternalHistoryFragment extends BaseEditFragment<FragmentCaseEditMaternalHistoryLayoutBinding, MaternalHistory, Case> {
 
@@ -83,10 +84,10 @@ public class CaseEditMaternalHistoryFragment extends BaseEditFragment<FragmentCa
 
 		setFieldVisibilitiesAndAccesses(MaternalHistoryDto.class, contentBinding.mainContent);
 
-		List<Item> initialRegions = InfrastructureHelper.loadRegions();
-		List<Item> initialDistricts = InfrastructureHelper.loadDistricts(record.getRashExposureRegion());
-		List<Item> initialCommunities = InfrastructureHelper.loadCommunities(record.getRashExposureDistrict());
-		InfrastructureHelper.initializeRegionFields(
+		List<Item> initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
+		List<Item> initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getRashExposureRegion());
+		List<Item> initialCommunities = InfrastructureDaoHelper.loadCommunities(record.getRashExposureDistrict());
+		InfrastructureFieldsDependencyHandler.instance.initializeRegionFields(
 			contentBinding.maternalHistoryRashExposureRegion,
 			initialRegions,
 			record.getRashExposureRegion(),

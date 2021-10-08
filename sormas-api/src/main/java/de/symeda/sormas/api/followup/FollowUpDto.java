@@ -6,8 +6,6 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.VisitOrigin;
-import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.visit.VisitResult;
@@ -23,6 +21,7 @@ public abstract class FollowUpDto extends PseudonymizableIndexDto implements Ser
 	public static final String LAST_NAME = "lastName";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
+	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 
 	private String uuid;
 	@PersonalData

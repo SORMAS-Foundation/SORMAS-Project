@@ -26,14 +26,18 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.AdditionalTestingStatus;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -47,6 +51,7 @@ public class SampleListEntry extends HorizontalLayout {
 
 	private final SampleIndexDto sample;
 	private Button editButton;
+	private Button associatedLabMessagesButton;
 
 	public SampleListEntry(SampleIndexDto sample) {
 
@@ -125,6 +130,45 @@ public class SampleListEntry extends HorizontalLayout {
 				Label labLabel = new Label(DataHelper.toStringNullable(sample.getLab()));
 				topLeftLayout.addComponent(labLabel);
 			}
+
+			SamplingReason samplingReason = sample.getSamplingReason();
+			if (samplingReason != null) {
+				String samplingReasonCaption = samplingReason.toString();
+				if (samplingReason == SamplingReason.OTHER_REASON && sample.getSamplingReasonDetails() != null) {
+					samplingReasonCaption = sample.getSamplingReasonDetails();
+				}
+				Label samplingReasonLabel =
+					new Label(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLING_REASON) + ": " + samplingReasonCaption);
+				topLeftLayout.addComponent(samplingReasonLabel);
+			}
+
+			Label testCountLabel = new Label(
+				I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleIndexDto.PATHOGEN_TEST_COUNT) + ": " + sample.getPathogenTestCount());
+			topLeftLayout.addComponent(testCountLabel);
+
+			if (sample.getPathogenTestCount() > 0) {
+				VerticalLayout latestTestLayout = new VerticalLayout();
+				latestTestLayout.setMargin(false);
+				latestTestLayout.setSpacing(false);
+
+				Label heading = new Label(I18nProperties.getCaption(Captions.latestPathogenTest));
+				CssStyles.style(heading, CssStyles.LABEL_BOLD);
+				PathogenTestDto latestTest = FacadeProvider.getPathogenTestFacade().getLatestPathogenTest(sample.getUuid());
+				Label testDate = new Label(
+					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_DATE_TIME) + ": "
+						+ DateFormatHelper.formatDate(latestTest.getTestDateTime()));
+				HorizontalLayout bottomLayout = new HorizontalLayout();
+				Label testType = new Label(latestTest.getTestType().toString());
+				bottomLayout.addComponent(testType);
+				if (latestTest.getCqValue() != null) {
+					Label cqValue = new Label(
+						I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.CQ_VALUE) + ": " + latestTest.getCqValue());
+					cqValue.addStyleName(CssStyles.ALIGN_RIGHT);
+					bottomLayout.addComponent(cqValue);
+				}
+				latestTestLayout.addComponents(heading, testDate, bottomLayout);
+				topLeftLayout.addComponent(latestTestLayout);
+			}
 		}
 
 		VerticalLayout topRightLayout = new VerticalLayout();
@@ -146,13 +190,13 @@ public class SampleListEntry extends HorizontalLayout {
 		}
 	}
 
-	public void addEditListener(int rowIndex, ClickListener editClickListener) {
+	public void addEditListener(ClickListener editClickListener) {
 		if (editButton == null) {
 			editButton = ButtonHelper.createIconButtonWithCaption(
-				"edit-sample-" + rowIndex,
+				"edit-sample-" + sample.getUuid(),
 				null,
 				VaadinIcons.PENCIL,
-				null,
+				editClickListener,
 				ValoTheme.BUTTON_LINK,
 				CssStyles.BUTTON_COMPACT);
 
@@ -160,8 +204,23 @@ public class SampleListEntry extends HorizontalLayout {
 			setComponentAlignment(editButton, Alignment.TOP_RIGHT);
 			setExpandRatio(editButton, 0);
 		}
+	}
 
-		editButton.addClickListener(editClickListener);
+	public void addAssociatedLabMessagesListener(ClickListener associatedLabMessagesClickListener) {
+		if (associatedLabMessagesButton == null) {
+			associatedLabMessagesButton = ButtonHelper.createIconButtonWithCaption(
+				"see-associated-lab-messages-" + sample.getUuid(),
+				null,
+				VaadinIcons.NOTEBOOK,
+				associatedLabMessagesClickListener,
+				ValoTheme.BUTTON_LINK,
+				CssStyles.BUTTON_COMPACT);
+
+			addComponent(associatedLabMessagesButton);
+			setComponentAlignment(associatedLabMessagesButton, Alignment.TOP_RIGHT);
+			setExpandRatio(associatedLabMessagesButton, 0);
+			associatedLabMessagesButton.setDescription(I18nProperties.getDescription(Descriptions.Sample_associatedLabMessages));
+		}
 	}
 
 	public SampleIndexDto getSample() {

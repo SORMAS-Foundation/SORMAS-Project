@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
@@ -35,7 +36,9 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.MeansOfTransport;
@@ -46,6 +49,7 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -55,6 +59,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
@@ -68,8 +73,8 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private static final String LOC_BURIAL_DETAILS_HEADING = "locBurialDetailsHeading";
 
 	//@formatter:off
-	private static final String HTML_LAYOUT = 
-			fluidRowLocs(ExposureDto.UUID, ExposureDto.REPORTING_USER) +
+	private static final String UUID_REPORTING_USER = fluidRowLocs(ExposureDto.UUID, ExposureDto.REPORTING_USER);
+	private static final String OTHER_STANDARD_FIELDS =
 			fluidRowLocs(ExposureDto.START_DATE, ExposureDto.END_DATE) +
 			loc(ExposureDto.DESCRIPTION) +
 			fluidRow(
@@ -89,8 +94,9 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 					))
 			) +
 			loc(LOC_EXPOSURE_DETAILS_HEADING) +
-			loc(ExposureDto.PATIENT_EXPOSITION_ROLE) +
+			loc(ExposureDto.EXPOSURE_ROLE) +
 			loc(ExposureDto.RISK_AREA) +
+			loc(ExposureDto.LARGE_ATTENDANCE_NUMBER) +
 			loc(ExposureDto.INDOORS) +
 			loc(ExposureDto.OUTDOORS) +
 			loc(ExposureDto.WEARING_MASK) +
@@ -116,10 +122,11 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			fluidRowLocs(ExposureDto.DECEASED_PERSON_NAME, ExposureDto.DECEASED_PERSON_RELATION) +
 			loc(LOC_LOCATION_HEADING) +
 			fluidRow(
-					fluidColumnLoc(6, 0, ExposureDto.TYPE_OF_PLACE),
+					fluidColumn(6, 0, locs(ExposureDto.TYPE_OF_PLACE)),
 					fluidColumn(6, 0, locs(
 							ExposureDto.TYPE_OF_PLACE_DETAILS,
-							ExposureDto.MEANS_OF_TRANSPORT
+							ExposureDto.MEANS_OF_TRANSPORT,
+							ExposureDto.WORK_ENVIRONMENT
 					))
 			) +
 			loc(ExposureDto.MEANS_OF_TRANSPORT_DETAILS) +
@@ -202,11 +209,11 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	}
 
 	private void addBasicFields() {
+		addFields(ExposureDto.UUID, ExposureDto.REPORTING_USER, ExposureDto.PROBABLE_INFECTION_ENVIRONMENT);
+
+		addFields(DateTimeField.class, ExposureDto.START_DATE, ExposureDto.END_DATE);
+
 		addFields(
-			ExposureDto.UUID,
-			ExposureDto.REPORTING_USER,
-			ExposureDto.START_DATE,
-			ExposureDto.END_DATE,
 			ExposureDto.EXPOSURE_TYPE,
 			ExposureDto.EXPOSURE_TYPE_DETAILS,
 			ExposureDto.GATHERING_TYPE,
@@ -228,11 +235,13 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			ExposureDto.MEANS_OF_TRANSPORT,
 			ExposureDto.MEANS_OF_TRANSPORT_DETAILS,
 			ExposureDto.SEAT_NUMBER,
-			ExposureDto.PATIENT_EXPOSITION_ROLE);
+			ExposureDto.EXPOSURE_ROLE,
+			ExposureDto.WORK_ENVIRONMENT);
 
 		addFieldsWithCss(
 			NullableOptionGroup.class,
 			Arrays.asList(
+				ExposureDto.LARGE_ATTENDANCE_NUMBER,
 				ExposureDto.INDOORS,
 				ExposureDto.OUTDOORS,
 				ExposureDto.WEARING_MASK,
@@ -260,6 +269,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.GATHERING_DETAILS, ExposureDto.GATHERING_TYPE, GatheringType.OTHER, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.HABITATION_DETAILS, ExposureDto.HABITATION_TYPE, HabitationType.OTHER, true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.TYPE_OF_ANIMAL_DETAILS, ExposureDto.TYPE_OF_ANIMAL, TypeOfAnimal.OTHER, true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), ExposureDto.LARGE_ATTENDANCE_NUMBER, ExposureDto.EXPOSURE_TYPE, ExposureType.GATHERING, true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			Arrays.asList(
@@ -296,6 +306,13 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 			Arrays.asList(MeansOfTransport.PLANE, MeansOfTransport.TRAIN, MeansOfTransport.OTHER),
 			true);
 
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ExposureDto.WORK_ENVIRONMENT,
+			locationForm.getFacilityTypeGroup(),
+			Collections.singletonList(FacilityTypeGroup.WORKING_PLACE),
+			true);
+
 		getContent().getComponent(LOC_ANIMAL_CONTACT_DETAILS_HEADING).setVisible(false);
 		getContent().getComponent(LOC_BURIAL_DETAILS_HEADING).setVisible(false);
 		getField(ExposureDto.EXPOSURE_TYPE).addValueChangeListener(e -> {
@@ -307,6 +324,7 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 		locationForm.setFacilityFieldsVisible(getField(ExposureDto.TYPE_OF_PLACE).getValue() == TypeOfPlace.FACILITY, true);
 		getField(ExposureDto.TYPE_OF_PLACE)
 			.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(e.getProperty().getValue() == TypeOfPlace.FACILITY, true));
+		locationForm.setContinentFieldsVisibility();
 	}
 
 	private void setUpRequirements() {
@@ -333,7 +351,15 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 
 	@Override
 	protected String createHtmlLayout() {
-		return HTML_LAYOUT;
+		//@formatter:off
+		String HTML_LAYOUT = UUID_REPORTING_USER;
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY) && epiDataParentClass == CaseDataDto.class) {
+			HTML_LAYOUT += fluidRowLocs(ExposureDto.PROBABLE_INFECTION_ENVIRONMENT) +
+			(FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()
+				? VaadinIcons.INFO_CIRCLE.getHtml() + " " + (I18nProperties.getString(Strings.infoCheckProbableInfectionEnvironment)) + "<p>   </p>" : "<p>   </p>");
+		}
+		//@formatter:on
+		return HTML_LAYOUT + OTHER_STANDARD_FIELDS;
 	}
 
 }

@@ -43,18 +43,24 @@ public class AuthProvider {
 
     private final boolean isUserSyncSupported;
 
-    private AuthProvider() {
-        String configuredProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
+    private final boolean isUserSyncAtStartupEnabled;
+
+    private final String name;
+
+	private AuthProvider(ConfigFacade configFacade) {
+		String configuredProvider = configFacade.getAuthenticationProvider();
         isUsernameCaseSensitive = SORMAS.equalsIgnoreCase(configuredProvider);
         isDefaultProvider = SORMAS.equalsIgnoreCase(configuredProvider);
         isUserSyncSupported = KEYCLOAK.equalsIgnoreCase(configuredProvider);
+        isUserSyncAtStartupEnabled = isUserSyncSupported && FacadeProvider.getConfigFacade().isAuthenticationProviderUserSyncAtStartupEnabled();
+        name = configuredProvider;
     }
 
-    public static AuthProvider getProvider() {
+	public static AuthProvider getProvider(ConfigFacade configFacade) {
         if (provider == null) {
             synchronized (AuthProvider.class) {
                 if (provider == null) {
-                    provider = new AuthProvider();
+					provider = new AuthProvider(configFacade);
                 }
             }
         }
@@ -82,4 +88,18 @@ public class AuthProvider {
         return isUserSyncSupported;
     }
 
+    /**
+     * Even if the Authentication Provider supports user sync, the user sync at startup might be disabled for startup performance reasons.
+     * If user sync is not supported, this will always return false.
+     */
+    public boolean isUserSyncAtStartupEnabled() {
+        return isUserSyncAtStartupEnabled;
+    }
+
+    /**
+     * Name of the active Authentication Provider.
+     */
+    public String getName() {
+        return name;
+    }
 }

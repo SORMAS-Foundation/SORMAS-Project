@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.importer;
 
 import java.io.IOException;
+import java.util.function.Function;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ClassResource;
@@ -9,7 +10,13 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
@@ -20,7 +27,8 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.importexport.ValueSeparator;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -31,17 +39,20 @@ public class AbstractImportLayout extends VerticalLayout {
 
 	protected Button downloadErrorReportButton;
 	protected Upload upload;
-	protected final UserReferenceDto currentUser;
+	protected final UserDto currentUser;
 	protected final UI currentUI;
+	protected ImportReceiver generatedReceiver;
+	protected ComboBox separator;
 
 	public AbstractImportLayout() {
-		currentUser = UserProvider.getCurrent().getUserReference();
+		currentUser = UserProvider.getCurrent().getUser();
 		currentUI = UI.getCurrent();
 		setSpacing(false);
 		setMargin(true);
+		createSeparatorComboBox();
 	}
 
-	protected void addDownloadResourcesComponent(int step, ClassResource importGuideResource, ClassResource dataDictionaryResource) {
+	protected void addDownloadResourcesComponent(int step, ClassResource importGuideResource) {
 		String headline = I18nProperties.getString(Strings.headingDownloadImportGuide);
 		String infoText = I18nProperties.getString(Strings.infoDownloadImportGuide);
 		Resource buttonIcon = VaadinIcons.FILE_PRESENTATION;
@@ -58,10 +69,7 @@ public class AbstractImportLayout extends VerticalLayout {
 			ValoTheme.BUTTON_PRIMARY,
 			CssStyles.VSPACE_TOP_3,
 			CssStyles.VSPACE_2);
-
-		FileDownloader dataDictionaryDownloader = new FileDownloader(dataDictionaryResource);
-		dataDictionaryDownloader.extend(dataDictionaryButton);
-
+		DownloadUtil.attachDataDictionaryDownloader(dataDictionaryButton);
 		addComponent(dataDictionaryButton);
 	}
 
@@ -94,12 +102,70 @@ public class AbstractImportLayout extends VerticalLayout {
 		String headline = I18nProperties.getString(Strings.headingImportCsvFile);
 		String infoText = I18nProperties.getString(Strings.infoImportCsvFile);
 		ImportLayoutComponent importCsvComponent = new ImportLayoutComponent(step, headline, infoText, null, null);
+		CssStyles.style(importCsvComponent, CssStyles.VSPACE_3);
 		addComponent(importCsvComponent);
+		addComponent(separator);
 		upload = new Upload("", receiver);
 		upload.setButtonCaption(I18nProperties.getCaption(Captions.importImportData));
 		CssStyles.style(upload, CssStyles.VSPACE_2);
+		upload.addStartedListener(receiver);
 		upload.addSucceededListener(receiver);
 		addComponent(upload);
+	}
+
+	private ComboBox createSeparatorComboBox() {
+		ComboBox comboBox = new ComboBox();
+		comboBox.setCaption(I18nProperties.getCaption(Captions.importValueSeparator));
+		comboBox.setItems(ValueSeparator.values());
+		comboBox.setValue(ValueSeparator.DEFAULT);
+		comboBox.setEmptySelectionAllowed(false);
+		comboBox.setItemCaptionGenerator(item -> {
+			if (ValueSeparator.DEFAULT.equals(ValueSeparator.valueOf(item.toString()))) {
+				ValueSeparator defaultSeparator = ValueSeparator.get(ValueSeparator.getSeparator(ValueSeparator.DEFAULT));
+				return String.format(
+					I18nProperties.getEnumCaption(ValueSeparator.valueOf(item.toString())),
+					defaultSeparator == null ? ValueSeparator.getSeparator(ValueSeparator.DEFAULT) : I18nProperties.getEnumCaption(defaultSeparator));
+			} else {
+				return I18nProperties.getEnumCaption(ValueSeparator.valueOf(item.toString()));
+			}
+		});
+		separator = comboBox;
+		return comboBox;
+	}
+
+	protected void addImportCsvComponentWithOverwrite(int step, Function<Boolean, ImportReceiver> receiverGenerator) {
+		String headline = I18nProperties.getString(Strings.headingImportCsvFile);
+		String infoText = I18nProperties.getString(Strings.infoImportCsvFile);
+		ImportLayoutComponent importCsvComponent = new ImportLayoutComponent(step, headline, infoText, null, null);
+		addComponent(importCsvComponent);
+		generatedReceiver = receiverGenerator.apply(false);
+		upload = new Upload("", generatedReceiver);
+		upload.setButtonCaption(I18nProperties.getCaption(Captions.importImportData));
+		CssStyles.style(upload, CssStyles.VSPACE_2);
+		upload.addStartedListener(generatedReceiver);
+		upload.addSucceededListener(generatedReceiver);
+
+		HorizontalLayout checkboxBar = new HorizontalLayout();
+		checkboxBar.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+		checkboxBar.setDescription(I18nProperties.getString(Strings.infoImportInfrastructureAllowOverwrite));
+		CssStyles.style(checkboxBar, CssStyles.VSPACE_TOP_3);
+		CheckBox allowOverwrite = new CheckBox(I18nProperties.getCaption(Captions.infrastructureImportAllowOverwrite));
+		allowOverwrite.setValue(false);
+		checkboxBar.addComponent(allowOverwrite);
+		Label labelInfo = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		checkboxBar.addComponent(labelInfo);
+		CssStyles.style(checkboxBar, CssStyles.VSPACE_3);
+		addComponent(checkboxBar);
+		addComponent(separator);
+		addComponent(upload);
+
+		allowOverwrite.addValueChangeListener(e -> {
+			upload.removeSucceededListener(generatedReceiver);
+			generatedReceiver = receiverGenerator.apply(e.getValue());
+			upload.setReceiver(generatedReceiver);
+			upload.addStartedListener(generatedReceiver);
+			upload.addSucceededListener(generatedReceiver);
+		});
 	}
 
 	protected void addDownloadErrorReportComponent(int step) {

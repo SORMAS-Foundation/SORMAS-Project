@@ -15,18 +15,18 @@
 
 package de.symeda.sormas.app.rest;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.AddTrace;
 import com.google.firebase.perf.metrics.Trace;
 
-import android.content.Context;
-import android.os.AsyncTask;
-import android.util.Log;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
@@ -43,19 +43,24 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
+import de.symeda.sormas.app.backend.customizableenum.CustomizableEnumValueDtoHelper;
 import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDtoHelper;
 import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.feature.FeatureConfigurationDtoHelper;
+import de.symeda.sormas.app.backend.immunization.ImmunizationDtoHelper;
 import de.symeda.sormas.app.backend.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDtoHelper;
 import de.symeda.sormas.app.backend.outbreak.OutbreakDtoHelper;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
+import de.symeda.sormas.app.backend.region.AreaDtoHelper;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
+import de.symeda.sormas.app.backend.region.ContinentDtoHelper;
 import de.symeda.sormas.app.backend.region.CountryDtoHelper;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
+import de.symeda.sormas.app.backend.region.SubcontinentDtoHelper;
 import de.symeda.sormas.app.backend.report.AggregateReportDtoHelper;
 import de.symeda.sormas.app.backend.report.WeeklyReportDtoHelper;
 import de.symeda.sormas.app.backend.sample.AdditionalTestDtoHelper;
@@ -217,6 +222,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		final boolean hasUnsynchronizedCampaignData = !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)
 			&& (DatabaseHelper.getCampaignFormDataDao().isAnyModified());
 		return DatabaseHelper.getCaseDao().isAnyModified()
+			|| DatabaseHelper.getImmunizationDao().isAnyModified()
 			|| DatabaseHelper.getContactDao().isAnyModified()
 			|| DatabaseHelper.getPersonDao().isAnyModified()
 			|| DatabaseHelper.getEventDao().isAnyModified()
@@ -238,6 +244,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 	private void synchronizeChangedData() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
 		PersonDtoHelper personDtoHelper = new PersonDtoHelper();
 		CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
+		ImmunizationDtoHelper immunizationDtoHelper = new ImmunizationDtoHelper();
 		EventDtoHelper eventDtoHelper = new EventDtoHelper();
 		EventParticipantDtoHelper eventParticipantDtoHelper = new EventParticipantDtoHelper();
 		SampleDtoHelper sampleDtoHelper = new SampleDtoHelper();
@@ -256,9 +263,11 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		new OutbreakDtoHelper().pullEntities(false);
 		new DiseaseConfigurationDtoHelper().pullEntities(false);
+		new CustomizableEnumValueDtoHelper().pullEntities(false);
 
 		boolean personsNeedPull = personDtoHelper.pullAndPushEntities();
 		boolean casesNeedPull = caseDtoHelper.pullAndPushEntities();
+		boolean immunizationsNeedPull = immunizationDtoHelper.pullAndPushEntities();
 		boolean eventsNeedPull = eventDtoHelper.pullAndPushEntities();
 		boolean eventParticipantsNeedPull = eventParticipantDtoHelper.pullAndPushEntities();
 		boolean samplesNeedPull = sampleDtoHelper.pullAndPushEntities();
@@ -279,6 +288,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			personDtoHelper.pullEntities(true);
 		if (casesNeedPull)
 			caseDtoHelper.pullEntities(true);
+		if (immunizationsNeedPull)
+			immunizationDtoHelper.pullEntities(true);
 		if (eventsNeedPull)
 			eventDtoHelper.pullEntities(true);
 		if (eventParticipantsNeedPull)
@@ -318,6 +329,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 	private void repullData() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
 		PersonDtoHelper personDtoHelper = new PersonDtoHelper();
 		CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
+		ImmunizationDtoHelper immunizationDtoHelper = new ImmunizationDtoHelper();
 		EventDtoHelper eventDtoHelper = new EventDtoHelper();
 		EventParticipantDtoHelper eventParticipantDtoHelper = new EventParticipantDtoHelper();
 		SampleDtoHelper sampleDtoHelper = new SampleDtoHelper();
@@ -339,9 +351,11 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new UserDtoHelper().repullEntities();
 		new OutbreakDtoHelper().repullEntities();
 		new DiseaseConfigurationDtoHelper().repullEntities();
+		new CustomizableEnumValueDtoHelper().repullEntities();
 		new FeatureConfigurationDtoHelper().repullEntities();
 		personDtoHelper.repullEntities();
 		caseDtoHelper.repullEntities();
+		immunizationDtoHelper.repullEntities();
 		eventDtoHelper.repullEntities();
 		eventParticipantDtoHelper.repullEntities();
 		sampleDtoHelper.repullEntities();
@@ -393,6 +407,13 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 	@AddTrace(name = "pullInitialInfrastructureTrace")
 	private void pullInitialInfrastructure() throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
+		new ContinentDtoHelper().pullEntities(false);
+		new SubcontinentDtoHelper().pullEntities(false);
+		new CountryDtoHelper().pullEntities(false);
+
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
+			new AreaDtoHelper().pullEntities(false);
+		}
 		new RegionDtoHelper().pullEntities(false);
 		new DistrictDtoHelper().pullEntities(false);
 		new CommunityDtoHelper().pullEntities(false);
@@ -401,6 +422,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new UserDtoHelper().pullEntities(false);
 		new DiseaseClassificationDtoHelper().pullEntities(false);
 		new DiseaseConfigurationDtoHelper().pullEntities(false);
+		new CustomizableEnumValueDtoHelper().pullEntities(false);
 
 		// user role configurations may be removed, so have to pull the deleted uuids
 		// this may be applied to other entities later as well
@@ -420,8 +442,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new FeatureConfigurationDtoHelper().pullEntities(false);
 
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-			new CampaignDtoHelper().pullEntities(false);
 			new CampaignFormMetaDtoHelper().pullEntities(false);
+			new CampaignDtoHelper().pullEntities(false);
 		}
 
 		ConfigProvider.setInitialSyncRequired(false);
@@ -442,6 +464,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
 			for (String eventUuid : eventUuids) {
 				DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
+			}
+
+			// Tasks
+			List<String> taskUuids = executeUuidCall(RetroProvider.getTaskFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+			for (String taskUuid : taskUuids) {
+				DatabaseHelper.getTaskDao().deleteTaskAndAllDependingEntities(taskUuid);
 			}
 
 			// Inactive outbreaks
@@ -466,6 +494,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
 			for (String caseUuid : caseUuids) {
 				DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
+			}
+
+			// Immunization
+			List<String> immunizationUuids = executeUuidCall(RetroProvider.getImmunizationFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+			for (String immunizationUuid : immunizationUuids) {
+				DatabaseHelper.getImmunizationDao().deleteImmunizationAndAllDependingEntities(immunizationUuid);
 			}
 
 			// Events
@@ -512,6 +546,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		// Example: Case is created using an existing person, meanwhile user loses access to the person
 		new PersonDtoHelper().pushEntities(true);
 		new CaseDtoHelper().pushEntities(true);
+		new ImmunizationDtoHelper().pushEntities(true);
 		new EventDtoHelper().pushEntities(true);
 		new EventParticipantDtoHelper().pushEntities(true);
 		new SampleDtoHelper().pushEntities(true);
@@ -565,6 +600,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		// clinical visits
 		List<String> clinicalVisitUuids = executeUuidCall(RetroProvider.getClinicalVisitFacade().pullUuids());
 		DatabaseHelper.getClinicalVisitDao().deleteInvalid(clinicalVisitUuids);
+		// immunizations
+		List<String> immunizationUuids = executeUuidCall(RetroProvider.getImmunizationFacade().pullUuids());
+		DatabaseHelper.getImmunizationDao().deleteInvalid(immunizationUuids);
 		// cases
 		List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullUuids());
 		DatabaseHelper.getCaseDao().deleteInvalid(caseUuids);
@@ -579,6 +617,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		new PersonDtoHelper().pullMissing(personUuids);
 		new CaseDtoHelper().pullMissing(caseUuids);
+		new ImmunizationDtoHelper().pullMissing(caseUuids);
 		new PrescriptionDtoHelper().pullMissing(prescriptionUuids);
 		new TreatmentDtoHelper().pullMissing(treatmentUuids);
 		new EventDtoHelper().pullMissing(eventUuids);
@@ -620,6 +659,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		// disease configurations
 		List<String> diseaseConfigurationUuids = executeUuidCall(RetroProvider.getDiseaseConfigurationFacade().pullUuids());
 		DatabaseHelper.getDiseaseConfigurationDao().deleteInvalid(diseaseConfigurationUuids);
+		// Disease variants
+		List<String> customizableEnumValueUuids = executeUuidCall(RetroProvider.getCustomizableEnumValueFacade().pullUuids());
+		DatabaseHelper.getCustomizableEnumValueDao().deleteInvalid(customizableEnumValueUuids);
 		// feature configurations
 		List<String> featureConfigurationUuids = executeUuidCall(RetroProvider.getFeatureConfigurationFacade().pullUuids());
 		DatabaseHelper.getFeatureConfigurationDao().deleteInvalid(featureConfigurationUuids);
@@ -641,22 +683,29 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		// regions
 		List<String> regionUuids = executeUuidCall(RetroProvider.getRegionFacade().pullUuids());
 		DatabaseHelper.getRegionDao().deleteInvalid(regionUuids);
+		// areas
+		List<String> areaUuids = executeUuidCall(RetroProvider.getAreaFacade().pullUuids());
+		DatabaseHelper.getAreaDao().deleteInvalid(areaUuids);
 		// countries
 		List<String> countryUuids = executeUuidCall(RetroProvider.getCountryFacade().pullUuids());
 		DatabaseHelper.getCountryDao().deleteInvalid(countryUuids);
-
-		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-			// campaigns
-			List<String> campaignUuids = executeUuidCall(RetroProvider.getCampaignFacade().pullUuids());
-			DatabaseHelper.getCampaignDao().deleteInvalid(campaignUuids);
-			// campaignFormMetas
-			List<String> campaignFormMetaUuids = executeUuidCall(RetroProvider.getCampaignFormMetaFacade().pullUuids());
-			DatabaseHelper.getCampaignFormMetaDao().deleteInvalid(campaignFormMetaUuids);
-		}
+		// subcontinents
+		List<String> subcontinentUuids = executeUuidCall(RetroProvider.getSubcontinentFacade().pullUuids());
+		DatabaseHelper.getSubcontinentDao().deleteInvalid(subcontinentUuids);
+		// continents
+		List<String> continentUuids = executeUuidCall(RetroProvider.getContinentFacade().pullUuids());
+		DatabaseHelper.getContinentDao().deleteInvalid(continentUuids);
 
 		// order is important, due to dependencies
 
+		new ContinentDtoHelper().pullMissing(continentUuids);
+		new SubcontinentDtoHelper().pullMissing(subcontinentUuids);
 		new CountryDtoHelper().pullMissing(countryUuids);
+
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
+			new AreaDtoHelper().pullMissing(areaUuids);
+		}
+
 		new RegionDtoHelper().pullMissing(regionUuids);
 		new DistrictDtoHelper().pullMissing(districtUuids);
 		new CommunityDtoHelper().pullMissing(communityUuids);
@@ -665,10 +714,19 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new UserRoleConfigDtoHelper().pullMissing(userRoleConfigUuids);
 		new UserDtoHelper().pullMissing(userUuids);
 		new DiseaseConfigurationDtoHelper().pullMissing(diseaseConfigurationUuids);
+		new CustomizableEnumValueDtoHelper().pullMissing(customizableEnumValueUuids);
 		new FeatureConfigurationDtoHelper().pullMissing(featureConfigurationUuids);
+
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-			new CampaignDtoHelper().pullMissing(featureConfigurationUuids);
-			new CampaignFormMetaDtoHelper().pullMissing(featureConfigurationUuids);
+			// campaigns
+			List<String> campaignUuids = executeUuidCall(RetroProvider.getCampaignFacade().pullUuids());
+			DatabaseHelper.getCampaignDao().deleteInvalid(campaignUuids);
+			// campaignFormMetas
+			List<String> campaignFormMetaUuids = executeUuidCall(RetroProvider.getCampaignFormMetaFacade().pullUuids());
+			DatabaseHelper.getCampaignFormMetaDao().deleteInvalid(campaignFormMetaUuids);
+
+			new CampaignFormMetaDtoHelper().pullMissing(campaignFormMetaUuids);
+			new CampaignDtoHelper().pullMissing(campaignUuids);
 		}
 	}
 

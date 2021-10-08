@@ -1,12 +1,16 @@
 package de.symeda.sormas.api.labmessage;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -20,15 +24,12 @@ public class LabMessageDto extends EntityDto {
 	public static final String SAMPLE_RECEIVED_DATE = "sampleReceivedDate";
 	public static final String LAB_SAMPLE_ID = "labSampleId";
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
-	public static final String TEST_LAB_NAME = "testLabName";
-	public static final String TEST_LAB_EXTERNAL_ID = "testLabExternalId";
-	public static final String TEST_LAB_POSTAL_CODE = "testLabPostalCode";
-	public static final String TEST_LAB_CITY = "testLabCity";
+	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";
 	public static final String SPECIMEN_CONDITION = "specimenCondition";
-	public static final String TEST_TYPE = "testType";
-	public static final String TESTED_DISEASE = "testedDisease";
-	public static final String TEST_DATE_TIME = "testDateTime";
-	public static final String TEST_RESULT = "testResult";
+	public static final String LAB_NAME = "labName";
+	public static final String LAB_EXTERNAL_ID = "labExternalId";
+	public static final String LAB_POSTAL_CODE = "labPostalCode";
+	public static final String LAB_CITY = "labCity";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String PERSON_SEX = "personSex";
@@ -37,39 +38,72 @@ public class LabMessageDto extends EntityDto {
 	public static final String PERSON_BIRTH_DATE_YYYY = "personBirthDateYYYY";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
 	public static final String PERSON_CITY = "personCity";
+	public static final String PERSON_PHONE = "personPhone";
+	public static final String PERSON_EMAIL = "personEmail";
 	public static final String PERSON_STREET = "personStreet";
 	public static final String PERSON_HOUSE_NUMBER = "personHouseNumber";
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String PROCESSED = "processed";
+	public static final String REPORT_ID = "reportId";
 
+	private Disease testedDisease;
 	private Date messageDateTime;
 	private Date sampleDateTime;
 	private Date sampleReceivedDate;
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String labSampleId;
 	private SampleMaterial sampleMaterial;
-	private String testLabName;
-	private String testLabExternalId;
-	private String testLabPostalCode;
-	private String testLabCity;
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	private String sampleMaterialText;
 	private SpecimenCondition specimenCondition;
-	private PathogenTestType testType;
-	private Disease testedDisease;
-	private Date testDateTime;
-	private PathogenTestResultType testResult;
+
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	private String labName;
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	private String labExternalId;
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	private String labPostalCode;
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	private String labCity;
+
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String personFirstName;
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String personLastName;
 	private Sex personSex;
 	private Integer personBirthDateDD;
 	private Integer personBirthDateMM;
 	private Integer personBirthDateYYYY;
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String personPostalCode;
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String personCity;
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String personStreet;
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String personHouseNumber;
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	private String personPhone;
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	private String personEmail;
 
+	@Valid
+	private List<TestReportDto> testReports = new ArrayList<>();
+
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String labMessageDetails;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	private String reportId;
 
-	private boolean processed;
+	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
+
+	public Disease getTestedDisease() {
+		return testedDisease;
+	}
+
+	public void setTestedDisease(Disease testedDisease) {
+		this.testedDisease = testedDisease;
+	}
 
 	public Date getMessageDateTime() {
 		return messageDateTime;
@@ -111,76 +145,52 @@ public class LabMessageDto extends EntityDto {
 		this.sampleMaterial = sampleMaterial;
 	}
 
-	public String getTestLabName() {
-		return testLabName;
+	public String getSampleMaterialText() {
+		return sampleMaterialText;
 	}
 
-	public void setTestLabName(String testLabName) {
-		this.testLabName = testLabName;
-	}
-
-	public String getTestLabExternalId() {
-		return testLabExternalId;
-	}
-
-	public void setTestLabExternalId(String testLabExternalId) {
-		this.testLabExternalId = testLabExternalId;
-	}
-
-	public String getTestLabPostalCode() {
-		return testLabPostalCode;
-	}
-
-	public void setTestLabPostalCode(String testLabPostalCode) {
-		this.testLabPostalCode = testLabPostalCode;
-	}
-
-	public String getTestLabCity() {
-		return testLabCity;
-	}
-
-	public void setTestLabCity(String testLabCity) {
-		this.testLabCity = testLabCity;
+	public void setSampleMaterialText(String sampleMaterialText) {
+		this.sampleMaterialText = sampleMaterialText;
 	}
 
 	public SpecimenCondition getSpecimenCondition() {
 		return specimenCondition;
 	}
 
+	public String getLabName() {
+		return labName;
+	}
+
+	public void setLabName(String labName) {
+		this.labName = labName;
+	}
+
+	public String getLabExternalId() {
+		return labExternalId;
+	}
+
+	public void setLabExternalId(String labExternalId) {
+		this.labExternalId = labExternalId;
+	}
+
+	public String getLabPostalCode() {
+		return labPostalCode;
+	}
+
+	public void setLabPostalCode(String labPostalCode) {
+		this.labPostalCode = labPostalCode;
+	}
+
+	public String getLabCity() {
+		return labCity;
+	}
+
+	public void setLabCity(String labCity) {
+		this.labCity = labCity;
+	}
+
 	public void setSpecimenCondition(SpecimenCondition specimenCondition) {
 		this.specimenCondition = specimenCondition;
-	}
-
-	public PathogenTestType getTestType() {
-		return testType;
-	}
-
-	public void setTestType(PathogenTestType testType) {
-		this.testType = testType;
-	}
-
-	public Disease getTestedDisease() {
-		return testedDisease;
-	}
-
-	public void setTestedDisease(Disease testedDisease) {
-		this.testedDisease = testedDisease;
-	}
-
-	public Date getTestDateTime() {
-		return testDateTime;
-	}
-
-	public void setTestDateTime(Date testDateTime) {
-		this.testDateTime = testDateTime;
-	}
-
-	public PathogenTestResultType getTestResult() {
-		return testResult;
-	}
-
-	public void setTestResult(PathogenTestResultType testResult) {
-		this.testResult = testResult;
 	}
 
 	public String getPersonFirstName() {
@@ -263,6 +273,41 @@ public class LabMessageDto extends EntityDto {
 		this.personHouseNumber = personHouseNumber;
 	}
 
+	public String getPersonPhone() {
+		return personPhone;
+	}
+
+	public void setPersonPhone(String personPhone) {
+		this.personPhone = personPhone;
+	}
+
+	public String getPersonEmail() {
+		return personEmail;
+	}
+
+	public void setPersonEmail(String personEmail) {
+		this.personEmail = personEmail;
+	}
+
+	public List<TestReportDto> getTestReports() {
+		return testReports;
+	}
+
+	public void setTestReports(List<TestReportDto> testReports) {
+		this.testReports = testReports;
+	}
+
+	public void addTestReport(TestReportDto testReport) {
+		testReport.setLabMessage(this.toReference());
+		if (this.testReports == null) {
+			List<TestReportDto> testReports = new ArrayList();
+			testReports.add(testReport);
+			this.testReports = testReports;
+		} else {
+			this.testReports.add(testReport);
+		}
+	}
+
 	public String getLabMessageDetails() {
 		return labMessageDetails;
 	}
@@ -271,12 +316,20 @@ public class LabMessageDto extends EntityDto {
 		this.labMessageDetails = labMessageDetails;
 	}
 
-	public boolean isProcessed() {
-		return processed;
+	public LabMessageStatus getStatus() {
+		return status;
 	}
 
-	public void setProcessed(boolean processed) {
-		this.processed = processed;
+	public void setStatus(LabMessageStatus status) {
+		this.status = status;
+	}
+
+	public String getReportId() {
+		return reportId;
+	}
+
+	public void setReportId(String reportId) {
+		this.reportId = reportId;
 	}
 
 	public static LabMessageDto build() {
@@ -284,5 +337,9 @@ public class LabMessageDto extends EntityDto {
 		LabMessageDto labMessage = new LabMessageDto();
 		labMessage.setUuid(DataHelper.createUuid());
 		return labMessage;
+	}
+
+	public LabMessageReferenceDto toReference() {
+		return new LabMessageReferenceDto(getUuid());
 	}
 }

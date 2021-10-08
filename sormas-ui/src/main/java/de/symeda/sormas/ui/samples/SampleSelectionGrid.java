@@ -6,9 +6,12 @@ import com.vaadin.v7.data.util.BeanItemContainer;
 import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.Grid;
+import com.vaadin.v7.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.utils.V7UuidRenderer;
 
 public class SampleSelectionGrid extends Grid {
 
@@ -34,6 +37,10 @@ public class SampleSelectionGrid extends Grid {
 			SampleDto.SAMPLE_MATERIAL,
 			SampleDto.LAB,
 			SampleDto.PATHOGEN_TEST_RESULT);
+
+		getColumn(SampleDto.UUID).setRenderer(new V7UuidRenderer());
+		getColumn(SampleDto.SAMPLE_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
+		getColumn(SampleDto.RECEIVED_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
 
 		for (Column column : getColumns()) {
 			column.setHeaderCaption(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, column.getPropertyId().toString()));

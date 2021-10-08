@@ -64,12 +64,14 @@
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/casePreviousHospitalization_healthFacility"
                 app:value="@{data.healthFacility}"
+                app:defaultValue='@{@string/value_unknown}'
                 style="@style/ControlFirstOfTwoColumnsStyle" />
 
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/casePreviousHospitalization_region"
                 app:value="@{data.region}"
+                app:defaultValue='@{@string/value_unknown}'
                 style="@style/ControlSecondOfTwoColumnsStyle" />
 
         </LinearLayout>
@@ -82,12 +84,26 @@
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/casePreviousHospitalization_district"
                 app:value="@{data.district}"
+                app:defaultValue='@{@string/value_unknown}'
                 style="@style/ControlFirstOfTwoColumnsStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/casePreviousHospitalization_community"
                 app:value="@{data.community}"
                 style="@style/ControlSecondOfTwoColumnsStyle" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/casePreviousHospitalization_hospitalizationReason"
+                app:value="@{data.hospitalizationReason}"
+                app:appendValue="@{data.otherHospitalizationReason}"
+                style="@style/ControlFirstOfTwoColumnsStyle" />
 
         </LinearLayout>
 

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.utils.ExportErrorException;
 
@@ -36,9 +37,9 @@ public interface ExportFacade {
 
 	String generateZipArchive(String date, int randomNumber);
 
-	List<ExportConfigurationDto> getExportConfigurations(ExportConfigurationCriteria criteria);
+	List<ExportConfigurationDto> getExportConfigurations(ExportConfigurationCriteria criteria, boolean isPublic);
 
-	void saveExportConfiguration(ExportConfigurationDto exportConfiguration);
+	void saveExportConfiguration(@Valid ExportConfigurationDto exportConfiguration);
 
 	void deleteExportConfiguration(String exportConfigurationUuid);
 }

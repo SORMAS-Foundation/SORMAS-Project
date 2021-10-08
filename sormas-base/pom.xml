@@ -5,10 +5,9 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.55.0-SNAPSHOT</version>
+	<version>1.64.0</version>
 
 	<properties>
-
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -720,6 +719,12 @@
 				<version>0.3.0</version>
 			</dependency>
 
+			<dependency>
+				<groupId>com.wcs.wcslib</groupId>
+				<artifactId>wcslib-vaadin-widget-multifileupload</artifactId>
+				<version>4.0</version>
+			</dependency>
+
 			<!-- ** Vaadin END ** -->
 
 			<!-- *** Compile dependencies END *** -->
@@ -760,7 +765,6 @@
 				<groupId>org.apache.poi</groupId>
 				<artifactId>poi-ooxml</artifactId>
 				<version>3.17</version>
-				<scope>test</scope>
 			</dependency>
 
 			<dependency>
@@ -797,13 +801,49 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>4.0.3.RELEASE</version>
+				<!-- downgraded because of missing support in android api 24-->
+			</dependency>
+
+			<dependency>
 				<groupId>p6spy</groupId>
 				<artifactId>p6spy</artifactId>
 				<version>3.9.1</version>
 				<scope>test</scope>
 			</dependency>
 
+			<dependency>
+				<groupId>com.github.tomakehurst</groupId>
+				<artifactId>wiremock-standalone</artifactId>
+				<version>2.27.2</version>
+				<scope>test</scope>
+			</dependency>
 			<!-- *** Test dependencies END *** -->
+
+			<dependency>
+				<groupId>com.ibm.etcd</groupId>
+				<artifactId>etcd-java</artifactId>
+				<version>0.0.18</version>
+			</dependency>
+
+			<!-- OIDC for S2S -->
+			<dependency>
+				<groupId>com.google.oauth-client</groupId>
+				<artifactId>google-oauth-client</artifactId>
+				<version>1.31.5</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.http-client</groupId>
+				<artifactId>google-http-client</artifactId>
+				<version>1.39.2</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.http-client</groupId>
+				<artifactId>google-http-client-gson</artifactId>
+				<version>1.39.2</version>
+			</dependency>
 
 		</dependencies>
 	</dependencyManagement>

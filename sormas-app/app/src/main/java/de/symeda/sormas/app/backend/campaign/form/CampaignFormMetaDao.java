@@ -21,17 +21,18 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 
 public class CampaignFormMetaDao extends AbstractAdoDao<CampaignFormMeta> {
 
-	public CampaignFormMetaDao(Dao<CampaignFormMeta, Long> innerDao) {
-		super(innerDao);
-	}
+    public CampaignFormMetaDao(Dao<CampaignFormMeta, Long> innerDao) {
+        super(innerDao);
+    }
 
-	@Override
-	protected Class<CampaignFormMeta> getAdoClass() {
-		return CampaignFormMeta.class;
-	}
+    @Override
+    protected Class<CampaignFormMeta> getAdoClass() {
+        return CampaignFormMeta.class;
+    }
 
-	@Override
-	public String getTableName() {
-		return CampaignFormMeta.TABLE_NAME;
-	}
+    @Override
+    public String getTableName() {
+        return CampaignFormMeta.TABLE_NAME;
+    }
 }
+

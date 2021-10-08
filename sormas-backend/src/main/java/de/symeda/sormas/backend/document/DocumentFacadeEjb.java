@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,12 +24,16 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventJurisdictionChecker;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -53,6 +57,8 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 @Stateless(name = "DocumentFacade")
 public class DocumentFacadeEjb implements DocumentFacade {
 
+	private static final String MIME_TYPE_DEFAULT = "application/octet-stream";
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
@@ -62,11 +68,12 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	private DocumentService documentService;
 	@EJB
 	private DocumentStorageService documentStorageService;
-
+	@EJB
+	private CaseService caseService;
+	@EJB
+	private ContactService contactService;
 	@EJB
 	private EventService eventService;
-	@EJB
-	private EventJurisdictionChecker eventJurisdictionChecker;
 
 	@Override
 	public DocumentDto getDocumentByUuid(String uuid) {
@@ -74,10 +81,14 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	}
 
 	@Override
-	public DocumentDto saveDocument(DocumentDto dto, byte[] content) throws IOException {
+	public DocumentDto saveDocument(@Valid DocumentDto dto, byte[] content) throws IOException {
 		Document existingDocument = dto.getUuid() == null ? null : documentService.getByUuid(dto.getUuid());
 		if (existingDocument != null) {
 			throw new EntityExistsException("Tried to save a document that already exists: " + dto.getUuid());
+		}
+
+		if (dto.getMimeType() == null) {
+			dto.setMimeType(MIME_TYPE_DEFAULT);
 		}
 
 		Document document = fromDto(dto, true);
@@ -155,23 +166,28 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	private void pseudonymizeDto(Document document, DocumentDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
-			switch (dto.getRelatedEntityType()) {
-			case EVENT:
-				pseudonimizeEventRelatedDto(document, dto, pseudonymizer);
-				break;
-			}
+			boolean inJurisdiction = isInJurisdiction(dto);
+			pseudonymizer.pseudonymizeDto(
+				DocumentDto.class,
+				dto,
+				inJurisdiction,
+				(e) -> pseudonymizer.pseudonymizeUser(document.getUploadingUser(), userService.getCurrentUser(), dto::setUploadingUser));
 		}
 	}
 
-	private void pseudonimizeEventRelatedDto(Document document, DocumentDto dto, Pseudonymizer pseudonymizer) {
-		assert dto.getRelatedEntityType() == DocumentRelatedEntityType.EVENT;
-
-		Event event = eventService.getByUuid(dto.getRelatedEntityUuid());
-		boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(event);
-
-		pseudonymizer.pseudonymizeDto(DocumentDto.class, dto, inJurisdiction, (e) -> {
-			pseudonymizer.pseudonymizeUser(document.getUploadingUser(), userService.getCurrentUser(), dto::setUploadingUser);
-		});
+	private boolean isInJurisdiction(DocumentDto dto) {
+		switch (dto.getRelatedEntityType()) {
+		case CASE:
+			Case caze = caseService.getByUuid(dto.getRelatedEntityUuid());
+			return caseService.inJurisdictionOrOwned(caze);
+		case CONTACT:
+			Contact contact = contactService.getByUuid(dto.getRelatedEntityUuid());
+			return contactService.inJurisdictionOrOwned(contact).getInJurisdiction();
+		case EVENT:
+			Event event = eventService.getByUuid(dto.getRelatedEntityUuid());
+			return eventService.inJurisdictionOrOwned(event);
+		}
+		return true;
 	}
 
 	public static DocumentDto toDto(Document source) {

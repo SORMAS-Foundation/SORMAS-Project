@@ -2,7 +2,10 @@ package de.symeda.sormas.api.importexport;
 
 import java.util.Set;
 
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
@@ -14,7 +17,9 @@ public class ExportConfigurationDto extends EntityDto {
 
 	public static final String NAME = "name";
 
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String name;
+	private boolean sharedToPublic;
 	private ExportType exportType;
 	private UserReferenceDto user;
 	private Set<String> properties;
@@ -35,6 +40,14 @@ public class ExportConfigurationDto extends EntityDto {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public boolean isSharedToPublic() {
+		return sharedToPublic;
+	}
+
+	public void setSharedToPublic(boolean sharedToPublic) {
+		this.sharedToPublic = sharedToPublic;
 	}
 
 	public ExportType getExportType() {

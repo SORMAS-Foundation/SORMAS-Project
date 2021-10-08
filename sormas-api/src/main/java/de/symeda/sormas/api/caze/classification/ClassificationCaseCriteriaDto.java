@@ -20,12 +20,14 @@ package de.symeda.sormas.api.caze.classification;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -33,10 +35,11 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 
 @JsonSubTypes({
 	@JsonSubTypes.Type(value = ClassificationEpiDataCriteriaDto.class, name = "ClassificationEpiDataCriteriaDto"),
-	@JsonSubTypes.Type(value = ClassificationNotInStartDateRangeCriteriaDto.class, name = "ClassificationNotInStartDateRangeCriteriaDto"),
+	@JsonSubTypes.Type(value = ClassificationVaccinationDateNotInStartDateRangeDto.class,
+		name = "ClassificationVaccinationDateNotInStartDateRangeDto"),
 	@JsonSubTypes.Type(value = ClassificationPathogenTestCriteriaDto.class, name = "ClassificationPathogenTestCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationExposureCriteriaDto.class, name = "ClassificationExposureCriteriaDto"),
-	@JsonSubTypes.Type(value = ClassificationSymptomsCriteriaDto.class, name = "ClassificationSymptomsCriteriaDto"), })
+	@JsonSubTypes.Type(value = ClassificationSymptomsCriteriaDto.class, name = "ClassificationSymptomsCriteriaDto") })
 public class ClassificationCaseCriteriaDto extends ClassificationCriteriaDto {
 
 	private static final long serialVersionUID = 2640725590302569043L;
@@ -62,7 +65,7 @@ public class ClassificationCaseCriteriaDto extends ClassificationCriteriaDto {
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests, List<EventDto> events, Date lastVaccinationDate) {
 
 		try {
 			Method method = getInvokeClass().getMethod("get" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));

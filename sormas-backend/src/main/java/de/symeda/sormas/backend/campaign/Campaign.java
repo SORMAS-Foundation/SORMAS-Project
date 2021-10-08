@@ -23,6 +23,7 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Entity(name = "campaigns")
 @Audited
@@ -112,8 +113,8 @@ public class Campaign extends CoreAdo {
 	}
 
 	@AuditedIgnore
-	@Type(type = "json")
-	@Column(columnDefinition = "json")
+	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
+	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
 	public List<CampaignDashboardElement> getDashboardElements() {
 		return dashboardElements;
 	}

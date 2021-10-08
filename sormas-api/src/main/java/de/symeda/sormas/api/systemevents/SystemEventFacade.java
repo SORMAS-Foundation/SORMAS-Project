@@ -1,7 +1,9 @@
 package de.symeda.sormas.api.systemevents;
 
-import javax.ejb.Remote;
 import java.util.Date;
+
+import javax.ejb.Remote;
+import javax.validation.Valid;
 
 /**
  * As subsequent manipulation of SystemEvents is undesired, this Facade shall not provide methods to fetch specific SystemEvents.
@@ -9,10 +11,19 @@ import java.util.Date;
 @Remote
 public interface SystemEventFacade {
 
-	Date getLatestSuccessByType(SystemEventType type);
+	boolean existsStartedEvent(SystemEventType type);
 
-	void saveSystemEvent(SystemEventDto dto);
+	SystemEventDto getLatestSuccessByType(SystemEventType type);
+
+	void saveSystemEvent(@Valid SystemEventDto dto);
 
 	void deleteAllDeletableSystemEvents(int daysAfterSystemEventGetsDeleted);
 
+	void reportSuccess(SystemEventDto systemEvent, String message, Date end);
+
+	void reportSuccess(SystemEventDto systemEvent, Date end);
+
+	void reportError(SystemEventDto systemEvent, String errorMessage, Date end);
+
+	void markPreviouslyStartedAsUnclear(SystemEventType type);
 }

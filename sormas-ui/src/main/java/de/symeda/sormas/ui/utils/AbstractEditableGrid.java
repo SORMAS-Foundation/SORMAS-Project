@@ -98,6 +98,11 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 		grid.getEditor().setBuffered(true);
 		grid.getEditor().setEnabled(true);
 
+		grid.getEditor().addSaveListener(e -> {
+			final List<T> items = getItems();
+			grid.setItems(items);
+		});
+
 		final HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setMargin(false);
 		buttonLayout.setSpacing(true);

@@ -25,6 +25,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -38,6 +39,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
@@ -65,11 +67,14 @@ public class Task extends AbstractDomainObject {
 	public static final String TASK_TYPE = "taskType";
 	public static final String CLOSED_LAT = "closedLat";
 	public static final String CLOSED_LON = "closedLon";
+	public static final String ARCHIVED = "archived";
+	public static final String TRAVEL_ENTRY = "travelEntry";
 
 	private TaskContext taskContext;
 	private Case caze;
 	private Contact contact;
 	private Event event;
+	private TravelEntry travelEntry;
 
 	private TaskType taskType;
 	private TaskPriority priority;
@@ -88,6 +93,8 @@ public class Task extends AbstractDomainObject {
 	private Double closedLon;
 	private Float closedLatLonAccuracy;
 
+	private boolean archived;
+
 	@Enumerated(EnumType.STRING)
 	public TaskContext getTaskContext() {
 		return taskContext;
@@ -97,7 +104,7 @@ public class Task extends AbstractDomainObject {
 		this.taskContext = taskContext;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Case getCaze() {
 		return caze;
 	}
@@ -106,7 +113,7 @@ public class Task extends AbstractDomainObject {
 		this.caze = caze;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Contact getContact() {
 		return contact;
 	}
@@ -115,7 +122,7 @@ public class Task extends AbstractDomainObject {
 		this.contact = contact;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
 	public Event getEvent() {
 		return event;
 	}
@@ -247,4 +254,21 @@ public class Task extends AbstractDomainObject {
 		this.closedLatLonAccuracy = closedLatLonAccuracy;
 	}
 
+	@Column
+	public boolean isArchived() {
+		return archived;
+	}
+
+	public void setArchived(boolean archived) {
+		this.archived = archived;
+	}
+
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+	public TravelEntry getTravelEntry() {
+		return travelEntry;
+	}
+
+	public void setTravelEntry(TravelEntry travelEntry) {
+		this.travelEntry = travelEntry;
+	}
 }

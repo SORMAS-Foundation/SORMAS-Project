@@ -17,27 +17,37 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoEventParticipant;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
 @Audited
-public class EventParticipant extends CoreAdo {
+public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 
 	private static final long serialVersionUID = -9006001699517297107L;
 
@@ -48,6 +58,11 @@ public class EventParticipant extends CoreAdo {
 	public static final String PERSON = "person";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	public static final String RESULTING_CASE = "resultingCase";
+	public static final String SAMPLES = "samples";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String SHARE_INFO_EVENT_PARTICIPANTS = "shareInfoEventParticipants";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
 	private User reportingUser;
 	private Event event;
@@ -57,6 +72,9 @@ public class EventParticipant extends CoreAdo {
 	private Set<Sample> samples;
 	private Region region;
 	private District district;
+	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
+	private List<ShareInfoEventParticipant> shareInfoEventParticipants = new ArrayList<>(0);
+	private VaccinationStatus vaccinationStatus;
 
 	@ManyToOne(cascade = {})
 	public User getReportingUser() {
@@ -135,5 +153,35 @@ public class EventParticipant extends CoreAdo {
 
 	public void setDistrict(District district) {
 		this.district = district;
+	}
+
+	@Override
+	@ManyToOne(cascade = CascadeType.ALL)
+	@AuditedIgnore
+	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
+
+	@Override
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo sormasToSormasOriginInfo) {
+		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
+	}
+
+	@OneToMany(mappedBy = ShareInfoEventParticipant.EVENT_PARTICIPANT, fetch = FetchType.LAZY)
+	public List<ShareInfoEventParticipant> getShareInfoEventParticipants() {
+		return shareInfoEventParticipants;
+	}
+
+	public void setShareInfoEventParticipants(List<ShareInfoEventParticipant> shareInfoEventParticipants) {
+		this.shareInfoEventParticipants = shareInfoEventParticipants;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
+	}
+
+	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
+		this.vaccinationStatus = vaccinationStatus;
 	}
 }

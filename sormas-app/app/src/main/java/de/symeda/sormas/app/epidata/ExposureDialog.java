@@ -1,8 +1,5 @@
 package de.symeda.sormas.app.epidata;
 
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
-
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +12,14 @@ import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalContactType;
 import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.exposure.ExposureRole;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
+import de.symeda.sormas.api.exposure.WorkEnvironment;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -28,6 +29,7 @@ import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.exposure.Exposure;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
@@ -37,6 +39,9 @@ import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogExposureEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
 
 public class ExposureDialog extends FormDialog {
 
@@ -54,7 +59,7 @@ public class ExposureDialog extends FormDialog {
 			-1,
 			false,
 			UiFieldAccessCheckers.forSensitiveData(exposure.isPseudonymized()),
-			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)));
+			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)).andWithCountry(ConfigProvider.getServerCountryCode()));
 
 		this.data = exposure;
 		this.create = create;
@@ -79,10 +84,17 @@ public class ExposureDialog extends FormDialog {
 		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, fieldAccessCheckers);
 		locationDialog.show();
 		locationDialog.setFacilityFieldsVisible(data.getTypeOfPlace() == TypeOfPlace.FACILITY, true);
+		locationDialog.updateContinentFieldsVisibility();
 
 		locationDialog.setPositiveCallback(() -> {
 			contentBinding.exposureLocation.setValue(locationClone);
 			data.setLocation(locationClone);
+			if (FacilityTypeGroup.WORKING_PLACE != locationDialog.getContentBinding().facilityTypeGroup.getValue()) {
+				contentBinding.exposureWorkEnvironment.setValue(null);
+				contentBinding.exposureWorkEnvironment.setVisibility(View.GONE);
+			} else {
+				contentBinding.exposureWorkEnvironment.setVisibility(View.VISIBLE);
+			}
 		});
 	}
 
@@ -94,8 +106,8 @@ public class ExposureDialog extends FormDialog {
 
 	@Override
 	protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
-		contentBinding.exposureStartDate.initializeDateField(getFragmentManager());
-		contentBinding.exposureEndDate.initializeDateField(getFragmentManager());
+		contentBinding.exposureStartDate.initializeDateTimeField(getFragmentManager());
+		contentBinding.exposureEndDate.initializeDateTimeField(getFragmentManager());
 
 		if (data.getId() == null) {
 			setLiveValidationDisabled(true);
@@ -107,8 +119,10 @@ public class ExposureDialog extends FormDialog {
 		contentBinding.exposureTypeOfAnimal.initializeSpinner(DataUtils.getEnumItems(TypeOfAnimal.class, true));
 		contentBinding.exposureAnimalCondition.initializeSpinner(DataUtils.getEnumItems(AnimalCondition.class, true));
 		contentBinding.exposureAnimalContactType.initializeSpinner(DataUtils.getEnumItems(AnimalContactType.class, true));
-		contentBinding.exposureTypeOfPlace.initializeSpinner(DataUtils.getEnumItems(TypeOfPlace.class, true));
+		contentBinding.exposureTypeOfPlace.initializeSpinner(DataUtils.getEnumItems(TypeOfPlace.class, true, fieldVisibilityCheckers));
 		contentBinding.exposureMeansOfTransport.initializeSpinner(DataUtils.getEnumItems(MeansOfTransport.class, true));
+		contentBinding.exposureExposureRole.initializeSpinner(DataUtils.getEnumItems(ExposureRole.class, true));
+		contentBinding.exposureWorkEnvironment.initializeSpinner(DataUtils.getEnumItems(WorkEnvironment.class, true));
 
 		setUpHeadingVisibilities(data.getExposureType());
 		contentBinding.exposureExposureType.addValueChangedListener(e -> {
@@ -124,6 +138,17 @@ public class ExposureDialog extends FormDialog {
 		contentBinding.exposureLocation.setOnClickListener(v -> openAddressPopup());
 
 		setFieldVisibilitiesAndAccesses(ExposureDto.class, (ViewGroup) getRootView());
+
+		contentBinding.exposureTypeOfPlace.addValueChangedListener(e -> {
+			if (e.getValue() != TypeOfPlace.FACILITY) {
+				contentBinding.exposureWorkEnvironment.setValue(null);
+				contentBinding.exposureWorkEnvironment.setVisibility(View.GONE);
+			} else {
+				FacilityType facilityType = data.getLocation().getFacilityType();
+				contentBinding.exposureWorkEnvironment.setVisibility(
+					facilityType == null || FacilityTypeGroup.WORKING_PLACE != facilityType.getFacilityTypeGroup() ? View.GONE : View.VISIBLE);
+			}
+		});
 	}
 
 	@Override

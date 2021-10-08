@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,8 +17,10 @@ package de.symeda.sormas.ui.sormastosormas;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.vaadin.v7.ui.CheckBox;
@@ -26,30 +28,87 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.LayoutUtil;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOptionsDto> {
 
+	private static final String CUSTOM_OPTIONS_PLACE_HOLDER = "__custom__";
+
 	private static final String HTML_LAYOUT = fluidRowLocs(SormasToSormasOptionsDto.ORGANIZATION)
-		+ fluidRowLocs(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS)
-		+ fluidRowLocs(SormasToSormasOptionsDto.WITH_SAMPLES)
 		+ fluidRowLocs(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP)
 		+ fluidRowLocs(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA)
 		+ fluidRowLocs(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA)
+		+ CUSTOM_OPTIONS_PLACE_HOLDER
 		+ fluidRowLocs(SormasToSormasOptionsDto.COMMENT);
 
-	private final boolean forCase;
+	private final List<String> customOptions;
 
 	private List<String> excludedOrganizationIds;
 
-	public SormasToSormasOptionsForm(boolean isForCase, List<String> excludedOrganizationIds) {
+	private final boolean hasOptions;
+
+	private final Consumer<SormasToSormasOptionsForm> customFieldDependencies;
+
+	public static SormasToSormasOptionsForm forCase(List<String> excludedOrganizationIds) {
+		return new SormasToSormasOptionsForm(
+				excludedOrganizationIds,
+				true,
+				Arrays.asList(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS, SormasToSormasOptionsDto.WITH_SAMPLES),
+				(form) -> {
+					FieldHelper.setEnabledWhen(
+							form.getFieldGroup(),
+							SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+							Boolean.FALSE,
+							SormasToSormasOptionsDto.WITH_SAMPLES,
+							false);
+
+					FieldHelper.setValueWhen(
+							form.getFieldGroup(),
+							SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+							Boolean.TRUE,
+							SormasToSormasOptionsDto.WITH_SAMPLES,
+							Boolean.TRUE);
+				});
+	}
+
+	public static SormasToSormasOptionsForm forContact(List<String> excludedOrganizationIds) {
+		return new SormasToSormasOptionsForm(excludedOrganizationIds, true, Collections.singletonList(SormasToSormasOptionsDto.WITH_SAMPLES), null);
+	}
+
+	public static SormasToSormasOptionsForm forEvent(List<String> excludedOrganizationIds) {
+		return new SormasToSormasOptionsForm(
+			excludedOrganizationIds,
+			true,
+			Arrays.asList(SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS, SormasToSormasOptionsDto.WITH_SAMPLES),
+			(form) -> FieldHelper.setVisibleWhen(
+				form.getFieldGroup(),
+				SormasToSormasOptionsDto.WITH_SAMPLES,
+				SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS,
+				Boolean.TRUE,
+				true));
+	}
+
+	public static SormasToSormasOptionsForm withoutOptions() {
+		return new SormasToSormasOptionsForm(null, false, null, null);
+	}
+
+	private SormasToSormasOptionsForm(
+		List<String> excludedOrganizationIds,
+		boolean hasOptions,
+		List<String> customOptions,
+		Consumer<SormasToSormasOptionsForm> customFieldDependencies) {
 		super(SormasToSormasOptionsDto.class, SormasToSormasOptionsDto.I18N_PREFIX, false);
 
-		this.forCase = isForCase;
+		this.customOptions = customOptions == null ? Collections.emptyList() : customOptions;
 		this.excludedOrganizationIds = excludedOrganizationIds == null ? Collections.emptyList() : excludedOrganizationIds;
+		this.customFieldDependencies = customFieldDependencies;
+		this.hasOptions = hasOptions;
 
 		addFields();
 
@@ -59,39 +118,77 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	@Override
 	protected String createHtmlLayout() {
-		return HTML_LAYOUT;
+		String customLocs = customOptions.stream().map(LayoutUtil::fluidRowLocs).collect(Collectors.joining());
+
+		return HTML_LAYOUT.replace(CUSTOM_OPTIONS_PLACE_HOLDER, customLocs);
 	}
 
 	@Override
 	protected void addFields() {
-		ComboBox organizationField = addField(SormasToSormasOptionsDto.ORGANIZATION, ComboBox.class);
-		organizationField.setRequired(true);
-		List<ServerAccessDataReferenceDto> organizations = FacadeProvider.getSormasToSormasFacade().getAvailableOrganizations();
-		organizationField.addItems(organizations.stream().filter(o -> !excludedOrganizationIds.contains(o.getUuid())).collect(Collectors.toList()));
+		ComboBox availableServersBox = addField(SormasToSormasOptionsDto.ORGANIZATION, ComboBox.class);
+		availableServersBox.setRequired(true);
+		List<SormasServerDescriptor> availableServers = FacadeProvider.getSormasToSormasFacade().getAllAvailableServers();
+		availableServersBox.addItems(availableServers.stream().filter(o -> !excludedOrganizationIds.contains(o.getId())).collect(Collectors.toList()));
 
-		if (forCase) {
-			addField(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS);
+		if (hasOptions) {
+
+			CheckBox handoverOwnership = addField(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP);
+			CheckBox pseudonimyzePersonalData = addField(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA);
+			CheckBox pseudonymizeSensitiveData = addField(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA);
+			
+			handoverOwnership.addValueChangeListener(e -> {
+				boolean ownershipHandedOver = (boolean) e.getProperty().getValue();
+				pseudonimyzePersonalData.setEnabled(!ownershipHandedOver);
+				pseudonymizeSensitiveData.setEnabled(!ownershipHandedOver);
+				
+				if (ownershipHandedOver) {
+					pseudonimyzePersonalData.setValue(false);
+					pseudonymizeSensitiveData.setValue(false);
+				}
+			});
+
+			pseudonimyzePersonalData.addValueChangeListener(e -> {
+				boolean pseudonimyze = (boolean) e.getProperty().getValue() || pseudonymizeSensitiveData.getValue();
+				handoverOwnership.setEnabled(!pseudonimyze);
+				if (pseudonimyze) {
+					handoverOwnership.setValue(false);
+				}
+			});
+
+			pseudonymizeSensitiveData.addValueChangeListener(e -> {
+				boolean pseudonimyze = (boolean) e.getProperty().getValue() || pseudonimyzePersonalData.getValue();
+				handoverOwnership.setEnabled(!pseudonimyze);
+				if (pseudonimyze) {
+					handoverOwnership.setValue(false);
+				}
+			});
+
+			addFields(customOptions);
+
+			TextArea comment = addField(SormasToSormasOptionsDto.COMMENT, TextArea.class);
+			comment.setRows(3);
+
+			if (customFieldDependencies != null) {
+				customFieldDependencies.accept(this);
+			}
+
+			if (CollectionUtils.isEmpty(customOptions)) {
+				pseudonymizeSensitiveData.addStyleNames(CssStyles.VSPACE_3);
+			} else {
+				getField(customOptions.get(customOptions.size() - 1)).addStyleNames(CssStyles.VSPACE_3);
+			}
 		}
-
-		addField(SormasToSormasOptionsDto.WITH_SAMPLES);
-
-		addField(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP);
-
-		addField(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA);
-
-		CheckBox pseudonymizeSensitiveData = addField(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA);
-		pseudonymizeSensitiveData.addStyleNames(CssStyles.VSPACE_3);
-
-		TextArea comment = addField(SormasToSormasOptionsDto.COMMENT, TextArea.class);
-		comment.setRows(3);
 	}
 
 	public void disableOrganization() {
 		getField(SormasToSormasOptionsDto.ORGANIZATION).setEnabled(false);
 	}
 
-	public void disableOrganizationAndOwnership() {
-		disableOrganization();
-		getField(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP).setEnabled(false);
+	public void disableAllOptions() {
+		getFieldGroup().getFields().forEach(f -> {
+			if (!SormasToSormasOptionsDto.COMMENT.equals(f.getId())) {
+				f.setEnabled(false);
+			}
+		});
 	}
 }

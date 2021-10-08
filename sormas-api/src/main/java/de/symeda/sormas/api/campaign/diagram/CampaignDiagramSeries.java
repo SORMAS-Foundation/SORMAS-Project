@@ -1,22 +1,35 @@
 package de.symeda.sormas.api.campaign.diagram;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.io.Serializable;
 import java.util.Objects;
 
+import javax.validation.constraints.Size;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import de.symeda.sormas.api.AgeGroup;
+import de.symeda.sormas.api.i18n.Validations;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CampaignDiagramSeries implements Serializable {
 
 	private static final long serialVersionUID = 1420672609912364060L;
 
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String fieldId;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String formId;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String referenceValue;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String stack;
 	private AgeGroup populationGroup;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String caption;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	private String color;
 
 	public CampaignDiagramSeries() {
 	}
@@ -68,6 +81,14 @@ public class CampaignDiagramSeries implements Serializable {
 		this.caption = caption;
 	}
 
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
+	}
+
 	/**
 	 * Needed. Otherwise hibernate will persist whenever loading,
 	 * because hibernate types creates new instances that aren't equal.
@@ -84,6 +105,7 @@ public class CampaignDiagramSeries implements Serializable {
 			&& Objects.equals(referenceValue, that.referenceValue)
 			&& Objects.equals(stack, that.stack)
 			&& Objects.equals(caption, that.caption)
+			&& Objects.equals(color, that.color)
 			&& Objects.equals(populationGroup, that.populationGroup);
 	}
 
@@ -97,6 +119,6 @@ public class CampaignDiagramSeries implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(fieldId, formId, referenceValue, stack, caption, populationGroup);
+		return Objects.hash(fieldId, formId, referenceValue, stack, caption, color, populationGroup);
 	}
 }

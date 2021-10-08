@@ -10,6 +10,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.sample.AdditionalTestDto;
@@ -33,8 +34,6 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	private SampleService sampleService;
 	@EJB
 	private UserService userService;
-	@EJB
-	private SampleJurisdictionChecker sampleJurisdictionChecker;
 
 	@Override
 	public AdditionalTestDto getByUuid(String uuid) {
@@ -53,11 +52,11 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	}
 
 	@Override
-	public AdditionalTestDto saveAdditionalTest(AdditionalTestDto additionalTest) {
+	public AdditionalTestDto saveAdditionalTest(@Valid AdditionalTestDto additionalTest) {
 		return saveAdditionalTest(additionalTest, true);
 	}
 
-	public AdditionalTestDto saveAdditionalTest(AdditionalTestDto additionalTest, boolean checkChangeDate) {
+	public AdditionalTestDto saveAdditionalTest(@Valid AdditionalTestDto additionalTest, boolean checkChangeDate) {
 
 		AdditionalTest entity = fromDto(additionalTest, checkChangeDate);
 		service.ensurePersisted(entity);
@@ -105,7 +104,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	public AdditionalTestDto convertToDto(AdditionalTest source, Pseudonymizer pseudonymizer) {
 		AdditionalTestDto dto = toDto(source);
 
-		pseudonymizer.pseudonymizeDto(AdditionalTestDto.class, dto, sampleJurisdictionChecker.isInJurisdictionOrOwned(source.getSample()), null);
+		pseudonymizer.pseudonymizeDto(AdditionalTestDto.class, dto, sampleService.inJurisdictionOrOwned(source.getSample()).getInJurisdiction(), null);
 
 		return dto;
 	}

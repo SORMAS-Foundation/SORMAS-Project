@@ -18,10 +18,12 @@ import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalContactType;
+import de.symeda.sormas.api.exposure.ExposureRole;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
+import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
@@ -58,6 +60,8 @@ public class Exposure extends PseudonymizableAdo {
 	private EpiData epiData;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User reportingUser;
+	@DatabaseField
+	private boolean probableInfectionEnvironment;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date startDate;
 	@DatabaseField(dataType = DataType.DATE_LONG)
@@ -70,6 +74,8 @@ public class Exposure extends PseudonymizableAdo {
 	private String exposureTypeDetails;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Location location;
+	@Enumerated(EnumType.STRING)
+	private ExposureRole exposureRole;
 
 	// Type of Place
 	@Enumerated(EnumType.STRING)
@@ -84,6 +90,9 @@ public class Exposure extends PseudonymizableAdo {
 	private String connectionNumber;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String seatNumber;
+
+	@Enumerated(EnumType.STRING)
+	private WorkEnvironment workEnvironment;
 
 	// Details
 	@Enumerated(EnumType.STRING)
@@ -162,6 +171,8 @@ public class Exposure extends PseudonymizableAdo {
 	private String deceasedPersonName;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String deceasedPersonRelation;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown largeAttendanceNumber;
 
 	@Override
 	public String getI18nPrefix() {
@@ -182,6 +193,14 @@ public class Exposure extends PseudonymizableAdo {
 
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
+	}
+
+	public boolean isProbableInfectionEnvironment() {
+		return probableInfectionEnvironment;
+	}
+
+	public void setProbableInfectionEnvironment(boolean probableInfectionEnvironment) {
+		this.probableInfectionEnvironment = probableInfectionEnvironment;
 	}
 
 	public Date getStartDate() {
@@ -230,6 +249,14 @@ public class Exposure extends PseudonymizableAdo {
 
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+
+	public ExposureRole getExposureRole() {
+		return exposureRole;
+	}
+
+	public void setExposureRole(ExposureRole exposureRole) {
+		this.exposureRole = exposureRole;
 	}
 
 	public YesNoUnknown getIndoors() {
@@ -544,6 +571,14 @@ public class Exposure extends PseudonymizableAdo {
 		this.seatNumber = seatNumber;
 	}
 
+	public WorkEnvironment getWorkEnvironment() {
+		return workEnvironment;
+	}
+
+	public void setWorkEnvironment(WorkEnvironment workEnvironment) {
+		this.workEnvironment = workEnvironment;
+	}
+
 	public YesNoUnknown getProphylaxis() {
 		return prophylaxis;
 	}
@@ -566,5 +601,13 @@ public class Exposure extends PseudonymizableAdo {
 
 	public void setRiskArea(YesNoUnknown riskArea) {
 		this.riskArea = riskArea;
+	}
+
+	public YesNoUnknown getLargeAttendanceNumber() {
+		return largeAttendanceNumber;
+	}
+
+	public void setLargeAttendanceNumber(YesNoUnknown largeAttendanceNumber) {
+		this.largeAttendanceNumber = largeAttendanceNumber;
 	}
 }

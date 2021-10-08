@@ -10,6 +10,9 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.backend.util.QueryHelper;
+
 public abstract class AbstractInfrastructureAdoService<ADO extends InfrastructureAdo> extends AdoServiceWithUserFilter<ADO> {
 
 	public AbstractInfrastructureAdoService(Class<ADO> elementClass) {
@@ -73,6 +76,37 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 
 		cq.select(join.get(InfrastructureAdo.ID));
 
-		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+		return QueryHelper.getFirstResult(em, cq) != null;
 	}
+
+	protected Predicate addRelevancePredicate(CriteriaBuilder cb, Root<?> from, Predicate filter, EntityRelevanceStatus relevanceStatus) {
+		if (relevanceStatus != null) {
+			if (relevanceStatus == EntityRelevanceStatus.ACTIVE) {
+				filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.or(cb.equal(from.get(InfrastructureAdo.ARCHIVED), false), cb.isNull(from.get(InfrastructureAdo.ARCHIVED))));
+			} else if (relevanceStatus == EntityRelevanceStatus.ARCHIVED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(InfrastructureAdo.ARCHIVED), true));
+			}
+		}
+		return filter;
+	}
+
+	// todo remove columnName later and handle this completely here. This is not possible due to #6549 now.
+	protected List<ADO> getByExternalId(String externalId, String columnName, boolean includeArchived) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
+		Root<ADO> from = cq.from(getElementClass());
+
+		Predicate filter = CriteriaBuilderHelper.ilikePrecise(cb, from.get(columnName), externalId.trim());
+		if (!includeArchived) {
+			filter = cb.and(filter, createBasicFilter(cb, from));
+		}
+
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultList();
+
+	}
+
+	public abstract List<ADO> getByExternalId(String externalId, boolean includeArchived);
 }

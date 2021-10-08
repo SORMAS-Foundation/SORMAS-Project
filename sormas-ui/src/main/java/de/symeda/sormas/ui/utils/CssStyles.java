@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.ui.utils;
 
 import java.util.Arrays;
@@ -160,10 +158,12 @@ public final class CssStyles {
 	public static final String BUTTON_FILTER_ENABLED = "filter-enabled";
 	public static final String BUTTON_FILTER_DISABLED = "filter-disabled";
 	public static final String BUTTON_FONT_SIZE_LARGE = "font-size-large";
+	public static final String GEOCODE_BUTTON_HIGHLIGHT = "geocode-button-highlight";
 
 	// List styles
 	public static final String SORMAS_LIST = "s-list";
 	public static final String SORMAS_LIST_ENTRY = "s-list-entry";
+	public static final String SORMAS_LIST_ENTRY_NO_BORDER = "s-list-entry-no-border";
 
 	// SVG fill and stroke styles
 	public static final String SVG_FILL_PRIMARY = "svg-fill-primary";
@@ -396,14 +396,13 @@ public final class CssStyles {
 			return "background-disease-congenital-rubella";
 		case ANTHRAX:
 			return "background-disease-anthrax";
-		case UNDEFINED:
-			return "background-disease-undefined";
 		case RABIES:
 			return "background-disease-rabies";
 		case CORONAVIRUS:
 			return "background-disease-coronavirus";
+		case UNDEFINED:
 		default:
-			throw new IllegalArgumentException(disease.toString());
+			return "background-disease-undefined";
 		}
 	}
 }

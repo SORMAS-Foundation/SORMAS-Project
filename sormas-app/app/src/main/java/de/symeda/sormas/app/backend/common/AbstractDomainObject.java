@@ -35,10 +35,11 @@ import androidx.annotation.Nullable;
 import androidx.databinding.BaseObservable;
 import androidx.recyclerview.widget.DiffUtil;
 
+import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 @MappedSuperclass
-public class AbstractDomainObject extends BaseObservable implements Serializable, Cloneable {
+public class AbstractDomainObject extends BaseObservable implements Serializable, Cloneable, HasUuid {
 
 	public static final String ID = "id";
 	public static final String UUID = "uuid";

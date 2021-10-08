@@ -20,19 +20,26 @@ package de.symeda.sormas.api.sample;
 import java.util.Date;
 import java.util.Set;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
-public class SampleDto extends PseudonymizableDto {
+public class SampleDto extends PseudonymizableDto implements SormasToSormasEntityDto {
 
 	private static final long serialVersionUID = -6975445672442728938L;
 
@@ -66,11 +73,15 @@ public class SampleDto extends PseudonymizableDto {
 	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
 	public static final String REQUESTED_OTHER_PATHOGEN_TESTS = "requestedOtherPathogenTests";
 	public static final String REQUESTED_OTHER_ADDITIONAL_TESTS = "requestedOtherAdditionalTests";
+	public static final String SAMPLING_REASON = "samplingReason";
+	public static final String SAMPLING_REASON_DETAILS = "samplingReasonDetails";
 
 	private CaseReferenceDto associatedCase;
 	private ContactReferenceDto associatedContact;
 	private EventParticipantReferenceDto associatedEventParticipant;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String labSampleID;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String fieldSampleID;
 	@Required
 	private Date sampleDateTime;
@@ -80,8 +91,12 @@ public class SampleDto extends PseudonymizableDto {
 	@Required
 	private UserReferenceDto reportingUser;
 	@SensitiveData
+	@Min(value = -90, message = Validations.numberTooSmall)
+	@Max(value = 90, message = Validations.numberTooBig)
 	private Double reportLat;
 	@SensitiveData
+	@Min(value = -180, message = Validations.numberTooSmall)
+	@Max(value = 180, message = Validations.numberTooBig)
 	private Double reportLon;
 
 	private Float reportLatLonAccuracy;
@@ -89,21 +104,26 @@ public class SampleDto extends PseudonymizableDto {
 	@Required
 	private SampleMaterial sampleMaterial;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String sampleMaterialText;
 	@Required
 	private SamplePurpose samplePurpose;
-	@Required
+
 	private FacilityReferenceDto lab;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String labDetails;
 	private Date shipmentDate;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String shipmentDetails;
 	private Date receivedDate;
 	private SpecimenCondition specimenCondition;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String noTestPossibleReason;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
 	private String comment;
 	private SampleSource sampleSource;
 	private SampleReferenceDto referredTo;
@@ -115,9 +135,16 @@ public class SampleDto extends PseudonymizableDto {
 	private Boolean additionalTestingRequested;
 	private Set<PathogenTestType> requestedPathogenTests;
 	private Set<AdditionalTestType> requestedAdditionalTests;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String requestedOtherPathogenTests;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String requestedOtherAdditionalTests;
 
+	private SamplingReason samplingReason;
+	@SensitiveData
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	private String samplingReasonDetails;
+	@Valid
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
 	private boolean ownershipHandedOver;
 
@@ -371,14 +398,34 @@ public class SampleDto extends PseudonymizableDto {
 		this.requestedOtherAdditionalTests = requestedOtherAdditionalTests;
 	}
 
+	public SamplingReason getSamplingReason() {
+		return samplingReason;
+	}
+
+	public void setSamplingReason(SamplingReason samplingReason) {
+		this.samplingReason = samplingReason;
+	}
+
+	public String getSamplingReasonDetails() {
+		return samplingReasonDetails;
+	}
+
+	public void setSamplingReasonDetails(String samplingReasonDetails) {
+		this.samplingReasonDetails = samplingReasonDetails;
+	}
+
+	@Override
+	@ImportIgnore
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
 
+	@Override
 	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
 
+	@Override
 	public boolean isOwnershipHandedOver() {
 		return ownershipHandedOver;
 	}

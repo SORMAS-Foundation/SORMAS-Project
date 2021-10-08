@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.api.utils;
 
 import java.io.BufferedReader;
@@ -26,6 +24,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -33,14 +32,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.UUID;
+
+import javax.annotation.Nullable;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.base.CharMatcher;
 
 import de.symeda.sormas.api.AgeGroup;
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonHelper;
@@ -59,6 +65,10 @@ public final class DataHelper {
 		byte[] bytes = longToBytes(randomUuid.getLeastSignificantBits(), randomUuid.getMostSignificantBits());
 		String uuid = Base32.encode(bytes, 6);
 		return uuid;
+	}
+
+	public static String createConstantUuid(int seed) {
+		return new UUID(0, seed).toString();
 	}
 
 	public static boolean isSame(HasUuid left, HasUuid right) {
@@ -145,7 +155,8 @@ public final class DataHelper {
 			|| type == Byte.class
 			|| type == Boolean.class
 			|| type == String.class
-			|| type == Date.class;
+			|| type == Date.class
+			|| type.isAssignableFrom(DiseaseVariant.class);
 	}
 
 	public static byte[] longToBytes(long x, long y) {
@@ -156,7 +167,7 @@ public final class DataHelper {
 		return buffer.array();
 	}
 
-	public static String getShortUuid(EntityDto domainObject) {
+	public static String getShortUuid(HasUuid domainObject) {
 		return getShortUuid(domainObject.getUuid());
 	}
 
@@ -282,7 +293,7 @@ public final class DataHelper {
 		}
 	}
 
-	public static String parseBoolean(Boolean value) {
+	public static String stringifyBoolean(Boolean value) {
 
 		if (value == null) {
 			return "";
@@ -291,6 +302,21 @@ public final class DataHelper {
 		} else {
 			return I18nProperties.getString(Strings.no);
 		}
+	}
+
+	public static Boolean parseBoolean(String value) {
+
+		if (value == null) {
+			return null;
+		}
+
+		if (I18nProperties.getString(Strings.yes).equalsIgnoreCase(value)) {
+			return true;
+		} else if (I18nProperties.getString(Strings.no).equalsIgnoreCase(value)) {
+			return false;
+		}
+
+		return Boolean.parseBoolean(value);
 	}
 
 	public static String getSexAndAgeGroupString(AgeGroup ageGroup, Sex sex) {
@@ -359,7 +385,7 @@ public final class DataHelper {
 		} else if (value instanceof Date) {
 			return DateFormatHelper.formatDate((Date) value);
 		} else if (value.getClass().equals(Boolean.class)) {
-			return DataHelper.parseBoolean((Boolean) value);
+			return DataHelper.stringifyBoolean((Boolean) value);
 		} else if (value instanceof Set) {
 			StringBuilder sb = new StringBuilder();
 			for (Object o : (Set<?>) value) {
@@ -376,13 +402,14 @@ public final class DataHelper {
 			return PersonHelper.getAgeAndBirthdateString(
 				ageAndBirthDate.getAge(),
 				ageAndBirthDate.getAgeType(),
-				ageAndBirthDate.getBirthdateDD(),
-				ageAndBirthDate.getBirthdateMM(),
-				ageAndBirthDate.getBirthdateYYYY(),
+				ageAndBirthDate.getDateOfBirthDD(),
+				ageAndBirthDate.getDateOfBirthMM(),
+				ageAndBirthDate.getDateOfBirthYYYY(),
 				userLanguage);
 		} else if (value instanceof BirthDateDto) {
 			BirthDateDto birthDate = (BirthDateDto) value;
-			return PersonHelper.formatBirthdate(birthDate.getBirthdateDD(), birthDate.getBirthdateMM(), birthDate.getBirthdateYYYY(), userLanguage);
+			return PersonHelper
+				.formatBirthdate(birthDate.getDateOfBirthDD(), birthDate.getDateOfBirthMM(), birthDate.getDateOfBirthYYYY(), userLanguage);
 		} else {
 			return value.toString();
 		}
@@ -390,5 +417,37 @@ public final class DataHelper {
 
 	public static String sanitizeFileName(String fileName) {
 		return fileName.replaceAll("[^a-zA-Z0-9._-]", "");
+	}
+
+	public static String cleanStringForFileName(String name) {
+		String nameWithoutSpecialCharacters = CharMatcher.javaLetter().or(CharMatcher.is(' ')).retainFrom(name);
+		return nameWithoutSpecialCharacters.replace(' ', '_').toLowerCase();
+	}
+
+	public static <T> List<T> asListNullable(@Nullable T object) {
+		if (object == null) {
+			return null;
+		}
+
+		return Collections.singletonList(object);
+	}
+
+	public static String joinStrings(String separator, String... strings) {
+		List<String> notEmptyValues = new ArrayList<>();
+		for (String string : strings) {
+			if (!StringUtils.isBlank(string)) {
+				notEmptyValues.add(string);
+			}
+		}
+
+		return StringUtils.join(notEmptyValues, separator);
+	}
+
+	public static String getEmailValidationRegex() {
+		return "^([a-zA-Z0-9_\\.\\-+])+@[a-zA-Z0-9-.]+\\.[a-zA-Z0-9-]{2,}$";
+	}
+
+	public static String getPhoneNumberValidationRegex() {
+		return ".*[a-zA-Z].*";
 	}
 }

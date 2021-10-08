@@ -41,6 +41,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
@@ -66,8 +67,6 @@ public class SampleGridComponent extends VerticalLayout {
 	private ComboBox relevanceStatusFilter;
 	private ComboBox sampleTypeFilter;
 
-	private VerticalLayout gridLayout;
-
 	private Label viewTitleLabel;
 	private String originalViewTitle;
 
@@ -87,10 +86,11 @@ public class SampleGridComponent extends VerticalLayout {
 			criteria.sampleAssociationType(SampleAssociationType.ALL);
 		}
 		grid = new SampleGrid(criteria);
-		gridLayout = new VerticalLayout();
+		VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createShipmentFilterBar());
 		gridLayout.addComponent(grid);
+		grid.setDataProviderListener(e -> updateStatusButtons());
 		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
 		styleGridLayout(gridLayout);
@@ -117,9 +117,7 @@ public class SampleGridComponent extends VerticalLayout {
 			samplesView.navigateTo(null, true);
 		});
 		filterForm.addApplyHandler(e -> {
-			if (!samplesView.navigateTo(criteria, false)) {
-				grid.reload();
-			}
+			grid.reload();
 		});
 		filterLayout.addComponent(filterForm);
 
@@ -159,8 +157,8 @@ public class SampleGridComponent extends VerticalLayout {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW_ARCHIVED)) {
-				relevanceStatusFilter = new ComboBox();
+			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
+				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 				relevanceStatusFilter.setId("relevanceStatusFilter");
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
@@ -195,7 +193,7 @@ public class SampleGridComponent extends VerticalLayout {
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
 			}
 
-			sampleTypeFilter = new ComboBox();
+			sampleTypeFilter = ComboBoxHelper.createComboBoxV7();
 			sampleTypeFilter.setWidth(140, Unit.PERCENTAGE);
 			sampleTypeFilter.setId("sampleTypeFilter");
 			sampleTypeFilter.setNullSelectionAllowed(false);

@@ -17,6 +17,8 @@ package de.symeda.sormas.backend.util;
 
 import java.util.function.Consumer;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -41,6 +43,10 @@ public class Pseudonymizer extends DtoPseudonymizer {
 			true);
 	}
 
+	public static Pseudonymizer getDefaultWithInaccessibleValuePlaceHolder(RightCheck rightCheck) {
+		return getDefault(rightCheck, I18nProperties.getCaption(Captions.inaccessibleValue));
+	}
+
 	public static Pseudonymizer getDefaultNoCheckers(boolean pseudonymizeMandatoryFields) {
 		return new Pseudonymizer(new FieldAccessCheckers(), new FieldAccessCheckers(), "", pseudonymizeMandatoryFields);
 	}
@@ -57,13 +63,17 @@ public class Pseudonymizer extends DtoPseudonymizer {
 		return getFieldAccessCheckers(inJurisdiction).getCheckerByType(SensitiveDataFieldAccessChecker.class);
 	}
 
-	public void pseudonymizeUser(User dtoUser, User currentUser, Consumer<UserReferenceDto> setPseudonymizedValue) {
+	public boolean pseudonymizeUser(User dtoUser, User currentUser, Consumer<UserReferenceDto> setPseudonymizedValue) {
 		boolean isInJurisdiction = dtoUser == null || isUserInJurisdiction(dtoUser, currentUser);
 
 		SensitiveDataFieldAccessChecker sensitiveDataFieldAccessChecker = getSensitiveDataFieldAccessChecker(isInJurisdiction);
 		if (sensitiveDataFieldAccessChecker != null && !sensitiveDataFieldAccessChecker.hasRight()) {
 			setPseudonymizedValue.accept(null);
+
+			return true;
 		}
+
+		return false;
 	}
 
 	public <DTO extends PseudonymizableDto> void restoreUser(
@@ -102,6 +112,10 @@ public class Pseudonymizer extends DtoPseudonymizer {
 			return DataHelper.isSame(currentUser.getDistrict(), user.getDistrict());
 		}
 
+		if (currentUser.getLaboratory() != null) {
+			return DataHelper.isSame(currentUser.getLaboratory(), user.getLaboratory());
+		}
+
 		return true;
 	}
 
@@ -115,5 +129,4 @@ public class Pseudonymizer extends DtoPseudonymizer {
 
 		return FieldAccessCheckers.withCheckers(personalFieldAccessChecker, sensitiveFieldAccessChecker);
 	}
-
 }

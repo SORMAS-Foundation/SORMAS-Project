@@ -1,14 +1,14 @@
 package de.symeda.sormas.api.campaign.diagram;
 
 import java.util.List;
-import java.util.Set;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 @Remote
 public interface CampaignDiagramDefinitionFacade {
 
-	CampaignDiagramDefinitionDto save(CampaignDiagramDefinitionDto campaignDiagramDefinitionDto);
+	CampaignDiagramDefinitionDto save(@Valid CampaignDiagramDefinitionDto campaignDiagramDefinitionDto);
 
 	List<CampaignDiagramDefinitionDto> getAll();
 

@@ -26,10 +26,15 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
+import de.symeda.sormas.api.caze.CriteriaWithSorting;
+import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryCriteria;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
@@ -54,6 +59,16 @@ public class PointOfEntryResource {
 	public List<PointOfEntryDto> getByUuids(List<String> uuids) {
 		List<PointOfEntryDto> result = FacadeProvider.getPointOfEntryFacade().getByUuids(uuids);
 		return result;
+	}
+
+	@POST
+	@Path("/indexList")
+	public Page<PointOfEntryDto> getIndexList(
+		@RequestBody CriteriaWithSorting<PointOfEntryCriteria> criteriaWithSorting,
+		@QueryParam("offset") int offset,
+		@QueryParam("size") int size) {
+		return FacadeProvider.getPointOfEntryFacade()
+			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
 	@GET

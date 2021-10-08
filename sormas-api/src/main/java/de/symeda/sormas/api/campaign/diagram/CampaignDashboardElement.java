@@ -1,19 +1,30 @@
 package de.symeda.sormas.api.campaign.diagram;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.io.Serializable;
 import java.util.Objects;
 
+import javax.validation.constraints.Size;
+
+import de.symeda.sormas.api.i18n.Validations;
+
 public class CampaignDashboardElement implements Serializable {
 
-	public static String DIAGRAM_ID = "diagramId";
-	public static String TAB_ID = "tabId";
-	public static String SUB_TAB_ID = "subTabId";
-	public static String ORDER = "order";
-	public static String WIDTH = "width";
-	public static String HEIGHT = "height";
+	private static final long serialVersionUID = 807316058932832033L;
 
+	public static final String DIAGRAM_ID = "diagramId";
+	public static final String TAB_ID = "tabId";
+	public static final String SUB_TAB_ID = "subTabId";
+	public static final String ORDER = "order";
+	public static final String WIDTH = "width";
+	public static final String HEIGHT = "height";
+
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String diagramId;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String tabId;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String subTabId;
 	private Integer order;
 	private Integer width;

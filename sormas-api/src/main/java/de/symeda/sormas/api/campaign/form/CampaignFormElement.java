@@ -1,14 +1,23 @@
 package de.symeda.sormas.api.campaign.form;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_SMALL;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
+
+import javax.validation.constraints.Size;
+
+import de.symeda.sormas.api.i18n.Validations;
 
 public class CampaignFormElement implements Serializable {
 
 	public static final String ID = "id";
 	public static final String TYPE = "type";
 	public static final String CAPTION = "caption";
+	public static final String EXPRESSION = "expression";
 
 	private static final long serialVersionUID = 5553496750859734167L;
 
@@ -49,10 +58,16 @@ public class CampaignFormElement implements Serializable {
 		"h5",
 		"h6" };
 
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String type;
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String id;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String caption;
+	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
+	private String expression;
 	private String[] styles;
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String dependingOn;
 	private String[] dependingOnValues;
 	private boolean important;
@@ -113,6 +128,14 @@ public class CampaignFormElement implements Serializable {
 		this.important = important;
 	}
 
+	public String getExpression() {
+		return expression;
+	}
+
+	public void setExpression(String expression) {
+		this.expression = expression;
+	}
+
 	/**
 	 * Needed. Otherwise hibernate will persist whenever loading,
 	 * because hibernate types creates new instances that aren't equal.
@@ -126,6 +149,7 @@ public class CampaignFormElement implements Serializable {
 				Objects.equals(type, that.type) &&
 				Objects.equals(id, that.id) &&
 				Objects.equals(caption, that.caption) &&
+				Objects.equals(expression, that.expression) &&
 				Arrays.equals(styles, that.styles) &&
 				Objects.equals(dependingOn, that.dependingOn) &&
 				Arrays.equals(dependingOnValues, that.dependingOnValues);
@@ -133,7 +157,7 @@ public class CampaignFormElement implements Serializable {
 
 	@Override
 	public int hashCode() {
-		int result = Objects.hash(type, id, caption, dependingOn, important);
+		int result = Objects.hash(type, id, caption, expression, dependingOn, important);
 		result = 31 * result + Arrays.hashCode(styles);
 		result = 31 * result + Arrays.hashCode(dependingOnValues);
 		return result;

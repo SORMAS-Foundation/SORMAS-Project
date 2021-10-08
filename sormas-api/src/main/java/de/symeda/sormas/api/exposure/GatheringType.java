@@ -22,6 +22,11 @@ public enum GatheringType {
 	PARTY,
 	RELIGIOUS,
 	MUSICAL,
+	CONCERT,
+	DEMONSTRATION,
+	CARNIVAL,
+	FAIR,
+	SPORTING_EVENT,
 	OTHER;
 
 	public String toString() {

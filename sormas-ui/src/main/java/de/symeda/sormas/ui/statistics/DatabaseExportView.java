@@ -150,6 +150,13 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		CssStyles.style(infrastructureDataHeadline, CssStyles.H4);
 		infrastructureDataLayout.addComponent(infrastructureDataHeadline);
 
+		VerticalLayout configurationDataLayout = new VerticalLayout();
+		configurationDataLayout.setMargin(false);
+		configurationDataLayout.setSpacing(false);
+		Label configurationDataHeadline = new Label(I18nProperties.getCaption(Captions.exportConfigurationData));
+		CssStyles.style(configurationDataHeadline, CssStyles.H4);
+		configurationDataLayout.addComponent(configurationDataHeadline);
+
 		for (DatabaseTable databaseTable : DatabaseTable.values()) {
 			CheckBox checkBox = new CheckBox(databaseTable.toString());
 			int indent = getIndent(databaseTable);
@@ -161,16 +168,26 @@ public class DatabaseExportView extends AbstractStatisticsView {
 				CssStyles.style(checkBox, CssStyles.INDENT_LEFT_3);
 			}
 
-			if (databaseTable.getDatabaseTableType() == DatabaseTableType.SORMAS) {
+			switch (databaseTable.getDatabaseTableType()) {
+			case SORMAS:
 				sormasDataLayout.addComponent(checkBox);
-			} else {
+				break;
+			case INFRASTRUCTURE:
 				infrastructureDataLayout.addComponent(checkBox);
+				break;
+			case CONFIGURATION:
+				configurationDataLayout.addComponent(checkBox);
+				break;
+			default:
+				throw new IllegalArgumentException(databaseTable.getDatabaseTableType().toString());
 			}
+
 			databaseTableToggles.put(checkBox, databaseTable);
 		}
 
 		databaseTablesLayout.addComponent(sormasDataLayout);
 		databaseTablesLayout.addComponent(infrastructureDataLayout);
+		databaseTablesLayout.addComponent(configurationDataLayout);
 		return databaseTablesLayout;
 	}
 

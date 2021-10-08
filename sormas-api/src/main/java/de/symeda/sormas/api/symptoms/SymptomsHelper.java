@@ -200,9 +200,9 @@ public final class SymptomsHelper {
 
 	/**
 	 * Updates the targetSymptoms according to the sourceSymptoms values. All sourceSymptoms that
-	 * are set to YES will also be set to YES in the targetSymptoms, while sourceSymptoms set to NO
-	 * will not result in an update of the corresponding targetSymptom. Additionally, the
-	 * targetSymptoms temperature will be updated if it is lower than the sourceSymptoms temperature,
+	 * are set to YES will also be set to YES in the targetSymptoms, while sourceSymptoms set to NO or UNKNOWN
+	 * will not result in an update of the corresponding targetSymptom unless this is the first time the symptom is reported.
+	 * Additionally, the targetSymptoms temperature will be updated if it is lower than the sourceSymptoms temperature,
 	 * and Strings will be added to existing Strings when those do not contain them already.
 	 */
 	public static void updateSymptoms(SymptomsDto sourceSymptoms, SymptomsDto targetSymptoms) {
@@ -221,9 +221,10 @@ public final class SymptomsHelper {
 				}
 
 				if (pd.getReadMethod().getReturnType() == SymptomState.class) {
-					// SymptomStates are carried over when they are set to YES
+					// SymptomStates are carried over when they are set to YES or this is the first time the symptom is reported
 					SymptomState result = (SymptomState) pd.getReadMethod().invoke(sourceSymptoms);
-					if (result == SymptomState.YES) {
+					boolean firstReport = result != null && pd.getReadMethod().invoke(targetSymptoms) == null;
+					if (result == SymptomState.YES || firstReport) {
 						pd.getWriteMethod().invoke(targetSymptoms, result);
 					}
 				} else if (pd.getReadMethod().getReturnType() == Boolean.class) {
@@ -496,7 +497,7 @@ public final class SymptomsHelper {
 		appendYesSymptom(string, symptomsDto.getHighOrLowBloodPressure(), SymptomsDto.HIGH_OR_LOW_BLOOD_PRESSURE);
 		appendYesSymptom(string, symptomsDto.getUrinaryRetention(), SymptomsDto.URINARY_RETENTION);
 
-		appendNotNullValue(string, symptomsDto.otherComplicationsText, SymptomsDto.OTHER_COMPLICATIONS_TEXT);
+		appendNotNullValue(string, symptomsDto.getOtherComplicationsText(), SymptomsDto.OTHER_COMPLICATIONS_TEXT);
 
 		// symptomsComments;
 

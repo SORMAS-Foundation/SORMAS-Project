@@ -21,9 +21,11 @@ import java.util.Date;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -58,6 +60,19 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 
 		addEditColumn(
 			e -> ControllerProvider.getVisitController().editVisit(e.getUuid(), getCriteria().getContact(), getCriteria().getCaze(), r -> reload()));
+
+		removeColumn(VisitIndexDto.ORIGIN);
+		addComponentColumn(visitIndexDto -> {
+			VisitOrigin origin = visitIndexDto.getOrigin();
+
+			String displayText = origin.toString();
+
+			if (origin == VisitOrigin.USER && visitIndexDto.getVisitUser() != null) {
+				displayText += " " + visitIndexDto.getVisitUser().getShortCaption();
+			}
+
+			return new Label(displayText);
+		}).setId(VisitIndexDto.ORIGIN);
 
 		setColumns(
 			EDIT_BTN_ID,

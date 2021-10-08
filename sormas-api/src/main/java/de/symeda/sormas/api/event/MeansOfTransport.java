@@ -19,6 +19,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum MeansOfTransport {
 
+	LOCAL_PUBLIC_TRANSPORT,
 	BUS,
 	FERRY,
 	PLANE,

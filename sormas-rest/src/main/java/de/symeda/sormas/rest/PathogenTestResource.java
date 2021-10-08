@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -63,7 +64,7 @@ public class PathogenTestResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postPathogenTests(List<PathogenTestDto> dtos) {
+	public List<PushResult> postPathogenTests(@Valid List<PathogenTestDto> dtos) {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getPathogenTestFacade()::savePathogenTest);
 		return result;
 	}

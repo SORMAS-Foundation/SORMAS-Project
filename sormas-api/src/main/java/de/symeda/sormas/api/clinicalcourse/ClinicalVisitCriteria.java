@@ -1,7 +1,7 @@
 package de.symeda.sormas.api.clinicalcourse;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class ClinicalVisitCriteria extends BaseCriteria implements Cloneable {
 

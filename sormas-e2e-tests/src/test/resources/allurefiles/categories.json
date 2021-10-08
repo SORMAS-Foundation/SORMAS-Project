@@ -1,0 +1,36 @@
+[
+  {
+    "name": "Infrastructure problems",
+    "messageRegex": ".*bye-bye.*",
+    "matchedStatuses": [
+      "broken",
+      "failed"
+    ]
+  },
+  {
+    "name": "Outdated tests",
+    "traceRegex": ".*FileNotFoundException.*",
+    "matchedStatuses": [
+      "broken"
+    ]
+  },
+  {
+    "name": "Product defects",
+    "matchedStatuses": [
+      "failed"
+    ]
+  },
+  {
+    "name": "Unknown issues",
+    "matchedStatuses": [
+      "broken"
+    ]
+  },
+  {
+    "name": "Logged Github tickets",
+    "traceRegex": ".*AssumptionViolatedException.*",
+    "matchedStatuses": [
+      "skipped"
+    ]
+  }
+]

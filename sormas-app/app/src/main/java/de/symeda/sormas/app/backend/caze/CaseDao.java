@@ -19,8 +19,10 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -45,18 +47,17 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.event.EventJurisdictionDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.task.TaskStatus;
-import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.jurisdiction.EventJurisdictionHelper;
-import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisitCriteria;
@@ -70,9 +71,13 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventCriteria;
+import de.symeda.sormas.app.backend.event.EventEditAuthorization;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.exposure.Exposure;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.task.Task;
@@ -141,6 +146,11 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		Date exposureDate = getLatestChangeDateSubJoin(EpiData.TABLE_NAME, Case.EPI_DATA, Exposure.TABLE_NAME);
 		if (exposureDate != null && exposureDate.after(date)) {
 			date = exposureDate;
+		}
+
+		Date activityAsCaseDate = getLatestChangeDateSubJoin(EpiData.TABLE_NAME, Case.EPI_DATA, ActivityAsCase.TABLE_NAME);
+		if (activityAsCaseDate != null && activityAsCaseDate.after(date)) {
+			date = activityAsCaseDate;
 		}
 
 		Date therapyDate = DatabaseHelper.getTherapyDao().getLatestChangeDate();
@@ -257,21 +267,21 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		}
 
 		if (UserRole.isPortHealthUser(currentUser.getUserRoles())) {
-			caze.setRegion(currentUser.getRegion());
-			caze.setDistrict(currentUser.getDistrict());
+			caze.setResponsibleRegion(currentUser.getRegion());
+			caze.setResponsibleDistrict(currentUser.getDistrict());
 			caze.setDisease(Disease.UNDEFINED);
 			caze.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
 			caze.setPointOfEntry(ConfigProvider.getUser().getPointOfEntry());
 		} else if (currentUser.getHealthFacility() != null) {
-			caze.setRegion(currentUser.getHealthFacility().getRegion());
-			caze.setDistrict(currentUser.getHealthFacility().getDistrict());
-			caze.setCommunity(currentUser.getHealthFacility().getCommunity());
+			caze.setResponsibleRegion(currentUser.getHealthFacility().getRegion());
+			caze.setResponsibleDistrict(currentUser.getHealthFacility().getDistrict());
+			caze.setResponsibleCommunity(currentUser.getHealthFacility().getCommunity());
 			caze.setHealthFacility(currentUser.getHealthFacility());
 			caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 		} else {
-			caze.setRegion(currentUser.getRegion());
-			caze.setDistrict(currentUser.getDistrict());
-			caze.setCommunity(currentUser.getCommunity());
+			caze.setResponsibleRegion(currentUser.getRegion());
+			caze.setResponsibleDistrict(currentUser.getDistrict());
+			caze.setResponsibleCommunity(currentUser.getCommunity());
 			caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 		}
 
@@ -282,6 +292,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		Case newCase = build(person);
 		if (caze != null) {
 			newCase.setDisease(caze.getDisease());
+			newCase.setDiseaseVariant(caze.getDiseaseVariant());
 			newCase.setDiseaseDetails(caze.getDiseaseDetails());
 			newCase.setPlagueType(caze.getPlagueType());
 			newCase.setDengueFeverType(caze.getDengueFeverType());
@@ -307,13 +318,22 @@ public class CaseDao extends AbstractAdoDao<Case> {
 	}
 
 	public void createPreviousHospitalizationAndUpdateHospitalization(Case caze, Case oldCase) {
-		caze.getHospitalization()
-			.getPreviousHospitalizations()
-			.add(DatabaseHelper.getPreviousHospitalizationDao().buildPreviousHospitalizationFromHospitalization(caze, oldCase));
-		caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
-		caze.getHospitalization().setAdmissionDate(new Date());
-		caze.getHospitalization().setDischargeDate(null);
-		caze.getHospitalization().setIsolated(null);
+		if (FacilityType.HOSPITAL.equals(oldCase.getFacilityType())) {
+			caze.getHospitalization()
+				.getPreviousHospitalizations()
+				.add(DatabaseHelper.getPreviousHospitalizationDao().buildPreviousHospitalizationFromHospitalization(caze, oldCase));
+			caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
+		}
+		if (FacilityType.HOSPITAL.equals(caze.getFacilityType())) {
+			caze.getHospitalization().setAdmissionDate(new Date());
+			caze.getHospitalization().setDischargeDate(null);
+			caze.getHospitalization().setIsolated(null);
+			caze.getHospitalization().setIntensiveCareUnit(null);
+			caze.getHospitalization().setLeftAgainstAdvice(null);
+			caze.getHospitalization().setAdmittedToHealthFacility(null);
+			caze.getHospitalization().setHospitalizationReason(null);
+			caze.getHospitalization().setOtherHospitalizationReason(null);
+		}
 	}
 
 	/**
@@ -371,7 +391,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			&& currentCase.isModified()
 			&& currentCase.getOutcomeDate() != null
 			&& source.getOutcomeDate() != null
-			&& currentCase.getOutcomeDate() != source.getOutcomeDate()) {
+			&& !Objects.equals(currentCase.getOutcomeDate(), source.getOutcomeDate())) {
 			// this could be the situation, but we also have to check the snapshot - the outcome date has to be null
 			Case snapshotCase = querySnapshotByUuid(source.getUuid());
 			if (snapshotCase != null && snapshotCase.getOutcomeDate() == null) {
@@ -455,9 +475,20 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			}
 
 			// If the district has changed, assign a new surveillance officer and re-assign tasks
-			if (!changedCase.getDistrict().getUuid().equals(existingCase.getUuid())) {
-				List<User> districtOfficers =
-					DatabaseHelper.getUserDao().getByDistrictAndRole(changedCase.getDistrict(), UserRole.SURVEILLANCE_OFFICER, User.UUID);
+			if (!DataHelper.isSame(changedCase.getResponsibleDistrict(), existingCase.getResponsibleDistrict())
+				|| (changedCase.getResponsibleDistrict() == null && !DataHelper.isSame(changedCase.getDistrict(), existingCase.getDistrict()))) {
+				List<User> districtOfficers = Collections.emptyList();
+
+				if (changedCase.getResponsibleDistrict() != null) {
+					districtOfficers = DatabaseHelper.getUserDao()
+						.getByDistrictAndRole(changedCase.getResponsibleDistrict(), UserRole.SURVEILLANCE_OFFICER, User.UUID);
+				}
+
+				if (districtOfficers.size() == 0 && changedCase.getDistrict() != null) {
+					districtOfficers =
+						DatabaseHelper.getUserDao().getByDistrictAndRole(changedCase.getDistrict(), UserRole.SURVEILLANCE_OFFICER, User.UUID);
+				}
+
 				if (districtOfficers.size() == 1) {
 					changedCase.setSurveillanceOfficer(districtOfficers.get(0));
 				} else {
@@ -469,20 +500,46 @@ public class CaseDao extends AbstractAdoDao<Case> {
 						continue;
 					}
 
+					User assigneeUser = task.getAssigneeUser();
+					if (assigneeUser != null
+						&& CaseJurisdictionBooleanValidator
+							.of(JurisdictionHelper.createCaseJurisdictionDto(changedCase), JurisdictionHelper.createUserJurisdiction(assigneeUser))
+							.isInJurisdiction()) {
+						continue;
+					}
+
 					if (changedCase.getSurveillanceOfficer() != null) {
 						task.setAssigneeUser(changedCase.getSurveillanceOfficer());
 					} else {
 						// TODO roles? what happens when there are no supervisors? assignee user cannot be null
-						List<User> survSupervisors =
-							DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
-						List<User> caseSupervisors =
-							DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getRegion(), UserRole.CASE_SUPERVISOR);
+						List<User> survSupervisors = Collections.emptyList();
+						if (changedCase.getResponsibleRegion() != null) {
+							survSupervisors =
+								DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getResponsibleRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
+						}
+
+						if (survSupervisors.size() == 0) {
+							survSupervisors =
+								DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
+						}
+
 						if (survSupervisors.size() >= 1) {
 							task.setAssigneeUser(survSupervisors.get(0));
-						} else if (caseSupervisors.size() >= 1) {
-							task.setAssigneeUser(caseSupervisors.get(0));
 						} else {
-							task.setAssigneeUser(null);
+							List<User> caseSupervisors = Collections.emptyList();
+							if (changedCase.getResponsibleRegion() != null) {
+								caseSupervisors =
+									DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getResponsibleRegion(), UserRole.CASE_SUPERVISOR);
+							}
+							if (caseSupervisors.size() == 0) {
+								caseSupervisors = DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getRegion(), UserRole.CASE_SUPERVISOR);
+							}
+
+							if (caseSupervisors.size() >= 1) {
+								task.setAssigneeUser(caseSupervisors.get(0));
+							} else {
+								task.setAssigneeUser(null);
+							}
 						}
 					}
 
@@ -594,17 +651,13 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		}
 
 		//Remove events outside jurisdiction which were pulled in due to linking with an accessible case
-		User user = ConfigProvider.getUser();
-		UserJurisdiction userJurisdiction = JurisdictionHelper.createUserJurisdiction(user);
 		EventCriteria eventCriteria = new EventCriteria();
 		eventCriteria.caze(caze);
 		List<Event> eventList = DatabaseHelper.getEventDao().queryByCriteria(eventCriteria, 0, 0);
 		for (Event event : eventList) {
 			List<EventParticipant> eventParticipantByEventList = DatabaseHelper.getEventParticipantDao().getByEvent(event);
 			if (eventParticipantByEventList.isEmpty()) {
-				EventJurisdictionDto eventJurisdictionDto = JurisdictionHelper.createEventJurisdictionDto(event);
-				Boolean isEventInJurisdiction =
-					EventJurisdictionHelper.isInJurisdictionOrOwned(JurisdictionLevel.REGION, userJurisdiction, eventJurisdictionDto);
+				Boolean isEventInJurisdiction = EventEditAuthorization.isEventEditAllowed(event);
 				if (!isEventInJurisdiction) {
 					DatabaseHelper.getEventDao().delete(event);
 				}
@@ -621,8 +674,18 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			QueryBuilder<Person, Long> personQueryBuilder = DatabaseHelper.getPersonDao().queryBuilder();
 
 			Where<Case, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
-			where.and().eq(Case.DISEASE, criteria.getCaseCriteria().getDisease());
-			where.and().eq(Case.REGION + "_id", criteria.getCaseCriteria().getRegion());
+			CaseCriteria caseCriteria = criteria.getCaseCriteria();
+			where.and().eq(Case.DISEASE, caseCriteria.getDisease());
+			Where<Case, Long> regionFilter = where.and()
+				.eq(Case.RESPONSIBLE_REGION + "_id", caseCriteria.getResponsibleRegion())
+				.or()
+				.eq(Case.REGION + "_id", caseCriteria.getResponsibleRegion());
+			if (caseCriteria.getRegion() != null) {
+				regionFilter.or()
+					.eq(Case.RESPONSIBLE_REGION + "_id", caseCriteria.getRegion())
+					.or()
+					.eq(Case.REGION + "_id", caseCriteria.getRegion());
+			}
 			where.and().raw(Person.TABLE_NAME + "." + Person.UUID + " = '" + criteria.getPersonUuid() + "'");
 			where.and()
 				.between(Case.REPORT_DATE, DateHelper.subtractDays(criteria.getReportDate(), 30), DateHelper.addDays(criteria.getReportDate(), 30));
@@ -693,6 +756,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 						where.or(
 							where.raw(Case.TABLE_NAME + "." + Case.UUID + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
 							where.raw(Case.TABLE_NAME + "." + Case.EPID_NUMBER + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
+							where.raw(Case.TABLE_NAME + "." + Case.EXTERNAL_ID + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
 							where.raw(Person.TABLE_NAME + "." + Person.FIRST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
 							where.raw(Person.TABLE_NAME + "." + Person.LAST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'")));
 				}
@@ -705,5 +769,29 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		}
 		queryBuilder = queryBuilder.leftJoin(personQueryBuilder);
 		return queryBuilder;
+	}
+
+	public static Region getRegionWithFallback(Case caze) {
+		if (caze.getRegion() == null) {
+			return caze.getResponsibleRegion();
+		}
+
+		return caze.getRegion();
+	}
+
+	public static District getDistrictWithFallback(Case caze) {
+		if (caze.getDistrict() == null) {
+			return caze.getResponsibleDistrict();
+		}
+
+		return caze.getDistrict();
+	}
+
+	public static Community getCommunityWithFallback(Case caze) {
+		if (caze.getRegion() == null) {
+			return caze.getResponsibleCommunity();
+		}
+
+		return caze.getCommunity();
 	}
 }

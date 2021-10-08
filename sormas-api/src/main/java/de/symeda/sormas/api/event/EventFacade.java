@@ -17,31 +17,35 @@
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
 public interface EventFacade {
 
 	List<EventDto> getAllActiveEventsAfter(Date date);
 
-	List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria);
-
 	Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria);
 
-	Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria);
+	EventDto getEventByUuid(String uuid, boolean detailedReferences);
 
-	EventDto getEventByUuid(String uuid);
-
-	EventDto saveEvent(@NotNull EventDto dto);
+	EventDto saveEvent(@Valid @NotNull EventDto dto);
 
 	EventReferenceDto getReferenceByUuid(String uuid);
 
@@ -51,13 +55,17 @@ public interface EventFacade {
 
 	List<EventDto> getByUuids(List<String> uuids);
 
-	void deleteEvent(String eventUuid);
+	void deleteEvent(String eventUuid) throws ExternalSurveillanceToolException;
+
+	List<String> deleteEvents(List<String> eventUuids);
 
 	long count(EventCriteria eventCriteria);
 
 	List<EventIndexDto> getIndexList(EventCriteria eventCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	List<EventExportDto> getExportList(EventCriteria eventCriteria, Integer first, Integer max);
+	Page<EventIndexDto> getIndexPage(@NotNull EventCriteria eventCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
+
+	List<EventExportDto> getExportList(EventCriteria eventCriteria, Collection<String> selectedRows, Integer first, Integer max);
 
 	boolean isArchived(String caseUuid);
 
@@ -75,9 +83,21 @@ public interface EventFacade {
 
 	boolean exists(String uuid);
 
+	boolean doesExternalTokenExist(String externalToken, String eventUuid);
+
 	String getUuidByCaseUuidOrPersonUuid(String value);
 
 	Set<String> getAllSubordinateEventUuids(String eventUuid);
 
 	Set<String> getAllSuperordinateEventUuids(String eventUuid);
+
+	Set<String> getAllEventUuidsByEventGroupUuid(String eventGroupUuid);
+
+	String getFirstEventUuidWithOwnershipHandedOver(List<String> eventUuids);
+
+	void validate(EventDto dto) throws ValidationRuntimeException;
+
+	Set<RegionReferenceDto> getAllRegionsRelatedToEventUuids(List<String> uuids);
+
+	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 }

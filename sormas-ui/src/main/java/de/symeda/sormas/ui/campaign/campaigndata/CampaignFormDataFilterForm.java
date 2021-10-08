@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.campaign.campaigndata;
 
 import java.util.function.Consumer;
 
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
@@ -28,9 +29,9 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -50,7 +51,10 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 	protected CampaignFormDataFilterForm() {
 
 		super(CampaignFormDataCriteria.class, CampaignFormDataDto.I18N_PREFIX);
-		CssStyles.style(CssStyles.FORCE_CAPTION, applyButton, resetButton);
+		formActionButtonsComponent.style(CssStyles.FORCE_CAPTION);
+		formActionButtonsComponent.setSpacing(false);
+		formActionButtonsComponent.setSizeFull();
+		formActionButtonsComponent.setMargin(new MarginInfo(false, false, false, true));
 	}
 
 	@Override
@@ -83,7 +87,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 		regionFilter = addField(
 			FieldConfiguration.withCaptionAndPixelSized(CampaignFormDataCriteria.REGION, I18nProperties.getCaption(Captions.Campaign_region), 200));
 		regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllRegions));
-		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		districtFilter = addField(
 			FieldConfiguration

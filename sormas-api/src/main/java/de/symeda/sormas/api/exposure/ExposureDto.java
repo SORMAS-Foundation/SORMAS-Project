@@ -17,12 +17,16 @@ package de.symeda.sormas.api.exposure;
 
 import java.util.Date;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -41,6 +45,7 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String I18N_PREFIX = "Exposure";
 
 	public static final String REPORTING_USER = "reportingUser";
+	public static final String PROBABLE_INFECTION_ENVIRONMENT = "probableInfectionEnvironment";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
 	public static final String DESCRIPTION = "description";
@@ -53,6 +58,7 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String MEANS_OF_TRANSPORT_DETAILS = "meansOfTransportDetails";
 	public static final String CONNECTION_NUMBER = "connectionNumber";
 	public static final String SEAT_NUMBER = "seatNumber";
+	public static final String WORK_ENVIRONMENT = "workEnvironment";
 	public static final String INDOORS = "indoors";
 	public static final String OUTDOORS = "outdoors";
 	public static final String WEARING_MASK = "wearingMask";
@@ -89,33 +95,44 @@ public class ExposureDto extends PseudonymizableDto {
 	public static final String DECEASED_PERSON_ILL = "deceasedPersonIll";
 	public static final String DECEASED_PERSON_NAME = "deceasedPersonName";
 	public static final String DECEASED_PERSON_RELATION = "deceasedPersonRelation";
-	public static final String PATIENT_EXPOSITION_ROLE = "patientExpositionRole";
+	public static final String EXPOSURE_ROLE = "exposureRole";
+	public static final String LARGE_ATTENDANCE_NUMBER = "largeAttendanceNumber";
 
 	@SensitiveData
 	private UserReferenceDto reportingUser;
+	@HideForCountriesExcept
+	private boolean probableInfectionEnvironment;
 	private Date startDate;
 	private Date endDate;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String description;
 	@Required
 	private ExposureType exposureType;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String exposureTypeDetails;
+	@Valid
 	private LocationDto location;
-	@HideForCountriesExcept
-	private PatientExpositionRole patientExpositionRole;
+	private ExposureRole exposureRole;
 
 	// Type of Place
 	private TypeOfPlace typeOfPlace;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String typeOfPlaceDetails;
 	private MeansOfTransport meansOfTransport;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String meansOfTransportDetails;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String connectionNumber;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String seatNumber;
+
+	private WorkEnvironment workEnvironment;
 
 	// Details
 	private YesNoUnknown indoors;
@@ -124,6 +141,7 @@ public class ExposureDto extends PseudonymizableDto {
 	private YesNoUnknown wearingPpe;
 	private YesNoUnknown otherProtectiveMeasures;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String protectiveMeasuresDetails;
 	private YesNoUnknown shortDistance;
 	private YesNoUnknown longFaceToFaceContact;
@@ -188,6 +206,7 @@ public class ExposureDto extends PseudonymizableDto {
 	private YesNoUnknown animalVaccinated;
 	private AnimalContactType animalContactType;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String animalContactTypeDetails;
 	@Diseases({
 		Disease.AFP,
@@ -213,6 +232,7 @@ public class ExposureDto extends PseudonymizableDto {
 		Disease.POLIO,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String waterSourceDetails;
 	@PersonalData
 	private ContactReferenceDto contactToCase;
@@ -223,12 +243,15 @@ public class ExposureDto extends PseudonymizableDto {
 	// Exposure sub-types
 	private GatheringType gatheringType;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String gatheringDetails;
 	private HabitationType habitationType;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String habitationDetails;
 	private TypeOfAnimal typeOfAnimal;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String typeOfAnimalDetails;
 
 	// Fields specific to ExposureType.BURIAL
@@ -236,9 +259,12 @@ public class ExposureDto extends PseudonymizableDto {
 	private YesNoUnknown physicalContactWithBody;
 	private YesNoUnknown deceasedPersonIll;
 	@PersonalData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String deceasedPersonName;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String deceasedPersonRelation;
+	private YesNoUnknown largeAttendanceNumber;
 
 	public static ExposureDto build(ExposureType exposureType) {
 
@@ -256,6 +282,14 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
+	}
+
+	public boolean isProbableInfectionEnvironment() {
+		return probableInfectionEnvironment;
+	}
+
+	public void setProbableInfectionEnvironment(boolean probableInfectionEnvironment) {
+		this.probableInfectionEnvironment = probableInfectionEnvironment;
 	}
 
 	public Date getStartDate() {
@@ -306,12 +340,12 @@ public class ExposureDto extends PseudonymizableDto {
 		this.location = location;
 	}
 
-	public PatientExpositionRole getPatientExpositionRole() {
-		return patientExpositionRole;
+	public ExposureRole getExposureRole() {
+		return exposureRole;
 	}
 
-	public void setPatientExpositionRole(PatientExpositionRole patientExpositionRole) {
-		this.patientExpositionRole = patientExpositionRole;
+	public void setExposureRole(ExposureRole exposureRole) {
+		this.exposureRole = exposureRole;
 	}
 
 	public YesNoUnknown getIndoors() {
@@ -626,6 +660,14 @@ public class ExposureDto extends PseudonymizableDto {
 		this.seatNumber = seatNumber;
 	}
 
+	public WorkEnvironment getWorkEnvironment() {
+		return workEnvironment;
+	}
+
+	public void setWorkEnvironment(WorkEnvironment workEnvironment) {
+		this.workEnvironment = workEnvironment;
+	}
+
 	public YesNoUnknown getProphylaxis() {
 		return prophylaxis;
 	}
@@ -648,5 +690,20 @@ public class ExposureDto extends PseudonymizableDto {
 
 	public void setRiskArea(YesNoUnknown riskArea) {
 		this.riskArea = riskArea;
+	}
+
+	public YesNoUnknown getLargeAttendanceNumber() {
+		return largeAttendanceNumber;
+	}
+
+	public void setLargeAttendanceNumber(YesNoUnknown largeAttendanceNumber) {
+		this.largeAttendanceNumber = largeAttendanceNumber;
+	}
+
+	@Override
+	public ExposureDto clone() throws CloneNotSupportedException {
+		ExposureDto clone = (ExposureDto) super.clone();
+		clone.setLocation((LocationDto) clone.getLocation().clone());
+		return clone;
 	}
 }

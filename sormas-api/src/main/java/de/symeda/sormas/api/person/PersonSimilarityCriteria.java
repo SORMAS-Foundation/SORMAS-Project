@@ -1,10 +1,14 @@
 package de.symeda.sormas.api.person;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 @SuppressWarnings("serial")
 public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable {
+
+	public static final String FIRST_NAME = "firstName";
+	public static final String LAST_NAME = "lastName";
+	public static final String UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE = "uuidExternalIdExternalTokenLike";
 
 	private String firstName;
 	private String lastName;
@@ -14,10 +18,15 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	private Integer birthdateDD;
 	private String passportNumber;
 	private String nationalHealthId;
+	private String uuidExternalIdExternalTokenLike;
 
 	@IgnoreForUrl
 	public String getFirstName() {
 		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
 
 	public PersonSimilarityCriteria firstName(String firstName) {
@@ -28,6 +37,10 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	@IgnoreForUrl
 	public String getLastName() {
 		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public PersonSimilarityCriteria lastName(String lastName) {
@@ -93,5 +106,13 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	public PersonSimilarityCriteria nationalHealthId(String nationalHealthId) {
 		this.nationalHealthId = nationalHealthId;
 		return this;
+	}
+
+	public String getUuidExternalIdExternalTokenLike() {
+		return uuidExternalIdExternalTokenLike;
+	}
+
+	public void setUuidExternalIdExternalTokenLike(String uuidExternalIdExternalTokenLike) {
+		this.uuidExternalIdExternalTokenLike = uuidExternalIdExternalTokenLike;
 	}
 }

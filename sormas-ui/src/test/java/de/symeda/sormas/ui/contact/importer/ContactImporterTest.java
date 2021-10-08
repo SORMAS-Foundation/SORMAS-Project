@@ -1,21 +1,32 @@
 package de.symeda.sormas.ui.contact.importer;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.InputStream;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-import com.opencsv.exceptions.CsvValidationException;
+import org.apache.commons.io.output.StringBuilderWriter;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+
+import com.opencsv.exceptions.CsvException;
+import com.opencsv.exceptions.CsvValidationException;
+import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -25,13 +36,13 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
@@ -40,11 +51,13 @@ import de.symeda.sormas.ui.TestDataCreator.RDCF;
 import de.symeda.sormas.ui.importer.ContactImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
+import de.symeda.sormas.ui.importer.PersonImportSimilarityResult;
 
 public class ContactImporterTest extends AbstractBeanTest {
 
 	@Test
-	public void testImportCaseContacts() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
+	public void testImportCaseContacts()
+		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
 		ContactFacadeEjb contactFacade = getBean(ContactFacadeEjbLocal.class);
 
@@ -63,7 +76,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 
 		// Successful import of 5 case contacts
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_success.csv").toURI());
-		ContactImporter contactImporter = new ContactImporterExtension(csvFile, false, user.toReference(), caze);
+		ContactImporter contactImporter = new ContactImporterExtension(csvFile, false, user, caze);
 		ImportResultStatus importResult = contactImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
@@ -72,10 +85,15 @@ public class ContactImporterTest extends AbstractBeanTest {
 		// Person Similarity: pick
 		List<PersonNameDto> persons = FacadeProvider.getPersonFacade().getMatchingNameDtos(user.toReference(), new PersonSimilarityCriteria());
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").toURI());
-		contactImporter = new ContactImporterExtension(csvFile, false, user.toReference(), caze) {
+		contactImporter = new ContactImporterExtension(csvFile, false, user, caze) {
 
 			@Override
-			protected void handleSimilarity(PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
+			protected <T extends PersonImportSimilarityResult> void handlePersonSimilarity(
+				PersonDto newPerson,
+				Consumer<T> resultConsumer,
+				BiFunction<SimilarPersonDto, ImportSimilarityResultOption, T> createSimilarityResult,
+				String infoText,
+				UI currentUI) {
 
 				List<SimilarPersonDto> entries = new ArrayList<>();
 				for (PersonNameDto person : persons) {
@@ -84,7 +102,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 						entries.addAll(FacadeProvider.getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(person.getUuid())));
 					}
 				}
-				resultConsumer.accept(new ContactImportSimilarityResult(entries.get(0), null, ImportSimilarityResultOption.PICK));
+				resultConsumer.accept((T) new ContactImportSimilarityResult(entries.get(0), null, ImportSimilarityResultOption.PICK));
 			}
 		};
 		importResult = contactImporter.runImport();
@@ -95,11 +113,16 @@ public class ContactImporterTest extends AbstractBeanTest {
 
 		// Person Similarity: skip
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").toURI());
-		contactImporter = new ContactImporterExtension(csvFile, false, user.toReference(), caze) {
+		contactImporter = new ContactImporterExtension(csvFile, false, user, caze) {
 
 			@Override
-			protected void handleSimilarity(PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
-				resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.SKIP));
+			protected <T extends PersonImportSimilarityResult> void handlePersonSimilarity(
+				PersonDto newPerson,
+				Consumer<T> resultConsumer,
+				BiFunction<SimilarPersonDto, ImportSimilarityResultOption, T> createSimilarityResult,
+				String infoText,
+				UI currentUI) {
+				resultConsumer.accept((T) new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.SKIP));
 			}
 		};
 		importResult = contactImporter.runImport();
@@ -110,13 +133,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 
 		// Person Similarity: create
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").toURI());
-		contactImporter = new ContactImporterExtension(csvFile, false, user.toReference(), caze) {
-
-			@Override
-			protected void handleSimilarity(PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
-				resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
-			}
-		};
+		contactImporter = new ContactImporterExtension(csvFile, false, user, caze);
 		importResult = contactImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
@@ -126,7 +143,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 		// Test import contacts from a commented CSV file
 		// Successful import of 5 case contacts
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_comment_success.csv").toURI());
-		contactImporter = new ContactImporterExtension(csvFile, false, user.toReference(), caze);
+		contactImporter = new ContactImporterExtension(csvFile, false, user, caze);
 		importResult = contactImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
@@ -134,7 +151,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testImportContacts() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
+	public void testImportContacts() throws IOException, InvalidColumnException, InterruptedException, CsvException, URISyntaxException {
 
 		ContactFacadeEjb contactFacade = getBean(ContactFacadeEjbLocal.class);
 
@@ -146,7 +163,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 		// 2 of them belong to a case that does not exist.
 		// 1 of those 2 still has enough details to be imported
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_contact_import_test.csv").toURI());
-		ContactImporter contactImporter = new ContactImporterExtension(csvFile, false, user.toReference(), null);
+		ContactImporter contactImporter = new ContactImporterExtension(csvFile, false, user, null);
 		ImportResultStatus importResult = contactImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importResult);
@@ -164,7 +181,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 			"ABCDEF-GHIJKL-MNOPQR");
 
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_contact_import_test.csv").toURI());
-		contactImporter = new ContactImporterExtension(csvFile, false, user.toReference(), null);
+		contactImporter = new ContactImporterExtension(csvFile, false, user, null);
 		importResult = contactImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
@@ -183,35 +200,56 @@ public class ContactImporterTest extends AbstractBeanTest {
 
 		// Test import contacts from a commented CSV file
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_contact_import_test_comment.csv").toURI());
-		contactImporter = new ContactImporterExtension(csvFile, false, user.toReference(), null);
+		contactImporter = new ContactImporterExtension(csvFile, false, user, null);
 		importResult = contactImporter.runImport();
+
+		InputStream errorStream =
+			new ByteArrayInputStream(((ContactImporterExtension) contactImporter).stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
+		List<String[]> errorRows = getCsvReader(errorStream).readAll();
+		if (errorRows.size() > 1) {
+			assertThat("Error during import: " + StringUtils.join(errorRows.get(1), ", "), errorRows, hasSize(0));
+		}
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(8, contactFacade.count(null));
 	}
 
-	private static class ContactImporterExtension extends ContactImporter {
+	public static class ContactImporterExtension extends ContactImporter {
 
-		private ContactImporterExtension(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser, CaseDataDto caze) {
-			super(inputFile, hasEntityClassRow, currentUser, caze);
+		public StringBuilder stringBuilder = new StringBuilder("");
+		private StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
+
+		public ContactImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze) throws IOException {
+			super(inputFile, hasEntityClassRow, currentUser, caze, ValueSeparator.DEFAULT);
 		}
 
-		protected void handleSimilarity(PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
-			resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
+		public ContactImporterExtension(File inputFile, UserDto currentUser) throws IOException {
+			super(inputFile, false, currentUser, null, ValueSeparator.DEFAULT);
 		}
 
+		@Override
+		protected <T extends PersonImportSimilarityResult> void handlePersonSimilarity(
+			PersonDto newPerson,
+			Consumer<T> resultConsumer,
+			BiFunction<SimilarPersonDto, ImportSimilarityResultOption, T> createSimilarityResult,
+			String infoText,
+			UI currentUI) {
+			resultConsumer.accept((T) new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
+		}
+
+		@Override
 		protected void handleContactSimilarity(ContactDto newContact, PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
 			resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
 		}
 
+		@Override
 		protected Writer createErrorReportWriter() {
-			return new OutputStreamWriter(new OutputStream() {
+			return writer;
+		}
 
-				@Override
-				public void write(int b) {
-					// Do nothing
-				}
-			});
+		@Override
+		protected Path getErrorReportFolderPath() {
+			return Paths.get(System.getProperty("java.io.tmpdir"));
 		}
 	}
 }

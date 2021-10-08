@@ -1,0 +1,126 @@
+[{
+  "type": "section",
+  "id": "totalNumbersSection"
+}, {
+  "type": "label",
+  "id": "totalNumbersLabel",
+  "caption": "<h3>Total Numbers</h3>"
+}, {
+  "type": "number",
+  "id": "childrenLivingInHouses",
+  "expression": "childrenVaccinatedRecall + 2",
+  "caption": "Number of < 5 years children living in houses",
+  "styles": ["row", "col-3"],
+  "important": true
+}, {
+  "type": "number",
+  "id": "childrenVaccinatedRecall",
+  "caption": "Number of < 5 years children vaccinated based on recall",
+  "styles": ["row", "col-3"]
+}, {
+  "type": "number",
+  "id": "childrenSeenByMonitor",
+  "caption": "Number of < 5 years children seen by the monitor",
+  "styles": ["row", "col-3"]
+}, {
+  "type": "number",
+  "id": "childrenFingerMarking",
+  "caption": "Number of < 5 years children seen with finger marking by monitor",
+  "styles": ["row", "col-3"]
+}, {
+  "type": "section",
+  "id": "missedChildrenSection"
+}, {
+  "type": "label",
+  "id": "missedChildrenLabel",
+  "caption": "<h3>Missed Children</h3>"
+}, {
+  "type": "number",
+  "id": "missedChildren",
+  "caption": "Total number of missed children (based on recall and FM)",
+  "styles": ["row"],
+  "important": true
+}, {
+  "type": "label",
+  "id": "missedChildrenNumbers",
+  "caption": "<h4>Number of missed children for the following reasons:</h4>",
+  "styles": ["col-6"]
+}, {
+  "type": "number",
+  "id": "houseNotIncluded",
+  "caption": "House not included in micro plan",
+  "styles": ["col-6"]
+}, {
+  "type": "number",
+  "id": "teamDidNotVisit",
+  "caption": "Not visited by team",
+  "styles": ["col-6"]
+}, {
+  "type": "number",
+  "id": "poorScreening",
+  "caption": "Poor screening by team",
+  "styles": ["col-6"]
+}, {
+  "type": "number",
+  "id": "childAbsent",
+  "caption": "Children absent",
+  "styles": ["col-6"]
+}, {
+  "type": "number",
+  "id": "newbornSickSleep",
+  "caption": "Newborn, Sick, Sleep",
+  "styles": ["col-6"]
+}, {
+  "type": "number",
+  "id": "refusal",
+  "caption": "Refusal",
+  "styles": ["col-6"]
+}, {
+  "type": "number",
+  "id": "guest",
+  "caption": "Guest",
+  "styles": ["col-6"],
+  "dependingOn": "refusal",
+  "dependingOnValues": [1, 5]
+}, {
+  "type": "section",
+  "id": "doorMarkingsSection"
+}, {
+  "type": "label",
+  "id": "doorMarkingsLabel",
+  "caption": "<h3>Door Markings</h3>"
+}, {
+  "type": "number",
+  "id": "doorMarkingCorrect",
+  "caption": "Correct"
+}, {
+  "type": "number",
+  "id": "doorMarkingIncorrect",
+  "caption": "Incorrect"
+}, {
+  "type": "number",
+  "id": "doorMarkingNotMarked",
+  "caption": "Not marked"
+}, {
+  "type": "section",
+  "id": "areaSection"
+}, {
+  "type": "yes-no",
+  "id": "poorlyCoveredArea",
+  "expression": "childrenVaccinatedRecall > 20",
+  "caption": "Poorly covered area (2 or more children missed based on finger mark)?",
+  "important": true
+}, {
+  "type": "yes-no",
+  "id": "missedArea",
+  "caption": "Missed area (2 or more houses missed due to no team visit)?",
+  "dependingOn": "poorlyCoveredArea",
+  "dependingOnValues": ["YES"]
+}, {
+  "type": "text",
+  "id": "comment",
+  "caption": "Comment",
+  "styles": ["col-12"],
+  "dependingOn": "missedArea",
+  "dependingOnValues": ["yes"]
+}]

@@ -39,12 +39,12 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.caze.edit.CaseNewFragment;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.ControlCheckBoxField;
-import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.databinding.FragmentContactNewLayoutBinding;
+import de.symeda.sormas.app.person.edit.PersonValidator;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
-import de.symeda.sormas.app.util.InfrastructureHelper;
+import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 
 public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayoutBinding, Contact, Contact> {
 
@@ -82,9 +82,9 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 			sourceCase = DatabaseHelper.getCaseDao().queryUuidBasic(record.getCaseUuid());
 		}
 		relationshipList = DataUtils.getEnumItems(ContactRelation.class, true);
-		initialRegions = InfrastructureHelper.loadRegions();
-		initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
-		initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
+		initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
+		initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getRegion());
+		initialCommunities = InfrastructureDaoHelper.loadCommunities(record.getDistrict());
 		diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
 		sexList = DataUtils.getEnumItems(Sex.class, true);
 		categoryList = DataUtils.getEnumItems(ContactCategory.class, true);
@@ -95,7 +95,10 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 		contentBinding.setData(record);
 		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
 
-		InfrastructureHelper.initializeRegionFields(
+		PersonValidator
+			.initializeBirthDateValidation(contentBinding.personBirthdateYYYY, contentBinding.personBirthdateMM, contentBinding.personBirthdateDD);
+
+		InfrastructureFieldsDependencyHandler.instance.initializeRegionFields(
 			contentBinding.contactRegion,
 			initialRegions,
 			record.getRegion(),
@@ -108,17 +111,19 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 
 		contentBinding.contactFirstContactDate.addValueChangedListener(e -> contentBinding.contactLastContactDate.setRequired(e.getValue() != null));
 
-		contentBinding.contactDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
-		contentBinding.contactDisease.addValueChangedListener(e -> {
-			contentBinding.contactContactProximity.setVisibility(e.getValue() == null ? GONE : VISIBLE);
-			if (ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
-				contentBinding.contactContactProximityDetails.setVisibility(e.getValue() == null ? GONE : VISIBLE);
-				contentBinding.contactContactCategory.setVisibility(e.getValue() == null ? GONE : VISIBLE);
-			}
-			contentBinding.contactContactProximity.clear();
-			contentBinding.contactContactProximity
-				.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues((Disease) e.getValue(), ConfigProvider.getServerLocale()))));
-		});
+		contentBinding.contactDisease.initializeSpinner(
+			diseaseList,
+			record.getDisease() != null ? record.getDisease() : DiseaseConfigurationCache.getInstance().getDefaultDisease(),
+			e -> {
+				contentBinding.contactContactProximity.setVisibility(e.getValue() == null ? GONE : VISIBLE);
+				if (ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
+					contentBinding.contactContactProximityDetails.setVisibility(e.getValue() == null ? GONE : VISIBLE);
+					contentBinding.contactContactCategory.setVisibility(e.getValue() == null ? GONE : VISIBLE);
+				}
+				contentBinding.contactContactProximity.clear();
+				contentBinding.contactContactProximity
+					.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues((Disease) e.getValue(), ConfigProvider.getServerLocale()))));
+			});
 
 		if (ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.contactContactProximity.addValueChangedListener(

@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.app.backend.facility;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import javax.persistence.Column;
@@ -27,8 +28,9 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import androidx.databinding.Bindable;
 
-import de.symeda.sormas.api.facility.FacilityHelper;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
@@ -49,6 +51,13 @@ public class Facility extends InfrastructureAdo {
 	public static final String NAME = "name";
 	public static final String TYPE = "type";
 
+	public Facility() {
+	}
+
+	public Facility(String uuid) {
+		setUuid(uuid);
+	}
+
 	@Column
 	private String name;
 
@@ -60,6 +69,24 @@ public class Facility extends InfrastructureAdo {
 	private Community community;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String city;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String postalCode;
+	@Column(length = COLUMN_LENGTH_BIG)
+	private String street;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String houseNumber;
+	@Column(length = COLUMN_LENGTH_BIG)
+	private String additionalInformation;
+	@Enumerated(EnumType.STRING)
+	private AreaType areaType;
+	@Column(columnDefinition = "text")
+	private String contactPersonFirstName;
+	@Column(columnDefinition = "text")
+	private String contactPersonLastName;
+	@Column(columnDefinition = "text")
+	private String contactPersonPhone;
+	@Column(columnDefinition = "text")
+	private String contactPersonEmail;
 
 	@DatabaseField
 	private Double latitude;
@@ -110,6 +137,78 @@ public class Facility extends InfrastructureAdo {
 
 	public void setCommunity(Community community) {
 		this.community = community;
+	}
+
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	public String getHouseNumber() {
+		return houseNumber;
+	}
+
+	public void setHouseNumber(String houseNumber) {
+		this.houseNumber = houseNumber;
+	}
+
+	public String getAdditionalInformation() {
+		return additionalInformation;
+	}
+
+	public void setAdditionalInformation(String additionalInformation) {
+		this.additionalInformation = additionalInformation;
+	}
+
+	public AreaType getAreaType() {
+		return areaType;
+	}
+
+	public void setAreaType(AreaType areaType) {
+		this.areaType = areaType;
+	}
+
+	public String getContactPersonFirstName() {
+		return contactPersonFirstName;
+	}
+
+	public void setContactPersonFirstName(String contactPersonFirstName) {
+		this.contactPersonFirstName = contactPersonFirstName;
+	}
+
+	public String getContactPersonLastName() {
+		return contactPersonLastName;
+	}
+
+	public void setContactPersonLastName(String contactPersonLastName) {
+		this.contactPersonLastName = contactPersonLastName;
+	}
+
+	public String getContactPersonPhone() {
+		return contactPersonPhone;
+	}
+
+	public void setContactPersonPhone(String contactPersonPhone) {
+		this.contactPersonPhone = contactPersonPhone;
+	}
+
+	public String getContactPersonEmail() {
+		return contactPersonEmail;
+	}
+
+	public void setContactPersonEmail(String contactPersonEmail) {
+		this.contactPersonEmail = contactPersonEmail;
 	}
 
 	public Double getLatitude() {

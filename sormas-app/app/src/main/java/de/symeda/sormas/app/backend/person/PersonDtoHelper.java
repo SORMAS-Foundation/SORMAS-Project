@@ -20,6 +20,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -38,6 +39,7 @@ import retrofit2.Call;
 public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 
 	private LocationDtoHelper locationHelper = new LocationDtoHelper();
+	private PersonContactDetailDtoHelper personContactDetailDtoHelper = new PersonContactDetailDtoHelper();
 
 	@Override
 	protected Class<Person> getAdoClass() {
@@ -83,9 +85,6 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setApproximateAgeType(source.getApproximateAgeType());
 		target.setApproximateAgeReferenceDate(source.getApproximateAgeReferenceDate());
 
-		target.setPhone(source.getPhone());
-		target.setPhoneOwner(source.getPhoneOwner());
-
 		target.setPresentCondition(source.getPresentCondition());
 		target.setDeathDate(source.getDeathDate());
 
@@ -116,8 +115,6 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
 		target.setBirthWeight(source.getBirthWeight());
 
-		target.setGeneralPractitionerDetails(source.getGeneralPractitionerDetails());
-		target.setEmailAddress(source.getEmailAddress());
 		target.setPassportNumber(source.getPassportNumber());
 		target.setNationalHealthId(source.getNationalHealthId());
 
@@ -134,10 +131,23 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		}
 		target.setAddresses(addresses);
 
+		List<PersonContactDetail> personContactDetails = new ArrayList<>();
+		List<PersonContactDetailDto> personContactDetailDtos = source.getPersonContactDetails();
+		if (!personContactDetailDtos.isEmpty()) {
+			for (PersonContactDetailDto personContactDetailDto : personContactDetailDtos) {
+				PersonContactDetail personContactDetail = personContactDetailDtoHelper.fillOrCreateFromDto(null, personContactDetailDto);
+				personContactDetail.setPerson(target);
+				personContactDetails.add(personContactDetail);
+			}
+		}
+		target.setPersonContactDetails(personContactDetails);
+
 		target.setExternalId(source.getExternalId());
 		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
 		target.setBirthCountry(DatabaseHelper.getCountryDao().getByReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(DatabaseHelper.getCountryDao().getByReferenceDto(source.getCitizenship()));
+		target.setAdditionalDetails(source.getAdditionalDetails());
 	}
 
 	@Override
@@ -165,8 +175,6 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setApproximateAge(source.getApproximateAge());
 		target.setApproximateAgeType(source.getApproximateAgeType());
 		target.setApproximateAgeReferenceDate(source.getApproximateAgeReferenceDate());
-		target.setPhone(source.getPhone());
-		target.setPhoneOwner(source.getPhoneOwner());
 
 		target.setCauseOfDeath(source.getCauseOfDeath());
 		target.setCauseOfDeathDisease(source.getCauseOfDeathDisease());
@@ -215,8 +223,6 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
 		target.setBirthWeight(source.getBirthWeight());
 
-		target.setGeneralPractitionerDetails(source.getGeneralPractitionerDetails());
-		target.setEmailAddress(source.getEmailAddress());
 		target.setPassportNumber(source.getPassportNumber());
 		target.setNationalHealthId(source.getNationalHealthId());
 
@@ -232,10 +238,21 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		}
 		target.setAddresses(locationDtos);
 
+		List<PersonContactDetailDto> personContactDetailDtos = new ArrayList<>();
+		// Necessary because the person is synchronized independently
+		DatabaseHelper.getPersonDao().initPersonContactDetails(source);
+		for (PersonContactDetail personContactDetail : source.getPersonContactDetails()) {
+			PersonContactDetailDto personContactDetailDto = personContactDetailDtoHelper.adoToDto(personContactDetail);
+			personContactDetailDtos.add(personContactDetailDto);
+		}
+		target.setPersonContactDetails(personContactDetailDtos);
+
 		target.setExternalId(source.getExternalId());
 		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
 		target.setBirthCountry(CountryDtoHelper.toReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(CountryDtoHelper.toReferenceDto(source.getCitizenship()));
+		target.setAdditionalDetails(source.getAdditionalDetails());
 	}
 
 	public static PersonReferenceDto toReferenceDto(Person ado) {

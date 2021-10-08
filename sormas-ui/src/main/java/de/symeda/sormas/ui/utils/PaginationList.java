@@ -97,7 +97,7 @@ public abstract class PaginationList<T> extends VerticalLayout {
 	}
 
 	private void initializePaginationLayout() {
-		firstPageButton = ButtonHelper.createButtonWithCaption("fistPage", "|<", e -> {
+		firstPageButton = ButtonHelper.createButton("fistPage", "|<", e -> {
 			showPage(1);
 		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT, CssStyles.BUTTON_FILTER_SMALL);
 
@@ -107,28 +107,28 @@ public abstract class PaginationList<T> extends VerticalLayout {
 		CssStyles.style(previousGapLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_PRIMARY);
 		paginationLayout.addComponent(previousGapLabel);
 
-		previousPreviousPageButton = ButtonHelper.createButtonWithCaption("previousPreviousPage", null, e -> {
+		previousPreviousPageButton = ButtonHelper.createButton("previousPreviousPage", null, e -> {
 			showPage(currentPage - 2);
 		}, BUTTON_STYLES);
 
 		paginationLayout.addComponent(previousPreviousPageButton);
 
-		previousPageButton = ButtonHelper.createButtonWithCaption("previousPage", null, e -> {
+		previousPageButton = ButtonHelper.createButton("previousPage", null, e -> {
 			showPage(currentPage - 1);
 		}, BUTTON_STYLES);
 
 		paginationLayout.addComponent(previousPageButton);
 
-		currentPageButton = ButtonHelper.createButtonWithCaption("currentPage", null, null, CURRENT_BUTTON_STYLES);
+		currentPageButton = ButtonHelper.createButton("currentPage", null, null, CURRENT_BUTTON_STYLES);
 		paginationLayout.addComponent(currentPageButton);
 
-		nextPageButton = ButtonHelper.createButtonWithCaption("nextPage", null, e -> {
+		nextPageButton = ButtonHelper.createButton("nextPage", null, e -> {
 			showPage(currentPage + 1);
 		}, BUTTON_STYLES);
 
 		paginationLayout.addComponent(nextPageButton);
 
-		nextNextPageButton = ButtonHelper.createButtonWithCaption("nextNextPage", null, e -> {
+		nextNextPageButton = ButtonHelper.createButton("nextNextPage", null, e -> {
 			showPage(currentPage + 2);
 		}, BUTTON_STYLES);
 
@@ -138,7 +138,7 @@ public abstract class PaginationList<T> extends VerticalLayout {
 		CssStyles.style(nextGapLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_PRIMARY);
 		paginationLayout.addComponent(nextGapLabel);
 
-		lastPageButton = ButtonHelper.createButtonWithCaption("", ">|", e -> {
+		lastPageButton = ButtonHelper.createButton("", ">|", e -> {
 			showPage(calculateLastPageNumber());
 		}, BUTTON_STYLES);
 
@@ -200,5 +200,9 @@ public abstract class PaginationList<T> extends VerticalLayout {
 
 	protected List<T> getEntries() {
 		return entries;
+	}
+
+	public boolean isEmpty() {
+		return entries.isEmpty();
 	}
 }

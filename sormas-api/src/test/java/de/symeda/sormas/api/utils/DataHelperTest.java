@@ -2,12 +2,21 @@ package de.symeda.sormas.api.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 
 public class DataHelperTest {
 
@@ -41,5 +50,121 @@ public class DataHelperTest {
 		assertEquals((Long) 1l, DataHelper.tryParseLong("1"));
 		assertEquals((Long) Long.MAX_VALUE, DataHelper.tryParseLong(String.valueOf(Long.MAX_VALUE)));
 		assertNull(DataHelper.tryParseLong(String.valueOf(Long.MAX_VALUE) + "0"));
+	}
+
+	@Test
+	public void testShortUuid() {
+		EntityDto entityDto = new EntityDto() {
+		};
+		entityDto.setUuid("ABCDEF-GHIJKL");
+
+		assertEquals("ABCDEF", DataHelper.getShortUuid(entityDto));
+
+		ReferenceDto referenceDto = new ReferenceDto() {
+		};
+		referenceDto.setUuid("MNOPQR-STUVWX");
+
+		assertEquals("MNOPQR", DataHelper.getShortUuid(referenceDto));
+
+		assertEquals("UZOUEH", DataHelper.getShortUuid("UZOUEH-HP7DRG-YOJ74F-PXWL2JZ4"));
+		assertNull(DataHelper.getShortUuid((String) null));
+
+		boolean exceptionThrown = false;
+		try {
+			assertEquals("A", DataHelper.getShortUuid("A"));
+			fail("getShortUuid should not be graceful on Uuids that are too short.");
+		} catch (StringIndexOutOfBoundsException e) {
+			exceptionThrown = true;
+		}
+
+		assertTrue("getShortUuid should throw StringIndexOutOfBoundsException on Uuids that are too short.", exceptionThrown);
+	}
+
+	@Test
+	public void testParseDateWithExceptionForEnFormat() throws ParseException {
+		Date date = DateHelper.parseDate("4/21/2021", new SimpleDateFormat("M/dd/yyy"));
+
+		Date parsed = DateHelper.parseDateWithException("4/21/2021", Language.EN.getDateFormat());
+		assertEquals(date, parsed);
+
+		parsed = DateHelper.parseDateWithException("4.21.2021", Language.EN.getDateFormat());
+		assertEquals(date, parsed);
+
+		parsed = DateHelper.parseDateWithException("4-21-2021", Language.EN.getDateFormat());
+		assertEquals(date, parsed);
+
+		parsed = DateHelper.parseDateWithException("4/21/21", Language.EN.getDateFormat());
+		assertEquals(date, parsed);
+
+		parsed = DateHelper.parseDateWithException("4.21.21", Language.EN.getDateFormat());
+		assertEquals(date, parsed);
+
+		parsed = DateHelper.parseDateWithException("4-21-21", Language.EN.getDateFormat());
+		assertEquals(date, parsed);
+
+	}
+
+	@Test
+	public void testParseDateWithExceptionForDeFormat() throws ParseException {
+		Date date = DateHelper.parseDate("4/21/2021", new SimpleDateFormat("M/dd/yyy"));
+
+		Date parsed = DateHelper.parseDateWithException("21/4/2021", Language.DE.getDateFormat());
+		assertEquals(date, parsed);
+
+		parsed = DateHelper.parseDateWithException("21.4.2021", Language.DE.getDateFormat());
+		assertEquals(date, parsed);
+
+		parsed = DateHelper.parseDateWithException("21-4-2021", Language.DE.getDateFormat());
+		assertEquals(date, parsed);
+
+		parsed = DateHelper.parseDateWithException("21/4/21", Language.DE.getDateFormat());
+		assertEquals(date, parsed);
+
+		parsed = DateHelper.parseDateWithException("21.4.21", Language.DE.getDateFormat());
+		assertEquals(date, parsed);
+
+		parsed = DateHelper.parseDateWithException("21-4-21", Language.DE.getDateFormat());
+		assertEquals(date, parsed);
+
+	}
+
+	@Test
+	public void testParseDateTimeWithExceptionForEnFormat() throws ParseException {
+		Date date = DateHelper.parseDate("4/21/2021 13:30", new SimpleDateFormat("M/dd/yyy HH:mm"));
+
+		Date parsed = DateHelper.parseDateTimeWithException("4/21/2021 13:30", Language.EN.getDateTimeFormat());
+		assertEquals(date, parsed);
+
+		parsed = DateHelper.parseDateTimeWithException("4.21.2021 1:30 pm", Language.EN.getDateTimeFormat());
+		assertEquals(date, parsed);
+
+		parsed = DateHelper.parseDateTimeWithException("4-21-2021 13.30", Language.EN.getDateTimeFormat());
+		assertEquals(date, parsed);
+
+		parsed = DateHelper.parseDateTimeWithException("4-21-2021 1.30 pm", Language.EN.getDateTimeFormat());
+		assertEquals(date, parsed);
+
+		Date parsedNoTime = DateHelper.parseDateTimeWithException("4/21/2021", Language.EN.getDateTimeFormat());
+		assertEquals(parsedNoTime, DateHelper.parseDate("4/21/2021", new SimpleDateFormat("M/dd/yyy")));
+	}
+
+	@Test
+	public void testParseDateTimeWithExceptionForDeFormat() throws ParseException {
+		Date date = DateHelper.parseDate("4/21/2021 13:30", new SimpleDateFormat("M/dd/yyy HH:mm"));
+
+		Date parsed = DateHelper.parseDateTimeWithException("21/4/2021 13:30", Language.DE.getDateTimeFormat());
+		assertEquals(date, parsed);
+
+		parsed = DateHelper.parseDateTimeWithException("21.4.2021 1:30 pm", Language.DE.getDateTimeFormat());
+		assertEquals(date, parsed);
+
+		parsed = DateHelper.parseDateTimeWithException("21-4-2021 13.30", Language.DE.getDateTimeFormat());
+		assertEquals(date, parsed);
+
+		parsed = DateHelper.parseDateTimeWithException("21-4-2021 1.30 pm", Language.DE.getDateTimeFormat());
+		assertEquals(date, parsed);
+
+		Date parsedNoTime = DateHelper.parseDateTimeWithException("21/4/2021", Language.DE.getDateTimeFormat());
+		assertEquals(parsedNoTime, DateHelper.parseDate("4/21/2021", new SimpleDateFormat("M/dd/yyy")));
 	}
 }

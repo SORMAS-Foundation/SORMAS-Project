@@ -26,6 +26,7 @@ import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -97,15 +98,15 @@ public class CampaignFormDataSelectionField extends VerticalLayout {
 		HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setWidthUndefined();
 
-		Button btnCancel = new Button(I18nProperties.getCaption(Captions.importCancelImport));
+		Button btnCancel = ButtonHelper.createButton(I18nProperties.getCaption(Captions.importCancelImport));
 		btnCancel.addClickListener(e -> cancelCallback.run());
 		buttonLayout.addComponent(btnCancel);
 
-		Button btnSkip = new Button(I18nProperties.getCaption(Captions.actionSkip));
+		Button btnSkip = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionSkip));
 		btnSkip.addClickListener(e -> skipCallback.run());
 		buttonLayout.addComponent(btnSkip);
 
-		Button btnOverwrite = new Button(I18nProperties.getCaption(Captions.actionOverwrite));
+		Button btnOverwrite = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionOverwrite));
 		CssStyles.style(btnOverwrite, ValoTheme.BUTTON_PRIMARY);
 		btnOverwrite.addClickListener(e -> overwriteCallback.run());
 		buttonLayout.addComponent(btnOverwrite);

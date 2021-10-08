@@ -56,6 +56,7 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setAnimalCondition(source.getAnimalCondition());
 		target.setTypeOfAnimal(source.getTypeOfAnimal());
 		target.setTypeOfAnimalDetails(source.getTypeOfAnimalDetails());
+		target.setExposureRole(source.getExposureRole());
 		target.setAnimalContactType(source.getAnimalContactType());
 		target.setAnimalContactTypeDetails(source.getAnimalContactTypeDetails());
 		target.setAnimalMarket(source.getAnimalMarket());
@@ -86,6 +87,7 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setPhysicalContactDuringPreparation(source.getPhysicalContactDuringPreparation());
 		target.setPhysicalContactWithBody(source.getPhysicalContactWithBody());
 		target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
+		target.setProbableInfectionEnvironment(source.isProbableInfectionEnvironment());
 		target.setShortDistance(source.getShortDistance());
 		target.setStartDate(source.getStartDate());
 		target.setWearingMask(source.getWearingMask());
@@ -96,12 +98,14 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setSeatNumber(source.getSeatNumber());
+		target.setWorkEnvironment(source.getWorkEnvironment());
 		target.setBodyOfWater(source.getBodyOfWater());
 		target.setWaterSource(source.getWaterSource());
 		target.setWaterSourceDetails(source.getWaterSourceDetails());
 		target.setProphylaxis(source.getProphylaxis());
 		target.setProphylaxisDate(source.getProphylaxisDate());
 		target.setRiskArea(source.getRiskArea());
+		target.setLargeAttendanceNumber(source.getLargeAttendanceNumber());
 	}
 
 	@Override
@@ -131,6 +135,7 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setAnimalCondition(source.getAnimalCondition());
 		target.setTypeOfAnimal(source.getTypeOfAnimal());
 		target.setTypeOfAnimalDetails(source.getTypeOfAnimalDetails());
+		target.setExposureRole(source.getExposureRole());
 		target.setAnimalContactType(source.getAnimalContactType());
 		target.setAnimalContactTypeDetails(source.getAnimalContactTypeDetails());
 		target.setAnimalMarket(source.getAnimalMarket());
@@ -159,6 +164,7 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setPhysicalContactDuringPreparation(source.getPhysicalContactDuringPreparation());
 		target.setPhysicalContactWithBody(source.getPhysicalContactWithBody());
 		target.setShortDistance(source.getShortDistance());
+		target.setProbableInfectionEnvironment(source.isProbableInfectionEnvironment());
 		target.setStartDate(source.getStartDate());
 		target.setWearingMask(source.getWearingMask());
 		target.setWearingPpe(source.getWearingPpe());
@@ -168,11 +174,13 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setSeatNumber(source.getSeatNumber());
+		target.setWorkEnvironment(source.getWorkEnvironment());
 		target.setBodyOfWater(source.getBodyOfWater());
 		target.setWaterSource(source.getWaterSource());
 		target.setWaterSourceDetails(source.getWaterSourceDetails());
 		target.setProphylaxis(source.getProphylaxis());
 		target.setProphylaxisDate(source.getProphylaxisDate());
 		target.setRiskArea(source.getRiskArea());
+		target.setLargeAttendanceNumber(source.getLargeAttendanceNumber());
 	}
 }

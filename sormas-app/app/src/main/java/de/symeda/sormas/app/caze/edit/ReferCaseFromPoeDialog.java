@@ -30,6 +30,7 @@ import androidx.fragment.app.FragmentActivity;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.Item;
@@ -38,7 +39,8 @@ import de.symeda.sormas.app.component.dialog.AbstractDialog;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogMoveCaseLayoutBinding;
-import de.symeda.sormas.app.util.InfrastructureHelper;
+import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 
 public class ReferCaseFromPoeDialog extends AbstractDialog {
 
@@ -78,14 +80,15 @@ public class ReferCaseFromPoeDialog extends AbstractDialog {
 
 	@Override
 	protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
-		InfrastructureHelper
+		InfrastructureDaoHelper
 			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
 
-		List<Item> initialRegions = InfrastructureHelper.loadRegions();
-		List<Item> initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
-		List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
-		List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity(), data.getFacilityType());
-		InfrastructureHelper.initializeFacilityFields(
+		List<Item> initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
+		List<Item> initialDistricts = InfrastructureDaoHelper.loadDistricts(CaseDao.getRegionWithFallback(data));
+		List<Item> initialCommunities = InfrastructureDaoHelper.loadCommunities(CaseDao.getDistrictWithFallback(data));
+		List<Item> initialFacilities = InfrastructureDaoHelper
+			.loadFacilities(CaseDao.getDistrictWithFallback(data), CaseDao.getCommunityWithFallback(data), data.getFacilityType());
+		InfrastructureFieldsDependencyHandler.instance.initializeFacilityFields(
 			data,
 			contentBinding.caseDataRegion,
 			initialRegions,

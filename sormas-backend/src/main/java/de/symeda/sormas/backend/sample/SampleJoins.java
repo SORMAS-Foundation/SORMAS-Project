@@ -25,61 +25,67 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
-public class SampleJoins<P> extends AbstractDomainObjectJoins<P, Sample> {
+public class SampleJoins<T> extends AbstractDomainObjectJoins<T, Sample> {
 
 	private Join<Sample, User> reportingUser;
 	private Join<Sample, Sample> referredSample;
 	private Join<Sample, Facility> lab;
 	private Join<Sample, Case> caze;
+	private Join<Sample, EventParticipant> eventParticipant;
+	private Join<Sample, Contact> contact;
 	private Join<Case, Person> casePerson;
 	private Join<Case, User> caseReportingUser;
+	private Join<Case, Region> caseResponsibleRegion;
+	private Join<Case, District> caseResponsibleDistrict;
+	private Join<Case, Community> caseResponsibleCommunity;
 	private Join<Case, Region> caseRegion;
 	private Join<Case, District> caseDistrict;
 	private Join<Case, Community> caseCommunity;
 	private Join<Case, Facility> caseFacility;
 	private Join<Case, PointOfEntry> casePointOfEntry;
-	private Join<Sample, Contact> contact;
+	private Join<Case, User> contactCaseReportingUser;
+	private Join<Case, Region> contactCaseResponsibleRegion;
+	private Join<Case, District> contactCaseResponsibleDistrict;
+	private Join<Case, Community> contactCaseResponsibleCommunity;
+	private Join<Case, Region> contactCaseRegion;
+	private Join<Case, District> contactCaseDistrict;
+	private Join<Case, Community> contactCaseCommunity;
+	private Join<Case, Facility> contactCaseHealthFacility;
+	private Join<Case, PointOfEntry> contactCasePointOfEntry;
 	private Join<Contact, Person> contactPerson;
 	private Join<Contact, User> contactReportingUser;
 	private Join<Contact, Region> contactRegion;
 	private Join<Contact, District> contactDistrict;
 	private Join<Contact, Community> contactCommunity;
 	private Join<Contact, Case> contactCase;
-	private Join<Case, User> contactCaseReportingUser;
-	private Join<Case, Region> contactCaseRegion;
-	private Join<Case, District> contactCaseDistrict;
-	private Join<Case, Community> contactCaseCommunity;
-	private Join<Case, Facility> contactCaseHealthFacility;
-	private Join<Case, PointOfEntry> contactCasePointOfEntry;
 	private Join<Person, Location> casePersonAddress;
+	private Join<Person, Location> contactPersonAddress;
 	private Join<Location, Region> casePersonAddressRegion;
 	private Join<Location, District> casePersonAddressDistrict;
 	private Join<Location, Community> casePersonAddressCommunity;
-	private Join<Person, Location> contactPersonAddress;
 	private Join<Location, Region> contactPersonAddressRegion;
 	private Join<Location, District> contactPersonAddressDistrict;
 	private Join<Location, Community> contactPersonAddressCommunity;
-	private Join<Sample, EventParticipant> eventParticipant;
-	private Join<EventParticipant, Person> eventParticipantPerson;
-	private Join<EventParticipant, Event> event;
-	private Join<Event, Location> eventLocation;
 	private Join<Location, Region> eventRegion;
 	private Join<Location, District> eventDistrict;
 	private Join<Location, Community> eventCommunity;
+	private Join<EventParticipant, Person> eventParticipantPerson;
+	private Join<EventParticipant, Event> event;
+	private Join<Event, Location> eventLocation;
 	private Join<Event, User> eventReportingUser;
-	private Join<Event, User> eventSurveillanceOfficer;
+	private Join<Event, User> eventResponsibleUser;
 
-	public SampleJoins(From<P, Sample> root) {
+	public SampleJoins(From<T, Sample> root) {
 		super(root);
 	}
 
@@ -129,6 +135,30 @@ public class SampleJoins<P> extends AbstractDomainObjectJoins<P, Sample> {
 
 	private void setCaseReportingUser(Join<Case, User> caseReportingUser) {
 		this.caseReportingUser = caseReportingUser;
+	}
+
+	public Join<Case, Region> getCaseResponsibleRegion() {
+		return getOrCreate(caseResponsibleRegion, Case.RESPONSIBLE_REGION, JoinType.LEFT, getCaze(), this::setCaseResponsibleRegion);
+	}
+
+	private void setCaseResponsibleRegion(Join<Case, Region> caseResponsibleRegion) {
+		this.caseResponsibleRegion = caseResponsibleRegion;
+	}
+
+	public Join<Case, District> getCaseResponsibleDistrict() {
+		return getOrCreate(caseResponsibleDistrict, Case.RESPONSIBLE_DISTRICT, JoinType.LEFT, getCaze(), this::setCaseResponsibleDistrict);
+	}
+
+	private void setCaseResponsibleDistrict(Join<Case, District> caseResponsibleDistrict) {
+		this.caseResponsibleDistrict = caseResponsibleDistrict;
+	}
+
+	public Join<Case, Community> getCaseResponsibleCommunity() {
+		return getOrCreate(caseResponsibleCommunity, Case.RESPONSIBLE_COMMUNITY, JoinType.LEFT, getCaze(), this::setCaseResponsibleCommunity);
+	}
+
+	private void setCaseResponsibleCommunity(Join<Case, Community> caseResponsibleCommunity) {
+		this.caseResponsibleCommunity = caseResponsibleCommunity;
 	}
 
 	public Join<Case, Region> getCaseRegion() {
@@ -243,12 +273,12 @@ public class SampleJoins<P> extends AbstractDomainObjectJoins<P, Sample> {
 		this.eventReportingUser = eventReportingUser;
 	}
 
-	public Join<Event, User> getEventSurveillanceOfficer() {
-		return getOrCreate(eventSurveillanceOfficer, Event.SURVEILLANCE_OFFICER, JoinType.LEFT, getEvent(), this::setEventSurveillanceOfficer);
+	public Join<Event, User> getEventResponsibleUser() {
+		return getOrCreate(eventResponsibleUser, Event.RESPONSIBLE_USER, JoinType.LEFT, getEvent(), this::setEventResponsibleUser);
 	}
 
-	private void setEventSurveillanceOfficer(Join<Event, User> eventSurveillanceOfficer) {
-		this.eventSurveillanceOfficer = eventSurveillanceOfficer;
+	private void setEventResponsibleUser(Join<Event, User> eventResponsibleUser) {
+		this.eventResponsibleUser = eventResponsibleUser;
 	}
 
 	public Join<Contact, Person> getContactPerson() {
@@ -305,6 +335,45 @@ public class SampleJoins<P> extends AbstractDomainObjectJoins<P, Sample> {
 
 	private void setContactCaseReportingUser(Join<Case, User> contactCaseReportingUser) {
 		this.contactCaseReportingUser = contactCaseReportingUser;
+	}
+
+	public Join<Case, Region> getContactCaseResponsibleRegion() {
+		return getOrCreate(
+			contactCaseResponsibleRegion,
+			Case.RESPONSIBLE_REGION,
+			JoinType.LEFT,
+			getContactCase(),
+			this::setContactCaseResponsibleRegion);
+	}
+
+	private void setContactCaseResponsibleRegion(Join<Case, Region> contactCaseResponsibleRegion) {
+		this.contactCaseResponsibleRegion = contactCaseResponsibleRegion;
+	}
+
+	public Join<Case, District> getContactCaseResponsibleDistrict() {
+		return getOrCreate(
+			contactCaseResponsibleDistrict,
+			Case.RESPONSIBLE_DISTRICT,
+			JoinType.LEFT,
+			getContactCase(),
+			this::setContactCaseResponsibleDistrict);
+	}
+
+	private void setContactCaseResponsibleDistrict(Join<Case, District> contactCaseResponsibleDistrict) {
+		this.contactCaseResponsibleDistrict = contactCaseResponsibleDistrict;
+	}
+
+	public Join<Case, Community> getContactCaseResponsibleCommunity() {
+		return getOrCreate(
+			contactCaseResponsibleCommunity,
+			Case.RESPONSIBLE_COMMUNITY,
+			JoinType.LEFT,
+			getContactCase(),
+			this::setContactCaseResponsibleCommunity);
+	}
+
+	private void setContactCaseResponsibleCommunity(Join<Case, Community> contactCaseResponsibleCommunity) {
+		this.contactCaseResponsibleCommunity = contactCaseResponsibleCommunity;
 	}
 
 	public Join<Case, Region> getContactCaseRegion() {
@@ -431,4 +500,5 @@ public class SampleJoins<P> extends AbstractDomainObjectJoins<P, Sample> {
 	public void setContactPersonAddressCommunity(Join<Location, Community> contactPersonAddressCommunity) {
 		this.contactPersonAddressCommunity = contactPersonAddressCommunity;
 	}
+
 }

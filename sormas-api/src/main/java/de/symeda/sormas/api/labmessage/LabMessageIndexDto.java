@@ -12,35 +12,40 @@ public class LabMessageIndexDto implements Serializable {
 
 	public static final String UUID = "uuid";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
+	public static final String TEST_LAB_NAME = "testLabName";
+	public static final String TEST_LAB_POSTAL_CODE = "testLabPostalCode";
 	public static final String TESTED_DISEASE = "testedDisease";
-	public static final String TEST_RESULT = "testResult";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
-	public static final String PROCESSED = "processed";
+	public static final String PERSON_POSTAL_CODE = "personPostalCode";
+	public static final String STATUS = "status";
 
 	private String uuid;
+
 	private Date messageDateTime;
+	private String testLabName;
+	private String testLabPostalCode;
 	private Disease testedDisease;
-	private PathogenTestResultType testResult;
 	private String personFirstName;
 	private String personLastName;
-	private boolean processed;
+	private String personPostalCode;
+	private LabMessageStatus status;
 
-	public LabMessageIndexDto(
-		String uuid,
-		Date messageDateTime,
-		Disease testedDisease,
-		PathogenTestResultType testResult,
+	public LabMessageIndexDto(String uuid, Date messageDateTime, String testLabName, String testLabPostalCode, Disease testedDisease,
 		String personFirstName,
 		String personLastName,
-		boolean processed) {
+		String personPostalCode,
+		LabMessageStatus status) {
+
 		this.uuid = uuid;
 		this.messageDateTime = messageDateTime;
+		this.testLabName = testLabName;
+		this.testLabPostalCode = testLabPostalCode;
 		this.testedDisease = testedDisease;
-		this.testResult = testResult;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
-		this.processed = processed;
+		this.personPostalCode = personPostalCode;
+		this.status = status;
 	}
 
 	public String getUuid() {
@@ -59,20 +64,28 @@ public class LabMessageIndexDto implements Serializable {
 		this.messageDateTime = messageDateTime;
 	}
 
+	public String getTestLabName() {
+		return testLabName;
+	}
+
+	public void setTestLabName(String testLabName) {
+		this.testLabName = testLabName;
+	}
+
+	public String getTestLabPostalCode() {
+		return testLabPostalCode;
+	}
+
+	public void setTestLabPostalCode(String testLabPostalCode) {
+		this.testLabPostalCode = testLabPostalCode;
+	}
+
 	public Disease getTestedDisease() {
 		return testedDisease;
 	}
 
 	public void setTestedDisease(Disease testedDisease) {
 		this.testedDisease = testedDisease;
-	}
-
-	public PathogenTestResultType getTestResult() {
-		return testResult;
-	}
-
-	public void setTestResult(PathogenTestResultType testResult) {
-		this.testResult = testResult;
 	}
 
 	public String getPersonFirstName() {
@@ -91,11 +104,19 @@ public class LabMessageIndexDto implements Serializable {
 		this.personLastName = personLastName;
 	}
 
-	public boolean isProcessed() {
-		return processed;
+	public String getPersonPostalCode() {
+		return personPostalCode;
 	}
 
-	public void setProcessed(boolean processed) {
-		this.processed = processed;
+	public void setPersonPostalCode(String personPostalCode) {
+		this.personPostalCode = personPostalCode;
+	}
+
+	public LabMessageStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(LabMessageStatus status) {
+		this.status = status;
 	}
 }

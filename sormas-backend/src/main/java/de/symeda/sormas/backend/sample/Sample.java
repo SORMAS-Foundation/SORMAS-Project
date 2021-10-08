@@ -53,21 +53,23 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSource;
+import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoSample;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "samples")
 @Audited
-public class Sample extends CoreAdo {
+public class Sample extends CoreAdo implements SormasToSormasEntity {
 
-	private static final long serialVersionUID = -7196712070188634978L;
+    private static final long serialVersionUID = -7196712070188634978L;
 
 	public static final String TABLE_NAME = "samples";
 
@@ -104,6 +106,8 @@ public class Sample extends CoreAdo {
 	public static final String REQUESTED_OTHER_PATHOGEN_TESTS = "requestedOtherPathogenTests";
 	public static final String REQUESTED_OTHER_ADDITIONAL_TESTS = "requestedOtherAdditionalTests";
 	public static final String PATHOGENTESTS = "pathogenTests";
+	public static final String SAMPLING_REASON = "samplingReason";
+	public static final String SAMPLING_REASON_DETAILS = "samplingReasonDetails";
 
 	private Case associatedCase;
 	private Contact associatedContact;
@@ -144,14 +148,16 @@ public class Sample extends CoreAdo {
 	private String requestedOtherAdditionalTests;
 	private String requestedPathogenTestsString;
 	private String requestedAdditionalTestsString;
+	private SamplingReason samplingReason;
+	private String samplingReasonDetails;
 
 	private List<PathogenTest> pathogenTests;
 	private List<AdditionalTest> additionalTests;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
-	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
+	private List<ShareInfoSample> shareInfoSamples = new ArrayList<>(0);
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn
 	public Case getAssociatedCase() {
 		return associatedCase;
@@ -161,7 +167,7 @@ public class Sample extends CoreAdo {
 		this.associatedCase = associatedCase;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn
 	public Contact getAssociatedContact() {
 		return associatedContact;
@@ -171,7 +177,7 @@ public class Sample extends CoreAdo {
 		this.associatedContact = associatedContact;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn
 	public EventParticipant getAssociatedEventParticipant() {
 		return associatedEventParticipant;
@@ -520,6 +526,24 @@ public class Sample extends CoreAdo {
 		this.requestedOtherAdditionalTests = requestedOtherAdditionalTests;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public SamplingReason getSamplingReason() {
+		return samplingReason;
+	}
+
+	public void setSamplingReason(SamplingReason samplingReason) {
+		this.samplingReason = samplingReason;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getSamplingReasonDetails() {
+		return samplingReasonDetails;
+	}
+
+	public void setSamplingReasonDetails(String samplingReasonDetails) {
+		this.samplingReasonDetails = samplingReasonDetails;
+	}
+
 	@Override
 	public String toString() {
 		return SampleReferenceDto.buildCaption(
@@ -562,22 +586,24 @@ public class Sample extends CoreAdo {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 
+	@Override
 	@ManyToOne(cascade = CascadeType.ALL)
 	@AuditedIgnore
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
 
+	@Override
 	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo sormasToSormasOriginInfo) {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
 
-	@OneToMany(mappedBy = SormasToSormasShareInfo.SAMPLE, fetch = FetchType.LAZY)
-	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
-		return sormasToSormasShares;
+	@OneToMany(mappedBy = ShareInfoSample.SAMPLE, fetch = FetchType.LAZY)
+	public List<ShareInfoSample> getShareInfoSamples() {
+		return shareInfoSamples;
 	}
 
-	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
-		this.sormasToSormasShares = sormasToSormasShares;
+	public void setShareInfoSamples(List<ShareInfoSample> shareInfoSamples) {
+		this.shareInfoSamples = shareInfoSamples;
 	}
 }

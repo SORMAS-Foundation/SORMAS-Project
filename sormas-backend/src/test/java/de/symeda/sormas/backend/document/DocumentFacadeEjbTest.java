@@ -106,4 +106,16 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 		assertThat(getDocumentFacade().getDocumentsRelatedToEntity(DocumentRelatedEntityType.EVENT, event.getUuid()), empty());
 		assertNull(getDocumentFacade().isExistingDocument(DocumentRelatedEntityType.EVENT, event.getUuid(), document.getName()));
 	}
+
+	@Test
+	public void testDocumentMimeTypeUnknown() throws IOException {
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf);
+		EventDto event = creator.createEvent(user.toReference());
+
+		DocumentDto document =
+			creator.createDocument(user.toReference(), "Mail.msg", null, 42L, event.toReference(), "content".getBytes(StandardCharsets.UTF_8));
+
+		assertEquals("application/octet-stream", getDocumentFacade().getDocumentByUuid(document.getUuid()).getMimeType());
+	}
 }

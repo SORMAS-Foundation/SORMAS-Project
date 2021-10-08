@@ -29,6 +29,7 @@
         <import type="de.symeda.sormas.api.person.PersonAddressType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.location.Location" />
+        <variable name="callback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
 
 
@@ -55,6 +56,21 @@
                 app:value="@{data.addressTypeDetails}"
                 app:dependencyParentField="@{locationAddressType}"
                 app:dependencyParentValue="@{PersonAddressType.OTHER_ADDRESS}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/location_continent"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.continent}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/location_subcontinent"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.subcontinent}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/location_country"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.country}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/location_region"
@@ -100,6 +116,26 @@
                 android:id="@+id/location_areaType"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@{data.areaType}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/location_contactPersonFirstName"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.contactPersonFirstName}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/location_contactPersonLastName"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.contactPersonLastName}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/location_contactPersonPhone"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.contactPersonPhone}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/location_contactPersonEmail"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.contactPersonEmail}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/location_details"

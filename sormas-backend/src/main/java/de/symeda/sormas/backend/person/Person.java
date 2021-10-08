@@ -19,9 +19,11 @@ package de.symeda.sormas.backend.person;
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -37,10 +39,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.externaldata.HasExternalData;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ArmedForcesRelationType;
 import de.symeda.sormas.api.person.BurialConductor;
@@ -48,6 +52,7 @@ import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -59,16 +64,18 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.messaging.ManualMessageLog;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.Country;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
 
 @Entity
 @Audited
-public class Person extends AbstractDomainObject {
+public class Person extends AbstractDomainObject implements HasExternalData {
 
 	private static final long serialVersionUID = -1735038738114840087L;
 
@@ -88,6 +95,8 @@ public class Person extends AbstractDomainObject {
 	public static final String BIRTHDATE_DD = "birthdateDD";
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
+	public static final String CAUSE_OF_DEATH = "causeOfDeath";
+	public static final String CAUSE_OF_DEATH_DETAILS = "causeOfDeathDetails";
 	public static final String CAUSE_OF_DEATH_DISEASE = "causeOfDeathDisease";
 	public static final String DEATH_PLACE_TYPE = "deathPlaceType";
 	public static final String DEATH_PLACE_DESCRIPTION = "deathPlaceDescription";
@@ -103,10 +112,9 @@ public class Person extends AbstractDomainObject {
 	public static final String OCCUPATION_TYPE = "occupationType";
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
 	public static final String ARMED_FORCES_RELATION_TYPE = "armedForcesRelationType";
-	public static final String PHONE = "phone";
-	public static final String PHONE_OWNER = "phoneOwner";
 	public static final String FATHERS_NAME = "fathersName";
 	public static final String MOTHERS_NAME = "mothersName";
+	public static final String NAMES_OF_GUARDIANS = "namesOfGuardians";
 	public static final String PLACE_OF_BIRTH_REGION = "placeOfBirthRegion";
 	public static final String PLACE_OF_BIRTH_DISTRICT = "placeOfBirthDistrict";
 	public static final String PLACE_OF_BIRTH_COMMUNITY = "placeOfBirthCommunity";
@@ -114,23 +122,27 @@ public class Person extends AbstractDomainObject {
 	public static final String PLACE_OF_BIRTH_FACILITY_DETAILS = "placeOfBirthFacilityDetails";
 	public static final String GESTATION_AGE_AT_BIRTH = "gestationAgeAtBirth";
 	public static final String BIRTH_WEIGHT = "birthWeight";
-	public static final String GENERAL_PRACTITIONER_DETAILS = "generalPractitionerDetails";
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
-	public static final String EMAIL_ADDRESS = "emailAddress";
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
 	public static final String ADDRESSES = "addresses";
-	public static final String EVENT_PARTICIPANTS = "eventParticipants";
-	public static final String CONTACTS = "contacts";
+	public static final String PERSON_CONTACT_DETAILS = "personContactDetails";
+
+	public static final String HAS_COVID_APP = "hasCovidApp";
+	public static final String COVID_CODE_DELIVERED = "covidCodeDelivered";
 
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EXTERNAL_TOKEN = "externalToken";
+	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String BIRTH_COUNTRY = "birthCountry";
 	public static final String CITIZENSHIP = "citizenship";
-	public static final String PERSON_CASES = "personCases";
-	public static final String PERSON_CONTACTS = "personContacts";
-	public static final String PERSON_EVENT_PARTICIPANTS = "personEventParticipants";
+	public static final String CASES = "cases";
+	public static final String CONTACTS = "contacts";
+	public static final String EVENT_PARTICIPANTS = "eventParticipants";
+	public static final String IMMUNIZATIONS = "immunizations";
+	public static final String ADDITIONAL_DETAILS = "additionalDetails";
+	public static final String TRAVEL_ENTRIES = "travelEntries";
 
 	private String firstName;
 	private String lastName;
@@ -157,9 +169,6 @@ public class Person extends AbstractDomainObject {
 	private BurialConductor burialConductor;
 
 	private Location address;
-	private String phone;
-	private String phoneOwner;
-	private String emailAddress;
 	private List<ManualMessageLog> manualMessageLogs;
 
 	private Sex sex;
@@ -183,11 +192,11 @@ public class Person extends AbstractDomainObject {
 	private OccupationType occupationType;
 	private String occupationDetails;
 	private ArmedForcesRelationType armedForcesRelationType;
-	private String generalPractitionerDetails;
 	private String passportNumber;
 	private String nationalHealthId;
 	private FacilityType placeOfBirthFacilityType;
 	private Set<Location> addresses = new HashSet<>();
+	private Set<PersonContactDetail> personContactDetails = new HashSet<>();
 	private Date changeDateOfEmbeddedLists;
 
 	private SymptomJournalStatus symptomJournalStatus;
@@ -196,16 +205,17 @@ public class Person extends AbstractDomainObject {
 	private boolean covidCodeDelivered;
 	private String externalId;
 	private String externalToken;
+	private String internalToken;
 
 	private Country birthCountry;
 	private Country citizenship;
+	private String additionalDetails;
 
-	private Set<EventParticipant> eventParticipants = new HashSet<>();
-	private Set<Contact> contacts = new HashSet<>();
-
-	private List<Case> personCases;
-	private List<Contact> personContacts;
-	private List<EventParticipant> personEventParticipants;
+	private List<Case> cases = new ArrayList<>();
+	private List<Contact> contacts = new ArrayList<>();
+	private List<EventParticipant> eventParticipants = new ArrayList<>();
+	private List<Immunization> immunizations = new ArrayList<>();
+	private List<TravelEntry> travelEntries = new ArrayList<>();
 
 	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getFirstName() {
@@ -357,22 +367,6 @@ public class Person extends AbstractDomainObject {
 
 	public void setAddress(Location address) {
 		this.address = address;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getPhoneOwner() {
-		return phoneOwner;
-	}
-
-	public void setPhoneOwner(String phoneOwner) {
-		this.phoneOwner = phoneOwner;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -576,24 +570,6 @@ public class Person extends AbstractDomainObject {
 		this.birthWeight = birthWeight;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getGeneralPractitionerDetails() {
-		return generalPractitionerDetails;
-	}
-
-	public void setGeneralPractitionerDetails(String generalPractitionerDetails) {
-		this.generalPractitionerDetails = generalPractitionerDetails;
-	}
-
-	@Column
-	public String getEmailAddress() {
-		return emailAddress;
-	}
-
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
-	}
-
 	@Column
 	public String getPassportNumber() {
 		return passportNumber;
@@ -631,6 +607,15 @@ public class Person extends AbstractDomainObject {
 
 	public void setAddresses(Set<Location> addresses) {
 		this.addresses = addresses;
+	}
+
+	@OneToMany(mappedBy = PersonContactDetail.PERSON, fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	public Set<PersonContactDetail> getPersonContactDetails() {
+		return personContactDetails;
+	}
+
+	public void setPersonContactDetails(Set<PersonContactDetail> personContactDetails) {
+		this.personContactDetails = personContactDetails;
 	}
 
 	/**
@@ -687,7 +672,18 @@ public class Person extends AbstractDomainObject {
 		return externalToken;
 	}
 
-	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
+	}
+
+	@Column
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
+	}
 
 	@ManyToOne
 	public Country getBirthCountry() {
@@ -707,48 +703,48 @@ public class Person extends AbstractDomainObject {
 		this.citizenship = nationality;
 	}
 
-	public void setEventParticipants(Set<EventParticipant> eventParticipants) {
-		this.eventParticipants = eventParticipants;
-	}
-
-	@OneToMany(cascade = {}, mappedBy = EventParticipant.PERSON, fetch = FetchType.LAZY)
-	public Set<EventParticipant> getEventParticipants() {
-		return eventParticipants;
-	}
-
 	@OneToMany(mappedBy = Case.PERSON, fetch = FetchType.LAZY)
-	public List<Case> getPersonCases() {
-		return personCases;
+	public List<Case> getCases() {
+		return cases;
 	}
 
-	public void setPersonCases(List<Case> personCases) {
-		this.personCases = personCases;
-	}
-
-	@OneToMany(mappedBy = Contact.PERSON, fetch = FetchType.LAZY)
-	public List<Contact> getPersonContacts() {
-		return personContacts;
-	}
-
-	public void setPersonContacts(List<Contact> personContacts) {
-		this.personContacts = personContacts;
+	public void setCases(List<Case> cases) {
+		this.cases = cases;
 	}
 
 	@OneToMany(mappedBy = EventParticipant.PERSON, fetch = FetchType.LAZY)
-	public List<EventParticipant> getPersonEventParticipants() {
-		return personEventParticipants;
+	public List<EventParticipant> getEventParticipants() {
+		return eventParticipants;
 	}
 
-	public void setPersonEventParticipants(List<EventParticipant> personEventParticipants) {
-		this.personEventParticipants = personEventParticipants;
+	public void setEventParticipants(List<EventParticipant> eventParticipants) {
+		this.eventParticipants = eventParticipants;
 	}
 
-	@OneToMany(cascade = {}, mappedBy = Contact.PERSON, fetch = FetchType.LAZY)
-	public Set<Contact> getContacts() {
+	@OneToMany(mappedBy = Immunization.PERSON, fetch = FetchType.LAZY)
+	public List<Immunization> getImmunizations() {
+		return immunizations;
+	}
+
+	public void setImmunizations(List<Immunization> immunizations) {
+		this.immunizations = immunizations;
+	}
+
+	@OneToMany(mappedBy = TravelEntry.PERSON, fetch = FetchType.LAZY)
+	public List<TravelEntry> getTravelEntries() {
+		return travelEntries;
+	}
+
+	public void setTravelEntries(List<TravelEntry> travelEntries) {
+		this.travelEntries = travelEntries;
+	}
+
+	@OneToMany(mappedBy = Contact.PERSON, fetch = FetchType.LAZY)
+	public List<Contact> getContacts() {
 		return contacts;
 	}
 
-	public void setContacts(Set<Contact> contacts) {
+	public void setContacts(List<Contact> contacts) {
 		this.contacts = contacts;
 	}
 
@@ -761,8 +757,57 @@ public class Person extends AbstractDomainObject {
 		this.manualMessageLogs = manualMessageLogs;
 	}
 
+	@Transient
+	public String getPhone() {
+		return getPersonContactInformation(PersonContactDetailType.PHONE);
+	}
+
+	public void setPhone(String phone) {
+		setPersonContactInformation(phone, PersonContactDetailType.PHONE);
+	}
+
+	@Transient
+	public String getEmailAddress() {
+		return getPersonContactInformation(PersonContactDetailType.EMAIL);
+	}
+
+	public void setEmailAddress(String email) {
+		setPersonContactInformation(email, PersonContactDetailType.EMAIL);
+	}
+
+	@Column(columnDefinition = "text")
+	public String getAdditionalDetails() {
+		return additionalDetails;
+	}
+
+	public void setAdditionalDetails(String additionalDetails) {
+		this.additionalDetails = additionalDetails;
+	}
+
+	private void setPersonContactInformation(String contactInfo, PersonContactDetailType personContactDetailType) {
+		final PersonContactDetail pcd =
+			new PersonContactDetail(this, true, personContactDetailType, null, null, contactInfo, null, false, null, null);
+		getPersonContactDetails().add(pcd);
+	}
+
+	@Transient
+	private String getPersonContactInformation(PersonContactDetailType personContactDetailType) {
+		final Optional<PersonContactDetail> optionalPersonContactDetail = getPersonContactDetails().stream()
+			.filter(pcd -> pcd.isPrimaryContact() && pcd.getPersonContactDetailType() == personContactDetailType)
+			.findAny();
+		if (optionalPersonContactDetail.isPresent()) {
+			return optionalPersonContactDetail.get().getContactInformation();
+		}
+		return null;
+	}
+
 	public PersonReferenceDto toReference() {
 		return new PersonReferenceDto(getUuid(), getFirstName(), getLastName());
+	}
+
+	@Transient
+	public boolean isEnrolledInExternalJournal() {
+		return SymptomJournalStatus.ACCEPTED.equals(symptomJournalStatus) || SymptomJournalStatus.REGISTERED.equals(symptomJournalStatus);
 	}
 
 	@Override

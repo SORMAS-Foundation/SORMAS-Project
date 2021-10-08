@@ -1,10 +1,12 @@
 package de.symeda.sormas.api.systemevents;
 
-import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.api.utils.DataHelper;
-
 import java.util.Date;
+
+import javax.validation.constraints.Size;
+
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class SystemEventDto extends EntityDto {
 
@@ -12,6 +14,7 @@ public class SystemEventDto extends EntityDto {
 	private Date startDate;
 	private Date endDate;
 	private SystemEventStatus status;
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String additionalInfo;
 
 	public SystemEventType getType() {

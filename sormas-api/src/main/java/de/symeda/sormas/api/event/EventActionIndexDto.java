@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -33,15 +35,23 @@ public class EventActionIndexDto implements Serializable {
 
 	public static final String EVENT_UUID = "eventUuid";
 	public static final String EVENT_TITLE = "eventTitle";
+	public static final String EVENT_DISEASE = "eventDisease";
+	public static final String EVENT_DISEASE_VARIANT = "eventDiseaseVariant";
+	public static final String EVENT_DISEASE_DETAILS = "eventDiseaseDetails";
+	public static final String EVENT_IDENTIFICATION_SOURCE = "eventIdentificationSource";
 	public static final String EVENT_START_DATE = "eventStartDate";
 	public static final String EVENT_END_DATE = "eventEndDate";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_RISK_LEVEL = "eventRiskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
+	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";
+	public static final String EVENT_REPORTING_USER = "eventReportingUser";
+	public static final String EVENT_RESPONSIBLE_USER = "eventResponsibleUser";
 	public static final String EVENT_EVOLUTION_DATE = "eventEvolutionDate";
 	public static final String ACTION_TITLE = "actionTitle";
 	public static final String ACTION_CREATION_DATE = "actionCreationDate";
 	public static final String ACTION_CHANGE_DATE = "actionChangeDate";
+	public static final String ACTION_DATE = "actionDate";
 	public static final String ACTION_STATUS = "actionStatus";
 	public static final String ACTION_PRIORITY = "actionPriority";
 	public static final String ACTION_LAST_MODIFIED_BY = "actionLastModifiedBy";
@@ -49,15 +59,23 @@ public class EventActionIndexDto implements Serializable {
 
 	private String eventUuid;
 	private String eventTitle;
+	private Disease eventDisease;
+	private DiseaseVariant eventDiseaseVariant;
+	private String eventDiseaseDetails;
+	private EventIdentificationSource eventIdentificationSource;
 	private Date eventStartDate;
 	private Date eventEndDate;
 	private EventStatus eventStatus;
 	private RiskLevel eventRiskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
+	private EventManagementStatus eventManagementStatus;
+	private UserReferenceDto eventReportingUser;
+	private UserReferenceDto eventResponsibleUser;
 	private Date eventEvolutionDate;
 	private String actionTitle;
 	private Date actionCreationDate;
 	private Date actionChangeDate;
+	private Date actionDate;
 	private ActionStatus actionStatus;
 	private ActionPriority actionPriority;
 	private UserReferenceDto actionLastModifiedBy;
@@ -66,16 +84,28 @@ public class EventActionIndexDto implements Serializable {
 	public EventActionIndexDto(
 		String eventUuid,
 		String eventTitle,
+		Disease eventDisease,
+		DiseaseVariant eventDiseaseVariant,
+		String eventDiseaseDetails,
+		EventIdentificationSource eventIdentificationSource,
 		Date eventStartDate,
 		Date eventEndDate,
 		EventStatus eventStatus,
 		RiskLevel eventRiskLevel,
 		EventInvestigationStatus eventInvestigationStatus,
+		EventManagementStatus eventManagementStatus,
+		String eventReportingUserUuid,
+		String eventReportingUserFirstName,
+		String eventReportingUserLastName,
+		String eventResponsibleUserUuid,
+		String eventResponsibleUserFirstName,
+		String eventResponsibleUserLastName,
 		ActionMeasure actionMeasure,
 		Date eventEvolutionDate,
 		String actionTitle,
 		Date actionCreationDate,
 		Date actionChangeDate,
+		Date actionDate,
 		ActionStatus actionStatus,
 		ActionPriority actionPriority,
 		String actionLastModifiedByUuid,
@@ -87,20 +117,28 @@ public class EventActionIndexDto implements Serializable {
 
 		this.eventUuid = eventUuid;
 		this.eventTitle = eventTitle;
+		this.eventDisease = eventDisease;
+		this.eventDiseaseVariant = eventDiseaseVariant;
+		this.eventDiseaseDetails = eventDiseaseDetails;
+		this.eventIdentificationSource = eventIdentificationSource;
 		this.eventStartDate = eventStartDate;
 		this.eventEndDate = eventEndDate;
 		this.eventStatus = eventStatus;
 		this.eventRiskLevel = eventRiskLevel;
 		this.eventInvestigationStatus = eventInvestigationStatus;
+		this.eventReportingUser = new UserReferenceDto(eventReportingUserUuid, eventReportingUserFirstName, eventReportingUserLastName, null);
+		this.eventResponsibleUser = new UserReferenceDto(eventResponsibleUserUuid, eventResponsibleUserFirstName, eventResponsibleUserLastName, null);
 		this.actionTitle = EventHelper.buildEventActionTitleString(actionMeasure, actionTitle);
 		this.eventEvolutionDate = eventEvolutionDate;
 		this.actionTitle = actionTitle;
 		this.actionCreationDate = actionCreationDate;
 		this.actionChangeDate = actionChangeDate;
+		this.actionDate = actionDate;
 		this.actionStatus = actionStatus;
 		this.actionPriority = actionPriority;
 		this.actionLastModifiedBy = new UserReferenceDto(actionLastModifiedByUuid, actionLastModifiedByFirstName, actionLastModifiedByLastName, null);
 		this.actionCreatorUser = new UserReferenceDto(actionCreatorUserUuid, actionCreatorUserFirstName, actionCreatorUserLastName, null);
+		this.eventManagementStatus = eventManagementStatus;
 	}
 
 	public String getEventUuid() {
@@ -117,6 +155,38 @@ public class EventActionIndexDto implements Serializable {
 
 	public void setEventTitle(String eventTitle) {
 		this.eventTitle = eventTitle;
+	}
+
+	public Disease getEventDisease() {
+		return eventDisease;
+	}
+
+	public void setEventDisease(Disease eventDisease) {
+		this.eventDisease = eventDisease;
+	}
+
+	public DiseaseVariant getEventDiseaseVariant() {
+		return eventDiseaseVariant;
+	}
+
+	public void setEventDiseaseVariant(DiseaseVariant eventDiseaseVariant) {
+		this.eventDiseaseVariant = eventDiseaseVariant;
+	}
+
+	public String getEventDiseaseDetails() {
+		return eventDiseaseDetails;
+	}
+
+	public void setEventDiseaseDetails(String eventDiseaseDetails) {
+		this.eventDiseaseDetails = eventDiseaseDetails;
+	}
+
+	public EventIdentificationSource getEventIdentificationSource() {
+		return eventIdentificationSource;
+	}
+
+	public void setEventIdentificationSource(EventIdentificationSource eventIdentificationSource) {
+		this.eventIdentificationSource = eventIdentificationSource;
 	}
 
 	public Date getEventStartDate() {
@@ -159,6 +229,22 @@ public class EventActionIndexDto implements Serializable {
 		this.eventInvestigationStatus = eventInvestigationStatus;
 	}
 
+	public UserReferenceDto getEventReportingUser() {
+		return eventReportingUser;
+	}
+
+	public void setEventReportingUser(UserReferenceDto eventReportingUser) {
+		this.eventReportingUser = eventReportingUser;
+	}
+
+	public UserReferenceDto getEventResponsibleUser() {
+		return eventResponsibleUser;
+	}
+
+	public void setEventResponsibleUser(UserReferenceDto eventResponsibleUser) {
+		this.eventResponsibleUser = eventResponsibleUser;
+	}
+
 	public Date getEventEvolutionDate() {
 		return eventEvolutionDate;
 	}
@@ -191,6 +277,14 @@ public class EventActionIndexDto implements Serializable {
 		this.actionChangeDate = actionChangeDate;
 	}
 
+	public Date getActionDate() {
+		return actionDate;
+	}
+
+	public void setActionDate(Date actionDate) {
+		this.actionDate = actionDate;
+	}
+
 	public ActionStatus getActionStatus() {
 		return actionStatus;
 	}
@@ -221,5 +315,13 @@ public class EventActionIndexDto implements Serializable {
 
 	public void setActionCreatorUser(UserReferenceDto actionCreatorUser) {
 		this.actionCreatorUser = actionCreatorUser;
+	}
+
+	public EventManagementStatus getEventManagementStatus() {
+		return eventManagementStatus;
+	}
+
+	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
+		this.eventManagementStatus = eventManagementStatus;
 	}
 }

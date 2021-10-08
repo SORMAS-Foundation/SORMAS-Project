@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,13 +15,23 @@
 
 package de.symeda.sormas.app.event.read;
 
-import android.os.Bundle;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
+import android.os.Bundle;
+import android.view.View;
+
+import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.HumanTransmissionMode;
+import de.symeda.sormas.api.event.ParenteralTransmissionMode;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseReadFragment;
@@ -44,7 +54,7 @@ public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutB
 			EventReadFragment.class,
 			null,
 			activityRootData,
-			new FieldVisibilityCheckers(),
+			FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode()),
 			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
@@ -85,10 +95,42 @@ public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutB
 			statusCaption = I18nProperties.getEnumCaption(eventStatus);
 		}
 
-		contentBinding.eventEvolutionDate.setCaption(String.format(
-			I18nProperties.getCaption(EVOLUTION_DATE_WITH_STATUS), statusCaption));
-		contentBinding.eventEvolutionComment.setCaption(String.format(
-			I18nProperties.getCaption(EVOLUTION_COMMENT_WITH_STATUS), statusCaption));
+		contentBinding.eventEvolutionDate.setCaption(String.format(I18nProperties.getCaption(EVOLUTION_DATE_WITH_STATUS), statusCaption));
+		contentBinding.eventEvolutionComment.setCaption(String.format(I18nProperties.getCaption(EVOLUTION_COMMENT_WITH_STATUS), statusCaption));
+
+		FacilityType facilityType = record.getEventLocation().getFacilityType();
+
+		contentBinding.exposureWorkEnvironment
+			.setVisibility(facilityType == null || FacilityTypeGroup.WORKING_PLACE != facilityType.getFacilityTypeGroup() ? View.GONE : View.VISIBLE);
+
+		if (isVisibleAllowed(EventDto.class, contentBinding.eventInfectionPathCertainty)) {
+			setVisibleWhen(contentBinding.eventInfectionPathCertainty, contentBinding.eventNosocomial, YesNoUnknown.YES);
+		}
+		if (isVisibleAllowed(EventDto.class, contentBinding.eventHumanTransmissionMode)) {
+			setVisibleWhen(
+				contentBinding.eventHumanTransmissionMode,
+				contentBinding.eventDiseaseTransmissionMode,
+				DiseaseTransmissionMode.HUMAN_TO_HUMAN);
+		}
+		if (isVisibleAllowed(EventDto.class, contentBinding.eventParenteralTransmissionMode)) {
+			setVisibleWhen(
+				contentBinding.eventParenteralTransmissionMode,
+				contentBinding.eventHumanTransmissionMode,
+				HumanTransmissionMode.PARENTERAL);
+		}
+		if (isVisibleAllowed(EventDto.class, contentBinding.eventMedicallyAssociatedTransmissionMode)) {
+			setVisibleWhen(
+				contentBinding.eventMedicallyAssociatedTransmissionMode,
+				contentBinding.eventParenteralTransmissionMode,
+				ParenteralTransmissionMode.MEDICALLY_ASSOCIATED);
+		}
+
+		if (isVisibleAllowed(EventDto.class, contentBinding.eventDiseaseVariant)) {
+			contentBinding.eventDiseaseVariant.setVisibility(record.getDiseaseVariant() != null ? VISIBLE : GONE);
+		}
+		if (isVisibleAllowed(EventDto.class, contentBinding.eventSpecificRisk)) {
+			contentBinding.eventSpecificRisk.setVisibility(record.getSpecificRisk() != null ? VISIBLE : GONE);
+		}
 	}
 
 	@Override

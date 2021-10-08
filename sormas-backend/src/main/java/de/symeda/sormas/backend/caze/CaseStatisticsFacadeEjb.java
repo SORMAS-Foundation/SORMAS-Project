@@ -42,10 +42,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCountDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
@@ -53,25 +53,25 @@ import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.statistics.StatisticsHelper;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.backend.common.BaseAdoService;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
-import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.PopulationData;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
-import de.symeda.sormas.backend.region.CommunityService;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
-import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
-import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.community.CommunityService;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "CaseStatisticsFacade")
 public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
@@ -282,7 +282,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				.append(" ON ")
 				.append(Case.TABLE_NAME)
 				.append(".")
-				.append(Case.COMMUNITY)
+				.append(Case.RESPONSIBLE_COMMUNITY)
 				.append("_id = ")
 				.append(Community.TABLE_NAME)
 				.append(".")
@@ -294,7 +294,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				.append(" ON ")
 				.append(Case.TABLE_NAME)
 				.append(".")
-				.append(Case.DISTRICT)
+				.append(Case.RESPONSIBLE_DISTRICT)
 				.append("_id = ")
 				.append(District.TABLE_NAME)
 				.append(".")
@@ -306,7 +306,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				.append(" ON ")
 				.append(Case.TABLE_NAME)
 				.append(".")
-				.append(Case.REGION)
+				.append(Case.RESPONSIBLE_REGION)
 				.append("_id = ")
 				.append(Region.TABLE_NAME)
 				.append(".")
@@ -814,7 +814,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				caseFilterBuilder,
 				filterBuilderParameters,
 				Case.TABLE_NAME,
-				Case.REGION + "_id",
+				Case.RESPONSIBLE_REGION + "_id",
 				regionIds,
 				entry -> entry);
 		}
@@ -825,7 +825,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				caseFilterBuilder,
 				filterBuilderParameters,
 				Case.TABLE_NAME,
-				Case.DISTRICT + "_id",
+				Case.RESPONSIBLE_DISTRICT + "_id",
 				districtIds,
 				entry -> entry);
 		}
@@ -836,7 +836,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				caseFilterBuilder,
 				filterBuilderParameters,
 				Case.TABLE_NAME,
-				Case.COMMUNITY + "_id",
+				Case.RESPONSIBLE_COMMUNITY + "_id",
 				communityIds,
 				entry -> entry);
 		}
@@ -991,6 +991,38 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				entry -> entry);
 		}
 
+		boolean usesCommunitys;
+		List<Long> communityIds;
+		if (CollectionUtils.isNotEmpty(caseCriteria.getCommunities())) {
+			// limit to specific communitys
+
+			communityIds = communityService.getIdsByReferenceDtos(caseCriteria.getCommunities());
+			extendFilterBuilderWithSimpleValue(
+					whereBuilder,
+					filterBuilderParameters,
+					PopulationData.TABLE_NAME,
+					PopulationData.COMMUNITY + "_id",
+					communityIds,
+					entry -> entry);
+			usesCommunitys = true;
+		} else {
+			// limit either to entries with community or to entries without community
+
+			communityIds = null;
+			usesCommunitys = subGroupingA == StatisticsCaseSubAttribute.COMMUNITY || subGroupingB == StatisticsCaseSubAttribute.COMMUNITY;
+
+			if (whereBuilder.length() > 0) {
+				whereBuilder.append(" AND ");
+			}
+			whereBuilder.append("(").append(PopulationData.TABLE_NAME).append(".").append(PopulationData.COMMUNITY).append("_id");
+			if (usesCommunitys) {
+				whereBuilder.append(" IS NOT NULL)");
+			} else {
+				// use entry with sum for all community
+				whereBuilder.append(" IS NULL)");
+			}
+		}
+
 		boolean usesDistricts;
 		List<Long> districtIds;
 		if (CollectionUtils.isNotEmpty(caseCriteria.getDistricts())) {
@@ -1015,7 +1047,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				whereBuilder.append(" AND ");
 			}
 			whereBuilder.append("(").append(PopulationData.TABLE_NAME).append(".").append(PopulationData.DISTRICT).append("_id");
-			if (usesDistricts) {
+			if (usesDistricts || usesCommunitys) {
 				whereBuilder.append(" IS NOT NULL)");
 			} else {
 				// use entry with sum for all districts
@@ -1110,7 +1142,16 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 
 		// growth rates to calculate the population
 		selectBuilder.append(" LEFT JOIN ");
-		if (districtIds != null || subGroupingA == StatisticsCaseSubAttribute.DISTRICT || subGroupingB == StatisticsCaseSubAttribute.DISTRICT) {
+		if (communityIds != null || subGroupingA == StatisticsCaseSubAttribute.COMMUNITY || subGroupingB == StatisticsCaseSubAttribute.COMMUNITY) {
+			selectBuilder.append(Community.TABLE_NAME)
+				.append(" AS growthsource ON growthsource.")
+				.append(Community.ID)
+				.append(" = ")
+				.append(PopulationData.COMMUNITY)
+				.append("_id");
+		} else if (districtIds != null
+			|| subGroupingA == StatisticsCaseSubAttribute.DISTRICT
+			|| subGroupingB == StatisticsCaseSubAttribute.DISTRICT) {
 			selectBuilder.append(District.TABLE_NAME)
 				.append(" AS growthsource ON growthsource.")
 				.append(District.ID)
@@ -1153,6 +1194,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 					return PopulationData.TABLE_NAME + "." + PopulationData.REGION + "_id";
 				case DISTRICT:
 					return PopulationData.TABLE_NAME + "." + PopulationData.DISTRICT + "_id";
+				case COMMUNITY:
+					return PopulationData.TABLE_NAME + "." + PopulationData.COMMUNITY + "_id";
 				default:
 					return null;
 				}
@@ -1190,7 +1233,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		}
 
 		filterBuilder.append(tableName).append(".").append(fieldName).append(" IN ");
-		return BaseAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
+		return QueryHelper.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
 	private StringBuilder extendFilterBuilderWithDate(
@@ -1242,7 +1285,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			.append(fieldName)
 			.append(")  AS integer))")
 			.append(" IN ");
-		return BaseAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
+		return QueryHelper.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
 	private <T> StringBuilder extendFilterBuilderWithEpiWeek(
@@ -1258,7 +1301,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		}
 
 		filterBuilder.append("epi_week(").append(tableName).append(".").append(fieldName).append(")").append(" IN ");
-		return BaseAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
+		return QueryHelper.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
 	private <T> StringBuilder extendFilterBuilderWithEpiWeekOfYear(
@@ -1285,7 +1328,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			.append(fieldName)
 			.append("))")
 			.append(" IN ");
-		return BaseAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
+		return QueryHelper.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
 	private <T> StringBuilder extendFilterBuilderWithQuarterOfYear(
@@ -1311,7 +1354,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			.append(fieldName)
 			.append(") AS integer))")
 			.append(" IN ");
-		return BaseAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
+		return QueryHelper.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
 	private <T> StringBuilder extendFilterBuilderWithMonthOfYear(
@@ -1337,7 +1380,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			.append(fieldName)
 			.append(") AS integer))")
 			.append(" IN ");
-		return BaseAdoService.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
+		return QueryHelper.appendInFilterValues(filterBuilder, filterBuilderParameters, values, valueMapper);
 	}
 
 	private String buildCaseGroupingSelectQuery(StatisticsCaseAttribute grouping, StatisticsCaseSubAttribute subGrouping, String groupAlias) {

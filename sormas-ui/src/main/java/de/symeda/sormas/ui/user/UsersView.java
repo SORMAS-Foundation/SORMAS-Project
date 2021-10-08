@@ -17,10 +17,24 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Collections;
+
+import org.apache.commons.io.IOUtils;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.Page;
+import com.vaadin.server.StreamResource;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
@@ -33,8 +47,8 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -45,8 +59,13 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
+import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.RowCount;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -79,6 +98,9 @@ public class UsersView extends AbstractView {
 
 	private RowCount rowsCount;
 
+	// Bulk operations
+	private MenuBar bulkOperationsDropdown;
+
 	public UsersView() {
 		super(VIEW_NAME);
 
@@ -88,6 +110,7 @@ public class UsersView extends AbstractView {
 		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
+		gridLayout.addComponent(createActionsBar());
 
 		rowsCount = new RowCount(Strings.labelNumberOfUsers, grid.getItemCount());
 		gridLayout.addComponent(rowsCount);
@@ -109,16 +132,60 @@ public class UsersView extends AbstractView {
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);
+
+			Button exportUserRightsButton =
+				ButtonHelper.createIconButton(Captions.exportUserRoles, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
+
+			new FileDownloader(new StreamResource(() -> new DownloadUtil.DelayedInputStream((out) -> {
+				try {
+					String documentPath = FacadeProvider.getUserRightsFacade().generateUserRightsDocument(true);
+					IOUtils.copy(Files.newInputStream(new File(documentPath).toPath()), out);
+				} catch (IOException e) {
+					LoggerFactory.getLogger(DownloadUtil.class).error(e.getMessage(), e);
+					new Notification(
+						I18nProperties.getString(Strings.headingExportUserRightsFailed),
+						I18nProperties.getString(Strings.messageUserRightsExportFailed),
+						Notification.Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
+				}
+			}, (e) -> {
+			}), createFileNameWithCurrentDate(ExportEntityName.USER_ROLES, ".xlsx"))).extend(exportUserRightsButton);
+
+			addHeaderComponent(exportUserRightsButton);
 		}
 
-		if (AuthProvider.getProvider().isUserSyncSupported()) {
-			syncButton = ButtonHelper.createIconButton(
-				Captions.syncUsers,
-				VaadinIcons.REFRESH,
-				e -> ControllerProvider.getUserController().sync()
-			);
+		if (AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isUserSyncSupported()) {
+			syncButton = ButtonHelper.createIconButton(Captions.syncUsers, VaadinIcons.REFRESH, e -> ControllerProvider.getUserController().sync());
 
 			addHeaderComponent(syncButton);
+		}
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
+			btnEnterBulkEditMode.setVisible(!ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
+
+			addHeaderComponent(btnEnterBulkEditMode);
+
+			Button btnLeaveBulkEditMode =
+				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
+			btnLeaveBulkEditMode.setVisible(ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
+
+			addHeaderComponent(btnLeaveBulkEditMode);
+
+			btnEnterBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(true);
+				ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).setInEagerMode(true);
+				btnEnterBulkEditMode.setVisible(false);
+				btnLeaveBulkEditMode.setVisible(true);
+				grid.reload();
+			});
+			btnLeaveBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(false);
+				ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).setInEagerMode(false);
+				btnLeaveBulkEditMode.setVisible(false);
+				btnEnterBulkEditMode.setVisible(true);
+				navigateTo(criteria);
+			});
 		}
 	}
 
@@ -128,9 +195,8 @@ public class UsersView extends AbstractView {
 		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
-		filterLayout.addStyleName(CssStyles.VSPACE_3);
 
-		activeFilter = new ComboBox();
+		activeFilter = ComboBoxHelper.createComboBoxV7();
 		activeFilter.setId(UserDto.ACTIVE);
 		activeFilter.setWidth(200, Unit.PIXELS);
 		activeFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.ACTIVE));
@@ -144,11 +210,11 @@ public class UsersView extends AbstractView {
 		});
 		filterLayout.addComponent(activeFilter);
 
-		userRolesFilter = new ComboBox();
+		userRolesFilter = ComboBoxHelper.createComboBoxV7();
 		userRolesFilter.setId(UserDto.USER_ROLES);
 		userRolesFilter.setWidth(200, Unit.PIXELS);
 		userRolesFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
-		userRolesFilter.addItems(UserUiHelper.getAssignableRoles());
+		userRolesFilter.addItems(UserUiHelper.getAssignableRoles(Collections.emptySet()));
 		userRolesFilter.addValueChangeListener(e -> {
 			criteria.userRole((UserRole) e.getProperty().getValue());
 			navigateTo(criteria);
@@ -157,13 +223,13 @@ public class UsersView extends AbstractView {
 
 		UserDto user = UserProvider.getCurrent().getUser();
 
-		regionFilter = new ComboBox();
+		regionFilter = ComboBoxHelper.createComboBoxV7();
 		regionFilter.setId(CaseDataDto.REGION);
 
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(140, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
-			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 
@@ -177,7 +243,7 @@ public class UsersView extends AbstractView {
 			filterLayout.addComponent(regionFilter);
 		}
 
-		districtFilter = new ComboBox();
+		districtFilter = ComboBoxHelper.createComboBoxV7();
 		districtFilter.setId(CaseDataDto.DISTRICT);
 		districtFilter.setWidth(140, Unit.PIXELS);
 		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
@@ -203,6 +269,41 @@ public class UsersView extends AbstractView {
 		filterLayout.addComponent(searchField);
 
 		return filterLayout;
+	}
+
+	public HorizontalLayout createActionsBar() {
+
+		HorizontalLayout statusFilterLayout = new HorizontalLayout();
+		statusFilterLayout.setSpacing(true);
+		statusFilterLayout.setMargin(false);
+		statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
+		statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
+
+		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+		actionButtonsLayout.setSpacing(true);
+		{
+			// Bulk operation dropdown
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				bulkOperationsDropdown = MenuBarHelper.createDropDown(
+					Captions.bulkActions,
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionEnable), VaadinIcons.CHECK_SQUARE_O, selectedItem -> {
+						ControllerProvider.getUserController()
+							.enableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+					}, true),
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDisable), VaadinIcons.THIN_SQUARE, selectedItem -> {
+						ControllerProvider.getUserController()
+							.disableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+					}, true));
+
+				bulkOperationsDropdown.setVisible(ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
+				actionButtonsLayout.addComponent(bulkOperationsDropdown);
+			}
+		}
+		statusFilterLayout.addComponent(actionButtonsLayout);
+		statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
+		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
+
+		return statusFilterLayout;
 	}
 
 	@Override

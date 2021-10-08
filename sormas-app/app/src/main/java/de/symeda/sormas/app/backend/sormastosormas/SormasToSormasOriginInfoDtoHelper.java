@@ -39,6 +39,9 @@ public class SormasToSormasOriginInfoDtoHelper extends AdoDtoHelper<SormasToSorm
 	protected void fillInnerFromDto(SormasToSormasOriginInfo sormasToSormasOriginInfo, SormasToSormasOriginInfoDto dto) {
 		sormasToSormasOriginInfo.setOrganizationId(dto.getOrganizationId());
 		sormasToSormasOriginInfo.setOwnershipHandedOver(dto.isOwnershipHandedOver());
+		sormasToSormasOriginInfo.setWithAssociatedContacts(dto.isWithAssociatedContacts());
+		sormasToSormasOriginInfo.setWithSamples(dto.isWithSamples());
+		sormasToSormasOriginInfo.setWithEventParticipants(dto.isWithEventParticipants());
 		sormasToSormasOriginInfo.setSenderName(dto.getSenderName());
 		sormasToSormasOriginInfo.setSenderEmail(dto.getSenderEmail());
 		sormasToSormasOriginInfo.setSenderPhoneNumber(dto.getSenderPhoneNumber());
@@ -49,6 +52,9 @@ public class SormasToSormasOriginInfoDtoHelper extends AdoDtoHelper<SormasToSorm
 	protected void fillInnerFromAdo(SormasToSormasOriginInfoDto dto, SormasToSormasOriginInfo sormasToSormasOriginInfo) {
 		dto.setOrganizationId(sormasToSormasOriginInfo.getOrganizationId());
 		dto.setOwnershipHandedOver(sormasToSormasOriginInfo.isOwnershipHandedOver());
+		dto.setWithAssociatedContacts(sormasToSormasOriginInfo.isWithAssociatedContacts());
+		dto.setWithSamples(sormasToSormasOriginInfo.isWithSamples());
+		dto.setWithEventParticipants(sormasToSormasOriginInfo.isWithEventParticipants());
 		dto.setSenderName(sormasToSormasOriginInfo.getSenderName());
 		dto.setSenderEmail(sormasToSormasOriginInfo.getSenderEmail());
 		dto.setSenderPhoneNumber(sormasToSormasOriginInfo.getSenderPhoneNumber());

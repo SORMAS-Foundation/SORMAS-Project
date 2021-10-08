@@ -18,25 +18,33 @@
 package de.symeda.sormas.api.caze;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Random;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
-import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -53,12 +61,25 @@ public interface CaseFacade {
 
 	long count(CaseCriteria caseCriteria);
 
+	long count(CaseCriteria caseCriteria, boolean ignoreUserFilter);
+
 	List<CaseIndexDto> getIndexList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	List<CaseIndexDetailedDto> getIndexDetailedList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+	Page<CaseIndexDto> getIndexPage(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	Page<CaseIndexDetailedDto> getIndexDetailedPage(
+		@NotNull CaseCriteria caseCriteria,
+		Integer offset,
+		Integer max,
+		List<SortProperty> sortProperties);
+
+	List<CaseIndexDetailedDto> getIndexDetailedList(CaseCriteria caseCriteria, Integer offset, Integer max, List<SortProperty> sortProperties);
+
+	CaseDataDto postUpdate(String uuid, JsonNode caseDataDtoJson);
 
 	List<CaseExportDto> getExportList(
 		CaseCriteria caseCriteria,
+		Collection<String> selectedRows,
 		CaseExportType exportType,
 		int first,
 		int max,
@@ -67,7 +88,7 @@ public interface CaseFacade {
 
 	CaseDataDto getCaseDataByUuid(String uuid);
 
-	CaseDataDto saveCase(CaseDataDto dto) throws ValidationRuntimeException;
+	CaseDataDto saveCase(@Valid CaseDataDto dto) throws ValidationRuntimeException;
 
 	void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef);
 
@@ -83,35 +104,35 @@ public interface CaseFacade {
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
 
-	String getUuidByUuidEpidNumberOrExternalId(String searchTerm);
+	CaseDataDto getByUuid(String uuid);
 
-	List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria);
+	String getUuidByUuidEpidNumberOrExternalId(String searchTerm, CaseCriteria caseCriteria);
 
-	List<MapCaseDto> getCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
+	List<MapCaseDto> getCasesForMap(
+		RegionReferenceDto regionRef,
+		DistrictReferenceDto districtRef,
+		Disease disease,
+		Date from,
+		Date to,
+		NewCaseDateType dateType);
 
-	Long countCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
-
-	Map<CaseClassification, Long> getCaseCountPerClassification(
-		CaseCriteria caseCriteria,
-		boolean excludeSharedCases,
-		boolean excludeCasesFromContacts);
-
-	Map<PresentCondition, Long> getCaseCountPerPersonCondition(
-		CaseCriteria caseCriteria,
-		boolean excludeSharedCases,
-		boolean excludeCasesFromContacts);
-
-	Map<Disease, Long> getCaseCountByDisease(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
-
-	String getLastReportedDistrictName(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
+	Long countCasesForMap(
+		RegionReferenceDto regionRef,
+		DistrictReferenceDto districtRef,
+		Disease disease,
+		Date from,
+		Date to,
+		NewCaseDateType dateType);
 
 	List<Pair<DistrictDto, BigDecimal>> getCaseMeasurePerDistrict(Date onsetFromDate, Date onsetToDate, Disease disease, CaseMeasure caseMeasure);
 
 	List<CaseDataDto> getAllCasesOfPerson(String personUuid);
 
-	void deleteCase(String caseUuid);
+	void deleteCase(String caseUuid) throws ExternalSurveillanceToolException;
 
-	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid);
+	List<String> deleteCases(List<String> caseUuids);
+
+	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) throws ExternalSurveillanceToolException;
 
 	Date getOldestCaseOnsetDate();
 
@@ -131,7 +152,9 @@ public interface CaseFacade {
 
 	boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease disease);
 
-	String generateEpidNumber(CaseReferenceDto caze);
+	boolean doesExternalTokenExist(String externalToken, String caseUuid);
+
+	String generateEpidNumber(CaseDataDto caze);
 
 	void mergeCase(String leadUuid, String otherUuid);
 
@@ -153,7 +176,9 @@ public interface CaseFacade {
 	 */
 	void updateArchived(List<String> caseUuids, boolean archived);
 
-	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count);
+	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count, Random randomGenerator);
+
+	FollowUpPeriodDto calculateFollowUpUntilDate(CaseDataDto caseDto, boolean ignoreOverwrite);
 
 	boolean isCaseEditAllowed(String caseUuid);
 
@@ -169,26 +194,17 @@ public interface CaseFacade {
 		Integer max,
 		List<SortProperty> sortProperties);
 
-	List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
-		RegionReferenceDto regionRef,
-		DistrictReferenceDto districtRef,
-		Disease disease,
-		Date from,
-		Date to);
-
-	long countCasesConvertedFromContacts(CaseCriteria caseCriteria);
-
 	void sendMessage(List<String> caseUuids, String subject, String messageContent, MessageType... messageTypes);
 
 	long countCasesWithMissingContactInformation(List<String> caseUuids, MessageType messageType);
 
 	List<ManualMessageLogDto> getMessageLog(String caseUuid, MessageType messageType);
 
-	String getFirstCaseUuidWithOwnershipHandedOver(List<String> caseUuids);
+	String getFirstUuidNotShareableWithExternalReportingTools(List<String> caseUuids);
 
 	void saveBulkCase(
 		List<String> caseUuidList,
-		CaseBulkEditData updatedCaseBulkEditData,
+		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
 		boolean classificationChange,
 		boolean investigationStatusChange,
@@ -197,7 +213,7 @@ public interface CaseFacade {
 
 	void saveBulkEditWithFacilities(
 		List<String> caseUuidList,
-		CaseBulkEditData updatedCaseBulkEditData,
+		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
 		boolean classificationChange,
 		boolean investigationStatusChange,
@@ -205,5 +221,15 @@ public interface CaseFacade {
 		boolean surveillanceOfficerChange,
 		Boolean doTransfer);
 
-	List<CasePersonDto> getDuplicates(CasePersonDto casePerson);
+	List<CasePersonDto> getDuplicates(@Valid CasePersonDto casePerson, int reportDateThreshold);
+
+	List<CasePersonDto> getDuplicates(@Valid CasePersonDto casePerson);
+
+	List<CaseDataDto> getByPersonUuids(List<String> personUuids);
+
+	List<CaseDataDto> getByExternalId(String externalId);
+
+	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
+
+	int updateCompleteness();
 }

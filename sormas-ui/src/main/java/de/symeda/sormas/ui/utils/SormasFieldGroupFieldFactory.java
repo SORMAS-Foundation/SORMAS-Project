@@ -25,11 +25,13 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.ActivityAsCase.ActivityAsCaseField;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.exposure.ExposuresField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.LocationsField;
+import de.symeda.sormas.ui.vaccination.VaccinationsField;
 
 public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory {
 
@@ -62,10 +64,9 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			} else {
 				if (Disease.class.isAssignableFrom(type)) {
 					fieldType = (Class<T>) ComboBox.class;
-					ComboBox field = new ComboBox();
+					ComboBox field = ComboBoxHelper.createComboBoxV7();
 					field.setImmediate(true);
 					field.setNullSelectionAllowed(true);
-					field.setFilteringMode(FilteringMode.CONTAINS);
 					populateWithDiseaseData(field);
 					return (T) field;
 				} else {
@@ -103,8 +104,6 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) field;
 		} else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
 			return (T) new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
-		} else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
-			return (T) new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (HealthConditionsForm.class.isAssignableFrom(fieldType)) {
 			return (T) new HealthConditionsForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (DateTimeField.class.isAssignableFrom(fieldType)) {
@@ -121,8 +120,12 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new PreviousHospitalizationsField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (ExposuresField.class.isAssignableFrom(fieldType)) {
 			return (T) new ExposuresField(fieldVisibilityCheckers, fieldAccessCheckers);
+		} else if (ActivityAsCaseField.class.isAssignableFrom(fieldType)) {
+			return (T) new ActivityAsCaseField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (LocationsField.class.isAssignableFrom(fieldType)) {
 			return (T) new LocationsField(fieldVisibilityCheckers, fieldAccessCheckers);
+		} else if (VaccinationsField.class.isAssignableFrom(fieldType)) {
+			return (T) new VaccinationsField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (fieldType.equals(Field.class)) {
 			// no specific field type defined -> fallbacks
 			if (Date.class.isAssignableFrom(type)) {
@@ -132,7 +135,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 				field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
 				return (T) field;
 			} else if (ReferenceDto.class.isAssignableFrom(type)) {
-				return (T) new ComboBox();
+				return (T) ComboBoxHelper.createComboBoxV7();
 			}
 		}
 		return super.createField(type, fieldType);
@@ -192,6 +195,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void populateWithEnumData(AbstractSelect select, Class<? extends Enum> enumClass) {
+
 		select.removeAllItems();
 		for (Object p : select.getContainerPropertyIds()) {
 			select.removeContainerProperty(p);
@@ -210,4 +214,5 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			}
 		}
 	}
+
 }

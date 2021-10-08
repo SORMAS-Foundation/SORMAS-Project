@@ -67,6 +67,7 @@
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/person_sex"
+                app:required="true"
                 app:value="@={data.person.sex}"
                 style="@style/ControlSingleColumnStyle" />
 
@@ -128,19 +129,19 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/contact_region"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:value="@={data.region}" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/contact_district"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:value="@={data.district}" />
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                 android:id="@+id/contact_community"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.community}" />

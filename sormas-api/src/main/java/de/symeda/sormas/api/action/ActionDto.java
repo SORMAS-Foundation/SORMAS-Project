@@ -19,13 +19,19 @@
 
 package de.symeda.sormas.api.action;
 
+import static de.symeda.sormas.api.utils.HtmlHelper.cleanHtml;
+
 import java.util.Date;
+
+import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.Required;
 
 public class ActionDto extends EntityDto {
@@ -55,8 +61,11 @@ public class ActionDto extends EntityDto {
 	private Date statusChangeDate;
 
 	private UserReferenceDto creatorUser;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String title;
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String description;
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String reply;
 	private UserReferenceDto lastModifiedBy;
 
@@ -138,19 +147,19 @@ public class ActionDto extends EntityDto {
 	}
 
 	public String getDescription() {
-		return description;
+		return cleanHtml(description, HtmlHelper.EVENTACTION_WHITELIST);
 	}
 
 	public void setDescription(String description) {
-		this.description = description;
+		this.description = cleanHtml(description, HtmlHelper.EVENTACTION_WHITELIST);
 	}
 
 	public String getReply() {
-		return reply;
+		return cleanHtml(reply, HtmlHelper.EVENTACTION_WHITELIST);
 	}
 
 	public void setReply(String reply) {
-		this.reply = reply;
+		this.reply = cleanHtml(reply, HtmlHelper.EVENTACTION_WHITELIST);
 	}
 
 	public UserReferenceDto getLastModifiedBy() {
@@ -175,6 +184,10 @@ public class ActionDto extends EntityDto {
 
 	public void setActionMeasure(ActionMeasure actionMeasure) {
 		this.actionMeasure = actionMeasure;
+	}
+
+	public ActionReferenceDto toReference() {
+		return new ActionReferenceDto(getUuid(), getTitle());
 	}
 
 	public ReferenceDto getContextReference() {

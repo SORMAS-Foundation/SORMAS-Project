@@ -18,8 +18,10 @@
 package de.symeda.sormas.ui.map;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.region.GeoLatLon;
+import de.symeda.sormas.api.geo.GeoLatLon;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
@@ -29,6 +31,8 @@ public class LeafletPolygon {
 
 	private String caption;
 	private double[][] latLons;
+	private double[] minLatLon;
+	private double[] maxLatLon;
 	private double[][][] holeLatLons;
 	private String options;
 
@@ -46,6 +50,8 @@ public class LeafletPolygon {
 
 	public void setLatLons(double[][] latLons) {
 		this.latLons = latLons;
+		this.minLatLon = null;
+		this.maxLatLon = null;
 	}
 
 	public void setLatLons(GeoLatLon[] geoLatLons) {
@@ -56,6 +62,26 @@ public class LeafletPolygon {
 					latLon.getLon() })
 			.toArray(size -> new double[size][]);
 		setLatLons(latLons);
+	}
+
+	// return (and if necessary calculate) minimum latitude and longitude
+	public double[] getMinLatLon() {
+		if (minLatLon == null) {
+			minLatLon = new double[2];
+			minLatLon[0] = Collections.min(Arrays.asList(latLons).stream().map(x -> x[0]).collect(Collectors.toList()));
+			minLatLon[1] = Collections.min(Arrays.asList(latLons).stream().map(x -> x[1]).collect(Collectors.toList()));
+		}
+		return minLatLon;
+	}
+
+	// return (and if necessary calculate) minimum latitude and longitude
+	public double[] getMaxLatLon() {
+		if (maxLatLon == null) {
+			maxLatLon = new double[2];
+			maxLatLon[0] = Collections.max(Arrays.asList(latLons).stream().map(x -> x[0]).collect(Collectors.toList()));
+			maxLatLon[1] = Collections.max(Arrays.asList(latLons).stream().map(x -> x[1]).collect(Collectors.toList()));
+		}
+		return maxLatLon;
 	}
 
 	public double[][][] getHoleLatLons() {

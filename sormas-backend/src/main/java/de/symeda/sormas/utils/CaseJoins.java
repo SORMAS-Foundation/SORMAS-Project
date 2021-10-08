@@ -24,26 +24,30 @@ import javax.persistence.criteria.JoinType;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.Country;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.share.ExternalShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
-public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObjectJoins<T, Case> {
+public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 
 	private Join<Case, Person> person;
+	private Join<Case, Region> responsibleRegion;
+	private Join<Case, District> responsibleDistrict;
+	private Join<Case, Community> responsibleCommunity;
 	private Join<Case, Region> region;
 	private Join<Case, District> district;
 	private Join<Case, Community> community;
@@ -66,9 +70,13 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 	private Join<Case, EventParticipant> eventParticipants;
 	private Join<Person, List<Location>> personAddresses;
 	private Join<Case, Sample> samples;
+	private Join<Sample, Facility> sampleLabs;
 	private Join<Person, Country> personBirthCountry;
 	private Join<Person, Country> personCitizenship;
 	private Join<Case, District> reportingDistrict;
+	private Join<Case, SormasToSormasShareInfo> shareInfoCases;
+	private Join<Case, ExternalShareInfo> externalShareInfo;
+	private Join<Case, User> followUpStatusChangeUser;
 
 	public CaseJoins(From<T, Case> caze) {
 		super(caze);
@@ -80,6 +88,30 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 
 	private void setPerson(Join<Case, Person> person) {
 		this.person = person;
+	}
+
+	public Join<Case, Region> getResponsibleRegion() {
+		return getOrCreate(responsibleRegion, Case.RESPONSIBLE_REGION, JoinType.LEFT, this::setResponsibleRegion);
+	}
+
+	private void setResponsibleRegion(Join<Case, Region> responsibleRegion) {
+		this.responsibleRegion = responsibleRegion;
+	}
+
+	public Join<Case, District> getResponsibleDistrict() {
+		return getOrCreate(responsibleDistrict, Case.RESPONSIBLE_DISTRICT, JoinType.LEFT, this::setResponsibleDistrict);
+	}
+
+	private void setResponsibleDistrict(Join<Case, District> responsibleDistrict) {
+		this.responsibleDistrict = responsibleDistrict;
+	}
+
+	public Join<Case, Community> getResponsibleCommunity() {
+		return getOrCreate(responsibleCommunity, Case.RESPONSIBLE_COMMUNITY, JoinType.LEFT, this::setResponsibleCommunity);
+	}
+
+	private void setResponsibleCommunity(Join<Case, Community> responsibleCommunity) {
+		this.responsibleCommunity = responsibleCommunity;
 	}
 
 	public Join<Case, Region> getRegion() {
@@ -250,6 +282,14 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 		this.samples = samples;
 	}
 
+	public Join<Sample, Facility> getSampleLabs() {
+		return getOrCreate(sampleLabs, Sample.LAB, JoinType.LEFT, getSamples(), this::setSampleLabs);
+	}
+
+	private void setSampleLabs(Join<Sample, Facility> sampleLabs) {
+		this.sampleLabs = sampleLabs;
+	}
+
 	public Join<Person, Country> getPersonBirthCountry() {
 		return getOrCreate(personBirthCountry, Person.BIRTH_COUNTRY, JoinType.LEFT, getPerson(), this::setPersonBirthCountry);
 	}
@@ -266,11 +306,27 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 		this.personCitizenship = personCitizenship;
 	}
 
-	public Join<Case, District> getReportingDistrict() {
-		return getOrCreate(reportingDistrict, Case.REPORTING_DISTRICT, JoinType.LEFT, this::setReportingDistrict);
+	public Join<Case, SormasToSormasShareInfo> getShareInfoCases() {
+		return getOrCreate(shareInfoCases, Case.SHARE_INFO_CASES, JoinType.LEFT, this::setShareInfoCases);
 	}
 
-	private void setReportingDistrict(Join<Case, District> reportingDistrict) {
-		this.reportingDistrict = reportingDistrict;
+	private void setShareInfoCases(Join<Case, SormasToSormasShareInfo> shareInfoCases) {
+		this.shareInfoCases = shareInfoCases;
+	}
+
+	public Join<Case, ExternalShareInfo> getExternalShareInfo() {
+		return getOrCreate(externalShareInfo, Case.EXTERNAL_SHARES, JoinType.LEFT, this::setExternalShareInfo);
+	}
+
+	private void setExternalShareInfo(Join<Case, ExternalShareInfo> externalShareInfo) {
+		this.externalShareInfo = externalShareInfo;
+	}
+
+	public Join<Case, User> getFollowUpStatusChangeUser() {
+		return getOrCreate(followUpStatusChangeUser, Case.FOLLOW_UP_STATUS_CHANGE_USER, JoinType.LEFT, this::setFollowUpStatusChangeUser);
+	}
+
+	private void setFollowUpStatusChangeUser(Join<Case, User> followUpStatusChangeUser) {
+		this.followUpStatusChangeUser = followUpStatusChangeUser;
 	}
 }

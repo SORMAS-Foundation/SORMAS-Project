@@ -13,7 +13,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.TextFieldWithMaxLengthWrapper;
+import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
 
 public class SmsComponent extends CustomField<String> {
 
@@ -44,12 +44,12 @@ public class SmsComponent extends CustomField<String> {
 
 		mainLayout.addComponent(new Label(I18nProperties.getString(Strings.messageEnterSms)));
 
-		final TextFieldWithMaxLengthWrapper<TextArea> tTextFieldWithMaxLengthWrapper = new TextFieldWithMaxLengthWrapper<>();
+		final ResizableTextAreaWrapper<TextArea> resizableTextAreaWrapper = new ResizableTextAreaWrapper<>();
 
 		smsTextArea = new TextArea();
 		smsTextArea.setWidth(100, Unit.PERCENTAGE);
 		smsTextArea.setRows(4);
-		mainLayout.addComponent(tTextFieldWithMaxLengthWrapper.wrap(smsTextArea, Captions.messagesCharacters, false));
+		mainLayout.addComponent(resizableTextAreaWrapper.wrap(smsTextArea, Captions.messagesCharacters, false));
 
 		final Label numberOfMessagesLabel = new Label(String.format(I18nProperties.getCaption(Captions.messagesNumberOfMessages), 0));
 		numberOfMessagesLabel.addStyleNames(CssStyles.ALIGN_RIGHT, CssStyles.FIELD_EXTRA_INFO, CssStyles.LABEL_ITALIC);

@@ -17,14 +17,20 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfTwoCol;
 
 import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 
 public class EventParticipantCreateForm extends AbstractEditForm<EventParticipantDto> {
@@ -33,8 +39,10 @@ public class EventParticipantCreateForm extends AbstractEditForm<EventParticipan
 
 	private static final String FIRST_NAME = PersonDto.FIRST_NAME;
 	private static final String LAST_NAME = PersonDto.LAST_NAME;
+	private static final String PERSON_SEX = PersonDto.SEX;
 
-	private static final String HTML_LAYOUT = fluidRowLocs(EventParticipantDto.INVOLVEMENT_DESCRIPTION) + fluidRowLocs(FIRST_NAME, LAST_NAME);
+	private static final String HTML_LAYOUT =
+		fluidRowLocs(EventParticipantDto.INVOLVEMENT_DESCRIPTION) + fluidRowLocs(FIRST_NAME, LAST_NAME) + fluidRow(oneOfTwoCol(PERSON_SEX));
 
 	public EventParticipantCreateForm() {
 
@@ -50,7 +58,10 @@ public class EventParticipantCreateForm extends AbstractEditForm<EventParticipan
 		addCustomField(FIRST_NAME, String.class, TextField.class);
 		addCustomField(LAST_NAME, String.class, TextField.class);
 
-		setRequired(true, FIRST_NAME, LAST_NAME);
+		ComboBox sex = addCustomField(PERSON_SEX, Sex.class, ComboBox.class);
+		sex.setCaption(I18nProperties.getCaption(Captions.Person_sex));
+
+		setRequired(true, FIRST_NAME, LAST_NAME, PERSON_SEX);
 	}
 
 	@Override
@@ -59,20 +70,48 @@ public class EventParticipantCreateForm extends AbstractEditForm<EventParticipan
 		final PersonDto person = newFieldValue.getPerson();
 		if (person != null) {
 			final Field<String> firstNameField = getField(FIRST_NAME);
-			firstNameField.setEnabled(false);
-			firstNameField.setValue(person.getFirstName());
 			final Field<String> lastNameField = getField(LAST_NAME);
-			lastNameField.setEnabled(false);
-			lastNameField.setValue(person.getLastName());
+			final Field<Sex> personSexField = getField(PERSON_SEX);
+			if (person.isPseudonymized()) {
+				firstNameField.setRequired(false);
+				firstNameField.setVisible(false);
+				lastNameField.setRequired(false);
+				lastNameField.setVisible(false);
+			} else {
+				firstNameField.setEnabled(false);
+				firstNameField.setValue(person.getFirstName());
+				lastNameField.setEnabled(false);
+				lastNameField.setValue(person.getLastName());
+				personSexField.setEnabled(false);
+				personSexField.setValue(person.getSex());
+			}
+			personSexField.setEnabled(false);
+			personSexField.setValue(person.getSex());
 		}
 	}
 
+	/**
+	 * 
+	 * @return first name of the person. ATTENTION: For pseudonymised persons, this method may return an empty string!
+	 */
 	public String getPersonFirstName() {
 		return (String) getField(FIRST_NAME).getValue();
 	}
 
+	/**
+	 * 
+	 * @return first name of the person. ATTENTION: For pseudonymised persons, this method may return an empty string!
+	 */
 	public String getPersonLastName() {
 		return (String) getField(LAST_NAME).getValue();
+	}
+
+	/**
+	 *
+	 * @return sex of the person.
+	 */
+	public Sex getPersonSex() {
+		return (Sex) getField(PERSON_SEX).getValue();
 	}
 
 	@Override

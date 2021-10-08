@@ -45,6 +45,10 @@ public class SymptomJournalConfig implements Serializable, Cloneable {
 		this.secret = secret;
 	}
 
+	public boolean isActive() {
+		return url != null;
+	}
+
 	public UserConfig getDefaultUser() {
 		return defaultUser;
 	}

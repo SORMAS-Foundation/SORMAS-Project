@@ -1,8 +1,8 @@
 package de.symeda.sormas.api.person;
 
-import de.symeda.sormas.api.utils.Required;
-
 import java.io.Serializable;
+
+import de.symeda.sormas.api.utils.Required;
 
 public class PersonSymptomJournalStatusDto implements Serializable {
 

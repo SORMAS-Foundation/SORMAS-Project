@@ -17,10 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.i18n;
 
-import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.ResourceBundle;
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -33,12 +29,19 @@ import java.util.Map;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle.Control;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringSubstitutor;
+
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.ResourceBundle;
+import de.symeda.sormas.api.caze.InfectionSetting;
+
 public final class I18nProperties {
 
 	public static final String FULL_COUNTRY_LOCALE_PATTERN = "[a-zA-Z]*-[a-zA-Z]*";
 
 	private static Map<Language, I18nProperties> instances = new HashMap<>();
-	private static ThreadLocal<Language> userLanguage = new ThreadLocal<>();
+	private static final ThreadLocal<Language> userLanguage = new ThreadLocal<>();
 
 	private static Language defaultLanguage;
 
@@ -48,6 +51,8 @@ public final class I18nProperties {
 	private final ResourceBundle validationProperties;
 	private final ResourceBundle stringProperties;
 	private final ResourceBundle countryProperties;
+	private final ResourceBundle continentProperties;
+	private final ResourceBundle subcontinentProperties;
 
 	private static I18nProperties getInstance(Language language) {
 
@@ -71,9 +76,14 @@ public final class I18nProperties {
 
 	public static Language setUserLanguage(Language language) {
 
+		if (userLanguage.get() != null && language == userLanguage.get()) {
+			return language;
+		}
+
 		if (language == null) {
 			language = getDefaultLanguage();
 		}
+
 		userLanguage.set(language);
 
 		return language;
@@ -111,6 +121,25 @@ public final class I18nProperties {
 
 	@SuppressWarnings("rawtypes")
 	public static String getEnumCaption(Language language, Enum value) {
+		return getEnumCaption(language, value, true);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static String getEnumCaption(Language language, InfectionSetting value) {
+		String caption = getEnumCaption(language, value, false);
+		if (value.getParent() != null) {
+			// Heavy Wide-Headed Rightwards Arrow U+2794
+			caption = getEnumCaption(language, value.getParent(), false) + " ➔ " + caption;
+		}
+
+		return caption;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private static String getEnumCaption(Language language, Enum value, boolean handleParents) {
+		if (handleParents && value instanceof InfectionSetting) {
+			return getEnumCaption(language, (InfectionSetting) value);
+		}
 
 		String caption = getInstance(language).enumProperties.getString(value.getClass().getSimpleName() + "." + value.name());
 		if (caption != null) {
@@ -251,6 +280,20 @@ public final class I18nProperties {
 		}
 	}
 
+	public static String getValidationError(String key, Map<String, Object> formatArgs) {
+
+		String result = getInstance(userLanguage.get()).validationProperties.getString(key, null);
+		if (result != null) {
+			return StringSubstitutor.replace(result, formatArgs, "{", "}");
+		} else if (formatArgs.size() > 0) {
+			Object firstFormatArg = formatArgs.get(formatArgs.keySet().iterator().next());
+
+			return firstFormatArg != null ? firstFormatArg.toString() : "";
+		} else {
+			return "";
+		}
+	}
+
 	public static String getPrefixValidationError(String prefix, String key, Object... formatArgs) {
 
 		String result = null;
@@ -284,17 +327,18 @@ public final class I18nProperties {
 
 	public static String getCountryName(String isoCode, String defaultValue) {
 
-		String result = getCountryName(userLanguage.get(), isoCode);
-		return StringUtils.isEmpty(result) ? defaultValue : result;
+		// first, check if the defaultValue actually equals the defaultValue in english language. If not, it has been customized
+		String trueDefaultName = getCountryName(Language.EN, isoCode);
+		if (!StringUtils.isEmpty(trueDefaultName) && !trueDefaultName.equalsIgnoreCase(defaultValue)) {
+			return defaultValue;
+		}
+		String translatedName = getCountryName(userLanguage.get(), isoCode);
+		return StringUtils.isEmpty(translatedName) ? defaultValue : translatedName;
 	}
 
 	public static String getCountryName(Language language, String isoCode) {
 		String nameLanguageKey = isoCode != null ? "country." + isoCode.toUpperCase() + ".name" : null;
 		return getInstance(language).countryProperties.getString(nameLanguageKey);
-	}
-
-	private I18nProperties() {
-		this(defaultLanguage);
 	}
 
 	private I18nProperties(Language language) {
@@ -305,6 +349,34 @@ public final class I18nProperties {
 		this.validationProperties = loadProperties("validations", language.getLocale());
 		this.stringProperties = loadProperties("strings", language.getLocale());
 		this.countryProperties = loadProperties("countries", language.getLocale());
+		this.continentProperties = loadProperties("continents", language.getLocale());
+		this.subcontinentProperties = loadProperties("subcontinents", language.getLocale());
+	}
+
+	private I18nProperties() {
+		this(defaultLanguage);
+	}
+
+	public static String getContinentName(String defaultName) {
+		String name = getInstance(userLanguage.get()).continentProperties
+			.getString("continent." + cleanContinentOrSubcontinentDefaultName(defaultName) + ".name");
+		return name != null ? name : defaultName;
+	}
+
+	public static String getSubcontinentName(String defaultName) {
+		String name = getInstance(userLanguage.get()).subcontinentProperties
+			.getString("subcontinent." + cleanContinentOrSubcontinentDefaultName(defaultName) + ".name");
+		return name != null ? name : defaultName;
+	}
+
+	/**
+	 * remove spaces und everything in brackets following (e.g. "Australia (Continent)" => "AUSTRALIA") for use with i18n-files
+	 */
+	private static String cleanContinentOrSubcontinentDefaultName(String defaultName) {
+		return defaultName.substring(0, defaultName.contains("(") ? defaultName.indexOf("(") : defaultName.length())
+			.trim()
+			.replace(" ", "_")
+			.toUpperCase();
 	}
 
 	public static ResourceBundle loadProperties(String propertiesGroup, Locale locale) {

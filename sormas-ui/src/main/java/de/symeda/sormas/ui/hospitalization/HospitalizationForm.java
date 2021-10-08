@@ -18,32 +18,36 @@
 package de.symeda.sormas.ui.hospitalization;
 
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLocCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 
+import org.joda.time.DateTimeComparator;
+
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.UserError;
+import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -63,6 +67,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 	private static final long serialVersionUID = 1L;
 
 	private static final String HOSPITALIZATION_HEADING_LOC = "hospitalizationHeadingLoc";
+	private static final String PREVIOUS_HOSPITALIZATIONS_HEADING_LOC = "previousHospitalizationsHeadingLoc";
 	private static final String HEALTH_FACILITY = Captions.CaseHospitalization_healthFacility;
 	private final CaseDataDto caze;
 	private final ViewMode viewMode;
@@ -76,14 +81,15 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 			loc(HOSPITALIZATION_HEADING_LOC) +
 			fluidRowLocs(HEALTH_FACILITY, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY) +
 			fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE, HospitalizationDto.LEFT_AGAINST_ADVICE, "") +
+			fluidRowLocs(HospitalizationDto.HOSPITALIZATION_REASON, HospitalizationDto.OTHER_HOSPITALIZATION_REASON) +
 					fluidRowLocs(3, HospitalizationDto.INTENSIVE_CARE_UNIT, 3,
 							HospitalizationDto.INTENSIVE_CARE_UNIT_START,
 							3,
 							HospitalizationDto.INTENSIVE_CARE_UNIT_END)
 					+ fluidRowLocs(HospitalizationDto.ISOLATED, HospitalizationDto.ISOLATION_DATE, "")
 					+
-			fluidRow(
-					fluidColumnLocCss(VSPACE_TOP_3, 6, 0, HospitalizationDto.HOSPITALIZED_PREVIOUSLY)) +
+			loc(PREVIOUS_HOSPITALIZATIONS_HEADING_LOC) +
+			fluidRowLocs(HospitalizationDto.HOSPITALIZED_PREVIOUSLY) +
 			fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS);
 	//@formatter:on
 
@@ -111,6 +117,10 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		hospitalizationHeadingLabel.addStyleName(H3);
 		getContent().addComponent(hospitalizationHeadingLabel, HOSPITALIZATION_HEADING_LOC);
 
+		Label previousHospitalizationsHeadingLabel = new Label(I18nProperties.getString(Strings.headingPreviousHospitalizations));
+		previousHospitalizationsHeadingLabel.addStyleName(H3);
+		getContent().addComponent(previousHospitalizationsHeadingLabel, PREVIOUS_HOSPITALIZATIONS_HEADING_LOC);
+
 		TextField facilityField = addCustomField(HEALTH_FACILITY, FacilityReferenceDto.class, TextField.class);
 		FacilityReferenceDto healthFacility = caze.getHealthFacility();
 		final boolean noneFacility = healthFacility == null || healthFacility.getUuid().equalsIgnoreCase(FacilityDto.NONE_FACILITY_UUID);
@@ -121,14 +131,18 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		final DateField admissionDateField = addField(HospitalizationDto.ADMISSION_DATE, DateField.class);
 		final DateField dischargeDateField = addDateField(HospitalizationDto.DISCHARGE_DATE, DateField.class, 7);
 		intensiveCareUnit = addField(HospitalizationDto.INTENSIVE_CARE_UNIT, NullableOptionGroup.class);
-		intensiveCareUnit.addValueChangeListener(e -> setDateFieldVisibilties());
 		intensiveCareUnitStart = addField(HospitalizationDto.INTENSIVE_CARE_UNIT_START, DateField.class);
 		intensiveCareUnitStart.setVisible(false);
 		intensiveCareUnitEnd = addField(HospitalizationDto.INTENSIVE_CARE_UNIT_END, DateField.class);
 		intensiveCareUnitEnd.setVisible(false);
+		FieldHelper
+			.setVisibleWhen(intensiveCareUnit, Arrays.asList(intensiveCareUnitStart, intensiveCareUnitEnd), Arrays.asList(YesNoUnknown.YES), true);
 		final Field isolationDateField = addField(HospitalizationDto.ISOLATION_DATE);
 		final NullableOptionGroup isolatedField = addField(HospitalizationDto.ISOLATED, NullableOptionGroup.class);
 		final NullableOptionGroup leftAgainstAdviceField = addField(HospitalizationDto.LEFT_AGAINST_ADVICE, NullableOptionGroup.class);
+
+		final ComboBox hospitalizationReason = addField(HospitalizationDto.HOSPITALIZATION_REASON);
+		final TextField otherHospitalizationReason = addField(HospitalizationDto.OTHER_HOSPITALIZATION_REASON, TextField.class);
 		NullableOptionGroup hospitalizedPreviouslyField = addField(HospitalizationDto.HOSPITALIZED_PREVIOUSLY, NullableOptionGroup.class);
 		CssStyles.style(hospitalizedPreviouslyField, CssStyles.ERROR_COLOR_PRIMARY);
 		PreviousHospitalizationsField previousHospitalizationsField =
@@ -146,7 +160,9 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				intensiveCareUnitEnd,
 				isolationDateField,
 				isolatedField,
-				leftAgainstAdviceField);
+				leftAgainstAdviceField,
+				hospitalizationReason,
+				otherHospitalizationReason);
 		}
 
 		initializeVisibilitiesAndAllowedVisibilities();
@@ -169,17 +185,41 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				true);
 		}
 
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			HospitalizationDto.OTHER_HOSPITALIZATION_REASON,
+			HospitalizationDto.HOSPITALIZATION_REASON,
+			Collections.singletonList(HospitalizationReasonType.OTHER),
+			true);
+
 		// Validations
-		admissionDateField.addValidator(
-			new DateComparisonValidator(
-				admissionDateField,
-				caze.getSymptoms().getOnsetDate(),
-				false,
-				false,
-				I18nProperties.getValidationError(
-					Validations.afterDateSoft,
-					admissionDateField.getCaption(),
-					I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE))));
+		// Add a visual-only validator to check if symptomonsetdate<admissiondate, as saving should be possible either way
+		admissionDateField.addValueChangeListener(event -> {
+			if (caze.getSymptoms().getOnsetDate() != null
+				&& DateTimeComparator.getDateOnlyInstance().compare(admissionDateField.getValue(), caze.getSymptoms().getOnsetDate()) < 0) {
+				admissionDateField.setComponentError(new ErrorMessage() {
+
+					@Override
+					public ErrorLevel getErrorLevel() {
+						return ErrorLevel.INFO;
+					}
+
+					@Override
+					public String getFormattedHtmlMessage() {
+						return I18nProperties.getValidationError(
+							Validations.afterDateSoft,
+							admissionDateField.getCaption(),
+							I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
+					}
+				});
+			} else {
+				// remove all invalidity-indicators and re-evaluate field
+				admissionDateField.setComponentError(null);
+				admissionDateField.markAsDirty();
+			}
+			// re-evaluate validity of dischargeDate (necessary because discharge has to be after admission)
+			dischargeDateField.markAsDirty();
+		});
 		admissionDateField.addValidator(
 			new DateComparisonValidator(
 				admissionDateField,
@@ -187,7 +227,6 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				true,
 				false,
 				I18nProperties.getValidationError(Validations.beforeDate, admissionDateField.getCaption(), dischargeDateField.getCaption())));
-		admissionDateField.setInvalidCommitted(true);
 		dischargeDateField.addValidator(
 			new DateComparisonValidator(
 				dischargeDateField,
@@ -195,43 +234,39 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				false,
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, dischargeDateField.getCaption(), admissionDateField.getCaption())));
+		dischargeDateField.addValueChangeListener(event -> admissionDateField.markAsDirty()); // re-evaluate admission date for consistent validation of all fields
 		intensiveCareUnitStart.addValidator(
 			new DateComparisonValidator(
 				intensiveCareUnitStart,
 				admissionDateField,
 				false,
-				true,
+				false,
 				I18nProperties.getValidationError(Validations.afterDate, intensiveCareUnitStart.getCaption(), admissionDateField.getCaption())));
 		intensiveCareUnitStart.addValidator(
 			new DateComparisonValidator(
 				intensiveCareUnitStart,
 				intensiveCareUnitEnd,
 				true,
-				true,
+				false,
 				I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitStart.getCaption(), intensiveCareUnitEnd.getCaption())));
 		intensiveCareUnitEnd.addValidator(
 			new DateComparisonValidator(
 				intensiveCareUnitEnd,
 				intensiveCareUnitStart,
 				false,
-				true,
+				false,
 				I18nProperties.getValidationError(Validations.afterDate, intensiveCareUnitEnd.getCaption(), intensiveCareUnitStart.getCaption())));
 		intensiveCareUnitEnd.addValidator(
 			new DateComparisonValidator(
 				intensiveCareUnitEnd,
 				dischargeDateField,
 				true,
-				true,
+				false,
 				I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitEnd.getCaption(), dischargeDateField.getCaption())));
+		intensiveCareUnitStart.addValueChangeListener(event -> intensiveCareUnitEnd.markAsDirty());
+		intensiveCareUnitEnd.addValueChangeListener(event -> intensiveCareUnitStart.markAsDirty());
 		hospitalizedPreviouslyField.addValueChangeListener(e -> updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField));
 		previousHospitalizationsField.addValueChangeListener(e -> updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField));
-	}
-
-	private void setDateFieldVisibilties() {
-
-		boolean visible = YesNoUnknown.YES.equals(intensiveCareUnit.getNullableValue());
-		intensiveCareUnitStart.setVisible(visible);
-		intensiveCareUnitEnd.setVisible(visible);
 	}
 
 	private void updatePrevHospHint(NullableOptionGroup hospitalizedPreviouslyField, PreviousHospitalizationsField previousHospitalizationsField) {

@@ -5,11 +5,11 @@ import java.util.function.Consumer;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.ui.Table;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.caze.AbstractTableField;
@@ -35,11 +35,6 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 
 	@Override
 	protected void editEntry(LocationDto entry, boolean create, Consumer<LocationDto> commitCallback) {
-
-		if (create && entry.getUuid() == null) {
-			entry.setUuid(DataHelper.createUuid());
-		}
-
 		LocationEditForm editForm = new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		editForm.showAddressType();
 		editForm.setValue(entry);
@@ -99,7 +94,9 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 		table.setColumnExpandRatio(LocationDto.COMMUNITY, 0);
 
 		for (Object columnId : table.getVisibleColumns()) {
-			if (!columnId.equals(EDIT_COLUMN_ID)) {
+			if (columnId.equals(EDIT_COLUMN_ID)) {
+				table.setColumnHeader(columnId, "&nbsp");
+			} else {
 				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, (String) columnId));
 			}
 		}
@@ -151,5 +148,13 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 			columnId = LocationDto.STREET;
 		}
 		return fieldAccessCheckers.isAccessible(getEntryType(), columnId.toString());
+	}
+
+	@Override
+	protected LocationDto createEntry() {
+		LocationDto location = LocationDto.build();
+		location.setCountry(FacadeProvider.getCountryFacade().getServerCountry());
+
+		return location;
 	}
 }

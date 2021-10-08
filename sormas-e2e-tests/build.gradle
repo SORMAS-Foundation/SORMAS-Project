@@ -1,0 +1,136 @@
+import com.github.sherter.googlejavaformatgradleplugin.GoogleJavaFormat
+
+plugins {
+	id "com.github.sherter.google-java-format" version "0.9"
+	id "com.diffplug.spotless" version "5.12.4"
+}
+
+apply plugin: "java"
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation "org.junit.jupiter:junit-jupiter:5.4.2"
+	implementation("io.qameta.allure:allure-cucumber4-jvm:$allureVersion")
+    testImplementation("io.qameta.allure:allure-java-commons:$allureVersion")
+	testImplementation("io.qameta.allure:allure-rest-assured:$allureVersion")
+	testImplementation("ru.yandex.qatools.allure:allure-java-adaptor-api:$allureJavaAdapterVersion")
+
+	implementation("io.github.prashant-ramcharan:courgette-jvm:$ioGithubPrashantRamcharan") {
+		exclude group: "org.testng", module: "testng"
+		exclude group: "org.yaml", module: "testng"
+	}
+	implementation("io.github.bonigarcia:webdrivermanager:$webdrivermanager")
+	implementation("org.seleniumhq.selenium:selenium-java:$seleniumhqVersion") {
+		exclude group: "com.google.guava", module: "guava"
+	}
+	implementation("org.awaitility:awaitility:$orgAwaitility")
+	testImplementation("org.awaitility:awaitility:$orgAwaitility")
+
+	testImplementation("com.google.truth.extensions:truth-java8-extension:$truthVersion") {
+		exclude group: "com.google.guava", module: "guava"
+	}
+	implementation("com.google.truth.extensions:truth-java8-extension:$truthVersion") {
+		exclude group: "com.google.guava", module: "guava"
+	}
+
+	implementation("org.projectlombok:lombok:$lombokVersion")
+	annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+	testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
+
+	implementation("com.google.guava:guava:$guavaVersion")
+
+	implementation("com.google.inject:guice:$guiceVersion")
+	implementation("io.cucumber:cucumber-guice:$cucumberVersion")
+
+	implementation("org.slf4j:slf4j-api:$orgSlf4J")
+	implementation("org.slf4j:slf4j-log4j12:$orgSlf4J")
+
+	implementation("ch.qos.logback:logback-classic:$logBackVersion")
+	implementation("ch.qos.logback:logback-core:$logBackVersion")
+
+	implementation("com.github.javafaker:javafaker:$javaFakerVersion") { exclude module: "org.yaml" }
+
+	testImplementation group: "org.assertj", name: "assertj-core", version: assertjCore
+
+	implementation("io.rest-assured:rest-assured:$restAssured")
+	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonDatatypeJdk8")
+	implementation("com.fasterxml.jackson.core:jackson-core:$jacksonDatatypeJdk8")
+	implementation group: "org.assertj", name: "assertj-core", version: assertjCore
+
+	compile group: "com.fasterxml.jackson.core", name: "jackson-core", version: "2.8.8"
+	compile group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: "2.8.8"
+	compile group: "com.fasterxml.jackson.core", name: "jackson-databind", version: "2.8.8"
+}
+
+task format(type: GoogleJavaFormat) {
+	source "src/main"
+	source "src/test"
+	include "**/*.java"
+}
+
+tasks.withType(Test) {
+	maxParallelForks = (int) (Runtime.runtime.availableProcessors().intdiv(2) ?: 1)
+	systemProperties = System.getProperties() as Map<String, ?>
+	systemProperties.remove("java.endorsed.dirs") // needs to be removed from Java 9
+}
+
+task createReportFolderIfNotExist() {
+	def folder = new File("allureReports")
+	if (!folder.exists()) {
+		folder.mkdirs()
+	}
+}
+
+task startTests {
+	doLast {
+		println "Starting the test cases"
+	}
+}
+
+task copyToGeneratedReport(type: Copy) {
+	dependsOn "createReportFolderIfNotExist"
+
+	from file("allureReports/history")
+	into file("$buildDir/allure-results/history")
+}
+
+task copyAllureFiles(type: Copy) {
+	copy {
+		from file("src/test/resources/allurefiles/categories.json")
+		into file("$buildDir/allure-results")
+	}
+
+	copy {
+		from file("$buildDir/resources/test/allurefiles/environment.properties")
+		into file("$buildDir/allure-results")
+	}
+}
+
+task createAllureReport(type: Exec) {
+	workingDir "."
+	def isWindows = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("windows")
+	if (isWindows) {
+		commandLine "cmd", "/c", "allure.bat", "generate", "$buildDir/allure-results", "-c", "-o", "./allureReports"
+	} else {
+		commandLine "allure", "generate", "$buildDir/allure-results", "-c", "-o", "./allureReports"
+	}
+}
+
+test {
+	maxParallelForks = (int) (Runtime.runtime.availableProcessors().intdiv(2) ?: 1)
+	println("maxParallelForks : " + maxParallelForks)
+	testLogging.showStandardStreams = true
+
+	// Pass all properties
+	systemProperties = System.getProperties() as Map<String, ?>
+	systemProperties.remove("java.endorsed.dirs")
+}
+
+compileJava.dependsOn format
+startTests.finalizedBy copyToGeneratedReport
+copyToGeneratedReport.finalizedBy test
+test.finalizedBy copyAllureFiles
+copyAllureFiles.finalizedBy createAllureReport

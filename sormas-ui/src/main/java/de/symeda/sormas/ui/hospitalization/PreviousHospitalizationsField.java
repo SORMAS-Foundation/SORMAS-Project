@@ -22,10 +22,12 @@ import java.util.function.Consumer;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.ui.Table;
 
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -81,22 +83,23 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			}
 		});
 
-		table.addGeneratedColumn(COMMUNITY, new Table.ColumnGenerator() {
-
-			@Override
-			public Object generateCell(Table source, Object itemId, Object columnId) {
-				PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
-				return prevHospitalization.getCommunity();
-			}
+		table.addGeneratedColumn(COMMUNITY, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+			PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
+			return prevHospitalization.getCommunity();
 		});
 
-		table.addGeneratedColumn(DISTRICT, new Table.ColumnGenerator() {
+		table.addGeneratedColumn(DISTRICT, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+			PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
+			DistrictReferenceDto district = prevHospitalization.getDistrict();
 
-			@Override
-			public Object generateCell(Table source, Object itemId, Object columnId) {
-				PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
-				return prevHospitalization.getDistrict();
-			}
+			return district != null ? district.getCaption() : I18nProperties.getCaption(Captions.unknown);
+		});
+
+		table.addGeneratedColumn(PreviousHospitalizationDto.HEALTH_FACILITY, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+			PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
+			FacilityReferenceDto healthFacility = prevHospitalization.getHealthFacility();
+
+			return healthFacility != null ? healthFacility.getCaption() : I18nProperties.getCaption(Captions.unknown);
 		});
 
 		table.setVisibleColumns(
@@ -117,7 +120,10 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 		table.setColumnExpandRatio(PreviousHospitalizationDto.ISOLATED, 0);
 
 		for (Object columnId : table.getVisibleColumns()) {
-			if (!columnId.equals(EDIT_COLUMN_ID)) {
+
+			if (columnId.equals(EDIT_COLUMN_ID)) {
+				table.setColumnHeader(columnId, "&nbsp");
+			} else {
 				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(PreviousHospitalizationDto.I18N_PREFIX, (String) columnId));
 			}
 		}

@@ -6,8 +6,12 @@ import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
+import java.util.Collections;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.cms.AttributeTable;
@@ -79,9 +83,14 @@ public class CmsCreator {
 
 	private static final String SIG_ALG = "SHA256WITHRSA";
 
+	private static final ObjectMapper objectMapper = new ObjectMapper();
+
 	static {
 		//make sure BC is initialised
 		CryptInit.getProvider();
+		objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+		objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+		objectMapper.setVisibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.ANY);
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CmsCreator.class);
@@ -92,18 +101,17 @@ public class CmsCreator {
 		//NOOP
 	}
 
-	public static byte[] signAndEncrypt(
-		byte[] plainData,
-		X509Certificate signerCertificate,
-		PrivateKey privateKey,
-		X509Certificate recipientCertificate,
-		boolean validateSignature)
-		throws CMSException {
+	public static byte[] signAndEncrypt(CmsPlaintext plainData, CmsCertificateConfig certificateConfig, boolean validateSignature)
+		throws CMSException, JsonProcessingException {
 
-		byte[] signedData = sign(plainData, signerCertificate, privateKey, validateSignature);
+		byte[] signedData = sign(
+			objectMapper.writeValueAsBytes(plainData),
+			certificateConfig.getOwnCertificate(),
+			certificateConfig.getOwnPrivateKey(),
+			validateSignature);
 
 		/* Create the encryptor */
-		return encrypt(signedData, recipientCertificate);
+		return encrypt(signedData, certificateConfig.getOtherCertificate());
 	}
 
 	static byte[] sign(byte[] plainData, X509Certificate signerCertificate, PrivateKey privateKey, boolean validateSignature) throws CMSException {
@@ -124,7 +132,7 @@ public class CmsCreator {
 		}
 
 		if (validateSignature) {
-			CmsReader.verify(cmsSignedData, Arrays.asList(signerCertificate));
+			CmsReader.verify(cmsSignedData, Collections.singletonList(signerCertificate));
 			logger.info("Created signature is valid");
 		}
 
@@ -144,7 +152,7 @@ public class CmsCreator {
 					.build(SIG_ALG, privateKey, signerCertificate));
 
 			/* Add the list of certs to the generator */
-			JcaCertStore certs = new JcaCertStore(Arrays.asList(signerCertificate));
+			JcaCertStore certs = new JcaCertStore(Collections.singletonList(signerCertificate));
 			generator.addCertificates(certs);
 
 			return generator;

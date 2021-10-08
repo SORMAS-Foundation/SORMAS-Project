@@ -304,6 +304,10 @@
 	padding: 8px;
   }
 
+  .geocode-button-highlight {
+    color: $s-critical-color !important;
+  }
+
   .root-component {
     min-width: 640px;
 	max-width: 1280px;

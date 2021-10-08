@@ -29,7 +29,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
 
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseLocalizedActivity;
@@ -38,6 +40,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.SormasApplication;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
@@ -46,7 +49,6 @@ import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.util.AppUpdateController;
-import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.NavigationHelper;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
 import de.symeda.sormas.app.util.SormasProperties;
@@ -70,8 +72,8 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 		binding = DataBindingUtil.setContentView(this, R.layout.activity_login_layout);
 		binding.setData(loginViewModel);
 
-		binding.userUserName.setLiveValidationDisabled(true);
-		binding.userPassword.setLiveValidationDisabled(true);
+		binding.loginUsername.setLiveValidationDisabled(true);
+		binding.loginPassword.setLiveValidationDisabled(true);
 
 		boolean hasDefaultUser =
 			!DataHelper.isNullOrEmpty(SormasProperties.getUserNameDefault()) && !DataHelper.isNullOrEmpty(SormasProperties.getUserPasswordDefault());
@@ -82,9 +84,7 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 	protected void onResume() {
 		super.onResume();
 
-		if (LocationService.instance().validateGpsAccessAndEnabled(this)) {
-			checkLoginAndDoUpdateAndInitialSync();
-		}
+		checkLoginAndDoUpdateAndInitialSync();
 
 		if (ConfigProvider.getUser() != null) {
 			binding.signInLayout.setVisibility(View.GONE);
@@ -97,14 +97,12 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 	public void onPause() {
 		super.onPause();
 
-		SoftKeyboardHelper.hideKeyboard(this, binding.userPassword.getWindowToken());
+		SoftKeyboardHelper.hideKeyboard(this, binding.loginPassword.getWindowToken());
 	}
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		if (LocationService.instance().validateGpsAccessAndEnabled(this)) {
-			checkLoginAndDoUpdateAndInitialSync();
-		}
+		checkLoginAndDoUpdateAndInitialSync();
 	}
 
 	/**
@@ -119,6 +117,8 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 			// Do nothing if the installation was successful
 			case Activity.RESULT_OK:
 			case Activity.RESULT_CANCELED:
+			case Activity.RESULT_FIRST_USER:
+				finishAndRemoveTask();
 				break;
 			// Everything else probably is an error
 			default:
@@ -144,8 +144,8 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 
 	public void loginDefaultUser(View view) {
 
-		binding.userUserName.setValue(SormasProperties.getUserNameDefault());
-		binding.userPassword.setValue(SormasProperties.getUserPasswordDefault());
+		binding.loginUsername.setValue(SormasProperties.getUserNameDefault());
+		binding.loginPassword.setValue(SormasProperties.getUserPasswordDefault());
 
 		login(view);
 	}
@@ -156,16 +156,16 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 	public void login(View view) {
 		//Hide notification
 		//NotificationHelper.hideNotification(binding);
-		binding.userUserName.disableErrorState();
-		binding.userPassword.disableErrorState();
+		binding.loginUsername.disableErrorState();
+		binding.loginPassword.disableErrorState();
 
-		String userName = binding.userUserName.getValue().trim();
-		String password = binding.userPassword.getValue();
+		String userName = binding.loginUsername.getValue().trim();
+		String password = binding.loginPassword.getValue();
 
 		if (userName.isEmpty()) {
-			binding.userUserName.enableErrorState(R.string.message_empty_username);
+			binding.loginUsername.enableErrorState(R.string.message_empty_username);
 		} else if (password.isEmpty()) {
-			binding.userPassword.enableErrorState(R.string.message_empty_password);
+			binding.loginPassword.enableErrorState(R.string.message_empty_password);
 		} else {
 			ConfigProvider.setUsernameAndPassword(userName, password);
 
@@ -269,16 +269,31 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 	}
 
 	private void openLandingActivity() {
-		if (ConfigProvider.getUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER)
-			|| ConfigProvider.getUser().hasUserRole(UserRole.CASE_OFFICER)
-			|| ConfigProvider.getUser().hasUserRole(UserRole.POE_INFORMANT)
-			|| ConfigProvider.getUser().hasUserRole(UserRole.COMMUNITY_INFORMANT)
-			|| ConfigProvider.getUser().hasUserRole(UserRole.HOSPITAL_INFORMANT)) {
-			NavigationHelper.goToCases(LoginActivity.this);
-		} else if (ConfigProvider.getUser().hasUserRole(UserRole.CONTACT_OFFICER)) {
-			NavigationHelper.goToContacts(LoginActivity.this);
+
+		User user = ConfigProvider.getUser();
+
+		boolean caseSuveillance = !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CASE_SURVEILANCE);
+		boolean campaigns = !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS);
+
+		if (caseSuveillance) {
+			if (ConfigProvider.hasUserRight(UserRight.CASE_VIEW)
+				&& (user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)
+					|| user.hasUserRole(UserRole.CASE_OFFICER)
+					|| user.hasUserRole(UserRole.POE_INFORMANT)
+					|| user.hasUserRole(UserRole.COMMUNITY_INFORMANT)
+					|| user.hasUserRole(UserRole.HOSPITAL_INFORMANT))) {
+				NavigationHelper.goToCases(LoginActivity.this);
+			} else if (ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) && user.hasUserRole(UserRole.CONTACT_OFFICER)) {
+				NavigationHelper.goToContacts(LoginActivity.this);
+			} else if (ConfigProvider.hasUserRight(UserRight.CASE_VIEW)) {
+				NavigationHelper.goToCases(LoginActivity.this);
+			} else {
+				NavigationHelper.goToSettings(LoginActivity.this);
+			}
+		} else if (campaigns && ConfigProvider.hasUserRight(UserRight.CAMPAIGN_FORM_DATA_VIEW)) {
+			NavigationHelper.goToCampaigns(LoginActivity.this);
 		} else {
-			NavigationHelper.goToCases(LoginActivity.this);
+			NavigationHelper.goToSettings(LoginActivity.this);
 		}
 	}
 

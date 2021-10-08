@@ -15,25 +15,62 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+
 import java.io.Serializable;
-import java.util.Map;
+import java.util.List;
 
 public class SormasToSormasErrorResponse implements Serializable {
 
-	private Map<String, ValidationErrors> errors;
+	private static final long serialVersionUID = -469412330276433776L;
+
+	private String message;
+
+	private String i18nTag;
+
+	private Object[] args;
+
+	private List<ValidationErrors> errors;
 
 	public SormasToSormasErrorResponse() {
 	}
 
-	public SormasToSormasErrorResponse(Map<String, ValidationErrors> errors) {
+	public SormasToSormasErrorResponse(String message, String i18nTag, List<ValidationErrors> errors, Object[] args) {
+		this.message = message;
+		this.i18nTag = i18nTag;
 		this.errors = errors;
+		this.args = args;
 	}
 
-	public Map<String, ValidationErrors> getErrors() {
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public String getI18nTag() {
+		return i18nTag;
+	}
+
+	public void setI18nTag(String i18nTag) {
+		this.i18nTag = i18nTag;
+	}
+
+	public List<ValidationErrors> getErrors() {
 		return errors;
 	}
 
-	public void setErrors(Map<String, ValidationErrors> errors) {
+	public void setErrors(List<ValidationErrors> errors) {
 		this.errors = errors;
+	}
+
+	public Object[] getArgs() {
+		return args;
+	}
+
+	public void setArgs(Object[] args) {
+		this.args = args;
 	}
 }

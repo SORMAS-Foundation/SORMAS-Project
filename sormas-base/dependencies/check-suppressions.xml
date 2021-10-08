@@ -4,6 +4,13 @@
   <!-- *** False positives *** -->
   <suppress>
     <notes><![CDATA[
+    Addresses another software: https://github.com/google/guava
+    ]]></notes>
+	<filePath regex="true">.*\bfailureaccess.*\.jar</filePath>
+    <vulnerabilityName>CVE-2020-8908</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
     We are using newer Gradle version 5.4.1
     ]]></notes>
 	<filePath regex="true">.*\bgradle-wrapper.*\.jar</filePath>
@@ -18,6 +25,20 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
+    CVE is fixed with Keycloak 3.4.2, we use at least version 11
+    ]]></notes>
+	<filePath regex="true">.*\bkeycloak-.*\.jar</filePath>
+    <cve>CVE-2017-12161</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    CVE is fixed with Keycloak 4.0.0, we use at least version 11
+    ]]></notes>
+	<filePath regex="true">.*\bkeycloak-.*\.jar</filePath>
+    <cve>CVE-2018-10912</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
     CVE is fixed with Keycloak 10, we use at least version 11
     ]]></notes>
 	<filePath regex="true">.*\bkeycloak-.*\.jar</filePath>
@@ -27,7 +48,7 @@
     <notes><![CDATA[
     We are using a newer version than Vaadin 6.4.9
     ]]></notes>
-	<filePath regex="true">.*\bvaadin-sass-compiler\.jar</filePath>
+	<filePath regex="true">.*\bvaadin.*</filePath>
     <cve>CVE-2011-0509</cve>
   </suppress>
   <suppress>
@@ -36,6 +57,13 @@
     ]]></notes>
 	<filePath regex="true">.*\bvaadin-sass-compiler\.jar</filePath>
     <cve>CVE-2019-10799</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Addresses another software: https://github.com/tasks/tasks
+    ]]></notes>
+	<filePath regex="true">.*\bmaven-ant-tasks.*\.jar</filePath>
+    <vulnerabilityName>CVE-2020-22475</vulnerabilityName>
   </suppress>
   <!-- *** False positives END *** -->
 

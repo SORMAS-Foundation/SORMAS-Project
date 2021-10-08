@@ -153,23 +153,27 @@ public class CampaignController {
 	public CommitDiscardWrapperComponent<CampaignEditForm> getCampaignComponent(CampaignDto campaignDto, Runnable callback) {
 
 		CampaignEditForm campaignEditForm = new CampaignEditForm(campaignDto);
+		boolean isCreate = false;
 		if (campaignDto == null) {
+			isCreate = true;
 			campaignDto = CampaignDto.build();
 			campaignDto.setCreatingUser(UserProvider.getCurrent().getUserReference());
 		}
 		campaignEditForm.setValue(campaignDto);
 
-		final CommitDiscardWrapperComponent<CampaignEditForm> campaignComponent =
-			new CommitDiscardWrapperComponent<CampaignEditForm>(campaignEditForm, UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT), campaignEditForm.getFieldGroup()) {
+		final CommitDiscardWrapperComponent<CampaignEditForm> campaignComponent = new CommitDiscardWrapperComponent<CampaignEditForm>(
+			campaignEditForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT),
+			campaignEditForm.getFieldGroup()) {
 
-				@Override
-				public void discard() {
-					super.discard();
-					campaignEditForm.discard();
-				}
-			};
+			@Override
+			public void discard() {
+				super.discard();
+				campaignEditForm.discard();
+			}
+		};
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE) && !isCreate) {
 			CampaignDto finalCampaignDto = campaignDto;
 			campaignComponent.addDeleteListener(() -> {
 				FacadeProvider.getCampaignFacade().deleteCampaign(finalCampaignDto.getUuid());
@@ -178,7 +182,7 @@ public class CampaignController {
 		}
 
 		// Initialize 'Archive' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_ARCHIVE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_ARCHIVE) && !isCreate) {
 			final String campaignUuid = campaignDto.getUuid();
 			boolean archived = FacadeProvider.getCampaignFacade().isArchived(campaignUuid);
 			Button archiveCampaignButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {

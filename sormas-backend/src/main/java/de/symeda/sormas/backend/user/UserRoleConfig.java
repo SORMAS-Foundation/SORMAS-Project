@@ -47,6 +47,7 @@ public class UserRoleConfig extends AbstractDomainObject {
 
 	private UserRole userRole;
 	private Set<UserRight> userRights;
+	private boolean enabled = true;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = USER_ROLE, unique = true, nullable = false)
@@ -72,5 +73,14 @@ public class UserRoleConfig extends AbstractDomainObject {
 
 	public void setUserRights(Set<UserRight> userRights) {
 		this.userRights = userRights;
+	}
+
+	@Column(nullable = false)
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 }

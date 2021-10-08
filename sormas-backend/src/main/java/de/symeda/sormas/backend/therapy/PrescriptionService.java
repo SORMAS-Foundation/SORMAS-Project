@@ -18,6 +18,7 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
@@ -131,18 +132,16 @@ public class PrescriptionService extends AdoServiceWithUserFilter<Prescription> 
 		}
 		if (!StringUtils.isEmpty(criteria.getTextFilter())) {
 			String[] textFilters = criteria.getTextFilter().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
-				if (!StringUtils.isEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-// #1389: Disabled the possibility to search in PRESCRIPTION_TYPE and TYPE_OF_DRUG
-//			Should be undone as soon as a possibility was found to search an enum value by string
-//							cb.like(cb.lower(prescription.get(Prescription.PRESCRIPTION_TYPE)), textFilter),
-						cb.like(cb.lower(prescription.get(Prescription.PRESCRIPTION_DETAILS)), textFilter),
-//							cb.like(cb.lower(prescription.get(Prescription.TYPE_OF_DRUG)), textFilter),
-						cb.like(cb.lower(prescription.get(Prescription.PRESCRIBING_CLINICIAN)), textFilter));
-					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
 				}
+
+				// #1389: Disabled the possibility to search in PRESCRIPTION_TYPE and TYPE_OF_DRUG
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.unaccentedIlike(cb, prescription.get(Prescription.PRESCRIPTION_DETAILS), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, prescription.get(Prescription.PRESCRIBING_CLINICIAN), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 

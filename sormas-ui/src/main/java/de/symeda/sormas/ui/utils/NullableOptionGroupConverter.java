@@ -25,9 +25,10 @@ class NullableOptionGroupConverter implements Converter<Object, Object> {
 			case 1:
 				oldValue = newValue.iterator().next();
 				break;
-
 			case 2:
-				oldValue = newValue.stream().filter(v -> !Objects.equals(v, oldValue)).findFirst().get();
+				oldValue = oldValue == null
+					? newValue.stream().filter(v -> !Objects.equals(v, oldValue)).reduce((first, second) -> second).orElse(null)
+					: newValue.stream().filter(v -> !Objects.equals(v, oldValue)).findFirst().get();
 				break;
 
 			default:

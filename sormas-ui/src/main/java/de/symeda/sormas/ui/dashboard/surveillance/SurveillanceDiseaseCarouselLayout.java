@@ -36,6 +36,7 @@ import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
+import de.symeda.sormas.ui.dashboard.surveillance.components.epicurve.SurveillanceEpiCurveComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")

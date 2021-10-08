@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.ui.action;
 
 import static de.symeda.sormas.api.utils.HtmlHelper.cleanHtml;
@@ -25,6 +22,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -32,15 +30,20 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionMeasure;
 import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.action.ActionStatus;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventHelper;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.HtmlHelper;
+import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -63,9 +66,8 @@ public class ActionListEntry extends HorizontalLayout {
 		VerticalLayout withContentLayout = new VerticalLayout();
 		withContentLayout.setMargin(false);
 		withContentLayout.setSpacing(false);
-		withContentLayout.setWidth(100, Unit.PERCENTAGE);
 		addComponent(withContentLayout);
-		setExpandRatio(withContentLayout, 1);
+		setExpandRatio(withContentLayout, 3);
 
 		Label measureOrTitle = new Label(
 			MoreObjects
@@ -180,6 +182,21 @@ public class ActionListEntry extends HorizontalLayout {
 				lastModifiedByLabel.addStyleName(statusStyle);
 			}
 			priorityLabel.addStyleName(statusStyle);
+		}
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
+			VerticalLayout documentLayout = new VerticalLayout();
+			documentLayout.setMargin(false);
+			documentLayout.setSpacing(false);
+			addComponent(documentLayout);
+			setExpandRatio(documentLayout, 1);
+			documentLayout.setMargin(new MarginInfo(true, true, false, false));
+
+			// TODO: user rights?
+			DocumentListComponent documentList =
+				new DocumentListComponent(DocumentRelatedEntityType.ACTION, action.toReference(), UserRight.EVENT_EDIT, false);
+			documentList.addStyleName(CssStyles.SIDE_COMPONENT);
+			documentLayout.addComponent(documentList);
 		}
 	}
 

@@ -64,12 +64,14 @@ public class LoginUI extends UI {
 		getPage().setTitle(FacadeProvider.getConfigFacade().getSormasInstanceName());
 
 		setContent(
-			new LoginScreen(
-				(LoginListener) () -> UI.getCurrent()
-					.getPage()
-					.setLocation(
-						VaadinServletService.getCurrentServletRequest().getContextPath() + "#"
-							+ DataHelper.toStringNullable(UI.getCurrent().getPage().getUriFragment()))));
+				new LoginScreen(
+						DefaultPasswordUIHelper.getInterceptionLoginListener(
+							(LoginListener) () -> UI.getCurrent().getPage().setLocation(
+								VaadinServletService.getCurrentServletRequest().getContextPath() + "#"
+									+ DataHelper.toStringNullable(UI.getCurrent().getPage().getUriFragment())),
+								UI.getCurrent())
+				)
+		);
 	}
 
 	@WebServlet(urlPatterns = {

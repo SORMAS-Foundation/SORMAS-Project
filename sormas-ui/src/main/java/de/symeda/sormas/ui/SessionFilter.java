@@ -66,12 +66,14 @@ public class SessionFilter implements Filter {
 			Language userLanguage =
 				Optional.of(FacadeProvider.getUserFacade()).map(UserFacade::getCurrentUser).map(UserDto::getLanguage).orElse(null);
 			I18nProperties.setUserLanguage(userLanguage);
+			FacadeProvider.getI18nFacade().setUserLanguage(userLanguage);
 			try {
 				try (Closeable bc = BaseControllerProvider.requestStart(controllerProvider)) {
 					chain.doFilter(req, response);
 				}
 			} finally {
 				I18nProperties.removeUserLanguage();
+				FacadeProvider.getI18nFacade().removeUserLanguage();
 			}
 
 		}, request, response);

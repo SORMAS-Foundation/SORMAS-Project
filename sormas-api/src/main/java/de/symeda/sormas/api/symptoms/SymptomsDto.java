@@ -42,8 +42,11 @@ import static de.symeda.sormas.api.Disease.YELLOW_FEVER;
 
 import java.util.Date;
 
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.Complication;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependantOn;
@@ -1174,6 +1177,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Outbreaks
 	private Date onsetDate;
 
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String onsetSymptom;
 
 	@Diseases({
@@ -1220,6 +1224,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@SensitiveData
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String otherHemorrhagicSymptomsText;
 
 	@Diseases({
@@ -1267,6 +1272,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(OTHER_NON_HEMORRHAGIC_SYMPTOMS)
 	@SensitiveData
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String otherNonHemorrhagicSymptomsText;
 
 	@Diseases({
@@ -1325,6 +1331,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String patientIllLocation;
 
 	@Diseases({
@@ -1530,6 +1537,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String symptomsComments;
 
 	@Diseases({
@@ -1677,6 +1685,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@HideForCountries
 	@SensitiveData
 	@SymptomGrouping(SymptomGroup.CARDIOVASCULAR)
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String congenitalHeartDiseaseDetails;
 
 	@Diseases({
@@ -2107,7 +2116,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@Complication
 	@HideForCountries
-	public SymptomState otherComplications;
+	private SymptomState otherComplications;
 
 	@Diseases({
 		AFP,
@@ -2133,7 +2142,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Complication
 	@HideForCountries
 	@SensitiveData
-	public String otherComplicationsText;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	private String otherComplicationsText;
 
 	@Diseases({
 		AFP,
@@ -3529,6 +3539,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.vomiting = vomiting;
 	}
 
+	@Order(331)
 	public SymptomState getConvulsion() {
 		return convulsion;
 	}
@@ -3593,6 +3604,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.congenitalHeartDiseaseDetails = congenitalHeartDiseaseDetails;
 	}
 
+	@Order(332)
 	public SymptomState getHydrophobia() {
 		return hydrophobia;
 	}
@@ -3601,6 +3613,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.hydrophobia = hydrophobia;
 	}
 
+	@Order(333)
 	public SymptomState getOpisthotonus() {
 		return opisthotonus;
 	}
@@ -3609,6 +3622,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.opisthotonus = opisthotonus;
 	}
 
+	@Order(334)
 	public SymptomState getAnxietyStates() {
 		return anxietyStates;
 	}
@@ -3617,6 +3631,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.anxietyStates = anxietyStates;
 	}
 
+	@Order(335)
 	public SymptomState getDelirium() {
 		return delirium;
 	}
@@ -3625,6 +3640,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.delirium = delirium;
 	}
 
+	@Order(336)
 	public SymptomState getUproariousness() {
 		return uproariousness;
 	}
@@ -3633,6 +3649,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.uproariousness = uproariousness;
 	}
 
+	@Order(337)
 	public SymptomState getParesthesiaAroundWound() {
 		return paresthesiaAroundWound;
 	}
@@ -3641,6 +3658,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.paresthesiaAroundWound = paresthesiaAroundWound;
 	}
 
+	@Order(338)
 	public SymptomState getExcessSalivation() {
 		return excessSalivation;
 	}
@@ -3649,6 +3667,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.excessSalivation = excessSalivation;
 	}
 
+	@Order(339)
 	public SymptomState getInsomnia() {
 		return insomnia;
 	}
@@ -3657,6 +3676,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.insomnia = insomnia;
 	}
 
+	@Order(340)
 	public SymptomState getParalysis() {
 		return paralysis;
 	}
@@ -3665,6 +3685,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.paralysis = paralysis;
 	}
 
+	@Order(341)
 	public SymptomState getExcitation() {
 		return excitation;
 	}
@@ -3673,6 +3694,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.excitation = excitation;
 	}
 
+	@Order(342)
 	public SymptomState getDysphagia() {
 		return dysphagia;
 	}
@@ -3681,6 +3703,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.dysphagia = dysphagia;
 	}
 
+	@Order(343)
 	public SymptomState getAerophobia() {
 		return aerophobia;
 	}
@@ -3689,6 +3712,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.aerophobia = aerophobia;
 	}
 
+	@Order(344)
 	public SymptomState getHyperactivity() {
 		return hyperactivity;
 	}
@@ -3697,6 +3721,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.hyperactivity = hyperactivity;
 	}
 
+	@Order(345)
 	public SymptomState getParesis() {
 		return paresis;
 	}
@@ -3705,6 +3730,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.paresis = paresis;
 	}
 
+	@Order(346)
 	public SymptomState getAgitation() {
 		return agitation;
 	}
@@ -3713,6 +3739,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.agitation = agitation;
 	}
 
+	@Order(347)
 	public SymptomState getAscendingFlaccidParalysis() {
 		return ascendingFlaccidParalysis;
 	}
@@ -3721,6 +3748,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.ascendingFlaccidParalysis = ascendingFlaccidParalysis;
 	}
 
+	@Order(348)
 	public SymptomState getErraticBehaviour() {
 		return erraticBehaviour;
 	}
@@ -3729,6 +3757,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.erraticBehaviour = erraticBehaviour;
 	}
 
+	@Order(349)
 	public SymptomState getComa() {
 		return coma;
 	}
@@ -3857,6 +3886,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.blueLips = blueLips;
 	}
 
+	@Order(350)
 	public SymptomState getPalpitations() {
 		return palpitations;
 	}

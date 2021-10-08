@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface ExportProperty {
 
-	String value();
+	String[] value();
 
 	boolean combined() default false;
 }

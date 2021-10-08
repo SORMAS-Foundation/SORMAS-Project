@@ -4,13 +4,16 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 
@@ -18,6 +21,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 
 	private static final long serialVersionUID = -3722694511897383913L;
 
+	public static final String RE_INFECTION = "reInfection";
 	public static final String SEX = "sex";
 	public static final String CITY = "city";
 	public static final String STREET = "street";
@@ -33,7 +37,10 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	public static final String LATEST_SAMPLE_DATE_TIME = "latestSampleDateTime";
 	public static final String SAMPLE_COUNT = "sampleCount";
 	public static final String SYMPTOM_ONSET_DATE = "symptomOnsetDate";
+	public static final String RESPONSIBLE_REGION = "responsibleRegion";
+	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
 
+	private YesNoUnknown reInfection;
 	@PersonalData
 	@SensitiveData
 	private String city;
@@ -60,28 +67,37 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	private Long sampleCount;
 	private Date symptomOnsetDate;
 
+	private String responsibleRegion;
+	private String responsibleCommunity;
+
 	private UserReferenceDto reportingUser;
 
 	//@formatter:off
-	public CaseIndexDetailedDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String personFirstName, String personLastName,
-								Disease disease, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
-								PresentCondition presentCondition, Date reportDate, String reportingUserUuid, Date creationDate,
-								String regionUuid, String districtUuid, String districtName, String communityUuid,
+	public CaseIndexDetailedDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String internalToken, String personFirstName, String personLastName,
+								Disease disease, DiseaseVariant diseaseVariant, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
+								PresentCondition presentCondition, Date reportDate, Date creationDate,
+								String regionUuid, String districtUuid,
 								String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 								String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 								Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex,
-								Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, Date changeDate, Long facilityId,
-								String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
-								String reportingUserFirstName, String reportingUserLastName, Date symptomOnsetDate,
-								int visitCount, long eventCount, Date latestSampleDateTime, long sampleCount) {
-
-		super(id, uuid, epidNumber, externalID, externalToken, personFirstName, personLastName, disease, diseaseDetails, caseClassification, investigationStatus,
-				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid, districtUuid, districtName, communityUuid,
-				healthFacilityUuid, healthFacilityName, healthFacilityDetails, pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
+								Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, VaccinationStatus vaccinationStatus, Date changeDate, Long facilityId,
+								String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleDistrictName, boolean isInJurisdiction,
+								//detailed fields
+								YesNoUnknown reInfection, String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
+								String reportingUserUuid, String reportingUserFirstName, String reportingUserLastName, Date symptomOnsetDate,
+								String responsibleRegion, String responsibleCommunity,
+								int visitCount, long eventCount, Date latestSampleDateTime, long sampleCount, Date latestChangedDate) {
+		super(id, uuid, epidNumber, externalID, externalToken, internalToken, personFirstName, personLastName,
+				disease, diseaseVariant, diseaseDetails, caseClassification, investigationStatus,
+				presentCondition, reportDate, creationDate,
+				regionUuid, districtUuid, healthFacilityUuid,
+				healthFacilityName, healthFacilityDetails, pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex,
-				quarantineTo, completeness, followUpStatus, followUpUntil, changeDate, facilityId, visitCount);
+				quarantineTo, completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccinationStatus, changeDate, facilityId,
+				responsibleRegionUuid, responsibleDistrictUuid, responsibleDistrictName, isInJurisdiction, visitCount, latestChangedDate);
 		//@formatter:on
 
+		this.reInfection = reInfection;
 		this.city = city;
 		this.street = street;
 		this.houseNumber = houseNumber;
@@ -93,6 +109,16 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 		this.latestSampleDateTime = latestSampleDateTime;
 		this.sampleCount = sampleCount;
 		this.symptomOnsetDate = symptomOnsetDate;
+		this.responsibleRegion = responsibleRegion;
+		this.responsibleCommunity = responsibleCommunity;
+	}
+
+	public YesNoUnknown getReInfection() {
+		return reInfection;
+	}
+
+	public void setReInfection(YesNoUnknown reInfection) {
+		this.reInfection = reInfection;
 	}
 
 	public String getCity() {
@@ -165,5 +191,13 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 
 	public Date getSymptomOnsetDate() {
 		return symptomOnsetDate;
+	}
+
+	public String getResponsibleRegion() {
+		return responsibleRegion;
+	}
+
+	public String getResponsibleCommunity() {
+		return responsibleCommunity;
 	}
 }

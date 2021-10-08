@@ -45,7 +45,8 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 		zoom: 13,
 		trackResize: true,
 		});
-	
+
+
 	// full-screen control
 	map.addControl(new L.Control.Fullscreen({
 		position: 'topright',
@@ -172,6 +173,10 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 		    	map.removeLayer(layer);
 		    }
 		});
+	}
+
+	this.addShapefileAttribution = function(attribution){
+		map.attributionControl.addAttribution(attribution);
 	}
  	
 	function featureGroupClick(event) {

@@ -35,18 +35,21 @@ import android.util.Log;
 import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationAllSymptomsCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationAnyOfSymptomsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationEventClusterCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationExposureCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestNegativeResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestOtherPositiveResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestPositiveResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeBetweenYearsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationVaccinationDateNotInStartDateRangeDto;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -84,9 +87,13 @@ public final class RetroProvider {
 
 	private InfoFacadeRetro infoFacadeRetro;
 	private CaseFacadeRetro caseFacadeRetro;
+	private ImmunizationFacadeRetro immunizationFacadeRetro;
 	private PersonFacadeRetro personFacadeRetro;
 	private CommunityFacadeRetro communityFacadeRetro;
 	private DistrictFacadeRetro districtFacadeRetro;
+	private AreaFacadeRetro areaFacadeRetro;
+	private ContinentFacadeRetro continentFacadeRetro;
+	private SubcontinentFacadeRetro subcontinentFacadeRetro;
 	private CountryFacadeRetro countryFacadeRetro;
 	private RegionFacadeRetro regionFacadeRetro;
 	private FacilityFacadeRetro facilityFacadeRetro;
@@ -108,6 +115,7 @@ public final class RetroProvider {
 	private AdditionalTestFacadeRetro additionalTestFacadeRetro;
 	private ClinicalVisitFacadeRetro clinicalVisitFacadeRetro;
 	private DiseaseConfigurationFacadeRetro diseaseConfigurationFacadeRetro;
+	private CustomizableEnumValueFacadeRetro customizableEnumValueFacadeRetro;
 	private InfrastructureFacadeRetro infrastructureFacadeRetro;
 	private CampaignFacadeRetro campaignFacadeRetro;
 	private CampaignFormMetaFacadeRetro campaignFormMetaFacadeRetro;
@@ -126,39 +134,16 @@ public final class RetroProvider {
 			throw new ServerConnectionException(404);
 		}
 
-		RuntimeTypeAdapterFactory<ClassificationCriteriaDto> classificationCriteriaFactory =
-			RuntimeTypeAdapterFactory.of(ClassificationCriteriaDto.class, "type")
-				.registerSubtype(ClassificationAllOfCriteriaDto.class, "ClassificationAllOfCriteriaDto")
-				.registerSubtype(ClassificationCaseCriteriaDto.class, "ClassificationCaseCriteriaDto")
-				.registerSubtype(ClassificationNoneOfCriteriaDto.class, "ClassificationNoneOfCriteriaDto")
-				.registerSubtype(ClassificationPersonAgeBetweenYearsCriteriaDto.class, "ClassificationPersonAgeBetweenYearsCriteriaDto")
-				.registerSubtype(ClassificationPathogenTestPositiveResultCriteriaDto.class, "ClassificationPathogenTestPositiveResultCriteriaDto")
-				.registerSubtype(ClassificationPathogenTestNegativeResultCriteriaDto.class, "ClassificationPathogenTestNegativeResultCriteriaDto")
-				.registerSubtype(
-					ClassificationPathogenTestOtherPositiveResultCriteriaDto.class,
-					"ClassificationPathogenTestOtherPositiveResultCriteriaDto")
-				.registerSubtype(ClassificationXOfCriteriaDto.class, "ClassificationXOfCriteriaDto")
-				.registerSubtype(ClassificationEpiDataCriteriaDto.class, "ClassificationEpiDataCriteriaDto")
-				.registerSubtype(ClassificationNotInStartDateRangeCriteriaDto.class, "ClassificationNotInStartDateRangeCriteriaDto")
-				.registerSubtype(ClassificationSymptomsCriteriaDto.class, "ClassificationSymptomsCriteriaDto")
-				.registerSubtype(ClassificationPathogenTestCriteriaDto.class, "ClassificationPathogenTestCriteriaDto")
-				.registerSubtype(ClassificationExposureCriteriaDto.class, "ClassificationExposureCriteriaDto")
-				.registerSubtype(ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto.class, "ClassificationXOfSubCriteriaDto")
-				.registerSubtype(ClassificationXOfCriteriaDto.ClassificationOneOfCompactCriteriaDto.class, "ClassificationOneOfCompactCriteriaDto")
-				.registerSubtype(ClassificationAllOfCriteriaDto.ClassificationAllOfCompactCriteriaDto.class, "ClassificationAllOfCompactCriteriaDto");
+		retrofit = buildRetrofit(serverUrl);
 
-		Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context1) -> {
-			if (json.isJsonNull()) {
-				return null;
-			}
-			long milliseconds = json.getAsLong();
-			return new Date(milliseconds);
-		}).registerTypeAdapter(Date.class, (JsonSerializer<Date>) (src, typeOfSrc, context12) -> {
-			if (src == null) {
-				return JsonNull.INSTANCE;
-			}
-			return new JsonPrimitive(src.getTime());
-		}).registerTypeAdapterFactory(classificationCriteriaFactory).create();
+		checkCompatibility();
+
+		updateLocale();
+		updateCountryName();
+	}
+
+	public static Retrofit buildRetrofit(String serverUrl) {
+		Gson gson = initGson();
 
 		// Basic auth as explained in https://futurestud.io/tutorials/android-basic-authentication-with-retrofit
 
@@ -189,12 +174,46 @@ public final class RetroProvider {
 			return chain.proceed(builder.build());
 		});
 
-		retrofit =
-			new Retrofit.Builder().baseUrl(serverUrl).addConverterFactory(GsonConverterFactory.create(gson)).client(httpClient.build()).build();
+		return new Retrofit.Builder().baseUrl(serverUrl).addConverterFactory(GsonConverterFactory.create(gson)).client(httpClient.build()).build();
+	}
 
-		checkCompatibility();
+	public static Gson initGson() {
+		RuntimeTypeAdapterFactory<ClassificationCriteriaDto> classificationCriteriaFactory =
+			RuntimeTypeAdapterFactory.of(ClassificationCriteriaDto.class, "type")
+				.registerSubtype(ClassificationAllOfCriteriaDto.class, "ClassificationAllOfCriteriaDto")
+				.registerSubtype(ClassificationCaseCriteriaDto.class, "ClassificationCaseCriteriaDto")
+				.registerSubtype(ClassificationNoneOfCriteriaDto.class, "ClassificationNoneOfCriteriaDto")
+				.registerSubtype(ClassificationPersonAgeBetweenYearsCriteriaDto.class, "ClassificationPersonAgeBetweenYearsCriteriaDto")
+				.registerSubtype(ClassificationPathogenTestPositiveResultCriteriaDto.class, "ClassificationPathogenTestPositiveResultCriteriaDto")
+				.registerSubtype(ClassificationPathogenTestNegativeResultCriteriaDto.class, "ClassificationPathogenTestNegativeResultCriteriaDto")
+				.registerSubtype(
+					ClassificationPathogenTestOtherPositiveResultCriteriaDto.class,
+					"ClassificationPathogenTestOtherPositiveResultCriteriaDto")
+				.registerSubtype(ClassificationXOfCriteriaDto.class, "ClassificationXOfCriteriaDto")
+				.registerSubtype(ClassificationEpiDataCriteriaDto.class, "ClassificationEpiDataCriteriaDto")
+				.registerSubtype(ClassificationVaccinationDateNotInStartDateRangeDto.class, "ClassificationVaccinationDateNotInStartDateRangeDto")
+				.registerSubtype(ClassificationSymptomsCriteriaDto.class, "ClassificationSymptomsCriteriaDto")
+				.registerSubtype(ClassificationPathogenTestCriteriaDto.class, "ClassificationPathogenTestCriteriaDto")
+				.registerSubtype(ClassificationExposureCriteriaDto.class, "ClassificationExposureCriteriaDto")
+				.registerSubtype(ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto.class, "ClassificationXOfSubCriteriaDto")
+				.registerSubtype(ClassificationXOfCriteriaDto.ClassificationOneOfCompactCriteriaDto.class, "ClassificationOneOfCompactCriteriaDto")
+				.registerSubtype(ClassificationAllOfCriteriaDto.ClassificationAllOfCompactCriteriaDto.class, "ClassificationAllOfCompactCriteriaDto")
+				.registerSubtype(ClassificationEventClusterCriteriaDto.class, "ClassificationEventClusterCriteriaDto")
+				.registerSubtype(ClassificationAllSymptomsCriteriaDto.class, "ClassificationAllSymptomsCriteriaDto")
+				.registerSubtype(ClassificationAnyOfSymptomsCriteriaDto.class, "ClassificationAnyOfSymptomsCriteriaDto");
 
-		updateLocale();
+		return new GsonBuilder().registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context1) -> {
+			if (json.isJsonNull()) {
+				return null;
+			}
+			long milliseconds = json.getAsLong();
+			return new Date(milliseconds);
+		}).registerTypeAdapter(Date.class, (JsonSerializer<Date>) (src, typeOfSrc, context12) -> {
+			if (src == null) {
+				return JsonNull.INSTANCE;
+			}
+			return new JsonPrimitive(src.getTime());
+		}).registerTypeAdapterFactory(classificationCriteriaFactory).create();
 	}
 
 	public static int getLastConnectionId() {
@@ -219,6 +238,27 @@ public final class RetroProvider {
 			ConfigProvider.setServerLocale(localeStr);
 		} else {
 			throwException(localeResponse);
+		}
+	}
+
+	private void updateCountryName() throws ServerCommunicationException, ServerConnectionException {
+		Response<String> countryNameResponse;
+		infoFacadeRetro = retrofit.create(InfoFacadeRetro.class);
+		Call<String> countryNameCall = infoFacadeRetro.getCountryName();
+		try {
+			countryNameResponse = countryNameCall.execute();
+		} catch (IOException e) {
+			Log.w(RetroProvider.class.getSimpleName(), e.getMessage());
+			// wrap the exception message inside a response object
+			countryNameResponse = Response.error(500, ResponseBody.create(MediaType.parse("text/plain"), e.getMessage()));
+		}
+
+		if (countryNameResponse.isSuccessful()) {
+			// success - now check compatibility
+			String countryNameStr = countryNameResponse.body();
+			ConfigProvider.setServerCountryName(countryNameStr);
+		} else {
+			throwException(countryNameResponse);
 		}
 	}
 
@@ -447,6 +487,19 @@ public final class RetroProvider {
 		return instance.caseFacadeRetro;
 	}
 
+	public static ImmunizationFacadeRetro getImmunizationFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.immunizationFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.immunizationFacadeRetro == null) {
+					instance.immunizationFacadeRetro = instance.retrofit.create(ImmunizationFacadeRetro.class);
+				}
+			}
+		}
+		return instance.immunizationFacadeRetro;
+	}
+
 	public static PersonFacadeRetro getPersonFacade() throws NoConnectionException {
 		if (instance == null)
 			throw new NoConnectionException();
@@ -484,6 +537,45 @@ public final class RetroProvider {
 			}
 		}
 		return instance.districtFacadeRetro;
+	}
+
+	public static AreaFacadeRetro getAreaFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.areaFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.areaFacadeRetro == null) {
+					instance.areaFacadeRetro = instance.retrofit.create(AreaFacadeRetro.class);
+				}
+			}
+		}
+		return instance.areaFacadeRetro;
+	}
+
+	public static ContinentFacadeRetro getContinentFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.continentFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.continentFacadeRetro == null) {
+					instance.continentFacadeRetro = instance.retrofit.create(ContinentFacadeRetro.class);
+				}
+			}
+		}
+		return instance.continentFacadeRetro;
+	}
+
+	public static SubcontinentFacadeRetro getSubcontinentFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.subcontinentFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.subcontinentFacadeRetro == null) {
+					instance.subcontinentFacadeRetro = instance.retrofit.create(SubcontinentFacadeRetro.class);
+				}
+			}
+		}
+		return instance.subcontinentFacadeRetro;
 	}
 
 	public static CountryFacadeRetro getCountryFacade() throws NoConnectionException {
@@ -757,6 +849,19 @@ public final class RetroProvider {
 			}
 		}
 		return instance.diseaseConfigurationFacadeRetro;
+	}
+
+	public static CustomizableEnumValueFacadeRetro getCustomizableEnumValueFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.customizableEnumValueFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.customizableEnumValueFacadeRetro == null) {
+					instance.customizableEnumValueFacadeRetro = instance.retrofit.create(CustomizableEnumValueFacadeRetro.class);
+				}
+			}
+		}
+		return instance.customizableEnumValueFacadeRetro;
 	}
 
 	public static FeatureConfigurationFacadeRetro getFeatureConfigurationFacade() throws NoConnectionException {

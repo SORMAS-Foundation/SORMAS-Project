@@ -34,8 +34,6 @@ public class DashboardStatisticsSubComponent extends VerticalLayout {
 
 	// Layouts
 	private AbstractOrderedLayout contentLayout;
-	private VerticalLayout leftContentColumnLayout;
-	private VerticalLayout rightContentColumnLayout;
 
 	// Components
 	private Label totalCountLabel;
@@ -117,41 +115,6 @@ public class DashboardStatisticsSubComponent extends VerticalLayout {
 		}
 	}
 
-	public void addTwoColumnsMainContent(boolean showSeparator, int leftColumnPercentalWidth) {
-		if (contentLayout == null) {
-			contentLayout = new HorizontalLayout();
-			contentLayout.setMargin(false);
-			contentLayout.setSpacing(true);
-			contentLayout.setWidth(100, Unit.PERCENTAGE);
-			contentLayout.setHeightUndefined();
-			addComponent(contentLayout);
-			contentLayout.setHeightUndefined();
-			setExpandRatio(contentLayout, 1);
-
-			leftContentColumnLayout = new VerticalLayout();
-			leftContentColumnLayout.setMargin(false);
-			leftContentColumnLayout.setWidth(100, Unit.PERCENTAGE);
-			leftContentColumnLayout.setHeightUndefined();
-			contentLayout.addComponent(leftContentColumnLayout);
-
-			if (showSeparator) {
-				Label separator = new Label();
-				separator.setHeight(100, Unit.PERCENTAGE);
-				CssStyles.style(separator, CssStyles.VR, CssStyles.HSPACE_LEFT_3, CssStyles.HSPACE_RIGHT_3);
-				contentLayout.addComponent(separator);
-			}
-
-			rightContentColumnLayout = new VerticalLayout();
-			rightContentColumnLayout.setMargin(false);
-			rightContentColumnLayout.setWidth(100, Unit.PERCENTAGE);
-			rightContentColumnLayout.setHeightUndefined();
-			contentLayout.addComponent(rightContentColumnLayout);
-
-			contentLayout.setExpandRatio(leftContentColumnLayout, leftColumnPercentalWidth);
-			contentLayout.setExpandRatio(rightContentColumnLayout, 100 - leftColumnPercentalWidth);
-		}
-	}
-
 	public void addComponentToContent(AbstractComponent component) {
 		if (contentLayout != null) {
 			component.setWidth(100, Unit.PERCENTAGE);
@@ -167,35 +130,9 @@ public class DashboardStatisticsSubComponent extends VerticalLayout {
 		}
 	}
 
-	public void addComponentToLeftContentColumn(AbstractComponent component) {
-		if (leftContentColumnLayout != null) {
-			component.setWidth(100, Unit.PERCENTAGE);
-			leftContentColumnLayout.addComponent(component);
-		}
-	}
-
-	public void addComponentToRightContentColumn(AbstractComponent component) {
-		if (rightContentColumnLayout != null) {
-			component.setWidth(100, Unit.PERCENTAGE);
-			rightContentColumnLayout.addComponent(component);
-		}
-	}
-
 	public void removeAllComponentsFromContent() {
 		if (contentLayout != null) {
 			contentLayout.removeAllComponents();
-		}
-	}
-
-	public void removeAllComponentsFromLeftContentColumn() {
-		if (leftContentColumnLayout != null) {
-			leftContentColumnLayout.removeAllComponents();
-		}
-	}
-
-	public void removeAllComponentsFromRightContentColumn() {
-		if (rightContentColumnLayout != null) {
-			rightContentColumnLayout.removeAllComponents();
 		}
 	}
 
@@ -205,8 +142,6 @@ public class DashboardStatisticsSubComponent extends VerticalLayout {
 		}
 
 		contentLayout = null;
-		leftContentColumnLayout = null;
-		rightContentColumnLayout = null;
 	}
 
 	public void updateCountLabel(int count) {

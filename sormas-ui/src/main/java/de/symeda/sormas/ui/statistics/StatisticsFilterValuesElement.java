@@ -36,14 +36,14 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
@@ -120,6 +120,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		tokenField.setEnableDefaultDeleteTokenAction(true);
 
 		addDropdown = new ComboBox<TokenizableValue>("", getFilterValues());
+		addDropdown.setWidth(200, Unit.PIXELS);
 		addDropdown.setId("select-" + rowIndex);
 		addDropdown.addStyleName(CssStyles.VSPACE_NONE);
 		addDropdown.setPlaceholder(I18nProperties.getString(Strings.promptTypeToAdd));
@@ -180,7 +181,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 				List<StatisticsGroupingKey> dateValues = StatisticsHelper.getTimeGroupingKeys(attribute, subAttribute);
 				return createTokens(dateValues);
 			case REGION:
-				return createTokens(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+				return createTokens(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 			case DISTRICT:
 				if (jurisdictionElement == null) {
 					return createTokens(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
@@ -220,7 +221,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 					return new ArrayList<>();
 				}
 			case PERSON_REGION:
-				return createTokens(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+				return createTokens(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 			case PERSON_DISTRICT:
 				if (residenceElement == null) {
 					return createTokens(FacadeProvider.getDistrictFacade().getAllActiveAsReference());

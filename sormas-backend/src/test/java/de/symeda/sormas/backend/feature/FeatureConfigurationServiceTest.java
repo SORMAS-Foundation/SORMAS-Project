@@ -1,13 +1,17 @@
 package de.symeda.sormas.backend.feature;
 
+import static org.junit.Assert.assertTrue;
+
+import java.util.stream.Collectors;
+
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 
 public class FeatureConfigurationServiceTest extends AbstractBeanTest {
 
@@ -17,6 +21,12 @@ public class FeatureConfigurationServiceTest extends AbstractBeanTest {
 		createConfigurations();
 		FeatureConfigurationService featureConfigurationService = getBean(FeatureConfigurationService.class);
 		featureConfigurationService.createMissingFeatureConfigurations();
+		assertTrue(
+			featureConfigurationService.getAll()
+				.stream()
+				.map(e -> e.getFeatureType())
+				.collect(Collectors.toList())
+				.containsAll(FeatureType.getAllServerFeatures()));
 	}
 
 	@Test

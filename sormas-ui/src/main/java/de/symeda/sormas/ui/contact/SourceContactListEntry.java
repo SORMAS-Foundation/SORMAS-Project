@@ -34,7 +34,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -104,8 +103,7 @@ public class SourceContactListEntry extends HorizontalLayout {
 				rightColumn.addComponent(lblContactProximity);
 			}
 
-			Label lblLastContactDate =
-				new Label(DateHelper.formatLocalDate(contact.getLastContactDate(), I18nProperties.getUserLanguage()));
+			Label lblLastContactDate = new Label(DateHelper.formatLocalDate(contact.getLastContactDate(), I18nProperties.getUserLanguage()));
 			CssStyles.style(lblLastContactDate, CssStyles.LABEL_TEXT_ALIGN_RIGHT);
 			lblLastContactDate.setWidth(100, Unit.PERCENTAGE);
 			rightColumn.addComponent(lblLastContactDate);

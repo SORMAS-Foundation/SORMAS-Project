@@ -15,16 +15,16 @@
 
 package de.symeda.sormas.app.backend.person;
 
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
-import android.util.Log;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
@@ -94,6 +94,7 @@ public class PersonDao extends AbstractAdoDao<Person> {
 		Person person = super.queryUuid(uuid);
 		if (person != null) {
 			initLocations(person);
+			initPersonContactDetails(person);
 		}
 		return person;
 	}
@@ -103,6 +104,7 @@ public class PersonDao extends AbstractAdoDao<Person> {
 		Person person = super.queryForId(id);
 		if (person != null) {
 			initLocations(person);
+			initPersonContactDetails(person);
 		}
 		return person;
 	}
@@ -112,6 +114,7 @@ public class PersonDao extends AbstractAdoDao<Person> {
 		Person person = super.querySnapshotByUuid(uuid);
 		if (person != null) {
 			initLocations(person);
+			initPersonContactDetails(person);
 		}
 		return person;
 	}
@@ -140,6 +143,8 @@ public class PersonDao extends AbstractAdoDao<Person> {
 		Person snapshot = super.saveAndSnapshot(person);
 		DatabaseHelper.getLocationDao()
 			.saveCollectionWithSnapshot(DatabaseHelper.getLocationDao().getByPerson(person), person.getAddresses(), person);
+		DatabaseHelper.getPersonContactDetailDao()
+			.saveCollectionWithSnapshot(DatabaseHelper.getPersonContactDetailDao().getByPerson(person), person.getPersonContactDetails(), person);
 
 		return snapshot;
 	}
@@ -160,6 +165,11 @@ public class PersonDao extends AbstractAdoDao<Person> {
 
 	public Person initLocations(Person person) {
 		person.setAddresses(DatabaseHelper.getLocationDao().getByPerson(person));
+		return person;
+	}
+
+	public Person initPersonContactDetails(Person person) {
+		person.setPersonContactDetails(DatabaseHelper.getPersonContactDetailDao().getByPerson(person));
 		return person;
 	}
 }

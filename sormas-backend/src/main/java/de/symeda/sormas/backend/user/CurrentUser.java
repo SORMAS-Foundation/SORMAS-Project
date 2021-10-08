@@ -22,4 +22,13 @@ public class CurrentUser implements Serializable {
 	public User getUser() {
 		return user;
 	}
+
+	/**
+	 * Should only be used for testing scenarios of user rights & jurisdiction!
+	 * @param user
+	 */
+	@Deprecated
+	public void setUser(User user) {
+		this.user = user;
+	}
 }

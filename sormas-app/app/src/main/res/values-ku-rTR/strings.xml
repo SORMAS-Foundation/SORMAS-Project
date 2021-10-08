@@ -265,6 +265,7 @@
     <string name="heading_app_update_required">App update required</string>
     <string name="heading_burial">Burial</string>
     <string name="heading_burials_visited">Burials Visited</string>
+    <string name="heading_campaigns_list">Campaign Data</string>
     <string name="heading_case_disease_changed">Case disease has changed</string>
     <string name="heading_case_edit">Edit Case</string>
     <string name="heading_case_new">New Case</string>
@@ -318,6 +319,7 @@
     <string name="heading_outbreak_response">Outbreak Response</string>
     <string name="heading_person_involved">Person Involved</string>
     <string name="heading_person_involved_new">New Person Involved</string>
+    <string name="heading_person_contact_detail">Person contact details</string>
     <string name="heading_pick_or_create_person">Pick or Create Person</string>
     <string name="heading_pick_or_create_case">Pick or Create a Case</string>
     <string name="heading_pick_or_create_event">Pick or Create a Event</string>
@@ -367,6 +369,7 @@
     <string name="heading_extend_followup">Extend follow-up period</string>
     <string name="heading_contact_tracing_first_contact">First contact with Contact Tracing</string>
     <string name="heading_exposure">Exposure</string>
+    <string name="heading_activityAsCase">Activity as Case</string>
     <string name="hint_add_to_empty_list">Add a new entry by pressing the \"+\" symbol in the top right.</string>
     <string name="hint_clear">Clear</string>
     <string name="hint_create_pin">Please choose a four-digit PIN which you will use to authenticate yourself whenever you open the SORMAS app.</string>

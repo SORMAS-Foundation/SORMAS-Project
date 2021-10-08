@@ -19,6 +19,9 @@ package de.symeda.sormas.api.therapy;
 
 import java.util.Date;
 
+import javax.validation.constraints.Size;
+
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
@@ -44,16 +47,21 @@ public class TreatmentDto extends PseudonymizableDto {
 	private TherapyReferenceDto therapy;
 	private Date treatmentDateTime;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String executingClinician;
 	private TreatmentType treatmentType;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String treatmentDetails;
 	private TypeOfDrug typeOfDrug;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String dose;
 	private TreatmentRoute route;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String routeDetails;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
 	private String additionalNotes;
 	private PrescriptionReferenceDto prescription;
 

@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
@@ -47,7 +47,7 @@ public class OutbreakFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testOutbreakCreationAndDeletion() {
 
-		DistrictReferenceDto district = new DistrictReferenceDto(rdcf.district.getUuid());
+		DistrictReferenceDto district = new DistrictReferenceDto(rdcf.district.getUuid(), null, null);
 		Disease disease = Disease.EVD;
 
 		getOutbreakFacade().startOutbreak(district, disease);

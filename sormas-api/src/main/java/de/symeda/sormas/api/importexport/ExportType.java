@@ -4,7 +4,9 @@ public enum ExportType {
 
 	CASE,
 	CONTACT,
+	EVENT_PARTICIPANTS,
 	VISIT,
-	SAMPLE;
-
+	SAMPLE,
+	TASK,
+	PERSON
 }

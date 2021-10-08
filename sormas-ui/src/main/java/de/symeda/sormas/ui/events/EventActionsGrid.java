@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import de.symeda.sormas.ui.utils.DateFormatHelper;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -26,6 +25,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
 
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.event.EventActionIndexDto;
@@ -37,6 +37,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -48,6 +49,7 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 	public static final String EVENT_DATE = Captions.singleDayEventDate;
 	public static final String ACTION_LAST_MODIFIED_BY_OR_CREATOR = "actionLastModifiedByOrCreator";
 	public static final String EVENT_EVOLUTION_DATE = Captions.singleDayEventEvolutionDate;
+	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 
 	@SuppressWarnings("unchecked")
 	public <V extends View> EventActionsGrid(EventCriteria eventCriteria, Class<V> viewClass) {
@@ -66,14 +68,21 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 		setColumns(
 			EventActionIndexDto.EVENT_UUID,
 			EventActionIndexDto.EVENT_TITLE,
+			createDiseaseColumn(this),
+			EventActionIndexDto.EVENT_DISEASE_VARIANT,
+			EventActionIndexDto.EVENT_IDENTIFICATION_SOURCE,
 			createEventDateColumn(this),
 			createEventEvolutionDateColumn(this),
 			EventActionIndexDto.EVENT_STATUS,
 			EventActionIndexDto.EVENT_RISK_LEVEL,
 			EventActionIndexDto.EVENT_INVESTIGATION_STATUS,
+			EventActionIndexDto.EVENT_MANAGEMENT_STATUS,
+			EventActionIndexDto.EVENT_REPORTING_USER,
+			EventActionIndexDto.EVENT_RESPONSIBLE_USER,
 			EventActionIndexDto.ACTION_TITLE,
 			EventActionIndexDto.ACTION_CREATION_DATE,
 			EventActionIndexDto.ACTION_CHANGE_DATE,
+			EventActionIndexDto.ACTION_DATE,
 			EventActionIndexDto.ACTION_STATUS,
 			EventActionIndexDto.ACTION_PRIORITY,
 			createLastModifiedByOrCreatorColumn(this));
@@ -83,6 +92,8 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<EventActionIndexDto, Date>) getColumn(EventActionIndexDto.ACTION_CHANGE_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+		((Column<EventActionIndexDto, Date>) getColumn(EventActionIndexDto.ACTION_DATE))
+			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 
 		for (Column<EventActionIndexDto, ?> column : getColumns()) {
 			String columnId = column.getId();
@@ -91,6 +102,15 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 
 		addItemClickListener(
 			new ShowDetailsListener<>(EventActionIndexDto.EVENT_UUID, e -> ControllerProvider.getEventController().navigateToData(e.getEventUuid())));
+	}
+
+	private String createDiseaseColumn(FilteredGrid<EventActionIndexDto, EventCriteria> grid) {
+		Column<EventActionIndexDto, String> diseaseShortColumn =
+			grid.addColumn(event -> DiseaseHelper.toString(event.getEventDisease(), event.getEventDiseaseDetails()));
+		diseaseShortColumn.setId(DISEASE_SHORT);
+		diseaseShortColumn.setSortProperty(EventActionIndexDto.EVENT_DISEASE);
+
+		return DISEASE_SHORT;
 	}
 
 	private String createEventDateColumn(FilteredGrid<EventActionIndexDto, EventCriteria> grid) {
@@ -120,8 +140,7 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 	}
 
 	private String createEventEvolutionDateColumn(FilteredGrid<EventActionIndexDto, EventCriteria> grid) {
-		Column<EventActionIndexDto, String> eventDateColumn =
-				grid.addColumn(event -> DateFormatHelper.formatDate(event.getEventEvolutionDate()));
+		Column<EventActionIndexDto, String> eventDateColumn = grid.addColumn(event -> DateFormatHelper.formatDate(event.getEventEvolutionDate()));
 		eventDateColumn.setId(EVENT_EVOLUTION_DATE);
 		eventDateColumn.setSortProperty(EventActionIndexDto.EVENT_EVOLUTION_DATE);
 		eventDateColumn.setSortable(true);
@@ -151,7 +170,7 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
 						.collect(Collectors.toList()))
 				.stream(),
-			query -> (int) FacadeProvider.getActionFacade().countEventAction(query.getFilter().orElse(null)));
+			query -> (int) FacadeProvider.getActionFacade().countEventActions(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}

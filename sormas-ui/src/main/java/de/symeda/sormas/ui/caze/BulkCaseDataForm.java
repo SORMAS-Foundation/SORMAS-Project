@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
@@ -37,25 +38,28 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseBulkEditData;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -74,6 +78,8 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 	private static final String TYPE_GROUP_LOC = "typeGroupLoc";
 	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
 	private static final String WARNING_LAYOUT = "warningLayout";
+	private static final String SHARE_CHECKBOX = "shareCheckbox";
+	private static final String DONT_SHARE_WARNING_LOC = "dontShareWarning";
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
@@ -99,7 +105,10 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
                             CaseBulkEditData.COMMUNITY) +
                     fluidRowLocs(FACILITY_OR_HOME_LOC, TYPE_GROUP_LOC, CaseBulkEditData.FACILITY_TYPE) +
                     fluidRowLocs(WARNING_LAYOUT) +
-                    fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseBulkEditData.HEALTH_FACILITY_DETAILS);
+                    fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseBulkEditData.HEALTH_FACILITY_DETAILS) +
+                    fluidRowLocs(SHARE_CHECKBOX) +
+                    fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL) +
+                    fluidRowLocs(DONT_SHARE_WARNING_LOC);
     //@formatter:on
 
 	private final DistrictReferenceDto singleSelectedDistrict;
@@ -112,6 +121,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 	private CheckBox outcomeCheckBox;
 	private CheckBox surveillanceOfficerCheckBox;
 	private CheckBox healthFacilityCheckbox;
+	private CheckBox shareWithReportingToolCheckbox;
 	private ComboBox facilityTypeGroup;
 	private ComboBox facilityType;
 	private TextField healthFacilityDetails;
@@ -176,6 +186,10 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		getContent().addComponent(outcomeCheckBox, OUTCOME_CHECKBOX);
 		NullableOptionGroup caseClassification = addField(CaseBulkEditData.CASE_CLASSIFICATION, NullableOptionGroup.class);
 		caseClassification.setEnabled(false);
+		if (!isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			caseClassification.removeItem(CaseClassification.CONFIRMED_NO_SYMPTOMS);
+			caseClassification.removeItem(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
+		}
 		NullableOptionGroup investigationStatus = addField(CaseBulkEditData.INVESTIGATION_STATUS, NullableOptionGroup.class);
 		investigationStatus.setEnabled(false);
 		NullableOptionGroup outcome = addField(CaseBulkEditData.OUTCOME, NullableOptionGroup.class);
@@ -211,7 +225,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		ComboBox community = addInfrastructureField(CaseBulkEditData.COMMUNITY);
 		community.setNullSelectionAllowed(true);
 		community.setEnabled(false);
-		facilityOrHome = new OptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.getTypesOfPlaceForCases());
+		facilityOrHome = new OptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.FOR_CASES);
 		addCustomField(facilityOrHome, FACILITY_OR_HOME_LOC, I18nProperties.getCaption(Captions.casePlaceOfStay));
 		facilityOrHome.setId("facilityOrHome");
 		facilityOrHome.setEnabled(false);
@@ -220,7 +234,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		healthFacilityDetails.setVisible(false);
 
-		facilityTypeGroup = new ComboBox();
+		facilityTypeGroup = ComboBoxHelper.createComboBoxV7();
 		facilityTypeGroup.setId("typeGroup");
 		addCustomField(facilityTypeGroup, TYPE_GROUP_LOC, I18nProperties.getCaption(Captions.Facility_typeGroup));
 		facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
@@ -335,7 +349,28 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		});
 		facilityType.setValue(FacilityType.HOSPITAL); // default
 
-		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+
+		if (FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
+			shareWithReportingToolCheckbox = new CheckBox(I18nProperties.getCaption(Captions.bulkCaseShareWithReportingTool));
+			shareWithReportingToolCheckbox.addStyleName(VSPACE_3);
+			getContent().addComponent(shareWithReportingToolCheckbox, SHARE_CHECKBOX);
+
+			CheckBox dontShareCheckbox = addField(CaseBulkEditData.DONT_SHARE_WITH_REPORTING_TOOL, CheckBox.class);
+			CaseFormHelper.addDontShareWithReportingTool(
+				getContent(),
+				() -> dontShareCheckbox,
+				DONT_SHARE_WARNING_LOC,
+				Strings.messageBulkDontShareWithReportingToolWarning);
+
+			dontShareCheckbox.setEnabled(false);
+			FieldHelper.setEnabledWhen(
+				shareWithReportingToolCheckbox,
+				Collections.singletonList(Boolean.TRUE),
+				Collections.singletonList(dontShareCheckbox),
+				true);
+
+		}
 
 		FieldHelper.setRequiredWhen(getFieldGroup(), diseaseCheckBox, Arrays.asList(CaseBulkEditData.DISEASE), Arrays.asList(true));
 		FieldHelper

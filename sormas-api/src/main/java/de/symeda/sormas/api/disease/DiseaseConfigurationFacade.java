@@ -46,4 +46,9 @@ public interface DiseaseConfigurationFacade {
 	Disease getDefaultDisease();
 
 	List<Disease> getAllDiseasesWithFollowUp(Boolean active, Boolean primary, Boolean caseBased);
+
+	boolean usesExtendedClassification(Disease disease);
+
+	boolean usesExtendedClassificationMulti(Disease disease);
+
 }

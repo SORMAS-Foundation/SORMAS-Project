@@ -28,6 +28,7 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
@@ -52,6 +53,7 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.NavigationHelper;
 
 public class ContactNewActivity extends BaseEditActivity<Contact> {
@@ -97,6 +99,11 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 			_contact.setCaseUuid(caseUuid);
 			_contact.setDisease(contactCase.getDisease());
 			_contact.setDiseaseDetails(contactCase.getDiseaseDetails());
+		} else {
+			Disease defaultDisease = DiseaseConfigurationCache.getInstance().getDefaultDisease();
+			if (defaultDisease != null) {
+				_contact.setDisease(defaultDisease);
+			}
 		}
 
 		_contact.setPerson(_person);
@@ -160,7 +167,6 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 		}
 
 		final Contact contactToSave = getStoredRootEntity();
-
 		ContactNewFragment fragment = (ContactNewFragment) getActiveFragment();
 		fragment.setLiveValidationDisabled(false);
 
@@ -191,9 +197,9 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 							&& contactToSave.getPerson().getAddress().isEmptyLocation()) {
 							Case contactCase = DatabaseHelper.getCaseDao().queryUuidBasic(contactToSave.getCaseUuid());
 							if (contactCase != null) {
-								contactToSave.getPerson().getAddress().setRegion(contactCase.getRegion());
-								contactToSave.getPerson().getAddress().setDistrict(contactCase.getDistrict());
-								contactToSave.getPerson().getAddress().setCommunity(contactCase.getCommunity());
+								contactToSave.getPerson().getAddress().setRegion(contactCase.getResponsibleRegion());
+								contactToSave.getPerson().getAddress().setDistrict(contactCase.getResponsibleDistrict());
+								contactToSave.getPerson().getAddress().setCommunity(contactCase.getResponsibleCommunity());
 							}
 						}
 

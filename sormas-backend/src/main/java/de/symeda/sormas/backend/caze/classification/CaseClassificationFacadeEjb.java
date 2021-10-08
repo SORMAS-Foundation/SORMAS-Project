@@ -23,45 +23,61 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto.ClassificationAllOfCompactCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationAllSymptomsCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationAnyOfSymptomsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationEventClusterCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationExposureCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestNegativeResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestOtherPositiveResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestPositiveResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeBetweenYearsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationVaccinationDateNotInStartDateRangeDto;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto.ClassificationOneOfCompactCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventFacadeEjb;
+import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
+import de.symeda.sormas.backend.sample.PathogenTestService;
 
 /**
  * Stateless instead of Singleton. It's ok to have multiple instances with an
@@ -74,31 +90,62 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 
 	@EJB
 	private PersonFacadeEjbLocal personFacade;
+	@EJB
+	private PathogenTestService pathogenTestService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private EventService eventService;
+	@EJB
+	private ImmunizationService immunizationService;
 
 	/** local cache */
 	private final Map<Disease, DiseaseClassificationCriteriaDto> criteriaMap = new HashMap<>();
 
 	@Override
-	public CaseClassification getClassification(CaseDataDto caze, List<PathogenTestDto> pathogenTests) {
+	public CaseClassification getClassification(CaseDataDto caze) {
 
 		if (criteriaMap.isEmpty()) {
 			buildCriteria();
 		}
 
 		PersonDto person = personFacade.getPersonByUuid(caze.getPerson().getUuid());
+		List<PathogenTestDto> pathogenTests = pathogenTestService.getAllByCase(caze.getUuid())
+			.stream()
+			.map(PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal::toDto)
+			.collect(Collectors.toList());
+		List<EventDto> caseEvents = eventService.getAllByCase(caze.getUuid()).stream().map(EventFacadeEjb::toDto).collect(Collectors.toList());
+		Date lastVaccinationDate = null;
+		if (caze.getDisease() == Disease.YELLOW_FEVER && caze.getVaccinationStatus() == VaccinationStatus.VACCINATED) {
+			lastVaccinationDate = immunizationService.getLastVaccinationDateBefore(person.getUuid(), caze.getDisease(), CaseLogic.getStartDate(caze));
+		}
+
 		DiseaseClassificationCriteriaDto criteria = criteriaMap.get(caze.getDisease());
 
-		if (criteria != null && criteria.getConfirmedCriteria() != null && criteria.getConfirmedCriteria().eval(caze, person, pathogenTests)) {
-			return CaseClassification.CONFIRMED;
-		} else if (criteria != null && criteria.getNotACaseCriteria() != null && criteria.getNotACaseCriteria().eval(caze, person, pathogenTests)) {
-			return CaseClassification.NO_CASE;
-		} else if (criteria != null && criteria.getProbableCriteria() != null && criteria.getProbableCriteria().eval(caze, person, pathogenTests)) {
-			return CaseClassification.PROBABLE;
-		} else if (criteria != null && criteria.getSuspectCriteria() != null && criteria.getSuspectCriteria().eval(caze, person, pathogenTests)) {
-			return CaseClassification.SUSPECT;
-		} else {
-			return CaseClassification.NOT_CLASSIFIED;
+		if (criteria != null) {
+			if (criteria.getConfirmedCriteria() != null
+				&& criteria.getConfirmedCriteria().eval(caze, person, pathogenTests, caseEvents, lastVaccinationDate)) {
+				return CaseClassification.CONFIRMED;
+			} else if (criteria.getNotACaseCriteria() != null
+				&& criteria.getNotACaseCriteria().eval(caze, person, pathogenTests, caseEvents, lastVaccinationDate)) {
+				return CaseClassification.NO_CASE;
+			} else if (criteria.getProbableCriteria() != null
+				&& criteria.getProbableCriteria().eval(caze, person, pathogenTests, caseEvents, lastVaccinationDate)) {
+				return CaseClassification.PROBABLE;
+			} else if (criteria.getSuspectCriteria() != null
+				&& criteria.getSuspectCriteria().eval(caze, person, pathogenTests, caseEvents, lastVaccinationDate)) {
+				return CaseClassification.SUSPECT;
+			} else if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+				if (criteria.getConfirmedNoSymptomsCriteria() != null
+					&& criteria.getConfirmedNoSymptomsCriteria().eval(caze, person, pathogenTests, caseEvents, lastVaccinationDate)) {
+					return CaseClassification.CONFIRMED_NO_SYMPTOMS;
+				} else if (criteria.getConfirmedUnknownSymptomsCriteria() != null
+					&& criteria.getConfirmedUnknownSymptomsCriteria().eval(caze, person, pathogenTests, caseEvents, lastVaccinationDate)) {
+					return CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS;
+				}
+			}
 		}
+		return CaseClassification.NOT_CLASSIFIED;
 	}
 
 	@Override
@@ -133,6 +180,8 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		ClassificationCriteriaDto suspect;
 		ClassificationCriteriaDto probable;
 		ClassificationCriteriaDto confirmed;
+		ClassificationCriteriaDto confirmedNoSymptoms;
+		ClassificationCriteriaDto confirmedUnknownSymptoms;
 
 		// EVD
 		suspect = allOf(
@@ -208,7 +257,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 					positiveTestResult(Disease.YELLOW_FEVER, PathogenTestType.HISTOPATHOLOGY))));
 		confirmed = allOf(
 			suspect,
-			notInStartDateRange(CaseDataDto.VACCINATION_DATE, 30),
+			vaccinationDateNotInStartDateRange(30),
 			xOf(
 				1,
 				allOf(
@@ -403,6 +452,65 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			probable,
 			confirmed,
 			extracted(Disease.CONGENITAL_RUBELLA));
+
+		// CORONAVIRUS
+		suspect = xOf(
+			1,
+			symptom(SymptomsDto.PNEUMONIA_CLINICAL_OR_RADIOLOGIC),
+			symptom(SymptomsDto.DIFFICULTY_BREATHING),
+			symptom(SymptomsDto.COUGH),
+			symptom(SymptomsDto.RUNNY_NOSE),
+			symptom(SymptomsDto.RESPIRATORY_DISEASE_VENTILATION),
+			symptom(SymptomsDto.ACUTE_RESPIRATORY_DISTRESS_SYNDROME),
+			symptom(SymptomsDto.LOSS_OF_TASTE),
+			symptom(SymptomsDto.LOSS_OF_SMELL),
+			symptom(SymptomsDto.SORE_THROAT));
+
+		probable = allOf(suspect, xOf(1, caseData(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, YesNoUnknown.YES), partOfEventCluster()));
+
+		confirmed = allOf(
+			suspect,
+			positiveTestResult(
+				Disease.CORONAVIRUS,
+				PathogenTestType.PCR_RT_PCR,
+				PathogenTestType.ANTIGEN_DETECTION,
+				PathogenTestType.ISOLATION,
+				PathogenTestType.SEQUENCING,
+				PathogenTestType.RAPID_TEST));
+
+		// confirmed_no_symptoms = positive test AND at least one symptom set to no AND all covid-relevant symptoms are anything but yes
+		confirmedNoSymptoms = allOf(
+			positiveTestResult(
+				Disease.CORONAVIRUS,
+				PathogenTestType.PCR_RT_PCR,
+				PathogenTestType.ANTIGEN_DETECTION,
+				PathogenTestType.ISOLATION,
+				PathogenTestType.SEQUENCING,
+				PathogenTestType.RAPID_TEST),
+			anyOfSymptoms(SymptomState.NO, Disease.CORONAVIRUS),
+			noneOf(anyOfSymptoms(SymptomState.YES, Disease.CORONAVIRUS)));
+
+		// confirmed_unknown_symptoms = positive test AND at least one symptom set to null or unknown AND covid-relevant symptoms are anything but yes or no
+		confirmedUnknownSymptoms = allOf(
+			positiveTestResult(
+				Disease.CORONAVIRUS,
+				PathogenTestType.PCR_RT_PCR,
+				PathogenTestType.ANTIGEN_DETECTION,
+				PathogenTestType.ISOLATION,
+				PathogenTestType.SEQUENCING,
+				PathogenTestType.RAPID_TEST),
+			xOf(1, anyOfSymptoms(SymptomState.UNKNOWN, Disease.CORONAVIRUS), anyOfSymptoms(null, Disease.CORONAVIRUS)),
+			noneOf(anyOfSymptoms(SymptomState.NO, Disease.CORONAVIRUS), anyOfSymptoms(SymptomState.YES, Disease.CORONAVIRUS)));
+
+		addCriteria(
+			Disease.CORONAVIRUS,
+			DateHelper.getDateZero(2020, 11, 6),
+			suspect,
+			probable,
+			confirmed,
+			confirmedNoSymptoms,
+			confirmedUnknownSymptoms,
+			extracted(Disease.CORONAVIRUS));
 	}
 
 	private ClassificationAllOfCriteriaDto extracted(Disease disease) {
@@ -417,7 +525,30 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		ClassificationCriteriaDto confirmed,
 		ClassificationCriteriaDto notACase) {
 
-		DiseaseClassificationCriteriaDto criteria = new DiseaseClassificationCriteriaDto(disease, changeDate, suspect, probable, confirmed, notACase);
+		DiseaseClassificationCriteriaDto criteria =
+			new DiseaseClassificationCriteriaDto(disease, changeDate, suspect, probable, confirmed, null, null, notACase);
+		criteriaMap.put(disease, criteria);
+	}
+
+	private void addCriteria(
+		Disease disease,
+		Date changeDate,
+		ClassificationCriteriaDto suspect,
+		ClassificationCriteriaDto probable,
+		ClassificationCriteriaDto confirmed,
+		ClassificationCriteriaDto confirmedNoSymptoms,
+		ClassificationCriteriaDto confirmedUnknownSymptoms,
+		ClassificationCriteriaDto notACase) {
+
+		DiseaseClassificationCriteriaDto criteria = new DiseaseClassificationCriteriaDto(
+			disease,
+			changeDate,
+			suspect,
+			probable,
+			confirmed,
+			confirmedNoSymptoms,
+			confirmedUnknownSymptoms,
+			notACase);
 		criteriaMap.put(disease, criteria);
 	}
 
@@ -481,12 +612,24 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		return new ClassificationPathogenTestOtherPositiveResultCriteriaDto(testedDisease);
 	}
 
-	private ClassificationNotInStartDateRangeCriteriaDto notInStartDateRange(String propertyId, int daysBeforeStartDate) {
-		return new ClassificationNotInStartDateRangeCriteriaDto(propertyId, daysBeforeStartDate);
+	private ClassificationVaccinationDateNotInStartDateRangeDto vaccinationDateNotInStartDateRange(int daysBeforeStartDate) {
+		return new ClassificationVaccinationDateNotInStartDateRangeDto(daysBeforeStartDate);
 	}
 
 	private ClassificationPersonAgeBetweenYearsCriteriaDto personAgeBetweenYears(Integer lowerYearsThreshold, Integer upperYearsThreshold) {
 		return new ClassificationPersonAgeBetweenYearsCriteriaDto(lowerYearsThreshold, upperYearsThreshold);
+	}
+
+	private ClassificationAnyOfSymptomsCriteriaDto anyOfSymptoms(SymptomState symptomState, Disease disease) {
+		return new ClassificationAnyOfSymptomsCriteriaDto(symptomState, disease, configFacade.getCountryLocale());
+	}
+
+	private ClassificationAllSymptomsCriteriaDto allOfSymptoms(SymptomState symptomState, Disease disease) {
+		return new ClassificationAllSymptomsCriteriaDto(symptomState, disease, configFacade.getCountryLocale());
+	}
+
+	private ClassificationEventClusterCriteriaDto partOfEventCluster() {
+		return new ClassificationEventClusterCriteriaDto();
 	}
 
 	@LocalBean

@@ -105,6 +105,11 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_internalToken"
+                    app:value="@{data.internalToken}"
+                    style="@style/ControlSingleColumnStyle"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/contact_disease"
                     app:value="@{data.disease}"
                     app:appendValue="@{data.diseaseDetails}"
@@ -466,6 +471,11 @@
                 <de.symeda.sormas.app.component.controls.ControlTextImageField
                     android:id="@+id/contact_highPriority"
                     app:value="@{data.highPriority}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_vaccinationStatus"
+                    app:value="@{data.vaccinationStatus}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField

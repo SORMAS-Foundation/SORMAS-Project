@@ -15,9 +15,29 @@
 
 package de.symeda.sormas.api;
 
+import java.util.regex.Pattern;
+
+import de.symeda.sormas.api.i18n.I18nProperties;
+
 public final class CountryHelper {
 
 	public static final String COUNTRY_CODE_GERMANY = "de";
 	public static final String COUNTRY_CODE_SWITZERLAND = "ch";
 
+	public static boolean isCountry(String countryLocale, String country) {
+		// If the country locale is complete (e.g. de-DE), check the last (country) part; 
+		// otherwise check the first (language) part
+		return Pattern.matches(I18nProperties.FULL_COUNTRY_LOCALE_PATTERN, countryLocale)
+			? countryLocale.toLowerCase().endsWith(country.toLowerCase())
+			: countryLocale.toLowerCase().startsWith(country.toLowerCase());
+	}
+
+	public static boolean isInCountries(String countryLocale, String... countries) {
+		for (String country : countries) {
+			if (isCountry(countryLocale, country)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

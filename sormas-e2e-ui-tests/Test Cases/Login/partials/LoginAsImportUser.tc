@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<TestCaseEntity>
-   <description>This user role is combined with other user role and is used for Importing Cases and Contacts</description>
-   <name>LoginAsImportUser</name>
-   <tag></tag>
-   <comment></comment>
-   <testCaseGuid>b8dc1c6b-a371-4bf6-a1ca-0e25c3721e36</testCaseGuid>
-</TestCaseEntity>

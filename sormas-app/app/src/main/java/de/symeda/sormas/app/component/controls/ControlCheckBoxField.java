@@ -143,6 +143,10 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
 	protected void onFinishInflate() {
 		super.onFinishInflate();
 
+		initInput();
+	}
+
+	protected void initInput() {
 		input = this.findViewById(R.id.checkbox);
 		input.setImeOptions(getImeOptions());
 		input.setTextAlignment(getTextAlignment());

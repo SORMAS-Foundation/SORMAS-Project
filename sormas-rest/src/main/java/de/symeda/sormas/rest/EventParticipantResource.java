@@ -21,17 +21,24 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.caze.CriteriaWithSorting;
+import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantIndexDto;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey
@@ -55,10 +62,15 @@ public class EventParticipantResource extends EntityDtoResource {
 		return result;
 	}
 
+	@GET
+	@Path("/{uuid}")
+	public EventParticipantDto getByUuid(@PathParam("uuid") String uuid) {
+		return FacadeProvider.getEventParticipantFacade().getByUuid(uuid);
+	}
+
 	@POST
 	@Path("/query")
 	public List<EventParticipantDto> getByUuids(List<String> uuids) {
-
 		List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getByUuids(uuids);
 		return result;
 	}
@@ -71,8 +83,14 @@ public class EventParticipantResource extends EntityDtoResource {
 	}
 
 	@POST
+	@Path("/query/persons")
+	public List<EventParticipantDto> getByPersonUuids(List<String> uuids) {
+		return FacadeProvider.getEventParticipantFacade().getByPersonUuids(uuids);
+	}
+
+	@POST
 	@Path("/push")
-	public List<PushResult> postEventParticipants(List<EventParticipantDto> dtos) {
+	public List<PushResult> postEventParticipants(@Valid List<EventParticipantDto> dtos) {
 
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getEventParticipantFacade()::saveEventParticipant);
 		return result;
@@ -82,6 +100,16 @@ public class EventParticipantResource extends EntityDtoResource {
 	@Path("/uuids")
 	public List<String> getAllActiveUuids() {
 		return FacadeProvider.getEventParticipantFacade().getAllActiveUuids();
+	}
+
+	@POST
+	@Path("/indexList")
+	public Page<EventParticipantIndexDto> getIndexList(
+		@RequestBody CriteriaWithSorting<EventParticipantCriteria> criteriaWithSorting,
+		@QueryParam("offset") int offset,
+		@QueryParam("size") int size) {
+		return FacadeProvider.getEventParticipantFacade()
+			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
 	@GET

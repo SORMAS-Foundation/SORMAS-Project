@@ -20,6 +20,7 @@ import android.os.Bundle;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.databinding.FragmentVisitReadLayoutBinding;
 
@@ -58,6 +59,11 @@ public class VisitReadFragment extends BaseReadFragment<FragmentVisitReadLayoutB
 
 	@Override
 	public boolean showEditAction() {
-		return VisitOrigin.USER.equals(record.getOrigin());
+		AbstractDomainObject ado = getActivityRootData();
+		if (ado instanceof Visit) {
+			Visit visit = (Visit) getActivityRootData();
+			return VisitOrigin.USER.equals(visit.getOrigin());
+		}
+		return true;
 	}
 }

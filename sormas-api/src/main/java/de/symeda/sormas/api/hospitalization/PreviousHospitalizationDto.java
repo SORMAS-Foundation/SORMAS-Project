@@ -19,11 +19,15 @@ package de.symeda.sormas.api.hospitalization;
 
 import java.util.Date;
 
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.caze.CaseLogic;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -44,6 +48,11 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 	public static final String ISOLATED = "isolated";
 	public static final String DESCRIPTION = "description";
+	public static final String HOSPITALIZATION_REASON = "hospitalizationReason";
+	public static final String OTHER_HOSPITALIZATION_REASON = "otherHospitalizationReason";
+	public static final String INTENSIVE_CARE_UNIT = "intensiveCareUnit";
+	public static final String INTENSIVE_CARE_UNIT_START = "intensiveCareUnitStart";
+	public static final String INTENSIVE_CARE_UNIT_END = "intensiveCareUnitEnd";
 
 	private Date admissionDate;
 	private Date dischargeDate;
@@ -54,10 +63,20 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 	@SensitiveData
 	private FacilityReferenceDto healthFacility;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
 	private YesNoUnknown isolated;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
 	private String description;
+
+	private HospitalizationReasonType hospitalizationReason;
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	private String otherHospitalizationReason;
+
+	private YesNoUnknown intensiveCareUnit;
+	private Date intensiveCareUnitStart;
+	private Date intensiveCareUnitEnd;
 
 	public static PreviousHospitalizationDto build(CaseDataDto caze) {
 
@@ -77,11 +96,17 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 			previousHospitalization.setDischargeDate(new Date());
 		}
 
-		previousHospitalization.setRegion(caze.getRegion());
-		previousHospitalization.setDistrict(caze.getDistrict());
-		previousHospitalization.setCommunity(caze.getCommunity());
+		previousHospitalization.setRegion(CaseLogic.getRegionWithFallback(caze));
+		previousHospitalization.setDistrict(CaseLogic.getDistrictWithFallback(caze));
+		previousHospitalization.setCommunity(CaseLogic.getCommunityWithFallback(caze));
 		previousHospitalization.setHealthFacility(caze.getHealthFacility());
+		previousHospitalization.setHealthFacilityDetails(caze.getHealthFacilityDetails());
 		previousHospitalization.setIsolated(hospitalization.getIsolated());
+		previousHospitalization.setHospitalizationReason(hospitalization.getHospitalizationReason());
+		previousHospitalization.setOtherHospitalizationReason(hospitalization.getOtherHospitalizationReason());
+		previousHospitalization.setIntensiveCareUnit(hospitalization.getIntensiveCareUnit());
+		previousHospitalization.setIntensiveCareUnitStart(hospitalization.getIntensiveCareUnitStart());
+		previousHospitalization.setIntensiveCareUnitEnd(hospitalization.getIntensiveCareUnitEnd());
 
 		return previousHospitalization;
 	}
@@ -156,5 +181,45 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 
 	public void setHealthFacilityDetails(String healthFacilityDetails) {
 		this.healthFacilityDetails = healthFacilityDetails;
+	}
+
+	public HospitalizationReasonType getHospitalizationReason() {
+		return hospitalizationReason;
+	}
+
+	public void setHospitalizationReason(HospitalizationReasonType hospitalizationReason) {
+		this.hospitalizationReason = hospitalizationReason;
+	}
+
+	public String getOtherHospitalizationReason() {
+		return otherHospitalizationReason;
+	}
+
+	public void setOtherHospitalizationReason(String otherHospitalizationReason) {
+		this.otherHospitalizationReason = otherHospitalizationReason;
+	}
+
+	public YesNoUnknown getIntensiveCareUnit() {
+		return intensiveCareUnit;
+	}
+
+	public void setIntensiveCareUnit(YesNoUnknown intensiveCareUnit) {
+		this.intensiveCareUnit = intensiveCareUnit;
+	}
+
+	public Date getIntensiveCareUnitStart() {
+		return intensiveCareUnitStart;
+	}
+
+	public void setIntensiveCareUnitStart(Date intensiveCareUnitStart) {
+		this.intensiveCareUnitStart = intensiveCareUnitStart;
+	}
+
+	public Date getIntensiveCareUnitEnd() {
+		return intensiveCareUnitEnd;
+	}
+
+	public void setIntensiveCareUnitEnd(Date intensiveCareUnitEnd) {
+		this.intensiveCareUnitEnd = intensiveCareUnitEnd;
 	}
 }

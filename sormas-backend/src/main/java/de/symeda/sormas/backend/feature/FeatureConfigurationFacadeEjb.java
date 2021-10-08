@@ -1,6 +1,22 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.feature;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +34,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.feature.FeatureConfigurationCriteria;
@@ -25,18 +42,18 @@ import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb;
-import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
-import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -111,15 +128,15 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 
 		if (includeInactive) {
 			if (criteria.getDistrict() == null) {
-				List<District> districts = null;
+				List<District> districts;
 				if (criteria.getRegion() != null) {
 					Region region = regionService.getByUuid(criteria.getRegion().getUuid());
 					districts = districtService.getAllActiveByRegion(region);
 				} else {
-					districts = districtService.getAllActive();
+					districts = districtService.getAllActiveByServerCountry();
 				}
 
-				List<String> activeUuids = resultList.stream().map(config -> config.getDistrictUuid()).collect(Collectors.toList());
+				List<String> activeUuids = resultList.stream().map(FeatureConfigurationIndexDto::getDistrictUuid).collect(Collectors.toList());
 				districts = districts.stream().filter(district -> !activeUuids.contains(district.getUuid())).collect(Collectors.toList());
 
 				for (District district : districts) {
@@ -138,7 +155,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		}
 
 		if (criteria.getRegion() != null) {
-			resultList.sort((c1, c2) -> c1.getDistrictName().compareTo(c2.getDistrictName()));
+			resultList.sort(Comparator.comparing(FeatureConfigurationIndexDto::getDistrictName));
 		} else {
 			resultList.sort((c1, c2) -> {
 				if (c1.getRegionName().equals(c2.getRegionName())) {
@@ -152,7 +169,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 
 	@Override
-	public void saveFeatureConfigurations(Collection<FeatureConfigurationIndexDto> configurations, FeatureType featureType) {
+	public void saveFeatureConfigurations(@Valid Collection<FeatureConfigurationIndexDto> configurations, FeatureType featureType) {
 
 		for (FeatureConfigurationIndexDto config : configurations) {
 			saveFeatureConfiguration(config, featureType);
@@ -160,7 +177,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 
 	@Override
-	public void saveFeatureConfiguration(FeatureConfigurationIndexDto configuration, FeatureType featureType) {
+	public void saveFeatureConfiguration(@Valid FeatureConfigurationIndexDto configuration, FeatureType featureType) {
 
 		// Delete an existing configuration that was set inactive and is not a server feature
 		if (!featureType.isServerFeature() && Boolean.FALSE.equals(configuration.isEnabled())) {
@@ -178,8 +195,8 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 			configurationDto = FeatureConfigurationDto.build();
 			configurationDto.setFeatureType(featureType);
 			configurationDto.setDisease(configuration.getDisease());
-			configurationDto.setRegion(new RegionReferenceDto(configuration.getRegionUuid()));
-			configurationDto.setDistrict(new DistrictReferenceDto(configuration.getDistrictUuid()));
+			configurationDto.setRegion(new RegionReferenceDto(configuration.getRegionUuid(), null, null));
+			configurationDto.setDistrict(new DistrictReferenceDto(configuration.getDistrictUuid(), null, null));
 			configurationDto.setEnabled(configuration.isEnabled());
 		}
 
@@ -240,6 +257,18 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	@Override
 	public boolean isFeatureEnabled(FeatureType featureType) {
 		return !isFeatureDisabled(featureType);
+	}
+
+	@Override
+	public boolean isAnySurveillanceEnabled() {
+		return isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
+			|| isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
+			|| isFeatureEnabled(FeatureType.AGGREGATE_REPORTING);
+	}
+
+	@Override
+	public boolean isCountryEnabled() {
+		return isAnySurveillanceEnabled();
 	}
 
 	@Override

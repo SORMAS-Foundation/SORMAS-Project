@@ -5,6 +5,7 @@ import java.util.Date;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -30,17 +31,15 @@ public class MergeCasesView extends AbstractView {
 
 	public static final String VIEW_NAME = CasesView.VIEW_NAME + "/merge";
 
-	private CaseCriteria criteria;
-
-	private MergeCasesGrid grid;
-	private MergeCasesFilterComponent filterComponent;
+	private final MergeCasesGrid grid;
+	private final MergeCasesFilterComponent filterComponent;
 
 	public MergeCasesView() {
 		super(VIEW_NAME);
 
 		boolean criteriaUninitialized = !ViewModelProviders.of(MergeCasesView.class).has(CaseCriteria.class);
 
-		criteria = ViewModelProviders.of(MergeCasesView.class).get(CaseCriteria.class);
+		CaseCriteria criteria = ViewModelProviders.of(MergeCasesView.class).get(CaseCriteria.class);
 		if (criteriaUninitialized) {
 			criteria.creationDateFrom(DateHelper.subtractDays(new Date(), 30))
 				.creationDateTo(new Date())
@@ -60,9 +59,7 @@ public class MergeCasesView extends AbstractView {
 				navigateTo(null);
 			}
 		});
-		filterComponent.setIgnoreRegionCallback((ignoreRegion) -> {
-			grid.reload(ignoreRegion);
-		});
+		filterComponent.setIgnoreRegionCallback(grid::reload);
 		gridLayout.addComponent(filterComponent);
 
 		gridLayout.addComponent(grid);
@@ -104,7 +101,7 @@ public class MergeCasesView extends AbstractView {
 			I18nProperties.getString(Strings.no),
 			null,
 			e -> {
-				if (e.booleanValue() == true) {
+				if (e) {
 					grid.calculateCompletenessValues();
 					new Notification(
 						I18nProperties.getString(Strings.headingCasesArchived),
@@ -117,8 +114,11 @@ public class MergeCasesView extends AbstractView {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		grid.reload();
-		filterComponent.updateDuplicateCountLabel(grid.getTreeData().getRootItems().size());
+		filterComponent.updateDuplicateCountLabel(0);
+		VaadinUiUtil.showSimplePopupWindow(
+			I18nProperties.getString(Strings.headingCaution),
+			I18nProperties.getString(Strings.infoMergeFiltersHint),
+			ContentMode.HTML,
+			640);
 	}
-
 }

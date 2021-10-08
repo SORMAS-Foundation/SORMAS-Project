@@ -30,14 +30,14 @@ import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.facility.FacilityService;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb;
-import de.symeda.sormas.backend.region.CommunityService;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb;
-import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
-import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.community.CommunityService;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "HospitalizationFacade")
@@ -73,6 +73,8 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setIsolated(source.getIsolated());
 		target.setIsolationDate(source.getIsolationDate());
 		target.setLeftAgainstAdvice(source.getLeftAgainstAdvice());
+		target.setHospitalizationReason(source.getHospitalizationReason());
+		target.setOtherHospitalizationReason(source.getOtherHospitalizationReason());
 
 		List<PreviousHospitalization> previousHospitalizations = new ArrayList<>();
 		for (PreviousHospitalizationDto prevDto : source.getPreviousHospitalizations()) {
@@ -110,6 +112,11 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
 		target.setIsolated(source.getIsolated());
 		target.setDescription(source.getDescription());
+		target.setHospitalizationReason(source.getHospitalizationReason());
+		target.setOtherHospitalizationReason(source.getOtherHospitalizationReason());
+		target.setIntensiveCareUnit(source.getIntensiveCareUnit());
+		target.setIntensiveCareUnitStart(source.getIntensiveCareUnitStart());
+		target.setIntensiveCareUnitEnd(source.getIntensiveCareUnitEnd());
 
 		return target;
 	}
@@ -132,6 +139,8 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setIsolated(source.getIsolated());
 		target.setIsolationDate(source.getIsolationDate());
 		target.setLeftAgainstAdvice(source.getLeftAgainstAdvice());
+		target.setHospitalizationReason(source.getHospitalizationReason());
+		target.setOtherHospitalizationReason(source.getOtherHospitalizationReason());
 
 		List<PreviousHospitalizationDto> previousHospitalizations = new ArrayList<>();
 		for (PreviousHospitalization prevDto : source.getPreviousHospitalizations()) {
@@ -165,6 +174,11 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
 		target.setIsolated(source.getIsolated());
 		target.setDescription(source.getDescription());
+		target.setHospitalizationReason(source.getHospitalizationReason());
+		target.setOtherHospitalizationReason(source.getOtherHospitalizationReason());
+		target.setIntensiveCareUnit(source.getIntensiveCareUnit());
+		target.setIntensiveCareUnitStart(source.getIntensiveCareUnitStart());
+		target.setIntensiveCareUnitEnd(source.getIntensiveCareUnitEnd());
 
 		return target;
 	}

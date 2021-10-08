@@ -65,7 +65,7 @@ public class DateTimeField extends CustomField<Date> {
 			converterSet = true;
 		}
 
-		timeField = new ComboBox();
+		timeField = ComboBoxHelper.createComboBoxV7();
 		timeField.setId(this.getId() + "_" + "time");
 		timeField.addContainerProperty(CAPTION_PROPERTY_ID, String.class, null);
 		timeField.setItemCaptionPropertyId(CAPTION_PROPERTY_ID);

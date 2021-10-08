@@ -170,18 +170,20 @@ public class PageMenuControl extends LinearLayout {
 	}
 
 	public void markActiveMenuItem(PageMenuItem menuItem) {
-		for (PageMenuItem m : menuItems) {
-			if (m != null) {
-				m.setActive(false);
+		if (menuItem != null) {
+			for (PageMenuItem m : menuItems) {
+				if (m != null) {
+					m.setActive(false);
+				}
 			}
+
+			menuItem.setActive(true);
+
+			adapter.notifyDataSetChanged();
+
+			invalidate();
+			requestLayout();
 		}
-
-		menuItem.setActive(true);
-
-		adapter.notifyDataSetChanged();
-
-		invalidate();
-		requestLayout();
 	}
 
 	@Override

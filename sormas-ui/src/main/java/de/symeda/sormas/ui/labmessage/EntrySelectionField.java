@@ -87,9 +87,7 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 
 	private void addCreateEntityRadioGroup() {
 		rbCreateEntity = new RadioButtonGroup<>();
-// 		TODO: Add creation of event participants
-//		rbCreateEntity.setItems(CREATE_CASE, CREATE_CONTACT, CREATE_EVENT_PARTICIPANT);
-		rbCreateEntity.setItems(CREATE_CASE, CREATE_CONTACT);
+		rbCreateEntity.setItems(CREATE_CASE, CREATE_CONTACT, CREATE_EVENT_PARTICIPANT);
 		rbCreateEntity.setItemCaptionGenerator((item) -> {
 			if (item == CREATE_CASE) {
 				return I18nProperties.getCaption(Captions.caseCreateNew);
@@ -161,8 +159,12 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 		rbSelectEventParticipant.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
 				rbCreateEntity.setValue(null);
-				rbSelectCase.setValue(null);
-				rbSelectContact.setValue(null);
+				if (rbSelectCase != null) {
+					rbSelectCase.setValue(null);
+				}
+				if (rbSelectContact != null) {
+					rbSelectContact.setValue(null);
+				}
 				eventParticipantGrid.setEnabled(true);
 				if (caseGrid != null) {
 					caseGrid.setEnabled(false);

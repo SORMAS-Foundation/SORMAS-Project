@@ -3,7 +3,9 @@ package de.symeda.sormas.ui.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -41,7 +43,6 @@ public class DownloadUtilTest extends AbstractBeanTest {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		String userUuid = user.getUuid();
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -84,10 +85,11 @@ public class DownloadUtilTest extends AbstractBeanTest {
 		}
 
 		StreamResource contactVisitsExport =
-			DownloadUtil.createVisitsExportStreamResource(new ContactCriteria(), "test_contact_follow_up_export.csv");
+			DownloadUtil.createVisitsExportStreamResource(new ContactCriteria(), Collections::emptySet, ExportEntityName.CONTACT_FOLLOW_UPS);
 
+		String expectedFileName = DownloadUtil.createFileNameWithCurrentDate(ExportEntityName.CONTACT_FOLLOW_UPS, ".csv");
 		Assert.assertNotNull(contactVisitsExport);
-		Assert.assertEquals("test_contact_follow_up_export.csv", contactVisitsExport.getStream().getFileName());
+		Assert.assertEquals(expectedFileName, contactVisitsExport.getStream().getFileName());
 		InputStream stream = contactVisitsExport.getStream().getStream();
 
 		final String shortDate = DateFormatHelper.formatDate(new Date());

@@ -19,38 +19,35 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
+
 @Remote
 public interface SormasToSormasFacade {
 
-	void saveSharedCases(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;
+	String getOrganizationId();
 
-	void saveSharedContacts(SormasToSormasEncryptedDataDto sharedContact) throws SormasToSormasException, SormasToSormasValidationException;
+	List<SormasServerDescriptor> getAllAvailableServers();
 
-	void shareCases(List<String> caseUuids, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	SormasServerDescriptor getSormasServerDescriptorById(String id);
 
-	void shareContacts(List<String> contactUuids, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	void rejectShareRequest(ShareRequestDataType dataType, String uuid) throws SormasToSormasException;
 
-	void returnCase(String caseUuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	void acceptShareRequest(ShareRequestDataType dataType, String uuid) throws SormasToSormasException, SormasToSormasValidationException;
 
-	void returnContact(String contactUuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	void revokeShare(String shareInfoUuid) throws SormasToSormasException;
 
-	void saveReturnedCase(SormasToSormasEncryptedDataDto sharedCase) throws SormasToSormasException, SormasToSormasValidationException;
+	void requestsRevoked(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException;
 
-	void saveReturnedContact(SormasToSormasEncryptedDataDto sharedContact) throws SormasToSormasException, SormasToSormasValidationException;
+	void requestAccepted(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException;
 
-	void syncCase(String caseUuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	boolean isFeatureEnabledForUser();
 
-	void saveSyncedCases(SormasToSormasEncryptedDataDto sharedCase) throws SormasToSormasException, SormasToSormasValidationException;
+	boolean isFeatureConfigured();
 
-	void syncContact(String contactUuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	boolean isSharingCasesContactsAndSamplesEnabledForUser();
 
-	void saveSyncedContacts(SormasToSormasEncryptedDataDto sharedData) throws SormasToSormasException, SormasToSormasValidationException;
+	boolean isSharingEventsEnabledForUser();
 
-	List<ServerAccessDataReferenceDto> getAvailableOrganizations();
-
-	ServerAccessDataReferenceDto getOrganizationRef(String id);
-
-	List<SormasToSormasShareInfoDto> getShareInfoIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max);
-
-	boolean isFeatureEnabled();
+	boolean isSharingLabMessagesEnabledForUser();
 }

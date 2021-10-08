@@ -22,6 +22,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -51,6 +52,7 @@ import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacad
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "CampaignFacade")
 public class CampaignFacadeEjb implements CampaignFacade {
@@ -108,11 +110,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 			cq.orderBy(cb.desc(campaign.get(Campaign.CHANGE_DATE)));
 		}
 
-		if (first != null && max != null) {
-			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			return em.createQuery(cq).getResultList();
-		}
+		return QueryHelper.getResultList(em, cq, first, max);
 	}
 
 	@Override
@@ -160,7 +158,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	}
 
 	@Override
-	public CampaignDto saveCampaign(CampaignDto dto) {
+	public CampaignDto saveCampaign(@Valid CampaignDto dto) {
 
 		Campaign campaign = fromDto(dto, true);
 		campaignService.ensurePersisted(campaign);

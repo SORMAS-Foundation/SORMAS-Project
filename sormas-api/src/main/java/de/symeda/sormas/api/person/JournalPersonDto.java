@@ -1,13 +1,10 @@
 package de.symeda.sormas.api.person;
 
-import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.utils.PersonalData;
-import de.symeda.sormas.api.utils.SensitiveData;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 

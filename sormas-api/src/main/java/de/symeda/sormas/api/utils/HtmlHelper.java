@@ -27,6 +27,7 @@ public class HtmlHelper {
 		Whitelist.relaxed().addTags("hr", "font").addAttributes("font", "size", "face", "color").addAttributes("div", "align");
 
 	private static final String HYPERLINK_TAG = "a";
+	private static final String SPAN_TAG = "span";
 	private static final String TITLE_ATTRIBUTE = "title";
 
 	public static String cleanHtml(String string) {
@@ -66,12 +67,20 @@ public class HtmlHelper {
 	 * @return Generated hyperlink with possible html tags escaped to prevent HTML injection.
 	 */
 	public static String buildHyperlinkTitle(String title, String caption) {
+		return buildTitle(HYPERLINK_TAG, title, caption);
+	}
 
-		// Build hyperlink with title tag
-		String result = String.format("<a %s>%s</a>", cleanHtmlAttribute(TITLE_ATTRIBUTE, title), HtmlHelper.cleanHtml(caption));
+	public static String buildTitle(String title, String caption) {
+		return buildTitle(SPAN_TAG, title, caption);
+	}
+
+	private static String buildTitle(String tag, String title, String caption) {
+
+		// Build tag with title attribute
+		String result = String.format("<%s %s>%s</%s>", tag, cleanHtmlAttribute(TITLE_ATTRIBUTE, title), HtmlHelper.cleanHtml(caption), tag);
 
 		// Prevent breakout in tag attributes: only allow the intended tag attribute
-		result = Jsoup.clean(result, Whitelist.none().addTags(HYPERLINK_TAG).addAttributes(HYPERLINK_TAG, TITLE_ATTRIBUTE));
+		result = Jsoup.clean(result, Whitelist.none().addTags(tag).addAttributes(tag, TITLE_ATTRIBUTE));
 		return result;
 	}
 }

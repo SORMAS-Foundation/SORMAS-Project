@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -19,7 +20,7 @@ public interface CampaignFacade {
 
 	long count(CampaignCriteria campaignCriteria);
 
-	CampaignDto saveCampaign(CampaignDto dto);
+	CampaignDto saveCampaign(@Valid CampaignDto dto);
 
 	CampaignDto getByUuid(String uuid);
 

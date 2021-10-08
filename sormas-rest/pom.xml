@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>de.symeda.sormas</groupId>
 		<artifactId>sormas-base</artifactId>
-		<version>1.55.0-SNAPSHOT</version>
+		<version>1.64.0</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 
@@ -39,15 +39,15 @@
 		</dependency>
 
 		<dependency>
-		    <groupId>org.glassfish.jersey.containers</groupId>
-		    <artifactId>jersey-container-servlet</artifactId>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-servlet</artifactId>
 		</dependency>
 		<dependency>
-		    <groupId>org.glassfish.jersey.media</groupId>
-		    <artifactId>jersey-media-json-jackson</artifactId>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
 		</dependency>
 
-      	<dependency>
+	  	<dependency>
 			<groupId>javax.security.enterprise</groupId>
 			<artifactId>javax.security.enterprise-api</artifactId>
 		</dependency>
@@ -114,6 +114,26 @@
 				</configuration>
 			</plugin>
 
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>src/main/resources/workflow-documentation.properties</file>
+							</files>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 			<!-- Swagger Generation -->
 			<plugin>
 				<groupId>io.openapitools.swagger</groupId>
@@ -121,10 +141,32 @@
 				<executions>
 					<execution>
 						<id>generate-swagger</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>generate-swagger-for-journal</id>
 						<phase>generate-test-resources</phase>
 						<goals>
 							<goal>generate</goal>
 						</goals>
+						<configuration>
+							<outputFilename>external_visits_API</outputFilename>
+							<swaggerConfig>
+								<info>
+									<title>SORMAS external visits journal API</title>
+									<description>
+										${externalVisitsDescription}
+									</description>
+									<version>1.41.1</version>
+								</info>
+							</swaggerConfig>
+							<resourcePackages>
+								<resourcePackage>de.symeda.sormas.rest.externaljournal</resourcePackage>
+							</resourcePackages>
+						</configuration>
 					</execution>
 				</executions>
 				<configuration>

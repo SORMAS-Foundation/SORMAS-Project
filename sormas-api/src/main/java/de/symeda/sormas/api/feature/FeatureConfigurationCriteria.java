@@ -1,9 +1,9 @@
 package de.symeda.sormas.api.feature;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class FeatureConfigurationCriteria extends BaseCriteria implements Cloneable {
 

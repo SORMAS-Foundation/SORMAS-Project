@@ -21,11 +21,8 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
-import javax.ejb.SessionContext;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
@@ -48,20 +45,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.user.CurrentUser;
 import de.symeda.sormas.backend.user.CurrentUserQualifier;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoService<ADO> {
 
 	// protected to be used by implementations
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
-
-	@Resource
-	private SessionContext context;
 
 	private final Class<ADO> elementClass;
 
@@ -79,6 +73,16 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 
 	protected User getCurrentUser() {
 		return currentUser.get().getUser();
+	}
+
+	/**
+	 * Should only be used for testing scenarios of user rights & jurisdiction!
+	 * 
+	 * @param user
+	 */
+	@Deprecated
+	public void setCurrentUser(User user) {
+		currentUser.get().setUser(user);
 	}
 
 	protected Class<ADO> getElementClass() {
@@ -105,7 +109,10 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<ADO> from = cq.from(getElementClass());
 		cq.select(cb.count(from));
-		cq.where(filterBuilder.apply(cb, from));
+		Predicate filter = filterBuilder.apply(cb, from);
+		if (filter != null) {
+			cq.where(filter);
+		}
 		return em.createQuery(cq).getSingleResult();
 	}
 
@@ -119,11 +126,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		Root<ADO> from = cq.from(getElementClass());
 		Path<Timestamp> changeDatePath = from.get(AbstractDomainObject.CHANGE_DATE);
 		cq.select(cb.greatest(changeDatePath));
-		try {
-			return em.createQuery(cq).getSingleResult();
-		} catch (NoResultException ex) {
-			return null;
-		}
+		return QueryHelper.getSingleResult(em, cq);
 	}
 
 	@Override
@@ -134,6 +137,19 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		Root<ADO> from = cq.from(getElementClass());
 		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
 
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<ADO> getAll(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
+		Root<ADO> from = cq.from(getElementClass());
+		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
+		Predicate filter = filterBuilder.apply(cb, from);
+		if (filter != null) {
+			cq.where(filter);
+		}
 		return em.createQuery(cq).getResultList();
 	}
 
@@ -207,7 +223,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	}
 
 	@Override
-	public ADO getByUuid(@NotNull String uuid) {
+	public ADO getByUuid(String uuid) {
 
 		if (uuid == null) {
 			return null;
@@ -248,7 +264,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 
 	@Override
 	public void delete(ADO deleteme) {
-		em.remove(deleteme);
+		em.remove(em.contains(deleteme) ? deleteme : em.merge(deleteme)); // todo: investigate why the entity might be detached (example: AdditionalTest)
 		em.flush();
 	}
 
@@ -257,7 +273,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		em.flush();
 	}
 
-	protected Boolean exists(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
+	public Boolean exists(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -275,6 +291,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		query.select(cb.selectCase().when(exists, trueExpression).otherwise(falseExpression));
 
 		final TypedQuery<Object> typedQuery = em.createQuery(query);
+		typedQuery.setMaxResults(1);
 
 		try {
 			return (Boolean) typedQuery.getSingleResult();
@@ -282,95 +299,6 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 			// h2 database entity manager throws "NoResultException" if the entity not found
 			return false;
 		}
-	}
-
-	/**
-	 * @return {@code true}, if the system itself is the executing user.
-	 */
-	protected boolean isSystem() {
-		return context.isCallerInRole(UserRole._SYSTEM);
-	}
-
-	/**
-	 * @return {@code true}, if the executing user is {@link UserRole#ADMIN}.
-	 */
-	protected boolean isAdmin() {
-		return hasUserRole(UserRole.ADMIN);
-	}
-
-	/**
-	 * @param permission
-	 * @return {@code true}, if the executing user is {@code userRole}.
-	 */
-	protected boolean hasUserRole(UserRole userRole) {
-		return context.isCallerInRole(userRole.name());
-	}
-
-	protected Timestamp requestTransactionDate() {
-		return (Timestamp) this.em.createNativeQuery("SELECT NOW()").getSingleResult();
-	}
-
-	/**
-	 * Prüft, ob ein eindeutig zu vergebener Wert bereits durch eine andere Entity verwendet wird.
-	 * 
-	 * @param uuid
-	 *            uuid der aktuell in Bearbeitung befindlichen Entity.
-	 * @param propertyName
-	 *            Attribut-Name des zu prüfenden Werts.
-	 * @param propertyValue
-	 *            Zu prüfender eindeutiger Wert.
-	 * @return
-	 *         <ol>
-	 *         <li>{@code true}, wenn {@code propertyValue == null}.</li>
-	 *         <li>{@code true}, wenn {@code propertyValue} durch die Entity mit {@code uuid} verwendet wird.</li>
-	 *         <li>{@code false}, wenn {@code propertyValue} bereits durch einen andere Entity verwendet wird.</li>
-	 *         </ol>
-	 */
-	protected boolean isUnique(String uuid, String propertyName, Object propertyValue) {
-
-		if (propertyValue == null) {
-			return true;
-		} else {
-			ADO foundEntity = getByUniqueAttribute(propertyName, propertyValue);
-			return foundEntity == null || foundEntity.getUuid().equals(uuid);
-		}
-	}
-
-	/**
-	 * Lädt eine Entity anhand einem als eindeutig erwartetem Attribut.
-	 * 
-	 * @param propertyName
-	 *            Attribut-Name des zu prüfenden Werts.
-	 * @param propertyValue
-	 *            Zu prüfender eindeutiger Wert.
-	 * @return {@code null}, wenn es keine Entity gibt, die {@code propertyValue} gesetzt hat.
-	 */
-	protected ADO getByUniqueAttribute(String propertyName, Object propertyValue) {
-
-//		return JpaHelper.simpleSingleQuery(em, elementClass, propertyName, propertyValue);
-		return null;
-	}
-
-	public static <T> StringBuilder appendInFilterValues(
-		StringBuilder filterBuilder,
-		List<Object> filterBuilderParameters,
-		List<T> values,
-		Function<T, ?> valueMapper) {
-
-		filterBuilder.append("(");
-		boolean first = true;
-		for (T value : values) {
-			if (first) {
-				filterBuilder.append("?");
-				first = false;
-			} else {
-				filterBuilder.append(",?");
-			}
-			filterBuilder.append(filterBuilderParameters.size() + 1);
-			filterBuilderParameters.add(valueMapper.apply(value));
-		}
-		filterBuilder.append(")");
-		return filterBuilder;
 	}
 
 	public List<Long> getIdsByReferenceDtos(List<? extends ReferenceDto> references) {
@@ -382,5 +310,15 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		cq.where(from.get(AbstractDomainObject.UUID).in(references.stream().map(ReferenceDto::getUuid).collect(Collectors.toList())));
 		cq.select(from.get(AbstractDomainObject.ID));
 		return em.createQuery(cq).getResultList();
+	}
+
+	protected <T> TypedQuery<T> createQuery(CriteriaQuery<T> cq, Integer first, Integer max) {
+
+		final TypedQuery<T> query = em.createQuery(cq);
+		if (first != null && max != null) {
+			query.setFirstResult(first).setMaxResults(max);
+		}
+
+		return query;
 	}
 }

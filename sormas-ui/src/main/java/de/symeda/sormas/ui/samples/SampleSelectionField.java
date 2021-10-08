@@ -16,8 +16,8 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class SampleSelectionField extends CustomField<SampleDto> {
 
-	public static final String CREATE_SAMPLE = "createContact";
-	public static final String SELECT_SAMPLE = "selectContact";
+	public static final String CREATE_SAMPLE = "createSample";
+	public static final String SELECT_SAMPLE = "selectSample";
 
 	private final List<SampleDto> samples;
 	private final String infoText;

@@ -30,9 +30,9 @@ public class AgeAndBirthDateDtoConverterV7 implements Converter<String, AgeAndBi
 		return PersonHelper.getAgeAndBirthdateString(
 			value.getAge(),
 			value.getAgeType(),
-			value.getBirthdateDD(),
-			value.getBirthdateMM(),
-			value.getBirthdateYYYY(),
+			value.getDateOfBirthDD(),
+			value.getDateOfBirthMM(),
+			value.getDateOfBirthYYYY(),
 			userLanguage);
 	}
 

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14,11 +14,8 @@
  */
 package de.symeda.sormas.ui.events;
 
-import java.util.Collections;
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -40,11 +37,14 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.action.ActionStatsComponent;
+import de.symeda.sormas.ui.docgeneration.EventDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.events.eventLink.SuperordinateEventComponent;
-import de.symeda.sormas.ui.survnet.SurvnetGateway;
-import de.symeda.sormas.ui.survnet.SurvnetGatewayType;
+import de.symeda.sormas.ui.events.groups.EventGroupListComponent;
+import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
+import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceShareComponent;
+import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -65,9 +65,11 @@ public class EventDataView extends AbstractEventView {
 	public static final String DOCUMENTS_LOC = "documents";
 	public static final String SUBORDINATE_EVENTS_LOC = "subordinate-events";
 	public static final String SUPERORDINATE_EVENT_LOC = "superordinate-event";
+	public static final String EVENT_GROUPS_LOC = "event-groups";
+	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 
 	private CommitDiscardWrapperComponent<?> editComponent;
-	private HorizontalLayout survNetLayout;
+	private ExternalSurveillanceShareComponent externalSurvToolLayout;
 
 	public EventDataView() {
 		super(VIEW_NAME);
@@ -76,7 +78,7 @@ public class EventDataView extends AbstractEventView {
 	@Override
 	protected void initView(String params) {
 
-		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid());
+		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid(), false);
 
 		setHeightUndefined();
 
@@ -85,9 +87,12 @@ public class EventDataView extends AbstractEventView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ACTIONS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 12, 0, DOCUMENTS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EventDocumentsComponent.DOCGENERATION_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUPERORDINATE_EVENT_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUBORDINATE_EVENTS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SurvnetGateway.SURVNET_GATEWAY_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENT_GROUPS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ExternalSurveillanceServiceGateway.EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SHORTCUT_LINKS_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
@@ -101,15 +106,16 @@ public class EventDataView extends AbstractEventView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
-		survNetLayout = SurvnetGateway.addComponentToLayout(layout, SurvnetGatewayType.EVENTS, () -> Collections.singletonList(event.getUuid()));
-		setSurvNetLayoutVisibility(event.getEventStatus());
-
-		editComponent = ControllerProvider.getEventController().getEventDataEditComponent(getEventRef().getUuid(), this::setSurvNetLayoutVisibility);
+		editComponent =
+			ControllerProvider.getEventController().getEventDataEditComponent(getEventRef().getUuid(), this::setExternalSurvToolLayoutVisibility);
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, EVENT_LOC);
+
+		externalSurvToolLayout = ExternalSurveillanceServiceGateway.addComponentToLayout(layout, editComponent, event);
+		setExternalSurvToolLayoutVisibility(event.getEventStatus());
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
 			TaskListComponent taskList = new TaskListComponent(TaskContext.EVENT, getEventRef());
@@ -123,25 +129,53 @@ public class EventDataView extends AbstractEventView {
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
 			// TODO: user rights?
-			DocumentListComponent documentList = new DocumentListComponent(DocumentRelatedEntityType.EVENT, getEventRef(), UserRight.EVENT_EDIT);
+			DocumentListComponent documentList =
+				new DocumentListComponent(DocumentRelatedEntityType.EVENT, getEventRef(), UserRight.EVENT_EDIT, event.isPseudonymized());
 			documentList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(documentList, DOCUMENTS_LOC);
 		}
 
-		SuperordinateEventComponent superordinateEventComponent = new SuperordinateEventComponent(event, () -> editComponent.discard());
-		superordinateEventComponent.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(superordinateEventComponent, SUPERORDINATE_EVENT_LOC);
+		EventDocumentsComponent eventDocuments = new EventDocumentsComponent(getEventRef());
+		eventDocuments.addStyleName(CssStyles.SIDE_COMPONENT);
+		layout.addComponent(eventDocuments, EventDocumentsComponent.DOCGENERATION_LOC);
 
-		EventListComponent subordinateEventList = new EventListComponent(event.toReference());
-		subordinateEventList.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(subordinateEventList, SUBORDINATE_EVENTS_LOC);
+		boolean eventHierarchiesFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_HIERARCHIES);
+		if (eventHierarchiesFeatureEnabled) {
+			SuperordinateEventComponent superordinateEventComponent = new SuperordinateEventComponent(event, () -> editComponent.discard());
+			superordinateEventComponent.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(superordinateEventComponent, SUPERORDINATE_EVENT_LOC);
+
+			EventListComponent subordinateEventList = new EventListComponent(event.toReference());
+			subordinateEventList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(subordinateEventList, SUBORDINATE_EVENTS_LOC);
+		}
+
+		boolean eventGroupsFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_GROUPS);
+		if (eventGroupsFeatureEnabled) {
+			EventGroupListComponent eventGroupsList = new EventGroupListComponent(event.toReference());
+			eventGroupsList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(eventGroupsList, EVENT_GROUPS_LOC);
+		}
+
+		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isSharingEventsEnabledForUser();
+		if (sormasToSormasEnabled || event.getSormasToSormasOriginInfo() != null) {
+			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
+			sormasToSormasLocLayout.setMargin(false);
+			sormasToSormasLocLayout.setSpacing(false);
+
+			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(event, sormasToSormasEnabled);
+			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
+			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
+
+			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
+		}
 
 		VerticalLayout shortcutLinksLayout = new VerticalLayout();
 		shortcutLinksLayout.setMargin(false);
 		shortcutLinksLayout.setSpacing(true);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
-			Button seeEventCasesBtn = ButtonHelper.createButtonWithCaption(
+			Button seeEventCasesBtn = ButtonHelper.createButton(
 				"eventLinkToCases",
 				I18nProperties.getCaption(Captions.eventLinkToCases),
 				thisEvent -> ControllerProvider.getCaseController().navigateTo(new CaseCriteria().eventLike(getEventRef().getUuid())),
@@ -150,7 +184,7 @@ public class EventDataView extends AbstractEventView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
-			Button seeEventContactsBtn = ButtonHelper.createButtonWithCaption(
+			Button seeEventContactsBtn = ButtonHelper.createButton(
 				"eventLinkToContacts",
 				I18nProperties.getCaption(Captions.eventLinkToContacts),
 				thisEvent -> ControllerProvider.getContactController().navigateTo(new ContactCriteria().eventUuid(getEventRef().getUuid())),
@@ -160,7 +194,7 @@ public class EventDataView extends AbstractEventView {
 
 		LocationDto eventLocationDto = ((EventDataForm) editComponent.getWrappedComponent()).getValue().getEventLocation();
 		if (eventLocationDto.getFacility() != null) {
-			Button seeEventsWithinTheSameFacility = ButtonHelper.createButtonWithCaption(
+			Button seeEventsWithinTheSameFacility = ButtonHelper.createButton(
 				"eventLinkToEventsWithinTheSameFacility",
 				I18nProperties.getCaption(Captions.eventLinkToEventsWithinTheSameFacility),
 				thisEvent -> ControllerProvider.getEventController()
@@ -180,9 +214,9 @@ public class EventDataView extends AbstractEventView {
 		setEventEditPermission(container);
 	}
 
-	private void setSurvNetLayoutVisibility(EventStatus eventStatus) {
-		if (survNetLayout != null) {
-			survNetLayout.setVisible(eventStatus == EventStatus.CLUSTER);
+	private void setExternalSurvToolLayoutVisibility(EventStatus eventStatus) {
+		if (externalSurvToolLayout != null) {
+			externalSurvToolLayout.setVisible(eventStatus == EventStatus.CLUSTER);
 		}
 	}
 }

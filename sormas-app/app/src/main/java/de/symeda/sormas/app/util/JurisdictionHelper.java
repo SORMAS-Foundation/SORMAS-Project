@@ -1,208 +1,284 @@
 package de.symeda.sormas.app.util;
 
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
-import de.symeda.sormas.api.event.EventJurisdictionDto;
-import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
-import de.symeda.sormas.api.sample.SampleJurisdictionDto;
-import de.symeda.sormas.api.task.TaskJurisdictionDto;
-import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseJurisdictionDto;
+import de.symeda.sormas.app.backend.caze.ResponsibleJurisdictionDto;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactJurisdictionDto;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventJurisdictionDto;
 import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.backend.event.EventParticipantJurisdictionDto;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.immunization.Immunization;
+import de.symeda.sormas.app.backend.immunization.ImmunizationJurisdictionDto;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.backend.sample.SampleJurisdictionDto;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.backend.task.TaskJurisdictionDto;
 import de.symeda.sormas.app.backend.user.User;
 
 public class JurisdictionHelper {
 
-	public static UserJurisdiction createUserJurisdiction(User user) {
-		UserJurisdiction jurisdiction = new UserJurisdiction();
+    public static UserJurisdiction createUserJurisdiction(User user) {
+        UserJurisdiction jurisdiction = new UserJurisdiction();
 
-		jurisdiction.setUuid(user.getUuid());
+        jurisdiction.setUuid(user.getUuid());
 
-		if (user.getRegion() != null) {
-			jurisdiction.setRegionUuid(user.getRegion().getUuid());
-		}
-		if (user.getDistrict() != null) {
-			jurisdiction.setDistrictUuid(user.getDistrict().getUuid());
-		}
-		if (user.getCommunity() != null) {
-			jurisdiction.setCommunityUuid(user.getCommunity().getUuid());
-		}
-		if (user.getHealthFacility() != null) {
-			jurisdiction.setHealthFacilityUuid(user.getHealthFacility().getUuid());
-		}
-		if (user.getPointOfEntry() != null) {
-			jurisdiction.setPointOfEntryUuid(user.getPointOfEntry().getUuid());
-		}
+        if (user.getRegion() != null) {
+            jurisdiction.setRegionUuid(user.getRegion().getUuid());
+        }
+        if (user.getDistrict() != null) {
+            jurisdiction.setDistrictUuid(user.getDistrict().getUuid());
+        }
+        if (user.getCommunity() != null) {
+            jurisdiction.setCommunityUuid(user.getCommunity().getUuid());
+        }
+        if (user.getHealthFacility() != null) {
+            jurisdiction.setHealthFacilityUuid(user.getHealthFacility().getUuid());
+        }
+        if (user.getPointOfEntry() != null) {
+            jurisdiction.setPointOfEntryUuid(user.getPointOfEntry().getUuid());
+        }
 
-		return jurisdiction;
-	}
+        jurisdiction.setJurisdictionLevel(UserRole.getJurisdictionLevel(user.getUserRoles()));
 
-	public static CaseJurisdictionDto createCaseJurisdictionDto(Case caze) {
-		if (caze == null) {
-			return null;
-		}
-		CaseJurisdictionDto dto = new CaseJurisdictionDto();
+        return jurisdiction;
+    }
 
-		if (caze.getReportingUser() != null) {
-			dto.setReportingUserUuid(caze.getReportingUser().getUuid());
-		}
-		if (caze.getRegion() != null) {
-			dto.setRegionUuid(caze.getRegion().getUuid());
-		}
-		if (caze.getDistrict() != null) {
-			dto.setDistrictUuid(caze.getDistrict().getUuid());
-		}
-		if (caze.getCommunity() != null) {
-			dto.setCommunityUuid(caze.getCommunity().getUuid());
-		}
-		if (caze.getHealthFacility() != null) {
-			dto.setHealthFacilityUuid(caze.getHealthFacility().getUuid());
-		}
-		if (caze.getPointOfEntry() != null) {
-			dto.setPointOfEntryUuid(caze.getPointOfEntry().getUuid());
-		}
+    public static CaseJurisdictionDto createCaseJurisdictionDto(Case caze) {
+        if (caze == null) {
+            return null;
+        }
+        CaseJurisdictionDto dto = new CaseJurisdictionDto();
 
-		return dto;
-	}
+        if (caze.getReportingUser() != null) {
+            dto.setReportingUserUuid(caze.getReportingUser().getUuid());
+        }
 
-	public static ContactJurisdictionDto createContactJurisdictionDto(Contact contact) {
-		if (contact == null) {
-			return null;
-		}
-		ContactJurisdictionDto dto = new ContactJurisdictionDto();
+        dto.setResponsibleJurisdiction(createResponsibleJurisdiction(caze));
 
-		if (contact.getReportingUser() != null) {
-			dto.setReportingUserUuid(contact.getReportingUser().getUuid());
-		}
-		if (contact.getRegion() != null) {
-			dto.setRegionUuid(contact.getRegion().getUuid());
-		}
-		if (contact.getDistrict() != null) {
-			dto.setDistrictUuid(contact.getDistrict().getUuid());
-		}
+        if (caze.getRegion() != null) {
+            dto.setRegionUuid(caze.getRegion().getUuid());
+        }
+        if (caze.getDistrict() != null) {
+            dto.setDistrictUuid(caze.getDistrict().getUuid());
+        }
+        if (caze.getCommunity() != null) {
+            dto.setCommunityUuid(caze.getCommunity().getUuid());
+        }
+        if (caze.getHealthFacility() != null) {
+            dto.setHealthFacilityUuid(caze.getHealthFacility().getUuid());
+        }
+        if (caze.getPointOfEntry() != null) {
+            dto.setPointOfEntryUuid(caze.getPointOfEntry().getUuid());
+        }
+        List<Sample> samples = DatabaseHelper.getSampleDao().queryByCase(caze);
+        if (!samples.isEmpty()) {
+            dto.setSampleLabUuids(samples.stream().filter(sample -> sample.getLab() != null).map(sample -> sample.getLab().getUuid()).collect(Collectors.toList()));
+        }
 
-		if (contact.getCaseUuid() != null) {
-			Case caseOfContact = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
-			dto.setCaseJurisdiction(JurisdictionHelper.createCaseJurisdictionDto(caseOfContact));
-		}
+        return dto;
+    }
 
-		return dto;
-	}
+    public static ContactJurisdictionDto createContactJurisdictionDto(Contact contact) {
+        if (contact == null) {
+            return null;
+        }
+        ContactJurisdictionDto dto = new ContactJurisdictionDto();
 
-	public static EventJurisdictionDto createEventJurisdictionDto(Event event) {
-		if (event == null) {
-			return null;
-		}
+        if (contact.getReportingUser() != null) {
+            dto.setReportingUserUuid(contact.getReportingUser().getUuid());
+        }
+        if (contact.getRegion() != null) {
+            dto.setRegionUuid(contact.getRegion().getUuid());
+        }
+        if (contact.getDistrict() != null) {
+            dto.setDistrictUuid(contact.getDistrict().getUuid());
+        }
 
-		Location eventLocation = event.getEventLocation();
-		if (eventLocation == null) {
-			return null;
-		}
+        if (contact.getCaseUuid() != null) {
+            Case caseOfContact = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
+            dto.setCaseJurisdiction(JurisdictionHelper.createCaseJurisdictionDto(caseOfContact));
+        }
 
-		EventJurisdictionDto eventJurisdiction = new EventJurisdictionDto();
+        return dto;
+    }
 
-		if (event.getReportingUser() != null) {
-			eventJurisdiction.setReportingUserUuid(event.getReportingUser().getUuid());
-		}
+    public static ImmunizationJurisdictionDto createImmunizationJurisdictionDto(Immunization immunization) {
+        if (immunization == null) {
+            return null;
+        }
 
-		if (event.getSurveillanceOfficer() != null) {
-			eventJurisdiction.setSurveillanceOfficerUuid(event.getSurveillanceOfficer().getUuid());
-		}
+        ImmunizationJurisdictionDto immunizationJurisdictionDto = new ImmunizationJurisdictionDto();
 
-		if (eventLocation.getRegion() != null) {
-			eventJurisdiction.setRegionUuid(eventLocation.getRegion().getUuid());
-		}
+        if (immunization.getReportingUser() != null) {
+            immunizationJurisdictionDto.setReportingUserUuid(immunization.getReportingUser().getUuid());
+        }
 
-		if (eventLocation.getDistrict() != null) {
-			eventJurisdiction.setDistrictUuid(eventLocation.getDistrict().getUuid());
-		}
+        ResponsibleJurisdictionDto responsibleJurisdiction = createResponsibleJurisdiction(immunization.getResponsibleRegion(), immunization.getResponsibleDistrict(), immunization.getResponsibleCommunity());
+        immunizationJurisdictionDto.setResponsibleJurisdiction(responsibleJurisdiction);
 
-		if (eventLocation.getCommunity() != null) {
-			eventJurisdiction.setCommunityUuid(eventLocation.getCommunity().getUuid());
+        return immunizationJurisdictionDto;
+    }
 
-		}
+    public static EventJurisdictionDto createEventJurisdictionDto(Event event) {
+        if (event == null) {
+            return null;
+        }
 
-		return eventJurisdiction;
-	}
+        Location eventLocation = event.getEventLocation();
+        if (eventLocation == null) {
+            return null;
+        }
 
-	public static EventParticipantJurisdictionDto createEventParticipantJurisdictionDto(EventParticipant eventParticipant) {
-		EventParticipantJurisdictionDto jurisdiction = new EventParticipantJurisdictionDto();
+        EventJurisdictionDto eventJurisdiction = new EventJurisdictionDto();
 
-		if (eventParticipant.getReportingUser() != null) {
-			jurisdiction.setReportingUserUuid(eventParticipant.getReportingUser().getUuid());
-		}
+        if (event.getReportingUser() != null) {
+            eventJurisdiction.setReportingUserUuid(event.getReportingUser().getUuid());
+        }
 
-		return jurisdiction;
-	}
+        if (event.getResponsibleUser() != null) {
+            eventJurisdiction.setResponsibleUserUuid(event.getResponsibleUser().getUuid());
+        }
 
-	public static TaskJurisdictionDto createTaskJurisdictionDto(Task task) {
+        if (eventLocation.getRegion() != null) {
+            eventJurisdiction.setRegionUuid(eventLocation.getRegion().getUuid());
+        }
 
-		if (task == null) {
-			return null;
-		}
+        if (eventLocation.getDistrict() != null) {
+            eventJurisdiction.setDistrictUuid(eventLocation.getDistrict().getUuid());
+        }
 
-		TaskJurisdictionDto jurisdiction = new TaskJurisdictionDto();
+        if (eventLocation.getCommunity() != null) {
+            eventJurisdiction.setCommunityUuid(eventLocation.getCommunity().getUuid());
 
-		if (task.getCreatorUser() != null) {
-			jurisdiction.setCreatorUserUuid(task.getCreatorUser().getUuid());
-		}
+        }
 
-		if (task.getAssigneeUser() != null) {
-			jurisdiction.setAssigneeUserUuid(task.getAssigneeUser().getUuid());
-		}
+        return eventJurisdiction;
+    }
 
-		Case caze = task.getCaze();
-		if (caze != null) {
-			jurisdiction.setCaseJurisdiction(createCaseJurisdictionDto(caze));
-		}
+    public static EventParticipantJurisdictionDto createEventParticipantJurisdictionDto(EventParticipant eventParticipant) {
+        EventParticipantJurisdictionDto jurisdiction = new EventParticipantJurisdictionDto();
 
-		Contact contact = task.getContact();
-		if (contact != null) {
-			jurisdiction.setContactJurisdiction(createContactJurisdictionDto(contact));
-		}
+        if (eventParticipant.getReportingUser() != null) {
+            jurisdiction.setReportingUserUuid(eventParticipant.getReportingUser().getUuid());
+        }
 
-		Event event = task.getEvent();
-		if (event != null) {
-			jurisdiction.setEventJurisdiction(createEventJurisdictionDto(event));
-		}
+        // todo https://github.com/hzi-braunschweig/SORMAS-Project/issues/5903
+        // if (eventParticipant.getRegion() != null) {
+        // 	jurisdiction.setRegionUuid(eventParticipant.getRegion().getUuid());
+        // }
+        //
+        // if (eventParticipant.getDistrict() != null) {
+        // 	jurisdiction.setDistrictUuid(eventParticipant.getDistrict().getUuid());
+        // }
 
-		return jurisdiction;
-	}
+        Event event = eventParticipant.getEvent();
+        if (event != null) {
+            jurisdiction.setEventJurisdictionDto(JurisdictionHelper.createEventJurisdictionDto(event));
+        }
 
-	public static SampleJurisdictionDto createSampleJurisdictionDto(Sample sample) {
+        return jurisdiction;
+    }
 
-		if (sample == null) {
-			return null;
-		}
+    public static TaskJurisdictionDto createTaskJurisdictionDto(Task task) {
 
-		SampleJurisdictionDto jurisdiction = new SampleJurisdictionDto();
+        if (task == null) {
+            return null;
+        }
 
-		if (sample.getReportingUser() != null) {
-			jurisdiction.setReportingUserUuid(sample.getReportingUser().getUuid());
-		}
+        TaskJurisdictionDto jurisdiction = new TaskJurisdictionDto();
 
-		Case caze = sample.getAssociatedCase();
-		if (caze != null) {
-			jurisdiction.setCaseJurisdiction(createCaseJurisdictionDto(caze));
-		}
+        if (task.getCreatorUser() != null) {
+            jurisdiction.setCreatorUserUuid(task.getCreatorUser().getUuid());
+        }
 
-		Contact contact = sample.getAssociatedContact();
-		if (contact != null) {
-			jurisdiction.setContactJurisdiction(createContactJurisdictionDto(contact));
-		}
+        if (task.getAssigneeUser() != null) {
+            jurisdiction.setAssigneeUserUuid(task.getAssigneeUser().getUuid());
+        }
 
-		Facility labFacility = sample.getLab();
-		if (labFacility != null) {
-			jurisdiction.setLabUuid(sample.getLab().getUuid());
-		}
+        Case caze = task.getCaze();
+        if (caze != null) {
+            jurisdiction.setCaseJurisdiction(createCaseJurisdictionDto(caze));
+        }
 
-		return jurisdiction;
-	}
+        Contact contact = task.getContact();
+        if (contact != null) {
+            jurisdiction.setContactJurisdiction(createContactJurisdictionDto(contact));
+        }
+
+        Event event = task.getEvent();
+        if (event != null) {
+            jurisdiction.setEventJurisdiction(createEventJurisdictionDto(event));
+        }
+
+        return jurisdiction;
+    }
+
+    public static SampleJurisdictionDto createSampleJurisdictionDto(Sample sample) {
+
+        if (sample == null) {
+            return null;
+        }
+
+        SampleJurisdictionDto jurisdiction = new SampleJurisdictionDto();
+
+        if (sample.getReportingUser() != null) {
+            jurisdiction.setReportingUserUuid(sample.getReportingUser().getUuid());
+        }
+
+        Case caze = sample.getAssociatedCase();
+        if (caze != null) {
+            jurisdiction.setCaseJurisdiction(createCaseJurisdictionDto(caze));
+        }
+
+        Contact contact = sample.getAssociatedContact();
+        if (contact != null) {
+            jurisdiction.setContactJurisdiction(createContactJurisdictionDto(contact));
+        }
+
+        Facility labFacility = sample.getLab();
+        if (labFacility != null) {
+            jurisdiction.setLabUuid(sample.getLab().getUuid());
+        }
+
+        return jurisdiction;
+    }
+
+    private static ResponsibleJurisdictionDto createResponsibleJurisdiction(Case caze) {
+        Region responsibleRegion = caze.getResponsibleRegion();
+        District responsibleDistrict = caze.getResponsibleDistrict();
+        Community responsibleCommunity = caze.getResponsibleCommunity();
+
+        return createResponsibleJurisdiction(responsibleRegion, responsibleDistrict, responsibleCommunity);
+    }
+
+    private static ResponsibleJurisdictionDto createResponsibleJurisdiction(Region responsibleRegion, District responsibleDistrict, Community responsibleCommunity) {
+        if (responsibleRegion == null && responsibleDistrict == null && responsibleCommunity == null) {
+            return null;
+        }
+
+        ResponsibleJurisdictionDto jurisdiction = new ResponsibleJurisdictionDto();
+        if (responsibleRegion != null) {
+            jurisdiction.setRegionUuid(responsibleRegion.getUuid());
+        }
+        if (responsibleDistrict != null) {
+            jurisdiction.setDistrictUuid(responsibleDistrict.getUuid());
+        }
+        if (responsibleCommunity != null) {
+            jurisdiction.setCommunityUuid(responsibleCommunity.getUuid());
+        }
+
+        return jurisdiction;
+    }
 }

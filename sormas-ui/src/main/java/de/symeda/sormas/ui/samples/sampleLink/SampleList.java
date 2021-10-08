@@ -28,6 +28,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -75,16 +76,26 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
-		List<SampleIndexDto> displayedEntries = getDisplayedEntries();
-		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
-			SampleIndexDto sample = displayedEntries.get(i);
+		for (SampleIndexDto sample : getDisplayedEntries()) {
 			SampleListEntry listEntry = new SampleListEntry(sample);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT)) {
-				listEntry.addEditListener(
-					i,
-					(ClickListener) event -> ControllerProvider.getSampleController().navigateToData(listEntry.getSample().getUuid()));
-			}
+			addEditButton(listEntry);
+			addViewLabMessageButton(listEntry);
 			listLayout.addComponent(listEntry);
+		}
+	}
+
+	private void addEditButton(SampleListEntry listEntry) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT)) {
+			listEntry.addEditListener(
+				(ClickListener) event -> ControllerProvider.getSampleController().navigateToData(listEntry.getSample().getUuid()));
+		}
+	}
+
+	private void addViewLabMessageButton(SampleListEntry listEntry) {
+		List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getForSample(listEntry.getSample().getUuid());
+		if (!labMessages.isEmpty()) {
+			listEntry
+				.addAssociatedLabMessagesListener(clickEvent -> ControllerProvider.getLabMessageController().showLabMessagesSlider(labMessages));
 		}
 	}
 }

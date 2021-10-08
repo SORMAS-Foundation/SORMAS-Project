@@ -22,13 +22,13 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class ContactIndexDto extends PseudonymizableIndexDto implements Serializable {
+public class ContactIndexDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 7511900591141885152L;
 
@@ -47,11 +47,17 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String CONTACT_OFFICER_UUID = "contactOfficerUuid";
 	public static final String CONTACT_CATEGORY = "contactCategory";
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String EXTERNAL_TOKEN = "externalToken";
+	public static final String INTERNAL_TOKEN = "internalToken";
+	public static final String COMPLETENESS = "completeness";
+	public static final String REGION_UUID = "regionUuid";
+	public static final String DISTRICT_UUID = "districtUuid";
+	public static final String COMMUNITY_UUID = "communityUuid";
 
 	private String uuid;
 	@PersonalData
@@ -65,9 +71,12 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
+	private Float completeness;
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
 	private SymptomJournalStatus symptomJournalStatus;
+	private VaccinationStatus vaccinationStatus;
+	private String districtUuid;
 	private String contactOfficerUuid;
 	private Date reportDateTime;
 	private ContactCategory contactCategory;
@@ -75,25 +84,27 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	private int visitCount;
 	private String externalID;
 	private String externalToken;
+	private String internalToken;
 	private String regionName;
 	private String districtName;
 	private String caseRegionName;
 	private String caseDistrictName;
 
-	private ContactJurisdictionDto jurisdiction;
-	private CaseJurisdictionDto caseJurisdiction;
+	private ContactJurisdictionFlagsDto contactJurisdictionFlagsDto;
 
 	//@formatter:off
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
-						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid, String regionName,
-						   String districtUuid, String districtName, String communityUuid, Date lastContactDate, ContactCategory contactCategory, 
-						   ContactProximity contactProximity, ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
-						   Date followUpUntil, SymptomJournalStatus symptomJournalStatus, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
-						   CaseClassification caseClassification, String caseReportingUserUid, String caseRegionUuid, String caseRegionName, String caseDistrictUuid, 
-						   String caseDistrictName, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionName,
+						   String districtName, Date lastContactDate, ContactCategory contactCategory,
+						   ContactProximity contactProximity, ContactClassification contactClassification, ContactStatus contactStatus, Float completeness,
+						   FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, VaccinationStatus vaccinationStatus, String contactOfficerUuid,
+						   String reportingUserUuid, Date reportDateTime,
+						   CaseClassification caseClassification, String caseRegionName, String caseDistrictName,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
-						   String externalID, String externalToken,
-						   int visitCount) {
+						   String externalID, String externalToken, String internalToken, boolean isInJurisdiction, boolean isCaseInJurisdiction,
+						   int visitCount,
+						   Date latestChangedDate // unused, only here for TypedQuery mapping
+	) {
 	//@formatter:on
 
 		this.uuid = uuid;
@@ -102,13 +113,6 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 
 		if (cazeUuid != null) {
 			this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
-			this.caseJurisdiction = new CaseJurisdictionDto(
-				caseReportingUserUid,
-				caseRegionUuid,
-				caseDistrictUuid,
-				caseCommunityUuid,
-				caseHealthFacilityUuid,
-				casePointOfEntryUuid);
 		}
 
 		this.disease = disease;
@@ -118,21 +122,24 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 		this.contactProximity = contactProximity;
 		this.contactClassification = contactClassification;
 		this.contactStatus = contactStatus;
+		this.completeness = completeness;
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
 		this.symptomJournalStatus = symptomJournalStatus;
+		this.vaccinationStatus = vaccinationStatus;
 		this.contactOfficerUuid = contactOfficerUuid;
 		this.reportDateTime = reportDateTime;
 		this.caseClassification = caseClassification;
 		this.visitCount = visitCount;
 		this.externalID = externalID;
 		this.externalToken = externalToken;
+		this.internalToken = internalToken;
 		this.regionName = regionName;
 		this.districtName = districtName;
 		this.caseRegionName = caseRegionName;
 		this.caseDistrictName = caseDistrictName;
 
-		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
+		this.contactJurisdictionFlagsDto = new ContactJurisdictionFlagsDto(isInJurisdiction, isCaseInJurisdiction);
 	}
 
 	public String getUuid() {
@@ -215,6 +222,14 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 		this.contactStatus = contactStatus;
 	}
 
+	public Float getCompleteness() {
+		return completeness;
+	}
+
+	public void setCompleteness(Float completeness) {
+		this.completeness = completeness;
+	}
+
 	public FollowUpStatus getFollowUpStatus() {
 		return followUpStatus;
 	}
@@ -239,8 +254,16 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 		this.symptomJournalStatus = symptomJournalStatus;
 	}
 
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
+	}
+
+	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
+		this.vaccinationStatus = vaccinationStatus;
+	}
+
 	public String getDistrictUuid() {
-		return jurisdiction.getDistrictUuid();
+		return districtUuid;
 	}
 
 	public String getContactOfficerUuid() {
@@ -291,9 +314,21 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 		this.externalID = externalID;
 	}
 
-	public String getExternalToken() { return externalToken; }
+	public String getExternalToken() {
+		return externalToken;
+	}
 
-	public void setExternalToken(String externalToken) { this.externalToken = externalToken; }
+	public void setExternalToken(String externalToken) {
+		this.externalToken = externalToken;
+	}
+
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
+	}
 
 	public String getRegionName() {
 		return regionName;
@@ -331,11 +366,16 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 		return new ContactReferenceDto(uuid);
 	}
 
-	public ContactJurisdictionDto getJurisdiction() {
-		return jurisdiction;
+	public boolean getInJurisdiction() {
+		return contactJurisdictionFlagsDto.getInJurisdiction();
 	}
 
-	public CaseJurisdictionDto getCaseJurisdiction() {
-		return caseJurisdiction;
+	public boolean getCaseInJurisdiction() {
+		return contactJurisdictionFlagsDto.getCaseInJurisdiction();
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 }

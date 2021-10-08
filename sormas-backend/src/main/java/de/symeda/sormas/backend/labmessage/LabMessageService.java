@@ -19,8 +19,8 @@ public class LabMessageService extends BaseAdoService<LabMessage> {
 
 	public Predicate buildCriteriaFilter(CriteriaBuilder cb, Root<LabMessage> labMessage, LabMessageCriteria criteria) {
 		Predicate filter = null;
-		if (criteria.getProcessed() != null) {
-			filter = cb.equal(labMessage.get(LabMessage.PROCESSED), criteria.getProcessed());
+		if (criteria.getLabMessageStatus() != null) {
+			filter = cb.equal(labMessage.get(LabMessage.STATUS), criteria.getLabMessageStatus());
 		}
 		return filter;
 	}

@@ -20,8 +20,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -31,6 +33,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -38,7 +41,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -62,6 +64,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserRoleConfig;
+import de.symeda.sormas.app.lbds.LbdsKeyHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.SormasProperties;
 
@@ -78,7 +81,18 @@ public final class ConfigProvider {
 	private static String LAST_DELETED_SYNC_DATE = "lastDeletedSyncDate";
 	private static String CURRENT_APP_DOWNLOAD_ID = "currentAppDownloadId";
 	private static String SERVER_LOCALE = "locale";
+	private static String SERVER_COUNTRY_NAME = "countryname";
 	private static String INITIAL_SYNC_REQUIRED = "initialSyncRequired";
+
+	private static String LBDS_SORMAS_PRIVATE_KEY_AES_SECRET = "lbdsSormasPrivateKeyAesSecret";
+	private static String LBDS_SORMAS_PRIVATE_KEY = "lbdsSormasPrivateKey";
+	private static String LBDS_SORMAS_PUBLIC_KEY = "lbdsSormasPublicKey";
+	private static String LBDS_SERVICE_PUBLIC_KEY = "lbdsServicePublicKey";
+	private static String LBDS_AES_SECRET = "lbdsAesSecret";
+	private static String LBDS_DEBUG_URL = "lbdsDebugUrl";
+
+	private static String LBDS_KEYSTORE_ALIAS_SORMAS_PRIVATE_KEY_AES_SECRET = "LBDS_PRIVATE_KEY_AES_SECRET";
+	private static String LBDS_KEYSTORE_ALIAS_AES_SECRET = "LBDS_AES_SECRET";
 
 	private static final String FULL_COUNTRY_LOCALE_PATTERN = "[a-zA-Z]*-[a-zA-Z]*";
 
@@ -105,8 +119,16 @@ public final class ConfigProvider {
 	private Long currentAppDownloadId;
 	private Boolean accessGranted;
 	private String serverLocale;
+	private String serverCountryName;
 	private Boolean repullNeeded;
 	private Boolean initialSyncRequired;
+
+	private String lbdsSormasPrivateKeyAesSecret;
+	private String lbdsSormasPrivateKeyPKCS8;
+	private PublicKey lbdsSormasPublicKey;
+	private PublicKey lbdsServicePublicKey;
+	private String lbdsAesSecret;
+	private String serverLbdsDebugUrl;
 
 	private ConfigProvider(Context context) {
 		this.context = context;
@@ -658,6 +680,24 @@ public final class ConfigProvider {
 		}
 	}
 
+	public static String getServerCountryName() {
+		if (instance.serverCountryName == null) {
+			synchronized (ConfigProvider.class) {
+				if (instance.serverCountryName == null) {
+					Config config = DatabaseHelper.getConfigDao().queryForId(SERVER_COUNTRY_NAME);
+					if (config != null) {
+						instance.serverCountryName = config.getValue();
+					}
+
+					if (instance.serverCountryName == null) {
+						setServerCountryName("");
+					}
+				}
+			}
+		}
+		return instance.serverCountryName;
+	}
+
 	public static String normalizeLocaleString(String locale) {
 		locale = locale.trim();
 		int pos = Math.max(locale.indexOf('-'), locale.indexOf('_'));
@@ -690,6 +730,18 @@ public final class ConfigProvider {
 
 		instance.serverLocale = serverLocale;
 		saveConfigEntry(SERVER_LOCALE, serverLocale);
+	}
+
+	public static void setServerCountryName(String serverCountryName) {
+		if (serverCountryName != null && serverCountryName.isEmpty()) {
+			serverCountryName = null;
+		}
+
+		if (serverCountryName == instance.serverCountryName || (serverCountryName != null && serverCountryName.equals(instance.serverCountryName)))
+			return;
+
+		instance.serverCountryName = serverCountryName;
+		saveConfigEntry(SERVER_COUNTRY_NAME, serverCountryName);
 	}
 
 	public static boolean isRepullNeeded() {
@@ -728,5 +780,147 @@ public final class ConfigProvider {
 
 		instance.initialSyncRequired = initialSyncRequired;
 		DatabaseHelper.getConfigDao().createOrUpdate(new Config(INITIAL_SYNC_REQUIRED, String.valueOf(initialSyncRequired)));
+	}
+
+	public static void resetLbdsSormasKeys() {
+		try {
+			KeyPair rsa = KeyPairGenerator.getInstance("RSA").genKeyPair();
+			instance.lbdsSormasPublicKey = rsa.getPublic();
+			PrivateKey lbdsSormasPrivateKey = rsa.getPrivate();
+
+			String aesKey = LbdsKeyHelper.generateAESKey();
+			instance.lbdsSormasPrivateKeyPKCS8 = LbdsKeyHelper.encryptAES(LbdsKeyHelper.getPKCS8FromPrivateKey(lbdsSormasPrivateKey), aesKey);
+
+			instance.lbdsSormasPrivateKeyAesSecret = instance.encodeCredential(aesKey, LBDS_KEYSTORE_ALIAS_SORMAS_PRIVATE_KEY_AES_SECRET);
+			DatabaseHelper.getConfigDao().createOrUpdate(new Config(LBDS_SORMAS_PRIVATE_KEY_AES_SECRET, instance.lbdsSormasPrivateKeyAesSecret));
+			DatabaseHelper.getConfigDao().createOrUpdate(new Config(LBDS_SORMAS_PRIVATE_KEY, instance.lbdsSormasPrivateKeyPKCS8));
+			DatabaseHelper.getConfigDao()
+				.createOrUpdate(new Config(LBDS_SORMAS_PUBLIC_KEY, LbdsKeyHelper.getX509FromPublicKey(instance.lbdsSormasPublicKey)));
+		} catch (GeneralSecurityException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private static String getLbdsSormasPrivateKeyAesSecret() {
+		if (instance.lbdsSormasPrivateKeyAesSecret == null) {
+			Config config = DatabaseHelper.getConfigDao().queryForId(LBDS_SORMAS_PRIVATE_KEY_AES_SECRET);
+			if (config != null) {
+				instance.lbdsSormasPrivateKeyAesSecret = config.getValue();
+			}
+		}
+		return instance.decodeCredential(instance.lbdsSormasPrivateKeyAesSecret, LBDS_KEYSTORE_ALIAS_SORMAS_PRIVATE_KEY_AES_SECRET);
+	}
+
+	public static PrivateKey getLbdsSormasPrivateKey() {
+		if (instance.lbdsSormasPrivateKeyPKCS8 == null) {
+			Config config = DatabaseHelper.getConfigDao().queryForId(LBDS_SORMAS_PRIVATE_KEY);
+			if (config != null) {
+				instance.lbdsSormasPrivateKeyPKCS8 = config.getValue();
+			} else {
+				resetLbdsSormasKeys();
+			}
+		}
+		try {
+			String aesKey = getLbdsSormasPrivateKeyAesSecret();
+			String lbdsSormasPrivateKeyPKCS8 = LbdsKeyHelper.decryptAES(instance.lbdsSormasPrivateKeyPKCS8, aesKey);
+			return LbdsKeyHelper.getPrivateKeyFromPKCS8(lbdsSormasPrivateKeyPKCS8);
+		} catch (GeneralSecurityException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static PublicKey getLbdsSormasPublicKey() {
+		if (instance.lbdsSormasPublicKey == null) {
+			Config config = DatabaseHelper.getConfigDao().queryForId(LBDS_SORMAS_PUBLIC_KEY);
+			if (config != null) {
+				try {
+					instance.lbdsSormasPublicKey = LbdsKeyHelper.getPublicKeyFromX509(config.getValue());
+				} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+					throw new RuntimeException(e);
+				}
+			} else {
+				resetLbdsSormasKeys();
+			}
+		}
+		return instance.lbdsSormasPublicKey;
+	}
+
+	public static PublicKey getLbdsServicePublicKey() {
+		if (instance.lbdsServicePublicKey == null) {
+			Config config = DatabaseHelper.getConfigDao().queryForId(LBDS_SERVICE_PUBLIC_KEY);
+			if (config != null) {
+				try {
+					instance.lbdsServicePublicKey = LbdsKeyHelper.getPublicKeyFromX509(config.getValue());
+				} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+		return instance.lbdsServicePublicKey;
+	}
+
+	public static void setLbdsServicePublicKey(PublicKey lbdsServicePublicKey) {
+		instance.lbdsServicePublicKey = lbdsServicePublicKey;
+		DatabaseHelper.getConfigDao().createOrUpdate(new Config(LBDS_SERVICE_PUBLIC_KEY, LbdsKeyHelper.getX509FromPublicKey(lbdsServicePublicKey)));
+	}
+
+	public static String getLbdsAesSecret() {
+		if (instance.lbdsAesSecret == null) {
+			Config config = DatabaseHelper.getConfigDao().queryForId(LBDS_AES_SECRET);
+			if (config != null) {
+				instance.lbdsAesSecret = config.getValue();
+			}
+		}
+		return instance.decodeCredential(instance.lbdsAesSecret, LBDS_KEYSTORE_ALIAS_AES_SECRET);
+	}
+
+	public static void setLbdsAesSecret(String lbdsAesSecret) {
+		if (lbdsAesSecret == null) {
+			throw new NullPointerException("lbdsAesSecret");
+		}
+
+		lbdsAesSecret = instance.encodeCredential(lbdsAesSecret, LBDS_KEYSTORE_ALIAS_AES_SECRET);
+
+		if (lbdsAesSecret.equals(instance.lbdsAesSecret)) {
+			return;
+		}
+
+		instance.lbdsAesSecret = lbdsAesSecret;
+
+		DatabaseHelper.getConfigDao().createOrUpdate(new Config(LBDS_AES_SECRET, lbdsAesSecret));
+	}
+
+	public static String getServerLbdsDebugUrl() {
+		if (instance.serverLbdsDebugUrl == null)
+			synchronized (ConfigProvider.class) {
+				if (instance.serverLbdsDebugUrl == null) {
+					Config config = DatabaseHelper.getConfigDao().queryForId(LBDS_DEBUG_URL);
+					if (config != null) {
+						instance.serverLbdsDebugUrl = config.getValue();
+
+						// take care of old mal-formatted urls
+						String properServerRestUrl = toProperRestUrl(instance.serverLbdsDebugUrl);
+						if (!DataHelper.equal(instance.serverLbdsDebugUrl, properServerRestUrl)) {
+							instance.serverLbdsDebugUrl = properServerRestUrl;
+							saveConfigEntry(LBDS_DEBUG_URL, instance.serverLbdsDebugUrl);
+						}
+					}
+				}
+			}
+		return instance.serverLbdsDebugUrl;
+	}
+
+	public static void setServerLbdsDebugUrl(String serverRestUrl) {
+
+		serverRestUrl = toProperRestUrl(serverRestUrl);
+		String currentServerRestUrl = getServerRestUrl();
+
+		if (DataHelper.equal(serverRestUrl, currentServerRestUrl))
+			return;
+
+		boolean wasNull = currentServerRestUrl == null;
+
+		instance.serverLbdsDebugUrl = serverRestUrl;
+		saveConfigEntry(LBDS_DEBUG_URL, serverRestUrl);
 	}
 }

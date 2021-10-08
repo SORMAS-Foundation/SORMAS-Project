@@ -15,16 +15,6 @@
 
 package de.symeda.sormas.app;
 
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.google.android.material.navigation.NavigationView;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -50,6 +40,15 @@ import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.navigation.NavigationView;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -74,7 +73,10 @@ import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.NavigationHelper;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public abstract class BaseActivity extends BaseLocalizedActivity implements NotificationContext {
 
@@ -214,6 +216,10 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 		}
 
 		updatePageMenu();
+
+		if (ConfigProvider.getUser() == null || !LocationService.instance().validateGpsAccessAndEnabled(this)) {
+			return;
+		}
 	}
 
 	protected void updateStatusFrame() {
@@ -239,16 +245,19 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 
 	protected void updatePageMenu() {
 		List<PageMenuItem> menuItems = getPageMenuData();
-		if (pageMenu != null && menuItems != null) {
+		if (pageMenu != null) {
 			ensureFabHiddenOnSoftKeyboardShown(pageMenu);
 			pageMenu.hide();
 
 			List<PageMenuItem> displayedMenuItems = new ArrayList<>();
-			for (PageMenuItem item : menuItems) {
-				if (item != null) {
-					displayedMenuItems.add(item);
+			if (menuItems != null) {
+				for (PageMenuItem item : menuItems) {
+					if (item != null) {
+						displayedMenuItems.add(item);
+					}
 				}
 			}
+
 			pageMenu.setMenuData(displayedMenuItems);
 			pageMenu.markActiveMenuItem(initializePageMenu(menuItems));
 		}
@@ -296,6 +305,10 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 					NavigationHelper.goToEvents(getContext());
 				} else if (id == R.id.menu_item_samples) {
 					NavigationHelper.goToSamples(getContext());
+				} else if (id == R.id.menu_item_immunizations) {
+					NavigationHelper.goToImmunizations(getContext());
+				} else if (id == R.id.menu_item_campaigns) {
+					NavigationHelper.goToCampaigns(getContext());
 				} else if (id == R.id.menu_item_reports) {
 					NavigationHelper.goToReports(getContext());
 				}
@@ -396,7 +409,9 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 			MenuItem contactMenu = menuNav.findItem(R.id.menu_item_contacts);
 			MenuItem eventMenu = menuNav.findItem(R.id.menu_item_events);
 			MenuItem sampleMenu = menuNav.findItem(R.id.menu_item_samples);
+			MenuItem immunizationMenu = menuNav.findItem(R.id.menu_item_samples);
 			MenuItem reportMenu = menuNav.findItem(R.id.menu_item_reports);
+			MenuItem campaignMenu = menuNav.findItem(R.id.menu_item_campaigns);
 
 			// TODO implement dashboard
 			if (dashboardMenu != null)
@@ -422,6 +437,12 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 					ConfigProvider.hasUserRight(UserRight.SAMPLE_VIEW)
 						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.SAMPLES_LAB));
 
+
+			if (immunizationMenu != null)
+				immunizationMenu.setVisible(
+					ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.IMMUNIZATION_MANAGEMENT));
+
 			if (eventMenu != null)
 				eventMenu.setVisible(
 					ConfigProvider.hasUserRight(UserRight.EVENT_VIEW)
@@ -436,6 +457,11 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 				reportMenu.setVisible(
 					ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_VIEW)
 						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.WEEKLY_REPORTING));
+
+			if (campaignMenu != null)
+				campaignMenu.setVisible(
+					ConfigProvider.hasUserRight(UserRight.CAMPAIGN_VIEW)
+						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS));
 
 		}
 
@@ -730,10 +756,12 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 
 	private PageMenuItem initializePageMenu(List<PageMenuItem> menuList) {
 		this.pageItems = menuList;
-		activePageItem = menuList.get(0);
-		for (int i = 0; i < menuList.size(); i++) {
-			if (i == activePagePosition) {
-				activePageItem = menuList.get(i);
+		if (CollectionUtils.isNotEmpty(menuList)) {
+			activePageItem = menuList.get(0);
+			for (int i = 0; i < menuList.size(); i++) {
+				if (i == activePagePosition) {
+					activePageItem = menuList.get(i);
+				}
 			}
 		}
 
@@ -745,16 +773,15 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 			return false; // last page
 		}
 
-		int newPosition = activePagePosition + 1;
+		int newPosition = activePagePosition;
 		PageMenuItem pageItem = null;
 
 		while (pageItem == null) {
-			pageItem = pageItems.get(newPosition);
 			newPosition++;
-
-			if (newPosition >= pageItems.size() - 1) {
+			if (newPosition >= pageItems.size()) {
 				return false;
 			}
+			pageItem = pageItems.get(newPosition);
 		}
 
 		pageMenu.markActiveMenuItem(pageItem);

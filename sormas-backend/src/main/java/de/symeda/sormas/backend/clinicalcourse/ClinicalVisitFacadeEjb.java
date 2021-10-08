@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -13,10 +15,15 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -25,23 +32,24 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitExportDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitIndexDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -49,9 +57,10 @@ import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.utils.CaseJoins;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "ClinicalVisitFacade")
 public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
@@ -70,18 +79,44 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	@EJB
 	private SymptomsFacadeEjbLocal symptomsFacade;
 	@EJB
-	private ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
-	@EJB
 	private CaseService caseService;
 	@EJB
 	private SymptomsService symptomsService;
-	@EJB
-	private CaseJurisdictionChecker caseJurisdictionChecker;
 
 	//	private String countPositiveSymptomsQuery;
 
+	public long count(ClinicalVisitCriteria clinicalVisitCriteria) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<ClinicalVisit> visit = cq.from(ClinicalVisit.class);
+		Predicate filter = null;
+
+		if (clinicalVisitCriteria != null) {
+
+			Predicate criteriaFilter = service.buildCriteriaFilter(clinicalVisitCriteria, cb, visit);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.select(cb.countDistinct(visit));
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	public Page<ClinicalVisitIndexDto> getIndexPage(
+		ClinicalVisitCriteria clinicalVisitCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+		List<ClinicalVisitIndexDto> eventIndexList = getIndexList(clinicalVisitCriteria, offset, size, sortProperties);
+		long totalElementCount = count(clinicalVisitCriteria);
+		return new Page<>(eventIndexList, offset, size, totalElementCount);
+	}
+
 	@Override
-	public List<ClinicalVisitIndexDto> getIndexList(ClinicalVisitCriteria criteria) {
+	public List<ClinicalVisitIndexDto> getIndexList(ClinicalVisitCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ClinicalVisitIndexDto> cq = cb.createQuery(ClinicalVisitIndexDto.class);
@@ -89,36 +124,47 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		ClinicalVisitJoins joins = new ClinicalVisitJoins(visit);
 
 		cq.multiselect(
-			Stream
-				.concat(
-					Stream.of(
-						visit.get(ClinicalVisit.UUID),
-						visit.get(ClinicalVisit.VISIT_DATE_TIME),
-						visit.get(ClinicalVisit.VISITING_PERSON),
-						visit.get(ClinicalVisit.VISIT_REMARKS),
-						joins.getSymptoms().get(Symptoms.TEMPERATURE),
-						joins.getSymptoms().get(Symptoms.TEMPERATURE_SOURCE),
-						joins.getSymptoms().get(Symptoms.BLOOD_PRESSURE_SYSTOLIC),
-						joins.getSymptoms().get(Symptoms.BLOOD_PRESSURE_DIASTOLIC),
-						joins.getSymptoms().get(Symptoms.HEART_RATE),
-						joins.getSymptoms().get(Symptoms.ID)),
-					getJurisdictionSelections(joins))
-				.collect(Collectors.toList()));
+			visit.get(ClinicalVisit.UUID),
+			visit.get(ClinicalVisit.VISIT_DATE_TIME),
+			visit.get(ClinicalVisit.VISITING_PERSON),
+			visit.get(ClinicalVisit.VISIT_REMARKS),
+			joins.getSymptoms().get(Symptoms.TEMPERATURE),
+			joins.getSymptoms().get(Symptoms.TEMPERATURE_SOURCE),
+			joins.getSymptoms().get(Symptoms.BLOOD_PRESSURE_SYSTOLIC),
+			joins.getSymptoms().get(Symptoms.BLOOD_PRESSURE_DIASTOLIC),
+			joins.getSymptoms().get(Symptoms.HEART_RATE),
+			joins.getSymptoms().get(Symptoms.ID),
+			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaze()))));
 
 		if (criteria != null) {
 			cq.where(service.buildCriteriaFilter(criteria, cb, visit));
 		}
 
-		cq.orderBy(cb.desc(visit.get(ClinicalVisit.VISIT_DATE_TIME)));
+		if (CollectionUtils.isNotEmpty(sortProperties)) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case ClinicalVisitDto.UUID:
+				case ClinicalVisitDto.DISEASE:
+				case ClinicalVisitDto.VISIT_DATE_TIME:
+				case ClinicalVisitDto.CLINICAL_COURSE:
+					expression = visit.get(sortProperty.propertyName);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(visit.get(ClinicalVisit.VISIT_DATE_TIME)));
+		}
 
-		List<ClinicalVisitIndexDto> results = em.createQuery(cq).getResultList();
+		List<ClinicalVisitIndexDto> results = QueryHelper.getResultList(em, cq, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(
-			ClinicalVisitIndexDto.class,
-			results,
-			v -> caseJurisdictionChecker.isInJurisdictionOrOwned(v.getCaseJurisdiction()),
-			null);
+		pseudonymizer.pseudonymizeDtoCollection(ClinicalVisitIndexDto.class, results, v -> v.getInJurisdiction(), null);
 
 		// Build the query to count positive symptoms
 		// TODO: Re-activate when issue #964 (replace EclipseLink with Hibernate) has been done
@@ -202,7 +248,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	 * case symptoms are not updated from this method.
 	 */
 	@Override
-	public ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit) {
+	public ClinicalVisitDto saveClinicalVisit(@Valid ClinicalVisitDto clinicalVisit) {
 
 		ClinicalCourse clinicalCourse = clinicalCourseService.getByReferenceDto(clinicalVisit.getClinicalCourse());
 		return saveClinicalVisit(clinicalVisit, clinicalCourse.getCaze().getUuid());
@@ -249,43 +295,40 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	}
 
 	@Override
-	public List<ClinicalVisitExportDto> getExportList(CaseCriteria criteria, int first, int max) {
+	public List<ClinicalVisitExportDto> getExportList(CaseCriteria criteria, Collection<String> selectedRows, int first, int max) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ClinicalVisitExportDto> cq = cb.createQuery(ClinicalVisitExportDto.class);
 		Root<ClinicalVisit> clinicalVisit = cq.from(ClinicalVisit.class);
 		ClinicalVisitJoins joins = new ClinicalVisitJoins(clinicalVisit);
 
+		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, joins.getCaze());
 		cq.multiselect(
-			Stream
-				.concat(
-					Stream.of(
-						joins.getCaze().get(Case.UUID),
-						joins.getCasePerson().get(Person.FIRST_NAME),
-						joins.getCasePerson().get(Person.LAST_NAME),
-						clinicalVisit.get(ClinicalVisit.DISEASE),
-						clinicalVisit.get(ClinicalVisit.VISIT_DATE_TIME),
-						clinicalVisit.get(ClinicalVisit.VISIT_REMARKS),
-						clinicalVisit.get(ClinicalVisit.VISITING_PERSON),
-						joins.getSymptoms().get(Symptoms.ID)),
-					getJurisdictionSelections(joins))
-				.collect(Collectors.toList()));
+			joins.getCaze().get(Case.UUID),
+			joins.getCasePerson().get(Person.FIRST_NAME),
+			joins.getCasePerson().get(Person.LAST_NAME),
+			clinicalVisit.get(ClinicalVisit.DISEASE),
+			clinicalVisit.get(ClinicalVisit.VISIT_DATE_TIME),
+			clinicalVisit.get(ClinicalVisit.VISIT_REMARKS),
+			clinicalVisit.get(ClinicalVisit.VISITING_PERSON),
+			joins.getSymptoms().get(Symptoms.ID),
+			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(caseQueryContext)));
 
 		Predicate filter = service.createUserFilter(cb, cq, clinicalVisit);
 
-		CaseJoins<ClinicalCourse> caseJoins = new CaseJoins<>(joins.getCaze());
-		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, joins.getCaze(), caseJoins);
+		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, joins.getCaze().get(Case.UUID));
 		cq.where(filter);
 		cq.orderBy(cb.desc(joins.getCaze().get(Case.UUID)), cb.desc(clinicalVisit.get(ClinicalVisit.VISIT_DATE_TIME)));
 
-		List<ClinicalVisitExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		List<ClinicalVisitExportDto> resultList = QueryHelper.getResultList(em, cq, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		for (ClinicalVisitExportDto exportDto : resultList) {
 			exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptomsService.getById(exportDto.getSymptomsId())));
 
-			Boolean inJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(exportDto.getCaseJurisdiction());
+			Boolean inJurisdiction = exportDto.getInJurisdiction();
 			pseudonymizer.pseudonymizeDto(ClinicalVisitExportDto.class, exportDto, inJurisdiction, (v) -> {
 				pseudonymizer.pseudonymizeDto(SymptomsDto.class, v.getSymptoms(), inJurisdiction, null);
 			});
@@ -297,6 +340,9 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	private Stream<Selection<?>> getJurisdictionSelections(ClinicalVisitJoins joins) {
 		return Stream.of(
 			joins.getCaseReportingUser().get(User.UUID),
+			joins.getCaseResponsibleRegion().get(Region.UUID),
+			joins.getCaseResponsibleDistrict().get(District.UUID),
+			joins.getCaseResponsibleCommunity().get(Community.UUID),
 			joins.getCaseRegion().get(Region.UUID),
 			joins.getCaseDistrict().get(District.UUID),
 			joins.getCaseCommunity().get(Community.UUID),
@@ -314,7 +360,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 	private void pseudonymizeDto(ClinicalVisit source, ClinicalVisitDto dto, Pseudonymizer pseudonymizer) {
 		if (source != null && dto != null) {
-			Boolean inJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(source.getClinicalCourse().getCaze());
+			Boolean inJurisdiction = caseService.inJurisdictionOrOwned(source.getClinicalCourse().getCaze());
 			pseudonymizer.pseudonymizeDto(ClinicalVisitDto.class, dto, inJurisdiction, v -> {
 				pseudonymizer.pseudonymizeDto(SymptomsDto.class, dto.getSymptoms(), inJurisdiction, null);
 			});
@@ -323,7 +369,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 	private void restorePseudonymizedDto(ClinicalVisitDto clinicalVisit, ClinicalVisit existingClinicalVisit) {
 		if (existingClinicalVisit != null) {
-			Boolean inJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(existingClinicalVisit.getClinicalCourse().getCaze());
+			Boolean inJurisdiction = caseService.inJurisdictionOrOwned(existingClinicalVisit.getClinicalCourse().getCaze());
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 			ClinicalVisitDto existingDto = toDto(existingClinicalVisit);
 

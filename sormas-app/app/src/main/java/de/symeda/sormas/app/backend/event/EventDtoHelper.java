@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,6 +24,7 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDtoHelper;
+import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfoDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
@@ -33,6 +34,8 @@ import retrofit2.Call;
 public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 
 	private LocationDtoHelper locationHelper;
+
+	private SormasToSormasOriginInfoDtoHelper sormasToSormasOriginInfoDtoHelper = new SormasToSormasOriginInfoDtoHelper();
 
 	public EventDtoHelper() {
 		locationHelper = new LocationDtoHelper();
@@ -68,6 +71,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 
 		target.setEventStatus(source.getEventStatus());
 		target.setRiskLevel(source.getRiskLevel());
+		target.setSpecificRisk(source.getSpecificRisk());
 		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
@@ -82,7 +86,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
 		target.setEvolutionDate(source.getEvolutionDate());
 		target.setEvolutionComment(source.getEvolutionComment());
-		target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
+		target.setResponsibleUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getResponsibleUser()));
 
 		target.setEventLocation(locationHelper.fillOrCreateFromDto(target.getEventLocation(), source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
@@ -91,6 +95,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setTravelDate(source.getTravelDate());
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
+		target.setWorkEnvironment(source.getWorkEnvironment());
 
 		target.setSrcType(source.getSrcType());
 		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
@@ -104,6 +109,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setSrcMediaDetails(source.getSrcMediaDetails());
 
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 
 		target.setReportLat(source.getReportLat());
@@ -114,7 +120,20 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
 		target.setSuperordinateEventUuid(source.getSuperordinateEvent() != null ? source.getSuperordinateEvent().getUuid() : null);
 
+		target.setSormasToSormasOriginInfo(
+			sormasToSormasOriginInfoDtoHelper.fillOrCreateFromDto(target.getSormasToSormasOriginInfo(), source.getSormasToSormasOriginInfo()));
+		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
+
 		target.setPseudonymized(source.isPseudonymized());
+		target.setEventManagementStatus(source.getEventManagementStatus());
+		target.setEventIdentificationSource(source.getEventIdentificationSource());
+
+		target.setInfectionPathCertainty(source.getInfectionPathCertainty());
+		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
+		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
+		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
+
+		target.setInternalToken(source.getInternalToken());
 	}
 
 	@Override
@@ -122,6 +141,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 
 		target.setEventStatus(source.getEventStatus());
 		target.setRiskLevel(source.getRiskLevel());
+		target.setSpecificRisk(source.getSpecificRisk());
 		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
@@ -162,6 +182,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setConnectionNumber(source.getConnectionNumber());
 		target.setTravelDate(source.getTravelDate());
 		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
+		target.setWorkEnvironment(source.getWorkEnvironment());
 
 		target.setSrcType(source.getSrcType());
 		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
@@ -175,13 +196,14 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setSrcMediaDetails(source.getSrcMediaDetails());
 
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 
-		if (source.getSurveillanceOfficer() != null) {
-			User user = DatabaseHelper.getUserDao().queryForId(source.getSurveillanceOfficer().getId());
-			target.setSurveillanceOfficer(UserDtoHelper.toReferenceDto(user));
+		if (source.getResponsibleUser() != null) {
+			User user = DatabaseHelper.getUserDao().queryForId(source.getResponsibleUser().getId());
+			target.setResponsibleUser(UserDtoHelper.toReferenceDto(user));
 		} else {
-			target.setSurveillanceOfficer(null);
+			target.setResponsibleUser(null);
 		}
 
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
@@ -193,7 +215,22 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
 
+		if (source.getSormasToSormasOriginInfo() != null) {
+			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoDtoHelper.adoToDto(source.getSormasToSormasOriginInfo()));
+		}
+		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
+
 		target.setPseudonymized(source.isPseudonymized());
+
+		target.setEventManagementStatus(source.getEventManagementStatus());
+		target.setEventIdentificationSource(source.getEventIdentificationSource());
+
+		target.setInfectionPathCertainty(source.getInfectionPathCertainty());
+		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
+		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
+		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
+
+		target.setInternalToken(source.getInternalToken());
 	}
 
 	public static EventReferenceDto toReferenceDto(Event ado) {

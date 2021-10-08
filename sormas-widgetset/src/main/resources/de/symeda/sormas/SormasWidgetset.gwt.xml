@@ -9,4 +9,6 @@
     <inherits name="com.explicatis.ext_token_field.WidgetSet" />
 
     <inherits name="com.vaadin.v7.Vaadin7WidgetSet" />
+
+    <inherits name="com.wcs.wcslib.vaadin.widget.multifileupload.WidgetSet" />
 </module>

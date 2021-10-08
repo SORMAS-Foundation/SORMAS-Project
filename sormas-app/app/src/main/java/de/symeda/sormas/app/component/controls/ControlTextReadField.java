@@ -138,8 +138,12 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 	protected void onFinishInflate() {
 		super.onFinishInflate();
 
+		initTextView();
+	}
+
+	protected void initTextView() {
 		textView = (TextView) this.findViewById(R.id.text_view);
-		textView.setMaxLines(maxLines);
+		textView.setMaxLines(getMaxLines());
 		textView.setImeOptions(getImeOptions());
 		textView.setTextAlignment(getTextAlignment());
 		if (getTextAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {
@@ -396,6 +400,14 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 		"value",
 		"valueFormat",
 		"defaultValue" }, requireAll = false)
+	public static void setValue(ControlTextReadField textField, boolean booleanValue, String valueFormat, String defaultValue) {
+		setValue(textField, Boolean.valueOf(booleanValue), valueFormat, defaultValue);
+	}
+
+	@BindingAdapter(value = {
+		"value",
+		"valueFormat",
+		"defaultValue" }, requireAll = false)
 	public static void setValue(ControlTextReadField textField, Boolean booleanValue, String valueFormat, String defaultValue) {
 		setValue(
 			textField,
@@ -436,9 +448,20 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 	@BindingAdapter(value = {
 		"dateTimeValue",
 		"valueFormat",
-		"defaultValue" }, requireAll = false)
-	public static void setDateTimeValue(ControlTextReadField textField, Date dateValue, String valueFormat, String defaultValue) {
-		setValue(textField, dateValue != null ? DateFormatHelper.formatLocalDateTime(dateValue) : null, null, valueFormat, defaultValue, dateValue);
+		"defaultValue",
+		"appendValue"}, requireAll = false)
+	public static void setDateTimeValue(ControlTextReadField textField, Date dateValue, String valueFormat, String defaultValue, Date appendDateValue) {
+		String appendValue = appendDateValue != null ? DateFormatHelper.formatLocalDateTime(appendDateValue) : null;
+		String stringValue;
+		if (dateValue != null) {
+			stringValue = DateFormatHelper.formatLocalDateTime(dateValue);
+		} else {
+			stringValue = appendValue;
+			appendValue = null;
+		}
+
+
+		setValue(textField, stringValue, appendValue, valueFormat, defaultValue, dateValue);
 	}
 
 	// Short uuid

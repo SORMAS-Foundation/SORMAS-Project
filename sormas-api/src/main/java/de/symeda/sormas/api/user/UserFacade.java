@@ -20,12 +20,13 @@ package de.symeda.sormas.api.user;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -33,7 +34,7 @@ public interface UserFacade {
 
 	UserDto getByUuid(String uuid);
 
-	UserDto saveUser(UserDto dto);
+	UserDto saveUser(@Valid UserDto dto);
 
 	boolean isLoginUnique(String uuid, String userName);
 
@@ -45,7 +46,13 @@ public interface UserFacade {
 
 	List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles);
 
-	List<UserDto> getIndexList(UserCriteria userCriteria, int first, int max, List<SortProperty> sortProperties);
+	List<UserReferenceDto> getUsersByRegionsAndRoles(List<RegionReferenceDto> regionRefs, UserRole... assignableRoles);
+
+	List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user);
+
+	List<UserDto> getIndexList(UserCriteria userCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	Page<UserDto> getIndexPage(UserCriteria userCriteria, int offset, int size, List<SortProperty> sortProperties);
 
 	long count(UserCriteria userCriteria);
 
@@ -59,6 +66,8 @@ public interface UserFacade {
 	 * @return
 	 */
 	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, boolean includeSupervisors, UserRole... userRoles);
+
+	List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districts, boolean includeSupervisors, UserRole... userRoles);
 
 	List<UserReferenceDto> getAllUserRefs(boolean includeInactive);
 
@@ -77,4 +86,10 @@ public interface UserFacade {
 	void removeUserAsSurveillanceAndContactOfficer(String userUuid);
 
 	UserSyncResult syncUser(String userUuid);
+
+	List<UserDto> getUsersWithDefaultPassword();
+
+	void enableUsers(List<String> userUuids);
+
+	void disableUsers(List<String> userUuids);
 }

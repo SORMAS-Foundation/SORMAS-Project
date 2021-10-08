@@ -1,6 +1,5 @@
 package de.symeda.sormas.api.campaign;
 
-import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 /**

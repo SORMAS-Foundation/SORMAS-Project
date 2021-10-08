@@ -19,7 +19,10 @@ import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 import java.util.List;
 
+import org.hzi.sormas.lbds.messaging.LbdsRelated;
+
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +33,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.BaseLandingFragment;
 import de.symeda.sormas.app.LocaleManager;
@@ -45,12 +49,14 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.dialog.ConfirmationInputDialog;
 import de.symeda.sormas.app.component.dialog.SyncLogDialog;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.FragmentSettingsLayoutBinding;
+import de.symeda.sormas.app.lbds.LbdsIntentSender;
 import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
@@ -86,12 +92,22 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding.resynchronizeData.setOnClickListener(v -> repullData());
 		binding.showSyncLog.setOnClickListener(v -> openSyncLog());
 		binding.logout.setOnClickListener(v -> logout());
+		binding.kexLbds.setOnClickListener(v -> kexLbds());
+		binding.syncPersonLbds.setOnClickListener(v -> LbdsIntentSender.sendNewCasePersonsLbds(getContext()));
+		binding.syncCaseLbds.setOnClickListener(v -> LbdsIntentSender.sendNewCasesLbds(getContext()));
+		binding.settingsLbdsDebugUrl.setValue(ConfigProvider.getServerLbdsDebugUrl());
 
 		binding.sormasVersion.setText("SORMAS " + InfoProvider.get().getVersion());
 		binding.sormasVersion.setOnClickListener(v -> {
 			versionClickedCount++;
 			if (isShowDevOptions()) {
 				binding.settingsServerUrl.setVisibility(View.VISIBLE);
+				if (isLbdsAppInstalled()) {
+					binding.kexLbds.setVisibility(View.VISIBLE);
+					binding.syncPersonLbds.setVisibility(View.VISIBLE);
+					binding.syncCaseLbds.setVisibility(View.VISIBLE);
+					binding.settingsLbdsDebugUrl.setVisibility(View.VISIBLE);
+				}
 				if (ConfigProvider.getUser() != null) {
 					binding.logout.setVisibility(View.VISIBLE);
 				}
@@ -100,28 +116,30 @@ public class SettingsFragment extends BaseLandingFragment {
 		});
 
 		binding.setData(ConfigProvider.getUser());
-		binding.userLanguage.initializeSpinner(DataUtils.getEnumItems(Language.class, true));
-		binding.userLanguage.addValueChangedListener(e -> {
-			if (!(e.getValue() == null
-				&& Language.fromLocaleString(ConfigProvider.getServerLocale()).equals(LocaleManager.getLanguagePref(getContext())))) {
-				if (!LocaleManager.getLanguagePref(getContext()).equals(e.getValue())) {
-					try {
-						Language newLanguage =
-							e.getValue() != null ? (Language) e.getValue() : Language.fromLocaleString(ConfigProvider.getServerLocale());
-						User user = binding.getData();
-						if (user != null) {
-							DatabaseHelper.getUserDao().saveAndSnapshot(user);
-						}
-						if (newLanguage != null) {
-							((SettingsActivity) getActivity()).setNewLocale((AppCompatActivity) getActivity(), newLanguage);
-						}
-					} catch (DaoException ex) {
-						NotificationHelper
-							.showNotification((SettingsActivity) getActivity(), ERROR, getString(R.string.message_language_change_unsuccessful));
+		Language initialLanguage = binding.getData() != null ? I18nProperties.getUserLanguage() : LocaleManager.getLanguagePref(getContext());
+		ValueChangeListener languageValueChangeListener = e -> {
+			Language currentLanguage = LocaleManager.getLanguagePref(getContext());
+			if (e.getValue() == null) {
+				// This happens e.g. when the user is not logged in
+				e.setValue(LocaleManager.getLanguagePref(getContext()));
+			}
+			Language newLanguage = (Language) e.getValue();
+			if (!LocaleManager.getLanguagePref(getContext()).equals(e.getValue())) {
+				try {
+					User user = binding.getData();
+					if (user != null) {
+						DatabaseHelper.getUserDao().saveAndSnapshot(user);
 					}
+					if (newLanguage != null) {
+						((SettingsActivity) getActivity()).setNewLocale((AppCompatActivity) getActivity(), newLanguage);
+					}
+				} catch (DaoException ex) {
+					NotificationHelper
+						.showNotification((SettingsActivity) getActivity(), ERROR, getString(R.string.message_language_change_unsuccessful));
 				}
 			}
-		});
+		};
+		binding.userLanguage.initializeSpinner(DataUtils.getEnumItems(Language.class, false), initialLanguage, languageValueChangeListener);
 
 		return binding.getRoot();
 	}
@@ -142,6 +160,11 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding.resynchronizeData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.showSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.logout.setVisibility(hasUser && isShowDevOptions() ? View.VISIBLE : View.GONE);
+		boolean showLbdsFeatures = isLbdsAppInstalled() && hasUser && isShowDevOptions();
+		binding.kexLbds.setVisibility(showLbdsFeatures ? View.VISIBLE : View.GONE);
+		binding.syncPersonLbds.setVisibility(showLbdsFeatures ? View.VISIBLE : View.GONE);
+		binding.syncCaseLbds.setVisibility(showLbdsFeatures ? View.VISIBLE : View.GONE);
+		binding.settingsLbdsDebugUrl.setVisibility(showLbdsFeatures ? View.VISIBLE : View.GONE);
 	}
 
 	@Override
@@ -267,6 +290,24 @@ public class SettingsFragment extends BaseLandingFragment {
 			Intent intent = new Intent(getActivity(), LoginActivity.class);
 			startActivity(intent);
 		}, "LOGOUT");
+	}
+
+	public void kexLbds() {
+		LbdsIntentSender.sendKexLbdsIntent(getContext());
+	}
+
+	private boolean isLbdsAppInstalled() {
+		PackageManager packageManager = getContext().getPackageManager();
+		try {
+			packageManager.getPackageInfo(LbdsRelated.LBDS_SERVICE_APP_PCKG, 0);
+			return true;
+		} catch (PackageManager.NameNotFoundException e) {
+			return false;
+		}
+	}
+
+	public String getLbdsDebugUrl() {
+		return (isLbdsAppInstalled() && isShowDevOptions()) ? binding.settingsLbdsDebugUrl.getValue() : null;
 	}
 
 	@Override

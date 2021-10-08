@@ -19,6 +19,7 @@
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/base_layout"
     android:descendantFocusability="beforeDescendants">
 
@@ -74,7 +75,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="@dimen/fragment_padding">
+                android:padding="@dimen/fragment_padding"
+                tools:ignore="ExtraText">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -100,12 +102,12 @@
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/exposure_startDate"
-                        app:value="@{data.startDate}"
+                        app:dateTimeValue="@{data.startDate}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/exposure_endDate"
-                        app:value="@{data.endDate}"
+                        app:dateTimeValue="@{data.endDate}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
@@ -206,8 +208,20 @@
                     style="@style/SubHeadingCompactStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/exposure_exposureRole"
+                    app:value="@{data.exposureRole}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/exposure_riskArea"
                     app:value="@{data.riskArea}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/exposure_largeAttendanceNumber"
+                    app:dependencyParentField="@{exposureExposureType}"
+                    app:dependencyParentValue="@{ExposureType.GATHERING}"
+                    app:value="@{data.largeAttendanceNumber}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
@@ -408,6 +422,11 @@
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/exposure_workEnvironment"
+                    app:value="@{data.workEnvironment}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -454,7 +473,7 @@
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/exposure_location"
-                    app:maxLines="3"
+                    app:maxLines="4"
                     app:value="@{data.location}"
                     style="@style/ControlSingleColumnStyle" />
 

@@ -15,8 +15,11 @@
 
 package de.symeda.sormas.app.person.edit;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.databinding.ObservableArrayList;
+import androidx.databinding.ObservableList;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -24,17 +27,12 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.databinding.ObservableArrayList;
-import androidx.databinding.ObservableList;
-
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ArmedForcesRelationType;
@@ -58,27 +56,38 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonContactDetail;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
+import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
+import de.symeda.sormas.app.person.PersonContactDetailDialog;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
-import de.symeda.sormas.app.util.InfrastructureHelper;
+import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 
-public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayoutBinding, Person, AbstractDomainObject> {
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
+public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayoutBinding, Person, PseudonymizableAdo> {
 
 	public static final String TAG = PersonEditFragment.class.getSimpleName();
 
 	private Person record;
 	private AbstractDomainObject rootData;
 	private IEntryItemOnClickListener onAddressItemClickListener;
+	private IEntryItemOnClickListener onPersonContactDetailItemClickListener;
 
 	// Instance methods
 
@@ -94,6 +103,16 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 	}
 
 	public static PersonEditFragment newInstance(Contact activityRootData) {
+
+		return newInstanceWithFieldCheckers(
+			PersonEditFragment.class,
+			null,
+			activityRootData,
+			FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+	}
+
+	public static PersonEditFragment newInstance(Immunization activityRootData) {
 
 		return newInstanceWithFieldCheckers(
 			PersonEditFragment.class,
@@ -125,19 +144,17 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		List<Item> deathPlaceTypeList = DataUtils.getEnumItems(DeathPlaceType.class, true);
 		List<Item> burialConductorList = DataUtils.getEnumItems(BurialConductor.class, true);
 
-		List<Item> initialOccupationRegions = InfrastructureHelper.loadRegions();
-
-		List<Item> initialPlaceOfBirthRegions = InfrastructureHelper.loadRegions();
-		List<Item> initialPlaceOfBirthDistricts = InfrastructureHelper.loadDistricts(record.getPlaceOfBirthRegion());
-		List<Item> initialPlaceOfBirthCommunities = InfrastructureHelper.loadCommunities(record.getPlaceOfBirthDistrict());
+		List<Item> initialPlaceOfBirthRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
+		List<Item> initialPlaceOfBirthDistricts = InfrastructureDaoHelper.loadDistricts(record.getPlaceOfBirthRegion());
+		List<Item> initialPlaceOfBirthCommunities = InfrastructureDaoHelper.loadCommunities(record.getPlaceOfBirthDistrict());
 		List<Item> initialPlaceOfBirthFacilities =
-			InfrastructureHelper.loadFacilities(record.getPlaceOfBirthDistrict(), record.getPlaceOfBirthCommunity(), null);
+			InfrastructureDaoHelper.loadFacilities(record.getPlaceOfBirthDistrict(), record.getPlaceOfBirthCommunity(), null);
 
 		List<Item> occupationFacilityTypeList = DataUtils.toItems(FacilityType.getTypes(FacilityTypeGroup.MEDICAL_FACILITY), true);
 		List<Item> placeOfBirthFacilityTypeList = DataUtils.toItems(FacilityType.getPlaceOfBirthTypes(), true);
-		List<Item> countryList = InfrastructureHelper.loadCountries();
+		List<Item> countryList = InfrastructureDaoHelper.loadCountries();
 
-		InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(
+		InfrastructureDaoHelper.initializeHealthFacilityDetailsFieldVisibility(
 			contentBinding.personPlaceOfBirthFacility,
 			contentBinding.personPlaceOfBirthFacilityDetails);
 		initializeCauseOfDeathDetailsFieldVisibility(
@@ -146,7 +163,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			contentBinding.personCauseOfDeathDetails);
 		initializeOccupationDetailsFieldVisibility(contentBinding.personOccupationType, contentBinding.personOccupationDetails);
 
-		InfrastructureHelper.initializeFacilityFields(
+		InfrastructureFieldsDependencyHandler.instance.initializeFacilityFields(
 			record,
 			contentBinding.personPlaceOfBirthRegion,
 			initialPlaceOfBirthRegions,
@@ -373,6 +390,12 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		return newAddresses;
 	}
 
+	private ObservableList<PersonContactDetail> getPersonContactDetails() {
+		ObservableArrayList<PersonContactDetail> personContactDetails = new ObservableArrayList<>();
+		personContactDetails.addAll(record.getPersonContactDetails());
+		return personContactDetails;
+	}
+
 	private void setFieldVisibilitiesAndAccesses(View view) {
 		setFieldVisibilitiesAndAccesses(LocationDto.class, (ViewGroup) view);
 	}
@@ -396,6 +419,25 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			dialog.show();
 			dialog.configureAsPersonAddressDialog(true);
 		};
+		onPersonContactDetailItemClickListener = (v, item) -> {
+			final PersonContactDetail personContactDetail = (PersonContactDetail) item;
+			final PersonContactDetail personContactDetailClone = (PersonContactDetail) personContactDetail.clone();
+			final PersonContactDetailDialog dialog =
+				new PersonContactDetailDialog(BaseActivity.getActiveActivity(), personContactDetailClone, record, getActivityRootData(), false);
+
+			dialog.setPositiveCallback(() -> checkExistingPrimaryContactDetails(personContactDetailClone, dialog, () -> {
+				record.getPersonContactDetails().set(record.getPersonContactDetails().indexOf(personContactDetail), personContactDetailClone);
+				updatePersonContactDetails();
+			}));
+
+			dialog.setDeleteCallback(() -> {
+				removePersonContactDetail(personContactDetail);
+				dialog.dismiss();
+			});
+
+			dialog.show();
+			dialog.configureAsPersonContactDetailDialog(true);
+		};
 
 		getContentBinding().btnAddAddress.setOnClickListener(v -> {
 			final Location address = DatabaseHelper.getLocationDao().build();
@@ -403,10 +445,22 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
 			dialog.setPositiveCallback(() -> addAddress(address));
 
-			dialog.setDeleteCallback(() -> removeAddress(address));
-
 			dialog.show();
 			dialog.configureAsPersonAddressDialog(false);
+		});
+
+		getContentBinding().btnAddPersonContactDetail.setOnClickListener(v -> {
+			final PersonContactDetail personContactDetail = DatabaseHelper.getPersonContactDetailDao().build();
+			final PersonContactDetailDialog dialog =
+				new PersonContactDetailDialog(BaseActivity.getActiveActivity(), personContactDetail, record, getActivityRootData(), true);
+
+			dialog.setPositiveCallback(() -> checkExistingPrimaryContactDetails(personContactDetail, dialog, () -> {
+				record.getPersonContactDetails().add(0, personContactDetail);
+				updatePersonContactDetails();
+			}));
+			dialog.show();
+
+			dialog.configureAsPersonContactDetailDialog(false);
 		});
 	}
 
@@ -423,6 +477,50 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 	private void addAddress(Location item) {
 		record.getAddresses().add(0, item);
 		updateAddresses();
+	}
+
+	private void updatePersonContactDetails() {
+		getContentBinding().setPersonContactDetailList(getPersonContactDetails());
+		getContentBinding().setPersonContactDetailBindCallback(this::setFieldVisibilitiesAndAccesses);
+	}
+
+	private void removePersonContactDetail(PersonContactDetail item) {
+		record.getPersonContactDetails().remove(item);
+		updatePersonContactDetails();
+	}
+
+	private void checkExistingPrimaryContactDetails(PersonContactDetail item, PersonContactDetailDialog dialog, Callback callback) {
+		final List<PersonContactDetail> personContactDetails = record.getPersonContactDetails();
+		for (PersonContactDetail pcd : personContactDetails) {
+			if (pcd.getPersonContactDetailType() == item.getPersonContactDetailType()
+				&& !item.getUuid().equals(pcd.getUuid())
+				&& pcd.isPrimaryContact()) {
+
+				final ConfirmationDialog confirmationDialog = new ConfirmationDialog(
+					BaseActivity.getActiveActivity(),
+					I18nProperties.getString(Strings.headingUpdatePersonContactDetails),
+					I18nProperties.getString(Strings.messagePersonContactDetailsPrimaryDuplicate),
+					R.string.yes,
+					R.string.no);
+
+				confirmationDialog.setPositiveCallback(() -> {
+					pcd.setPrimaryContact(false);
+					callback.call();
+				});
+
+				confirmationDialog.setNegativeCallback(() -> {
+					item.setPrimaryContact(false);
+					callback.call();
+				});
+
+				confirmationDialog.show();
+				dialog.dismiss();
+				return;
+			}
+		}
+
+		callback.call();
+		dialog.dismiss();
 	}
 
 	// Overrides
@@ -447,6 +545,9 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		} else if (ado instanceof Contact) {
 			record = ((Contact) ado).getPerson();
 			rootData = ado;
+		} else if (ado instanceof Immunization) {
+			record = ((Immunization) ado).getPerson();
+			rootData = ado;
 		} else {
 			throw new UnsupportedOperationException(
 				"ActivityRootData of class " + ado.getClass().getSimpleName() + " does not support PersonEditFragment");
@@ -456,6 +557,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		// automatically loaded (because there's no additional queryForId call for person when the
 		// parent data is loaded)
 		DatabaseHelper.getPersonDao().initLocations(record);
+		DatabaseHelper.getPersonDao().initPersonContactDetails(record);
 	}
 
 	@Override
@@ -469,6 +571,10 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		contentBinding.setAddressList(getAddresses());
 		contentBinding.setAddressItemClickCallback(onAddressItemClickListener);
 		getContentBinding().setAddressBindCallback(this::setFieldVisibilitiesAndAccesses);
+
+		contentBinding.setPersonContactDetailList(getPersonContactDetails());
+		contentBinding.setPersonContactDetailItemClickCallback(onPersonContactDetailItemClickListener);
+		getContentBinding().setPersonContactDetailBindCallback(this::setFieldVisibilitiesAndAccesses);
 	}
 
 	@Override

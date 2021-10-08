@@ -15,8 +15,8 @@ import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -123,7 +123,7 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 				cbRashExposureCommunity,
 				district != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()) : null);
 		});
-		cbRashExposureRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		cbRashExposureRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

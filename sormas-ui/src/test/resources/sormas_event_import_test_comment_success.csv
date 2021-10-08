@@ -1,0 +1,11 @@
+## This is a comment line
+##This is also a comment line
+## This is a comment line with a , inside
+Event,Event,Event,Event,Event,Event,Event,Event,Event,Location,Location,Location,Location,Location,Location,Location,Location,Location,Location
+## This is a comment line after the first line of the headers
+eventStatus,riskLevel,eventInvestigationStatus,eventInvestigationStartDate,eventInvestigationEndDate,eventTitle,eventDesc,startDate,endDate,eventLocation.region,eventLocation.district,eventLocation.community,eventLocation.city,eventLocation.areaType,eventLocation.postalCode,eventLocation.street,eventLocation.houseNumber,eventLocation.addressType,disease
+## This is a comment line after the headers
+EVENT,LOW,PENDING,03/01/2021,03/03/2021,Event title 1,Event desc 1,02/28/2021,,Bourgogne-Franche-Comté,Côte d'Or,Dijon,Dijon,URBAN,21000,rue de la liberté,5000,HOME,CORONAVIRUS
+## This is a comment line between data rows
+EVENT,LOW,PENDING,02/28/2021,03/02/2021,Event title 2,Event desc 2,02/23/2021,,Bourgogne-Franche-Comté,Côte d'Or,Dijon,Dijon,URBAN,21000,,,,CORONAVIRUS
+## This is an end of file comment line

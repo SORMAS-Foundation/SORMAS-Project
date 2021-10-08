@@ -18,23 +18,30 @@ package de.symeda.sormas.app.pathogentest.edit;
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
-import java.util.Date;
-
 import android.content.Context;
+import android.database.SQLException;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 
 import androidx.annotation.NonNull;
 
+import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
@@ -120,15 +127,49 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 			return; // don't save multiple times
 		}
 
-		final PathogenTest PathogenTestToSave = getStoredRootEntity();
+		final PathogenTest pathogenTestToSave = getStoredRootEntity();
+		final Case associatedCase = pathogenTestToSave.getSample().getAssociatedCase();
+
+		if (associatedCase != null) {
+			DiseaseVariant caseDiseaseVariant = associatedCase.getDiseaseVariant();
+			DiseaseVariant newDiseaseVariant = pathogenTestToSave.getTestedDiseaseVariant();
+			if (pathogenTestToSave.getTestResult() == PathogenTestResultType.POSITIVE
+				&& pathogenTestToSave.getTestResultVerified()
+				&& !DataHelper.equal(newDiseaseVariant, caseDiseaseVariant)) {
+
+				String heading = I18nProperties.getString(Strings.headingUpdateCaseWithNewDiseaseVariant);
+				String subHeading = I18nProperties.getString(Strings.messageUpdateCaseWithNewDiseaseVariant);
+				int positiveButtonTextResId = R.string.yes;
+				int negativeButtonTextResId = R.string.no;
+
+				ConfirmationDialog dlg = new ConfirmationDialog(this, heading, subHeading, positiveButtonTextResId, negativeButtonTextResId);
+				dlg.setCancelable(false);
+				dlg.setNegativeCallback(() -> {
+					save(pathogenTestToSave);
+				});
+				dlg.setPositiveCallback(() -> {
+					associatedCase.setDiseaseVariant(newDiseaseVariant);
+					try {
+						DatabaseHelper.getCaseDao().updateOrCreate(associatedCase);
+					} catch (SQLException | java.sql.SQLException e) {
+						Log.e(getClass().getSimpleName(), "Could not update case: " + associatedCase.getUuid());
+						throw new RuntimeException(e);
+					}
+					save(pathogenTestToSave);
+				});
+				dlg.show();
+			} else {
+				save(pathogenTestToSave);
+			}
+		}
+	}
+
+	private void save(PathogenTest pathogenTestToSave) {
 		PathogenTestEditFragment fragment = (PathogenTestEditFragment) getActiveFragment();
 
-		if (PathogenTestToSave.getLabUser() == null) {
+		if (pathogenTestToSave.getLabUser() == null) {
 			NotificationHelper.showNotification(this, ERROR, getString(R.string.error_no_pathogentest_labuser));
 			return;
-		}
-		if (PathogenTestToSave.getTestDateTime() == null) {
-			PathogenTestToSave.setTestDateTime(new Date());
 		}
 
 		fragment.setLiveValidationDisabled(false);
@@ -140,7 +181,7 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 			return;
 		}
 
-		saveTask = new SavingAsyncTask(getRootView(), PathogenTestToSave) {
+		saveTask = new SavingAsyncTask(getRootView(), pathogenTestToSave) {
 
 			@Override
 			protected void onPreExecute() {
@@ -149,7 +190,7 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 
 			@Override
 			public void doInBackground(TaskResultHolder resultHolder) throws DaoException, ValidationException {
-				DatabaseHelper.getSampleTestDao().saveAndSnapshot(PathogenTestToSave);
+				DatabaseHelper.getSampleTestDao().saveAndSnapshot(pathogenTestToSave);
 			}
 
 			@Override

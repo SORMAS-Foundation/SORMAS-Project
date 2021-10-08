@@ -28,9 +28,12 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
 import com.vaadin.ui.JavaScriptFunction;
 import com.vaadin.util.ReflectTools;
 
-import de.symeda.sormas.api.region.GeoLatLon;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.geo.GeoLatLon;
 import elemental.json.Json;
 import elemental.json.JsonArray;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JS and CSS files are in the VAADIN folder, so we can also access required
@@ -49,6 +52,8 @@ import elemental.json.JsonArray;
 	"vaadin://map/leaflet.fullscreen.css",
 	"vaadin://map/MarkerCluster.css" })
 public class LeafletMap extends AbstractJavaScriptComponent {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private static final long serialVersionUID = 1671451734103288729L;
 
@@ -79,6 +84,10 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 				LeafletMap.this.fireEvent(new MarkerClickEvent(LeafletMap.this, groupId, markerIndex));
 			}
 		});
+		// credit where credit's due
+		String attribution = FacadeProvider.getGeoShapeProvider().loadShapefileAttributions();
+		this.addShapefileAttribution(attribution);
+
 	}
 
 	/**
@@ -142,6 +151,17 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 
 	public void addMarkerClickListener(MarkerClickListener listener) {
 		addListener(MarkerClickEvent.class, listener, MarkerClickListener.MARKER_CLICK_METHOD);
+	}
+
+	/**
+	 * Append the give attribution to the Leaflet attribution list.
+	 * See https://leafletjs.com/reference-1.7.1.html#control-attribution
+	 * 
+	 * @param attribution
+	 *            The attribution to be given.
+	 */
+	public void addShapefileAttribution(String attribution) {
+		callFunction("addShapefileAttribution", attribution);
 	}
 
 	public interface MarkerClickListener extends Serializable {

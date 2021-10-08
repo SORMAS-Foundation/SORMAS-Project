@@ -16,6 +16,7 @@
 package de.symeda.sormas.rest;
 
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
 
@@ -48,7 +49,7 @@ public class BAGExportResource {
 		return createFileDownloadResponse(
 			output -> CsvStreamUtils.writeCsvContentToStream(
 				BAGExportCaseDto.class,
-				(from, to) -> FacadeProvider.getBAGExportFacade().getCaseExportList(from, to),
+				(from, to) -> FacadeProvider.getBAGExportFacade().getCaseExportList(Collections.emptySet(), from, to),
 				(propertyId, type) -> propertyId,
 				null,
 				null,
@@ -64,7 +65,7 @@ public class BAGExportResource {
 		return createFileDownloadResponse(
 			output -> CsvStreamUtils.writeCsvContentToStream(
 				BAGExportContactDto.class,
-				(from, to) -> FacadeProvider.getBAGExportFacade().getContactExportList(from, to),
+				(from, to) -> FacadeProvider.getBAGExportFacade().getContactExportList(Collections.emptySet(), from, to),
 				(propertyId, type) -> propertyId,
 				null,
 				null,

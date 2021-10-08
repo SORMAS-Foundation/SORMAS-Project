@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Order;
@@ -29,7 +28,7 @@ public class ClinicalVisitExportDto implements Serializable {
 	private long symptomsId;
 	private SymptomsDto symptoms;
 
-	private CaseJurisdictionDto caseJurisdiction;
+	private Boolean isInJurisdiction;
 
 	public ClinicalVisitExportDto(
 		String caseUuid,
@@ -40,12 +39,7 @@ public class ClinicalVisitExportDto implements Serializable {
 		String visitRemarks,
 		String visitingPerson,
 		long symptomsId,
-		String caseReportingUserUuid,
-		String caseRegionUuid,
-		String caseDistrictUuid,
-		String caseCommunityUuid,
-		String caseHealthFacilityUuid,
-		String casePointOfEntryUuid) {
+		boolean isInJurisdiction) {
 
 		this.caseUuid = caseUuid;
 		this.caseName = PersonDto.buildCaption(caseFirstName, caseLastName);
@@ -54,8 +48,7 @@ public class ClinicalVisitExportDto implements Serializable {
 		this.visitRemarks = visitRemarks;
 		this.visitingPerson = visitingPerson;
 		this.symptomsId = symptomsId;
-
-		this.caseJurisdiction = new CaseJurisdictionDto(caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid);
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	@Order(0)
@@ -129,7 +122,7 @@ public class ClinicalVisitExportDto implements Serializable {
 		this.symptomsId = symptomsId;
 	}
 
-	public CaseJurisdictionDto getCaseJurisdiction() {
-		return caseJurisdiction;
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 }

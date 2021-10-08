@@ -153,8 +153,10 @@ public class VisitEditActivity extends BaseEditActivity<Visit> {
 				hidePreloader();
 				super.onPostExecute(taskResult);
 				if (taskResult.getResultStatus().isSuccess()) {
-					if (!goToNextPage()) {
-						finish();
+					if (visit.getVisitStatus() == VisitStatus.COOPERATIVE && goToNextPage()) {
+						// enter symptoms
+					} else {
+						finish(); // back to contact
 					}
 				} else {
 					onResume(); // reload data

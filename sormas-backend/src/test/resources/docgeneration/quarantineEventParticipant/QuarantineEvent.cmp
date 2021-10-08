@@ -1,0 +1,43 @@
+Case Person:
+Debord, Guy
+
+Born:
+28.12.1931
+
+Address:
+Nauwieserstraße 7
+66111 Saarbrücken
+
+Phone:
++49 681 1234
+
+Involvment:
+participated
+
+Empty Properties:
+*** In EventParticipant: No property sequelaeDetails in class EventParticipant ***
+./.
+./.
+
+*** In EventParticipant: No property additionalDetails in class EventParticipant ***
+
+User:
+Surv Sup
+
+Sample:
+./. - ./.: ./.
+
+Pathogen Test:
+./. ./. ./.
+
+
+Extra remarks:
+the first remark
+./.
+the third remark
+
+Errors:
+*** In EventParticipant: No property errorProperty in class EventParticipant ***
+*** In EventParticipant.person: No property errorProperty in class Person ***
+
+

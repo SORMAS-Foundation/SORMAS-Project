@@ -24,7 +24,7 @@
 
     <data>
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
-        <import type="de.symeda.sormas.api.infrastructure.PointOfEntryType" />
+        <import type="de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType" />
         <import type="de.symeda.sormas.api.caze.porthealthinfo.ConveyanceType" />
         <import type="de.symeda.sormas.api.infrastructure.InfrastructureHelper" />
 

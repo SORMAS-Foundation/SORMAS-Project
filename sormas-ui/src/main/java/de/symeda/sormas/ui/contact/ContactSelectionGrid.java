@@ -13,7 +13,7 @@ import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.person.SimilarPersonDto;
+import de.symeda.sormas.ui.utils.V7UuidRenderer;
 
 public class ContactSelectionGrid extends Grid {
 
@@ -38,10 +38,14 @@ public class ContactSelectionGrid extends Grid {
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
 
+		setColumns();
+	}
+
+	protected void setColumns() {
 		setColumns(
+			SimilarContactDto.UUID,
 			SimilarContactDto.FIRST_NAME,
 			SimilarContactDto.LAST_NAME,
-			SimilarContactDto.UUID,
 			SimilarContactDto.CAZE,
 			SimilarContactDto.CASE_ID_EXTERNAL_SYSTEM,
 			SimilarContactDto.LAST_CONTACT_DATE,
@@ -54,11 +58,12 @@ public class ContactSelectionGrid extends Grid {
 			column.setHeaderCaption(
 				I18nProperties.findPrefixCaption(
 					column.getPropertyId().toString(),
-					SimilarPersonDto.I18N_PREFIX,
+					SimilarContactDto.I18N_PREFIX,
 					ContactIndexDto.I18N_PREFIX,
 					ContactDto.I18N_PREFIX));
 		}
 
+		getColumn(SimilarContactDto.UUID).setRenderer(new V7UuidRenderer());
 		getColumn(SimilarContactDto.FIRST_NAME).setMinimumWidth(150);
 		getColumn(SimilarContactDto.LAST_NAME).setMinimumWidth(150);
 	}

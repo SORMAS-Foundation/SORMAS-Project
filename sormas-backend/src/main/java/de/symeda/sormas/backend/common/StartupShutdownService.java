@@ -21,15 +21,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.sql.Timestamp;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -52,39 +57,44 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.externaljournal.UserConfig;
-import de.symeda.sormas.api.facility.FacilityCriteria;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
-import de.symeda.sormas.api.infrastructure.PointOfEntryType;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
-import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationService;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
-import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.CommunityService;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.community.CommunityService;
+import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.country.CountryService;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
@@ -99,13 +109,8 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class StartupShutdownService {
 
 	static final String SORMAS_SCHEMA = "sql/sormas_schema.sql";
-
 	static final String AUDIT_SCHEMA = "sql/sormas_audit_schema.sql";
-
 	private static final Pattern SQL_COMMENT_PATTERN = Pattern.compile("^\\s*(--.*)?");
-
-	public static final String SORMAS_TO_SORMAS_USER_NAME = "Sormas2Sormas";
-
 	//@formatter:off
 	private static final Pattern SCHEMA_VERSION_SQL_PATTERN = Pattern.compile(
 			"^\\s*INSERT\\s+INTO\\s+schema_version\\s*" + 
@@ -145,13 +150,31 @@ public class StartupShutdownService {
 	@EJB
 	private FeatureConfigurationService featureConfigurationService;
 	@EJB
-	private ServerAccessDataService serverAccessDataService;
+	private CountryFacadeEjbLocal countryFacade;
+	@EJB
+	private CountryService countryService;
+	@EJB
+	private SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb;
 
 	@Inject
 	private Event<UserUpdateEvent> userUpdateEvent;
 
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
+
+	static boolean isBlankOrSqlComment(String sqlLine) {
+		return SQL_COMMENT_PATTERN.matcher(sqlLine).matches();
+	}
+
+	static Integer extractSchemaVersion(String sqlLine) {
+
+		return Optional.ofNullable(sqlLine)
+			.map(SCHEMA_VERSION_SQL_PATTERN::matcher)
+			.filter(Matcher::matches)
+			.map(m -> m.group(1))
+			.map(Integer::parseInt)
+			.orElse(null);
+	}
 
 	@PostConstruct
 	public void startup() {
@@ -170,7 +193,7 @@ public class StartupShutdownService {
 
 		facilityService.createConstantFacilities();
 
-		createConstantPointsOfEntry();
+		pointOfEntryService.createConstantPointsOfEntry();
 
 		createDefaultUsers();
 
@@ -179,6 +202,8 @@ public class StartupShutdownService {
 		createOrUpdateSymptomJournalUser();
 
 		createOrUpdatePatientDiaryUser();
+
+		syncUsers();
 
 		upgrade();
 
@@ -194,12 +219,17 @@ public class StartupShutdownService {
 	}
 
 	private void createDefaultInfrastructureData() {
+		if (!configFacade.isCreateDefaultEntities()) {
+			// return if isCreateDefaultEntities() is false
+			logger.info("Skipping the creation of default infrastructure data");
+			return;
+		}
 
 		// Region
 		Region region = null;
 		if (regionService.count() == 0) {
 			region = new Region();
-			region.setUuid(DataHelper.createUuid());
+			region.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.REGION.ordinal()));
 			region.setName(I18nProperties.getCaption(Captions.defaultRegion, "Default Region"));
 			region.setEpidCode("DEF-REG");
 			region.setDistricts(new ArrayList<District>());
@@ -210,7 +240,7 @@ public class StartupShutdownService {
 		District district = null;
 		if (districtService.count() == 0) {
 			district = new District();
-			district.setUuid(DataHelper.createUuid());
+			district.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.DISTRICT.ordinal()));
 			district.setName(I18nProperties.getCaption(Captions.defaultDistrict, "Default District"));
 			if (region == null) {
 				region = regionService.getAll().get(0);
@@ -226,7 +256,7 @@ public class StartupShutdownService {
 		Community community = null;
 		if (communityService.count() == 0) {
 			community = new Community();
-			community.setUuid(DataHelper.createUuid());
+			community.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.COMMUNITY.ordinal()));
 			community.setName(I18nProperties.getCaption(Captions.defaultCommunity, "Default Community"));
 			if (district == null) {
 				district = districtService.getAll().get(0);
@@ -301,46 +331,28 @@ public class StartupShutdownService {
 		}
 	}
 
-	private void createConstantPointsOfEntry() {
-		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_AIRPORT_UUID) == null) {
-			PointOfEntry otherAirport = new PointOfEntry();
-			otherAirport.setName("OTHER_AIRPORT");
-			otherAirport.setUuid(PointOfEntryDto.OTHER_AIRPORT_UUID);
-			otherAirport.setActive(true);
-			otherAirport.setPointOfEntryType(PointOfEntryType.AIRPORT);
-			pointOfEntryService.persist(otherAirport);
-		}
-		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_SEAPORT_UUID) == null) {
-			PointOfEntry otherSeaport = new PointOfEntry();
-			otherSeaport.setName("OTHER_SEAPORT");
-			otherSeaport.setUuid(PointOfEntryDto.OTHER_SEAPORT_UUID);
-			otherSeaport.setActive(true);
-			otherSeaport.setPointOfEntryType(PointOfEntryType.SEAPORT);
-			pointOfEntryService.persist(otherSeaport);
-		}
-		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_GROUND_CROSSING_UUID) == null) {
-			PointOfEntry otherGC = new PointOfEntry();
-			otherGC.setName("OTHER_GROUND_CROSSING");
-			otherGC.setUuid(PointOfEntryDto.OTHER_GROUND_CROSSING_UUID);
-			otherGC.setActive(true);
-			otherGC.setPointOfEntryType(PointOfEntryType.GROUND_CROSSING);
-			pointOfEntryService.persist(otherGC);
-		}
-		if (pointOfEntryService.getByUuid(PointOfEntryDto.OTHER_POE_UUID) == null) {
-			PointOfEntry otherPoe = new PointOfEntry();
-			otherPoe.setName("OTHER_POE");
-			otherPoe.setUuid(PointOfEntryDto.OTHER_POE_UUID);
-			otherPoe.setActive(true);
-			otherPoe.setPointOfEntryType(PointOfEntryType.OTHER);
-			pointOfEntryService.persist(otherPoe);
-		}
-	}
-
 	private void createDefaultUsers() {
 
 		if (userService.count() == 0) {
 
-			Region region = regionService.getAll().get(0);
+			// Create Admin
+			//@formatter:off
+			createAndPersistDefaultUser(
+					UserRole.ADMIN,
+					"ad",
+					"min",
+					DefaultEntityHelper.ADMIN_USERNAME_AND_PASSWORD,
+					u -> {});
+			//@formatter:on
+
+			if (!configFacade.isCreateDefaultEntities()) {
+				// return if isCreateDefaultEntities() is false
+				logger.info("Skipping the creation of default entities");
+				return;
+			}
+
+			Region region =
+				regionService.getByUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.REGION.ordinal()));
 			District district = region.getDistricts().get(0);
 			Community community = district.getCommunities().get(0);
 			List<Facility> healthFacilities = facilityService.getActiveFacilitiesByCommunityAndType(community, FacilityType.HOSPITAL, false, false);
@@ -349,105 +361,165 @@ public class StartupShutdownService {
 			Facility laboratory = laboratories.size() > 0 ? laboratories.get(0) : null;
 			PointOfEntry pointOfEntry = pointOfEntryService.getAllActive().get(0);
 
-			// Create Admin
-			User admin = MockDataGenerator.createUser(UserRole.ADMIN, "ad", "min", "sadmin");
-			admin.setUserName("admin");
-			userService.persist(admin);
-			userUpdateEvent.fire(new UserUpdateEvent(admin));
+			logger.info("Create default users");
 
 			// Create Surveillance Supervisor
-			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Surveillance", "Supervisor", "SurvSup");
-			surveillanceSupervisor.setUserName("SurvSup");
-			surveillanceSupervisor.setRegion(region);
-			userService.persist(surveillanceSupervisor);
-			userUpdateEvent.fire(new UserUpdateEvent(surveillanceSupervisor));
+			createAndPersistDefaultUser(
+				UserRole.SURVEILLANCE_SUPERVISOR,
+				"Surveillance",
+				"Supervisor",
+				DefaultEntityHelper.SURV_SUP_USERNAME_AND_PASSWORD,
+				u -> u.setRegion(region));
 
 			// Create Case Supervisor
-			User caseSupervisor = MockDataGenerator.createUser(UserRole.CASE_SUPERVISOR, "Case", "Supervisor", "CaseSup");
-			caseSupervisor.setUserName("CaseSup");
-			caseSupervisor.setRegion(region);
-			userService.persist(caseSupervisor);
-			userUpdateEvent.fire(new UserUpdateEvent(caseSupervisor));
+			createAndPersistDefaultUser(
+				UserRole.CASE_SUPERVISOR,
+				"Case",
+				"Supervisor",
+				DefaultEntityHelper.CASE_SUP_USERNAME_AND_PASSWORD,
+				u -> u.setRegion(region));
 
 			// Create Contact Supervisor
-			User contactSupervisor = MockDataGenerator.createUser(UserRole.CONTACT_SUPERVISOR, "Contact", "Supervisor", "ContSup");
-			contactSupervisor.setUserName("ContSup");
-			contactSupervisor.setRegion(region);
-			userService.persist(contactSupervisor);
-			userUpdateEvent.fire(new UserUpdateEvent(contactSupervisor));
+			createAndPersistDefaultUser(
+				UserRole.CONTACT_SUPERVISOR,
+				"Contact",
+				"Supervisor",
+				DefaultEntityHelper.CONT_SUP_USERNAME_AND_PASSWORD,
+				u -> u.setRegion(region));
 
 			// Create Point of Entry Supervisor
-			User poeSupervisor = MockDataGenerator.createUser(UserRole.POE_SUPERVISOR, "Point of Entry", "Supervisor", "PoeSup");
-			poeSupervisor.setUserName("PoeSup");
-			poeSupervisor.setRegion(region);
-			userService.persist(poeSupervisor);
-			userUpdateEvent.fire(new UserUpdateEvent(poeSupervisor));
+			createAndPersistDefaultUser(
+				UserRole.POE_SUPERVISOR,
+				"Point of Entry",
+				"Supervisor",
+				DefaultEntityHelper.POE_SUP_USERNAME_AND_PASSWORD,
+				u -> u.setRegion(region));
 
 			// Create Laboratory Officer
-			User laboratoryOfficer = MockDataGenerator.createUser(UserRole.LAB_USER, "Laboratory", "Officer", "LabOff");
-			laboratoryOfficer.setUserName("LabOff");
-			laboratoryOfficer.setLaboratory(laboratory);
-			userService.persist(laboratoryOfficer);
-			userUpdateEvent.fire(new UserUpdateEvent(laboratoryOfficer));
+			createAndPersistDefaultUser(
+				UserRole.LAB_USER,
+				"Laboratory",
+				"Officer",
+				DefaultEntityHelper.LAB_OFF_USERNAME_AND_PASSWORD,
+				u -> u.setLaboratory(laboratory));
 
 			// Create Event Officer
-			User eventOfficer = MockDataGenerator.createUser(UserRole.EVENT_OFFICER, "Event", "Officer", "EveOff");
-			eventOfficer.setUserName("EveOff");
-			eventOfficer.setRegion(region);
-			userService.persist(eventOfficer);
-			userUpdateEvent.fire(new UserUpdateEvent(eventOfficer));
+			createAndPersistDefaultUser(
+				UserRole.EVENT_OFFICER,
+				"Event",
+				"Officer",
+				DefaultEntityHelper.EVE_OFF_USERNAME_AND_PASSWORD,
+				u -> u.setRegion(region));
 
 			// Create National User
-			User nationalUser = MockDataGenerator.createUser(UserRole.NATIONAL_USER, "National", "User", "NatUser");
-			nationalUser.setUserName("NatUser");
-			userService.persist(nationalUser);
-			userUpdateEvent.fire(new UserUpdateEvent(nationalUser));
+			//@formatter:off
+			createAndPersistDefaultUser(
+					UserRole.NATIONAL_USER,
+					"National",
+					"User",
+					DefaultEntityHelper.NAT_USER_USERNAME_AND_PASSWORD,
+					u -> {});
+			//@formatter:on
 
 			// Create National Clinician
-			User nationalClinician = MockDataGenerator.createUser(UserRole.NATIONAL_CLINICIAN, "National", "Clinician", "NatClin");
-			nationalClinician.setUserName("NatClin");
-			userService.persist(nationalClinician);
-			userUpdateEvent.fire(new UserUpdateEvent(nationalClinician));
+			//@formatter:off
+			createAndPersistDefaultUser(
+					UserRole.NATIONAL_CLINICIAN,
+					"National",
+					"Clinician",
+					DefaultEntityHelper.NAT_CLIN_USERNAME_AND_PASSWORD,
+					u -> {});
+			//@formatter:on
 
 			// Create Surveillance Officer
-			User surveillanceOfficer = MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER, "Surveillance", "Officer", "SurvOff");
-			surveillanceOfficer.setUserName("SurvOff");
-			surveillanceOfficer.setRegion(region);
-			surveillanceOfficer.setDistrict(district);
-			userService.persist(surveillanceOfficer);
-			userUpdateEvent.fire(new UserUpdateEvent(surveillanceOfficer));
+			//@formatter:off
+			User surveillanceOfficer = createAndPersistDefaultUser(
+				UserRole.SURVEILLANCE_OFFICER,
+				"Surveillance",
+				"Officer",
+				DefaultEntityHelper.SURV_OFF_USERNAME_AND_PASSWORD,
+				u -> {
+					u.setRegion(region);
+					u.setDistrict(district);
+				});
+			//@formatter:on
 
 			// Create Hospital Informant
-			User hospitalInformant = MockDataGenerator.createUser(UserRole.HOSPITAL_INFORMANT, "Hospital", "Informant", "HospInf");
-			hospitalInformant.setUserName("HospInf");
-			hospitalInformant.setRegion(region);
-			hospitalInformant.setDistrict(district);
-			hospitalInformant.setHealthFacility(facility);
-			hospitalInformant.setAssociatedOfficer(surveillanceOfficer);
-			userService.persist(hospitalInformant);
-			userUpdateEvent.fire(new UserUpdateEvent(hospitalInformant));
+			//@formatter:off
+			createAndPersistDefaultUser(
+					UserRole.HOSPITAL_INFORMANT,
+					"Hospital",
+					"Informant",
+					DefaultEntityHelper.HOSP_INF_USERNAME_AND_PASSWORD,
+					u -> {
+						u.setRegion(region);
+						u.setDistrict(district);
+						u.setHealthFacility(facility);
+						u.setAssociatedOfficer(surveillanceOfficer);
+					});
+			//@formatter:on
 
-			User poeInformant = MockDataGenerator.createUser(UserRole.POE_INFORMANT, "Poe", "Informant", "PoeInf");
-			poeInformant.setUserName("PoeInf");
-			poeInformant.setRegion(region);
-			poeInformant.setDistrict(district);
-			poeInformant.setPointOfEntry(pointOfEntry);
-			poeInformant.setAssociatedOfficer(surveillanceOfficer);
-			userService.persist(poeInformant);
-			userUpdateEvent.fire(new UserUpdateEvent(poeInformant));
+			// Create Community Officer
+			//@formatter:off
+			createAndPersistDefaultUser(
+					UserRole.COMMUNITY_OFFICER,
+					"Community",
+					"Officer",
+					DefaultEntityHelper.COMM_OFF_USERNAME_AND_PASSWORD,
+					u -> {
+						u.setRegion(region);
+						u.setDistrict(district);
+						u.setCommunity(community);
+					});
+			//@formatter:on
+
+			// Create Poe Informant
+			//@formatter:off
+			createAndPersistDefaultUser(
+					UserRole.POE_INFORMANT,
+					"Poe",
+					"Informant",
+					DefaultEntityHelper.POE_INF_USERNAME_AND_PASSWORD,
+					u -> {
+						u.setUserName("PoeInf");
+						u.setRegion(region);
+						u.setDistrict(district);
+						u.setPointOfEntry(pointOfEntry);
+						u.setAssociatedOfficer(surveillanceOfficer);
+					});
+			//@formatter:on
+
 		}
 	}
 
+	private User createAndPersistDefaultUser(
+		UserRole userRole,
+		String firstName,
+		String lastName,
+		DataHelper.Pair<String, String> usernameAndPassword,
+		Consumer<User> userModificator) {
+		User user = MockDataGenerator.createUser(userRole, firstName, lastName, usernameAndPassword.getElement1());
+		user.setUserName(usernameAndPassword.getElement0());
+		userModificator.accept(user);
+		userService.persist(user);
+		userUpdateEvent.fire(new UserUpdateEvent(user));
+		return user;
+	}
+
 	private void createOrUpdateSormasToSormasUser() {
-		serverAccessDataService.getServerAccessData().ifPresent((serverAccessData -> {
-			String sormasToSormasUserPassword = serverAccessData.getRestUserPassword();
+		if (sormasToSormasFacadeEjb.isFeatureConfigured()) {
+			// password is never used, just to prevent login as this user
+			byte[] pwd = new byte[64];
+			SecureRandom rnd = new SecureRandom();
+			rnd.nextBytes(pwd);
+
 			createOrUpdateDefaultUser(
 				Collections.singleton(UserRole.SORMAS_TO_SORMAS_CLIENT),
-				SORMAS_TO_SORMAS_USER_NAME,
-				sormasToSormasUserPassword,
+				DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME,
+				new String(pwd),
 				"Sormas to Sormas",
 				"Client");
-		}));
+		}
 	}
 
 	private void createOrUpdateSymptomJournalUser() {
@@ -459,7 +531,7 @@ public class StartupShutdownService {
 		}
 
 		createOrUpdateDefaultUser(
-			Collections.singleton(UserRole.REST_USER),
+			new HashSet<>(Arrays.asList(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)),
 			userConfig.getUsername(),
 			userConfig.getPassword(),
 			"Symptom",
@@ -510,6 +582,50 @@ public class StartupShutdownService {
 	}
 
 	/**
+	 * Synchronizes all active users with the external Authentication Provider if User Sync at startup is enabled and supported.
+	 *
+	 * @see AuthProvider#isUserSyncSupported()
+	 * @see AuthProvider#isUserSyncAtStartupEnabled()
+	 */
+	private void syncUsers() {
+
+		AuthProvider authProvider = AuthProvider.getProvider(configFacade);
+
+		if (!authProvider.isUserSyncSupported()) {
+			logger.info("Active Authentication Provider {} doesn't support user sync", authProvider.getName());
+			return;
+		}
+
+		if (!authProvider.isUserSyncAtStartupEnabled()) {
+			logger.info("User sync at startup is disabled. Enable this in SORMAS properties if the active Authentication Provider supports it");
+			return;
+		}
+
+		List<User> users = userService.getAllActive();
+		for (User user : users) {
+			syncUser(user);
+		}
+		logger.info("User synchronization finalized");
+	}
+
+	/**
+	 * Triggers the user sync asynchronously to not block the deployment step
+	 */
+	private void syncUser(User user) {
+		String shortUuid = DataHelper.getShortUuid(user.getUuid());
+		logger.debug("Synchronizing user {}", shortUuid);
+		try {
+
+			UserUpdateEvent event = new UserUpdateEvent(user);
+			event.setExceptionCallback(exceptionMessage -> logger.error("Could not synchronize user {} due to {}", shortUuid, exceptionMessage));
+
+			this.userUpdateEvent.fireAsync(event);
+		} catch (Throwable e) {
+			logger.error(MessageFormat.format("Unexpected exception when synchronizing user {0}", shortUuid), e);
+		}
+	}
+
+	/**
 	 * Checks if the PostgreSQL server is configured correctly to run SORMAS.
 	 */
 	private void checkDatabaseConfig(EntityManager entityManager) {
@@ -517,9 +633,10 @@ public class StartupShutdownService {
 		List<String> errors = new ArrayList<>();
 
 		// Check postgres version
-		String versionRegexp = Stream.of("9\\.5", "9\\.6", "10\\.\\d+").collect(Collectors.joining(")|(", "(", ")"));
 		String versionString = entityManager.createNativeQuery("SHOW server_version").getSingleResult().toString();
-		if (!versionString.matches(versionRegexp)) {
+		if (isSupportedDatabaseVersion(versionString)) {
+			logger.debug("Your PostgreSQL Version ({}) is currently supported.", versionString);
+		} else {
 			logger.warn("Your PostgreSQL Version ({}) is currently not supported.", versionString);
 		}
 
@@ -543,6 +660,18 @@ public class StartupShutdownService {
 			// List all config problems and stop deployment
 			throw new RuntimeException(errors.stream().collect(Collectors.joining("\n * ", "Postgres setup is not compatible:\n * ", "")));
 		}
+	}
+
+	/**
+	 * @param versionString
+	 *            Database system version.
+	 * @return {@code true}, if the database version is supported.
+	 */
+	static boolean isSupportedDatabaseVersion(String versionString) {
+
+		String versionBegin = versionString.split(" ")[0];
+		String versionRegexp = Stream.of("9\\.5", "9\\.5\\.\\d+", "9\\.6", "9\\.6\\.\\d+", "10\\.\\d+").collect(Collectors.joining(")|(", "(", ")"));
+		return versionBegin.matches(versionRegexp);
 	}
 
 	private void updateDatabase(EntityManager entityManager, String schemaFileName) {
@@ -600,20 +729,6 @@ public class StartupShutdownService {
 		}
 	}
 
-	static boolean isBlankOrSqlComment(String sqlLine) {
-		return SQL_COMMENT_PATTERN.matcher(sqlLine).matches();
-	}
-
-	static Integer extractSchemaVersion(String sqlLine) {
-
-		return Optional.ofNullable(sqlLine)
-			.map(SCHEMA_VERSION_SQL_PATTERN::matcher)
-			.filter(Matcher::matches)
-			.map(m -> m.group(1))
-			.map(Integer::parseInt)
-			.orElse(null);
-	}
-
 	private void upgrade() {
 
 		@SuppressWarnings("unchecked")
@@ -627,8 +742,19 @@ public class StartupShutdownService {
 			case 95:
 				// update follow up and status for all contacts
 				for (Contact contact : contactService.getAll()) {
-					contactService.updateFollowUpUntilAndStatus(contact);
+					contactService.updateFollowUpDetails(contact, false);
 					contactService.udpateContactStatus(contact);
+				}
+				break;
+			case 354:
+				CountryReferenceDto serverCountry = countryFacade.getServerCountry();
+
+				if (serverCountry != null) {
+					Country country = countryService.getByUuid(serverCountry.getUuid());
+					em.createQuery("UPDATE Region set country = :server_country, changeDate = :change_date WHERE country is null")
+						.setParameter("server_country", country)
+						.setParameter("change_date", new Timestamp(new Date().getTime()))
+						.executeUpdate();
 				}
 				break;
 
@@ -690,6 +816,18 @@ public class StartupShutdownService {
 		}
 
 		try {
+			importFacade.generateContinentImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create continent import template .csv file.");
+		}
+
+		try {
+			importFacade.generateSubcontinentImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create subcontinent import template .csv file.");
+		}
+
+		try {
 			importFacade.generateCountryImportTemplateFile();
 		} catch (IOException e) {
 			logger.error("Could not create country import template .csv file.");
@@ -714,17 +852,23 @@ public class StartupShutdownService {
 		} catch (IOException e) {
 			logger.error("Could not create facility/laboratory import template .csv file.");
 		}
+
+		try {
+			importFacade.generateEventImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create event import template .csv file.");
+		}
+
 		try {
 			importFacade.generateEventParticipantImportTemplateFile();
 		} catch (IOException e) {
-			logger.error("Could not create eventparticipant import template .csv file.");
+			logger.error("Could not create event participant import template .csv file.");
 		}
 	}
 
 	private void createMissingDiseaseConfigurations() {
-
 		List<DiseaseConfiguration> diseaseConfigurations = diseaseConfigurationService.getAll();
-		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(c -> c.getDisease()).collect(Collectors.toList());
+		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(DiseaseConfiguration::getDisease).collect(Collectors.toList());
 		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
 			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
 			diseaseConfigurationService.ensurePersisted(configuration);

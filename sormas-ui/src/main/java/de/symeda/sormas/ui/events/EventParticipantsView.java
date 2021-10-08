@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,32 +17,53 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isDocGenerationAllowed;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.components.grid.MultiSelectionModelImpl;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
+import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.importexport.ExportType;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.customexport.ExportConfigurationsLayout;
 import de.symeda.sormas.ui.events.eventparticipantimporter.EventParticipantImportLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.EventParticipantDownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
@@ -102,14 +123,16 @@ public class EventParticipantsView extends AbstractEventView {
 		addHeaderComponent(exportPopupButton);
 
 		{
-			StreamResource streamResource =
-				new GridExportStreamResource(grid, "sormas_eventParticipants", createFileNameWithCurrentDate("sormas_eventParticipants_", ".csv"));
+			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+				grid,
+				() -> this.grid.getSelectionModel() instanceof MultiSelectionModelImpl ? this.grid.asMultiSelect().getSelectedItems() : null,
+				ExportEntityName.EVENT_PARTICIPANTS);
 			addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
 		}
 
 		{
 			StreamResource extendedExportStreamResource =
-				EventParticipantDownloadUtil.createExtendedEventParticipantExportResource(grid.getCriteria());
+				EventParticipantDownloadUtil.createExtendedEventParticipantExportResource(grid.getCriteria(), this::getSelectedRows, null);
 
 			addExportButton(
 				extendedExportStreamResource,
@@ -118,6 +141,32 @@ public class EventParticipantsView extends AbstractEventView {
 				VaadinIcons.FILE_TEXT,
 				Captions.exportDetailed,
 				Descriptions.descDetailedExportButton);
+		}
+
+		{
+			Button btnCustomExport = ButtonHelper.createIconButton(Captions.exportCustom, VaadinIcons.FILE_TEXT, e -> {
+				Window customExportWindow = VaadinUiUtil.createPopupWindow();
+
+				ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
+					ExportType.EVENT_PARTICIPANTS,
+					ImportExportUtils.getEventParticipantExportProperties(EventParticipantDownloadUtil::getPropertyCaption),
+					customExportWindow::close);
+				customExportsLayout.setExportCallback(
+					(exportConfig) -> Page.getCurrent()
+						.open(
+							EventParticipantDownloadUtil
+								.createExtendedEventParticipantExportResource(grid.getCriteria(), this::getSelectedRows, exportConfig),
+							null,
+							true));
+				customExportWindow.setWidth(1024, Unit.PIXELS);
+				customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCustom));
+				customExportWindow.setContent(customExportsLayout);
+				UI.getCurrent().addWindow(customExportWindow);
+				exportPopupButton.setPopupVisible(false);
+			}, ValoTheme.BUTTON_PRIMARY);
+			btnCustomExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
+			btnCustomExport.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(btnCustomExport);
 		}
 
 		filterForm = new EventParticipantsFilterForm();
@@ -138,12 +187,46 @@ public class EventParticipantsView extends AbstractEventView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
-			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
-				Captions.bulkActions,
-				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-					ControllerProvider.getEventParticipantController()
-						.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+			List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>();
+			bulkActions
+				.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEventParticipantsToContacts), VaadinIcons.HAND, mi -> {
+					grid.bulkActionHandler(items -> {
+						EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid(), false);
+						ControllerProvider.getContactController().openLineListingWindow(eventDto, items);
+					}, true);
 				}));
+			bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
+				grid.bulkActionHandler(items -> {
+					ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, () -> navigateTo(criteria));
+				}, true);
+			}));
+
+			if (isDocGenerationAllowed()) {
+				bulkActions
+					.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkActionCreatDocuments), VaadinIcons.FILE_TEXT, mi -> {
+						grid.bulkActionHandler(items -> {
+							List<ReferenceDto> references = grid.asMultiSelect()
+								.getSelectedItems()
+								.stream()
+								.map(EventParticipantIndexDto::toReference)
+								.collect(Collectors.toList());
+							if (references.size() == 0) {
+								new Notification(
+									I18nProperties.getString(Strings.headingNoEventParticipantsSelected),
+									I18nProperties.getString(Strings.messageNoEventParticipantsSelected),
+									Notification.Type.WARNING_MESSAGE,
+									false).show(Page.getCurrent());
+
+								return;
+							}
+
+							ControllerProvider.getDocGenerationController()
+								.showQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT);
+						});
+					}));
+			}
+
+			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);
 
 			topLayout.addComponent(bulkOperationsDropdown);
 			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
@@ -153,10 +236,16 @@ public class EventParticipantsView extends AbstractEventView {
 		return topLayout;
 	}
 
+	private Set<String> getSelectedRows() {
+		return this.grid.getSelectionModel() instanceof MultiSelectionModelImpl
+			? grid.asMultiSelect().getSelectedItems().stream().map(EventParticipantIndexDto::getUuid).collect(Collectors.toSet())
+			: Collections.emptySet();
+	}
+
 	@Override
 	protected void initView(String params) {
 
-		criteria.event(getEventRef());
+		criteria.withEvent(getEventRef());
 
 		if (grid == null) {
 			grid = new EventParticipantsGrid(criteria);

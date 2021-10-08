@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 @Remote
 public interface AdditionalTestFacade {
@@ -12,7 +13,7 @@ public interface AdditionalTestFacade {
 
 	List<AdditionalTestDto> getAllBySample(String sampleUuid);
 
-	AdditionalTestDto saveAdditionalTest(AdditionalTestDto additionalTest);
+	AdditionalTestDto saveAdditionalTest(@Valid AdditionalTestDto additionalTest);
 
 	void deleteAdditionalTest(String additionalTestUuid);
 

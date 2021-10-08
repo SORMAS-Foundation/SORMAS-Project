@@ -27,11 +27,13 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.action.ActionCriteria;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionFacade;
 import de.symeda.sormas.api.action.ActionStatEntry;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventActionExportDto;
 import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -125,7 +127,7 @@ public class ActionFacadeEjb implements ActionFacade {
 	}
 
 	@Override
-	public ActionDto saveAction(ActionDto dto) {
+	public ActionDto saveAction(@Valid ActionDto dto) {
 
 		Action ado = fromDto(dto, true);
 		actionService.ensurePersisted(ado);
@@ -181,6 +183,11 @@ public class ActionFacadeEjb implements ActionFacade {
 	}
 
 	@Override
+	public List<ActionDto> getActionList(ActionCriteria actionCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+		return actionService.getActionList(actionCriteria, first, max, sortProperties).stream().map(c -> toDto(c)).collect(Collectors.toList());
+	}
+
+	@Override
 	public List<ActionStatEntry> getActionStats(ActionCriteria actionCriteria) {
 		return actionService.getActionStats(actionCriteria);
 	}
@@ -191,13 +198,36 @@ public class ActionFacadeEjb implements ActionFacade {
 	}
 
 	@Override
+	public Page<EventActionIndexDto> getEventActionIndexPage(
+		EventCriteria criteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+		List<EventActionIndexDto> eventActionIndexList = getEventActionList(criteria, offset, size, sortProperties);
+		long totalElementCount = countEventActions(criteria);
+		return new Page<>(eventActionIndexList, offset, size, totalElementCount);
+
+	}
+
+	public Page<ActionDto> getActionPage(ActionCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<ActionDto> actionList = getActionList(criteria, offset, size, sortProperties);
+		long totalElementCount = countActions(criteria);
+		return new Page<>(actionList, offset, size, totalElementCount);
+	}
+
+	@Override
 	public List<EventActionExportDto> getEventActionExportList(EventCriteria criteria, Integer first, Integer max) {
 		return actionService.getEventActionExportList(criteria, first, max);
 	}
 
 	@Override
-	public long countEventAction(EventCriteria criteria) {
+	public long countEventActions(EventCriteria criteria) {
 		return actionService.countEventActions(criteria);
+	}
+
+	@Override
+	public long countActions(ActionCriteria criteria) {
+		return actionService.countActions(criteria);
 	}
 
 	@LocalBean

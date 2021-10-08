@@ -18,6 +18,12 @@
 			&.main-criteria-confirmed {
 				background: rgba(255, 0, 0, 0.6);
 			}
+			&.main-criteria-confirmed_no_symptoms {
+				background: rgba(255, 0, 0, 0.3);
+			}
+			&.main-criteria-confirmed_unknown_symptoms {
+				background: rgba(255, 0, 0, 0.3);
+			}
 			&.main-criteria-not_a_case {
 				background: rgba(160, 160, 160, 0.6);
 			}

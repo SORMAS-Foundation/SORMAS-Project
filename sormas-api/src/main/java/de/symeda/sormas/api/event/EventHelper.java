@@ -45,9 +45,9 @@ public final class EventHelper {
 		if (eventStartDate == null) {
 			return "";
 		} else if (eventEndDate == null) {
-			return DateFormatHelper.formatDate(eventStartDate);
+			return DateFormatHelper.formatLocalDateTime(eventStartDate);
 		} else {
-			return String.format("%s - %s", DateFormatHelper.formatDate(eventStartDate), DateFormatHelper.formatDate(eventEndDate));
+			return String.format("%s - %s", DateFormatHelper.formatLocalDateTime(eventStartDate), DateFormatHelper.formatLocalDateTime(eventEndDate));
 		}
 	}
 

@@ -21,11 +21,11 @@ import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
@@ -38,6 +38,9 @@ public class VisitJoins extends AbstractDomainObjectJoins<Visit, Visit> {
 	private Join<Contact, District> contactDistrict;
 	private Join<Contact, Community> contactCommunity;
 	private Join<Case, User> caseReportingUser;
+	private Join<Case, Region> caseResponsibleRegion;
+	private Join<Case, District> caseResponsibleDistrict;
+	private Join<Case, Community> caseResponsibleCommunity;
 	private Join<Case, Region> caseRegion;
 	private Join<Case, District> caseDistrict;
 	private Join<Case, Community> caseCommunity;
@@ -45,6 +48,9 @@ public class VisitJoins extends AbstractDomainObjectJoins<Visit, Visit> {
 	private Join<Case, PointOfEntry> casePointOfEntry;
 	private Join<Contact, Case> contactCase;
 	private Join<Case, User> contactCaseReportingUser;
+	private Join<Case, Region> contactCaseResponsibleRegion;
+	private Join<Case, District> contactCaseResponsibleDistrict;
+	private Join<Case, Community> contactCaseResponsibleCommunity;
 	private Join<Case, Region> contactCaseRegion;
 	private Join<Case, District> contactCaseDistrict;
 	private Join<Case, Community> contactCaseCommunity;
@@ -115,6 +121,30 @@ public class VisitJoins extends AbstractDomainObjectJoins<Visit, Visit> {
 		this.caseReportingUser = caseReportingUser;
 	}
 
+	public Join<Case, Region> getCaseResponsibleRegion() {
+		return getOrCreate(caseResponsibleRegion, Case.RESPONSIBLE_REGION, JoinType.LEFT, getCase(), this::setCaseResponsibleRegion);
+	}
+
+	private void setCaseResponsibleRegion(Join<Case, Region> caseResponsibleRegion) {
+		this.caseResponsibleRegion = caseResponsibleRegion;
+	}
+
+	public Join<Case, District> getCaseResponsibleDistrict() {
+		return getOrCreate(caseResponsibleDistrict, Case.RESPONSIBLE_DISTRICT, JoinType.LEFT, getCase(), this::setCaseResponsibleDistrict);
+	}
+
+	private void setCaseResponsibleDistrict(Join<Case, District> caseResponsibleDistrict) {
+		this.caseResponsibleDistrict = caseResponsibleDistrict;
+	}
+
+	public Join<Case, Community> getCaseResponsibleCommunity() {
+		return getOrCreate(caseResponsibleCommunity, Case.RESPONSIBLE_COMMUNITY, JoinType.LEFT, getCase(), this::setCaseResponsibleCommunity);
+	}
+
+	private void setCaseResponsibleCommunity(Join<Case, Community> caseResponsibleCommunity) {
+		this.caseResponsibleCommunity = caseResponsibleCommunity;
+	}
+
 	public Join<Case, Region> getCaseRegion() {
 		return getOrCreate(caseRegion, Case.REGION, JoinType.LEFT, getCase(), this::setCaseRegion);
 	}
@@ -169,6 +199,45 @@ public class VisitJoins extends AbstractDomainObjectJoins<Visit, Visit> {
 
 	private void setContactCaseReportingUser(Join<Case, User> contactCaseReportingUser) {
 		this.contactCaseReportingUser = contactCaseReportingUser;
+	}
+
+	public Join<Case, Region> getContactCaseResponsibleRegion() {
+		return getOrCreate(
+			contactCaseResponsibleRegion,
+			Case.RESPONSIBLE_REGION,
+			JoinType.LEFT,
+			getContactCase(),
+			this::setContactCaseResponsibleRegion);
+	}
+
+	private void setContactCaseResponsibleRegion(Join<Case, Region> contactCaseResponsibleRegion) {
+		this.contactCaseResponsibleRegion = contactCaseResponsibleRegion;
+	}
+
+	public Join<Case, District> getContactCaseResponsibleDistrict() {
+		return getOrCreate(
+			contactCaseResponsibleDistrict,
+			Case.RESPONSIBLE_DISTRICT,
+			JoinType.LEFT,
+			getContactCase(),
+			this::setContactCaseResponsibleDistrict);
+	}
+
+	private void setContactCaseResponsibleDistrict(Join<Case, District> contactCaseResponsibleDistrict) {
+		this.contactCaseResponsibleDistrict = contactCaseResponsibleDistrict;
+	}
+
+	public Join<Case, Community> getContactCaseResponsibleCommunity() {
+		return getOrCreate(
+			contactCaseResponsibleCommunity,
+			Case.RESPONSIBLE_COMMUNITY,
+			JoinType.LEFT,
+			getContactCase(),
+			this::setContactCaseResponsibleCommunity);
+	}
+
+	private void setContactCaseResponsibleCommunity(Join<Case, Community> contactCaseResponsibleCommunity) {
+		this.contactCaseResponsibleCommunity = contactCaseResponsibleCommunity;
 	}
 
 	public Join<Case, Region> getContactCaseRegion() {

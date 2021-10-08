@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend.common;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -32,13 +33,13 @@ import com.google.common.collect.Lists;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.externaljournal.UserConfig;
+import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.region.GeoLatLon;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
@@ -51,12 +52,14 @@ import de.symeda.sormas.api.utils.VersionHelper;
 public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String AUTHENTICATION_PROVIDER = "authentication.provider";
+	private static final String AUTHENTICATION_PROVIDER_USER_SYNC_AT_STARTUP = "authentication.provider.userSyncAtStartup";
 
 	public static final String COUNTRY_NAME = "country.name";
 	public static final String COUNTRY_LOCALE = "country.locale";
 	public static final String COUNTRY_EPID_PREFIX = "country.epidprefix";
 	private static final String COUNTRY_CENTER_LAT = "country.center.latitude";
 	private static final String COUNTRY_CENTER_LON = "country.center.longitude";
+	private static final String MAP_USE_COUNTRY_CENTER = "map.usecountrycenter";
 	private static final String MAP_ZOOM = "map.zoom";
 
 	public static final String VERSION_PLACEHOLER = "%version";
@@ -87,7 +90,9 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String SMS_AUTH_KEY = "sms.auth.key";
 	public static final String SMS_AUTH_SECRET = "sms.auth.secret";
 
+	public static final String DUPLICATE_CHECKS_EXCLUDE_PERSONS_OF_ACHIVED_ENTRIES = "duplicatechecks.excludepersonsonlylinkedtoarchivedentries";
 	public static final String NAME_SIMILARITY_THRESHOLD = "namesimilaritythreshold";
+
 	public static final String INFRASTRUCTURE_SYNC_THRESHOLD = "infrastructuresyncthreshold";
 
 	public static final String INTERFACE_SYMPTOM_JOURNAL_URL = "interface.symptomjournal.url";
@@ -105,29 +110,58 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String INTERFACE_PATIENT_DIARY_DEFAULT_USER_USERNAME = "interface.patientdiary.defaultuser.username";
 	public static final String INTERFACE_PATIENT_DIARY_DEFAULT_USER_PASSWORD = "interface.patientdiary.defaultuser.password";
 
+	public static final String DOCGENERATION_NULL_REPLACEMENT = "docgeneration.nullReplacement";
 	public static final String INTERFACE_DEMIS_JNDINAME = "interface.demis.jndiName";
 
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
+	private static final String DAYS_AFTER_TRAVEL_ENTRY_GETS_ARCHIVED = "daysAfterTravelEntryGetsArchived";
 
 	private static final String DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED = "daysAfterSystemEventGetsDeleted";
 
 	private static final String GEOCODING_SERVICE_URL_TEMPLATE = "geocodingServiceUrlTemplate";
 	private static final String GEOCODING_LONGITUDE_JSON_PATH = "geocodingLongitudeJsonPath";
 	private static final String GEOCODING_LATITUDE_JSON_PATH = "geocodingLatitudeJsonPath";
+	private static final String GEOCODING_EPSG4326_WKT = "geocodingEPSG4326_WKT";
 
-	private static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
-	private static final String SORMAS2SORMAS_SERVER_ACCESS_DATA_FILE_NAME = "sormas2sormas.serverAccessDataFileName";
-	private static final String SORMAS2SORMAS_KEYSTORE_NAME = "sormas2sormas.keystoreName";
-	private static final String SORMAS2SORMAS_KEYSTORE_PASSWORD = "sormas2sormas.keystorePass";
-	private static final String SORMAS2SORMAS_TRUSTSTORE_NAME = "sormas2sormas.truststoreName";
-	private static final String SORMAS2SORMAS_TRUSTSTORE_PASS = "sormas2sormas.truststorePass";
+	private static final String CENTRAL_OIDC_URL = "central.oidc.url";
+	private static final String CENTRAL_ETCD_HOST = "central.etcd.host";
+	private static final String CENTRAL_ETCD_CLIENT_NAME = "central.etcd.clientName";
+	private static final String CENTRAL_ETCD_CLIENT_PASSWORD = "central.etcd.clientPassword";
+	private static final String CENTRAL_ETCD_CA_PATH = "central.etcd.caPath";
 
-	private static final String SORMAS_TO_SORMAS_USER_PASSWORD = "sormasToSormasUserPassword";
+	public static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
+	public static final String SORMAS2SORMAS_ID = "sormas2sormas.id";
+	public static final String SORMAS2SORMAS_KEYSTORE_NAME = "sormas2sormas.keystoreName";
+	public static final String SORMAS2SORMAS_KEYSTORE_PASSWORD = "sormas2sormas.keystorePass";
+	public static final String SORMAS2SORMAS_ROOT_CA_ALIAS = "sormas2sormas.rootCaAlias";
+	public static final String SORMAS2SORMAS_TRUSTSTORE_NAME = "sormas2sormas.truststoreName";
+	public static final String SORMAS2SORMAS_TRUSTSTORE_PASS = "sormas2sormas.truststorePass";
 
-	private static final String SURVNET_GATEWAY_URL = "survnet.url";
+	private static final String SORMAS2SORMAS_OIDC_REALM = "sormas2sormas.oidc.realm";
+	private static final String SORMAS2SORMAS_OIDC_CLIENT_ID = "sormas2sormas.oidc.clientId";
+	private static final String SORMAS2SORMAS_OIDC_CLIENT_SECRET = "sormas2sormas.oidc.clientSecret";
+
+	private static final String SORMAS2SORMAS_ETCD_KEY_PREFIX = "sormas2sormas.etcd.keyPrefix";
+
+	private static final String SORMAS2SORMAS_RETAIN_CASE_EXTERNAL_TOKEN = "sormas2sormas.retainCaseExternalToken";
+
+	private static final String EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL = "survnet.url";
 
 	private static final String DASHBOARD_MAP_MARKER_LIMIT = "dashboardMapMarkerLimit";
+	private static final String AUDITOR_ATTRIBUTE_LOGGING = "auditor.attribute.logging";
+
+	private static final String CREATE_DEFAULT_ENTITIES = "createDefaultEntities";
+	private static final String SKIP_DEFAULT_PASSWORD_CHECK = "skipDefaultPasswordCheck";
+
+	private static final String STEP_SIZE_FOR_CSV_EXPORT = "stepSizeForCsvExport";
+
+	private static final String UI_URL = "ui.url";
+
+	private static final String DOCUMENT_UPLOAD_SIZE_LIMIT_MB = "documentUploadSizeLimitMb";
+	public static final int DEFAULT_DOCUMENT_UPLOAD_SIZE_LIMIT_MB = 20;
+	public static final String IMPORT_FILE_SIZE_LIMIT_MB = "importFileSizeLimitMb";
+	public static final int DEFAULT_IMPOR_FILE_SIZE_LIMIT_MB = 20;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -174,6 +208,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		}
 	}
 
+	protected long getLong(String name, int defaultValue) {
+
+		try {
+			return Long.parseLong(getProperty(name, Long.toString(defaultValue)));
+		} catch (Exception e) {
+			logger.error("Could not parse long value of property '" + name + "': " + e.getMessage());
+			return defaultValue;
+		}
+	}
+
 	@Override
 	public String getCountryName() {
 
@@ -181,7 +225,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		if (countryName.isEmpty()) {
 			logger.info("No country name is specified in sormas.properties.");
 		}
-		return countryName;
+		return new String(countryName.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
 	}
 
 	/**
@@ -235,6 +279,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public GeoLatLon getCountryCenter() {
 		return new GeoLatLon(getDouble(COUNTRY_CENTER_LAT, 0), getDouble(COUNTRY_CENTER_LON, 0));
+	}
+
+	@Override
+	public boolean isMapUseCountryCenter() {
+		return getBoolean(MAP_USE_COUNTRY_CENTER, false);
 	}
 
 	@Override
@@ -293,6 +342,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public String getUiUrl() {
+		return getProperty(UI_URL, null);
+	}
+
+	@Override
 	public String getDocumentFilesPath() {
 		return getProperty(DOCUMENT_FILES_PATH, "/opt/sormas/documents/");
 	}
@@ -348,6 +402,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public boolean isDuplicateChecksExcludePersonsOfArchivedEntries() {
+		return getBoolean(DUPLICATE_CHECKS_EXCLUDE_PERSONS_OF_ACHIVED_ENTRIES, false);
+	}
+
+	@Override
 	public double getNameSimilarityThreshold() {
 		return getDouble(NAME_SIMILARITY_THRESHOLD, PersonHelper.DEFAULT_NAME_SIMILARITY_THRESHOLD);
 	}
@@ -383,6 +442,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public int getDaysAfterTravelEntryGetsArchived() {
+		return getInt(DAYS_AFTER_TRAVEL_ENTRY_GETS_ARCHIVED, 90);
+	}
+
+	@Override
 	public String getGeocodingServiceUrlTemplate() {
 		return getProperty(GEOCODING_SERVICE_URL_TEMPLATE, null);
 	}
@@ -395,6 +459,13 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getGeocodingLatitudeJsonPath() {
 		return getProperty(GEOCODING_LATITUDE_JSON_PATH, null);
+	}
+
+	@Override
+	public String getGeocodingEPSG4326_WKT() {
+		return getProperty(
+			GEOCODING_EPSG4326_WKT,
+			"GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Long\",EAST],AXIS[\"Lat\",NORTH],AUTHORITY[\"EPSG\",\"4326\"]]");
 	}
 
 	@Override
@@ -437,25 +508,27 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public SormasToSormasConfig getSormasToSormasConfig() {
+	public SormasToSormasConfig getS2SConfig() {
 		SormasToSormasConfig config = new SormasToSormasConfig();
 		config.setPath(getProperty(SORMAS2SORMAS_FILES_PATH, null));
-		config.setServerAccessDataFileName(getProperty(SORMAS2SORMAS_SERVER_ACCESS_DATA_FILE_NAME, null));
 		config.setKeystoreName(getProperty(SORMAS2SORMAS_KEYSTORE_NAME, null));
 		config.setKeystorePass(getProperty(SORMAS2SORMAS_KEYSTORE_PASSWORD, null));
 		config.setTruststoreName(getProperty(SORMAS2SORMAS_TRUSTSTORE_NAME, null));
 		config.setTruststorePass(getProperty(SORMAS2SORMAS_TRUSTSTORE_PASS, null));
+		config.setRootCaAlias(getProperty(SORMAS2SORMAS_ROOT_CA_ALIAS, null));
+		config.setRetainCaseExternalToken(getBoolean(SORMAS2SORMAS_RETAIN_CASE_EXTERNAL_TOKEN, true));
+		config.setId(getProperty(SORMAS2SORMAS_ID, null));
+		config.setOidcServer(getProperty(CENTRAL_OIDC_URL, null));
+		config.setOidcRealm(getProperty(SORMAS2SORMAS_OIDC_REALM, null));
+		config.setOidcClientId(getProperty(SORMAS2SORMAS_OIDC_CLIENT_ID, null));
+		config.setOidcClientSecret(getProperty(SORMAS2SORMAS_OIDC_CLIENT_SECRET, null));
+		config.setKeyPrefix(getProperty(SORMAS2SORMAS_ETCD_KEY_PREFIX, null));
 		return config;
 	}
 
 	@Override
-	public String getSormasToSormasUserPassword() {
-		return getProperty(SORMAS_TO_SORMAS_USER_PASSWORD, null);
-	}
-
-	@Override
-	public String getSurvnetGatewayUrl() {
-		return getProperty(SURVNET_GATEWAY_URL, null);
+	public String getExternalSurveillanceToolGatewayUrl() {
+		return getProperty(EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL, null);
 	}
 
 	@Override
@@ -468,15 +541,27 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			getPatientDiaryConfig().getProbandsUrl(),
 			getPatientDiaryConfig().getAuthUrl());
 
+		SormasToSormasConfig s2sConfig = getS2SConfig();
+
+		if (s2sConfig.getOidcServer() != null && s2sConfig.getOidcRealm() != null) {
+			urls.add(s2sConfig.getOidcRealmCertEndpoint());
+			urls.add(s2sConfig.getOidcRealmTokenEndpoint());
+			urls.add(s2sConfig.getOidcRealmUrl());
+			urls.add(s2sConfig.getOidcServer());
+		}
+
+		UrlValidator urlValidator = new UrlValidator(
+			new String[] {
+				"http",
+				"https" },
+			UrlValidator.ALLOW_LOCAL_URLS);
+
 		urls.forEach(url -> {
 			if (StringUtils.isBlank(url)) {
 				return;
 			}
-			// Must be a valid URL
-			if (!new UrlValidator(
-				new String[] {
-					"http",
-					"https" }).isValid(url)) {
+
+			if (!urlValidator.isValid(url)) {
 				throw new IllegalArgumentException("'" + url + "' is not a valid URL");
 			}
 		});
@@ -485,6 +570,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getAuthenticationProvider() {
 		return getProperty(AUTHENTICATION_PROVIDER, "SORMAS");
+	}
+
+	@Override
+	public boolean isAuthenticationProviderUserSyncAtStartupEnabled() {
+		return getBoolean(AUTHENTICATION_PROVIDER_USER_SYNC_AT_STARTUP, false);
 	}
 
 	@Override
@@ -537,10 +627,42 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getInt(DASHBOARD_MAP_MARKER_LIMIT, -1);
 	}
 
-	@LocalBean
-	@Stateless
-	public static class ConfigFacadeEjbLocal extends ConfigFacadeEjb {
+	public boolean isCreateDefaultEntities() {
+		return getBoolean(CREATE_DEFAULT_ENTITIES, false);
+	}
 
+	public boolean isSkipDefaultPasswordCheck() {
+		return getBoolean(SKIP_DEFAULT_PASSWORD_CHECK, false);
+	}
+
+	public String getDocgenerationNullReplacement() {
+		return getProperty(DOCGENERATION_NULL_REPLACEMENT, "./.");
+	}
+
+	public String getCentralEtcdHost() {
+		return getProperty(CENTRAL_ETCD_HOST, null);
+	}
+
+	public String getCentralEtcdClientName() {
+		return getProperty(CENTRAL_ETCD_CLIENT_NAME, null);
+	}
+
+	public String getCentralEtcdClientPassword() {
+		return getProperty(CENTRAL_ETCD_CLIENT_PASSWORD, null);
+	}
+
+	public String getCentralEtcdCaPath() {
+		return getProperty(CENTRAL_ETCD_CA_PATH, null);
+	}
+
+	@Override
+	public boolean isAuditorAttributeLoggingEnabled() {
+		return getBoolean(AUDITOR_ATTRIBUTE_LOGGING, true);
+	}
+
+	@Override
+	public int getStepSizeForCsvExport() {
+		return getInt(STEP_SIZE_FOR_CSV_EXPORT, 5000);
 	}
 
 	@Override
@@ -553,4 +675,19 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getProperty(INTERFACE_DEMIS_JNDINAME, null);
 	}
 
+	@Override
+	public long getDocumentUploadSizeLimitMb() {
+		return getLong(DOCUMENT_UPLOAD_SIZE_LIMIT_MB, DEFAULT_DOCUMENT_UPLOAD_SIZE_LIMIT_MB);
+	}
+
+	@Override
+	public long getImportFileSizeLimitMb() {
+		return getLong(IMPORT_FILE_SIZE_LIMIT_MB, DEFAULT_IMPOR_FILE_SIZE_LIMIT_MB);
+	}
+
+	@LocalBean
+	@Stateless
+	public static class ConfigFacadeEjbLocal extends ConfigFacadeEjb {
+
+	}
 }

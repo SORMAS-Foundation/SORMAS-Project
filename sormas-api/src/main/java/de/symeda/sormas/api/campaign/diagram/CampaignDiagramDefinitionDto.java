@@ -1,19 +1,27 @@
 package de.symeda.sormas.api.campaign.diagram;
 
-import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.campaign.CampaignDto;
-import de.symeda.sormas.api.utils.DataHelper;
-
 import java.util.List;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class CampaignDiagramDefinitionDto extends EntityDto {
 
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String diagramId;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String diagramCaption;
 	private DiagramType diagramType;
+	@Valid
 	private List<CampaignDiagramSeries> campaignDiagramSeries;
+	@Valid
 	private List<CampaignDiagramSeries> campaignSeriesTotal;
 	private boolean percentageDefault;
+	private List<CampaignDiagramTranslations> campaignDiagramTranslations;
 
 	public static CampaignDiagramDefinitionDto build() {
 		CampaignDiagramDefinitionDto campaignDiagramDefinition = new CampaignDiagramDefinitionDto();
@@ -67,5 +75,13 @@ public class CampaignDiagramDefinitionDto extends EntityDto {
 
 	public void setPercentageDefault(boolean percentageDefault) {
 		this.percentageDefault = percentageDefault;
+	}
+
+	public List<CampaignDiagramTranslations> getCampaignDiagramTranslations() {
+		return campaignDiagramTranslations;
+	}
+
+	public void setCampaignDiagramTranslations(List<CampaignDiagramTranslations> campaignDiagramTranslations) {
+		this.campaignDiagramTranslations = campaignDiagramTranslations;
 	}
 }

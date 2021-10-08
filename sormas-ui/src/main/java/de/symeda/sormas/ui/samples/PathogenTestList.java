@@ -26,8 +26,10 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -38,10 +40,9 @@ import de.symeda.sormas.ui.utils.PaginationList;
 @SuppressWarnings("serial")
 public class PathogenTestList extends PaginationList<PathogenTestDto> {
 
-	private SampleReferenceDto sampleRef;
-	private int caseSampleCount;
-	private BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest;
-	private Supplier<Boolean> createOrEditAllowedCallback;
+	private final SampleReferenceDto sampleRef;
+	private final BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest;
+	private final Supplier<Boolean> createOrEditAllowedCallback;
 
 	public PathogenTestList(
 		SampleReferenceDto sampleRef,
@@ -62,6 +63,7 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 		if (!pathogenTests.isEmpty()) {
 			showPage(1);
 		} else {
+			listLayout.removeAllComponents();
 			updatePaginationLayout();
 			Label noPathogenTestsLabel = new Label(I18nProperties.getString(Strings.infoNoPathogenTests));
 			listLayout.addComponent(noPathogenTestsLabel);
@@ -71,20 +73,30 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 	@Override
 	protected void drawDisplayedEntries() {
 		List<PathogenTestDto> displayedEntries = getDisplayedEntries();
-		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
-			PathogenTestDto pathogenTest = displayedEntries.get(i);
+		for (PathogenTestDto pathogenTest : displayedEntries) {
 			PathogenTestListEntry listEntry = new PathogenTestListEntry(pathogenTest);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT)) {
-				listEntry.addEditListener(i, (ClickListener) event -> {
-					if (createOrEditAllowedCallback.get()) {
-						ControllerProvider.getPathogenTestController()
-							.edit(pathogenTest, caseSampleCount, PathogenTestList.this::reload, onSavedPathogenTest);
-					} else {
-						Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
-					}
-				});
-			}
+			addEditButton(pathogenTest, listEntry);
+			addViewLabMessageButton(listEntry);
 			listLayout.addComponent(listEntry);
+		}
+	}
+
+	private void addEditButton(PathogenTestDto pathogenTest, PathogenTestListEntry listEntry) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT)) {
+			listEntry.addEditListener((ClickListener) event -> {
+				if (createOrEditAllowedCallback.get()) {
+					ControllerProvider.getPathogenTestController().edit(pathogenTest, 0, PathogenTestList.this::reload, onSavedPathogenTest);
+				} else {
+					Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
+				}
+			});
+		}
+	}
+
+	private void addViewLabMessageButton(PathogenTestListEntry listEntry) {
+		List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getByPathogenTestUuid(listEntry.getPathogenTest().getUuid());
+		if (!labMessages.isEmpty()) {
+			listEntry.addAssociatedLabMessagesListener(clickEvent -> ControllerProvider.getLabMessageController().showLabMessagesSlider(labMessages));
 		}
 	}
 }

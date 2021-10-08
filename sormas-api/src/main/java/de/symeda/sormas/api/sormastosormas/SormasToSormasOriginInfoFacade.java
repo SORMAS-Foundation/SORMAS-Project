@@ -16,8 +16,10 @@
 package de.symeda.sormas.api.sormastosormas;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 @Remote
 public interface SormasToSormasOriginInfoFacade {
 
+	SormasToSormasOriginInfoDto saveOriginInfo(@Valid SormasToSormasOriginInfoDto originInfoDto);
 }

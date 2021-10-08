@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.backend.therapy;
@@ -23,6 +20,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -44,6 +42,7 @@ import de.symeda.sormas.backend.TestDataCreator;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TreatmentFacadeEjbPseudonymizationTest extends AbstractBeanTest {
+
 	private TestDataCreator.RDCF rdcf1;
 	private TestDataCreator.RDCF rdcf2;
 	private UserDto user1;
@@ -55,11 +54,11 @@ public class TreatmentFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
 		user1 = creator
-				.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
+			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
 		user2 = creator
-				.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
+			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
@@ -79,7 +78,7 @@ public class TreatmentFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetAllTreatmentsAfter(){
+	public void testGetAllTreatmentsAfter() {
 		TreatmentDto treatment1 = createTreatment(creator.createCase(user2.toReference(), rdcf2, null));
 		CaseDataDto case2 = creator.createCase(user1.toReference(), rdcf1, null);
 		creator.createContact(user2.toReference(), creator.createPerson().toReference(), case2);
@@ -92,7 +91,7 @@ public class TreatmentFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testPseudonymizeIndexList(){
+	public void testPseudonymizeIndexList() {
 		CaseDataDto case1 = creator.createCase(user2.toReference(), rdcf2, null);
 		TreatmentDto treatment1 = createTreatment(case1);
 		CaseDataDto case2 = creator.createCase(user1.toReference(), rdcf1, null);
@@ -113,14 +112,14 @@ public class TreatmentFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testPseudonymizeExportList(){
+	public void testPseudonymizeExportList() {
 		CaseDataDto case1 = creator.createCase(user2.toReference(), rdcf2, null);
 		createTreatment(case1);
 		CaseDataDto case2 = creator.createCase(user1.toReference(), rdcf1, null);
 		creator.createContact(user2.toReference(), creator.createPerson().toReference(), case2);
 		createTreatment(case2);
 
-		List<TreatmentExportDto> exportList = getTreatmentFacade().getExportList(new CaseCriteria(), 0, 100);
+		List<TreatmentExportDto> exportList = getTreatmentFacade().getExportList(new CaseCriteria(), Collections.emptySet(), 0, 100);
 
 		TreatmentExportDto export1 = exportList.stream().filter(p -> p.getCaseUuid().equals(case1.getUuid())).findFirst().get();
 		assertThat(export1.getCaseName(), is("FirstName LASTNAME"));
@@ -138,7 +137,7 @@ public class TreatmentFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testUpdateOutsideJurisdiction(){
+	public void testUpdateOutsideJurisdiction() {
 		CaseDataDto caze = creator.createCase(user1.toReference(), rdcf1, null);
 		creator.createContact(user2.toReference(), creator.createPerson().toReference(), caze);
 		TreatmentDto treatment = createTreatment(caze);
@@ -157,7 +156,6 @@ public class TreatmentFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(saved.getRouteDetails(), is("Test route details"));
 		assertThat(saved.getAdditionalNotes(), is("Test additional notes"));
 	}
-
 
 	private TreatmentDto createTreatment(CaseDataDto caze) {
 		return creator.createTreatment(caze, t -> {

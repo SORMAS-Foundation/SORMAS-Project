@@ -15,7 +15,9 @@
 
 package de.symeda.sormas.app.backend.campaign.form;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.j256.ormlite.table.DatabaseTable;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -25,13 +27,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.j256.ormlite.table.DatabaseTable;
-
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
+
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity(name = CampaignFormMeta.TABLE_NAME)
 @DatabaseTable(tableName = CampaignFormMeta.TABLE_NAME)
@@ -146,5 +146,10 @@ public class CampaignFormMeta extends PseudonymizableAdo {
 	@Override
 	public String getI18nPrefix() {
 		return I18N_PREFIX;
+	}
+
+	@Override
+	public String toString() {
+		return getFormName();
 	}
 }

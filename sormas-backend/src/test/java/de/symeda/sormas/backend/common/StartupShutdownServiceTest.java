@@ -3,6 +3,8 @@ package de.symeda.sormas.backend.common;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +18,36 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 public class StartupShutdownServiceTest {
+
+	private String[] supportedDatabaseVersions = new String[] {
+		"9.5",
+		"9.5.25",
+		"9.6.5",
+		"9.6",
+		"10.1",
+		"10.14 (Ubuntu 10.14-1.pgdg20.04+1)" };
+
+	private String[] unsupportedDatabaseVersions = new String[] {
+		"8.4",
+		"8.4.22",
+		"9.1",
+		"11.0" };
+
+	@Test
+	public void testIsSupportedDatabaseVersion() {
+
+		for (String version : supportedDatabaseVersions) {
+			assertTrue(
+				String.format("Supported version not recognized correctly: '%s'", version),
+				StartupShutdownService.isSupportedDatabaseVersion(version));
+		}
+
+		for (String version : unsupportedDatabaseVersions) {
+			assertFalse(
+				String.format("Unsupported version not recognized correctly: '%s'", version),
+				StartupShutdownService.isSupportedDatabaseVersion(version));
+		}
+	}
 
 	@Test
 	public void testIsBlankOrSqlComment() {

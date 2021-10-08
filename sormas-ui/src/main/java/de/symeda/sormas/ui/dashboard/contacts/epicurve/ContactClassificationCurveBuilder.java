@@ -13,7 +13,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 
-public class ContactClassificationCurveBuilder extends EpiCurveBuilder {
+public class ContactClassificationCurveBuilder extends ContactsEpiCurveBuilder {
 
 	public ContactClassificationCurveBuilder(EpiCurveGrouping epiCurveGrouping) {
 		super(epiCurveGrouping);
@@ -48,7 +48,7 @@ public class ContactClassificationCurveBuilder extends EpiCurveBuilder {
 
 		hcjs.append("series: [");
 		hcjs.append(
-			"{ name: '" + I18nProperties.getCaption(Captions.dashboardUnconfirmed)
+			"{ name: '" + I18nProperties.getCaption(Captions.dashboardUnconfirmedContact)
 				+ "', color: '#808080', dataLabels: { allowOverlap: false }, data: [");
 		for (int i = 0; i < unconfirmedNumbers.length; i++) {
 			if (i == unconfirmedNumbers.length - 1) {
@@ -58,7 +58,7 @@ public class ContactClassificationCurveBuilder extends EpiCurveBuilder {
 			}
 		}
 		hcjs.append(
-			"{ name: '" + I18nProperties.getCaption(Captions.dashboardConfirmed)
+			"{ name: '" + I18nProperties.getCaption(Captions.dashboardConfirmedContact)
 				+ "', color: '#005A9C', dataLabels: { allowOverlap: false },  data: [");
 		for (int i = 0; i < confirmedNumbers.length; i++) {
 			if (i == confirmedNumbers.length - 1) {

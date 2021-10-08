@@ -19,6 +19,8 @@ package de.symeda.sormas.api;
 
 public interface HasUuid {
 
+	String UUID_REGEX = "^[0-9a-zA-Z-]*$";
+
 	/**
 	 * Returns an identification possibility for this entity type so that objects of this type can be uniquely differentiated from each
 	 * other.

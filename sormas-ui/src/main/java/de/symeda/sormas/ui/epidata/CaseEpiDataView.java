@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.epidata;
 
+import static de.symeda.sormas.ui.travelentry.travelentrylink.TravelEntryListComponent.TRAVEL_ENTRIES_LOC;
+
 import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
@@ -32,6 +34,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
 import de.symeda.sormas.ui.contact.SourceContactListComponent;
+import de.symeda.sormas.ui.travelentry.travelentrylink.TravelEntryListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
@@ -56,8 +59,10 @@ public class CaseEpiDataView extends AbstractCaseView {
 
 		setHeightUndefined();
 
-		String htmlLayout =
-			LayoutUtil.fluidRow(LayoutUtil.fluidColumnLoc(8, 0, 12, 0, LOC_EPI_DATA), LayoutUtil.fluidColumnLoc(4, 0, 6, 0, LOC_SOURCE_CONTACTS));
+		String htmlLayout = LayoutUtil.fluidRow(
+			LayoutUtil.fluidColumnLoc(8, 0, 12, 0, LOC_EPI_DATA),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, LOC_SOURCE_CONTACTS),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TRAVEL_ENTRIES_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> epiDataComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -101,13 +106,15 @@ public class CaseEpiDataView extends AbstractCaseView {
 				sourceContactsLayout.addComponent(contactCreationDisclaimer);
 			}
 
-			if (sourceContactList.getSize() > 0) {
+			if (!sourceContactList.isEmpty()) {
 				epiDataComponent.getWrappedComponent().disableContactWithSourceCaseKnownField();
 			}
 
 			epiDataComponent.getWrappedComponent().setGetSourceContactsCallback(sourceContactList::getEntries);
 		}
 		layout.addComponent(sourceContactsLayout, LOC_SOURCE_CONTACTS);
+
+		TravelEntryListComponent.addTravelEntryListComponent(layout, getCaseRef());
 
 		setCaseEditPermission(container);
 	}

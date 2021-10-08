@@ -38,6 +38,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.task.TaskExportDto;
 import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
@@ -171,6 +172,55 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		TaskIndexDto index4 = indexList.stream().filter(t -> t.getUuid().equals(task4.getUuid())).findFirst().get();
 		assertThat(index4.getContact().getCaption(), is(DataHelper.getShortUuid(index4.getContact().getUuid())));
+	}
+
+	@Test
+	public void testPseudonymizeExportList() {
+
+		CaseDataDto caze1 = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
+		TaskDto task1 = createCaseTask(caze1);
+
+		CaseDataDto caze2 = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
+		ContactDto contact1 = creator.createContact(
+			user2.toReference(),
+			null,
+			creator.createPerson("John", "Smith").toReference(),
+			caze2,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf2);
+		TaskDto task2 = createCaseTask(caze2);
+		TaskDto task3 = createContactTask(contact1);
+
+		ContactDto contact2 = creator.createContact(
+			user1.toReference(),
+			null,
+			creator.createPerson("John", "Smith").toReference(),
+			caze2,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf1);
+		TaskDto task4 = createContactTask(contact2);
+
+		List<TaskExportDto> exportList = getTaskFacade().getExportList(new TaskCriteria(), null, 1, 100);
+		TaskExportDto export1 = exportList.stream().filter(t -> t.getUuid().equals(task1.getUuid())).findFirst().get();
+		assertThat(export1.getPersonFirstName(), is("John"));
+		assertThat(export1.getPersonLastName(), is("Smith"));
+
+		TaskExportDto export2 = exportList.stream().filter(t -> t.getUuid().equals(task2.getUuid())).findFirst().get();
+		assertThat(export2.getPersonFirstName(), is("Confidential"));
+		assertThat(export2.getPersonLastName(), is("Confidential"));
+
+		TaskExportDto export3 = exportList.stream().filter(t -> t.getUuid().equals(task3.getUuid())).findFirst().get();
+		assertThat(export3.getPersonFirstName(), is("John"));
+		assertThat(export3.getPersonLastName(), is("Smith"));
+
+		TaskExportDto export4 = exportList.stream().filter(t -> t.getUuid().equals(task4.getUuid())).findFirst().get();
+		assertThat(export4.getPersonFirstName(), is("Confidential"));
+		assertThat(export4.getPersonLastName(), is("Confidential"));
+
 	}
 
 	@Test

@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.ui.events.eventparticipantimporter;
 
 import java.beans.IntrospectionException;
@@ -22,46 +19,48 @@ import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.exceptions.CsvValidationException;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantExportDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.person.SimilarPersonDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.importer.DataImporter;
-import de.symeda.sormas.ui.importer.EventParticipantImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportErrorException;
 import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 import de.symeda.sormas.ui.importer.ImporterPersonHelper;
-import de.symeda.sormas.ui.person.PersonSelectionField;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.importer.PersonImportSimilarityResult;
 
 /**
  * Data importer that is used to import event participant.
@@ -82,8 +81,14 @@ public class EventParticipantImporter extends DataImporter {
 	private final EventReferenceDto event;
 	private UI currentUI;
 
-	public EventParticipantImporter(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser, EventReferenceDto event) {
-		super(inputFile, hasEntityClassRow, currentUser);
+	public EventParticipantImporter(
+		File inputFile,
+		boolean hasEntityClassRow,
+		UserDto currentUser,
+		EventReferenceDto event,
+		ValueSeparator csvSeparator)
+		throws IOException {
+		super(inputFile, hasEntityClassRow, currentUser, csvSeparator);
 		this.event = event;
 
 		personFacade = FacadeProvider.getPersonFacade();
@@ -105,7 +110,7 @@ public class EventParticipantImporter extends DataImporter {
 		String[] entityProperties,
 		String[][] entityPropertyPaths,
 		boolean firstLine)
-		throws IOException, InvalidColumnException, InterruptedException {
+		throws IOException, InterruptedException {
 
 		// Check whether the new line has the same length as the header line
 		if (values.length > entityProperties.length) {
@@ -113,8 +118,18 @@ public class EventParticipantImporter extends DataImporter {
 			return ImportLineResult.ERROR;
 		}
 
-		final PersonDto newPersonTemp = PersonDto.build();
-		final EventParticipantDto newEventParticipantTemp = EventParticipantDto.build(event, currentUser);
+		// regenerate the UUID to prevent overwrite in case of export and import of the same entities
+		int uuidIndex = ArrayUtils.indexOf(entityProperties, EventParticipantDto.UUID);
+		if (uuidIndex >= 0) {
+			values[uuidIndex] = DataHelper.createUuid();
+		}
+		int personUuidIndex = ArrayUtils.indexOf(entityProperties, String.join(".", EventParticipantDto.PERSON, PersonDto.UUID));
+		if (personUuidIndex >= 0) {
+			values[personUuidIndex] = DataHelper.createUuid();
+		}
+
+		final PersonDto newPersonTemp = PersonDto.buildImportEntity();
+		final EventParticipantDto newEventParticipantTemp = EventParticipantDto.build(event, currentUser.toReference());
 		newEventParticipantTemp.setPerson(newPersonTemp);
 
 		boolean eventParticipantHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, true, importColumnInformation -> {
@@ -159,7 +174,12 @@ public class EventParticipantImporter extends DataImporter {
 				synchronized (personSelectLock) {
 					// Call the logic that allows the user to handle the similarity; once this has been done, the LOCK should be notified
 					// to allow the importer to resume
-					handleSimilarity(newPerson, result -> consumer.onImportResult(result, personSelectLock));
+					handlePersonSimilarity(
+						newPerson,
+						result -> consumer.onImportResult(result, personSelectLock),
+						(person, similarityResultOption) -> new PersonImportSimilarityResult(person, similarityResultOption),
+						Strings.infoSelectOrCreatePersonForImport,
+						currentUI);
 
 					try {
 						if (!personSelectLock.wasNotified) {
@@ -180,7 +200,7 @@ public class EventParticipantImporter extends DataImporter {
 
 						// get first eventparticipant for event and person
 						EventParticipantCriteria eventParticipantCriteria =
-							new EventParticipantCriteria().person(newPerson.toReference()).event(event);
+							new EventParticipantCriteria().withPerson(newPerson.toReference()).withEvent(event);
 						EventParticipantDto pickedEventParticipant = eventParticipantFacade.getFirst(eventParticipantCriteria);
 
 						if (pickedEventParticipant != null) {
@@ -205,16 +225,16 @@ public class EventParticipantImporter extends DataImporter {
 					}
 				}
 
-				// Determine the import result and, if there was no duplicate, the user did not skip over the eventparticipant 
+				// Determine the import result and, if there was no duplicate, the user did not skip over the eventparticipant
 				// or an existing person was picked, save the eventparticipant and person to the database
-				if (eventParticipantHasImportError) {
-					return ImportLineResult.ERROR;
-				} else if (ImportSimilarityResultOption.SKIP.equals(resultOption)) {
+				if (ImportSimilarityResultOption.SKIP.equals(resultOption)) {
 					return ImportLineResult.SKIPPED;
 				} else {
+					// Workaround: Reset the change date to avoid OutdatedEntityExceptions
+					newPerson.setChangeDate(new Date());
 					PersonDto savedPerson = personFacade.savePerson(newPerson);
 					newEventParticipant.setPerson(savedPerson);
-
+					newEventParticipant.setChangeDate(new Date());
 					eventParticipantFacade.saveEventParticipant(newEventParticipant);
 
 					consumer.result = null;
@@ -227,44 +247,6 @@ public class EventParticipantImporter extends DataImporter {
 		} else {
 			return ImportLineResult.ERROR;
 		}
-	}
-
-	/**
-	 * Presents a popup window to the user that allows them to deal with detected potentially duplicate persons.
-	 * By passing the desired result to the resultConsumer, the importer decided how to proceed with the import process.
-	 */
-	protected void handleSimilarity(PersonDto newPerson, Consumer<EventParticipantImportSimilarityResult> resultConsumer) {
-
-		currentUI.accessSynchronously(() -> {
-			PersonSelectionField personSelect =
-				new PersonSelectionField(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipantImport));
-			personSelect.setWidth(1024, Unit.PIXELS);
-
-			if (personSelect.hasMatches()) {
-				final CommitDiscardWrapperComponent<PersonSelectionField> component = new CommitDiscardWrapperComponent<>(personSelect);
-				component.addCommitListener(() -> {
-					SimilarPersonDto person = personSelect.getValue();
-					if (person == null) {
-						resultConsumer.accept(new EventParticipantImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
-					} else {
-						resultConsumer.accept(new EventParticipantImportSimilarityResult(person, ImportSimilarityResultOption.PICK));
-					}
-				});
-
-				component.addDiscardListener(
-					() -> resultConsumer.accept(new EventParticipantImportSimilarityResult(null, ImportSimilarityResultOption.SKIP)));
-
-				personSelect.setSelectionChangeCallback((commitAllowed) -> {
-					component.getCommitButton().setEnabled(commitAllowed);
-				});
-
-				VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreatePerson));
-
-				personSelect.selectBestMatch();
-			} else {
-				resultConsumer.accept(new EventParticipantImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
-			}
-		});
 	}
 
 	/**
@@ -284,17 +266,24 @@ public class EventParticipantImporter extends DataImporter {
 					if (currentElement instanceof PersonReferenceDto) {
 						currentElement = person;
 					}
+				} else if (EventParticipantExportDto.BIRTH_DATE.equals(headerPathElementName)) {
+					BirthDateDto birthDateDto = PersonHelper.parseBirthdate(entry, currentUser.getLanguage());
+					if (birthDateDto != null) {
+						person.setBirthdateDD(birthDateDto.getDateOfBirthDD());
+						person.setBirthdateMM(birthDateDto.getDateOfBirthMM());
+						person.setBirthdateYYYY(birthDateDto.getDateOfBirthYYYY());
+					}
 				} else {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
 					Class<?> propertyType = pd.getPropertyType();
 
 					// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
 					// according to the types of the eventparticipant or person fields
-					if (executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath)) {
+					if (executeDefaultInvoke(pd, currentElement, entry, entryHeaderPath)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
 						List<DistrictReferenceDto> district = FacadeProvider.getDistrictFacade()
-							.getByName(entry, ImporterPersonHelper.getRegionBasedOnDistrict(pd.getName(), null, null, person, currentElement), false);
+							.getByName(entry, ImporterPersonHelper.getRegionBasedOnDistrict(pd.getName(), null, person, currentElement), false);
 						if (district.isEmpty()) {
 							throw new ImportErrorException(
 								I18nProperties
@@ -374,13 +363,18 @@ public class EventParticipantImporter extends DataImporter {
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importCasesUnexpectedError));
 			}
 		}
+
+		ImportLineResultDto<EventParticipantDto> constraintErrors = validateConstraints(eventParticipant);
+		if (constraintErrors.isError()) {
+			throw new ImportErrorException(constraintErrors.getMessage());
+		}
 	}
 
 	private class EventParticipantImportConsumer {
 
-		protected EventParticipantImportSimilarityResult result;
+		protected PersonImportSimilarityResult result;
 
-		private void onImportResult(EventParticipantImportSimilarityResult result, EventParticipantImportLock LOCK) {
+		private void onImportResult(PersonImportSimilarityResult result, EventParticipantImportLock LOCK) {
 			this.result = result;
 			synchronized (LOCK) {
 				LOCK.notify();

@@ -24,6 +24,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Transient;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
@@ -31,10 +34,10 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.ContactTracingContactType;
-import de.symeda.sormas.api.caze.CovidTestReason;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
@@ -43,17 +46,19 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
-import de.symeda.sormas.api.caze.ReportingType;
+import de.symeda.sormas.api.caze.ScreeningType;
 import de.symeda.sormas.api.caze.Trimester;
-import de.symeda.sormas.api.caze.Vaccination;
-import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.app.backend.caze.porthealthinfo.PortHealthInfo;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -90,9 +95,12 @@ public class Case extends PseudonymizableAdo {
 	public static final String HEALTH_FACILITY = "healthFacility_id";
 	public static final String OUTCOME = "outcome";
 	public static final String EPID_NUMBER = "epidNumber";
+	public static final String EXTERNAL_ID = "externalID";
 	public static final String CASE_ORIGIN = "caseOrigin";
+	public static final String RESPONSIBLE_REGION = "responsibleRegion";
 	public static final String REGION = "region";
 	public static final String COMPLETENESS = "completeness";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	private Person person;
@@ -102,6 +110,10 @@ public class Case extends PseudonymizableAdo {
 
 	@Enumerated(EnumType.STRING)
 	private Disease disease;
+
+	@Column(name = "diseaseVariant")
+	private String diseaseVariantString;
+	private DiseaseVariant diseaseVariant;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String diseaseDetails;
@@ -118,6 +130,12 @@ public class Case extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private CaseClassification caseClassification;
+
+	@Enumerated(EnumType.STRING)
+	private CaseIdentificationSource caseIdentificationSource;
+
+	@Enumerated(EnumType.STRING)
+	private ScreeningType screeningType;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User classificationUser;
@@ -136,6 +154,15 @@ public class Case extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private InvestigationStatus investigationStatus;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Region responsibleRegion;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private District responsibleDistrict;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Community responsibleCommunity;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Region region;
@@ -188,16 +215,8 @@ public class Case extends PseudonymizableAdo {
 	private YesNoUnknown pregnant;
 
 	@Enumerated(EnumType.STRING)
-	private Vaccination vaccination;
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String vaccine;
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String vaccinationDoses;
-
-	@Enumerated(EnumType.STRING)
-	private VaccinationInfoSource vaccinationInfoSource;
+	@DatabaseField(columnName = "vaccination")
+	private VaccinationStatus vaccinationStatus;
 
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown smallpoxVaccinationScar;
@@ -205,12 +224,8 @@ public class Case extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown smallpoxVaccinationReceived;
 
-	@DatabaseField(dataType = DataType.DATE_LONG)
-	private Date vaccinationDate;
-
-	@Deprecated
-	@DatabaseField(dataType = DataType.DATE_LONG)
-	private Date smallpoxVaccinationDate;
+	@DatabaseField(columnName = "vaccinationDate", dataType = DataType.DATE_LONG)
+	private Date smallpoxLastVaccinationDate;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String epidNumber;
@@ -276,6 +291,9 @@ public class Case extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String externalToken;
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String internalToken;
+
 	@Enumerated(EnumType.STRING)
 	private QuarantineType quarantine;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -311,17 +329,11 @@ public class Case extends PseudonymizableAdo {
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date quarantineOfficialOrderSentDate;
 	@Enumerated(EnumType.STRING)
-	private ReportingType reportingType;
-	@Enumerated(EnumType.STRING)
 	private YesNoUnknown postpartum;
 	@Enumerated(EnumType.STRING)
 	private Trimester trimester;
 	@DatabaseField
 	private Integer caseIdIsm;
-	@Enumerated(EnumType.STRING)
-	private CovidTestReason covidTestReason;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String covidTestReasonDetails;
 	@Enumerated(EnumType.STRING)
 	private ContactTracingContactType contactTracingFirstContactType;
 	@DatabaseField
@@ -348,13 +360,34 @@ public class Case extends PseudonymizableAdo {
 	@DatabaseField
 	private Date prohibitionToWorkUntil;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private District reportingDistrict;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown reInfection;
+	@DatabaseField
+	private Date previousInfectionDate;
+
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown bloodOrganOrTissueDonated;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	@DatabaseField
 	private boolean ownershipHandedOver;
+
+	@DatabaseField
+	private boolean notACaseReasonNegativeTest;
+	@DatabaseField
+	private boolean notACaseReasonPhysicianInformation;
+	@DatabaseField
+	private boolean notACaseReasonDifferentPathogen;
+	@DatabaseField
+	private boolean notACaseReasonOther;
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String notACaseReasonDetails;
+	@DatabaseField
+	private Date followUpStatusChangeDate;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private User followUpStatusChangeUser;
 
 	public boolean isUnreferredPortHealthCase() {
 		return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
@@ -382,6 +415,32 @@ public class Case extends PseudonymizableAdo {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	public String getDiseaseVariantString() {
+		return diseaseVariantString;
+	}
+
+	public void setDiseaseVariantString(String diseaseVariantString) {
+		this.diseaseVariantString = diseaseVariantString;
+	}
+
+	@Transient
+	public DiseaseVariant getDiseaseVariant() {
+		if (StringUtils.isBlank(diseaseVariantString)) {
+			return null;
+		} else {
+			return DatabaseHelper.getCustomizableEnumValueDao().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, diseaseVariantString);
+		}
+	}
+
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
+		if (diseaseVariant == null) {
+			diseaseVariantString = null;
+		} else {
+			diseaseVariantString = diseaseVariant.getValue();
+		}
 	}
 
 	public String getDiseaseDetails() {
@@ -414,6 +473,46 @@ public class Case extends PseudonymizableAdo {
 
 	public void setCaseClassification(CaseClassification caseClassification) {
 		this.caseClassification = caseClassification;
+	}
+
+	public CaseIdentificationSource getCaseIdentificationSource() {
+		return caseIdentificationSource;
+	}
+
+	public void setCaseIdentificationSource(CaseIdentificationSource caseIdentificationSource) {
+		this.caseIdentificationSource = caseIdentificationSource;
+	}
+
+	public ScreeningType getScreeningType() {
+		return screeningType;
+	}
+
+	public void setScreeningType(ScreeningType screeningType) {
+		this.screeningType = screeningType;
+	}
+
+	public Region getResponsibleRegion() {
+		return responsibleRegion;
+	}
+
+	public void setResponsibleRegion(Region responsibleRegion) {
+		this.responsibleRegion = responsibleRegion;
+	}
+
+	public District getResponsibleDistrict() {
+		return responsibleDistrict;
+	}
+
+	public void setResponsibleDistrict(District responsibleDistrict) {
+		this.responsibleDistrict = responsibleDistrict;
+	}
+
+	public Community getResponsibleCommunity() {
+		return responsibleCommunity;
+	}
+
+	public void setResponsibleCommunity(Community responsibleCommunity) {
+		this.responsibleCommunity = responsibleCommunity;
 	}
 
 	public Region getRegion() {
@@ -552,36 +651,12 @@ public class Case extends PseudonymizableAdo {
 		this.pregnant = pregnant;
 	}
 
-	public Vaccination getVaccination() {
-		return vaccination;
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
 	}
 
-	public void setVaccination(Vaccination vaccination) {
-		this.vaccination = vaccination;
-	}
-
-	public String getVaccine() {
-		return vaccine;
-	}
-
-	public void setVaccine(String vaccine) {
-		this.vaccine = vaccine;
-	}
-
-	public String getVaccinationDoses() {
-		return vaccinationDoses;
-	}
-
-	public void setVaccinationDoses(String vaccinationDoses) {
-		this.vaccinationDoses = vaccinationDoses;
-	}
-
-	public VaccinationInfoSource getVaccinationInfoSource() {
-		return vaccinationInfoSource;
-	}
-
-	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
-		this.vaccinationInfoSource = vaccinationInfoSource;
+	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
+		this.vaccinationStatus = vaccinationStatus;
 	}
 
 	public YesNoUnknown getSmallpoxVaccinationScar() {
@@ -600,12 +675,12 @@ public class Case extends PseudonymizableAdo {
 		this.smallpoxVaccinationReceived = smallpoxVaccinationReceived;
 	}
 
-	public Date getVaccinationDate() {
-		return vaccinationDate;
+	public Date getSmallpoxLastVaccinationDate() {
+		return smallpoxLastVaccinationDate;
 	}
 
-	public void setVaccinationDate(Date vaccinationDate) {
-		this.vaccinationDate = vaccinationDate;
+	public void setSmallpoxLastVaccinationDate(Date smallpoxLastVaccinationDate) {
+		this.smallpoxLastVaccinationDate = smallpoxLastVaccinationDate;
 	}
 
 	public String getEpidNumber() {
@@ -880,6 +955,14 @@ public class Case extends PseudonymizableAdo {
 		this.externalToken = externalToken;
 	}
 
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
+	}
+
 	public QuarantineType getQuarantine() {
 		return quarantine;
 	}
@@ -1016,14 +1099,6 @@ public class Case extends PseudonymizableAdo {
 		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
 	}
 
-	public ReportingType getReportingType() {
-		return reportingType;
-	}
-
-	public void setReportingType(ReportingType reportingType) {
-		this.reportingType = reportingType;
-	}
-
 	public YesNoUnknown getPostpartum() {
 		return postpartum;
 	}
@@ -1054,22 +1129,6 @@ public class Case extends PseudonymizableAdo {
 
 	public void setCaseIdIsm(Integer caseIdIsm) {
 		this.caseIdIsm = caseIdIsm;
-	}
-
-	public CovidTestReason getCovidTestReason() {
-		return covidTestReason;
-	}
-
-	public void setCovidTestReason(CovidTestReason covidTestReason) {
-		this.covidTestReason = covidTestReason;
-	}
-
-	public String getCovidTestReasonDetails() {
-		return covidTestReasonDetails;
-	}
-
-	public void setCovidTestReasonDetails(String covidTestReasonDetails) {
-		this.covidTestReasonDetails = covidTestReasonDetails;
 	}
 
 	public ContactTracingContactType getContactTracingFirstContactType() {
@@ -1168,12 +1227,28 @@ public class Case extends PseudonymizableAdo {
 		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
 	}
 
-	public District getReportingDistrict() {
-		return reportingDistrict;
+	public YesNoUnknown getReInfection() {
+		return reInfection;
 	}
 
-	public void setReportingDistrict(District reportingDistrict) {
-		this.reportingDistrict = reportingDistrict;
+	public void setReInfection(YesNoUnknown reInfection) {
+		this.reInfection = reInfection;
+	}
+
+	public Date getPreviousInfectionDate() {
+		return previousInfectionDate;
+	}
+
+	public void setPreviousInfectionDate(Date previousInfectionDate) {
+		this.previousInfectionDate = previousInfectionDate;
+	}
+
+	public YesNoUnknown getBloodOrganOrTissueDonated() {
+		return bloodOrganOrTissueDonated;
+	}
+
+	public void setBloodOrganOrTissueDonated(YesNoUnknown bloodOrganOrTissueDonated) {
+		this.bloodOrganOrTissueDonated = bloodOrganOrTissueDonated;
 	}
 
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
@@ -1190,5 +1265,61 @@ public class Case extends PseudonymizableAdo {
 
 	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
 		this.ownershipHandedOver = ownershipHandedOver;
+	}
+
+	public boolean isNotACaseReasonNegativeTest() {
+		return notACaseReasonNegativeTest;
+	}
+
+	public void setNotACaseReasonNegativeTest(boolean notACaseReasonNegativeTest) {
+		this.notACaseReasonNegativeTest = notACaseReasonNegativeTest;
+	}
+
+	public boolean isNotACaseReasonPhysicianInformation() {
+		return notACaseReasonPhysicianInformation;
+	}
+
+	public void setNotACaseReasonPhysicianInformation(boolean notACaseReasonPhysicianInformation) {
+		this.notACaseReasonPhysicianInformation = notACaseReasonPhysicianInformation;
+	}
+
+	public boolean isNotACaseReasonDifferentPathogen() {
+		return notACaseReasonDifferentPathogen;
+	}
+
+	public void setNotACaseReasonDifferentPathogen(boolean notACaseReasonDifferentPathogen) {
+		this.notACaseReasonDifferentPathogen = notACaseReasonDifferentPathogen;
+	}
+
+	public boolean isNotACaseReasonOther() {
+		return notACaseReasonOther;
+	}
+
+	public void setNotACaseReasonOther(boolean notACaseReasonOther) {
+		this.notACaseReasonOther = notACaseReasonOther;
+	}
+
+	public String getNotACaseReasonDetails() {
+		return notACaseReasonDetails;
+	}
+
+	public void setNotACaseReasonDetails(String notACaseReasonDetails) {
+		this.notACaseReasonDetails = notACaseReasonDetails;
+	}
+
+	public Date getFollowUpStatusChangeDate() {
+		return followUpStatusChangeDate;
+	}
+
+	public void setFollowUpStatusChangeDate(Date followUpStatusChangeDate) {
+		this.followUpStatusChangeDate = followUpStatusChangeDate;
+	}
+
+	public User getFollowUpStatusChangeUser() {
+		return followUpStatusChangeUser;
+	}
+
+	public void setFollowUpStatusChangeUser(User followUpStatusChangeUser) {
+		this.followUpStatusChangeUser = followUpStatusChangeUser;
 	}
 }

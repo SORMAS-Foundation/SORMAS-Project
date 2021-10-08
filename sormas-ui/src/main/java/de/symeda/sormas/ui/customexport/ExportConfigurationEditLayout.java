@@ -20,9 +20,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -45,7 +45,9 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.importexport.ExportGroupType;
-import de.symeda.sormas.api.utils.DataHelper.Pair;
+import de.symeda.sormas.api.importexport.ExportPropertyMetaInfo;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -53,6 +55,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class ExportConfigurationEditLayout extends VerticalLayout {
 
 	private TextField tfName;
+	private CheckBox checkBoxPublicExport;
 	private Label lblDescription;
 	private Map<ExportGroupType, Label> groupTypeLabels;
 	private Map<ExportGroupType, List<CheckBox>> checkBoxGroups;
@@ -62,20 +65,13 @@ public class ExportConfigurationEditLayout extends VerticalLayout {
 
 	public ExportConfigurationEditLayout(
 		ExportConfigurationDto exportConfiguration,
-		List<Pair<String, ExportGroupType>> availableProperties,
-		Function<String, String> propertyCaptionProvider,
+		List<ExportPropertyMetaInfo> availableProperties,
 		Consumer<ExportConfigurationDto> resultCallback,
 		Runnable discardCallback) {
 
 		this.exportConfiguration = exportConfiguration;
 
-		tfName = new TextField(I18nProperties.getPrefixCaption(ExportConfigurationDto.I18N_PREFIX, ExportConfigurationDto.NAME));
-		tfName.setWidth(350, Unit.PIXELS);
-		tfName.setRequiredIndicatorVisible(true);
-		if (this.exportConfiguration.getName() != null) {
-			tfName.setValue(this.exportConfiguration.getName());
-		}
-		addComponent(tfName);
+		addComponent(buildConfigNameAndSharedToPublicCheckboxLayout());
 
 		lblDescription = new Label(I18nProperties.getString(Strings.infoEditExportConfiguration));
 		lblDescription.setWidth(100, Unit.PERCENTAGE);
@@ -83,7 +79,7 @@ public class ExportConfigurationEditLayout extends VerticalLayout {
 
 		addComponent(buildSelectionButtonLayout());
 
-		int totalCheckBoxCount = buildCheckBoxGroups(availableProperties, propertyCaptionProvider);
+		int totalCheckBoxCount = buildCheckBoxGroups(availableProperties);
 
 		groupTypeLabels = new HashMap<>();
 		for (ExportGroupType groupType : checkBoxGroups.keySet()) {
@@ -98,20 +94,54 @@ public class ExportConfigurationEditLayout extends VerticalLayout {
 		setComponentAlignment(buttonLayout, Alignment.MIDDLE_RIGHT);
 	}
 
-	private int buildCheckBoxGroups(List<Pair<String, ExportGroupType>> exportExportProperties, Function<String, String> captionProvider) {
+	private HorizontalLayout buildConfigNameAndSharedToPublicCheckboxLayout() {
+
+		HorizontalLayout configNameAndSharedToPublicCheckboxLayout = new HorizontalLayout();
+		configNameAndSharedToPublicCheckboxLayout.setMargin(false);
+
+		tfName = new TextField(I18nProperties.getPrefixCaption(ExportConfigurationDto.I18N_PREFIX, Captions.ExportConfiguration_NAME));
+		tfName.setWidth(350, Unit.PIXELS);
+		tfName.setRequiredIndicatorVisible(true);
+		if (this.exportConfiguration.getName() != null) {
+			tfName.setValue(this.exportConfiguration.getName());
+		}
+		configNameAndSharedToPublicCheckboxLayout.addComponent(tfName);
+
+		checkBoxPublicExport = new CheckBox(I18nProperties.getPrefixCaption(ExportConfigurationDto.I18N_PREFIX, Captions.ExportConfiguration_sharedToPublic));
+		checkBoxPublicExport.setWidth(350, Unit.PIXELS);
+		checkBoxPublicExport.setValue(this.exportConfiguration.isSharedToPublic());
+		checkBoxPublicExport.setEnabled(hasManagePublicExportRights());
+		checkBoxPublicExport.setStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
+
+		HorizontalLayout publicExportLayout = new HorizontalLayout();
+		publicExportLayout.setMargin(false);
+
+		publicExportLayout.addComponent(checkBoxPublicExport);
+
+		configNameAndSharedToPublicCheckboxLayout.addComponent(publicExportLayout);
+
+		return configNameAndSharedToPublicCheckboxLayout;
+	}
+
+	private boolean hasManagePublicExportRights() {
+		return Objects.requireNonNull(UserProvider.getCurrent()).hasUserRight(UserRight.MANAGE_PUBLIC_EXPORT_CONFIGURATION)
+				&& (UserProvider.getCurrent().getUserReference().equals(this.exportConfiguration.getUser()));
+	}
+
+	private int buildCheckBoxGroups(List<ExportPropertyMetaInfo> exportExportProperties) {
 
 		checkBoxGroups = new HashMap<>();
 		checkBoxes = new HashMap<>();
 		int checkBoxCount = 0;
 
-		for (Pair<String, ExportGroupType> pair : exportExportProperties) {
-			ExportGroupType groupType = pair.getElement1();
-			String property = pair.getElement0();
+		for (ExportPropertyMetaInfo meta : exportExportProperties) {
+			ExportGroupType groupType = meta.getExportGroupType();
+			String property = meta.getPropertyId();
 			if (!checkBoxGroups.containsKey(groupType)) {
 				checkBoxGroups.put(groupType, new ArrayList<>());
 			}
 
-			String caption = captionProvider.apply(property);
+			String caption = meta.getCaption();
 			CheckBox cb = new CheckBox(caption);
 
 			if (!CollectionUtils.isEmpty(exportConfiguration.getProperties())) {
@@ -242,5 +272,6 @@ public class ExportConfigurationEditLayout extends VerticalLayout {
 		}
 		exportConfiguration.setProperties(properties);
 		exportConfiguration.setName(tfName.getValue());
+		exportConfiguration.setSharedToPublic(checkBoxPublicExport.getValue());
 	}
 }

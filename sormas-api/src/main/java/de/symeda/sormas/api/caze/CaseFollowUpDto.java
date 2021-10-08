@@ -21,6 +21,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.followup.FollowUpDto;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 
 public class CaseFollowUpDto extends FollowUpDto {
 
@@ -28,28 +29,24 @@ public class CaseFollowUpDto extends FollowUpDto {
 
 	private Date symptomsOnsetDate;
 
-	private final CaseJurisdictionDto jurisdiction;
+	private SymptomJournalStatus symptomJournalStatus;
+	private Boolean isInJurisdiction;
 
 	//@formatter:off
-	public CaseFollowUpDto(String uuid, String personFirstName, String personLastName,
-							  Date reportDate, Date symptomsOnsetDate, Date followUpUntil, Disease disease,
-							  String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid,
-							  String caseCommunityUud, String caseHealthFacilityUuid, String casePointOfEntryUuid
+	public CaseFollowUpDto(String uuid, Date changeDate, String personFirstName, String personLastName,
+						   Date reportDate, Date symptomsOnsetDate, Date followUpUntil, SymptomJournalStatus symptomJournalStatus,
+						   Disease disease,
+						   boolean isInJurisdiction
 	) {
 	//formatter:on
 		super(uuid, personFirstName, personLastName, reportDate, followUpUntil, disease);
 		this.symptomsOnsetDate = symptomsOnsetDate;
-		this.jurisdiction = new CaseJurisdictionDto(
-				caseReportingUserUuid,
-				caseRegionUuid,
-				caseDistrictUuid,
-				caseCommunityUud,
-				caseHealthFacilityUuid,
-				casePointOfEntryUuid);
+		this.symptomJournalStatus = symptomJournalStatus;
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
-	public CaseJurisdictionDto getJurisdiction() {
-		return jurisdiction;
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 
 	public Date getSymptomsOnsetDate() {
@@ -58,5 +55,13 @@ public class CaseFollowUpDto extends FollowUpDto {
 
 	public void setSymptomsOnsetDate(Date symptomsOnsetDate) {
 		this.symptomsOnsetDate = symptomsOnsetDate;
+	}
+
+	public SymptomJournalStatus getSymptomJournalStatus() {
+		return symptomJournalStatus;
+	}
+
+	public void setSymptomJournalStatus(SymptomJournalStatus symptomJournalStatus) {
+		this.symptomJournalStatus = symptomJournalStatus;
 	}
 }

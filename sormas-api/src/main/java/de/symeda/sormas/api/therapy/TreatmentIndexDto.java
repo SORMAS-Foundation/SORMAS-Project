@@ -3,7 +3,6 @@ package de.symeda.sormas.api.therapy;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.utils.SensitiveData;
 
 public class TreatmentIndexDto implements Serializable {
@@ -26,7 +25,7 @@ public class TreatmentIndexDto implements Serializable {
 	@SensitiveData
 	private String executingClinician;
 
-	private CaseJurisdictionDto caseJurisdiction;
+	private Boolean isInJurisdiction;
 
 	public TreatmentIndexDto(
 		String uuid,
@@ -38,12 +37,7 @@ public class TreatmentIndexDto implements Serializable {
 		TreatmentRoute route,
 		String routeDetails,
 		String executingClinician,
-		String caseReportingUserUuid,
-		String caseRegionUuid,
-		String caseDistrictUuid,
-		String caseCommunityUuid,
-		String caseHealthFacilityUuid,
-		String casePointOfEntryUuid) {
+		boolean isInJurisdiction) {
 
 		this.uuid = uuid;
 		this.treatmentIndexType = new TreatmentIndexType(treatmentType, treatmentDetails, typeOfDrug);
@@ -51,14 +45,7 @@ public class TreatmentIndexDto implements Serializable {
 		this.dose = dose;
 		this.treatmentIndexRoute = new TreatmentIndexRoute(route, routeDetails);
 		this.executingClinician = executingClinician;
-
-		this.caseJurisdiction = new CaseJurisdictionDto(
-			caseReportingUserUuid,
-			caseRegionUuid,
-			caseDistrictUuid,
-			caseCommunityUuid,
-			caseHealthFacilityUuid,
-			casePointOfEntryUuid);
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public String getUuid() {
@@ -109,8 +96,8 @@ public class TreatmentIndexDto implements Serializable {
 		this.executingClinician = executingClinician;
 	}
 
-	public CaseJurisdictionDto getCaseJurisdiction() {
-		return caseJurisdiction;
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 
 	public static class TreatmentIndexType implements Serializable {
@@ -124,6 +111,14 @@ public class TreatmentIndexDto implements Serializable {
 			this.treatmentType = treatmentType;
 			this.treatmentDetails = treatmentDetails;
 			this.typeOfDrug = typeOfDrug;
+		}
+
+		public String getTreatmentDetails() {
+			return treatmentDetails;
+		}
+
+		public TypeOfDrug getTypeOfDrug() {
+			return typeOfDrug;
 		}
 
 		public String formatString() {
@@ -140,6 +135,14 @@ public class TreatmentIndexDto implements Serializable {
 		public TreatmentIndexRoute(TreatmentRoute route, String routeDetails) {
 			this.route = route;
 			this.routeDetails = routeDetails;
+		}
+
+		public TreatmentRoute getRoute() {
+			return route;
+		}
+
+		public String getRouteDetails() {
+			return routeDetails;
 		}
 
 		public String formatString() {

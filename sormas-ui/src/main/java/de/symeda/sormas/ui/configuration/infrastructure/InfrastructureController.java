@@ -32,21 +32,24 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.HasUuid;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityIndexDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
-import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
-import de.symeda.sormas.api.region.AreaDto;
-import de.symeda.sormas.api.region.CommunityDto;
-import de.symeda.sormas.api.region.CountryDto;
-import de.symeda.sormas.api.region.CountryIndexDto;
-import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.DistrictIndexDto;
-import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.region.RegionIndexDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
+import de.symeda.sormas.api.infrastructure.area.AreaDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.infrastructure.continent.ContinentDto;
+import de.symeda.sormas.api.infrastructure.country.CountryDto;
+import de.symeda.sormas.api.infrastructure.country.CountryIndexDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictIndexDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.region.RegionIndexDto;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -79,9 +82,33 @@ public class InfrastructureController {
 	}
 
 	public void editArea(String uuid) {
-		AreaDto area = FacadeProvider.getAreaFacade().getAreaByUuid(uuid);
+		AreaDto area = FacadeProvider.getAreaFacade().getByUuid(uuid);
 		CommitDiscardWrapperComponent<AreaEditForm> editComponent = getAreaEditComponent(area);
 		String caption = I18nProperties.getString(Strings.edit) + " " + area.getName();
+		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
+	}
+
+	public void createContinent() {
+		CommitDiscardWrapperComponent<ContinentEditForm> createComponent = getContinentEditComponent(null);
+		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateEntry));
+	}
+
+	public void editContinent(String uuid) {
+		ContinentDto continentDto = FacadeProvider.getContinentFacade().getByUuid(uuid);
+		CommitDiscardWrapperComponent<ContinentEditForm> editComponent = getContinentEditComponent(continentDto);
+		String caption = I18nProperties.getString(Strings.headingEditContinent);
+		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
+	}
+
+	public void createSubcontinent() {
+		CommitDiscardWrapperComponent<SubcontinentEditForm> createComponent = getSubcontinentEditComponent(null);
+		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateEntry));
+	}
+
+	public void editSubcontinent(String uuid) {
+		SubcontinentDto subcontinentDto = FacadeProvider.getSubcontinentFacade().getByUuid(uuid);
+		CommitDiscardWrapperComponent<SubcontinentEditForm> editComponent = getSubcontinentEditComponent(subcontinentDto);
+		String caption = I18nProperties.getString(Strings.headingEditSubcontinent);
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
 
@@ -103,7 +130,7 @@ public class InfrastructureController {
 	}
 
 	public void editRegion(String uuid) {
-		RegionDto region = FacadeProvider.getRegionFacade().getRegionByUuid(uuid);
+		RegionDto region = FacadeProvider.getRegionFacade().getByUuid(uuid);
 		CommitDiscardWrapperComponent<RegionEditForm> editComponent = getRegionEditComponent(region);
 		String caption = I18nProperties.getString(Strings.edit) + " " + region.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
@@ -165,7 +192,7 @@ public class InfrastructureController {
 
 			@Override
 			public void onCommit() {
-				FacadeProvider.getFacilityFacade().saveFacility(editForm.getValue());
+				FacadeProvider.getFacilityFacade().save(editForm.getValue());
 				Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 				SormasUI.get().getNavigator().navigateTo(FacilitiesView.VIEW_NAME);
 			}
@@ -198,7 +225,7 @@ public class InfrastructureController {
 			editForm.getFieldGroup());
 
 		editComponent.addCommitListener(() -> {
-			FacadeProvider.getAreaFacade().saveArea(editForm.getValue());
+			FacadeProvider.getAreaFacade().save(editForm.getValue());
 			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 			SormasUI.get().getNavigator().navigateTo(AreasView.VIEW_NAME);
 		});
@@ -208,6 +235,60 @@ public class InfrastructureController {
 		}
 
 		return editComponent;
+	}
+
+	private CommitDiscardWrapperComponent<ContinentEditForm> getContinentEditComponent(ContinentDto continent) {
+		boolean isNew = continent == null;
+		ContinentEditForm editForm = new ContinentEditForm(isNew);
+		if (isNew) {
+			continent = ContinentDto.build();
+		}
+
+		editForm.setValue(continent);
+
+		final CommitDiscardWrapperComponent<ContinentEditForm> editView = new CommitDiscardWrapperComponent<>(
+			editForm,
+			UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+			editForm.getFieldGroup());
+
+		editView.addCommitListener(() -> {
+			FacadeProvider.getContinentFacade().save(editForm.getValue());
+			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
+			SormasUI.get().getNavigator().navigateTo(ContinentsView.VIEW_NAME);
+		});
+
+		if (!isNew) {
+			extendEditComponentWithArchiveButton(editView, continent.isArchived(), continent.getUuid(), InfrastructureType.CONTINENT, null);
+		}
+
+		return editView;
+	}
+
+	private CommitDiscardWrapperComponent<SubcontinentEditForm> getSubcontinentEditComponent(SubcontinentDto subcontinent) {
+		boolean isNew = subcontinent == null;
+		SubcontinentEditForm editForm = new SubcontinentEditForm(isNew);
+		if (isNew) {
+			subcontinent = SubcontinentDto.build();
+		}
+
+		editForm.setValue(subcontinent);
+
+		final CommitDiscardWrapperComponent<SubcontinentEditForm> editView = new CommitDiscardWrapperComponent<>(
+			editForm,
+			UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+			editForm.getFieldGroup());
+
+		editView.addCommitListener(() -> {
+			FacadeProvider.getSubcontinentFacade().save(editForm.getValue());
+			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
+			SormasUI.get().getNavigator().navigateTo(SubcontinentsView.VIEW_NAME);
+		});
+
+		if (!isNew) {
+			extendEditComponentWithArchiveButton(editView, subcontinent.isArchived(), subcontinent.getUuid(), InfrastructureType.SUBCONTINENT, null);
+		}
+
+		return editView;
 	}
 
 	private CommitDiscardWrapperComponent<CountryEditForm> getCountryEditComponent(CountryDto country) {
@@ -221,12 +302,12 @@ public class InfrastructureController {
 		editForm.setValue(country);
 
 		final CommitDiscardWrapperComponent<CountryEditForm> editView = new CommitDiscardWrapperComponent<>(
-				editForm,
-				UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
-				editForm.getFieldGroup());
+			editForm,
+			UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+			editForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
-			FacadeProvider.getCountryFacade().saveCountry(editForm.getValue());
+			FacadeProvider.getCountryFacade().save(editForm.getValue());
 			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 			SormasUI.get().getNavigator().navigateTo(CountriesView.VIEW_NAME);
 		});
@@ -254,7 +335,7 @@ public class InfrastructureController {
 			editForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
-			FacadeProvider.getRegionFacade().saveRegion(editForm.getValue());
+			FacadeProvider.getRegionFacade().save(editForm.getValue());
 			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 			SormasUI.get().getNavigator().navigateTo(RegionsView.VIEW_NAME);
 		});
@@ -285,7 +366,7 @@ public class InfrastructureController {
 
 			@Override
 			public void onCommit() {
-				FacadeProvider.getDistrictFacade().saveDistrict(editForm.getValue());
+				FacadeProvider.getDistrictFacade().save(editForm.getValue());
 				Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 				SormasUI.get().getNavigator().navigateTo(DistrictsView.VIEW_NAME);
 			}
@@ -317,7 +398,7 @@ public class InfrastructureController {
 
 			@Override
 			public void onCommit() {
-				FacadeProvider.getCommunityFacade().saveCommunity(editForm.getValue());
+				FacadeProvider.getCommunityFacade().save(editForm.getValue());
 				Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 				SormasUI.get().getNavigator().navigateTo(CommunitiesView.VIEW_NAME);
 			}
@@ -367,8 +448,12 @@ public class InfrastructureController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_ARCHIVE)) {
 			Button archiveButton = ButtonHelper.createButton(isArchived ? Captions.actionDearchive : Captions.actionArchive, e -> {
 				if (!isArchived) {
-					if (InfrastructureType.AREA.equals(infrastructureType)
-						&& FacadeProvider.getAreaFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid))
+					if (InfrastructureType.CONTINENT.equals(infrastructureType)
+						&& FacadeProvider.getContinentFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid))
+						|| InfrastructureType.SUBCONTINENT.equals(infrastructureType)
+							&& FacadeProvider.getSubcontinentFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid))
+						|| InfrastructureType.AREA.equals(infrastructureType)
+							&& FacadeProvider.getAreaFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid))
 						|| InfrastructureType.REGION.equals(infrastructureType)
 							&& FacadeProvider.getRegionFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid))
 						|| InfrastructureType.DISTRICT.equals(infrastructureType)
@@ -379,8 +464,12 @@ public class InfrastructureController {
 						return;
 					}
 				} else {
-					if (InfrastructureType.DISTRICT.equals(infrastructureType)
-						&& FacadeProvider.getDistrictFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid))
+					if (InfrastructureType.COUNTRY.equals(infrastructureType)
+						&& FacadeProvider.getCountryFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid))
+						|| InfrastructureType.SUBCONTINENT.equals(infrastructureType)
+							&& FacadeProvider.getSubcontinentFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid))
+						|| InfrastructureType.DISTRICT.equals(infrastructureType)
+							&& FacadeProvider.getDistrictFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid))
 						|| InfrastructureType.COMMUNITY.equals(infrastructureType)
 							&& FacadeProvider.getCommunityFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid))
 						|| InfrastructureType.FACILITY.equals(infrastructureType)
@@ -405,6 +494,14 @@ public class InfrastructureController {
 
 		final String contentText;
 		switch (infrastructureType) {
+		case CONTINENT:
+			contentText = I18nProperties
+				.getString(bulkArchiving ? Strings.messageContinentsArchivingNotPossible : Strings.messageContinentArchivingNotPossible);
+			break;
+		case SUBCONTINENT:
+			contentText = I18nProperties
+				.getString(bulkArchiving ? Strings.messageSubcontinentsArchivingNotPossible : Strings.messageSubcontinentArchivingNotPossible);
+			break;
 		case AREA:
 			contentText =
 				I18nProperties.getString(bulkArchiving ? Strings.messageAreasArchivingNotPossible : Strings.messageAreaArchivingNotPossible);
@@ -431,6 +528,14 @@ public class InfrastructureController {
 
 		final String contentText;
 		switch (infrastructureType) {
+		case COUNTRY:
+			contentText = I18nProperties
+				.getString(bulkArchiving ? Strings.messageCountriesDearchivingNotPossible : Strings.messageCountryDearchivingNotPossible);
+			break;
+		case SUBCONTINENT:
+			contentText = I18nProperties
+				.getString(bulkArchiving ? Strings.messageSubcontinentsDearchivingNotPossible : Strings.messageSubcontinentDearchivingNotPossible);
+			break;
 		case DISTRICT:
 			contentText = I18nProperties
 				.getString(bulkArchiving ? Strings.messageDistrictsDearchivingNotPossible : Strings.messageDistrictDearchivingNotPossible);
@@ -458,6 +563,15 @@ public class InfrastructureController {
 		Label contentLabel = new Label();
 		final String notificationMessage;
 		switch (infrastructureType) {
+		case CONTINENT:
+			contentLabel.setValue(I18nProperties.getString(archive ? Strings.confirmationArchiveContinent : Strings.confirmationDearchiveContinent));
+			notificationMessage = I18nProperties.getString(archive ? Strings.messageContinentArchived : Strings.messageContinentDearchived);
+			break;
+		case SUBCONTINENT:
+			contentLabel
+				.setValue(I18nProperties.getString(archive ? Strings.confirmationArchiveSubcontinent : Strings.confirmationDearchiveSubcontinent));
+			notificationMessage = I18nProperties.getString(archive ? Strings.messageSubcontinentArchived : Strings.messageSubcontinentDearchived);
+			break;
 		case AREA:
 			contentLabel.setValue(I18nProperties.getString(archive ? Strings.confirmationArchiveArea : Strings.confirmationDearchiveArea));
 			notificationMessage = I18nProperties.getString(archive ? Strings.messageAreaArchived : Strings.messageAreaDearchived);
@@ -500,11 +614,27 @@ public class InfrastructureController {
 			e -> {
 				if (e.booleanValue()) {
 					switch (infrastructureType) {
+					case CONTINENT:
+						if (archive) {
+							FacadeProvider.getContinentFacade().archive(entityUuid);
+						} else {
+							FacadeProvider.getContinentFacade().dearchive(entityUuid);
+						}
+						SormasUI.get().getNavigator().navigateTo(ContinentsView.VIEW_NAME);
+						break;
+					case SUBCONTINENT:
+						if (archive) {
+							FacadeProvider.getSubcontinentFacade().archive(entityUuid);
+						} else {
+							FacadeProvider.getSubcontinentFacade().dearchive(entityUuid);
+						}
+						SormasUI.get().getNavigator().navigateTo(SubcontinentsView.VIEW_NAME);
+						break;
 					case AREA:
 						if (archive) {
 							FacadeProvider.getAreaFacade().archive(entityUuid);
 						} else {
-							FacadeProvider.getAreaFacade().deArchive(entityUuid);
+							FacadeProvider.getAreaFacade().dearchive(entityUuid);
 						}
 						SormasUI.get().getNavigator().navigateTo(AreasView.VIEW_NAME);
 						break;
@@ -585,6 +715,10 @@ public class InfrastructureController {
 		// Check if archiving/dearchiving is allowed concerning the hierarchy
 		Set<String> selectedRowsUuids = selectedRows.stream().map(row -> ((HasUuid) row).getUuid()).collect(Collectors.toSet());
 		if (InfrastructureType.AREA.equals(infrastructureType) && FacadeProvider.getAreaFacade().isUsedInOtherInfrastructureData(selectedRowsUuids)
+			|| InfrastructureType.CONTINENT.equals(infrastructureType)
+				&& FacadeProvider.getContinentFacade().isUsedInOtherInfrastructureData(selectedRowsUuids)
+			|| InfrastructureType.SUBCONTINENT.equals(infrastructureType)
+				&& FacadeProvider.getSubcontinentFacade().isUsedInOtherInfrastructureData(selectedRowsUuids)
 			|| InfrastructureType.REGION.equals(infrastructureType)
 				&& FacadeProvider.getRegionFacade().isUsedInOtherInfrastructureData(selectedRowsUuids)
 			|| InfrastructureType.DISTRICT.equals(infrastructureType)
@@ -594,8 +728,12 @@ public class InfrastructureController {
 			showArchivingNotPossibleWindow(infrastructureType, true);
 			return;
 		}
-		if (InfrastructureType.DISTRICT.equals(infrastructureType)
-			&& FacadeProvider.getDistrictFacade().hasArchivedParentInfrastructure(selectedRowsUuids)
+		if (InfrastructureType.COUNTRY.equals(infrastructureType)
+			&& FacadeProvider.getCountryFacade().hasArchivedParentInfrastructure(selectedRowsUuids)
+			|| InfrastructureType.SUBCONTINENT.equals(infrastructureType)
+				&& FacadeProvider.getSubcontinentFacade().hasArchivedParentInfrastructure(selectedRowsUuids)
+			|| InfrastructureType.DISTRICT.equals(infrastructureType)
+				&& FacadeProvider.getDistrictFacade().hasArchivedParentInfrastructure(selectedRowsUuids)
 			|| InfrastructureType.COMMUNITY.equals(infrastructureType)
 				&& FacadeProvider.getCommunityFacade().hasArchivedParentInfrastructure(selectedRowsUuids)
 			|| InfrastructureType.FACILITY.equals(infrastructureType)
@@ -609,6 +747,21 @@ public class InfrastructureController {
 		final String confirmationMessage;
 		final String notificationMessage;
 		switch (infrastructureType) {
+		case CONTINENT:
+			confirmationMessage = archive
+				? I18nProperties.getString(Strings.confirmationArchiveContinents)
+				: I18nProperties.getString(Strings.confirmationDearchiveContinents);
+			notificationMessage =
+				archive ? I18nProperties.getString(Strings.messageContinentsArchived) : I18nProperties.getString(Strings.messageContinentsDearchived);
+			break;
+		case SUBCONTINENT:
+			confirmationMessage = archive
+				? I18nProperties.getString(Strings.confirmationArchiveSubcontinents)
+				: I18nProperties.getString(Strings.confirmationDearchiveSubcontinents);
+			notificationMessage = archive
+				? I18nProperties.getString(Strings.messageSubcontinentsArchived)
+				: I18nProperties.getString(Strings.messageSubcontinentsDearchived);
+			break;
 		case AREA:
 			confirmationMessage =
 				archive ? I18nProperties.getString(Strings.confirmationArchiveAreas) : I18nProperties.getString(Strings.confirmationDearchiveAreas);
@@ -621,7 +774,7 @@ public class InfrastructureController {
 				: I18nProperties.getString(Strings.confirmationDearchiveCountries);
 			notificationMessage =
 				archive ? I18nProperties.getString(Strings.messageCountriesArchived) : I18nProperties.getString(Strings.messageCountriesDearchived);
-				break;
+			break;
 		case REGION:
 			confirmationMessage = archive
 				? I18nProperties.getString(Strings.confirmationArchiveRegions)
@@ -673,12 +826,30 @@ public class InfrastructureController {
 				if (e.booleanValue()) {
 
 					switch (infrastructureType) {
+					case CONTINENT:
+						for (ContinentDto selectedRow : (Collection<ContinentDto>) selectedRows) {
+							if (archive) {
+								FacadeProvider.getContinentFacade().archive(selectedRow.getUuid());
+							} else {
+								FacadeProvider.getContinentFacade().dearchive(selectedRow.getUuid());
+							}
+						}
+						break;
+					case SUBCONTINENT:
+						for (SubcontinentDto selectedRow : (Collection<SubcontinentDto>) selectedRows) {
+							if (archive) {
+								FacadeProvider.getSubcontinentFacade().archive(selectedRow.getUuid());
+							} else {
+								FacadeProvider.getSubcontinentFacade().dearchive(selectedRow.getUuid());
+							}
+						}
+						break;
 					case AREA:
 						for (AreaDto selectedRow : (Collection<AreaDto>) selectedRows) {
 							if (archive) {
 								FacadeProvider.getAreaFacade().archive(selectedRow.getUuid());
 							} else {
-								FacadeProvider.getAreaFacade().deArchive(selectedRow.getUuid());
+								FacadeProvider.getAreaFacade().dearchive(selectedRow.getUuid());
 							}
 						}
 						break;
@@ -719,7 +890,7 @@ public class InfrastructureController {
 						}
 						break;
 					case FACILITY:
-						for (FacilityDto selectedRow : (Collection<FacilityDto>) selectedRows) {
+						for (FacilityIndexDto selectedRow : (Collection<FacilityIndexDto>) selectedRows) {
 							if (archive) {
 								FacadeProvider.getFacilityFacade().archive(selectedRow.getUuid());
 							} else {

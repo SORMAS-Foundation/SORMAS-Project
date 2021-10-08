@@ -20,6 +20,7 @@ package de.symeda.sormas.rest;
 import javax.ws.rs.ApplicationPath;
 
 import de.symeda.sormas.api.utils.InfoProvider;
+import de.symeda.sormas.rest.externaljournal.ExternalVisitsResource;
 import de.symeda.sormas.rest.swagger.AttributeConverter;
 import de.symeda.sormas.rest.swagger.SormasSwaggerExtensions;
 import io.swagger.v3.core.converter.ModelConverters;
@@ -57,24 +58,23 @@ public class RestConfig extends ResourceConfig {
 		SwaggerConfig.init();
 
 		Info info = new Info().title("SORMAS external symptom journal API")
-				.version(InfoProvider.get().getVersion())
-				.description(
-						"The purpose of this API is to enable communication between SORMAS and other symptom journals. "
-								+ "Only users with the role ``REST_EXTERNAL_VISITS_USER`` are authorized to use the endpoints. "
-								+ "If you would like to receive access, please contact the System Administrator. "
-								+ "For technical details please contact the dev team on gitter. "
-								+ "Authentication is done using basic auth, with the user and password.")
-				.contact(new Contact().url("https://gitter.im/SORMAS-Project/dev-support").name("Dev support"))
-				.license(new License().name("GNU General Public License").url("https://www.gnu.org/licenses/"));
+			.version(InfoProvider.get().getVersion())
+			.description(
+				"The purpose of this API is to enable communication between SORMAS and other symptom journals. "
+					+ "Only users with the role ``REST_EXTERNAL_VISITS_USER`` are authorized to use the endpoints. "
+					+ "If you would like to receive access, please contact the System Administrator. "
+					+ "For technical details please contact the dev team on gitter. "
+					+ "Authentication is done using basic auth, with the user and password.")
+			.contact(new Contact().url("https://gitter.im/SORMAS-Project/dev-support").name("Dev support"))
+			.license(new License().name("GNU General Public License").url("https://www.gnu.org/licenses/"));
 
 		OpenAPI openAPI = new OpenAPI().info(info);
 		openAPI.addExtension("sormas-extension", new SormasSwaggerExtensions());
 		ModelConverters.getInstance().addConverter(new AttributeConverter(Json.mapper()));
-		SwaggerConfiguration openAPIConfiguration = new SwaggerConfiguration()
-				.prettyPrint(true)
-				.openAPI(openAPI)
-				.readAllResources(false)
-				.resourceClasses(SetUtils.hashSet(ExternalVisitsResource.class.getSimpleName()));
+		SwaggerConfiguration openAPIConfiguration = new SwaggerConfiguration().prettyPrint(true)
+			.openAPI(openAPI)
+			.readAllResources(false)
+			.resourceClasses(SetUtils.hashSet(ExternalVisitsResource.class.getSimpleName()));
 		OpenApiResource openApiResource = new OpenApiResource();
 		openApiResource.setOpenApiConfiguration(openAPIConfiguration);
 		register(openApiResource);

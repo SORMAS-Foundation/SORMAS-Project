@@ -28,7 +28,8 @@ public enum ExposureType {
 	PERSONAL_SERVICES,
 	BURIAL,
 	ANIMAL_CONTACT,
-	OTHER;
+	OTHER,
+	UNKNOWN;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

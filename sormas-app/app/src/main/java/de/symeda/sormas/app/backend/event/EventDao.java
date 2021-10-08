@@ -25,6 +25,8 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import android.util.Log;
+
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -35,6 +37,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.LocationService;
 
 public class EventDao extends AbstractAdoDao<Event> {
@@ -79,6 +82,11 @@ public class EventDao extends AbstractAdoDao<Event> {
 		event.getEventLocation().setDistrict(ConfigProvider.getUser().getDistrict());
 		event.setEventStatus(EventStatus.SIGNAL);
 		event.setEventInvestigationStatus(EventInvestigationStatus.PENDING);
+
+		Disease defaultDisease = DiseaseConfigurationCache.getInstance().getDefaultDisease();
+		if (defaultDisease != null) {
+			event.setDisease(defaultDisease);
+		}
 
 		return event;
 	}
@@ -133,7 +141,7 @@ public class EventDao extends AbstractAdoDao<Event> {
 
 	public List<Event> queryByCriteria(EventCriteria criteria, long offset, long limit) {
 		try {
-			return buildQueryBuilder(criteria).orderBy(Event.REPORT_DATE_TIME, true).offset(offset).limit(limit).query();
+			return buildQueryBuilder(criteria).orderBy(Event.LOCAL_CHANGE_DATE, false).offset(offset).limit(limit).query();
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform queryByCriteria on Event");
 			throw new RuntimeException(e);

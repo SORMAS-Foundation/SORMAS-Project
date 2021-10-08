@@ -31,7 +31,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Grid;
 
 import de.symeda.sormas.api.i18n.Captions;
@@ -44,6 +43,7 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class ReportsView extends AbstractView {
@@ -90,7 +90,7 @@ public class ReportsView extends AbstractView {
 		int year = prevEpiWeek.getYear();
 		int week = prevEpiWeek.getWeek();
 
-		yearFilter = new ComboBox();
+		yearFilter = ComboBoxHelper.createComboBoxV7();
 		yearFilter.setId(Strings.year);
 		yearFilter.setWidth(200, Unit.PIXELS);
 		yearFilter.setNullSelectionAllowed(false);
@@ -104,7 +104,7 @@ public class ReportsView extends AbstractView {
 		});
 		filterLayout.addComponent(yearFilter);
 
-		epiWeekFilter = new ComboBox();
+		epiWeekFilter = ComboBoxHelper.createComboBoxV7();
 		epiWeekFilter.setId(Strings.epiWeek);
 		epiWeekFilter.setWidth(200, Unit.PIXELS);
 		epiWeekFilter.setNullSelectionAllowed(false);
@@ -115,7 +115,7 @@ public class ReportsView extends AbstractView {
 		});
 		filterLayout.addComponent(epiWeekFilter);
 
-		Button lastWeekButton = ButtonHelper.createButtonWithCaption(
+		Button lastWeekButton = ButtonHelper.createButton(
 			Captions.dashboardLastWeek,
 			String.format(I18nProperties.getCaption(Captions.dashboardLastWeek), DateHelper.getPreviousEpiWeek(new Date()).toString()),
 			e -> {

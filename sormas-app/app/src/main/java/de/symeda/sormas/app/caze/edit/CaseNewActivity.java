@@ -15,20 +15,17 @@
 
 package de.symeda.sormas.app.caze.edit;
 
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
-
-import java.util.Calendar;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 
 import androidx.annotation.NonNull;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Calendar;
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -57,6 +54,9 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DateFormatHelper;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class CaseNewActivity extends BaseEditActivity<Case> {
 
@@ -196,7 +196,6 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
 		final Case caze = getStoredRootEntity();
 		CaseNewFragment fragment = (CaseNewFragment) getActiveFragment();
-
 		fragment.setLiveValidationDisabled(false);
 
 		try {
@@ -279,10 +278,10 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 					Calendar calendar = Calendar.getInstance();
 					String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
 					caseToSave.setEpidNumber(
-						caseToSave.getRegion().getEpidCode() != null
-							? caseToSave.getRegion().getEpidCode()
-							: "" + "-" + caseToSave.getDistrict().getEpidCode() != null
-								? caseToSave.getDistrict().getEpidCode()
+						caseToSave.getResponsibleRegion().getEpidCode() != null
+							? caseToSave.getResponsibleRegion().getEpidCode()
+							: "" + "-" + caseToSave.getResponsibleDistrict().getEpidCode() != null
+								? caseToSave.getResponsibleDistrict().getEpidCode()
 								: "" + "-" + year + "-");
 				}
 

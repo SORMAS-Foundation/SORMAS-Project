@@ -15,12 +15,6 @@
 
 package de.symeda.sormas.app.util;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
-
-import org.apache.commons.lang3.StringUtils;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -40,7 +34,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 
 /**
@@ -112,7 +113,7 @@ public final class LocationService {
 
 		activeRequestCount++;
 
-		if (!validateGpsAccessAndEnabled(callingActivity)) {
+		if (ConfigProvider.getUser() == null || !validateGpsAccessAndEnabled(callingActivity)) {
 			return;
 		}
 
@@ -157,7 +158,7 @@ public final class LocationService {
 
 	public void requestFreshLocation(Activity callingActivity) {
 
-		if (!validateGpsAccessAndEnabled(callingActivity)) {
+		if (ConfigProvider.getUser() == null || !validateGpsAccessAndEnabled(callingActivity)) {
 			return;
 		}
 
@@ -198,7 +199,7 @@ public final class LocationService {
 
 	public Location getLocation(Activity callingActivity) {
 
-		if (!validateGpsAccessAndEnabled(callingActivity)) {
+		if (ConfigProvider.getUser() == null || !validateGpsAccessAndEnabled(callingActivity)) {
 			return null;
 		}
 
@@ -323,15 +324,17 @@ public final class LocationService {
 
 	public boolean validateGpsAccessAndEnabled(final Activity callingActivity) {
 
-		if (!LocationService.instance().hasGpsAccess()) {
-			buildAndShowRequestGpsAccessDialog(callingActivity);
-			return false;
-		}
+		if (DatabaseHelper.getFeatureConfigurationDao().isAnySurveillanceEnabled()) {
+			if (!LocationService.instance().hasGpsAccess()) {
+				buildAndShowRequestGpsAccessDialog(callingActivity);
+				return false;
+			}
 
-		if (!LocationService.instance().hasGpsEnabled()) {
-			AlertDialog turnOnGPSDialog = buildEnableGpsDialog(callingActivity);
-			turnOnGPSDialog.show();
-			return false;
+			if (!LocationService.instance().hasGpsEnabled()) {
+				AlertDialog turnOnGPSDialog = buildEnableGpsDialog(callingActivity);
+				turnOnGPSDialog.show();
+				return false;
+			}
 		}
 
 		return true;
@@ -344,7 +347,7 @@ public final class LocationService {
 	 * @param callingActivity
 	 */
 	private void buildAndShowRequestGpsAccessDialog(final Activity callingActivity) {
-		if (requestGpsAccessDialog != null) {
+		if (requestGpsAccessDialog != null && LocationService.instance().hasGpsAccess()) {
 			return;
 		}
 

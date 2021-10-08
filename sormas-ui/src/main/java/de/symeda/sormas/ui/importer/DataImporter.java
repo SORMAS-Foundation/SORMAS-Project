@@ -4,7 +4,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +13,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.CharsetDecoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,8 +21,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
@@ -40,21 +47,35 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
+import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
-import de.symeda.sormas.api.region.AreaReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.importexport.ValueSeparator;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.SimilarPersonDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
+import de.symeda.sormas.api.utils.CharsetHelper;
+import de.symeda.sormas.api.utils.ConstrainValidationHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.person.PersonSelectionField;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -105,21 +126,28 @@ public abstract class DataImporter {
 	 */
 	private char csvSeparator;
 
-	protected UserReferenceDto currentUser;
+	protected UserDto currentUser;
 	private CSVWriter errorReportCsvWriter;
 
-	public DataImporter(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser) {
+	private final EnumCaptionCache enumCaptionCache;
+
+	public DataImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator csvSeparator) throws IOException {
 		this.inputFile = inputFile;
 		this.hasEntityClassRow = hasEntityClassRow;
 		this.currentUser = currentUser;
+		this.enumCaptionCache = new EnumCaptionCache(currentUser.getLanguage());
 
-		Path exportDirectory = Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
+		Path exportDirectory = getErrorReportFolderPath();
+		if (!exportDirectory.toFile().exists() || !exportDirectory.toFile().canWrite()) {
+			logger.error(exportDirectory + " doesn't exist or cannot be accessed");
+			throw new FileNotFoundException("Temp directory doesn't exist or cannot be accessed");
+		}
 		Path errorReportFilePath = exportDirectory.resolve(
 			ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" + DataHelper.getShortUuid(currentUser.getUuid()) + "_"
 				+ DateHelper.formatDateForExport(new Date()) + ".csv");
 		this.errorReportFilePath = errorReportFilePath.toString();
 
-		this.csvSeparator = FacadeProvider.getConfigFacade().getCsvSeparator();
+		this.csvSeparator = ValueSeparator.getSeparator(csvSeparator);
 	}
 
 	/**
@@ -142,6 +170,8 @@ public abstract class DataImporter {
 		Thread importThread = new Thread(() -> {
 			try {
 				currentUI.setPollInterval(300);
+				I18nProperties.setUserLanguage(currentUser.getLanguage());
+				FacadeProvider.getI18nFacade().setUserLanguage(currentUser.getLanguage());
 
 				ImportResultStatus importResult = runImport();
 
@@ -322,7 +352,7 @@ public abstract class DataImporter {
 	}
 
 	private CSVReader getCSVReader(File inputFile) throws IOException {
-		CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
+		CharsetDecoder decoder = CharsetHelper.getDecoder(inputFile);
 		InputStream inputStream = Files.newInputStream(inputFile.toPath());
 		BOMInputStream bomInputStream = new BOMInputStream(inputStream);
 		Reader reader = new InputStreamReader(bomInputStream, decoder);
@@ -360,20 +390,35 @@ public abstract class DataImporter {
 	@SuppressWarnings({
 		"unchecked",
 		"rawtypes" })
-	protected boolean executeDefaultInvokings(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath)
+	protected boolean executeDefaultInvoke(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath)
 		throws InvocationTargetException, IllegalAccessException, ImportErrorException {
 		Class<?> propertyType = pd.getPropertyType();
 
 		if (propertyType.isEnum()) {
-			pd.getWriteMethod().invoke(element, Enum.valueOf((Class<? extends Enum>) propertyType, entry.toUpperCase()));
+			Enum enumValue = null;
+			Class<Enum> enumType = (Class<Enum>) propertyType;
+			try {
+				enumValue = Enum.valueOf(enumType, entry.toUpperCase());
+			} catch (IllegalArgumentException e) {
+				// ignore
+			}
+
+			if (enumValue == null) {
+				enumValue = enumCaptionCache.getEnumByCaption(enumType, entry);
+			}
+
+			pd.getWriteMethod().invoke(element, enumValue);
+
 			return true;
 		}
 		if (propertyType.isAssignableFrom(Date.class)) {
+			String dateFormat = I18nProperties.getUserLanguage().getDateFormat();
 			try {
-				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry));
+				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, dateFormat));
 				return true;
 			} catch (ParseException e) {
-				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importInvalidDate, pd.getName()));
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importInvalidDate, pd.getName(), DateHelper.getAllowedDateFormats(dateFormat)));
 			}
 		}
 		if (propertyType.isAssignableFrom(Integer.class)) {
@@ -389,7 +434,7 @@ public abstract class DataImporter {
 			return true;
 		}
 		if (propertyType.isAssignableFrom(Boolean.class) || propertyType.isAssignableFrom(boolean.class)) {
-			pd.getWriteMethod().invoke(element, Boolean.parseBoolean(entry));
+			pd.getWriteMethod().invoke(element, DataHelper.parseBoolean(entry));
 			return true;
 		}
 		if (propertyType.isAssignableFrom(AreaReferenceDto.class)) {
@@ -405,17 +450,64 @@ public abstract class DataImporter {
 				return true;
 			}
 		}
-		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
-			List<RegionReferenceDto> region = FacadeProvider.getRegionFacade().getByName(entry, false);
-			if (region.isEmpty()) {
+		if (propertyType.isAssignableFrom(SubcontinentReferenceDto.class)) {
+			List<SubcontinentReferenceDto> subcontinents = FacadeProvider.getSubcontinentFacade().getByDefaultName(entry, false);
+			if (subcontinents.isEmpty()) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
-			} else if (region.size() > 1) {
+			} else if (subcontinents.size() > 1) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importSubcontinentNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+			} else {
+				pd.getWriteMethod().invoke(element, subcontinents.get(0));
+				return true;
+			}
+		}
+		if (propertyType.isAssignableFrom(CountryReferenceDto.class)) {
+			List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getByDefaultName(entry, false);
+			if (countries.isEmpty()) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
+			} else if (countries.size() > 1) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importSubcontinentNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+			} else {
+				pd.getWriteMethod().invoke(element, countries.get(0));
+				return true;
+			}
+		}
+		if (propertyType.isAssignableFrom(ContinentReferenceDto.class)) {
+			List<ContinentReferenceDto> continents = FacadeProvider.getContinentFacade().getByDefaultName(entry, false);
+			if (continents.isEmpty()) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
+			} else if (continents.size() > 1) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importSubcontinentNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+			} else {
+				pd.getWriteMethod().invoke(element, continents.get(0));
+				return true;
+			}
+		}
+		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
+			List<RegionDto> regions = FacadeProvider.getRegionFacade().getByName(entry, false);
+			if (regions.isEmpty()) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
+			} else if (regions.size() > 1) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importRegionNotUnique, entry, buildEntityProperty(entryHeaderPath)));
 			} else {
-				pd.getWriteMethod().invoke(element, region.get(0));
-				return true;
+				RegionDto region = regions.get(0);
+				CountryReferenceDto serverCountry = FacadeProvider.getCountryFacade().getServerCountry();
+
+				if (region.getCountry() != null && !region.getCountry().equals(serverCountry)) {
+					throw new ImportErrorException(
+						I18nProperties.getValidationError(Validations.importRegionNotInServerCountry, entry, buildEntityProperty(entryHeaderPath)));
+				} else {
+					pd.getWriteMethod().invoke(element, region.toReference());
+					return true;
+				}
 			}
 		}
 		if (propertyType.isAssignableFrom(UserReferenceDto.class)) {
@@ -453,11 +545,13 @@ public abstract class DataImporter {
 		String[][] entityPropertyPaths,
 		boolean ignoreEmptyEntries,
 		Function<ImportCellData, Exception> insertCallback)
-		throws IOException, InvalidColumnException {
+		throws IOException {
+
 		boolean dataHasImportError = false;
+		List<String> invalidColumns = new ArrayList<>();
 
 		for (int i = 0; i < values.length; i++) {
-			String value = values[i];
+			String value = StringUtils.trimToNull(values[i]);
 			if (ignoreEmptyEntries && (value == null || value.isEmpty())) {
 				continue;
 			}
@@ -477,14 +571,58 @@ public abstract class DataImporter {
 						writeImportError(values, exception.getMessage());
 						break;
 					} else if (exception instanceof InvalidColumnException) {
-						throw (InvalidColumnException) exception;
+						invalidColumns.add(((InvalidColumnException) exception).getColumnName());
 					}
 				}
 			}
 
 		}
 
+		if (invalidColumns.size() > 0) {
+			LoggerFactory.getLogger(getClass()).warn("Unhandled columns [{}]", String.join(", ", invalidColumns));
+		}
+
 		return dataHasImportError;
+	}
+
+	/**
+	 * Presents a popup window to the user that allows them to deal with detected potentially duplicate persons.
+	 * By passing the desired result to the resultConsumer, the importer decided how to proceed with the import process.
+	 */
+	protected <T extends PersonImportSimilarityResult> void handlePersonSimilarity(
+		PersonDto newPerson,
+		Consumer<T> resultConsumer,
+		BiFunction<SimilarPersonDto, ImportSimilarityResultOption, T> createSimilarityResult,
+		String infoText,
+		UI currentUI) {
+		currentUI.accessSynchronously(() -> {
+			PersonSelectionField personSelect = new PersonSelectionField(newPerson, I18nProperties.getString(infoText));
+			personSelect.setWidth(1024, Unit.PIXELS);
+
+			if (personSelect.hasMatches()) {
+				final CommitDiscardWrapperComponent<PersonSelectionField> component = new CommitDiscardWrapperComponent<>(personSelect);
+				component.addCommitListener(() -> {
+					SimilarPersonDto person = personSelect.getValue();
+					if (person == null) {
+						resultConsumer.accept(createSimilarityResult.apply(null, ImportSimilarityResultOption.CREATE));
+					} else {
+						resultConsumer.accept(createSimilarityResult.apply(person, ImportSimilarityResultOption.PICK));
+					}
+				});
+
+				component.addDiscardListener(() -> resultConsumer.accept(createSimilarityResult.apply(null, ImportSimilarityResultOption.SKIP)));
+
+				personSelect.setSelectionChangeCallback((commitAllowed) -> {
+					component.getCommitButton().setEnabled(commitAllowed);
+				});
+
+				VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreatePerson));
+
+				personSelect.selectBestMatch();
+			} else {
+				resultConsumer.accept(createSimilarityResult.apply(null, ImportSimilarityResultOption.CREATE));
+			}
+		});
 	}
 
 	protected FacilityType getTypeOfFacility(String propertyName, Object currentElement)
@@ -539,5 +677,26 @@ public abstract class DataImporter {
 
 	protected String getErrorReportFileName() {
 		return errorReportFileName;
+	}
+
+	protected <T> ImportLineResultDto<T> validateConstraints(T object) {
+		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		Validator validator = factory.getValidator();
+
+		Set<ConstraintViolation<T>> constraintViolations = validator.validate(object);
+		if (constraintViolations.size() > 0) {
+			return ImportLineResultDto.errorResult(
+				ConstrainValidationHelper.getPropertyErrors(constraintViolations)
+					.entrySet()
+					.stream()
+					.map(e -> String.join(".", e.getKey().get(e.getKey().size() - 1)) + ": " + e.getValue())
+					.collect(Collectors.joining(";")));
+		}
+
+		return ImportLineResultDto.successResult();
+	}
+
+	protected Path getErrorReportFolderPath() {
+		return Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
 	}
 }

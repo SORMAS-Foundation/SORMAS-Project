@@ -25,6 +25,7 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
+import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfoDtoHelper;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -33,6 +34,8 @@ import retrofit2.Call;
 public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, EventParticipantDto> {
 
 	private PersonDtoHelper personHelper = new PersonDtoHelper();
+
+	private SormasToSormasOriginInfoDtoHelper sormasToSormasOriginInfoDtoHelper = new SormasToSormasOriginInfoDtoHelper();
 
 	@Override
 	protected Class<EventParticipant> getAdoClass() {
@@ -81,6 +84,11 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 
 		target.setInvolvementDescription(source.getInvolvementDescription());
 		target.setResultingCaseUuid(source.getResultingCase() != null ? source.getResultingCase().getUuid() : null);
+		target.setVaccinationStatus(source.getVaccinationStatus());
+
+		target.setSormasToSormasOriginInfo(
+			sormasToSormasOriginInfoDtoHelper.fillOrCreateFromDto(target.getSormasToSormasOriginInfo(), source.getSormasToSormasOriginInfo()));
+		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
 
 		target.setPseudonymized(source.isPseudonymized());
 	}
@@ -116,6 +124,11 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 		}
 
 		target.setInvolvementDescription(source.getInvolvementDescription());
+		target.setVaccinationStatus(source.getVaccinationStatus());
+
+		if (source.getSormasToSormasOriginInfo() != null) {
+			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoDtoHelper.adoToDto(source.getSormasToSormasOriginInfo()));
+		}
 
 		target.setPseudonymized(source.isPseudonymized());
 	}

@@ -329,4 +329,15 @@ public class TaskDao extends AbstractAdoDao<Task> {
 		queryBuilder.setWhere(where);
 		return queryBuilder;
 	}
+
+	public void deleteTaskAndAllDependingEntities(String taskUuid) throws SQLException {
+		Task task = queryUuidWithEmbedded(taskUuid);
+
+		// Cancel if not in local database
+		if (task == null) {
+			return;
+		}
+
+		deleteCascade(task);
+	}
 }

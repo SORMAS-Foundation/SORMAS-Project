@@ -1,27 +1,26 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.ui.configuration.infrastructure;
 
 import java.util.Date;
 
+import org.vaadin.hene.popupbutton.PopupButton;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -34,27 +33,30 @@ import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.facility.FacilityCriteria;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityExportDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
@@ -75,6 +77,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 	private SearchField searchField;
 	private ComboBox typeGroupFilter;
 	private ComboBox typeFilter;
+	private ComboBox countryFilter;
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private ComboBox communityFilter;
@@ -87,15 +90,17 @@ public class FacilitiesView extends AbstractConfigurationView {
 	protected FacilitiesGrid grid;
 	protected Button importButton;
 	protected Button createButton;
-	protected Button exportButton;
+	protected PopupButton exportPopupButton;
 	private MenuBar bulkOperationsDropdown;
+	private RowCount rowCount;
 
 	public FacilitiesView() {
 
 		super(VIEW_NAME);
 
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
-		criteria = ViewModelProviders.of(getClass()).get(FacilityCriteria.class);
+		criteria = ViewModelProviders.of(getClass())
+			.get(FacilityCriteria.class, new FacilityCriteria().country(FacadeProvider.getCountryFacade().getServerCountry()));
 		if (criteria.getRelevanceStatus() == null) {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
@@ -104,7 +109,8 @@ public class FacilitiesView extends AbstractConfigurationView {
 		gridLayout = new VerticalLayout();
 		//		gridLayout.addComponent(createHeaderBar());
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(new RowCount(Strings.labelNumberOfFacilities, grid.getItemCount()));
+		rowCount = new RowCount(Strings.labelNumberOfFacilities, grid.getItemCount());
+		gridLayout.addComponent(rowCount);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -118,6 +124,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 				window.setCaption(I18nProperties.getString(Strings.headingImportFacilities));
 				window.addCloseListener(c -> {
 					grid.reload();
+					rowCount.update(grid.getItemCount());
 				});
 			}, ValoTheme.BUTTON_PRIMARY);
 
@@ -125,17 +132,49 @@ public class FacilitiesView extends AbstractConfigurationView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
-			exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
-			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
-			addHeaderComponent(exportButton);
+			VerticalLayout exportLayout = new VerticalLayout();
+			exportLayout.setSpacing(true);
+			exportLayout.setMargin(true);
+			exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+			exportLayout.setWidth(250, Unit.PIXELS);
 
-			StreamResource streamResource = new GridExportStreamResource(
-				grid,
-				"sormas_facilities",
-				"sormas_facilities_" + DateHelper.formatDateForExport(new Date()) + ".csv",
-				FacilitiesGrid.EDIT_BTN_ID);
-			FileDownloader fileDownloader = new FileDownloader(streamResource);
-			fileDownloader.extend(exportButton);
+			exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
+			addHeaderComponent(exportPopupButton);
+
+			StreamResource basicExportStreamResource =
+				GridExportStreamResource.createStreamResource(grid, ExportEntityName.FACILITIES, FacilitiesGrid.EDIT_BTN_ID);
+
+			addExportButton(
+				basicExportStreamResource,
+				exportPopupButton,
+				exportLayout,
+				VaadinIcons.TABLE,
+				Captions.exportBasic,
+				Strings.infoBasicExport);
+
+			// Detailed export
+
+			StreamResource detailedExportStreamResource = DownloadUtil.createCsvExportStreamResource(
+				FacilityExportDto.class,
+				null,
+				(Integer start, Integer max) -> FacadeProvider.getFacilityFacade().getExportList(grid.getCriteria(), start, max),
+				(propertyId, type) -> {
+					String caption = I18nProperties.findPrefixCaption(propertyId, FacilityExportDto.I18N_PREFIX, FacilityDto.I18N_PREFIX);
+					if (Date.class.isAssignableFrom(type)) {
+						caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+					}
+					return caption;
+				},
+				ExportEntityName.FACILITIES,
+				null);
+
+			addExportButton(
+				detailedExportStreamResource,
+				exportPopupButton,
+				exportLayout,
+				VaadinIcons.FILE_TEXT,
+				Captions.exportDetailed,
+				Strings.infoDetailedExport);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
@@ -166,6 +205,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 				searchField.setEnabled(false);
 				grid.setEagerDataProvider();
 				grid.reload();
+				rowCount.update(grid.getItemCount());
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(false);
@@ -200,10 +240,11 @@ public class FacilitiesView extends AbstractConfigurationView {
 		searchField.addTextChangeListener(e -> {
 			criteria.nameCityLike(e.getText());
 			grid.reload();
+			rowCount.update(grid.getItemCount());
 		});
 		filterLayout.addComponent(searchField);
 
-		typeGroupFilter = new ComboBox();
+		typeGroupFilter = ComboBoxHelper.createComboBoxV7();
 		typeGroupFilter.setId("typeGroup");
 		typeGroupFilter.setWidth(220, Unit.PIXELS);
 		typeGroupFilter.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
@@ -214,7 +255,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		});
 		filterLayout.addComponent(typeGroupFilter);
 
-		typeFilter = new ComboBox();
+		typeFilter = ComboBoxHelper.createComboBoxV7();
 		typeFilter.setId(FacilityDto.TYPE);
 		typeFilter.setWidth(220, Unit.PIXELS);
 		typeFilter.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
@@ -224,7 +265,13 @@ public class FacilitiesView extends AbstractConfigurationView {
 		});
 		filterLayout.addComponent(typeFilter);
 
-		regionFilter = new ComboBox();
+		countryFilter = addCountryFilter(filterLayout, country -> {
+			criteria.country(country);
+			grid.reload();
+			rowCount.update(grid.getItemCount());
+		}, regionFilter);
+
+		regionFilter = ComboBoxHelper.createComboBoxV7();
 		regionFilter.setId(FacilityDto.REGION);
 		regionFilter.setWidth(140, Unit.PIXELS);
 		regionFilter.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.REGION));
@@ -239,7 +286,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		});
 		filterLayout.addComponent(regionFilter);
 
-		districtFilter = new ComboBox();
+		districtFilter = ComboBoxHelper.createComboBoxV7();
 		districtFilter.setId(FacilityDto.DISTRICT);
 		districtFilter.setWidth(140, Unit.PIXELS);
 		districtFilter.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.DISTRICT));
@@ -253,7 +300,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		});
 		filterLayout.addComponent(districtFilter);
 
-		communityFilter = new ComboBox();
+		communityFilter = ComboBoxHelper.createComboBoxV7();
 		communityFilter.setId(FacilityDto.COMMUNITY);
 		communityFilter.setWidth(140, Unit.PIXELS);
 		communityFilter.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.COMMUNITY));
@@ -275,8 +322,8 @@ public class FacilitiesView extends AbstractConfigurationView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)) {
-				relevanceStatusFilter = new ComboBox();
+			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 				relevanceStatusFilter.setId("relevanceStatus");
 				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
@@ -346,6 +393,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		}
 		updateFilterComponents();
 		grid.reload();
+		rowCount.update(grid.getItemCount());
 	}
 
 	public void updateFilterComponents() {
@@ -360,6 +408,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		searchField.setValue(criteria.getNameCityLike());
 		typeGroupFilter.setValue(criteria.getTypeGroup());
 		typeFilter.setValue(criteria.getType());
+		countryFilter.setValue(criteria.getCountry());
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
 		communityFilter.setValue(criteria.getCommunity());

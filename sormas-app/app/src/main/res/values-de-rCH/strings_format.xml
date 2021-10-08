@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
-  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~ Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
@@ -21,6 +21,10 @@
     <string name="age_with_dob_and_prepend_format"><b>%1$s:</b> %2$s %3$s (%4$s)</string>
     <string name="date_range_format">%1$s - %2$s</string>
     <string name="due_timeago_format">fällig %1$s</string>
+    <string name="lbds_response_cases">LBDS Sync Antwort. Fälle übertragen: %1$d , ignoriert: %2$d</string>
+    <string name="lbds_response_persons">LBDS Sync Antwort. Personen übertragen: %1$d , ignoriert: %2$d</string>
+    <string name="lbds_cases_transferred">LBDS Sync. Sendet Fälle: %1$d</string>
+    <string name="lbds_persons_transferred">LBDS Sync. Sendet Personen: %1$d</string>
     <string name="message_unsynchronized_changes_confirmation">Es gibt nicht synchronisierte Änderungen auf Ihrem Gerät.\nWenn Sie fortfahren, werden diese verloren gehen und können nicht wiederhergestellt werden. Geben Sie das Wort %1$s in das Textfeld unten ein, um fortzufahren.</string>
     <string name="number_of_cases_format">%1$s</string>
     <string name="number_of_visits_long_format">%1$d Besuche (%2$d verpasst)</string>

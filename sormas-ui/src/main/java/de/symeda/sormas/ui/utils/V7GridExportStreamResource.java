@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,7 +27,6 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -50,7 +51,6 @@ public class V7GridExportStreamResource extends StreamResource {
 	public V7GridExportStreamResource(
 		Indexed container,
 		List<Column> gridColumns,
-		String tempFilePrefix,
 		String filename,
 		String... ignoredPropertyIds) {
 
@@ -60,14 +60,10 @@ public class V7GridExportStreamResource extends StreamResource {
 			public InputStream getStream() {
 				List<String> ignoredPropertyIdsList = Arrays.asList(ignoredPropertyIds);
 				List<Column> columns = new ArrayList<>(gridColumns);
-				columns.removeIf(c -> c.isHidden());
-				columns.removeIf(c -> ignoredPropertyIdsList.contains(c.getPropertyId()));
-				Collection<?> itemIds = container.getItemIds();
+				columns.removeIf(Column::isHidden);
+				columns.removeIf(column -> ignoredPropertyIdsList.contains(column.getPropertyId()));
 
-				List<String> headerRow = new ArrayList<>();
-				columns.forEach(c -> {
-					headerRow.add(c.getHeaderCaption());
-				});
+				List<String> headerRow = columns.stream().map(Column::getHeaderCaption).collect(toList());
 
 				try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
 					try (CSVWriter writer = CSVUtils.createCSVWriter(
@@ -76,15 +72,15 @@ public class V7GridExportStreamResource extends StreamResource {
 
 						writer.writeNext(headerRow.toArray(new String[headerRow.size()]));
 
-						itemIds.forEach(i -> {
+						container.getItemIds().forEach(id -> {
 							List<String> row = new ArrayList<>();
-							columns.forEach(c -> {
-								Property<?> property = container.getItem(i).getItemProperty(c.getPropertyId());
+							columns.forEach(column -> {
+								Property<?> property = container.getItem(id).getItemProperty(column.getPropertyId());
 								if (property.getValue() != null) {
 									if (property.getType() == Date.class) {
 										row.add(DateFormatHelper.formatLocalDateTime((Date) property.getValue()));
 									} else if (property.getType() == Boolean.class) {
-										if ((Boolean) property.getValue() == true) {
+										if ((Boolean) property.getValue()) {
 											row.add(I18nProperties.getEnumCaption(YesNoUnknown.YES));
 										} else
 											row.add(I18nProperties.getEnumCaption(YesNoUnknown.NO));

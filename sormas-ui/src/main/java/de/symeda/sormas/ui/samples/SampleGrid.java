@@ -21,14 +21,18 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
 
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
@@ -52,6 +56,9 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 
 	private static final String PATHOGEN_TEST_RESULT = Captions.Sample_pathogenTestResult;
 	private static final String DISEASE_SHORT = Captions.columnDiseaseShort;
+	private static final String LAST_PATHOGEN_TEST = Captions.columnLastPathogenTest;
+
+	private DataProviderListener<SampleIndexDto> dataProviderListener;
 
 	@SuppressWarnings("unchecked")
 	public SampleGrid(SampleCriteria criteria) {
@@ -61,7 +68,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(SamplesView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {
@@ -88,6 +95,21 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		pathogenTestResultColumn.setId(PATHOGEN_TEST_RESULT);
 		pathogenTestResultColumn.setSortProperty(SampleIndexDto.PATHOGEN_TEST_RESULT);
 
+		Column<SampleIndexDto, String> lastPathogenTestColumn = addColumn(sample -> {
+			PathogenTestType type = sample.getTypeOfLastTest();
+			Float cqValue = sample.getLastTestCqValue();
+			String text = null;
+			if (type != null) {
+				text = type.toString();
+				if (cqValue != null) {
+					text += " (" + cqValue + ")";
+				}
+			}
+			return text;
+		});
+		lastPathogenTestColumn.setId(LAST_PATHOGEN_TEST);
+		lastPathogenTestColumn.setSortable(false);
+
 		setColumns(
 			SampleIndexDto.UUID,
 			SampleIndexDto.LAB_SAMPLE_ID,
@@ -105,7 +127,9 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			SampleIndexDto.SAMPLE_MATERIAL,
 			SampleIndexDto.SAMPLE_PURPOSE,
 			PATHOGEN_TEST_RESULT,
-			SampleIndexDto.ADDITIONAL_TESTING_STATUS);
+			SampleIndexDto.ADDITIONAL_TESTING_STATUS,
+			LAST_PATHOGEN_TEST,
+			SampleIndexDto.PATHOGEN_TEST_COUNT);
 
 		((Column<SampleIndexDto, Date>) getColumn(SampleIndexDto.SHIPMENT_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 		((Column<SampleIndexDto, Date>) getColumn(SampleIndexDto.RECEIVED_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
@@ -113,9 +137,11 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		((Column<SampleIndexDto, String>) getColumn(SampleIndexDto.RECEIVED)).setRenderer(new BooleanRenderer());
 		((Column<SampleIndexDto, String>) getColumn(SampleIndexDto.LAB)).setMaximumWidth(200);
 		((Column<SampleIndexDto, String>) getColumn(SampleIndexDto.ADDITIONAL_TESTING_STATUS)).setSortable(false);
+		((Column<SampleIndexDto, Integer>) getColumn(SampleIndexDto.PATHOGEN_TEST_COUNT)).setSortable(false);
 
 		((Column<SampleIndexDto, String>) getColumn(SampleIndexDto.UUID)).setRenderer(new UuidRenderer());
-		addItemClickListener(new ShowDetailsListener<>(SampleIndexDto.UUID, e -> ControllerProvider.getSampleController().navigateToData(e.getUuid())));
+		addItemClickListener(
+			new ShowDetailsListener<>(SampleIndexDto.UUID, e -> ControllerProvider.getSampleController().navigateToData(e.getUuid())));
 
 		if (UserProvider.getCurrent().hasUserRole(UserRole.LAB_USER) || UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 			removeColumn(SampleIndexDto.SHIPMENT_DATE);
@@ -147,8 +173,13 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 				removeColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT);
 			}
 		}
-		if (criteria.getSampleAssociationType() == SampleAssociationType.CONTACT) {
+
+		if (!shouldShowEpidNumber()) {
 			removeColumn(SampleIndexDto.EPID_NUMBER);
+		}
+
+		if (criteria.getSampleAssociationType() == SampleAssociationType.CONTACT) {
+			removeColumnIfExists(SampleIndexDto.EPID_NUMBER);
 
 			if (getColumn(SampleIndexDto.ASSOCIATED_CASE) != null) {
 				removeColumn(SampleIndexDto.ASSOCIATED_CASE);
@@ -158,7 +189,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			}
 		}
 		if (criteria.getSampleAssociationType() == SampleAssociationType.EVENT_PARTICIPANT) {
-			removeColumn(SampleIndexDto.EPID_NUMBER);
+			removeColumnIfExists(SampleIndexDto.EPID_NUMBER);
 			if (getColumn(SampleIndexDto.ASSOCIATED_CASE) != null) {
 				removeColumn(SampleIndexDto.ASSOCIATED_CASE);
 			}
@@ -175,9 +206,19 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		}
 	}
 
+	private boolean shouldShowEpidNumber() {
+		ConfigFacade configFacade = FacadeProvider.getConfigFacade();
+		return !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+			&& !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND);
+	}
+
 	public void reload() {
 		if (getSelectionModel().isUserSelectionAllowed()) {
 			deselectAll();
+		}
+
+		if (ViewModelProviders.of(SamplesView.class).get(ViewConfiguration.class).isInEagerMode()) {
+			setEagerDataProvider();
 		}
 
 		getDataProvider().refreshAll();
@@ -205,5 +246,13 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			DataProvider.fromStream(FacadeProvider.getSampleFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
+
+		if (dataProviderListener != null) {
+			dataProvider.addDataProviderListener(dataProviderListener);
+		}
+	}
+
+	public void setDataProviderListener(DataProviderListener<SampleIndexDto> dataProviderListener) {
+		this.dataProviderListener = dataProviderListener;
 	}
 }

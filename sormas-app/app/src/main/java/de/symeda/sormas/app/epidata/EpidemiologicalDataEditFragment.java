@@ -22,10 +22,12 @@ import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getEpiDataOfCas
 
 import android.content.res.Resources;
 import android.text.Html;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.databinding.ObservableArrayList;
 
+import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -35,6 +37,7 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
@@ -52,6 +55,7 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 
 	private EpiData record;
 	private IEntryItemOnClickListener onExposureItemClickListener;
+	private IEntryItemOnClickListener onActivityAsCaseItemClickListener;
 
 	// Static methods
 
@@ -100,6 +104,45 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 
 			getContentBinding().epiDataExposureDetailsKnown.setEnabled(getExposureList().isEmpty());
 		});
+
+		onActivityAsCaseItemClickListener = (v, item) -> {
+			final ActivityAsCase activityAsCase = (ActivityAsCase) item;
+			final ActivityAsCase activityAsCaseClone = (ActivityAsCase) activityAsCase.clone();
+			final ActivityAsCaseDialog dialog =
+				new ActivityAsCaseDialog(CaseEditActivity.getActiveActivity(), activityAsCaseClone, getActivityRootData(), false);
+
+			dialog.setPositiveCallback(() -> {
+				record.getActivitiesAsCase().set(record.getActivitiesAsCase().indexOf(activityAsCase), activityAsCaseClone);
+				updateActivitiesAsCase();
+			});
+
+			dialog.setDeleteCallback(() -> {
+				removeActivityAsCase(activityAsCase);
+				dialog.dismiss();
+			});
+
+			dialog.show();
+		};
+
+		contentBinding.btnAddActivityascase.setOnClickListener(v -> {
+			final ActivityAsCase activityAsCase = DatabaseHelper.getActivityAsCaseDao().build();
+			final ActivityAsCaseDialog dialog =
+				new ActivityAsCaseDialog(CaseEditActivity.getActiveActivity(), activityAsCase, getActivityRootData(), true);
+
+			dialog.setPositiveCallback(() -> addActivityAsCase(activityAsCase));
+			dialog.show();
+		});
+
+		contentBinding.epiDataActivityAsCaseDetailsKnown.addValueChangedListener(field -> {
+			YesNoUnknown value = (YesNoUnknown) field.getValue();
+			contentBinding.activityascaseLayout.setVisibility(value == YesNoUnknown.YES ? VISIBLE : GONE);
+			if (value != YesNoUnknown.YES) {
+				clearActivitiesAsCase();
+			}
+
+			getContentBinding().epiDataActivityAsCaseDetailsKnown.setEnabled(getActivityAsCaseList().isEmpty());
+		});
+
 	}
 
 	private ObservableArrayList<Exposure> getExposureList() {
@@ -129,6 +172,33 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 		updateExposures();
 	}
 
+	private ObservableArrayList<ActivityAsCase> getActivityAsCaseList() {
+		ObservableArrayList<ActivityAsCase> activitiesAsCase = new ObservableArrayList<>();
+		activitiesAsCase.addAll(record.getActivitiesAsCase());
+		return activitiesAsCase;
+	}
+
+	private void clearActivitiesAsCase() {
+		record.getActivitiesAsCase().clear();
+		updateActivitiesAsCase();
+	}
+
+	private void removeActivityAsCase(ActivityAsCase activityAsCase) {
+		record.getActivitiesAsCase().remove(activityAsCase);
+		updateActivitiesAsCase();
+	}
+
+	private void updateActivitiesAsCase() {
+		getContentBinding().setActivityAsCaseList(getActivityAsCaseList());
+		getContentBinding().epiDataActivityAsCaseDetailsKnown.setEnabled(getActivityAsCaseList().isEmpty());
+		updateAddActivitiesAsCaseButtonVisibility();
+	}
+
+	private void addActivityAsCase(ActivityAsCase activityAsCase) {
+		record.getActivitiesAsCase().add(0, activityAsCase);
+		updateActivitiesAsCase();
+	}
+
 	@Override
 	protected String getSubHeadingTitle() {
 		Resources r = getResources();
@@ -155,17 +225,27 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 		contentBinding.setExposureListBindCallback(
 			v -> FieldVisibilityAndAccessHelper
 				.setFieldVisibilitiesAndAccesses(ExposureDto.class, (ViewGroup) v, new FieldVisibilityCheckers(), getFieldAccessCheckers()));
+
+		contentBinding.setActivityAsCaseList(getActivityAsCaseList());
+		contentBinding.setActivityAsCaseItemClickCallback(onActivityAsCaseItemClickListener);
+		contentBinding.setActivityAsCaseListBindCallback(
+			v -> FieldVisibilityAndAccessHelper
+				.setFieldVisibilitiesAndAccesses(ActivityAsCaseDto.class, (ViewGroup) v, new FieldVisibilityCheckers(), getFieldAccessCheckers()));
 	}
 
 	@Override
 	public void onAfterLayoutBinding(FragmentEditEpidLayoutBinding contentBinding) {
 		setFieldVisibilitiesAndAccesses(EpiDataDto.class, contentBinding.mainContent);
 		contentBinding.epiDataExposureDetailsKnown.setEnabled(getExposureList().isEmpty());
+		contentBinding.epiDataActivityAsCaseDetailsKnown.setEnabled(getActivityAsCaseList().isEmpty());
 
 		if (!(getActivityRootData() instanceof Case)) {
 			contentBinding.epiDataContactWithSourceCaseKnown.setVisibility(GONE);
 			contentBinding.sourceContactsHeading.setVisibility(GONE);
 			contentBinding.exposureInvestigationInfo.setText(Html.fromHtml(I18nProperties.getString(Strings.infoExposureInvestigationContacts)));
+			contentBinding.activityascaseInvestigationInfo.setText(Html.fromHtml(I18nProperties.getString(Strings.infoActivityAsCaseInvestigation)));
+			contentBinding.activityascaseLayout.setVisibility(GONE);
+			contentBinding.epiDataActivityAsCaseDetailsKnown.setVisibility(GONE);
 		}
 	}
 
@@ -192,4 +272,11 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 		}
 	}
 
+	private void updateAddActivitiesAsCaseButtonVisibility() {
+		if (getActivityRootData() instanceof Contact) {
+			getContentBinding().btnAddActivityascase.setVisibility(View.GONE);
+		} else if (getActivityRootData() instanceof Case && !getActivityAsCaseList().isEmpty()) {
+			getContentBinding().btnAddActivityascase.setVisibility(View.VISIBLE);
+		}
+	}
 }

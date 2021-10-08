@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramCriteria;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
@@ -33,7 +34,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface CampaignFormDataFacade {
 
-	CampaignFormDataDto saveCampaignFormData(CampaignFormDataDto dto);
+	CampaignFormDataDto saveCampaignFormData(@Valid CampaignFormDataDto dto);
 
 	List<CampaignFormDataDto> getByUuids(List<String> uuids);
 

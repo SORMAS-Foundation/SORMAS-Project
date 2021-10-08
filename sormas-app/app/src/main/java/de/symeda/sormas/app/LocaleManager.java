@@ -1,12 +1,12 @@
 package de.symeda.sormas.app;
 
-import java.util.Locale;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
+
+import java.util.Locale;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -46,7 +46,7 @@ public class LocaleManager {
 		Locale.setDefault(locale);
 		Resources res = context.getResources();
 		Configuration config = new Configuration(res.getConfiguration());
-		config.setLocale(locale);
+		config.setLocale(Language.EN == language ? null : locale); // to make sure for 'en' locale the default resource files are used and not 'en-rAF'
 		context = context.createConfigurationContext(config);
 		return context;
 	}

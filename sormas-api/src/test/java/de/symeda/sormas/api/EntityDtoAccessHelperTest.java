@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.api;
 
 import static org.junit.Assert.assertEquals;
@@ -18,6 +33,7 @@ import de.symeda.sormas.api.EntityDtoAccessHelper.CachedReferenceDtoResolver;
 import de.symeda.sormas.api.EntityDtoAccessHelper.IReferenceDtoResolver;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -52,6 +68,10 @@ public class EntityDtoAccessHelperTest {
 		personDto.setBirthdateYYYY(1973);
 		personDto.setPhone("+49 681 1234");
 
+		LocationDto address = new LocationDto();
+		address.setStreet("Elm Street");
+		personDto.setAddress(address);
+
 		referenceDtoResolver = new IReferenceDtoResolver() {
 
 			@Override
@@ -81,17 +101,36 @@ public class EntityDtoAccessHelperTest {
 	@Test
 	public void failOnImplausibleProperty() {
 		try {
-			assertNull(EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "blubber.blubber"));
+			EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "blubber.blubber");
 			fail("expected: IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
-			assertEquals("No property blubber in class CaseDataDto", e.getMessage());
+			assertEquals("In CaseData: No property blubber in class CaseData", e.getMessage());
 		}
 
 		try {
-			assertNull(EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "disease.blubber"));
+			EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "disease.blubber");
 			fail("expected: IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
-			assertEquals("CaseDataDto.disease is not an EntityDto or ReferenceDto", e.getMessage());
+			assertEquals("In CaseData.disease: Disease.blubber cannot be resolved.", e.getMessage());
+		}
+
+		IReferenceDtoResolver mockResolver = mock(IReferenceDtoResolver.class);
+		CachedReferenceDtoResolver cachedReferenceDtoResolver = new CachedReferenceDtoResolver(mockResolver);
+		when(mockResolver.resolve(personReferenceDto)).thenReturn(personDto);
+		caseDataDto.setPerson(personReferenceDto);
+
+		try {
+			EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "person.blubber", cachedReferenceDtoResolver);
+			fail("expected: IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			assertEquals("In CaseData.person: No property blubber in class Person", e.getMessage());
+		}
+
+		try {
+			EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "person.firstName.blubber", cachedReferenceDtoResolver);
+			fail("expected: IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			assertEquals("In CaseData.person.firstName: String.blubber cannot be resolved.", e.getMessage());
 		}
 	}
 
@@ -122,8 +161,8 @@ public class EntityDtoAccessHelperTest {
 	public void readCachedReferencedEntityDto() {
 		IReferenceDtoResolver mockResolver = mock(IReferenceDtoResolver.class);
 		CachedReferenceDtoResolver cachedReferenceDtoResolver = new CachedReferenceDtoResolver(mockResolver);
-		caseDataDto.setPerson(personReferenceDto);
 		when(mockResolver.resolve(personReferenceDto)).thenReturn(personDto);
+		caseDataDto.setPerson(personReferenceDto);
 		assertEquals("Tenzing", EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "person.firstName", cachedReferenceDtoResolver));
 		assertEquals("Tenzing", EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "person.firstName", cachedReferenceDtoResolver));
 		verify(mockResolver, times(1)).resolve(personReferenceDto);
@@ -134,7 +173,9 @@ public class EntityDtoAccessHelperTest {
 		caseDataDto.setPerson(personReferenceDto);
 		caseDataDto.setHospitalization(hospitalizationDto);
 		assertEquals("Tenzing", EntityDtoAccessHelper.getPropertyPathValueString(caseDataDto, "person.firstName", referenceDtoResolver));
-		assertEquals("No", EntityDtoAccessHelper.getPropertyPathValueString(caseDataDto, "hospitalization.isolated", referenceDtoResolver));
+		assertEquals(
+			YesNoUnknown.NO,
+			EntityDtoAccessHelper.getPropertyPathValueString(caseDataDto, "hospitalization.isolated", referenceDtoResolver));
 		assertEquals(
 			"9/18/2020",
 			EntityDtoAccessHelper.getPropertyPathValueString(caseDataDto, "hospitalization.dischargeDate", referenceDtoResolver));

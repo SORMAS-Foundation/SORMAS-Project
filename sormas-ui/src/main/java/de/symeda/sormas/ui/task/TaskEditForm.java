@@ -47,16 +47,18 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -168,48 +170,58 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			}
 
 			UserDto userDto = UserProvider.getCurrent().getUser();
-			DistrictReferenceDto district = null;
-			RegionReferenceDto region = null;
+			List<DistrictReferenceDto> districts;
+			List<RegionReferenceDto> regions;
 			if (taskDto.getCaze() != null) {
 				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(taskDto.getCaze().getUuid());
-				district = caseDto.getDistrict();
-				region = caseDto.getRegion();
+
+				districts = getCaseDistricts(caseDto);
+				regions = getCaseRegions(caseDto);
 			} else if (taskDto.getContact() != null) {
 				ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(taskDto.getContact().getUuid());
 				if (contactDto.getRegion() != null && contactDto.getDistrict() != null) {
-					district = contactDto.getDistrict();
-					region = contactDto.getRegion();
+					districts = DataHelper.asListNullable(contactDto.getDistrict());
+					regions = DataHelper.asListNullable(contactDto.getRegion());
 				} else {
 					CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
-					district = caseDto.getDistrict();
-					region = caseDto.getRegion();
+					districts = getCaseDistricts(caseDto);
+					regions = getCaseRegions(caseDto);
 				}
 			} else if (taskDto.getEvent() != null) {
-				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(taskDto.getEvent().getUuid());
-				district = eventDto.getEventLocation().getDistrict();
-				region = eventDto.getEventLocation().getRegion();
+				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(taskDto.getEvent().getUuid(), false);
+
+				districts = DataHelper.asListNullable(eventDto.getEventLocation().getDistrict());
+				regions = DataHelper.asListNullable(eventDto.getEventLocation().getRegion());
+			} else if (taskDto.getTravelEntry() != null) {
+				TravelEntryDto travelEntryDto = FacadeProvider.getTravelEntryFacade().getByUuid(taskDto.getTravelEntry().getUuid());
+
+				districts = DataHelper.asListNullable(travelEntryDto.getResponsibleDistrict());
+				regions = DataHelper.asListNullable(travelEntryDto.getResponsibleRegion());
 			} else {
-				district = userDto.getDistrict();
-				region = userDto.getRegion();
+				districts = DataHelper.asListNullable(userDto.getDistrict());
+				regions = DataHelper.asListNullable(userDto.getRegion());
 			}
 
 			final List<UserReferenceDto> users = new ArrayList<>();
-			if (district != null) {
-				users.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district, true));
-			} else if (region != null) {
-				users.addAll(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region));
+			if (districts != null) {
+				users.addAll(FacadeProvider.getUserFacade().getUserRefsByDistricts(districts, true));
+			} else if (regions != null) {
+				users.addAll(FacadeProvider.getUserFacade().getUsersByRegionsAndRoles(regions));
 			} else {
 				// fallback - just show all users
 				users.addAll(FacadeProvider.getUserFacade().getAllUserRefs(false));
 			}
 
-			// Allow regional users to assign the task to national ones
+			// Allow users to assign tasks to users of the next higher jurisdiction level, when the higher jurisdiction contains the users jurisdiction
+			// For facility users, this checks where the facility is located and considers the district & community of the faciliy the "higher level"
+			// For national users, there is no higher level
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ASSIGN_TASKS_TO_HIGHER_LEVEL)
-				&& userDto.getDistrict() == null
-				&& userDto.getRegion() != null) {
-				users.addAll(
-					FacadeProvider.getUserFacade()
-						.getUsersByRegionAndRoles(null, UserRole.getWithJurisdictionLevels(JurisdictionLevel.NATION).toArray(new UserRole[0])));
+				&& UserRole.getJurisdictionLevel(userDto.getUserRoles()) != JurisdictionLevel.NATION) {
+
+				List<UserReferenceDto> superordinateUsers = FacadeProvider.getUserFacade().getUsersWithSuperiorJurisdiction(userDto);
+				if (superordinateUsers != null) {
+					users.addAll(superordinateUsers);
+				}
 			}
 
 			// Validation
@@ -236,6 +248,30 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				assigneeUser.setItemCaption(user, user.getCaption() + " (" + (userTaskCount != null ? userTaskCount.toString() : "0") + ")");
 			}
 		});
+	}
+
+	private List<DistrictReferenceDto> getCaseDistricts(CaseDataDto caseDto) {
+		List<DistrictReferenceDto> districts = new ArrayList<>(2);
+
+		if (caseDto.getDistrict() != null) {
+			districts.add(caseDto.getDistrict());
+		}
+
+		districts.add(caseDto.getResponsibleDistrict());
+
+		return districts;
+	}
+
+	private List<RegionReferenceDto> getCaseRegions(CaseDataDto caseDto) {
+		List<RegionReferenceDto> regions = new ArrayList<>(2);
+
+		if (caseDto.getRegion() != null) {
+			regions.add(caseDto.getRegion());
+		}
+
+		regions.add(caseDto.getResponsibleRegion());
+
+		return regions;
 	}
 
 	private void checkIfAssigneeEmailOrPhoneIsProvided(UserReferenceDto assigneeRef) {

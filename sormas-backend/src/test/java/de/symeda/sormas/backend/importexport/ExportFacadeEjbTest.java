@@ -47,7 +47,7 @@ public class ExportFacadeEjbTest extends AbstractBeanTest {
 			new HashSet<>(Arrays.asList(ContactDto.UUID, ContactDto.CONTACT_CATEGORY)),
 			getUserFacade().getCurrentUserAsReference());
 
-		List<ExportConfigurationDto> exportConfigurations = getExportFacade().getExportConfigurations(null);
+		List<ExportConfigurationDto> exportConfigurations = getExportFacade().getExportConfigurations(null, false);
 
 		assertThat(exportConfigurations, hasSize(2));
 
@@ -71,7 +71,7 @@ public class ExportFacadeEjbTest extends AbstractBeanTest {
 			getUserFacade().getCurrentUserAsReference());
 
 		List<ExportConfigurationDto> exportConfigurations =
-			getExportFacade().getExportConfigurations(new ExportConfigurationCriteria().exportType(ExportType.CONTACT));
+			getExportFacade().getExportConfigurations(new ExportConfigurationCriteria().exportType(ExportType.CONTACT), false);
 
 		assertThat(exportConfigurations, hasSize(1));
 	}

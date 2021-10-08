@@ -13,7 +13,7 @@ import com.vaadin.v7.ui.Label;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
-import de.symeda.sormas.api.facility.FacilityHelper;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -74,17 +74,33 @@ public class CasePickOrImportField extends CasePickOrCreateField {
 			reportDateField.setWidthUndefined();
 			caseInfoLayout.addComponent(reportDateField);
 
-			Label regionField = new Label();
-			regionField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
-			regionField.setValue(newCase.getRegion().toString());
-			regionField.setWidthUndefined();
-			caseInfoLayout.addComponent(regionField);
+			Label responsibleRegionField = new Label();
+			responsibleRegionField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_REGION));
+			responsibleRegionField.setValue(newCase.getResponsibleRegion().toString());
+			responsibleRegionField.setWidthUndefined();
+			caseInfoLayout.addComponent(responsibleRegionField);
 
-			Label districtField = new Label();
-			districtField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
-			districtField.setValue(newCase.getDistrict().toString());
-			districtField.setWidthUndefined();
-			caseInfoLayout.addComponent(districtField);
+			Label responsibleDistrictField = new Label();
+			responsibleDistrictField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_DISTRICT));
+			responsibleDistrictField.setValue(newCase.getResponsibleDistrict().toString());
+			responsibleDistrictField.setWidthUndefined();
+			caseInfoLayout.addComponent(responsibleDistrictField);
+
+			if (newCase.getRegion() != null) {
+				Label regionField = new Label();
+				regionField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
+				regionField.setValue(newCase.getRegion().toString());
+				regionField.setWidthUndefined();
+				caseInfoLayout.addComponent(regionField);
+			}
+
+			if (newCase.getDistrict() != null) {
+				Label districtField = new Label();
+				districtField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
+				districtField.setValue(newCase.getDistrict().toString());
+				districtField.setWidthUndefined();
+				caseInfoLayout.addComponent(districtField);
+			}
 
 			Label facilityField = new Label();
 			facilityField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));

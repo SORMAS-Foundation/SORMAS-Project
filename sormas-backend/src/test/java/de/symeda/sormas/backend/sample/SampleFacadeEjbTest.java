@@ -19,12 +19,14 @@ package de.symeda.sormas.backend.sample;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -32,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -40,16 +43,18 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.AdditionalTestingStatus;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -60,6 +65,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -68,7 +74,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
-import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 
 public class SampleFacadeEjbTest extends AbstractBeanTest {
 
@@ -92,6 +98,19 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		sample.setReferredTo(referredSample.toReference());
 		creator.createAdditionalTest(sample.toReference());
 		creator.createAdditionalTest(sample.toReference());
+		creator.createPathogenTest(sample.toReference(), caze);
+		PathogenTestDto test = creator.createPathogenTest(
+			sample.toReference(),
+			PathogenTestType.CQ_VALUE_DETECTION,
+			caze.getDisease(),
+			new Date(),
+			rdcf.facility,
+			caze.getReportingUser(),
+			PathogenTestResultType.PENDING,
+			"",
+			false);
+		test.setCqValue(1.5F);
+		getPathogenTestFacade().savePathogenTest(test);
 
 		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(new SampleCriteria(), 0, 100, null);
 
@@ -99,6 +118,9 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 		// First sample should have an additional test
 		assertEquals(AdditionalTestingStatus.PERFORMED, sampleIndexDtos.get(1).getAdditionalTestingStatus());
+
+		assertEquals(PathogenTestType.CQ_VALUE_DETECTION, sampleIndexDtos.get(1).getTypeOfLastTest());
+		assertTrue(sampleIndexDtos.get(1).getLastTestCqValue().equals(1.5F));
 	}
 
 	@Test
@@ -215,7 +237,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		final SampleIndexDto sample14 = sampleList1.get(3);
 		Assert.assertEquals(sampleOfEventParticipant.getUuid(), sample14.getUuid());
 		Assert.assertEquals(eventParticipant.getUuid(), sample14.getAssociatedEventParticipant().getUuid());
-		Assert.assertEquals(rdcf.district, sample14.getDistrict());
+		Assert.assertEquals(rdcf.district.getCaption(), sample14.getDistrict());
 
 		assertEquals(2, getSampleFacade().count(new SampleCriteria().sampleAssociationType(SampleAssociationType.CONTACT)));
 		assertEquals(
@@ -266,10 +288,10 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		creator.createAdditionalTest(sample.toReference());
 
 		CaseDataDto caseDataDto = CaseDataDto.buildFromContact(contact);
-		caseDataDto.setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
-		caseDataDto.setDistrict(new DistrictReferenceDto(rdcf.district.getUuid()));
+		caseDataDto.setResponsibleRegion(new RegionReferenceDto(rdcf.region.getUuid(), null, null));
+		caseDataDto.setResponsibleDistrict(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
 		caseDataDto.setFacilityType(rdcf.facility.getType());
-		caseDataDto.setHealthFacility(new FacilityReferenceDto(rdcf.facility.getUuid()));
+		caseDataDto.setHealthFacility(new FacilityReferenceDto(rdcf.facility.getUuid(), null, null));
 		caseDataDto.setReportingUser(user.toReference());
 		CaseDataDto caseConvertedFromContact = getCaseFacade().saveCase(caseDataDto);
 
@@ -336,6 +358,118 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		// Sample and pathogen test should be marked as deleted
 		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
 		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(sampleTest.getUuid()));
+	}
+
+	@Test
+	public void testAllSamplesDeletionWithOneAdditionalTest() {
+
+		Date since = new Date();
+
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		//1st Case person
+		PersonDto firstCazePerson = creator.createPerson("FirstCase", "FirstPerson");
+		CaseDataDto firstCaze = creator.createCase(
+			user.toReference(),
+			firstCazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		SampleDto firstSample =
+			creator.createSample(firstCaze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		SampleDto secondSample =
+			creator.createSample(firstCaze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		PathogenTestDto firstSamplePathogenTest = creator.createPathogenTest(
+			firstSample.toReference(),
+			PathogenTestType.MICROSCOPY,
+			firstCaze.getDisease(),
+			new Date(),
+			rdcf.facility,
+			user.toReference(),
+			PathogenTestResultType.POSITIVE,
+			"Positive",
+			true);
+		AdditionalTestDto firstSampleAdditionalTest = creator.createAdditionalTest(firstSample.toReference());
+
+		// Database should contain the created sample and sample test
+		assertNotNull(getSampleTestFacade().getByUuid(firstSamplePathogenTest.getUuid()));
+		assertNotNull(getAdditionalTestFacade().getByUuid(firstSampleAdditionalTest.getUuid()));
+
+		getSampleFacade().deleteAllSamples(Arrays.asList(firstSample.getUuid(), secondSample.getUuid()));
+
+		// Sample and pathogen test should be marked as deleted, additional test should be deleted
+		List<String> sampleUuids = getSampleFacade().getDeletedUuidsSince(since);
+		assertTrue(sampleUuids.contains(firstSample.getUuid()));
+		assertTrue(sampleUuids.contains(secondSample.getUuid()));
+		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(firstSamplePathogenTest.getUuid()));
+		assertNull(getAdditionalTestFacade().getByUuid(firstSampleAdditionalTest.getUuid()));
+	}
+
+	@Test
+	public void testAllSamplesDeletionWithMultipleAdditionalTest() {
+
+		Date since = new Date();
+
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		PersonDto secondCazePerson = creator.createPerson("SecondCase", "SecondPerson");
+		CaseDataDto secondCaze = creator.createCase(
+			user.toReference(),
+			secondCazePerson.toReference(),
+			Disease.ACUTE_VIRAL_HEPATITIS,
+			CaseClassification.NOT_CLASSIFIED,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		SampleDto thirdSample =
+			creator.createSample(secondCaze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		SampleDto forthSample =
+			creator.createSample(secondCaze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		PathogenTestDto secondSamplePathogenTest = creator.createPathogenTest(
+			thirdSample.toReference(),
+			PathogenTestType.RAPID_TEST,
+			secondCaze.getDisease(),
+			new Date(),
+			rdcf.facility,
+			user.toReference(),
+			PathogenTestResultType.INDETERMINATE,
+			"Indeterminate",
+			true);
+		PathogenTestDto thirdSamplePathogenTest = creator.createPathogenTest(
+			forthSample.toReference(),
+			PathogenTestType.CQ_VALUE_DETECTION,
+			secondCaze.getDisease(),
+			new Date(),
+			rdcf.facility,
+			user.toReference(),
+			PathogenTestResultType.NOT_DONE,
+			"Not done",
+			true);
+		AdditionalTestDto secondSampleAdditionalTest = creator.createAdditionalTest(thirdSample.toReference());
+		AdditionalTestDto thirdSampleAdditionalTest = creator.createAdditionalTest(forthSample.toReference());
+
+		// Database should contain the created sample, sample test and additional tests
+		assertNotNull(getSampleTestFacade().getByUuid(secondSamplePathogenTest.getUuid()));
+		assertNotNull(getSampleTestFacade().getByUuid(thirdSamplePathogenTest.getUuid()));
+		assertNotNull(getAdditionalTestFacade().getByUuid(secondSampleAdditionalTest.getUuid()));
+		assertNotNull(getAdditionalTestFacade().getByUuid(thirdSampleAdditionalTest.getUuid()));
+
+		getSampleFacade().deleteAllSamples(Arrays.asList(thirdSample.getUuid(), forthSample.getUuid()));
+
+		// Sample and pathogen test should be marked as deleted, additional tests should be deleted
+		List<String> sampleUuids = getSampleFacade().getDeletedUuidsSince(since);
+		assertTrue(sampleUuids.contains(thirdSample.getUuid()));
+		assertTrue(sampleUuids.contains(forthSample.getUuid()));
+		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(secondSamplePathogenTest.getUuid()));
+		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(thirdSamplePathogenTest.getUuid()));
+		assertNull(getAdditionalTestFacade().getByUuid(secondSampleAdditionalTest.getUuid()));
+		assertNull(getAdditionalTestFacade().getByUuid(thirdSampleAdditionalTest.getUuid()));
 	}
 
 	@Test
@@ -463,5 +597,83 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 		assertThat(samples, hasSize(3));
 		assertThat(samples, contains(sample, sample2, sample3));
+	}
+
+	@Test
+	public void testGetSimilarSamples() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER);
+		CaseDataDto caze = creator.createCase(officer.toReference(), creator.createPerson().toReference(), rdcf);
+
+		Date sampleDateTime1 = DateHelper.parseDate("11.02.2021", new SimpleDateFormat("dd.MM.yyyy"));
+		creator.createSample(caze.toReference(), officer.toReference(), rdcf.facility, (s) -> {
+			s.setLabSampleID("case_sample_id");
+			s.setSampleDateTime(sampleDateTime1);
+			s.setSampleMaterial(SampleMaterial.BLOOD);
+		});
+
+		Date sampleDateTime2 = DateHelper.parseDate("08.02.2021", new SimpleDateFormat("dd.MM.yyyy"));
+		creator.createSample(caze.toReference(), officer.toReference(), rdcf.facility, (s) -> {
+			s.setLabSampleID("case_sample_id_2");
+			s.setSampleDateTime(sampleDateTime2);
+			s.setSampleMaterial(SampleMaterial.BLOOD);
+		});
+
+		ContactReferenceDto contact = creator.createContact(officer.toReference(), creator.createPerson().toReference()).toReference();
+		SampleDto contactSample =
+			creator.createSample(contact, sampleDateTime1, new Date(), officer.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+
+		EventParticipantDto eventParticipant =
+			creator.createEventParticipant(creator.createEvent(officer.toReference()).toReference(), creator.createPerson(), officer.toReference());
+		SampleDto eventParticipantSample = creator
+			.createSample(eventParticipant.toReference(), sampleDateTime1, new Date(), officer.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+
+		SampleSimilarityCriteria criteria = new SampleSimilarityCriteria();
+		criteria.caze(caze.toReference());
+
+		criteria.setLabSampleId("case_sample_id");
+		List<SampleDto> similarSamples = getSampleFacade().getSimilarSamples(criteria);
+		MatcherAssert.assertThat(similarSamples, hasSize(1));
+
+		// should return all samples for unknown lab sample id and missing date and material
+		criteria.setLabSampleId("unknown_id");
+		similarSamples = getSampleFacade().getSimilarSamples(criteria);
+		MatcherAssert.assertThat(similarSamples, hasSize(2));
+
+		criteria.setSampleMaterial(SampleMaterial.BLOOD);
+
+		criteria.setSampleDateTime(DateHelper.addDays(sampleDateTime2, 1));
+		similarSamples = getSampleFacade().getSimilarSamples(criteria);
+		MatcherAssert.assertThat(similarSamples, hasSize(2));
+
+		criteria.setSampleDateTime(DateHelper.subtractDays(sampleDateTime2, 1));
+		similarSamples = getSampleFacade().getSimilarSamples(criteria);
+		MatcherAssert.assertThat(similarSamples, hasSize(1));
+
+		criteria.setSampleDateTime(DateHelper.addDays(sampleDateTime1, 3));
+		similarSamples = getSampleFacade().getSimilarSamples(criteria);
+		MatcherAssert.assertThat(similarSamples, hasSize(0));
+
+		criteria.setSampleDateTime(DateHelper.subtractDays(sampleDateTime2, 3));
+		similarSamples = getSampleFacade().getSimilarSamples(criteria);
+		MatcherAssert.assertThat(similarSamples, hasSize(0));
+
+		// contact samples
+		SampleSimilarityCriteria contactSampleCriteria = new SampleSimilarityCriteria().contact(contact);
+		contactSampleCriteria.setSampleDateTime(sampleDateTime1);
+		contactSampleCriteria.setSampleMaterial(SampleMaterial.BLOOD);
+
+		List<SampleDto> contactSimilarSamples = getSampleFacade().getSimilarSamples(contactSampleCriteria);
+		MatcherAssert.assertThat(contactSimilarSamples, hasSize(1));
+		MatcherAssert.assertThat(contactSimilarSamples.get(0).getUuid(), is(contactSample.getUuid()));
+
+		// event participant samples
+		SampleSimilarityCriteria eventParticipantSampleCriteria = new SampleSimilarityCriteria().eventParticipant(eventParticipant.toReference());
+		eventParticipantSampleCriteria.setSampleDateTime(sampleDateTime1);
+		eventParticipantSampleCriteria.setSampleMaterial(SampleMaterial.BLOOD);
+
+		List<SampleDto> eventParticipantSimilarSamples = getSampleFacade().getSimilarSamples(eventParticipantSampleCriteria);
+		MatcherAssert.assertThat(eventParticipantSimilarSamples, hasSize(1));
+		MatcherAssert.assertThat(eventParticipantSimilarSamples.get(0).getUuid(), is(eventParticipantSample.getUuid()));
 	}
 }

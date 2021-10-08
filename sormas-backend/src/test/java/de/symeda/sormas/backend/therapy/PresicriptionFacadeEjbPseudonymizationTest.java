@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -77,7 +78,7 @@ public class PresicriptionFacadeEjbPseudonymizationTest extends AbstractBeanTest
 	}
 
 	@Test
-	public void testGetAllPrescriptionsAfter(){
+	public void testGetAllPrescriptionsAfter() {
 		PrescriptionDto prescription1 = createPrescription(creator.createCase(user2.toReference(), rdcf2, null));
 		CaseDataDto case2 = creator.createCase(user1.toReference(), rdcf1, null);
 		creator.createContact(user2.toReference(), creator.createPerson().toReference(), case2);
@@ -90,7 +91,7 @@ public class PresicriptionFacadeEjbPseudonymizationTest extends AbstractBeanTest
 	}
 
 	@Test
-	public void testPseudonymizeIndexList(){
+	public void testPseudonymizeIndexList() {
 		CaseDataDto case1 = creator.createCase(user2.toReference(), rdcf2, null);
 		PrescriptionDto prescription1 = createPrescription(case1);
 		CaseDataDto case2 = creator.createCase(user1.toReference(), rdcf1, null);
@@ -110,16 +111,15 @@ public class PresicriptionFacadeEjbPseudonymizationTest extends AbstractBeanTest
 		assertThat(export2.getPrescriptionRoute(), is("Confidential"));
 	}
 
-
 	@Test
-	public void testPseudonymizeExportList(){
+	public void testPseudonymizeExportList() {
 		CaseDataDto case1 = creator.createCase(user2.toReference(), rdcf2, null);
 		createPrescription(case1);
 		CaseDataDto case2 = creator.createCase(user1.toReference(), rdcf1, null);
 		creator.createContact(user2.toReference(), creator.createPerson().toReference(), case2);
 		createPrescription(case2);
 
-		List<PrescriptionExportDto> prescriptions = getPrescriptionFacade().getExportList(new CaseCriteria(), 0, 100);
+		List<PrescriptionExportDto> prescriptions = getPrescriptionFacade().getExportList(new CaseCriteria(), Collections.emptySet(), 0, 100);
 
 		PrescriptionExportDto export1 = prescriptions.stream().filter(p -> p.getCaseUuid().equals(case1.getUuid())).findFirst().get();
 		assertThat(export1.getCaseName(), is("FirstName LASTNAME"));
@@ -137,7 +137,7 @@ public class PresicriptionFacadeEjbPseudonymizationTest extends AbstractBeanTest
 	}
 
 	@Test
-	public void testUpdateOutsideJurisdiction(){
+	public void testUpdateOutsideJurisdiction() {
 		CaseDataDto caze = creator.createCase(user1.toReference(), rdcf1, null);
 		creator.createContact(user2.toReference(), creator.createPerson().toReference(), caze);
 		PrescriptionDto prescription = createPrescription(caze);

@@ -7,7 +7,8 @@ public enum SystemEventStatus {
 	STARTED,
 	SUCCESS,
 	CANCELLED,
-	ERROR;
+	ERROR,
+	UNCLEAR;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

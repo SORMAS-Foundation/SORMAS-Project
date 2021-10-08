@@ -32,6 +32,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationPosition;
 import de.symeda.sormas.app.core.notification.NotificationType;
+import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.util.AppUpdateController;
 
 public class SettingsActivity extends BaseLandingActivity {
@@ -53,6 +54,21 @@ public class SettingsActivity extends BaseLandingActivity {
 	}
 
 	@Override
+	public void onBackPressed() {
+		// this should always either open the side menu, or return to the login page
+		if (ConfigProvider.getUser() == null) {
+			// open login page
+			Intent intent = new Intent(getContext(), LoginActivity.class);
+			startActivity(intent);
+		} else {
+			// normally open sidebar here; However, it is not possible to create an ActionMenuItem here and then call super.onOptionsItemSelected(item)
+			// so just return so that the app won't be closed
+			return;
+		}
+		super.onBackPressed();
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
@@ -65,6 +81,9 @@ public class SettingsActivity extends BaseLandingActivity {
 		case R.id.action_save:
 			String serverUrl = getActiveFragment().getServerUrl();
 			ConfigProvider.setServerRestUrl(serverUrl);
+
+			String lbdsDebugUrl = getActiveFragment().getLbdsDebugUrl();
+			ConfigProvider.setServerLbdsDebugUrl(lbdsDebugUrl);
 
 			onBackPressed(); // Settings don't have a parent -> go back instead of up
 
@@ -113,6 +132,8 @@ public class SettingsActivity extends BaseLandingActivity {
 			// Do nothing if the installation was successful
 			case Activity.RESULT_OK:
 			case Activity.RESULT_CANCELED:
+			case Activity.RESULT_FIRST_USER:
+				finishAndRemoveTask();
 				break;
 			// Everything else probably is an error
 			default:
@@ -124,9 +145,7 @@ public class SettingsActivity extends BaseLandingActivity {
 
 	public void setNewLocale(AppCompatActivity mContext, Language language) {
 		LocaleManager.setNewLocale(this, language);
-		if (ConfigProvider.getUser() != null) {
-			I18nProperties.setUserLanguage(ConfigProvider.getUser().getLanguage());
-		}
+		I18nProperties.setUserLanguage(language);
 		Intent intent = mContext.getIntent();
 		startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
 	}

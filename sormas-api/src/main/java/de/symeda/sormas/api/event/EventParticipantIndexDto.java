@@ -1,10 +1,12 @@
 package de.symeda.sormas.api.event;
 
 import java.io.Serializable;
+import java.util.Date;
 
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
@@ -25,6 +27,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	public static final String CONTACT_COUNT = "contactCount";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
 	private String uuid;
 	private String personUuid;
@@ -36,12 +39,18 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 	@SensitiveData
 	private String lastName;
 	private Sex sex;
-	private String approximateAge;
+	private Integer approximateAge;
 	@SensitiveData
 	private String involvementDescription;
 	private long contactCount;
 
-	private EventParticipantJurisdictionDto eventJurisdiction;
+	private PathogenTestResultType pathogenTestResult;
+	private Date sampleDateTime;
+
+	private VaccinationStatus vaccinationStatus;
+
+	private boolean isInJurisdiction;
+	private boolean isInJurisdictionOrOwned;
 
 	public EventParticipantIndexDto(
 		String uuid,
@@ -54,7 +63,12 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		Integer approximateAge,
 		ApproximateAgeType approximateAgeType,
 		String involvementDescription,
-		String reportingUserUuid) {
+		PathogenTestResultType pathogenTestResult,
+		Date sampleDateTime,
+		VaccinationStatus vaccinationStatus,
+		String reportingUserUuid,
+		boolean isInJurisdiction,
+		boolean isInJurisdictionOrOwned) {
 
 		this.uuid = uuid;
 		this.personUuid = personUuid;
@@ -63,10 +77,13 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.sex = sex;
-		this.approximateAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
+		this.approximateAge = approximateAge;
 		this.involvementDescription = involvementDescription;
-
-		this.eventJurisdiction = new EventParticipantJurisdictionDto(reportingUserUuid);
+		this.pathogenTestResult = pathogenTestResult;
+		this.sampleDateTime = sampleDateTime;
+		this.vaccinationStatus = vaccinationStatus;
+		this.isInJurisdiction = isInJurisdiction;
+		this.isInJurisdictionOrOwned = isInJurisdictionOrOwned;
 	}
 
 	public String getUuid() {
@@ -125,11 +142,11 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		this.sex = sex;
 	}
 
-	public String getApproximateAge() {
+	public Integer getApproximateAge() {
 		return approximateAge;
 	}
 
-	public void setApproximateAge(String approximateAge) {
+	public void setApproximateAge(Integer approximateAge) {
 		this.approximateAge = approximateAge;
 	}
 
@@ -149,7 +166,39 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		this.contactCount = contactCount;
 	}
 
-	public EventParticipantJurisdictionDto getJurisdiction() {
-		return eventJurisdiction;
+	public PathogenTestResultType getPathogenTestResult() {
+		return pathogenTestResult;
+	}
+
+	public void setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
+		this.pathogenTestResult = pathogenTestResult;
+	}
+
+	public Date getSampleDateTime() {
+		return sampleDateTime;
+	}
+
+	public void setSampleDateTime(Date sampleDateTime) {
+		this.sampleDateTime = sampleDateTime;
+	}
+
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
+	}
+
+	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
+		this.vaccinationStatus = vaccinationStatus;
+	}
+
+	public boolean getInJurisdiction() {
+		return isInJurisdiction;
+	}
+
+	public boolean getInJurisdictionOrOwned() {
+		return isInJurisdictionOrOwned;
+	}
+
+	public EventParticipantReferenceDto toReference() {
+		return new EventParticipantReferenceDto(uuid, firstName, lastName);
 	}
 }

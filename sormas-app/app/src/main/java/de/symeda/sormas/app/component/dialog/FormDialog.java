@@ -10,7 +10,7 @@ import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 
 public abstract class FormDialog extends AbstractDialog {
 
-	private FieldVisibilityCheckers fieldVisibilityCheckers;
+	protected FieldVisibilityCheckers fieldVisibilityCheckers;
 	protected UiFieldAccessCheckers fieldAccessCheckers;
 
 	public FormDialog(

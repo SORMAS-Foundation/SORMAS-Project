@@ -17,15 +17,22 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.vaadin.server.Page;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
@@ -39,8 +46,6 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import java.util.Collection;
 
 public class TaskController {
 
@@ -171,6 +176,121 @@ public class TaskController {
 						new Notification(
 							I18nProperties.getString(Strings.headingTasksDeleted),
 							I18nProperties.getString(Strings.messageTasksDeleted),
+							Type.HUMANIZED_MESSAGE,
+							false).show(Page.getCurrent());
+					}
+				});
+		}
+	}
+
+	public void showBulkTaskDataEditComponent(Collection<? extends TaskIndexDto> selectedTasks, Runnable callback) {
+		if (selectedTasks.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoTasksSelected),
+				I18nProperties.getString(Strings.messageNoTasksSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
+
+		// Check if tasks with multiple districts have been selected
+		// In that situation we won't allow editing them
+		List<String> taskUuids = selectedTasks.stream().map(TaskIndexDto::getUuid).collect(Collectors.toList());
+		List<DistrictReferenceDto> districts = FacadeProvider.getTaskFacade().getDistrictsByTaskUuids(taskUuids, 2L);
+		if (districts.size() == 2) {
+			new Notification(
+				I18nProperties.getString(Strings.headingUnavailableTaskEdition),
+				I18nProperties.getString(Strings.messageUnavailableTaskEditionDueToDifferentDistricts),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
+
+		// Create a temporary task in order to use the CommitDiscardWrapperComponent
+		TaskBulkEditData bulkEditData = new TaskBulkEditData();
+		BulkTaskDataForm form = new BulkTaskDataForm(districts.stream().findFirst().orElse(null));
+		form.setValue(bulkEditData);
+		final CommitDiscardWrapperComponent<BulkTaskDataForm> editView = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
+
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditTask));
+
+		editView.addCommitListener(() -> {
+			TaskBulkEditData updatedBulkEditData = form.getValue();
+			for (TaskIndexDto indexDto : selectedTasks) {
+				TaskDto dto = FacadeProvider.getTaskFacade().getByUuid(indexDto.getUuid());
+				if (form.getPriorityCheckbox().getValue()) {
+					dto.setPriority(updatedBulkEditData.getTaskPriority());
+				}
+				if (form.getAssigneeCheckbox().getValue()) {
+					dto.setAssigneeUser(updatedBulkEditData.getTaskAssignee());
+				}
+				if (form.getTaskStatusCheckbox().getValue()) {
+					dto.setTaskStatus(updatedBulkEditData.getTaskStatus());
+				}
+
+				FacadeProvider.getTaskFacade().saveTask(dto);
+			}
+			popupWindow.close();
+			Notification.show(I18nProperties.getString(Strings.messageTasksEdited), Type.HUMANIZED_MESSAGE);
+			callback.run();
+		});
+
+		editView.addDiscardListener(popupWindow::close);
+	}
+
+	public void archiveAllSelectedItems(Collection<? extends TaskIndexDto> selectedRows, Runnable callback) {
+
+		if (selectedRows.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoTasksSelected),
+				I18nProperties.getString(Strings.messageNoTasksSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingConfirmArchiving),
+				new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveTasks), selectedRows.size())),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				null,
+				e -> {
+					if (e.booleanValue()) {
+						List<String> caseUuids = selectedRows.stream().map(TaskIndexDto::getUuid).collect(Collectors.toList());
+						FacadeProvider.getTaskFacade().updateArchived(caseUuids, true);
+						callback.run();
+						new Notification(
+							I18nProperties.getString(Strings.headingTasksArchived),
+							I18nProperties.getString(Strings.messageTasksArchived),
+							Type.HUMANIZED_MESSAGE,
+							false).show(Page.getCurrent());
+					}
+				});
+		}
+	}
+
+	public void dearchiveAllSelectedItems(Collection<? extends TaskIndexDto> selectedRows, Runnable callback) {
+
+		if (selectedRows.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoTasksSelected),
+				I18nProperties.getString(Strings.messageNoTasksSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingConfirmDearchiving),
+				new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveTasks), selectedRows.size())),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				null,
+				e -> {
+					if (e.booleanValue() == true) {
+						List<String> caseUuids = selectedRows.stream().map(TaskIndexDto::getUuid).collect(Collectors.toList());
+						FacadeProvider.getTaskFacade().updateArchived(caseUuids, false);
+						callback.run();
+						new Notification(
+							I18nProperties.getString(Strings.headingTasksDearchived),
+							I18nProperties.getString(Strings.messageTasksDearchived),
 							Type.HUMANIZED_MESSAGE,
 							false).show(Page.getCurrent());
 					}
