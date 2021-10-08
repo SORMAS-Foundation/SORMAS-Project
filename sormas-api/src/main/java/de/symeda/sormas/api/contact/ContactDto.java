@@ -192,6 +192,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String contactProximityDetails;
 	private ContactCategory contactCategory;
+	@Required
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;

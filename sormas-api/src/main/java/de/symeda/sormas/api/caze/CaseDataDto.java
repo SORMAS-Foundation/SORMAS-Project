@@ -281,7 +281,9 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String sequelaeDetails;
 
+	@Required
 	private RegionReferenceDto responsibleRegion;
+	@Required
 	private DistrictReferenceDto responsibleDistrict;
 	@Outbreaks
 	@PersonalData

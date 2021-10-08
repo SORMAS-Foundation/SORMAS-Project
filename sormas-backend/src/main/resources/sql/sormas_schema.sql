@@ -8302,4 +8302,14 @@ ALTER TABLE testreport_history ADD COLUMN externalid varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (409, 'Add PathogenTest.externalId and transfer it from lab messages #5713');
 
+-- 2021-09-30 Make contact classification required in the API and backend #6828
+UPDATE contact set contactclassification = 'UNCONFIRMED' where contactclassification IS NULL;
+ALTER TABLE contact ALTER COLUMN contactclassification SET NOT NULL;
+ALTER TABLE contact_history ALTER COLUMN contactclassification SET NOT NULL;
+
+ALTER TABLE cases ALTER COLUMN responsibleRegion_id SET NOT NULL;
+ALTER TABLE cases ALTER COLUMN responsibleDistrict_id SET NOT NULL;
+ALTER TABLE cases ALTER COLUMN healthfacility_id SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (410, 'Make contact classification required in the API and backend #6828');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
