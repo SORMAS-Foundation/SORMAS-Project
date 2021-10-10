@@ -38,6 +38,12 @@ import java.util.stream.Collectors;
 @Stateless
 public class CentralInfraSyncFacade {
 
+	public static final String CONTINENT = "continent";
+	public static final String SUBCONTINENT = "subcontinent";
+	public static final String COUNTRY = "country";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
@@ -77,7 +83,7 @@ public class CentralInfraSyncFacade {
 		List<DTO> newDtos = dtos.stream().filter(d -> d.getChangeDate().after(lastUpdate)).collect(Collectors.toList());
 		logger.info("Importing {} entities of type {}", newDtos.size(), type);
 
-		newDtos.stream().parallel().forEach(facade::save);
+		newDtos.forEach(facade::save);
 
 	}
 
@@ -86,43 +92,49 @@ public class CentralInfraSyncFacade {
 			logger.info("Skipping synchronization with central as feature is disabled.");
 			return;
 		}
+		logger.info("Syncing all infra data.");
+		try {
+			SystemEventDto currentSync = syncFacadeEjb.startSyncFor(SystemEventType.SYNC_CENTRAL);
+			Date lastUpdate = syncFacadeEjb.findLastSyncDateFor(SystemEventType.SYNC_CENTRAL);
+			Date syncedAt = new Date();
 
-		SystemEventDto currentSync = syncFacadeEjb.startSyncFor(SystemEventType.SYNC_CENTRAL);
-		Date lastUpdate = syncFacadeEjb.findLastSyncDateFor(SystemEventType.SYNC_CENTRAL);
-		Date syncedAt = new Date();
+			loadAndStoreContinents(lastUpdate);
+			loadAndStoreSubcontinents(lastUpdate);
+			loadAndStoreCountries(lastUpdate);
+			loadAndStoreRegions(lastUpdate);
+			loadAndStoreDistricts(lastUpdate);
+			loadAndStoreCommunities(lastUpdate);
 
-		loadAndStoreContinents(lastUpdate);
-		loadAndStoreSubcontinents(lastUpdate);
-		loadAndStoreCountries(lastUpdate);
-		loadAndStoreRegions(lastUpdate);
-		loadAndStoreDistricts(lastUpdate);
-		loadAndStoreCommunities(lastUpdate);
+			syncFacadeEjb.reportSuccessfulSyncWithTimestamp(currentSync, syncedAt);
+		} catch (Exception e) {
+			// broad clause is necessary here: Cron schedule stability was influenced by uncatched exceptions 
+			logger.error("Could not sync with central: %s", e);
+		}
 
-		syncFacadeEjb.reportSuccessfulSyncWithTimestamp(currentSync, syncedAt);
 	}
 
 	private void loadAndStoreContinents(Date lastUpdate) {
-		loadAndStore("continent", ContinentDto.class, continentFacadeEjb, lastUpdate);
+		loadAndStore(CONTINENT, ContinentDto.class, continentFacadeEjb, lastUpdate);
 	}
 
 	private void loadAndStoreSubcontinents(Date lastUpdate) {
-		loadAndStore("subcontinent", SubcontinentDto.class, subcontinentFacadeEjb, lastUpdate);
+		loadAndStore(SUBCONTINENT, SubcontinentDto.class, subcontinentFacadeEjb, lastUpdate);
 	}
 
 	private void loadAndStoreCountries(Date lastUpdate) {
-		loadAndStore("country", CountryDto.class, countryFacadeEjb, lastUpdate);
+		loadAndStore(COUNTRY, CountryDto.class, countryFacadeEjb, lastUpdate);
 	}
 
 	private void loadAndStoreRegions(Date lastUpdate) {
-		loadAndStore("region", RegionDto.class, regionFacadeEjb, lastUpdate);
+		loadAndStore(REGION, RegionDto.class, regionFacadeEjb, lastUpdate);
 	}
 
 	private void loadAndStoreDistricts(Date lastUpdate) {
-		loadAndStore("district", DistrictDto.class, districtFacadeEjb, lastUpdate);
+		loadAndStore(DISTRICT, DistrictDto.class, districtFacadeEjb, lastUpdate);
 	}
 
 	private void loadAndStoreCommunities(Date lastUpdate) {
-		loadAndStore("community", CommunityDto.class, communityFacadeEjb, lastUpdate);
+		loadAndStore(COMMUNITY, CommunityDto.class, communityFacadeEjb, lastUpdate);
 	}
 
 }

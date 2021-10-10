@@ -181,7 +181,7 @@ public class CronService {
 		}
 	}
 
-	@Schedule(hour = "2", minute = "30", persistent = false)
+	@Schedule(hour = "1", minute = "50", persistent = false)
 	public void syncInfraWithCentral() {
 		centralInfraSyncFacade.syncAll();
 	}
