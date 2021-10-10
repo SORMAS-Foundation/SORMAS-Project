@@ -53,7 +53,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import de.symeda.sormas.backend.infrastructure.central.CentralInfraSyncFacade;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -156,8 +155,7 @@ public class StartupShutdownService {
 	private CountryService countryService;
 	@EJB
 	private SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb;
-	@EJB
-	private CentralInfraSyncFacade centralInfraSyncFacade;
+
 	@Inject
 	private Event<UserUpdateEvent> userUpdateEvent;
 
@@ -218,8 +216,6 @@ public class StartupShutdownService {
 
 		configFacade.validateAppUrls();
 		configFacade.validateExternalUrls();
-
-		syncWithCentral();
 	}
 
 	private void createDefaultInfrastructureData() {
@@ -236,7 +232,7 @@ public class StartupShutdownService {
 			region.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.REGION.ordinal()));
 			region.setName(I18nProperties.getCaption(Captions.defaultRegion, "Default Region"));
 			region.setEpidCode("DEF-REG");
-			region.setDistricts(new ArrayList<>());
+			region.setDistricts(new ArrayList<District>());
 			regionService.ensurePersisted(region);
 		}
 
@@ -251,7 +247,7 @@ public class StartupShutdownService {
 			}
 			district.setRegion(region);
 			district.setEpidCode("DIS");
-			district.setCommunities(new ArrayList<>());
+			district.setCommunities(new ArrayList<Community>());
 			districtService.ensurePersisted(district);
 			region.getDistricts().add(district);
 		}
@@ -335,14 +331,6 @@ public class StartupShutdownService {
 		}
 	}
 
-	private void syncWithCentral() {
-		if (!configFacade.isCentralLocationSync()) {
-			logger.info("Skipping synchronization with central as feature is disabled.");
-			return;
-		}
-		centralInfraSyncFacade.loadAndStoreAll();
-	}
-
 	private void createDefaultUsers() {
 
 		if (userService.count() == 0) {
@@ -368,9 +356,9 @@ public class StartupShutdownService {
 			District district = region.getDistricts().get(0);
 			Community community = district.getCommunities().get(0);
 			List<Facility> healthFacilities = facilityService.getActiveFacilitiesByCommunityAndType(community, FacilityType.HOSPITAL, false, false);
-			Facility facility = !healthFacilities.isEmpty() ? healthFacilities.get(0) : null;
+			Facility facility = healthFacilities.size() > 0 ? healthFacilities.get(0) : null;
 			List<Facility> laboratories = facilityService.getAllActiveLaboratories(false);
-			Facility laboratory = !laboratories.isEmpty() ? laboratories.get(0) : null;
+			Facility laboratory = laboratories.size() > 0 ? laboratories.get(0) : null;
 			PointOfEntry pointOfEntry = pointOfEntryService.getAllActive().get(0);
 
 			logger.info("Create default users");
