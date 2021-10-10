@@ -94,8 +94,8 @@ public class CentralInfraSyncFacade {
 		}
 		logger.info("Syncing all infra data.");
 		try {
-			SystemEventDto currentSync = syncFacadeEjb.startSyncFor(SystemEventType.SYNC_CENTRAL);
-			Date lastUpdate = syncFacadeEjb.findLastSyncDateFor(SystemEventType.SYNC_CENTRAL);
+			SystemEventDto currentSync = syncFacadeEjb.startSyncFor(SystemEventType.CENTRAL_SYNC_INFRA);
+			Date lastUpdate = syncFacadeEjb.findLastSyncDateFor(SystemEventType.CENTRAL_SYNC_INFRA);
 			Date syncedAt = new Date();
 
 			loadAndStoreContinents(lastUpdate);
