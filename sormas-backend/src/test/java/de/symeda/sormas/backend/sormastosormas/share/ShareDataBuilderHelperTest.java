@@ -53,11 +53,11 @@ public class ShareDataBuilderHelperTest extends AbstractBeanTest {
         TestDataCreator.RDCF rdcf = creator.createRDCF();
 
         PersonDto personDto = creator.createPerson();
-        UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
-        CaseDataDto caseDataDto = creator.createCase(officer, rdcf, dto -> {
+        UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+        CaseDataDto caseDataDto = creator.createCase(officerReferenceDto, rdcf, dto -> {
             dto.setPerson(personDto.toReference());
-            dto.setSurveillanceOfficer(officer);
-            dto.setClassificationUser(officer);
+            dto.setSurveillanceOfficer(officerReferenceDto);
+            dto.setClassificationUser(officerReferenceDto);
             dto.setAdditionalDetails("additionalDetails");
             dto.setExternalID("externalId");
             dto.setExternalToken("externalToken");

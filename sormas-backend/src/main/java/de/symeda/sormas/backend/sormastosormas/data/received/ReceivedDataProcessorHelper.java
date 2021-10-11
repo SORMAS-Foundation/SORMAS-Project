@@ -34,6 +34,7 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
@@ -215,6 +216,7 @@ public class ReceivedDataProcessorHelper {
 
 		contact.setPerson(person.toReference());
 		updateReportingUser(contact, existingContact);
+		handleIgnoredProperties(contact, existingContact);
 
 		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
 			infraValidator.validateInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
@@ -300,5 +302,12 @@ public class ReceivedDataProcessorHelper {
 			return null;
 		}
 		return personFacade.getPersonByUuid(existingContactDto.getPerson().getUuid());
+	}
+
+	public PersonDto getExistingPerson(@Nullable EventParticipantDto eventParticipantDto) {
+		if (eventParticipantDto == null) {
+			return null;
+		}
+		return personFacade.getPersonByUuid(eventParticipantDto.getPerson().getUuid());
 	}
 }

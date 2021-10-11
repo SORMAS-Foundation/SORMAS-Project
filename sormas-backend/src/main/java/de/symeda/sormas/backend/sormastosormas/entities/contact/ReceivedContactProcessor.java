@@ -75,6 +75,7 @@ public class ReceivedContactProcessor
 			throw new SormasToSormasValidationException(validationErrors);
 		}
 
+		dataProcessorHelper.handleIgnoredProperties(contact, existingContact);
 		return new ProcessedContactData(person, contact, samples, originInfo);
 	}
 

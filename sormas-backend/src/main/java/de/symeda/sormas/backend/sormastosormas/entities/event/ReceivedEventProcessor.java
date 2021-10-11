@@ -122,6 +122,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		dataProcessorHelper.updateReportingUser(event, existingEvent);
+		dataProcessorHelper.handleIgnoredProperties(event, existingEvent);
 		if (existingEvent == null) {
 			event.setResponsibleUser(userService.getCurrentUser().toReference());
 		} else {
@@ -162,7 +163,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 		eventParticipants.forEach(eventParticipant -> {
 			ValidationErrors validationErrors = new ValidationErrors();
 
-			ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(eventParticipant.getPerson(), null);
+			ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(eventParticipant.getPerson(), dataProcessorHelper.getExistingPerson(eventParticipant));
 			validationErrors.addAll(personValidationErrors);
 
 			DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
