@@ -192,6 +192,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			updateOriginInfoOnShareAccepted(s.getEvent(), s);
 			updateOriginInfoOnShareAccepted(s.getEventParticipant(), s);
 			updateOriginInfoOnShareAccepted(s.getSample(), s);
+			updateOriginInfoOnShareAccepted(s.getImmunization(), s);
 		});
 		shareRequestInfoService.ensurePersisted(requestInfo);
 

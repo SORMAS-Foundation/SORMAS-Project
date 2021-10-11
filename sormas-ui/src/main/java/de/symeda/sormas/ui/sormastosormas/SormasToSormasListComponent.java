@@ -45,6 +45,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
@@ -128,6 +129,20 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		initLayout(
 			eventParticipant.getSormasToSormasOriginInfo(),
 			() -> FacadeProvider.getSormasToSormasEventFacade().getAllShares(eventParticipant.getEvent().getUuid()),
+			null);
+	}
+
+	public SormasToSormasListComponent(ImmunizationDto immunzation) {
+		sormasToSormasList =
+			new SormasToSormasList(immunzation.getSormasToSormasOriginInfo() == null, Captions.sormasToSormasImmunizationNotShared, null);
+
+		initLayout(
+			immunzation.getSormasToSormasOriginInfo(),
+			() -> FacadeProvider.getSormasToSormasShareInfoFacade()
+				.getIndexList(new SormasToSormasShareInfoCriteria().immunization(immunzation.toReference()), null, null)
+				.stream()
+				.map(s -> new SormasToSormasShareTree(null, s, Collections.emptyList()))
+				.collect(Collectors.toList()),
 			null);
 	}
 

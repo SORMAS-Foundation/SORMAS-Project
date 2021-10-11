@@ -159,6 +159,7 @@ public interface Validations {
 	String sormasToSormasEventExists = "sormasToSormasEventExists";
 	String sormasToSormasEventParticipantExists = "sormasToSormasEventParticipantExists";
 	String sormasToSormasFacility = "sormasToSormasFacility";
+	String sormasToSormasImmunizationExists = "sormasToSormasImmunizationExists";
 	String sormasToSormasInfrastructure = "sormasToSormasInfrastructure";
 	String sormasToSormasLabMessageExists = "sormasToSormasLabMessageExists";
 	String sormasToSormasNotEditable = "sormasToSormasNotEditable";

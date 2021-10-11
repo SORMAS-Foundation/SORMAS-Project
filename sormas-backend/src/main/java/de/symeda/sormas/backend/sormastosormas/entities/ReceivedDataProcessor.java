@@ -25,7 +25,9 @@ import javax.ejb.Stateless;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
@@ -40,6 +42,7 @@ import de.symeda.sormas.backend.sormastosormas.entities.caze.ReceivedCaseProcess
 import de.symeda.sormas.backend.sormastosormas.entities.contact.ReceivedContactProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.event.ReceivedEventProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.eventparticipant.ReceivedEventParticipantProcessor;
+import de.symeda.sormas.backend.sormastosormas.entities.immunization.ReceivedImmunizationProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.sample.ReceivedSampleProcessor;
 import de.symeda.sormas.backend.sormastosormas.share.ShareRequestData;
 
@@ -59,6 +62,8 @@ public class ReceivedDataProcessor {
 	private ReceivedEventProcessor eventProcessor;
 	@EJB
 	private ReceivedEventParticipantProcessor eventParticipantProcessor;
+	@EJB
+	private ReceivedImmunizationProcessor immunizationProcessor;
 
 	public List<ValidationErrors> processReceivedData(SormasToSormasDto receivedData, ShareDataExistingEntities existingEntities) {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
@@ -122,6 +127,19 @@ public class ReceivedDataProcessor {
 
 				if (contactErrors.hasError()) {
 					validationErrors.add(new ValidationErrors(ValidationHelper.buildSampleValidationGroupName(s.getEntity()), contactErrors));
+				}
+			});
+		}
+
+		List<SormasToSormasEntityDto<ImmunizationDto>> immunizations = receivedData.getImmunizations();
+		if (CollectionUtils.isNotEmpty(immunizations)) {
+			immunizations.forEach(s -> {
+				ValidationErrors immunizationErrors =
+					immunizationProcessor.processReceivedData(s, existingEntities.getImmunizations().get(s.getEntity().getUuid()));
+
+				if (immunizationErrors.hasError()) {
+					validationErrors
+						.add(new ValidationErrors(ValidationHelper.buildImmunizationValidationGroupName(s.getEntity()), immunizationErrors));
 				}
 			});
 		}

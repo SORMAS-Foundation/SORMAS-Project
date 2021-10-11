@@ -40,6 +40,7 @@ import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -50,6 +51,7 @@ import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.immunization.joins.ImmunizationJoins;
 import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryDtoTransformer;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -63,6 +65,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 	@EJB
 	private UserService userService;
+	@EJB
+	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
 	public ImmunizationService() {
 		super(Immunization.class);
@@ -341,6 +345,21 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		em.createQuery(cu).executeUpdate();
 	}
 
+	public List<Immunization> getByPersonIds(List<Long> personIds) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Immunization> cq = cb.createQuery(Immunization.class);
+		Root<Immunization> from = cq.from(Immunization.class);
+
+		ImmunizationQueryContext<Immunization> immunizationQueryContext = new ImmunizationQueryContext<>(cb, cq, from);
+
+		Predicate filter = createUserFilter(immunizationQueryContext);
+		filter = CriteriaBuilderHelper.andInValues(personIds, filter, cb, from.get(Immunization.PERSON_ID));
+
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultList();
+	}
+
 	private Predicate createUserFilter(ImmunizationQueryContext<Immunization> qc) {
 		final User currentUser = userService.getCurrentUser();
 		return ImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
@@ -391,5 +410,17 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Immunization.DELETED)));
 
 		return filter;
+	}
+
+	public boolean isImmunizationEditAllowed(Immunization immunization) {
+		if (!userService.hasRight(UserRight.IMMUNIZATION_EDIT)) {
+			return false;
+		}
+
+		if (immunization.getSormasToSormasOriginInfo() != null && !immunization.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
+			return false;
+		}
+
+		return inJurisdictionOrOwned(immunization) && !sormasToSormasShareInfoService.isImmunizationsOwnershipHandedOver(immunization);
 	}
 }

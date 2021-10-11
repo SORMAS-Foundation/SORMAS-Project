@@ -66,6 +66,8 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	private boolean withEventParticipants;
 
+	private boolean withImmunizations;
+
 	private String comment;
 
 	private SormasToSormasShareRequest request;
@@ -150,6 +152,15 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	public void setWithEventParticipants(boolean withEventParticipants) {
 		this.withEventParticipants = withEventParticipants;
+	}
+
+	@Column
+	public boolean isWithImmunizations() {
+		return withImmunizations;
+	}
+
+	public void setWithImmunizations(boolean withImmunizations) {
+		this.withImmunizations = withImmunizations;
 	}
 
 	@OneToOne(mappedBy = "originInfo")
