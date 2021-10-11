@@ -22,6 +22,7 @@ import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCont
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -124,6 +125,13 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 		if (validationErrors.size() > 0) {
 			throw SormasToSormasException.fromStringProperty(validationErrors, Strings.errorSormasToSormasShare);
 		}
+	}
+
+	@Override
+	protected void validateEntitiesBeforeShare(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
+		validateEntitiesBeforeShare(
+			shares.stream().map(SormasToSormasShareInfo::getContact).filter(Objects::nonNull).collect(Collectors.toList()),
+			shares.get(0).isOwnershipHandedOver());
 	}
 
 	@Override

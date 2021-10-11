@@ -205,7 +205,6 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 			byte[] decryptedData = CmsReader.decryptAndVerify(encryptedData.getData(), new S2SCertificateConfig(encryptedData.getSenderId()));
 			return objectMapper.readValue(decryptedData, dataType);
 		} catch (Exception e) {
-			e.printStackTrace();
 			LOGGER.error("Could not decrypt and verify data", e);
 			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasDecrypt);
 		}

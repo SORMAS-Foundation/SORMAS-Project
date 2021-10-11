@@ -8317,15 +8317,7 @@ ALTER TABLE sormastosormasshareinfo
     ADD COLUMN event_id bigint,
     ADD COLUMN eventparticipant_id bigint,
     ADD COLUMN sample_id bigint,
-    ALTER COLUMN requestuuid DROP NOT NULL,
-    DROP COLUMN requestuuid,
-    DROP COLUMN requeststatus,
-    DROP COLUMN comment,
-    DROP COLUMN withassociatedcontacts,
-    DROP COLUMN withsamples,
-    DROP COLUMN pseudonymizedpersonaldata,
-    DROP COLUMN pseudonymizedsensitivedata,
-    DROP COLUMN witheventparticipants;
+    ALTER COLUMN requestuuid DROP NOT NULL;
 
 ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_contact_id FOREIGN KEY (contact_id) REFERENCES contact (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
@@ -8366,6 +8358,16 @@ DO $$
             END LOOP;
     END;
 $$ LANGUAGE plpgsql;
+
+ALTER TABLE sormastosormasshareinfo
+    DROP COLUMN requestuuid,
+    DROP COLUMN requeststatus,
+    DROP COLUMN comment,
+    DROP COLUMN withassociatedcontacts,
+    DROP COLUMN withsamples,
+    DROP COLUMN pseudonymizedpersonaldata,
+    DROP COLUMN pseudonymizedsensitivedata,
+    DROP COLUMN witheventparticipants;
 
 DROP TABLE sormastosormasshareinfo_entities;
 DELETE FROM sormastosormasshareinfo WHERE caze_id IS NULL and contact_id IS NULL and event_id IS NULL and eventparticipant_id IS NULL and sample_id is null;
