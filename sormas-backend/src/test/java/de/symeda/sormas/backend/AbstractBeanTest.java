@@ -26,6 +26,8 @@ import javax.persistence.Query;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumValueService;
+import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessorHelper;
+import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -587,6 +589,14 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	}
 
 	public CustomizableEnumFacade getCustomizableEnumFacade() { return getBean(CustomizableEnumFacadeEjb.class); }
+
+	public ShareDataBuilderHelper getShareDataBuilderHelper() {
+		return getBean(ShareDataBuilderHelper.class);
+	}
+
+	public ReceivedDataProcessorHelper getReceivedDataProcessorHelper() {
+		return getBean(ReceivedDataProcessorHelper.class);
+	}
 
 	protected UserDto useSurveillanceOfficerLogin(TestDataCreator.RDCF rdcf) {
 		if (rdcf == null) {
