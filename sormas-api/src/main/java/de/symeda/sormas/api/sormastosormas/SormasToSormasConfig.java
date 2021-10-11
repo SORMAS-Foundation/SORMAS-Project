@@ -14,10 +14,10 @@ public class SormasToSormasConfig implements Serializable {
 	// resort in the REST client, as it needs to be shared between REST client and sormas-rest.
 	public static final String SENDER_SERVER_ID = "senderServerId";
 
+	public static final String SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS = "sormas2sormas.ignoreProperty.additionalDetails";
 	public static final String SORMAS2SORMAS_IGNORE_EXTERNAL_ID = "sormas2sormas.ignoreProperty.externalId";
 	public static final String SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN = "sormas2sormas.ignoreProperty.externalToken";
-	public static final String SORMAS2SORMAS_IGNORE_GENERAL_COMMENT = "sormas2sormas.ignoreProperty.generalComment";
-	public static final String SORMAS2SORMAS_IGNORE_INTERNAL_ID = "sormas2sormas.ignoreProperty.internalId";
+	public static final String SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN = "sormas2sormas.ignoreProperty.internalToken";
 
 	private String id;
 	private String path;
@@ -28,10 +28,10 @@ public class SormasToSormasConfig implements Serializable {
 	private String truststorePass;
 	private Map<String, Boolean> ignoreProperties = new HashMap<>();
 	{
+		this.ignoreProperties.put(SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, true);
 		this.ignoreProperties.put(SORMAS2SORMAS_IGNORE_EXTERNAL_ID, true);
 		this.ignoreProperties.put(SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, true);
-		this.ignoreProperties.put(SORMAS2SORMAS_IGNORE_GENERAL_COMMENT, true);
-		this.ignoreProperties.put(SORMAS2SORMAS_IGNORE_INTERNAL_ID, true);
+		this.ignoreProperties.put(SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, true);
 	}
 
 	private String oidcServer;

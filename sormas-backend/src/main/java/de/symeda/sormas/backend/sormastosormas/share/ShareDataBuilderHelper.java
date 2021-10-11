@@ -96,7 +96,7 @@ public class ShareDataBuilderHelper {
 
 		pseudonymiePerson(personDto, pseudonymizedPersonalData, pseudonymizedSensitiveData);
 
-		clearIgnoredProperties(personDto, personDto.getClass());
+		clearIgnoredProperties(personDto);
 
 		return personDto;
 	}
@@ -116,7 +116,7 @@ public class ShareDataBuilderHelper {
 		contactDto.setResultingCaseUser(null);
 		contactDto.setSormasToSormasOriginInfo(null);
 
-		clearIgnoredProperties(contactDto, ContactDto.class);
+		clearIgnoredProperties(contactDto);
 
 		return contactDto;
 	}
@@ -144,7 +144,7 @@ public class ShareDataBuilderHelper {
 		return samples.stream().map(s -> {
 			SampleDto sampleDto = sampleFacade.convertToDto(s, pseudonymizer);
 			sampleDto.setSormasToSormasOriginInfo(null);
-			clearIgnoredProperties(sampleDto, SampleDto.class);
+			clearIgnoredProperties(sampleDto);
 
 			return new SormasToSormasSampleDto(
 				sampleDto,
@@ -222,19 +222,20 @@ public class ShareDataBuilderHelper {
 
 	}
 
-	public void clearIgnoredProperties(Object dto, Class<?> dtoType) {
+	public <T> void clearIgnoredProperties(T dto) {
 		SormasToSormasConfig s2SConfig = configFacadeEjb.getS2SConfig();
+		Class<?> dtoType = dto.getClass();
 		for (Field field : dtoType.getDeclaredFields()) {
 			if (field.isAnnotationPresent(S2SIgnoreProperty.class)) {
 				String s2sConfigProperty = field.getAnnotation(S2SIgnoreProperty.class).configProperty();
 				if (s2SConfig.getIgnoreProperties().get(s2sConfigProperty)) {
+					field.setAccessible(true);
 					try {
-						field.setAccessible(true);
 						field.set(dto, null);
-						field.setAccessible(false);
 					} catch (IllegalAccessException e) {
 						LOGGER.error("Could not clear field {} for {}", field.getName(), dtoType.getSimpleName());
 					}
+					field.setAccessible(false);
 				}
 			}
 		}

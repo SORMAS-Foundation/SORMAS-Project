@@ -32,6 +32,7 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
 import de.symeda.sormas.backend.sormastosormas.entities.SyncDataDto;
 import org.junit.Test;
@@ -397,6 +398,8 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 
 		SormasToSormasEncryptedDataDto encryptedData =
 			encryptShareData(new SyncDataDto<>(shareData, new ShareTreeCriteria(contact.getUuid(), null, false)));
+
+		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
 
 		Mockito.when(MockProducer.getManagedScheduledExecutorService().schedule(Matchers.any(Runnable.class), Matchers.anyLong(), Matchers.any()))
 			.then(invocation -> {

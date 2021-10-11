@@ -17,8 +17,10 @@ package de.symeda.sormas.backend.common;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
@@ -138,10 +140,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String SORMAS2SORMAS_TRUSTSTORE_NAME = "sormas2sormas.truststoreName";
 	public static final String SORMAS2SORMAS_TRUSTSTORE_PASS = "sormas2sormas.truststorePass";
 
-	public static final String SORMAS2SORMAS_IGNORE_EXTERNAL_ID = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID;
-	public static final String SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN;
-	public static final String SORMAS2SORMAS_IGNORE_GENERAL_COMMENT = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_GENERAL_COMMENT;
-	public static final String SORMAS2SORMAS_IGNORE_INTERNAL_ID = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_ID;
+	private static final String SORMAS2SORMAS_IGNORE_PROPERTY_PREFIX = "sormas2sormas.ignoreProperty.";
 
 	private static final String SORMAS2SORMAS_OIDC_REALM = "sormas2sormas.oidc.realm";
 	private static final String SORMAS2SORMAS_OIDC_CLIENT_ID = "sormas2sormas.oidc.clientId";
@@ -525,11 +524,15 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setOidcClientId(getProperty(SORMAS2SORMAS_OIDC_CLIENT_ID, null));
 		config.setOidcClientSecret(getProperty(SORMAS2SORMAS_OIDC_CLIENT_SECRET, null));
 		config.setKeyPrefix(getProperty(SORMAS2SORMAS_ETCD_KEY_PREFIX, null));
-		config.getIgnoreProperties().put(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, getBoolean(SORMAS2SORMAS_IGNORE_EXTERNAL_ID, true));
-		config.getIgnoreProperties().put(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, getBoolean(SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, true));
-		config.getIgnoreProperties().put(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_GENERAL_COMMENT, getBoolean(SORMAS2SORMAS_IGNORE_GENERAL_COMMENT, true));
-		config.getIgnoreProperties().put(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_ID, getBoolean(SORMAS2SORMAS_IGNORE_INTERNAL_ID, true));
+		config.getIgnoreProperties().putAll(getS2SIgnoreProperties());
 		return config;
+	}
+
+	private Map<String, Boolean> getS2SIgnoreProperties() {
+		return props.stringPropertyNames().stream()
+				.filter(property -> property.startsWith(SORMAS2SORMAS_IGNORE_PROPERTY_PREFIX))
+				.collect(Collectors.toMap(property -> property, property -> getBoolean(property, true)));
+
 	}
 
 	@Override

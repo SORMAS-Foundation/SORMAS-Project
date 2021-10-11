@@ -148,7 +148,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 		PersonDto personDto = dataBuilderHelper.getPersonDto(caze.getPerson(), pseudonymizer, pseudonymizePersonalData, pseudonymizeSensitiveData);
 		CaseDataDto cazeDto = getCazeDto(caze, pseudonymizer);
 
-		dataBuilderHelper.clearIgnoredProperties(cazeDto, CaseDataDto.class);
+		dataBuilderHelper.clearIgnoredProperties(cazeDto);
 
 		SormasToSormasCaseDto caseData = new SormasToSormasCaseDto(personDto, cazeDto, originInfo);
 		ShareData<Case, SormasToSormasCaseDto> shareData = new ShareData<>(caze, caseData);

@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.sormastosormas.data.received;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildPathogenTestValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildSampleValidationGroupName;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,10 +26,12 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
@@ -38,6 +41,8 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
@@ -48,44 +53,30 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPrev
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb.ContinentFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb.SubcontinentFacadeEjbLocal;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.user.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Stateless
 @LocalBean
 public class ReceivedDataProcessorHelper {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReceivedDataProcessorHelper.class);
+
 	@EJB
 	private UserService userService;
-	@EJB
-	private ContinentFacadeEjbLocal continentFacade;
-	@EJB
-	private SubcontinentFacadeEjbLocal subcontinentFacade;
-	@EJB
-	private RegionFacadeEjbLocal regionFacade;
-	@EJB
-	private DistrictFacadeEjbLocal districtFacade;
-	@EJB
-	private CommunityFacadeEjbLocal communityFacade;
-	@EJB
-	private FacilityFacadeEjb.FacilityFacadeEjbLocal facilityFacade;
-	@EJB
-	private PointOfEntryFacadeEjbLocal pointOfEntryFacade;
-	@EJB
-	private CountryFacadeEjbLocal countryFacade;
 	@EJB
 	private SampleFacadeEjbLocal sampleFacade;
 	@EJB
 	private InfrastructureValidator infraValidator;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private PersonFacadeEjbLocal personFacade;
 
 	public ValidationErrors processOriginInfo(SormasToSormasOriginInfoDto originInfo, String validationGroupCaption) {
 		if (originInfo == null) {
@@ -113,20 +104,20 @@ public class ReceivedDataProcessorHelper {
 		return validationErrors;
 	}
 
-	public ValidationErrors processPerson(PersonDto person) {
+	public ValidationErrors processPerson(PersonDto person, PersonDto existingPerson) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		infraValidator.validateLocation(person.getAddress(), Captions.Person, validationErrors);
 
-		person.getAddresses().forEach(address -> {
-			infraValidator.validateLocation(address, Captions.Person, validationErrors);
-		});
+		person.getAddresses().forEach(address -> infraValidator.validateLocation(address, Captions.Person, validationErrors));
 
 		CountryReferenceDto birthCountry = processCountry(person.getBirthCountry(), Captions.Person_birthCountry, validationErrors);
 		person.setBirthCountry(birthCountry);
 
 		CountryReferenceDto citizenship = processCountry(person.getCitizenship(), Captions.Person_citizenship, validationErrors);
 		person.setCitizenship(citizenship);
+
+		handleIgnoredProperties(person, existingPerson);
 
 		return validationErrors;
 	}
@@ -219,7 +210,7 @@ public class ReceivedDataProcessorHelper {
 	public ValidationErrors processContactData(ContactDto contact, PersonDto person, ContactDto existingContact) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
-		ValidationErrors personValidationErrors = processPerson(person);
+		ValidationErrors personValidationErrors = processPerson(person, getExistingPerson(existingContact));
 		validationErrors.addAll(personValidationErrors);
 
 		contact.setPerson(person.toReference());
@@ -271,10 +262,43 @@ public class ReceivedDataProcessorHelper {
 		}
 	}
 
-	public void updateReportingUser(SormasToSormasEntityDto entity, SormasToSormasEntityDto originalEntiy) {
-		UserReferenceDto reportingUser = originalEntiy == null ? userService.getCurrentUser().toReference() : originalEntiy.getReportingUser();
+	public void updateReportingUser(SormasToSormasEntityDto entity, SormasToSormasEntityDto originalEntity) {
+		UserReferenceDto reportingUser = originalEntity == null ? userService.getCurrentUser().toReference() : originalEntity.getReportingUser();
 
 		entity.setReportingUser(reportingUser);
 	}
 
+    public <T> void handleIgnoredProperties(T receivedEntity, T originalEntity) {
+        Class<?> dtoType = receivedEntity.getClass();
+        SormasToSormasConfig s2SConfig = configFacade.getS2SConfig();
+        for (Field field : dtoType.getDeclaredFields()) {
+            if (field.isAnnotationPresent(S2SIgnoreProperty.class)) {
+                String s2sConfigProperty = field.getAnnotation(S2SIgnoreProperty.class).configProperty();
+                if (s2SConfig.getIgnoreProperties().get(s2sConfigProperty)) {
+                    field.setAccessible(true);
+                    try {
+                    	Object originalValue = originalEntity != null ? field.get(originalEntity) : null;
+                        field.set(receivedEntity, originalValue);
+                    } catch (IllegalAccessException e) {
+                        LOGGER.error("Could not set field {} for {}", field.getName(), dtoType.getSimpleName());
+                    }
+                    field.setAccessible(false);
+                }
+            }
+        }
+    }
+
+	public PersonDto getExitingPerson(@Nullable CaseDataDto existingCaseDto) {
+		if (existingCaseDto == null) {
+			return null;
+		}
+		return personFacade.getPersonByUuid(existingCaseDto.getPerson().getUuid());
+	}
+
+	public PersonDto getExistingPerson(@Nullable ContactDto existingContactDto) {
+		if (existingContactDto == null) {
+			return null;
+		}
+		return personFacade.getPersonByUuid(existingContactDto.getPerson().getUuid());
+	}
 }

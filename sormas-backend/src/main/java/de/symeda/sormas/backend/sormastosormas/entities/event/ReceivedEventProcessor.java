@@ -162,7 +162,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 		eventParticipants.forEach(eventParticipant -> {
 			ValidationErrors validationErrors = new ValidationErrors();
 
-			ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(eventParticipant.getPerson());
+			ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(eventParticipant.getPerson(), null);
 			validationErrors.addAll(personValidationErrors);
 
 			DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =

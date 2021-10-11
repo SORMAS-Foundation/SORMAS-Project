@@ -64,8 +64,7 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 	private SampleService sampleService;
 
 	@Override
-	public ShareData<Event, SormasToSormasEventDto> buildShareData(Event event, User user, SormasToSormasOptionsDto options)
-		throws SormasToSormasException {
+	public ShareData<Event, SormasToSormasEventDto> buildShareData(Event event, User user, SormasToSormasOptionsDto options) {
 		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(user, options);
 
 		List<EventParticipant> eventParticipants = Collections.emptyList();
@@ -153,6 +152,8 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 		eventDto.setReportingUser(null);
 		eventDto.setSormasToSormasOriginInfo(null);
 
+		dataBuilderHelper.clearIgnoredProperties(eventDto);
+
 		return eventDto;
 	}
 
@@ -168,6 +169,7 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 			dto.setSormasToSormasOriginInfo(null);
 
 			dataBuilderHelper.pseudonymiePerson(dto.getPerson(), pseudonymizedPersonalData, pseudonymizedSensitiveData);
+			dataBuilderHelper.clearIgnoredProperties(dto);
 
 			return dto;
 		}).collect(Collectors.toList());

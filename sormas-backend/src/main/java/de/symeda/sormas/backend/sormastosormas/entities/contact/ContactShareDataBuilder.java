@@ -50,8 +50,7 @@ public class ContactShareDataBuilder implements ShareDataBuilder<Contact, Sormas
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
 
-	public ShareData<Contact, SormasToSormasContactDto> buildShareData(Contact contact, User user, SormasToSormasOptionsDto options)
-		throws SormasToSormasException {
+	public ShareData<Contact, SormasToSormasContactDto> buildShareData(Contact contact, User user, SormasToSormasOptionsDto options) {
 		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(user, options);
 
 		return createShareData(
@@ -74,8 +73,7 @@ public class ContactShareDataBuilder implements ShareDataBuilder<Contact, Sormas
 	}
 
 	@Override
-	public List<ShareData<Contact, SormasToSormasContactDto>> buildShareData(User user, SormasToSormasShareInfo shareInfo)
-		throws SormasToSormasException {
+	public List<ShareData<Contact, SormasToSormasContactDto>> buildShareData(User user, SormasToSormasShareInfo shareInfo) {
 		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(user, shareInfo);
 
 		return shareInfo.getContacts().stream().map(shareInfoContact -> {
