@@ -17,17 +17,12 @@ package de.symeda.sormas.ui.vaccination;
 
 import java.util.function.Consumer;
 
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.Table;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.i18n.Captions;
@@ -36,16 +31,13 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
-import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class VaccinationsField extends AbstractTableField<VaccinationDto> {
@@ -85,24 +77,16 @@ public class VaccinationsField extends AbstractTableField<VaccinationDto> {
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
 
-		editView.addCommitListener(new CommitDiscardWrapperComponent.CommitListener() {
-
-			@Override
-			public void onCommit() {
-				if (!vaccinationEditForm.getFieldGroup().isModified()) {
-					commitCallback.accept(vaccinationEditForm.getValue());
-				}
+		editView.addCommitListener(() -> {
+			if (!vaccinationEditForm.getFieldGroup().isModified()) {
+				commitCallback.accept(vaccinationEditForm.getValue());
 			}
 		});
 
 		if (!isEmpty(entry) && UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
-			editView.addDeleteListener(new CommitDiscardWrapperComponent.DeleteListener() {
-
-				@Override
-				public void onDelete() {
-					popupWindow.close();
-					VaccinationsField.this.removeEntry(entry);
-				}
+			editView.addDeleteListener(() -> {
+				popupWindow.close();
+				VaccinationsField.this.removeEntry(entry);
 			}, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
 		}
 	}
@@ -118,7 +102,6 @@ public class VaccinationsField extends AbstractTableField<VaccinationDto> {
 	protected Table createTable() {
 		Table table = super.createTable();
 
-
 		table.addGeneratedColumn(VaccinationDto.UUID, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			Label textField = new Label(DataHelper.getShortUuid(((EntityDto) itemId).getUuid()));
 			return textField;
@@ -127,7 +110,6 @@ public class VaccinationsField extends AbstractTableField<VaccinationDto> {
 			Label textField = new Label(DateFormatHelper.formatDate(((VaccinationDto) itemId).getVaccinationDate()));
 			return textField;
 		});
-
 
 		return table;
 	}
