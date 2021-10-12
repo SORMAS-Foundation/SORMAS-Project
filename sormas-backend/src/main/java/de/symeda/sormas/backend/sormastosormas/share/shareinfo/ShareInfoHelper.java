@@ -29,8 +29,13 @@ public class ShareInfoHelper {
 	}
 
 	public static boolean isOwnerShipHandedOver(SormasToSormasShareInfo shareInfo) {
+		// ownership handed over and the latest request was accepted
 		return shareInfo.isOwnershipHandedOver()
-			&& shareInfo.getRequests().stream().anyMatch(r -> r.getRequestStatus() == ShareRequestStatus.ACCEPTED);
+			&& shareInfo.getRequests()
+				.stream()
+				.max(Comparator.comparing(ShareRequestInfo::getCreationDate))
+				.filter(r -> r.getRequestStatus() == ShareRequestStatus.ACCEPTED)
+				.isPresent();
 	}
 
 	public static <T> SormasToSormasShareInfo createShareInfo(String organizationId, T entity, BiConsumer<SormasToSormasShareInfo, T> setEntity) {
@@ -45,5 +50,9 @@ public class ShareInfoHelper {
 
 	public static Optional<ShareRequestInfo> getLatestRequest(Stream<ShareRequestInfo> requests) {
 		return requests.max(Comparator.comparing(ShareRequestInfo::getCreationDate));
+	}
+
+	public static Optional<ShareRequestInfo> getLatestAcceptedRequest(Stream<ShareRequestInfo> requests) {
+		return getLatestRequest(requests.filter(r -> r.getRequestStatus() == ShareRequestStatus.ACCEPTED));
 	}
 }

@@ -45,6 +45,7 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sample.Sample;
 
 @Stateless
@@ -98,6 +99,15 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 					criteria.getEventParticipant().getUuid()));
 		}
 
+		if (criteria.getImmunization() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.equal(
+					from.join(SormasToSormasShareInfo.IMMUNIZATION, JoinType.LEFT).get(Immunization.UUID),
+					criteria.getImmunization().getUuid()));
+		}
+
 		return filter;
 	}
 
@@ -119,6 +129,10 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 
 	public boolean isSamlpeOwnershipHandedOver(Sample sample) {
 		return isOwnerShipHandedOver(SormasToSormasShareInfo.SAMPLE, sample);
+	}
+
+	public boolean isImmunizationsOwnershipHandedOver(Immunization immunization) {
+		return isOwnerShipHandedOver(SormasToSormasShareInfo.IMMUNIZATION, immunization);
 	}
 
 	private boolean isOwnerShipHandedOver(String associatedObjectField, AbstractDomainObject associatedObject) {
@@ -166,6 +180,10 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 
 	public SormasToSormasShareInfo getBySampleAndOrganization(String sampleUuid, String organizationId) {
 		return getByOrganization(SormasToSormasShareInfo.SAMPLE, sampleUuid, organizationId);
+	}
+
+	public SormasToSormasShareInfo getByImmunizationAndOrganization(String immunizationUuid, String organizationId) {
+		return getByOrganization(SormasToSormasShareInfo.IMMUNIZATION, immunizationUuid, organizationId);
 	}
 
 	public SormasToSormasShareInfo getByOrganization(String associatedObjectField, String associatedObjectUuid, String organizationId) {

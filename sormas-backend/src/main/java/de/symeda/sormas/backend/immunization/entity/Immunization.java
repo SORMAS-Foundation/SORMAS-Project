@@ -54,4 +54,6 @@ public class Immunization extends BaseImmunization {
 	public static final String VALID_UNTIL = "validUntil";
 	public static final String RELATED_CASE = "relatedCase";
 	public static final String VACCINATIONS = "vaccinations";
+	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 }

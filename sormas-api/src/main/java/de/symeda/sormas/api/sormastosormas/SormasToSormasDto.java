@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
@@ -42,6 +43,8 @@ public class SormasToSormasDto implements Serializable {
 	private List<SormasToSormasEventDto> events;
 	@Valid
 	private List<SormasToSormasEventParticipantDto> eventParticipants;
+	@Valid
+	private List<SormasToSormasEntityDto<ImmunizationDto>> immunizations;
 
 	public SormasToSormasOriginInfoDto getOriginInfo() {
 		return originInfo;
@@ -89,5 +92,13 @@ public class SormasToSormasDto implements Serializable {
 
 	public void setEventParticipants(List<SormasToSormasEventParticipantDto> eventParticipants) {
 		this.eventParticipants = eventParticipants;
+	}
+
+	public List<SormasToSormasEntityDto<ImmunizationDto>> getImmunizations() {
+		return immunizations;
+	}
+
+	public void setImmunizations(List<SormasToSormasEntityDto<ImmunizationDto>> immunizations) {
+		this.immunizations = immunizations;
 	}
 }

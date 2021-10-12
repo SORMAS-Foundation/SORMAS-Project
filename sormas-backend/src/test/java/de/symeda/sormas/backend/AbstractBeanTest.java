@@ -55,7 +55,6 @@ import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.geo.GeoShapeProvider;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
@@ -275,7 +274,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(CaseService.class);
 	}
 
-	public ImmunizationFacade getImmunizationFacade() {
+	public ImmunizationFacadeEjbLocal getImmunizationFacade() {
 		return getBean(ImmunizationFacadeEjbLocal.class);
 	}
 

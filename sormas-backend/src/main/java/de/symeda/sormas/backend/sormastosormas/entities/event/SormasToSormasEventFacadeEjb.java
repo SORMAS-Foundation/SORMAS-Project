@@ -47,10 +47,11 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.immunization.ImmunizationService;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
@@ -76,7 +77,7 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	@EJB
 	private SampleService sampleService;
 	@EJB
-	private EventFacadeEjbLocal eventFacade;
+	private ImmunizationService immunizationService;
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
 
@@ -145,20 +146,32 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 		}
 
 		Stream<SormasToSormasShareInfo> sampleShareInfos = Stream.empty();
-		if (eventParticipants.size() > 0 && options.isWithSamples()) {
-			List<String> eventParticipantUuids = eventParticipants.stream().map(EventParticipant::getUuid).collect(Collectors.toList());
-			sampleShareInfos = sampleService.getByEventParticipantUuids(eventParticipantUuids)
-				.stream()
-				.map(
-					s -> s.getSormasToSormasShares()
-						.stream()
-						.filter(share -> share.getOrganizationId().equals(organizationId))
-						.findFirst()
-						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, s, SormasToSormasShareInfo::setSample)));
+		Stream<SormasToSormasShareInfo> immunizationShareInfos = Stream.empty();
+		if (eventParticipants.size() > 0) {
+			if (options.isWithSamples()) {
+				List<String> eventParticipantUuids = eventParticipants.stream().map(EventParticipant::getUuid).collect(Collectors.toList());
+				sampleShareInfos = sampleService.getByEventParticipantUuids(eventParticipantUuids)
+					.stream()
+					.map(
+						s -> s.getSormasToSormasShares()
+							.stream()
+							.filter(share -> share.getOrganizationId().equals(organizationId))
+							.findFirst()
+							.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, s, SormasToSormasShareInfo::setSample)));
+			}
 
+			if (options.isWithImmunizations()) {
+				immunizationShareInfos = getAssociatedImmunizations(eventParticipants).stream()
+					.map(
+						i -> i.getSormasToSormasShares()
+							.stream()
+							.filter(share -> share.getOrganizationId().equals(organizationId))
+							.findFirst()
+							.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, i, SormasToSormasShareInfo::setImmunization)));
+			}
 		}
 
-		return Stream.of(Stream.of(eventShareInfo), eventParticipantShareInfos, sampleShareInfos)
+		return Stream.of(Stream.of(eventShareInfo), eventParticipantShareInfos, sampleShareInfos, immunizationShareInfos)
 			.flatMap(Function.identity())
 			.collect(Collectors.toList());
 	}
@@ -171,6 +184,11 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	@Override
 	protected List<String> getUuidsWithPendingOwnershipHandedOver(List<Event> entities) {
 		return shareInfoService.getEventUuidsWithPendingOwnershipHandOver(entities);
+	}
+
+	private List<Immunization> getAssociatedImmunizations(List<EventParticipant> eventParticipants) {
+		List<Long> personIds = eventParticipants.stream().map(ep -> ep.getPerson().getId()).collect(Collectors.toList());
+		return immunizationService.getByPersonIds(personIds);
 	}
 
 	@LocalBean

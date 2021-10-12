@@ -57,6 +57,8 @@ public class ShareRequestInfo extends AbstractDomainObject {
 
 	private boolean withEventParticipants;
 
+	private boolean withImmunizations;
+
 	private boolean pseudonymizedPersonalData;
 
 	private boolean pseudonymizedSensitiveData;
@@ -119,6 +121,15 @@ public class ShareRequestInfo extends AbstractDomainObject {
 
 	public void setWithEventParticipants(boolean withEventParticipants) {
 		this.withEventParticipants = withEventParticipants;
+	}
+
+	@Column
+	public boolean isWithImmunizations() {
+		return withImmunizations;
+	}
+
+	public void setWithImmunizations(boolean withImmunizations) {
+		this.withImmunizations = withImmunizations;
 	}
 
 	@Column

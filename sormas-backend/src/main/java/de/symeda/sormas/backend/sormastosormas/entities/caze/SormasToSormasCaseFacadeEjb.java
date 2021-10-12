@@ -50,11 +50,12 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.immunization.ImmunizationService;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
@@ -81,7 +82,7 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	@EJB
 	private SampleService sampleService;
 	@EJB
-	private CaseFacadeEjbLocal caseFacade;
+	private ImmunizationService immunizationService;
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
 
@@ -174,7 +175,20 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, s, SormasToSormasShareInfo::setSample)));
 		}
 
-		return Stream.of(Stream.of(cazeShareInfo), contactShareInfos, sampleShareInfos).flatMap(Function.identity()).collect(Collectors.toList());
+		Stream<SormasToSormasShareInfo> immunizationShareInfos = Stream.empty();
+		if (options.isWithImmunizations()) {
+			immunizationShareInfos = getAssociatedImmunizations(caze, contacts).stream()
+				.map(
+					i -> i.getSormasToSormasShares()
+						.stream()
+						.filter(share -> share.getOrganizationId().equals(organizationId))
+						.findFirst()
+						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, i, SormasToSormasShareInfo::setImmunization)));
+		}
+
+		return Stream.of(Stream.of(cazeShareInfo), contactShareInfos, sampleShareInfos, immunizationShareInfos)
+			.flatMap(Function.identity())
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -197,6 +211,23 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 		}
 
 		return samples;
+	}
+
+	private List<Immunization> getAssociatedImmunizations(Case caze, List<Contact> associatedContacts) {
+		final List<Immunization> caseImmunizations = immunizationService.getByPersonIds(Collections.singletonList(caze.getPerson().getId()));
+		List<Immunization> immunizations = new ArrayList<>(caseImmunizations);
+
+		List<Long> contactIds = associatedContacts.stream().map(Contact::getId).collect(Collectors.toList());
+		List<Immunization> contactImmunizations = immunizationService.getByPersonIds(contactIds)
+			.stream()
+			.filter(
+				contactImmunization -> caseImmunizations.stream()
+					.noneMatch(caseImmunization -> DataHelper.isSame(caseImmunization, contactImmunization)))
+			.collect(Collectors.toList());
+
+		immunizations.addAll(contactImmunizations);
+
+		return immunizations;
 	}
 
 	@LocalBean

@@ -267,6 +267,7 @@ public interface Strings {
 	String errorFileNotFound = "errorFileNotFound";
 	String errorFormIdPopulationAgeGroup = "errorFormIdPopulationAgeGroup";
 	String errorIllegalFilename = "errorIllegalFilename";
+	String errorImmunizationNotEditable = "errorImmunizationNotEditable";
 	String errorIntegerFieldValidationFailed = "errorIntegerFieldValidationFailed";
 	String errorInvalidValue = "errorInvalidValue";
 	String errorLabResultsAdapterNotFound = "errorLabResultsAdapterNotFound";

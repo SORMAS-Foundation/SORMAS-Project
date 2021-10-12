@@ -23,8 +23,10 @@ import javax.ejb.Stateless;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
@@ -39,6 +41,7 @@ import de.symeda.sormas.backend.sormastosormas.entities.caze.ProcessedCaseDataPe
 import de.symeda.sormas.backend.sormastosormas.entities.contact.ProcessedContactDataPersister;
 import de.symeda.sormas.backend.sormastosormas.entities.event.ProcessedEventDataPersister;
 import de.symeda.sormas.backend.sormastosormas.entities.eventparticipant.ProcessedEventParticipantDataPersister;
+import de.symeda.sormas.backend.sormastosormas.entities.immunization.ProcessedImmunizationDataPersister;
 import de.symeda.sormas.backend.sormastosormas.entities.sample.ProcessedSampleDataPersister;
 
 @Stateless
@@ -55,6 +58,8 @@ public class ProcessedDataPersister {
 	private ProcessedEventDataPersister eventDataPersister;
 	@EJB
 	private ProcessedEventParticipantDataPersister eventParticipantDataPersister;
+	@EJB
+	private ProcessedImmunizationDataPersister immunizationDataPersister;
 
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
@@ -101,6 +106,13 @@ public class ProcessedDataPersister {
 				sampleDataPersister.persistSharedData(s, originInfo, existingEntities.getSamples().get(s.getEntity().getUuid()));
 			}
 		}
+
+		List<SormasToSormasEntityDto<ImmunizationDto>> immunizations = processedData.getImmunizations();
+		if (CollectionUtils.isNotEmpty(immunizations)) {
+			for (SormasToSormasEntityDto<ImmunizationDto> s : immunizations) {
+				immunizationDataPersister.persistSharedData(s, originInfo, existingEntities.getImmunizations().get(s.getEntity().getUuid()));
+			}
+		}
 	}
 
 	public void persistSyncData(SormasToSormasDto processedData, SormasToSormasOriginInfoDto originInfoDto, ShareTreeCriteria shareTreeCriteria)
@@ -137,6 +149,13 @@ public class ProcessedDataPersister {
 		if (CollectionUtils.isNotEmpty(samples)) {
 			for (SormasToSormasSampleDto s : samples) {
 				sampleDataPersister.persistSyncData(s, originInfoDto);
+			}
+		}
+
+		List<SormasToSormasEntityDto<ImmunizationDto>> immunizations = processedData.getImmunizations();
+		if (CollectionUtils.isNotEmpty(immunizations)) {
+			for (SormasToSormasEntityDto<ImmunizationDto> i : immunizations) {
+				immunizationDataPersister.persistSyncData(i, originInfoDto);
 			}
 		}
 
