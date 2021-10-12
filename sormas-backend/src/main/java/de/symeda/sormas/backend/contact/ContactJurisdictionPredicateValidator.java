@@ -38,36 +38,36 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 
 	private final ContactJoins<?> joins;
 	private final CriteriaQuery<?> cq;
-	private final User currentUser;
+	private final User user;
 
-	private ContactJurisdictionPredicateValidator(ContactQueryContext qc, User currentUser) {
+	private ContactJurisdictionPredicateValidator(ContactQueryContext qc, User user) {
 		super(
 			qc.getCriteriaBuilder(),
 			Collections.singletonList(
 				CaseJurisdictionPredicateValidator
-					.of(new CaseQueryContext<>(qc.getCriteriaBuilder(), qc.getQuery(), ((ContactJoins) qc.getJoins()).getCaze()), currentUser)));
+					.of(new CaseQueryContext<>(qc.getCriteriaBuilder(), qc.getQuery(), ((ContactJoins) qc.getJoins()).getCaze()), user)));
 
 		this.joins = (ContactJoins<?>) qc.getJoins();
-		this.currentUser = currentUser;
+		this.user = user;
 		this.cq = qc.getQuery();
 	}
 
-	public static ContactJurisdictionPredicateValidator of(ContactQueryContext qc, User currentUser) {
-		return new ContactJurisdictionPredicateValidator(qc, currentUser);
+	public static ContactJurisdictionPredicateValidator of(ContactQueryContext qc, User user) {
+		return new ContactJurisdictionPredicateValidator(qc, user);
 	}
 
 	@Override
 	protected Predicate isInJurisdictionOrOwned() {
 		final Predicate reportedByCurrentUser = cb.and(
 			cb.isNotNull(joins.getRoot().get(Contact.REPORTING_USER)),
-			cb.equal(joins.getRoot().get(Contact.REPORTING_USER).get(User.ID), currentUser.getId()));
+			cb.equal(joins.getRoot().get(Contact.REPORTING_USER).get(User.ID), user.getId()));
 
 		return cb.or(reportedByCurrentUser, inJurisdiction());
 	}
 
 	@Override
 	protected Predicate isInJurisdiction() {
-		return isInJurisdictionByJurisdictionLevel(currentUser.getJurisdictionLevel());
+		return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
 	}
 
 	@Override
@@ -82,17 +82,17 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 
 	@Override
 	protected Predicate whenRegionalLevel() {
-		return cb.equal(joins.getRoot().get(Contact.REGION).get(Region.ID), currentUser.getRegion().getId());
+		return cb.equal(joins.getRoot().get(Contact.REGION).get(Region.ID), user.getRegion().getId());
 	}
 
 	@Override
 	protected Predicate whenDistrictLevel() {
-		return cb.equal(joins.getRoot().get(Contact.DISTRICT).get(District.ID), currentUser.getDistrict().getId());
+		return cb.equal(joins.getRoot().get(Contact.DISTRICT).get(District.ID), user.getDistrict().getId());
 	}
 
 	@Override
 	protected Predicate whenCommunityLevel() {
-		return cb.equal(joins.getRoot().get(Contact.COMMUNITY).get(Community.ID), currentUser.getCommunity().getId());
+		return cb.equal(joins.getRoot().get(Contact.COMMUNITY).get(Community.ID), user.getCommunity().getId());
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 		final SampleJoins sampleJoins = new SampleJoins(sampleRoot);
 		final Join contactJoin = sampleJoins.getContact();
 		SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator =
-			SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, currentUser);
+			SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, user);
 		sampleContactSubquery.where(cb.and(cb.equal(contactJoin, joins.getRoot()), sampleJurisdictionPredicateValidator.inJurisdictionOrOwned()));
 		sampleContactSubquery.select(sampleRoot.get(Sample.ID));
 		return cb.exists(sampleContactSubquery);

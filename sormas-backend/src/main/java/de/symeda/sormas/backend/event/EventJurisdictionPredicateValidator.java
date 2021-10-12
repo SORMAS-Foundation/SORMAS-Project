@@ -29,32 +29,32 @@ public class EventJurisdictionPredicateValidator extends PredicateJurisdictionVa
 
 	private final EventJoins<?> joins;
 	private final CriteriaQuery<?> cq;
-	private final User currentUser;
+	private final User user;
 
 
-	private EventJurisdictionPredicateValidator(EventQueryContext qc, User currentUser) {
+	private EventJurisdictionPredicateValidator(EventQueryContext qc, User user) {
 		super(qc.getCriteriaBuilder(), null);
 		this.joins = (EventJoins<?>) qc.getJoins();
-		this.currentUser = currentUser;
+		this.user = user;
 		this.cq = qc.getQuery();
 	}
 
-	public static EventJurisdictionPredicateValidator of(EventQueryContext qc, User currentUser) {
-		return new EventJurisdictionPredicateValidator(qc, currentUser);
+	public static EventJurisdictionPredicateValidator of(EventQueryContext qc, User user) {
+		return new EventJurisdictionPredicateValidator(qc, user);
 	}
 
 	@Override
 	protected Predicate isInJurisdiction() {
-		return isInJurisdictionByJurisdictionLevel(currentUser.getJurisdictionLevel());
+		return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
 	}
 
 	@Override
 	protected Predicate isInJurisdictionOrOwned() {
 		final Predicate reportedByCurrentUser =
-				cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
+				cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), user.getUuid()));
 
 		final Predicate currentUserResponsible =
-				cb.and(cb.isNotNull(joins.getResponsibleUser()), cb.equal(joins.getResponsibleUser().get(User.UUID), currentUser.getUuid()));
+				cb.and(cb.isNotNull(joins.getResponsibleUser()), cb.equal(joins.getResponsibleUser().get(User.UUID), user.getUuid()));
 
 		return cb.or(reportedByCurrentUser, currentUserResponsible, isInJurisdiction());
 	}
@@ -71,17 +71,17 @@ public class EventJurisdictionPredicateValidator extends PredicateJurisdictionVa
 
 	@Override
 	protected Predicate whenRegionalLevel() {
-		return cb.equal(joins.getRegion().get(Region.ID), currentUser.getRegion().getId());
+		return cb.equal(joins.getRegion().get(Region.ID), user.getRegion().getId());
 	}
 
 	@Override
 	protected Predicate whenDistrictLevel() {
-		return cb.equal(joins.getDistrict().get(District.ID), currentUser.getDistrict().getId());
+		return cb.equal(joins.getDistrict().get(District.ID), user.getDistrict().getId());
 	}
 
 	@Override
 	protected Predicate whenCommunityLevel() {
-		return cb.equal(joins.getCommunity().get(Community.ID), currentUser.getCommunity().getId());
+		return cb.equal(joins.getCommunity().get(Community.ID), user.getCommunity().getId());
 	}
 
 	@Override
@@ -96,7 +96,7 @@ public class EventJurisdictionPredicateValidator extends PredicateJurisdictionVa
 
 	@Override
 	protected Predicate whenLaboratoryLevel() {
-		return EventParticipantJurisdictionPredicateValidator.of(new EventParticipantQueryContext(cb, cq, joins.getEventParticipants()), currentUser)
+		return EventParticipantJurisdictionPredicateValidator.of(new EventParticipantQueryContext(cb, cq, joins.getEventParticipants()), user)
 			.whenLaboratoryLevel();
 	}
 }

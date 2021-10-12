@@ -33,40 +33,37 @@ import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 public class ImmunizationJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
 	private final ImmunizationJoins<?> joins;
-	private final User currentUser;
-	private final CriteriaQuery<?> cq;
+	private final User user;
 
 	private ImmunizationJurisdictionPredicateValidator(
 		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
 		ImmunizationJoins<?> joins,
-		User currentUser,
+		User user,
 		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
 		super(cb, associatedJurisdictionValidators);
 		this.joins = joins;
-		this.currentUser = currentUser;
-		this.cq = cq;
+		this.user = user;
 	}
 
-	public static ImmunizationJurisdictionPredicateValidator of(ImmunizationQueryContext qc, User currentUser) {
+	public static ImmunizationJurisdictionPredicateValidator of(ImmunizationQueryContext qc, User user) {
 		return new ImmunizationJurisdictionPredicateValidator(
 			qc.getQuery(),
 			qc.getCriteriaBuilder(),
 			(ImmunizationJoins<?>) qc.getJoins(),
-			currentUser,
+			user,
 			null);
 	}
 
 	@Override
 	protected Predicate isInJurisdiction() {
-		return isInJurisdictionByJurisdictionLevel(currentUser.getJurisdictionLevel());
+		return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
 	}
 
 	@Override
 	protected Predicate isInJurisdictionOrOwned() {
 		final Path<Object> reportingUserPath = joins.getRoot().get(Immunization.REPORTING_USER);
-		final Predicate reportedByCurrentUser =
-			cb.and(cb.isNotNull(reportingUserPath), cb.equal(reportingUserPath.get(User.ID), currentUser.getId()));
+		final Predicate reportedByCurrentUser = cb.and(cb.isNotNull(reportingUserPath), cb.equal(reportingUserPath.get(User.ID), user.getId()));
 		return cb.or(reportedByCurrentUser, isInJurisdiction());
 	}
 
@@ -82,17 +79,17 @@ public class ImmunizationJurisdictionPredicateValidator extends PredicateJurisdi
 
 	@Override
 	protected Predicate whenRegionalLevel() {
-		return cb.equal(joins.getRoot().get(Immunization.RESPONSIBLE_REGION).get(Region.ID), currentUser.getRegion().getId());
+		return cb.equal(joins.getRoot().get(Immunization.RESPONSIBLE_REGION).get(Region.ID), user.getRegion().getId());
 	}
 
 	@Override
 	protected Predicate whenDistrictLevel() {
-		return cb.equal(joins.getRoot().get(Immunization.RESPONSIBLE_DISTRICT).get(District.ID), currentUser.getDistrict().getId());
+		return cb.equal(joins.getRoot().get(Immunization.RESPONSIBLE_DISTRICT).get(District.ID), user.getDistrict().getId());
 	}
 
 	@Override
 	protected Predicate whenCommunityLevel() {
-		return cb.equal(joins.getRoot().get(Immunization.RESPONSIBLE_COMMUNITY).get(Community.ID), currentUser.getCommunity().getId());
+		return cb.equal(joins.getRoot().get(Immunization.RESPONSIBLE_COMMUNITY).get(Community.ID), user.getCommunity().getId());
 	}
 
 	@Override
