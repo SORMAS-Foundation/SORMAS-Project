@@ -34,6 +34,9 @@ import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -100,6 +103,8 @@ import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb.VaccinationFaca
 
 @Stateless(name = "ImmunizationFacade")
 public class ImmunizationFacadeEjb implements ImmunizationFacade {
+
+	private final Logger logger = LoggerFactory.getLogger(ImmunizationFacadeEjb.class);
 
 	@EJB
 	private ImmunizationService immunizationService;
@@ -581,7 +586,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 					}
 				}));
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Failed to sync shares of immunization", e);
 			}
 		}, 5, TimeUnit.SECONDS);
 	}
