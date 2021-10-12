@@ -131,9 +131,10 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Immunization> immunization, Timestamp date) {
 		Join<Immunization, Vaccination> vaccinations = immunization.join(Immunization.VACCINATIONS, JoinType.LEFT);
 
-		return new ChangeDateFilterBuilder(cb, date).add(immunization).add(vaccinations)
-//			.add(immunization, Immunization.SORMAS_TO_SORMAS_ORIGIN_INFO)
-//			.add(immunization, Immunization.SORMAS_TO_SORMAS_SHARES)
+		return new ChangeDateFilterBuilder(cb, date).add(immunization)
+			.add(vaccinations)
+			.add(immunization, Immunization.SORMAS_TO_SORMAS_ORIGIN_INFO)
+			.add(immunization, Immunization.SORMAS_TO_SORMAS_SHARES)
 			.build();
 	}
 
