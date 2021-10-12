@@ -31,6 +31,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sample.Sample;
 
 @Entity(name = "sormastosormasshareinfo")
@@ -43,6 +44,7 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 	public static final String SAMPLE = "sample";
 	public static final String EVENT = "event";
 	public static final String EVENT_PARTICIPANT = "eventParticipant";
+	public static final String IMMUNIZATION = "immunization";
 	public static final String ORGANIZATION_ID = "organizationId";
 	public static final String REQUESTS = "requests";
 	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
@@ -56,6 +58,8 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 	private Event event;
 
 	private EventParticipant eventParticipant;
+
+	private Immunization immunization;
 
 	private String organizationId;
 
@@ -110,6 +114,15 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	public void setEventParticipant(EventParticipant eventParticipant) {
 		this.eventParticipant = eventParticipant;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Immunization getImmunization() {
+		return immunization;
+	}
+
+	public void setImmunization(Immunization immunization) {
+		this.immunization = immunization;
 	}
 
 	@Column(columnDefinition = "text")

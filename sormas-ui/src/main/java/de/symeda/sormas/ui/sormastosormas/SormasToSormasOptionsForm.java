@@ -65,10 +65,14 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		return new SormasToSormasOptionsForm(
 			currentShares,
 			true,
-			Arrays.asList(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS, SormasToSormasOptionsDto.WITH_SAMPLES),
+			Arrays.asList(
+				SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS,
+				SormasToSormasOptionsDto.WITH_SAMPLES,
+				SormasToSormasOptionsDto.WITH_IMMUNIZATIONS),
 			(f, s) -> {
 				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS)).setValue(s.isWithAssociatedContacts());
 				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_SAMPLES)).setValue(s.isWithSamples());
+				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS)).setValue(s.isWithImmunizations());
 			},
 				(form) -> {
 					FieldHelper.setEnabledWhen(
@@ -77,6 +81,12 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 							Boolean.FALSE,
 							SormasToSormasOptionsDto.WITH_SAMPLES,
 							false);
+				FieldHelper.setEnabledWhen(
+					form.getFieldGroup(),
+					SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+					Boolean.FALSE,
+					SormasToSormasOptionsDto.WITH_IMMUNIZATIONS,
+					false);
 
 					FieldHelper.setValueWhen(
 							form.getFieldGroup(),
@@ -84,12 +94,24 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 							Boolean.TRUE,
 							SormasToSormasOptionsDto.WITH_SAMPLES,
 							Boolean.TRUE);
+
+				FieldHelper.setValueWhen(
+					form.getFieldGroup(),
+					SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+					Boolean.TRUE,
+					SormasToSormasOptionsDto.WITH_IMMUNIZATIONS,
+					Boolean.TRUE);
 				});
 	}
 
 	public static SormasToSormasOptionsForm forContact(List<SormasToSormasShareInfoDto> currentShares) {
-		return new SormasToSormasOptionsForm(currentShares, true, Collections.singletonList(SormasToSormasOptionsDto.WITH_SAMPLES), (f, s) -> {
+		return new SormasToSormasOptionsForm(
+			currentShares,
+			true,
+			Arrays.asList(SormasToSormasOptionsDto.WITH_SAMPLES, SormasToSormasOptionsDto.WITH_IMMUNIZATIONS),
+			(f, s) -> {
 			((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_SAMPLES)).setValue(s.isWithSamples());
+			((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS)).setValue(s.isWithImmunizations());
 		}, null);
 	}
 
@@ -97,17 +119,30 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		return new SormasToSormasOptionsForm(
 			currentShares,
 			true,
-			Arrays.asList(SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS, SormasToSormasOptionsDto.WITH_SAMPLES),
+			Arrays.asList(
+				SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS,
+				SormasToSormasOptionsDto.WITH_SAMPLES,
+				SormasToSormasOptionsDto.WITH_IMMUNIZATIONS),
 			(f, s) -> {
 				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS)).setValue(s.isWithEvenParticipants());
 				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_SAMPLES)).setValue(s.isWithSamples());
+				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS)).setValue(s.isWithImmunizations());
 			},
-			(form) -> FieldHelper.setVisibleWhen(
-				form.getFieldGroup(),
-				SormasToSormasOptionsDto.WITH_SAMPLES,
-				SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS,
-				Boolean.TRUE,
-				true));
+			(form) -> {
+				FieldHelper.setVisibleWhen(
+					form.getFieldGroup(),
+					SormasToSormasOptionsDto.WITH_SAMPLES,
+					SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS,
+					Boolean.TRUE,
+					true);
+
+				FieldHelper.setVisibleWhen(
+					form.getFieldGroup(),
+					SormasToSormasOptionsDto.WITH_IMMUNIZATIONS,
+					SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS,
+					Boolean.TRUE,
+					true);
+			});
 	}
 
 	public static SormasToSormasOptionsForm withoutOptions() {

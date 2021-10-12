@@ -22,7 +22,9 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
@@ -37,6 +39,7 @@ import de.symeda.sormas.backend.sormastosormas.entities.caze.CaseShareDataBuilde
 import de.symeda.sormas.backend.sormastosormas.entities.contact.ContactShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.entities.event.EventShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.entities.eventparticipant.EventParticipantShareDataBuilder;
+import de.symeda.sormas.backend.sormastosormas.entities.immunization.ImmunizationShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.entities.sample.SampleShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
@@ -59,6 +62,8 @@ public class ShareDataBuilder {
 	@EJB
 	private EventParticipantShareDataBuilder eventParticipantShareDataBuilder;
 	@EJB
+	private ImmunizationShareDataBuilder immunizationShareDataBuilder;
+	@EJB
 	private ShareDataBuilderHelper shareDataBuilderHelper;
 
 	public SormasToSormasDto buildShareDataForRequest(ShareRequestInfo requestInfo, User user) {
@@ -77,6 +82,7 @@ public class ShareDataBuilder {
 		List<SormasToSormasSampleDto> samples = new ArrayList<>();
 		List<SormasToSormasEventDto> events = new ArrayList<>();
 		List<SormasToSormasEventParticipantDto> eventParticipants = new ArrayList<>();
+		List<SormasToSormasEntityDto<ImmunizationDto>> immunizations = new ArrayList<>();
 
 		shares.forEach(s -> {
 			if (s.getCaze() != null) {
@@ -98,6 +104,10 @@ public class ShareDataBuilder {
 			if (s.getEventParticipant() != null) {
 				eventParticipants.add(eventParticipantShareDataBuilder.buildShareData(s.getEventParticipant(), requestInfo));
 			}
+
+			if (s.getImmunization() != null) {
+				immunizations.add(immunizationShareDataBuilder.buildShareData(s.getImmunization(), requestInfo));
+			}
 		});
 
 		SormasToSormasDto dto = new SormasToSormasDto();
@@ -107,6 +117,7 @@ public class ShareDataBuilder {
 		dto.setSamples(samples);
 		dto.setEvents(events);
 		dto.setEventParticipants(eventParticipants);
+		dto.setImmunizations(immunizations);
 
 		return dto;
 	}
@@ -117,24 +128,23 @@ public class ShareDataBuilder {
 		List<SormasToSormasEventPreview> events = new ArrayList<>();
 		List<SormasToSormasEventParticipantPreview> eventParticipants = new ArrayList<>();
 
-		requestInfo.getShares()
-			.forEach(s -> {
-				if (s.getCaze() != null) {
-					cases.add(caseShareDataBuilder.buildShareDataPreview(s.getCaze(), requestInfo));
-				}
+		requestInfo.getShares().forEach(s -> {
+			if (s.getCaze() != null) {
+				cases.add(caseShareDataBuilder.buildShareDataPreview(s.getCaze(), requestInfo));
+			}
 
-				if (s.getContact() != null) {
-					contacts.add(contactShareDataBuilder.buildShareDataPreview(s.getContact(), requestInfo));
-				}
+			if (s.getContact() != null) {
+				contacts.add(contactShareDataBuilder.buildShareDataPreview(s.getContact(), requestInfo));
+			}
 
-				if (s.getEvent() != null) {
-					events.add(eventShareDataBuilder.buildShareDataPreview(s.getEvent(), requestInfo));
-				}
+			if (s.getEvent() != null) {
+				events.add(eventShareDataBuilder.buildShareDataPreview(s.getEvent(), requestInfo));
+			}
 
-				if (s.getEventParticipant() != null) {
-					eventParticipants.add(eventParticipantShareDataBuilder.buildShareDataPreview(s.getEventParticipant(), requestInfo));
-				}
-			});
+			if (s.getEventParticipant() != null) {
+				eventParticipants.add(eventParticipantShareDataBuilder.buildShareDataPreview(s.getEventParticipant(), requestInfo));
+			}
+		});
 
 		return new ShareRequestPreviews(cases, contacts, events, eventParticipants);
 	}

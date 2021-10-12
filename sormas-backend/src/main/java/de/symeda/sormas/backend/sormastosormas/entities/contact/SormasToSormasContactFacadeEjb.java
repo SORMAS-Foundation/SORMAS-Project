@@ -21,6 +21,7 @@ import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RES
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -45,11 +46,10 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
@@ -73,11 +73,9 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 	@EJB
 	private SampleService sampleService;
 	@EJB
-	private ContactFacadeEjbLocal contactFacade;
-	@EJB
-	private CaseFacadeEjbLocal caseFacade;
-	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
+	@EJB
+	private ImmunizationService immunizationService;
 
 	public SormasToSormasContactFacadeEjb() {
 		super(
@@ -155,7 +153,21 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, s, SormasToSormasShareInfo::setSample)));
 		}
 
-		return Stream.of(Stream.of(eventShareInfo), sampleShareInfos).flatMap(Function.identity()).collect(Collectors.toList());
+		Stream<SormasToSormasShareInfo> immunizationShareInfos = Stream.empty();
+		if (options.isWithImmunizations()) {
+			immunizationShareInfos = immunizationService.getByPersonIds(Collections.singletonList(contact.getPerson().getId()))
+				.stream()
+				.map(
+					i -> i.getSormasToSormasShares()
+						.stream()
+						.filter(share -> share.getOrganizationId().equals(organizationId))
+						.findFirst()
+						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, i, SormasToSormasShareInfo::setImmunization)));
+		}
+
+		return Stream.of(Stream.of(eventShareInfo), sampleShareInfos, immunizationShareInfos)
+			.flatMap(Function.identity())
+			.collect(Collectors.toList());
 	}
 
 	@Override

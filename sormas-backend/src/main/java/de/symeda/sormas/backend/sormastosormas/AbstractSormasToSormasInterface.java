@@ -38,7 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -47,6 +46,7 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolExc
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
@@ -83,6 +83,8 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.immunization.ImmunizationService;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
@@ -155,6 +157,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	private EventParticipantService eventParticipantService;
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private ImmunizationService immunizationService;
 
 	private final String requestEndpoint;
 	private final String requestRejectEndpoint;
@@ -234,6 +238,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 			if (SormasToSormasCaseDto[].class.isAssignableFrom(getShareDataClass())) {
 				options.setWithSamples(true);
+				options.setWithImmunizations(true);
 			}
 		}
 	}
@@ -377,7 +382,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 					// sync with as much servers as possible
 					try {
 						ShareRequestInfo latestRequestInfo = ShareInfoHelper
-							.getLatestRequest(shareInfo.getRequests().stream().filter(r -> r.getRequestStatus() == ShareRequestStatus.ACCEPTED))
+							.getLatestAcceptedRequest(shareInfo.getRequests().stream())
 							.orElse(null);
 
 						syncEntityToShares(entity, latestRequestInfo, reShareCriteria, currentUser);
@@ -485,11 +490,27 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 				.collect(Collectors.toMap(Sample::getUuid, Function.identity()));
 		}
 
-		return new ShareDataExistingEntities(existingCases, existingContacts, existingEvents, existingEventParticipants, existingSamples);
-	}
+		Map<String, Immunization> existingImmunizations = Collections.emptyMap();
+		if (CollectionUtils.isNotEmpty(receivedData.getImmunizations())) {
+			existingImmunizations =
+				immunizationService
+					.getByUuids(
+						receivedData.getImmunizations()
+							.stream()
+							.map(SormasToSormasEntityDto::getEntity)
+							.map(ImmunizationDto::getUuid)
+							.collect(Collectors.toList()))
+					.stream()
+					.collect(Collectors.toMap(Immunization::getUuid, Function.identity()));
+		}
 
-	private ValidationErrorGroup buildEntityValidationGroupName(HasUuid entity) {
-		return buildEntityValidationGroupName(entity.getUuid());
+		return new ShareDataExistingEntities(
+			existingCases,
+			existingContacts,
+			existingEvents,
+			existingEventParticipants,
+			existingSamples,
+			existingImmunizations);
 	}
 
 	private ValidationErrorGroup buildEntityValidationGroupName(String uuid) {
@@ -747,6 +768,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		requestInfo.setWithAssociatedContacts(options.isWithAssociatedContacts());
 		requestInfo.setWithSamples(options.isWithSamples());
 		requestInfo.setWithEventParticipants(options.isWithEventParticipants());
+		requestInfo.setWithImmunizations(options.isWithImmunizations());
 		requestInfo.setPseudonymizedPersonalData(options.isPseudonymizePersonalData());
 		requestInfo.setPseudonymizedSensitiveData(options.isPseudonymizeSensitiveData());
 		requestInfo.setComment(options.getComment());

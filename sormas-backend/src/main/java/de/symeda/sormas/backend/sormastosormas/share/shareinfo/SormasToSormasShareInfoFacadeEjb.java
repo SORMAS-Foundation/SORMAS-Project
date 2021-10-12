@@ -88,6 +88,7 @@ public class SormasToSormasShareInfoFacadeEjb implements SormasToSormasShareInfo
 		target.setWithAssociatedContacts(latestRequest.isWithAssociatedContacts());
 		target.setWithSamples(latestRequest.isWithSamples());
 		target.setWithEvenParticipants(latestRequest.isWithEventParticipants());
+		target.setWithImmunizations(latestRequest.isWithImmunizations());
 		target.setPseudonymizedPersonalData(latestRequest.isPseudonymizedPersonalData());
 		target.setPseudonymizedSensitiveData(latestRequest.isPseudonymizedSensitiveData());
 		target.setComment(latestRequest.getComment());
