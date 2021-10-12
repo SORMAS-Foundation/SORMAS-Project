@@ -25,10 +25,10 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
@@ -40,37 +40,37 @@ import de.symeda.sormas.utils.CaseJoins;
 public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
 	private final CaseJoins<?> joins;
-	private final User currentUser;
+	private final User user;
 	private final CriteriaQuery<?> cq;
 
 	private CaseJurisdictionPredicateValidator(
 		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
 		CaseJoins<?> joins,
-		User currentUser,
+		User user,
 		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
 		super(cb, associatedJurisdictionValidators);
 		this.joins = joins;
-		this.currentUser = currentUser;
+		this.user = user;
 		this.cq = cq;
 	}
 
-	public static CaseJurisdictionPredicateValidator of(CaseQueryContext qc, User currentUser) {
-		return new CaseJurisdictionPredicateValidator(qc.getQuery(), qc.getCriteriaBuilder(), (CaseJoins<?>) qc.getJoins(), currentUser, null);
+	public static CaseJurisdictionPredicateValidator of(CaseQueryContext qc, User user) {
+		return new CaseJurisdictionPredicateValidator(qc.getQuery(), qc.getCriteriaBuilder(), (CaseJoins<?>) qc.getJoins(), user, null);
 	}
 
 	@Override
 	protected Predicate isInJurisdictionOrOwned() {
 		final Predicate reportedByCurrentUser = cb.and(
 			cb.isNotNull(joins.getRoot().get(Case.REPORTING_USER)),
-			cb.equal(joins.getRoot().get(Case.REPORTING_USER).get(User.ID), currentUser.getId()));
+			cb.equal(joins.getRoot().get(Case.REPORTING_USER).get(User.ID), user.getId()));
 
 		return cb.or(reportedByCurrentUser, isInJurisdiction());
 	}
 
 	@Override
 	protected Predicate isInJurisdiction() {
-		return isInJurisdictionByJurisdictionLevel(currentUser.getJurisdictionLevel());
+		return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
 	}
 
 	@Override
@@ -87,34 +87,34 @@ public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionVal
 	protected Predicate whenRegionalLevel() {
 		return CriteriaBuilderHelper.or(
 			cb,
-			cb.equal(joins.getRoot().get(Case.RESPONSIBLE_REGION).get(Region.ID), currentUser.getRegion().getId()),
-			cb.equal(joins.getRoot().get(Case.REGION).get(Region.ID), currentUser.getRegion().getId()));
+			cb.equal(joins.getRoot().get(Case.RESPONSIBLE_REGION).get(Region.ID), user.getRegion().getId()),
+			cb.equal(joins.getRoot().get(Case.REGION).get(Region.ID), user.getRegion().getId()));
 	}
 
 	@Override
 	protected Predicate whenDistrictLevel() {
 		return CriteriaBuilderHelper.or(
 			cb,
-			cb.equal(joins.getRoot().get(Case.RESPONSIBLE_DISTRICT).get(District.ID), currentUser.getDistrict().getId()),
-			cb.equal(joins.getRoot().get(Case.DISTRICT).get(District.ID), currentUser.getDistrict().getId()));
+			cb.equal(joins.getRoot().get(Case.RESPONSIBLE_DISTRICT).get(District.ID), user.getDistrict().getId()),
+			cb.equal(joins.getRoot().get(Case.DISTRICT).get(District.ID), user.getDistrict().getId()));
 	}
 
 	@Override
 	protected Predicate whenCommunityLevel() {
 		return CriteriaBuilderHelper.or(
 			cb,
-			cb.equal(joins.getRoot().get(Case.RESPONSIBLE_COMMUNITY).get(Community.ID), currentUser.getCommunity().getId()),
-			cb.equal(joins.getRoot().get(Case.COMMUNITY).get(Community.ID), currentUser.getCommunity().getId()));
+			cb.equal(joins.getRoot().get(Case.RESPONSIBLE_COMMUNITY).get(Community.ID), user.getCommunity().getId()),
+			cb.equal(joins.getRoot().get(Case.COMMUNITY).get(Community.ID), user.getCommunity().getId()));
 	}
 
 	@Override
 	protected Predicate whenFacilityLevel() {
-		return cb.equal(joins.getRoot().get(Case.HEALTH_FACILITY).get(Facility.ID), currentUser.getHealthFacility().getId());
+		return cb.equal(joins.getRoot().get(Case.HEALTH_FACILITY).get(Facility.ID), user.getHealthFacility().getId());
 	}
 
 	@Override
 	protected Predicate whenPointOfEntryLevel() {
-		return cb.equal(joins.getRoot().get(Case.POINT_OF_ENTRY).get(PointOfEntry.ID), currentUser.getPointOfEntry().getId());
+		return cb.equal(joins.getRoot().get(Case.POINT_OF_ENTRY).get(PointOfEntry.ID), user.getPointOfEntry().getId());
 	}
 
 	@Override
@@ -125,7 +125,7 @@ public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionVal
 		final SampleJoins sampleJoins = new SampleJoins(sampleRoot);
 		final Join caseJoin = sampleJoins.getCaze();
 		SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator =
-			SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, currentUser);
+			SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, user);
 		sampleSubquery.where(cb.and(cb.equal(caseJoin, joins.getRoot()), sampleJurisdictionPredicateValidator.inJurisdictionOrOwned()));
 		sampleSubquery.select(sampleRoot.get(Sample.ID));
 		return cb.exists(sampleSubquery);

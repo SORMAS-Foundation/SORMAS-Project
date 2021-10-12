@@ -47,9 +47,13 @@ import javax.validation.ValidationException;
 import org.apache.commons.beanutils.BeanUtils;
 
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
@@ -80,11 +84,14 @@ import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
@@ -119,6 +126,8 @@ public class UserFacadeEjb implements UserFacade {
 	private ContactService contactService;
 	@EJB
 	private EventService eventService;
+	@EJB
+	private TravelEntryService travelEntryService;
 	@EJB
 	private PointOfEntryService pointOfEntryService;
 	@Inject
@@ -314,6 +323,94 @@ public class UserFacadeEjb implements UserFacade {
 
 		User associatedOfficer = userService.getByReferenceDto(associatedOfficerRef);
 		return userService.getAllByAssociatedOfficer(associatedOfficer, userRoles).stream().map(f -> toDto(f)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<UserReferenceDto> getUsersHavingCaseInJurisdiction(CaseReferenceDto caseReferenceDto) {
+
+		final List<UserReferenceDto> users = new ArrayList<>();
+
+		final Case caze = caseService.getByReferenceDto(caseReferenceDto);
+		final Region responsibleRegion = caze.getResponsibleRegion();
+		final District responsibleDistrict = caze.getResponsibleDistrict();
+		if (responsibleDistrict != null) {
+			final List<DistrictReferenceDto> caseDistricts = new ArrayList<>();
+			caseDistricts.add(DistrictFacadeEjb.toReferenceDto(responsibleDistrict));
+			final District district = caze.getDistrict();
+			if (district != null) {
+				caseDistricts.add(DistrictFacadeEjb.toReferenceDto(district));
+			}
+			users.addAll(getUserRefsByDistricts(caseDistricts, true));
+		} else if (responsibleRegion != null) {
+
+			final List<RegionReferenceDto> caseRegions = new ArrayList<>();
+			caseRegions.add(RegionFacadeEjb.toReferenceDto(responsibleRegion));
+			final Region region = caze.getRegion();
+			if (region != null) {
+				caseRegions.add(RegionFacadeEjb.toReferenceDto(region));
+			}
+			users.addAll(getUsersByRegionsAndRoles(caseRegions));
+		} else {
+			users.addAll(getAllUserRefs(false));
+		}
+
+		return users.stream()
+			.filter(userReferenceDto -> caseService.inJurisdictionOrOwned(caze, userService.getByUuid(userReferenceDto.getUuid())))
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<UserReferenceDto> getUsersHavingContactInJurisdiction(ContactReferenceDto contactReferenceDto) {
+
+		final Contact contact = contactService.getByReferenceDto(contactReferenceDto);
+		final Region region = contact.getRegion();
+		final District district = contact.getDistrict();
+
+		final List<UserReferenceDto> users = getAllUsersByDistrictOrRegion(region, district);
+
+		return users.stream()
+			.filter(userReferenceDto -> contactService.inJurisdictionOrOwned(contact, userService.getByUuid(userReferenceDto.getUuid())))
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<UserReferenceDto> getUsersHavingEventInJurisdiction(EventReferenceDto eventReferenceDto) {
+
+		final de.symeda.sormas.backend.event.Event event = eventService.getByReferenceDto(eventReferenceDto);
+		final Region region = event.getEventLocation().getRegion();
+		final District district = event.getEventLocation().getDistrict();
+
+		final List<UserReferenceDto> users = getAllUsersByDistrictOrRegion(region, district);
+
+		return users.stream()
+				.filter(userReferenceDto -> eventService.inJurisdictionOrOwned(event, userService.getByUuid(userReferenceDto.getUuid())))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<UserReferenceDto> getUsersHavingTravelEntryInJurisdiction(TravelEntryReferenceDto travelEntryReferenceDto) {
+
+		TravelEntry travelEntry = travelEntryService.getByReferenceDto(travelEntryReferenceDto);
+		final Region region = travelEntry.getResponsibleRegion();
+		final District district = travelEntry.getResponsibleDistrict();
+
+		final List<UserReferenceDto> users = getAllUsersByDistrictOrRegion(region, district);
+
+		return users.stream()
+			.filter(userReferenceDto -> travelEntryService.inJurisdictionOrOwned(travelEntry, userService.getByUuid(userReferenceDto.getUuid())))
+			.collect(Collectors.toList());
+	}
+
+	private List<UserReferenceDto> getAllUsersByDistrictOrRegion(Region region, District district) {
+		final List<UserReferenceDto> users = new ArrayList<>();
+		if (district != null) {
+			users.addAll(getUserRefsByDistrict(DistrictFacadeEjb.toReferenceDto(district), true));
+		} else if (region != null) {
+			users.addAll(getUsersByRegionAndRoles(RegionFacadeEjb.toReferenceDto(region)));
+		} else {
+			users.addAll(getAllUserRefs(false));
+		}
+		return users;
 	}
 
 	@Override

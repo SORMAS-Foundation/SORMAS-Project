@@ -871,34 +871,40 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return inJurisdictionOrOwned(event) && !sormasToSormasShareInfoService.isEventOwnershipHandedOver(event);
 	}
 
+	public boolean inJurisdictionOrOwned(Event event, User user) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<Event> root = cq.from(Event.class);
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new EventQueryContext(cb, cq, root), user)));
+		cq.where(cb.equal(root.get(Event.UUID), event.getUuid()));
+		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
+	}
+
 	public boolean inJurisdiction(Event event) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<Event> root = cq.from(Event.class);
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdiction(new EventQueryContext(cb, cq, root))));
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdiction(new EventQueryContext(cb, cq, root), userService.getCurrentUser())));
 		cq.where(cb.equal(root.get(Event.UUID), event.getUuid()));
 		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
 	}
 
 	public boolean inJurisdictionOrOwned(Event event) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
-		Root<Event> root = cq.from(Event.class);
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new EventQueryContext(cb, cq, root))));
-		cq.where(cb.equal(root.get(Event.UUID), event.getUuid()));
-		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
+		return inJurisdictionOrOwned(event, userService.getCurrentUser());
 	}
 
-	public Predicate inJurisdiction(EventQueryContext qc) {
-		final User currentUser = userService.getCurrentUser();
-		return EventJurisdictionPredicateValidator.of(qc, currentUser).inJurisdiction();
+	public Predicate inJurisdiction(EventQueryContext qc, User user) {
+		return EventJurisdictionPredicateValidator.of(qc, user).inJurisdiction();
 	}
 
 	public Predicate inJurisdictionOrOwned(EventQueryContext qc) {
-		final User currentUser = userService.getCurrentUser();
-		return EventJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
+		return inJurisdictionOrOwned(qc, getCurrentUser());
+	}
+
+	public Predicate inJurisdictionOrOwned(EventQueryContext qc, User user) {
+		return EventJurisdictionPredicateValidator.of(qc, user).inJurisdictionOrOwned();
 	}
 
 	@Transactional(rollbackOn = Exception.class)

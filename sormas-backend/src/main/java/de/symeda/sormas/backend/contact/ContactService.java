@@ -1352,6 +1352,16 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb.lessThanOrEqualTo(contact.get(Contact.REPORT_DATE_TIME), to)));
 	}
 
+	public boolean inJurisdictionOrOwned(Contact contact, User user) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<Contact> root = cq.from(Contact.class);
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new ContactQueryContext(cb, cq, root), user)));
+		cq.where(cb.equal(root.get(Contact.UUID), contact.getUuid()));
+		return em.createQuery(cq).getSingleResult();
+	}
+
 	public ContactJurisdictionFlagsDto inJurisdictionOrOwned(Contact contact) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -1362,20 +1372,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	public List<Selection<?>> getJurisdictionSelections(ContactQueryContext qc) {
-
-		final CriteriaBuilder cb = qc.getCriteriaBuilder();
-		final ContactJoins joins = (ContactJoins) qc.getJoins();
-		return Arrays.asList(
-			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc)),
-			JurisdictionHelper.booleanSelector(
-				cb,
-				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaze())))));
+	public Predicate inJurisdictionOrOwned(ContactQueryContext contactQueryContext) {
+		return inJurisdictionOrOwned(contactQueryContext, userService.getCurrentUser());
 	}
 
-	public Predicate inJurisdictionOrOwned(ContactQueryContext contactQueryContext) {
-		final User currentUser = userService.getCurrentUser();
-		return ContactJurisdictionPredicateValidator.of(contactQueryContext, currentUser).inJurisdictionOrOwned();
+	public Predicate inJurisdictionOrOwned(ContactQueryContext contactQueryContext, User user) {
+		return ContactJurisdictionPredicateValidator.of(contactQueryContext, user).inJurisdictionOrOwned();
 	}
 
 	public boolean isContactEditAllowed(Contact contact) {
@@ -1384,6 +1386,17 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 
 		return inJurisdictionOrOwned(contact).getInJurisdiction() && !sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact);
+	}
+
+	public List<Selection<?>> getJurisdictionSelections(ContactQueryContext qc) {
+
+		final CriteriaBuilder cb = qc.getCriteriaBuilder();
+		final ContactJoins joins = (ContactJoins) qc.getJoins();
+		return Arrays.asList(
+			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc, userService.getCurrentUser())),
+			JurisdictionHelper.booleanSelector(
+				cb,
+				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaze())))));
 	}
 
 	public List<Contact> getByPersonUuids(List<String> personUuids) {
