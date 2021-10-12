@@ -18,7 +18,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.SimilarEntriesDto;
-import de.symeda.sormas.ui.caze.CaseSelectionGrid;
+import de.symeda.sormas.ui.caze.components.caseselection.CaseSelectionGrid;
 import de.symeda.sormas.ui.contact.ContactSelectionGrid;
 import de.symeda.sormas.ui.events.EventParticipantSelectionGrid;
 import de.symeda.sormas.ui.utils.CssStyles;

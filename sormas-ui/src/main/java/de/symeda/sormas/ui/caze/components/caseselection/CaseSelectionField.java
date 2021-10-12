@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.caze.components.caseselection;
 
 import java.util.function.Consumer;
 

@@ -42,7 +42,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class VaccinationsField extends AbstractTableField<VaccinationDto> {
 
-	private FieldVisibilityCheckers fieldVisibilityCheckers;
+	private final FieldVisibilityCheckers fieldVisibilityCheckers;
 
 	public VaccinationsField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(fieldAccessCheckers);

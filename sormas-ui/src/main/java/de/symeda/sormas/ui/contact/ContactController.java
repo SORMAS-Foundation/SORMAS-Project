@@ -75,7 +75,7 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseContactsView;
-import de.symeda.sormas.ui.caze.CaseSelectionField;
+import de.symeda.sormas.ui.caze.components.caseselection.CaseSelectionField;
 import de.symeda.sormas.ui.contact.components.linelisting.layout.LineListingLayout;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
@@ -261,7 +261,7 @@ public class ContactController {
 	}
 
 	public void navigateToData(String contactUuid, boolean openTab) {
-		navigateToView(ContactDataView.VIEW_NAME , contactUuid, openTab);
+		navigateToView(ContactDataView.VIEW_NAME, contactUuid, openTab);
 	}
 
 	public void navigateToView(String viewName, String contactUuid, boolean openTab) {
