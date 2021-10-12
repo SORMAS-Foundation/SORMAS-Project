@@ -1290,51 +1290,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public List<CaseIndexDto> getSimilarCases(CaseSimilarityCriteria criteria) {
 
-		CaseCriteria caseCriteria = criteria.getCaseCriteria();
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
-		Root<Case> root = cq.from(Case.class);
-		cq.distinct(true);
-
-		CaseJoins<Case> joins = new CaseJoins<>(root);
-
-		selectIndexDtoFields(new CaseQueryContext(cb, cq, root));
-
-		Predicate userFilter = caseService.createUserFilter(cb, cq, root);
-
-		// In case you wonder: At this point in time the **person** duplicate check has already happen.
-		// Here, we really just check if there is a similar case to the current one, therefore it is allowed to just
-		// check if a case exists which references the same person to make sure that we are really talking about
-		// the same case.
-		Predicate personSimilarityFilter =
-			criteria.getPersonUuid() != null ? cb.equal(joins.getPerson().get(Person.UUID), criteria.getPersonUuid()) : null;
-
-		Predicate diseaseFilter = caseCriteria.getDisease() != null ? cb.equal(root.get(Case.DISEASE), caseCriteria.getDisease()) : null;
-
-		Predicate regionFilter = null;
-		RegionReferenceDto criteriaRegion = caseCriteria.getRegion();
-		if (criteriaRegion != null) {
-			regionFilter = CriteriaBuilderHelper.or(cb, regionFilter, CaseCriteriaHelper.createRegionFilterWithFallback(cb, joins, criteriaRegion));
-		}
-
-		Predicate reportDateFilter = criteria.getReportDate() != null
-			? cb.between(
-				root.get(Case.REPORT_DATE),
-				DateHelper.subtractDays(criteria.getReportDate(), 30),
-				DateHelper.addDays(criteria.getReportDate(), 30))
-			: null;
-
-		Predicate filter = caseService.createDefaultFilter(cb, root);
-		filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
-		filter = CriteriaBuilderHelper.and(cb, filter, personSimilarityFilter);
-		filter = CriteriaBuilderHelper.and(cb, filter, diseaseFilter);
-		filter = CriteriaBuilderHelper.and(cb, filter, regionFilter);
-		filter = CriteriaBuilderHelper.and(cb, filter, reportDateFilter);
-
-		cq.where(filter);
-
-		return em.createQuery(cq).getResultList();
+		return caseService.getSimilarCases(criteria);
 	}
 
 	@Override

@@ -56,12 +56,14 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
@@ -74,6 +76,7 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
@@ -1389,6 +1392,55 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		TypedQuery<Long> q = em.createQuery(cq).setParameter(uuidParam, uuid);
 
 		return q.getResultList().stream().findFirst().orElse(null);
+	}
+
+	public List<CaseIndexDto> getSimilarCases(CaseSimilarityCriteria criteria) {
+
+		CaseCriteria caseCriteria = criteria.getCaseCriteria();
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
+		Root<Case> root = cq.from(Case.class);
+		cq.distinct(true);
+
+		CaseJoins<Case> joins = new CaseJoins<>(root);
+
+		selectIndexDtoFields(new CaseQueryContext(cb, cq, root));
+
+		Predicate userFilter = caseService.createUserFilter(cb, cq, root);
+
+		// In case you wonder: At this point in time the **person** duplicate check has already happen.
+		// Here, we really just check if there is a similar case to the current one, therefore it is allowed to just
+		// check if a case exists which references the same person to make sure that we are really talking about
+		// the same case.
+		Predicate personSimilarityFilter =
+			criteria.getPersonUuid() != null ? cb.equal(joins.getPerson().get(Person.UUID), criteria.getPersonUuid()) : null;
+
+		Predicate diseaseFilter = caseCriteria.getDisease() != null ? cb.equal(root.get(Case.DISEASE), caseCriteria.getDisease()) : null;
+
+		Predicate regionFilter = null;
+		RegionReferenceDto criteriaRegion = caseCriteria.getRegion();
+		if (criteriaRegion != null) {
+			regionFilter = CriteriaBuilderHelper.or(cb, regionFilter, CaseCriteriaHelper.createRegionFilterWithFallback(cb, joins, criteriaRegion));
+		}
+
+		Predicate reportDateFilter = criteria.getReportDate() != null
+			? cb.between(
+				root.get(Case.REPORT_DATE),
+				DateHelper.subtractDays(criteria.getReportDate(), 30),
+				DateHelper.addDays(criteria.getReportDate(), 30))
+			: null;
+
+		Predicate filter = createDefaultFilter(cb, root);
+		filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, personSimilarityFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, diseaseFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, regionFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, reportDateFilter);
+
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultList();
 	}
 
 	@Transactional(rollbackOn = Exception.class)
