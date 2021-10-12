@@ -632,6 +632,11 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
+	public List<CaseIndexDto> getCaseSelectionList(CaseCriteria caseCriteria) {
+		return getIndexList(caseCriteria, null, null, null);
+	}
+
+	@Override
 	public List<CaseListEntryDto> getEntriesList(String personUuid, Integer first, Integer max) {
 
 		Long personId = personFacade.getPersonIdByUuid(personUuid);

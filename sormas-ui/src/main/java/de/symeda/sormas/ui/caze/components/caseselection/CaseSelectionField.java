@@ -59,7 +59,7 @@ public class CaseSelectionField extends CustomField<CaseIndexDto> {
 			CaseCriteria criteria = new CaseCriteria().disease(disease);
 			if (StringUtils.isNotEmpty(searchField.getValue()) && StringUtils.isNotEmpty(searchField.getValue().trim())) {
 				criteria.setSourceCaseInfoLike(searchField.getValue());
-				grid.setCases(FacadeProvider.getCaseFacade().getIndexList(criteria, null, null, null));
+				grid.setCases(FacadeProvider.getCaseFacade().getCaseSelectionList(criteria));
 			} else {
 				criteria.setSourceCaseInfoLike(null);
 				grid.clearCases();
