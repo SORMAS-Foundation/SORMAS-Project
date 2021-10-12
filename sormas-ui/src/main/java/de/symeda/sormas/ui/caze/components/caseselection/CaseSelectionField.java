@@ -12,6 +12,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
@@ -24,14 +25,15 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 @SuppressWarnings("serial")
 public class CaseSelectionField extends CustomField<CaseIndexDto> {
 
-	protected CaseCriteria criteria;
+	private final Disease disease;
+
 	protected CaseSelectionGrid grid;
 	protected Consumer<Boolean> selectionChangeCallback;
 	protected VerticalLayout mainLayout;
 
-	public CaseSelectionField(CaseCriteria criteria) {
+	public CaseSelectionField(Disease disease) {
 
-		this.criteria = criteria;
+		this.disease = disease;
 
 		mainLayout = new VerticalLayout();
 		mainLayout.setSpacing(true);
@@ -54,6 +56,7 @@ public class CaseSelectionField extends CustomField<CaseIndexDto> {
 		filterLayout.addComponent(searchField);
 
 		Button searchButton = ButtonHelper.createButton(Captions.caseSearchCase, e -> {
+			CaseCriteria criteria = new CaseCriteria().disease(disease);
 			if (StringUtils.isNotEmpty(searchField.getValue()) && StringUtils.isNotEmpty(searchField.getValue().trim())) {
 				criteria.setSourceCaseInfoLike(searchField.getValue());
 				grid.setCases(FacadeProvider.getCaseFacade().getIndexList(criteria, null, null, null));

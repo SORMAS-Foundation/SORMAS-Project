@@ -42,7 +42,6 @@ import com.vaadin.ui.Window;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
@@ -555,20 +554,16 @@ public class ContactController {
 			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
 			editForm.getFieldGroup());
 
-		editComponent.addCommitListener(new CommitDiscardWrapperComponent.CommitListener() {
+		editComponent.addCommitListener(() -> {
+			if (!editForm.getFieldGroup().isModified()) {
+				ContactDto dto = editForm.getValue();
 
-			@Override
-			public void onCommit() {
-				if (!editForm.getFieldGroup().isModified()) {
-					ContactDto dto = editForm.getValue();
+				fillPersonAddressIfEmpty(dto, () -> FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid()));
 
-					fillPersonAddressIfEmpty(dto, () -> FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid()));
+				FacadeProvider.getContactFacade().saveContact(dto);
 
-					FacadeProvider.getContactFacade().saveContact(dto);
-
-					Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
-					SormasUI.refreshView();
-				}
+				Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
+				SormasUI.refreshView();
 			}
 		});
 
@@ -615,31 +610,27 @@ public class ContactController {
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditContacts));
 
-		editView.addCommitListener(new CommitDiscardWrapperComponent.CommitListener() {
-
-			@Override
-			public void onCommit() {
-				ContactBulkEditData updatedBulkEditData = form.getValue();
-				for (ContactIndexDto indexDto : selectedContacts) {
-					ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(indexDto.getUuid());
-					if (form.getClassificationCheckBox().getValue() == true) {
-						contactDto.setContactClassification(updatedBulkEditData.getContactClassification());
-					}
-					// Setting the contact officer is only allowed if all selected contacts are in the same district
-					if (district != null && form.getContactOfficerCheckBox().getValue() == true) {
-						contactDto.setContactOfficer(updatedBulkEditData.getContactOfficer());
-					}
-
-					FacadeProvider.getContactFacade().saveContact(contactDto);
+		editView.addCommitListener(() -> {
+			ContactBulkEditData updatedBulkEditData = form.getValue();
+			for (ContactIndexDto indexDto : selectedContacts) {
+				ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(indexDto.getUuid());
+				if (form.getClassificationCheckBox().getValue() == true) {
+					contactDto.setContactClassification(updatedBulkEditData.getContactClassification());
 				}
-				popupWindow.close();
-				if (caseUuid == null) {
-					overview();
-				} else {
-					caseContactsOverview(caseUuid);
+				// Setting the contact officer is only allowed if all selected contacts are in the same district
+				if (district != null && form.getContactOfficerCheckBox().getValue() == true) {
+					contactDto.setContactOfficer(updatedBulkEditData.getContactOfficer());
 				}
-				Notification.show(I18nProperties.getString(Strings.messageContactsEdited), Type.HUMANIZED_MESSAGE);
+
+				FacadeProvider.getContactFacade().saveContact(contactDto);
 			}
+			popupWindow.close();
+			if (caseUuid == null) {
+				overview();
+			} else {
+				caseContactsOverview(caseUuid);
+			}
+			Notification.show(I18nProperties.getString(Strings.messageContactsEdited), Type.HUMANIZED_MESSAGE);
 		});
 
 		editView.addDiscardListener(() -> popupWindow.close());
@@ -748,8 +739,7 @@ public class ContactController {
 
 	public void openSelectCaseForContactWindow(Disease disease, Consumer<CaseIndexDto> selectedCaseCallback) {
 
-		CaseCriteria criteria = new CaseCriteria().disease(disease);
-		CaseSelectionField selectionField = new CaseSelectionField(criteria);
+		CaseSelectionField selectionField = new CaseSelectionField(disease);
 		selectionField.setWidth(1280, Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<CaseSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
