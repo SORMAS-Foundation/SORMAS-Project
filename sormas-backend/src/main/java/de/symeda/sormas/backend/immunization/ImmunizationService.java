@@ -321,7 +321,9 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 			if (numberOfDoses != null) {
 				final Date startDate = immunization.getStartDate();
-				if (System.currentTimeMillis() > startDate.getTime() && vaccinationCount >= 1 && vaccinationCount < numberOfDoses) {
+				if ((startDate == null || System.currentTimeMillis() > startDate.getTime())
+					&& vaccinationCount >= 1
+					&& vaccinationCount < numberOfDoses) {
 					immunization.setImmunizationManagementStatus(ImmunizationManagementStatus.ONGOING);
 					immunization.setImmunizationStatus(ImmunizationStatus.PENDING);
 				} else if (vaccinationCount >= numberOfDoses) {
