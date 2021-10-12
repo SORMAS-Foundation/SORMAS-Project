@@ -159,6 +159,9 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 			availableServersCombo.addValueChangeListener(e -> {
 				SormasServerDescriptor selectedServer = (SormasServerDescriptor) e.getProperty().getValue();
 
+				if (selectedServer == null) {
+					return;
+				}
 				Optional<SormasToSormasShareInfoDto> previousShare = findShareByOrganization(currentShares, selectedServer.getId());
 
 				previousShare.ifPresent(s -> {
