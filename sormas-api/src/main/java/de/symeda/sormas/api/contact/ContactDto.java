@@ -19,6 +19,7 @@ package de.symeda.sormas.api.contact;
 
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
 import java.util.Date;
 
@@ -139,8 +140,6 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String VISITS = "visits";
 	public static final String VACCINATION_INFO = "vaccinationInfo";
-	public static final String FOLLOW_UP_STATUS_CHANGE_DATE = "followUpStatusChangeDate";
-	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
 	public static final String PREVIOUS_QUARANTINE_TO = "previousQuarantineTo";
 	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
 
@@ -149,7 +148,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String caseIdExternalSystem;
 	@SensitiveData
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String caseOrEventInformation;
 	private Disease disease;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -203,12 +202,12 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
 	@SensitiveData
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String followUpComment;
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
 	@SensitiveData
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String description;
 	private ContactRelation relationToCase;
 	@SensitiveData
@@ -291,7 +290,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOfficialOrderSentDate;
 	@SensitiveData
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String additionalDetails;
 	private EpiDataDto epiData;
 	@Valid
@@ -340,7 +339,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 
 	private Date previousQuarantineTo;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String quarantineChangeComment;
 
 	public static ContactDto build() {

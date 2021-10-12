@@ -8307,6 +8307,7 @@ UPDATE contact set contactclassification = 'UNCONFIRMED' where contactclassifica
 ALTER TABLE contact ALTER COLUMN contactclassification SET NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (410, 'Make contact classification required in the API and backend #6828');
+
 -- 2021-09-23 - Change of quarantine end should be documented #6782
 ALTER TABLE cases ADD COLUMN previousquarantineto timestamp;
 ALTER TABLE cases ADD COLUMN quarantinechangecomment varchar(4096);

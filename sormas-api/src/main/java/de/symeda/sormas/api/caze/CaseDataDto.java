@@ -17,6 +17,7 @@ package de.symeda.sormas.api.caze;
 
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
 import java.util.Date;
 import java.util.List;
@@ -465,7 +466,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
 	private FollowUpStatus followUpStatus;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String followUpComment;
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
@@ -538,7 +539,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 
 	private Date previousQuarantineTo;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String quarantineChangeComment;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {

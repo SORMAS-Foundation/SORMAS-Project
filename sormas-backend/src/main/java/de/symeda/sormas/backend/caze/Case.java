@@ -1675,7 +1675,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.previousQuarantineTo = previousQuarantineTo;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getQuarantineChangeComment() {
 		return quarantineChangeComment;
 	}
