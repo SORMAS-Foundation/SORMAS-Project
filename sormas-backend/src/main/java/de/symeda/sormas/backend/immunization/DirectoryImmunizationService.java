@@ -100,8 +100,8 @@ public class DirectoryImmunizationService extends AbstractCoreAdoService<Directo
 			immunization.get(Immunization.END_DATE),
 			lastVaccineType.get(LastVaccineType.VACCINE_TYPE),
 			immunization.get(Immunization.RECOVERY_DATE),
-			immunization.get(Immunization.CHANGE_DATE),
-			JurisdictionHelper.booleanSelector(cb, createUserFilter(directoryImmunizationQueryContext)));
+			JurisdictionHelper.booleanSelector(cb, createUserFilter(directoryImmunizationQueryContext)),
+			immunization.get(Immunization.CHANGE_DATE));
 
 		buildWhereCondition(criteria, cb, cq, directoryImmunizationQueryContext);
 

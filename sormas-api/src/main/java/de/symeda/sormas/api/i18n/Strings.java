@@ -32,6 +32,7 @@ public interface Strings {
 	String classificationGeneratedFor = "classificationGeneratedFor";
 	String classificationInfoNumberText = "classificationInfoNumberText";
 	String classificationInfoText = "classificationInfoText";
+	String classificationLastVaccinationDateWithin = "classificationLastVaccinationDateWithin";
 	String classificationNoneOf = "classificationNoneOf";
 	String classificationNotACase = "classificationNotACase";
 	String classificationNotWithin = "classificationNotWithin";
@@ -580,6 +581,7 @@ public interface Strings {
 	String headingPointOfEntryImport = "headingPointOfEntryImport";
 	String headingPointOfEntryInformation = "headingPointOfEntryInformation";
 	String headingPrescriptionsDeleted = "headingPrescriptionsDeleted";
+	String headingPreviousHospitalizations = "headingPreviousHospitalizations";
 	String headingQuarantineForCases = "headingQuarantineForCases";
 	String headingRecovery = "headingRecovery";
 	String headingReduceQuarantine = "headingReduceQuarantine";
@@ -976,6 +978,7 @@ public interface Strings {
 	String messageImmunizationArchived = "messageImmunizationArchived";
 	String messageImmunizationDearchived = "messageImmunizationDearchived";
 	String messageImmunizationSaved = "messageImmunizationSaved";
+	String messageImmunizationSavedVaccinationStatusUpdated = "messageImmunizationSavedVaccinationStatusUpdated";
 	String messageImportCanceled = "messageImportCanceled";
 	String messageImportCanceledErrors = "messageImportCanceledErrors";
 	String messageImportError = "messageImportError";
@@ -1230,6 +1233,7 @@ public interface Strings {
 	String promptPersonsSearchField = "promptPersonsSearchField";
 	String promptPrescriptionTextFilter = "promptPrescriptionTextFilter";
 	String promptRegion = "promptRegion";
+	String promptRelatedPersonLikeField = "promptRelatedPersonLikeField";
 	String promptSampleDateFrom = "promptSampleDateFrom";
 	String promptSampleDateTo = "promptSampleDateTo";
 	String promptSampleEpiWeekFrom = "promptSampleEpiWeekFrom";

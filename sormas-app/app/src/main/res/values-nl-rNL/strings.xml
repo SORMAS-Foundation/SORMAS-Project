@@ -119,6 +119,8 @@
     <string name="action_kex_lbds">LBDS Key Exchange</string>
     <string name="action_sync_person_lbds">LBDS Sync Persons</string>
     <string name="action_sync_case_lbds">LBDS Sync Cases</string>
+    <string name="action_save_vaccination">Save Vaccination</string>
+    <string name="action_edit_vaccination">Edit Vaccination</string>
     <string name="caption_address">Address</string>
     <string name="caption_age">Age</string>
     <string name="caption_attended_by">Attended by</string>
@@ -238,6 +240,8 @@
     <string name="caption_latest_submission">Latest Submission: %1$s</string>
     <string name="caption_settings_debug_url_lbds">LBDS Server Debug URL</string>
     <string name="caption_immunization_information">Immunization details</string>
+    <string name="caption_immunization_vaccinations">Vaccinations</string>
+    <string name="caption_vaccination_information">Vaccination Information</string>
     <string name="caption_new_immunization">New Immunization</string>
     <string name="caption_overwrite_immunization_management_status">Overwrite immunization management status</string>
     <string name="caption_searchCase">Search case</string>
@@ -405,6 +409,9 @@
     <string name="heading_campaign_form_data_summary">Campaign Data Summary</string>
     <string name="heading_campaign_form_meta_select">Select Campaign Form</string>
     <string name="heading_case_place_of_stay">Place of stay</string>
+    <string name="heading_vaccination">Vaccination</string>
+    <string name="heading_vaccination_edit">Edit Vaccination</string>
+    <string name="heading_vaccination_new">New Vaccination</string>
     <string name="heading_search_for_case">Search specific case</string>
     <string name="hint_add_to_empty_list">Add a new entry by pressing the \"+\" symbol in the top right.</string>
     <string name="hint_clear">Clear</string>
@@ -635,4 +642,5 @@
     <string name="scan_field_sample_id">Scan field sample id</string>
     <string name="caption_facility_type_group">Facility category</string>
     <string name="caption_facility_type">Facility type</string>
+    <string name="value_vaccine_date_unknown">Vaccination Date N/A</string>
 </resources>

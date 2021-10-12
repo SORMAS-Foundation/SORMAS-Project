@@ -21,6 +21,7 @@ package org.sormas.e2etests.services;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import org.sormas.e2etests.enums.immunizations.StatusValues;
 import org.sormas.e2etests.pojo.web.Task;
 
 public class TaskService {
@@ -31,32 +32,31 @@ public class TaskService {
   public Task buildGeneratedTask() {
     long currentTimeMillis = System.currentTimeMillis();
     return Task.builder()
-        .taskContext("GENERAL")
-        .taskType("other task as described in comments")
+        .taskType("case isolation")
         .suggestedStartDate(LocalDate.now())
         .suggestedStartTime(LocalTime.of(11, 30))
         .dueDateDate(LocalDate.now().plusDays(1))
         .dueDateTime(LocalTime.of(11, 30))
         .assignedTo("Surveillance OFFICER - Surveillance Officer")
         .priority("Normal")
-        .commentsOnTask(currentTimeMillis + "Comment on task")
-        .taskStatus("PENDING")
+        .commentsOnTask("Comment on task" + currentTimeMillis)
+        .taskStatus(StatusValues.PENDING.getValue())
         .build();
   }
 
-  public Task buildEditTask() {
+  public Task buildEditTask(String currentTaskContext) {
     long currentTimeMillis = System.currentTimeMillis();
     return Task.builder()
-        .taskContext("GENERAL")
-        .taskType("other task as described in comments")
+        .taskContext(currentTaskContext)
+        .taskType("contact tracing")
         .suggestedStartDate(LocalDate.now().plusDays(3))
         .suggestedStartTime(LocalTime.of(12, 30))
         .dueDateDate(LocalDate.now().plusDays(5))
         .dueDateTime(LocalTime.of(13, 30))
         .assignedTo("Surveillance OFFICER - Surveillance Officer")
         .priority("High")
-        .commentsOnTask(currentTimeMillis + "Comment on task")
-        .taskStatus("DONE")
+        .commentsOnTask("Comment on task" + currentTimeMillis)
+        .taskStatus(StatusValues.DONE.getValue())
         .build();
   }
 

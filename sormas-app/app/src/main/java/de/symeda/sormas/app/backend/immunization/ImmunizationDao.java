@@ -15,16 +15,18 @@
 
 package de.symeda.sormas.app.backend.immunization;
 
-import android.util.Log;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
+import static de.symeda.sormas.app.backend.immunization.ImmunizationDaoHelper.overlappingDateRangeImmunizations;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+
+import android.util.Log;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
@@ -36,10 +38,8 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
+import de.symeda.sormas.app.backend.vaccination.Vaccination;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
-
-import static de.symeda.sormas.app.backend.immunization.ImmunizationDaoHelper.overlappingDateRangeImmunizations;
 
 public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 
@@ -243,8 +243,8 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 			return null;
 		}
 
-		String query = "SELECT MAX(v." + AbstractDomainObject.CHANGE_DATE + ") FROM " + VaccinationEntity.TABLE_NAME + " AS v" + " LEFT JOIN "
-			+ Immunization.TABLE_NAME + " AS i ON i." + AbstractDomainObject.ID + " = v." + VaccinationEntity.IMMUNIZATION + "_ID";
+		String query = "SELECT MAX(v." + AbstractDomainObject.CHANGE_DATE + ") FROM " + Vaccination.TABLE_NAME + " AS v" + " LEFT JOIN "
+			+ Immunization.TABLE_NAME + " AS i ON i." + AbstractDomainObject.ID + " = v." + Vaccination.IMMUNIZATION + "_ID";
 		Date vaccinationDate = getLatestChangeDateJoinFromQuery(query);
 
 		if (vaccinationDate != null && vaccinationDate.after(date)) {

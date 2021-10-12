@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -53,6 +54,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.area.AreaService;
@@ -66,15 +68,16 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "DistrictFacade")
-public class DistrictFacadeEjb implements DistrictFacade {
+public class DistrictFacadeEjb
+	extends AbstractInfrastructureEjb<District, DistrictDto, DistrictIndexDto, DistrictReferenceDto, DistrictService, DistrictCriteria>
+	implements DistrictFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
-	@EJB
-	private DistrictService districtService;
 	@EJB
 	private UserService userService;
 	@EJB
@@ -83,26 +86,32 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	private RegionService regionService;
 	@EJB
 	private PopulationDataFacadeEjbLocal populationDataFacade;
-	@EJB
-	private FeatureConfigurationFacadeEjbLocal featureConfiguration;
+
+	public DistrictFacadeEjb() {
+	}
+
+	@Inject
+	protected DistrictFacadeEjb(DistrictService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
+		super(service, featureConfiguration);
+	}
 
 	@Override
 	public List<DistrictReferenceDto> getAllActiveAsReference() {
-		return districtService.getAllActive(District.NAME, true).stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return service.getAllActive(District.NAME, true).stream().map(DistrictFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<DistrictReferenceDto> getAllActiveByArea(String areaUuid) {
 
 		Area area = areaService.getByUuid(areaUuid);
-		return districtService.getAllActiveByArea(area).stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return service.getAllActiveByArea(area).stream().map(DistrictFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<DistrictReferenceDto> getAllActiveByRegion(String regionUuid) {
 
 		Region region = regionService.getByUuid(regionUuid);
-		return region.getDistricts().stream().filter(d -> !d.isArchived()).map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return region.getDistricts().stream().filter(d -> !d.isArchived()).map(DistrictFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -114,7 +123,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 		selectDtoFields(cq, district);
 
-		Predicate filter = districtService.createChangeDateFilter(cb, district, date);
+		Predicate filter = service.createChangeDateFilter(cb, district, date);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -143,11 +152,6 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	}
 
 	@Override
-	public DistrictDto getByUuid(String uuid) {
-		return toDto(districtService.getByUuid(uuid));
-	}
-
-	@Override
 	public List<DistrictIndexDto> getIndexList(DistrictCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -157,15 +161,15 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 		Predicate filter = null;
 		if (criteria != null) {
-			filter = districtService.buildCriteriaFilter(criteria, cb, district);
+			filter = service.buildCriteriaFilter(criteria, cb, district);
 		}
 
 		if (filter != null) {
 			cq.where(filter);
 		}
 
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
+		if (CollectionUtils.isNotEmpty(sortProperties)) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
@@ -209,7 +213,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		Predicate filter = null;
 
 		if (criteria != null) {
-			filter = districtService.buildCriteriaFilter(criteria, cb, root);
+			filter = service.buildCriteriaFilter(criteria, cb, root);
 		}
 
 		if (filter != null) {
@@ -227,34 +231,34 @@ public class DistrictFacadeEjb implements DistrictFacade {
 			return Collections.emptyList();
 		}
 
-		return districtService.getAllUuids();
+		return service.getAllUuids();
 	}
 
 	@Override
 	public int getCountByRegion(String regionUuid) {
 
 		Region region = regionService.getByUuid(regionUuid);
-		return districtService.getCountByRegion(region);
+		return service.getCountByRegion(region);
 	}
 
 	@Override
 	public DistrictDto getDistrictByUuid(String uuid) {
-		return toDto(districtService.getByUuid(uuid));
+		return toDto(service.getByUuid(uuid));
 	}
 
 	@Override
 	public List<DistrictDto> getByUuids(List<String> uuids) {
-		return districtService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public DistrictReferenceDto getDistrictReferenceByUuid(String uuid) {
-		return toReferenceDto(districtService.getByUuid(uuid));
+		return toReferenceDto(service.getByUuid(uuid));
 	}
 
 	@Override
 	public DistrictReferenceDto getDistrictReferenceById(long id) {
-		return toReferenceDto(districtService.getById(id));
+		return toReferenceDto(service.getById(id));
 	}
 
 	@Override
@@ -277,46 +281,19 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	}
 
 	@Override
-	public DistrictDto save(@Valid DistrictDto dto) throws ValidationRuntimeException {
-		return save(dto, false);
+	public DistrictDto save(DistrictDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
+		return save(dtoToSave, allowMerge, Validations.importDistrictAlreadyExists);
 	}
 
 	@Override
-	public DistrictDto save(@Valid DistrictDto dto, boolean allowMerge) throws ValidationRuntimeException {
-
-		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
-		}
-
-		if (dto.getRegion() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
-		}
-
-		District district = districtService.getByUuid(dto.getUuid());
-
-		if (district == null) {
-			List<DistrictReferenceDto> duplicates = getByName(dto.getName(), dto.getRegion(), true);
-			if (!duplicates.isEmpty()) {
-				if (allowMerge) {
-					String uuid = duplicates.get(0).getUuid();
-					district = districtService.getByUuid(uuid);
-					DistrictDto dtoToMerge = getDistrictByUuid(uuid);
-					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
-				} else {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importDistrictAlreadyExists));
-				}
-			}
-		}
-
-		district = fillOrBuildEntity(dto, district, true);
-		districtService.ensurePersisted(district);
-		return toDto(district);
+	protected List<District> findDuplicates(DistrictDto dto) {
+		return service.getByName(dto.getName(), regionService.getByReferenceDto(dto.getRegion()), true);
 	}
 
 	@Override
 	public List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef, boolean includeArchivedEntities) {
 
-		return districtService.getByName(name, regionService.getByReferenceDto(regionRef), includeArchivedEntities)
+		return service.getByName(name, regionService.getByReferenceDto(regionRef), includeArchivedEntities)
 			.stream()
 			.map(DistrictFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -325,7 +302,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	@Override
 	public List<DistrictReferenceDto> getByExternalId(String externalId, boolean includeArchivedEntities) {
 
-		return districtService.getByExternalId(externalId, includeArchivedEntities)
+		return service.getByExternalId(externalId, includeArchivedEntities)
 			.stream()
 			.map(DistrictFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -350,31 +327,11 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	}
 
 	@Override
-	public void archive(String districtUuid) {
-
-		District district = districtService.getByUuid(districtUuid);
-		district.setArchived(true);
-		districtService.ensurePersisted(district);
-	}
-
-	@Override
-	public void dearchive(String districtUuid) {
-
-		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
-		}
-
-		District district = districtService.getByUuid(districtUuid);
-		district.setArchived(false);
-		districtService.ensurePersisted(district);
-	}
-
-	@Override
 	public boolean isUsedInOtherInfrastructureData(Collection<String> districtUuids) {
 
-		return districtService.isUsedInInfrastructureData(districtUuids, Community.DISTRICT, Community.class)
-			|| districtService.isUsedInInfrastructureData(districtUuids, Facility.DISTRICT, Facility.class)
-			|| districtService.isUsedInInfrastructureData(districtUuids, PointOfEntry.DISTRICT, PointOfEntry.class);
+		return service.isUsedInInfrastructureData(districtUuids, Community.DISTRICT, Community.class)
+			|| service.isUsedInInfrastructureData(districtUuids, Facility.DISTRICT, Facility.class)
+			|| service.isUsedInInfrastructureData(districtUuids, PointOfEntry.DISTRICT, PointOfEntry.class);
 	}
 
 	@Override
@@ -398,10 +355,10 @@ public class DistrictFacadeEjb implements DistrictFacade {
 			return null;
 		}
 
-		DistrictReferenceDto dto = new DistrictReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
-		return dto;
+		return new DistrictReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
 	}
 
+	@Override
 	public DistrictDto toDto(District entity) {
 
 		if (entity == null) {
@@ -440,7 +397,8 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		return dto;
 	}
 
-	private District fillOrBuildEntity(@NotNull DistrictDto source, District target, boolean checkChangeDate) {
+	@Override
+	protected District fillOrBuildEntity(@NotNull DistrictDto source, District target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, District::new, checkChangeDate);
 
@@ -450,14 +408,13 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
-
 		return target;
 	}
 
 	@Override
 	public String getFullEpidCodeForDistrict(String districtUuid) {
 
-		District district = districtService.getByUuid(districtUuid);
+		District district = service.getByUuid(districtUuid);
 		return getFullEpidCodeForDistrict(district);
 	}
 
@@ -470,5 +427,12 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	@Stateless
 	public static class DistrictFacadeEjbLocal extends DistrictFacadeEjb {
 
+		public DistrictFacadeEjbLocal() {
+		}
+
+		@Inject
+		protected DistrictFacadeEjbLocal(DistrictService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
+			super(service, featureConfiguration);
+		}
 	}
 }

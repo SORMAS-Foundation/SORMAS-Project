@@ -17,11 +17,11 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.infrastructure.region.RegionDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCountDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
@@ -112,8 +112,8 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		List<StatisticsCaseCountDto> results =
 			getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.SEX, null, null, null, false, true, null);
 
-		// List should have one entry per sex and also unknown
-		assertEquals(Sex.values().length + 1, results.size());
+		// List should have one entry per sex
+		assertEquals(Sex.values().length, results.size());
 	}
 
 	@Test

@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.api.campaign.data;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -36,7 +36,7 @@ public class CampaignFormDataEntry implements Serializable, JsonDataEntry {
 	public static final String ID = "id";
 	public static final String VALUE = "value";
 
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String id;
 	private Object value;
 

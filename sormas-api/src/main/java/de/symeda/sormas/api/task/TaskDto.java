@@ -34,6 +34,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Required;
 
 public class TaskDto extends EntityDto {
@@ -89,11 +90,11 @@ public class TaskDto extends EntityDto {
 	private Date perceivedStart;
 
 	private UserReferenceDto creatorUser;
-	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String creatorComment;
 	@Required
 	private UserReferenceDto assigneeUser;
-	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String assigneeReply;
 
 	@Min(value = -90, message = Validations.numberTooSmall)

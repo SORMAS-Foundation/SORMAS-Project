@@ -148,7 +148,11 @@ public class PathogenTestController {
 		return editView;
 	}
 
-	public static void showCaseUpdateWithNewDiseaseVariantDialog(CaseDataDto existingCaseDto, DiseaseVariant diseaseVariant, Runnable callback) {
+	public static void showCaseUpdateWithNewDiseaseVariantDialog(
+		CaseDataDto existingCaseDto,
+		DiseaseVariant diseaseVariant,
+		String diseaseVariantDetails,
+		Runnable callback) {
 
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingUpdateCaseWithNewDiseaseVariant),
@@ -160,6 +164,7 @@ public class PathogenTestController {
 				if (e) {
 					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(existingCaseDto.getUuid());
 					caseDataByUuid.setDiseaseVariant(diseaseVariant);
+					caseDataByUuid.setDiseaseVariantDetails(diseaseVariantDetails);
 					FacadeProvider.getCaseFacade().saveCase(caseDataByUuid);
 					ControllerProvider.getCaseController().navigateToCase(caseDataByUuid.getUuid());
 				}
@@ -219,6 +224,7 @@ public class PathogenTestController {
 								showCaseUpdateWithNewDiseaseVariantDialog(
 									caze,
 									dto.getTestedDiseaseVariant(),
+									dto.getTestedDiseaseVariantDetails(),
 									() -> {
 										// Retrieve the case again because it might have changed
 										showConfirmCaseDialog(FacadeProvider.getCaseFacade().getByUuid(caze.getUuid()));
@@ -229,7 +235,12 @@ public class PathogenTestController {
 						}
 					});
 				} else {
-					showCaseCloningWithNewDiseaseDialog(caze, dto.getTestedDisease());
+					showCaseCloningWithNewDiseaseDialog(
+						caze,
+						dto.getTestedDisease(),
+						dto.getTestedDiseaseDetails(),
+						dto.getTestedDiseaseVariant(),
+						dto.getTestedDiseaseVariantDetails());
 				}
 			}
 		};
@@ -417,7 +428,12 @@ public class PathogenTestController {
 			});
 	}
 
-	public static void showCaseCloningWithNewDiseaseDialog(CaseDataDto existingCaseDto, Disease disease) {
+	public static void showCaseCloningWithNewDiseaseDialog(
+		CaseDataDto existingCaseDto,
+		Disease disease,
+		String diseaseDetails,
+		DiseaseVariant diseaseVariant,
+		String diseaseVariantDetails) {
 
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getCaption(Captions.caseCloneCaseWithNewDisease) + " " + I18nProperties.getEnumCaption(disease) + "?",
@@ -431,6 +447,9 @@ public class PathogenTestController {
 					clonedCase.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
 					clonedCase.setClassificationUser(null);
 					clonedCase.setDisease(disease);
+					clonedCase.setDiseaseDetails(diseaseDetails);
+					clonedCase.setDiseaseVariant(diseaseVariant);
+					clonedCase.setDiseaseVariantDetails(diseaseVariantDetails);
 					clonedCase.setEpidNumber(null);
 					clonedCase.setReportDate(new Date());
 					FacadeProvider.getCaseFacade().saveCase(clonedCase);

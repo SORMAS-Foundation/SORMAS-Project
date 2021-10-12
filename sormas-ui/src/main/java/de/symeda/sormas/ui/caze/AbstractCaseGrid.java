@@ -93,6 +93,8 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 		initColumns();
 
 		addItemClickListener(new ShowDetailsListener<>(CaseIndexDto.UUID, e -> ControllerProvider.getCaseController().navigateToCase(e.getUuid())));
+		addItemClickListener(new ShowDetailsListener<>(CaseIndexDto.PERSON_UUID, e ->
+			ControllerProvider.getCaseController().navigateToView(CasePersonView.VIEW_NAME, e.getUuid(), null)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -152,6 +154,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 
 		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<CaseIndexDto, String>) getColumn(CaseIndexDto.UUID)).setRenderer(new UuidRenderer());
+		((Column<CaseIndexDto, String>) getColumn(CaseIndexDto.PERSON_UUID)).setRenderer(new UuidRenderer());
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 
@@ -190,8 +193,6 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 					LocationDto.I18N_PREFIX));
 			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 		}
-
-		getColumn(CaseIndexDto.VACCINATION).setCaption(I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus));
 	}
 
 	protected Stream<String> getGridColumns() {
@@ -224,7 +225,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 					: Stream.<String> empty(),
 				Stream.of(CaseIndexDto.QUARANTINE_TO, CaseIndexDto.CREATION_DATE),
 				getFollowUpColumns(),
-				Stream.of(CaseIndexDto.VACCINATION),
+				Stream.of(CaseIndexDto.VACCINATION_STATUS),
 				Stream.of(COLUMN_COMPLETENESS))
 			.flatMap(Function.identity());
 	}
@@ -238,7 +239,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 	}
 
 	protected Stream<String> getPersonColumns() {
-		return Stream.of(CaseIndexDto.PERSON_FIRST_NAME, CaseIndexDto.PERSON_LAST_NAME);
+		return Stream.of(CaseIndexDto.PERSON_UUID, CaseIndexDto.PERSON_FIRST_NAME, CaseIndexDto.PERSON_LAST_NAME);
 	}
 
 	protected Stream<String> getEventColumns() {

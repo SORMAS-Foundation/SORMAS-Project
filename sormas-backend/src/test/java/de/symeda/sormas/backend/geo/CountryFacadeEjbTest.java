@@ -31,7 +31,7 @@ public class CountryFacadeEjbTest extends AbstractBeanTest {
 		Country expected = creator.createCountry("Romania", "ROU", "642");
 		getCountryService().doFlush();
 
-		CountryDto actual = getCountryFacade().getCountryByUuid(expected.getUuid());
+		CountryDto actual = getCountryFacade().getByUuid(expected.getUuid());
 		assertTrue(entityIsEqualToDto(expected, actual));
 	}
 
@@ -143,7 +143,7 @@ public class CountryFacadeEjbTest extends AbstractBeanTest {
 	public void testArchive() {
 		Country country = creator.createCountry("Romania", "ROU", "642");
 		getCountryFacade().archive(country.getUuid());
-		CountryDto actual = getCountryFacade().getCountryByUuid(country.getUuid());
+		CountryDto actual = getCountryFacade().getByUuid(country.getUuid());
 		assertTrue(actual.isArchived());
 	}
 
@@ -152,7 +152,7 @@ public class CountryFacadeEjbTest extends AbstractBeanTest {
 		Country country = creator.createCountry("Romania", "ROU", "642");
 		country.setArchived(true);
 		getCountryFacade().dearchive(country.getUuid());
-		CountryDto actual = getCountryFacade().getCountryByUuid(country.getUuid());
+		CountryDto actual = getCountryFacade().getByUuid(country.getUuid());
 		assertFalse(actual.isArchived());
 	}
 

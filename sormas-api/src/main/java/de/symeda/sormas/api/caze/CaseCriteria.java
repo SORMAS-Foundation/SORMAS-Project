@@ -55,7 +55,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public static final String WITH_REDUCED_QUARANTINE = "withReducedQuarantine";
 	public static final String CREATION_DATE_FROM = "creationDateFrom";
 	public static final String CREATION_DATE_TO = "creationDateTo";
-	public static final String NAME_UUID_EPID_NUMBER_LIKE = "nameUuidEpidNumberLike";
+	public static final String CASE_LIKE = "caseLike";
 	public static final String EVENT_LIKE = "eventLike";
 	public static final String ONLY_CASES_WITH_EVENTS = "onlyCasesWithEvents";
 	public static final String REPORTING_USER_LIKE = "reportingUserLike";
@@ -67,7 +67,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public static final String BIRTHDATE_DD = "birthdateDD";
 	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
-	public static final String VACCINATION = "vaccination";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String FACILITY_TYPE_GROUP = "facilityTypeGroup";
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String INCLUDE_CASES_FROM_OTHER_JURISDICTIONS = "includeCasesFromOtherJurisdictions";
@@ -79,6 +79,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		"onlyEntitiesChangedSinceLastSharedWithExternalSurvTool";
 	public static final String ONLY_CASES_WITH_DONT_SHARE_WITH_EXTERNAL_SURV_TOOL = "onlyCasesWithDontShareWithExternalSurvTool";
 	public static final String ONLY_SHOW_CASES_WITH_FULFILLED_REFERENCE_DEFINITION = "onlyShowCasesWithFulfilledReferenceDefinition";
+	public static final String PERSON_LIKE = "personLike";
 
 	private UserRole reportingUserRole;
 	private Disease disease;
@@ -108,7 +109,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean withExtendedQuarantine;
 	private Boolean withReducedQuarantine;
 	private Boolean deleted = Boolean.FALSE;
-	private String nameUuidEpidNumberLike;
+	private String caseLike;
 	private String eventLike;
 	private Boolean onlyCasesWithEvents = Boolean.FALSE;
 	private String reportingUserLike;
@@ -126,7 +127,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Date followUpVisitsTo;
 	private Integer followUpVisitsInterval;
 	private SymptomJournalStatus symptomJournalStatus;
-	private Vaccination vaccination;
+	private VaccinationStatus vaccinationStatus;
 	private Date reportDateTo;
 	private FacilityTypeGroup facilityTypeGroup;
 	private FacilityType facilityType;
@@ -138,6 +139,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
 	private Boolean onlyCasesWithDontShareWithExternalSurvTool;
 	private Boolean onlyShowCasesWithFulfilledReferenceDefinition;
+	private String personLike;
 
 	public CaseCriteria() {
 		super(NewCaseDateType.class);
@@ -432,18 +434,18 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	/**
 	 * returns all entries that match ALL of the passed words
 	 */
-	public void setNameUuidEpidNumberLike(String nameUuidEpidNumberLike) {
-		this.nameUuidEpidNumberLike = nameUuidEpidNumberLike;
+	public void setCaseLike(String caseLike) {
+		this.caseLike = caseLike;
 	}
 
-	public CaseCriteria nameUuidEpidNumberLike(String nameUuidEpidNumberLike) {
-		setNameUuidEpidNumberLike(nameUuidEpidNumberLike);
+	public CaseCriteria caseLike(String caseLike) {
+		setCaseLike(caseLike);
 		return this;
 	}
 
 	@IgnoreForUrl
-	public String getNameUuidEpidNumberLike() {
-		return nameUuidEpidNumberLike;
+	public String getCaseLike() {
+		return caseLike;
 	}
 
 	public void setEventLike(String eventLike) {
@@ -593,12 +595,12 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		this.symptomJournalStatus = symptomJournalStatus;
 	}
 
-	public Vaccination getVaccination() {
-		return vaccination;
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
 	}
 
-	public void setVaccination(Vaccination vaccination) {
-		this.vaccination = vaccination;
+	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
+		this.vaccinationStatus = vaccinationStatus;
 	}
 
 	public Date getReportDateTo() {
@@ -711,5 +713,18 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 
 	public void setFollowUpVisitsInterval(Integer followUpVisitsInterval) {
 		this.followUpVisitsInterval = followUpVisitsInterval;
+	}
+
+	public String getPersonLike() {
+		return personLike;
+	}
+
+	public void setPersonLike(String personLike) {
+		this.personLike = personLike;
+	}
+
+	public CaseCriteria personLike(String personLike) {
+		setPersonLike(personLike);
+		return this;
 	}
 }

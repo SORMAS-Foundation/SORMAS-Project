@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.immunization.vaccination;
 
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -24,16 +26,14 @@ import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 import androidx.paging.PositionalDataSource;
 
-import java.util.List;
-
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.immunization.Immunization;
+import de.symeda.sormas.app.backend.vaccination.Vaccination;
 import de.symeda.sormas.app.backend.vaccination.VaccinationCriteria;
-import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
 
 public class VaccinationListViewModel extends ViewModel {
 
-	private LiveData<PagedList<VaccinationEntity>> vaccinations;
+	private LiveData<PagedList<Vaccination>> vaccinations;
 	private VaccinationDataFactory vaccinationDataFactory;
 
 	public void initializeViewModel(Immunization immunization) {
@@ -51,7 +51,7 @@ public class VaccinationListViewModel extends ViewModel {
 		initializeList();
 	}
 
-	public LiveData<PagedList<VaccinationEntity>> getVaccinations() {
+	public LiveData<PagedList<Vaccination>> getVaccinations() {
 		return vaccinations;
 	}
 
@@ -68,7 +68,7 @@ public class VaccinationListViewModel extends ViewModel {
 		return vaccinationDataFactory.getVaccinationCriteria();
 	}
 
-	public static class VaccinationDataSource extends PositionalDataSource<VaccinationEntity> {
+	public static class VaccinationDataSource extends PositionalDataSource<Vaccination> {
 
 		private VaccinationCriteria vaccinationCriteria;
 
@@ -77,22 +77,22 @@ public class VaccinationListViewModel extends ViewModel {
 		}
 
 		@Override
-		public void loadInitial(@NonNull LoadInitialParams params, @NonNull LoadInitialCallback<VaccinationEntity> callback) {
+		public void loadInitial(@NonNull LoadInitialParams params, @NonNull LoadInitialCallback<Vaccination> callback) {
 			long totalCount = DatabaseHelper.getVaccinationDao().countByCriteria(vaccinationCriteria);
 			int offset = params.requestedStartPosition;
 			int count = params.requestedLoadSize;
 			if (offset + count > totalCount) {
 				offset = (int) Math.max(0, totalCount - count);
 			}
-			List<VaccinationEntity> vaccinationEntities = DatabaseHelper.getVaccinationDao().queryByCriteria(vaccinationCriteria, offset, count);
-			callback.onResult(vaccinationEntities, offset, (int) totalCount);
+			List<Vaccination> vaccinations = DatabaseHelper.getVaccinationDao().queryByCriteria(vaccinationCriteria, offset, count);
+			callback.onResult(vaccinations, offset, (int) totalCount);
 		}
 
 		@Override
-		public void loadRange(@NonNull LoadRangeParams params, @NonNull LoadRangeCallback<VaccinationEntity> callback) {
-			List<VaccinationEntity> vaccinationEntities =
+		public void loadRange(@NonNull LoadRangeParams params, @NonNull LoadRangeCallback<Vaccination> callback) {
+			List<Vaccination> vaccinations =
 				DatabaseHelper.getVaccinationDao().queryByCriteria(vaccinationCriteria, params.startPosition, params.loadSize);
-			callback.onResult(vaccinationEntities);
+			callback.onResult(vaccinations);
 		}
 	}
 

@@ -197,7 +197,6 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 		TravelEntryIndexDto indexDto = indexList.get(0);
 		assertEquals(travelEntry1.getUuid(), indexDto.getUuid());
 		assertEquals("Point of entry 1", indexDto.getPointOfEntryName());
-		assertEquals(Disease.CORONAVIRUS, indexDto.getDisease());
 	}
 
 }

@@ -97,7 +97,6 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.COUNTRY));
 	//@formatter:on
 
-	private final int DAYS_IN_THE_FUTURE = 365;
 	private final CaseReferenceDto relatedCase;
 	private Boolean ignoreMeansOfImmunizationChange = false;
 	private MeansOfImmunization previousMeansOfImmunization;

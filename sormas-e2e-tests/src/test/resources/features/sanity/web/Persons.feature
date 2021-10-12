@@ -2,7 +2,7 @@
 Feature: Edit Persons
 
   Scenario: Edit existent person
-    Given I log in with the user
+    Given I log in with National User
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     Then I create a new contact

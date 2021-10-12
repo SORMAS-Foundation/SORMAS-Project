@@ -24,12 +24,12 @@ import java.util.Calendar;
 import java.util.UUID;
 import org.sormas.e2etests.enums.CommunityUUIDs;
 import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.DistrictUUIDs;
-import org.sormas.e2etests.enums.RegionUUIDs;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.TestDataUser;
 import org.sormas.e2etests.enums.immunizations.ImmunizationManagementStatusValues;
-import org.sormas.e2etests.enums.immunizations.ImmunizationStatusValues;
 import org.sormas.e2etests.enums.immunizations.MeansOfImmunizationValues;
+import org.sormas.e2etests.enums.immunizations.StatusValues;
 import org.sormas.e2etests.pojo.api.Immunization;
 import org.sormas.e2etests.pojo.api.Person;
 
@@ -56,12 +56,12 @@ public class ImmunizationApiService {
         .reportingUser(TestDataUser.NATIONAL_USER.getUuid())
         .archived(false)
         .disease(DiseasesValues.getRandomDiseaseName())
-        .immunizationStatus(ImmunizationStatusValues.getRandomImmunizationStatus())
+        .immunizationStatus(StatusValues.getRandomImmunizationStatus())
         .meansOfImmunization(MeansOfImmunizationValues.getRandomMeansOfImmunization())
         .immunizationManagementStatus(
             ImmunizationManagementStatusValues.getRandomImmunizationManagementStatus())
-        .responsibleRegion(RegionUUIDs.VoreingestellteBundeslander.toString())
-        .responsibleDistrict(DistrictUUIDs.VoreingestellterLandkreis.toString())
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getUuid())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getUuid())
         .responsibleCommunity(CommunityUUIDs.VoreingestellteGemeinde.toString())
         .build();
   }

@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,10 +61,7 @@ import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.ScreeningType;
 import de.symeda.sormas.api.caze.Trimester;
-import de.symeda.sormas.api.caze.Vaccination;
-import de.symeda.sormas.api.caze.VaccinationInfoSource;
-import de.symeda.sormas.api.caze.Vaccine;
-import de.symeda.sormas.api.caze.VaccineManufacturer;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -115,9 +112,11 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	public static final String SYSTEM_CASE_CLASSIFICATION = "systemCaseClassification";
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PERSON = "person";
+	public static final String PERSON_ID = "personId";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String RABIES_TYPE = "rabiesType";
 	public static final String HEALTH_FACILITY = "healthFacility";
@@ -145,21 +144,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	public static final String MATERNAL_HISTORY = "maternalHistory";
 	public static final String PORT_HEALTH_INFO = "portHealthInfo";
 	public static final String PREGNANT = "pregnant";
-	public static final String VACCINATION = "vaccination";
-	public static final String VACCINATION_DOSES = "vaccinationDoses";
-	public static final String VACCINATION_INFO_SOURCE = "vaccinationInfoSource";
-	public static final String FIRST_VACCINATION_DATE = "firstVaccinationDate";
-	public static final String LAST_VACCINATION_DATE = "lastVaccinationDate";
-	public static final String VACCINE_NAME = "vaccineName";
-	public static final String OTHER_VACCINE_NAME = "otherVaccineName";
-	public static final String VACCINE_MANUFACTURER = "vaccineManufacturer";
-	public static final String OTHER_VACCINE_MANUFACTURER = "otherVaccineManufacturer";
-	public static final String VACCINE_INN = "vaccineInn";
-	public static final String VACCINE_BATCH_NUMBER = "vaccineBatchNumber";
-	public static final String VACCINE_UNII_CODE = "vaccineUniiCode";
-	public static final String VACCINE_ATC_CODE = "vaccineAtcCode";
-	public static final String WHICH_VACCINE = "whichVaccine";
-	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -247,6 +232,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
 	private String diseaseDetails;
+	private String diseaseVariantDetails;
 	private PlagueType plagueType;
 	private DengueFeverType dengueFeverType;
 	private RabiesType rabiesType;
@@ -306,22 +292,10 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 
 	private YesNoUnknown pregnant;
 
-	private Vaccination vaccination;
-	private String vaccinationDoses;
-	private VaccinationInfoSource vaccinationInfoSource;
-	private Date firstVaccinationDate;
-	private Date lastVaccinationDate;
-	private Vaccine vaccineName;
-	private String otherVaccineName;
-	private VaccineManufacturer vaccineManufacturer;
-	private String otherVaccineManufacturer;
-	private String vaccineInn;
-	private String vaccineBatchNumber;
-	private String vaccineUniiCode;
-	private String vaccineAtcCode;
-	private String vaccine;
+	private VaccinationStatus vaccinationStatus;
 	private YesNoUnknown smallpoxVaccinationScar;
 	private YesNoUnknown smallpoxVaccinationReceived;
+	private Date smallpoxLastVaccinationDate;
 
 	private String epidNumber;
 
@@ -422,6 +396,17 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	private Date previousQuarantineTo;
 	private String quarantineChangeComment;
 
+	private Long personId;
+
+	@Column(name = "person_id", updatable = false, insertable = false)
+	public Long getPersonId() {
+		return personId;
+	}
+
+	public void setPersonId(Long personId) {
+		this.personId = personId;
+	}
+
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
 	public Person getPerson() {
@@ -432,7 +417,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.person = person;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getDescription() {
 		return description;
 	}
@@ -460,13 +445,22 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.diseaseVariant = diseaseVariant;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
 
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -543,7 +537,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.classificationDate = classificationDate;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getClassificationComment() {
 		return classificationComment;
 	}
@@ -644,7 +638,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.healthFacility = healthFacility;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getHealthFacilityDetails() {
 		return healthFacilityDetails;
 	}
@@ -662,7 +656,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.surveillanceOfficer = surveillanceOfficer;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT, name = "cliniciandetails")
+	@Column(length = CHARACTER_LIMIT_DEFAULT, name = "cliniciandetails")
 	public String getClinicianName() {
 		return clinicianName;
 	}
@@ -671,7 +665,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.clinicianName = clinicianName;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getClinicianPhone() {
 		return clinicianPhone;
 	}
@@ -680,7 +674,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.clinicianPhone = clinicianPhone;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getClinicianEmail() {
 		return clinicianEmail;
 	}
@@ -876,39 +870,12 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	}
 
 	@Enumerated(EnumType.STRING)
-	public Vaccination getVaccination() {
-		return vaccination;
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
 	}
 
-	public void setVaccination(Vaccination vaccination) {
-		this.vaccination = vaccination;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getVaccinationDoses() {
-		return vaccinationDoses;
-	}
-
-	public void setVaccinationDoses(String vaccinationDoses) {
-		this.vaccinationDoses = vaccinationDoses;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public VaccinationInfoSource getVaccinationInfoSource() {
-		return vaccinationInfoSource;
-	}
-
-	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
-		this.vaccinationInfoSource = vaccinationInfoSource;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getVaccine() {
-		return vaccine;
-	}
-
-	public void setVaccine(String vaccine) {
-		this.vaccine = vaccine;
+	public void setVaccinationStatus(VaccinationStatus vaccination) {
+		this.vaccinationStatus = vaccination;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -930,96 +897,15 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
-	public Date getFirstVaccinationDate() {
-		return firstVaccinationDate;
+	public Date getSmallpoxLastVaccinationDate() {
+		return smallpoxLastVaccinationDate;
 	}
 
-	public void setFirstVaccinationDate(Date firstVaccinationDate) {
-		this.firstVaccinationDate = firstVaccinationDate;
+	public void setSmallpoxLastVaccinationDate(Date smallpoxLastVaccinationDate) {
+		this.smallpoxLastVaccinationDate = smallpoxLastVaccinationDate;
 	}
 
-	@Temporal(TemporalType.TIMESTAMP)
-	public Date getLastVaccinationDate() {
-		return lastVaccinationDate;
-	}
-
-	public void setLastVaccinationDate(Date vaccinationDate) {
-		this.lastVaccinationDate = vaccinationDate;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public Vaccine getVaccineName() {
-		return vaccineName;
-	}
-
-	public void setVaccineName(Vaccine vaccineName) {
-		this.vaccineName = vaccineName;
-	}
-
-	@Column(columnDefinition = "text")
-	public String getOtherVaccineName() {
-		return otherVaccineName;
-	}
-
-	public void setOtherVaccineName(String otherVaccineName) {
-		this.otherVaccineName = otherVaccineName;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public VaccineManufacturer getVaccineManufacturer() {
-		return vaccineManufacturer;
-	}
-
-	public void setVaccineManufacturer(VaccineManufacturer vaccineManufacturer) {
-		this.vaccineManufacturer = vaccineManufacturer;
-	}
-
-	@Column(columnDefinition = "text")
-	public String getOtherVaccineManufacturer() {
-		return otherVaccineManufacturer;
-	}
-
-	public void setOtherVaccineManufacturer(String otherVaccineManufacturer) {
-		this.otherVaccineManufacturer = otherVaccineManufacturer;
-	}
-
-	@Column(columnDefinition = "text")
-	public String getVaccineInn() {
-		return vaccineInn;
-	}
-
-	public void setVaccineInn(String vaccineInn) {
-		this.vaccineInn = vaccineInn;
-	}
-
-	@Column(columnDefinition = "text")
-	public String getVaccineBatchNumber() {
-		return vaccineBatchNumber;
-	}
-
-	public void setVaccineBatchNumber(String vaccineBatchNumber) {
-		this.vaccineBatchNumber = vaccineBatchNumber;
-	}
-
-	@Column(columnDefinition = "text")
-	public String getVaccineUniiCode() {
-		return vaccineUniiCode;
-	}
-
-	public void setVaccineUniiCode(String vaccineUniiCode) {
-		this.vaccineUniiCode = vaccineUniiCode;
-	}
-
-	@Column(columnDefinition = "text")
-	public String getVaccineAtcCode() {
-		return vaccineAtcCode;
-	}
-
-	public void setVaccineAtcCode(String vaccineAtcCode) {
-		this.vaccineAtcCode = vaccineAtcCode;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getEpidNumber() {
 		return epidNumber;
 	}
@@ -1136,7 +1022,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.sequelae = sequelae;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSequelaeDetails() {
 		return sequelaeDetails;
 	}
@@ -1154,7 +1040,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.notifyingClinic = notifyingClinic;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getNotifyingClinicDetails() {
 		return notifyingClinicDetails;
 	}
@@ -1227,7 +1113,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.pointOfEntry = pointOfEntry;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getPointOfEntryDetails() {
 		return pointOfEntryDetails;
 	}
@@ -1253,7 +1139,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.additionalDetails = additionalDetails;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalID() {
 		return externalID;
 	}
@@ -1282,7 +1168,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.externalID = externalId;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalToken() {
 		return externalToken;
 	}
@@ -1318,7 +1204,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.quarantine = quarantine;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getQuarantineTypeDetails() {
 		return quarantineTypeDetails;
 	}
@@ -1345,7 +1231,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.quarantineTo = quarantineTo;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getQuarantineHelpNeeded() {
 		return quarantineHelpNeeded;
 	}
@@ -1399,7 +1285,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.quarantineHomePossible = quarantineHomePossible;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getQuarantineHomePossibleComment() {
 		return quarantineHomePossibleComment;
 	}
@@ -1417,7 +1303,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.quarantineHomeSupplyEnsured = quarantineHomeSupplyEnsured;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getQuarantineHomeSupplyEnsuredComment() {
 		return quarantineHomeSupplyEnsuredComment;
 	}
@@ -1489,7 +1375,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.followUpStatus = followUpStatus;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getFollowUpComment() {
 		return followUpComment;
 	}
@@ -1570,7 +1456,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.quarantineReasonBeforeIsolation = quarantineReasonBeforeIsolation;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getQuarantineReasonBeforeIsolationDetails() {
 		return quarantineReasonBeforeIsolationDetails;
 	}
@@ -1588,7 +1474,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.endOfIsolationReason = endOfIsolationReason;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getEndOfIsolationReasonDetails() {
 		return endOfIsolationReasonDetails;
 	}
@@ -1696,7 +1582,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.notACaseReasonOther = notACaseReasonOther;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getNotACaseReasonDetails() {
 		return notACaseReasonDetails;
 	}

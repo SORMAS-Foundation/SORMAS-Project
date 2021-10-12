@@ -32,7 +32,6 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -42,7 +41,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -80,6 +79,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoEvent;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoEventParticipant;
 import de.symeda.sormas.backend.user.User;
@@ -175,7 +175,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		}), "Involved", user.toReference(), (ep) -> {
 			ep.setRegion(rdcf.region);
 			ep.setDistrict(rdcf.district);
-			ep.getVaccinationInfo().setVaccination(Vaccination.VACCINATED);
+			ep.setVaccinationStatus(VaccinationStatus.VACCINATED);
 		});
 
 		SampleDto sample =

@@ -48,7 +48,7 @@ public class EventParticipantDownloadUtil {
 			EventParticipantExportDto.class,
 			null,
 			(Integer start, Integer max) -> FacadeProvider.getEventParticipantFacade()
-				.getExportList(criteria, selectedRows.get(), start, max, I18nProperties.getUserLanguage()),
+				.getExportList(criteria, selectedRows.get(), start, max, I18nProperties.getUserLanguage(), exportConfiguration),
 			EventParticipantDownloadUtil::captionProvider,
 			ExportEntityName.EVENT_PARTICIPANTS,
 			exportConfiguration);

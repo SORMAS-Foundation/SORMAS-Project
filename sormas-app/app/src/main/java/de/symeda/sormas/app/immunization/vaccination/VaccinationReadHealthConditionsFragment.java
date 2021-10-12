@@ -21,13 +21,13 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseReadHealthConditionsFragment;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
+import de.symeda.sormas.app.backend.vaccination.Vaccination;
 
-public class VaccinationReadHealthConditionsFragment extends BaseReadHealthConditionsFragment<VaccinationEntity> {
+public class VaccinationReadHealthConditionsFragment extends BaseReadHealthConditionsFragment<Vaccination> {
 
 	public static final String TAG = VaccinationReadHealthConditionsFragment.class.getSimpleName();
 
-	public static VaccinationReadHealthConditionsFragment newInstance(VaccinationEntity activityRootData) {
+	public static VaccinationReadHealthConditionsFragment newInstance(Vaccination activityRootData) {
 		return newInstanceWithFieldCheckers(
 			VaccinationReadHealthConditionsFragment.class,
 			null,

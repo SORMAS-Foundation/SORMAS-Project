@@ -21,12 +21,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
+import de.symeda.sormas.app.backend.vaccination.Vaccination;
 import de.symeda.sormas.app.core.adapter.databinding.BindingPagedListAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.BindingViewHolder;
 import de.symeda.sormas.app.databinding.RowVaccinationListItemLayoutBinding;
 
-public class VaccinationListAdapter extends BindingPagedListAdapter<VaccinationEntity, RowVaccinationListItemLayoutBinding> {
+public class VaccinationListAdapter extends BindingPagedListAdapter<Vaccination, RowVaccinationListItemLayoutBinding> {
 
 	public VaccinationListAdapter() {
 		super(R.layout.row_vaccination_list_item_layout);
@@ -37,8 +37,8 @@ public class VaccinationListAdapter extends BindingPagedListAdapter<VaccinationE
 		super.onBindViewHolder(holder, position);
 
 		if (getItemViewType(position) == TYPE_ITEM) {
-			BindingViewHolder<VaccinationEntity, RowVaccinationListItemLayoutBinding> pagedHolder = (BindingViewHolder) holder;
-			VaccinationEntity item = getItem(position);
+			BindingViewHolder<Vaccination, RowVaccinationListItemLayoutBinding> pagedHolder = (BindingViewHolder) holder;
+			Vaccination item = getItem(position);
 
 			pagedHolder.setOnListItemClickListener(this.mOnListItemClickListener);
 

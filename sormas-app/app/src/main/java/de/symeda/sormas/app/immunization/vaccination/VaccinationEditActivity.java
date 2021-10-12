@@ -15,11 +15,14 @@
 
 package de.symeda.sormas.app.immunization.vaccination;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
+
+import java.util.List;
+
 import android.content.Context;
 import android.os.AsyncTask;
 import android.view.Menu;
-
-import java.util.List;
 
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -29,7 +32,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.immunization.Immunization;
-import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
+import de.symeda.sormas.app.backend.vaccination.Vaccination;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
@@ -37,10 +40,7 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
-
-public class VaccinationEditActivity extends BaseEditActivity<VaccinationEntity> {
+public class VaccinationEditActivity extends BaseEditActivity<Vaccination> {
 
 	private AsyncTask saveTask;
 
@@ -53,12 +53,12 @@ public class VaccinationEditActivity extends BaseEditActivity<VaccinationEntity>
 	}
 
 	@Override
-	protected VaccinationEntity queryRootEntity(String recordUuid) {
+	protected Vaccination queryRootEntity(String recordUuid) {
 		return DatabaseHelper.getVaccinationDao().queryUuid(recordUuid);
 	}
 
 	@Override
-	protected VaccinationEntity buildRootEntity() {
+	protected Vaccination buildRootEntity() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -76,7 +76,7 @@ public class VaccinationEditActivity extends BaseEditActivity<VaccinationEntity>
 	}
 
 	@Override
-	protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, VaccinationEntity activityRootData) {
+	protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Vaccination activityRootData) {
 		VaccinationSection section = VaccinationSection.fromOrdinal(menuItem.getPosition());
 		BaseEditFragment fragment;
 		switch (section) {
@@ -107,7 +107,7 @@ public class VaccinationEditActivity extends BaseEditActivity<VaccinationEntity>
 			return;
 		}
 
-		final VaccinationEntity vaccinationEntity = getStoredRootEntity();
+		final Vaccination Vaccination = getStoredRootEntity();
 
 		try {
 			FragmentValidator.validate(getContext(), getActiveFragment().getContentBinding());
@@ -116,7 +116,7 @@ public class VaccinationEditActivity extends BaseEditActivity<VaccinationEntity>
 			return;
 		}
 
-		saveTask = new SavingAsyncTask(getRootView(), vaccinationEntity) {
+		saveTask = new SavingAsyncTask(getRootView(), Vaccination) {
 
 			@Override
 			protected void onPreExecute() {
@@ -125,10 +125,10 @@ public class VaccinationEditActivity extends BaseEditActivity<VaccinationEntity>
 
 			@Override
 			public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
-				final VaccinationEntity savedVaccination = DatabaseHelper.getVaccinationDao().saveAndSnapshot(vaccinationEntity);
-				final Immunization immunization = DatabaseHelper.getImmunizationDao().queryUuid(vaccinationEntity.getImmunization().getUuid());
-				final List<VaccinationEntity> vaccinations = immunization.getVaccinations();
-				for (VaccinationEntity ve : vaccinations) {
+				final Vaccination savedVaccination = DatabaseHelper.getVaccinationDao().saveAndSnapshot(Vaccination);
+				final Immunization immunization = DatabaseHelper.getImmunizationDao().queryUuid(Vaccination.getImmunization().getUuid());
+				final List<Vaccination> vaccinations = immunization.getVaccinations();
+				for (Vaccination ve : vaccinations) {
 					if (ve.getUuid().equals(savedVaccination.getUuid())) {
 						vaccinations.remove(ve);
 						break;
