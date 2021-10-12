@@ -15,97 +15,63 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.caze;
 
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
-import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessorHelper;
 
 @Stateless
 @LocalBean
-public class ReceivedCaseProcessor
-	implements ReceivedDataProcessor<CaseDataDto, SormasToSormasCaseDto, ProcessedCaseData, SormasToSormasCasePreview> {
+public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto, SormasToSormasCaseDto, SormasToSormasCasePreview, Case> {
 
 	@EJB
 	private ReceivedDataProcessorHelper dataProcessorHelper;
 	@EJB
-	private ContactFacadeEjbLocal contactFacade;
-	@EJB
 	private InfrastructureValidator infraValidator;
+	@EJB
+	private CaseService caseService;
 
 	@Override
-	public ProcessedCaseData processReceivedData(SormasToSormasCaseDto receivedCase, CaseDataDto existingCaseData)
-		throws SormasToSormasValidationException {
-		List<ValidationErrors> validationErrors = new ArrayList<>();
+	public ValidationErrors processReceivedData(SormasToSormasCaseDto receivedCase, Case existingCase) {
 
-		PersonDto person = receivedCase.getPerson();
 		CaseDataDto caze = receivedCase.getEntity();
-		List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts = receivedCase.getAssociatedContacts();
-		List<SormasToSormasSampleDto> samples = receivedCase.getSamples();
-		SormasToSormasOriginInfoDto originInfo = receivedCase.getOriginInfo();
+		PersonDto person = receivedCase.getPerson();
 
-		ValidationErrors caseValidationErrors = new ValidationErrors();
-
-		ValidationErrors originInfoErrorsErrors = dataProcessorHelper.processOriginInfo(originInfo, Captions.CaseData);
-		caseValidationErrors.addAll(originInfoErrorsErrors);
-
-		ValidationErrors caseDataErrors = processCaseData(caze, person, existingCaseData);
-		caseValidationErrors.addAll(caseDataErrors);
-
-		if (caseValidationErrors.hasError()) {
-			validationErrors.add(new ValidationErrors(buildCaseValidationGroupName(caze), caseValidationErrors));
+		ValidationErrors uuidError = validateSharedUuid(caze.getUuid());
+		if (uuidError.hasError()) {
+			return uuidError;
 		}
 
-		if (associatedContacts != null && associatedContacts.size() > 0) {
-			List<ValidationErrors> contactValidationErrors = processAssociatedContacts(associatedContacts);
-			validationErrors.addAll(contactValidationErrors);
-		}
-
-		if (samples != null && samples.size() > 0) {
-			List<ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
-			validationErrors.addAll(sampleErrors);
-		}
-
-		if (validationErrors.size() > 0) {
-			throw new SormasToSormasValidationException(validationErrors);
-		}
-
-		return new ProcessedCaseData(person, caze, associatedContacts, samples, originInfo);
+		return processCaseData(caze, person, existingCase);
 	}
 
 	@Override
-	public SormasToSormasCasePreview processReceivedPreview(SormasToSormasCasePreview preview) throws SormasToSormasValidationException {
-		List<ValidationErrors> validationErrors = new ArrayList<>();
+	public ValidationErrors processReceivedPreview(SormasToSormasCasePreview preview) {
+		ValidationErrors uuidError = validateSharedUuid(preview.getUuid());
+		if (uuidError.hasError()) {
+			return uuidError;
+		}
 
-		ValidationErrors caseValidationErrors = new ValidationErrors();
+		ValidationErrors validationErrors = new ValidationErrors();
 
 		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
 			infraValidator.validateInfrastructure(
@@ -121,7 +87,7 @@ public class ReceivedCaseProcessor
 				preview.getPointOfEntry(),
 				preview.getPointOfEntryDetails());
 
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, caseValidationErrors, infrastructureData -> {
+		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, validationErrors, infrastructureData -> {
 			preview.setRegion(infrastructureData.getRegion());
 			preview.setDistrict(infrastructureData.getDistrict());
 			preview.setCommunity(infrastructureData.getCommunity());
@@ -131,34 +97,22 @@ public class ReceivedCaseProcessor
 			preview.setPointOfEntryDetails(infrastructureData.getPointOfEntryDetails());
 		});
 
-		if (caseValidationErrors.hasError()) {
-			validationErrors.add(new ValidationErrors(buildCaseValidationGroupName(preview), caseValidationErrors));
-		}
-
 		ValidationErrors personValidationErrors = dataProcessorHelper.processPersonPreview(preview.getPerson());
-		caseValidationErrors.addAll(personValidationErrors);
-
-		List<SormasToSormasContactPreview> contacts = preview.getContacts();
-		if (contacts != null && contacts.size() > 0) {
-			List<ValidationErrors> contactValidationErrors = processContactPreviews(contacts);
-			validationErrors.addAll(contactValidationErrors);
+		if (personValidationErrors.hasError()) {
+			validationErrors.addAll(personValidationErrors);
 		}
 
-		if (validationErrors.size() > 0) {
-			throw new SormasToSormasValidationException(validationErrors);
-		}
-
-		return preview;
+		return validationErrors;
 	}
 
-	private ValidationErrors processCaseData(CaseDataDto caze, PersonDto person, CaseDataDto existingCaseData) {
+	private ValidationErrors processCaseData(CaseDataDto caze, PersonDto person, Case existingCase) {
 		ValidationErrors caseValidationErrors = new ValidationErrors();
 
 		ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(person);
 		caseValidationErrors.addAll(personValidationErrors);
 
 		caze.setPerson(person.toReference());
-		dataProcessorHelper.updateReportingUser(caze, existingCaseData);
+		dataProcessorHelper.updateReportingUser(caze, existingCase);
 
 		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
 			infraValidator.validateInfrastructure(caze);
@@ -242,38 +196,16 @@ public class ReceivedCaseProcessor
 		return validationErrors;
 	}
 
-	private List<ValidationErrors> processAssociatedContacts(List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts) {
-		List<ValidationErrors> validationErrors = new ArrayList<>();
-
-		Map<String, ContactDto> existingContactsMap =
-			contactFacade.getByUuids(associatedContacts.stream().map(c -> c.getContact().getUuid()).collect(Collectors.toList()))
-				.stream()
-				.collect(Collectors.toMap(EntityDto::getUuid, Function.identity()));
-
-		for (SormasToSormasCaseDto.AssociatedContactDto associatedContact : associatedContacts) {
-			ContactDto contact = associatedContact.getContact();
-			ValidationErrors contactErrors =
-				dataProcessorHelper.processContactData(contact, associatedContact.getPerson(), existingContactsMap.get(contact.getUuid()));
-
-			if (contactErrors.hasError()) {
-				validationErrors.add(new ValidationErrors(buildContactValidationGroupName(contact), contactErrors));
-			}
+	private ValidationErrors validateSharedUuid(String uuid) {
+		ValidationErrors errors = new ValidationErrors();
+		if (caseService.exists(
+			(cb, caseRoot, cq) -> cb.and(
+				cb.equal(caseRoot.get(Case.UUID), uuid),
+				cb.isNull(caseRoot.get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+				cb.isEmpty(caseRoot.get(Case.SORMAS_TO_SORMAS_SHARES))))) {
+			errors.add(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasCaseExists));
 		}
 
-		return validationErrors;
-	}
-
-	private List<ValidationErrors> processContactPreviews(List<SormasToSormasContactPreview> contacts) {
-		List<ValidationErrors> validationErrors = new ArrayList<>();
-
-		for (SormasToSormasContactPreview contact : contacts) {
-			ValidationErrors contactErrors = dataProcessorHelper.processContactPreview(contact);
-
-			if (contactErrors.hasError()) {
-				validationErrors.add(new ValidationErrors(buildContactValidationGroupName(contact), contactErrors));
-			}
-		}
-
-		return validationErrors;
+		return errors;
 	}
 }

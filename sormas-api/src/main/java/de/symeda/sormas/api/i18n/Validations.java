@@ -157,11 +157,13 @@ public interface Validations {
 	String sormasToSormasCountry = "sormasToSormasCountry";
 	String sormasToSormasDistrict = "sormasToSormasDistrict";
 	String sormasToSormasEventExists = "sormasToSormasEventExists";
+	String sormasToSormasEventParticipantExists = "sormasToSormasEventParticipantExists";
 	String sormasToSormasFacility = "sormasToSormasFacility";
 	String sormasToSormasInfrastructure = "sormasToSormasInfrastructure";
 	String sormasToSormasLabMessageExists = "sormasToSormasLabMessageExists";
 	String sormasToSormasNotEditable = "sormasToSormasNotEditable";
 	String sormasToSormasOrganizationIdMissing = "sormasToSormasOrganizationIdMissing";
+	String sormasToSormasOwnershipAlreadyHandedOver = "sormasToSormasOwnershipAlreadyHandedOver";
 	String sormasToSormasPersonEnrolled = "sormasToSormasPersonEnrolled";
 	String sormasToSormasPointOfEntry = "sormasToSormasPointOfEntry";
 	String sormasToSormasRegion = "sormasToSormasRegion";

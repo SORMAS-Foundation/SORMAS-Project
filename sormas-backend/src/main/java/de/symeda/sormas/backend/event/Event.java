@@ -70,7 +70,7 @@ import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoEvent;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -144,7 +144,8 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	public static final String PARENTERAL_TRANSMISSION_MODE = "parenteralTransmissionMode";
 	public static final String MEDICALLY_ASSOCIATED_TRANSMISSION_MODE = "medicallyAssociatedTransmissionMode";
 
-	public static final String SHARE_INFO_EVENTS = "shareInfoEvents";
+	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 
 	private Event superordinateEvent;
 	private List<Event> subordinateEvents;
@@ -195,7 +196,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	private YesNoUnknown transregionalOutbreak;
 	private DiseaseTransmissionMode diseaseTransmissionMode;
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
-	private List<ShareInfoEvent> shareInfoEvents = new ArrayList<>(0);
+	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 	private EventManagementStatus eventManagementStatus;
 
 	private boolean archived;
@@ -759,13 +760,14 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.sormasToSormasOriginInfo = originInfo;
 	}
 
-	@OneToMany(mappedBy = ShareInfoEvent.EVENT, fetch = FetchType.LAZY)
-	public List<ShareInfoEvent> getShareInfoEvents() {
-		return shareInfoEvents;
+	@OneToMany(mappedBy = SormasToSormasShareInfo.EVENT, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
+		return sormasToSormasShares;
 	}
 
-	public void setShareInfoEvents(List<ShareInfoEvent> shareInfoEvents) {
-		this.shareInfoEvents = shareInfoEvents;
+	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
+		this.sormasToSormasShares = sormasToSormasShares;
 	}
 
 	@Column(columnDefinition = "text")

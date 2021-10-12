@@ -22,43 +22,43 @@ import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCont
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
-import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
-import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
-import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoContact;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.user.User;
 
 @Stateless(name = "SormasToSormasContactFacade")
-public class SormasToSormasContactFacadeEjb
-	extends AbstractSormasToSormasInterface<Contact, ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview, ProcessedContactData>
+public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterface<Contact, ContactDto, SormasToSormasContactDto>
 	implements SormasToSormasContactFacade {
 
 	private static final String CONTACT_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CONTACT_REQUEST_ENDPOINT;
@@ -71,11 +71,7 @@ public class SormasToSormasContactFacadeEjb
 	@EJB
 	private ContactService contactService;
 	@EJB
-	private ContactShareDataBuilder contactShareDataBuilder;
-	@EJB
-	private ReceivedContactProcessor receivedContactProcessor;
-	@EJB
-	private ProcessedContactDataPersister processedContactDataPersister;
+	private SampleService sampleService;
 	@EJB
 	private ContactFacadeEjbLocal contactFacade;
 	@EJB
@@ -92,29 +88,12 @@ public class SormasToSormasContactFacadeEjb
 			SYNC_SHARED_CONTACT_ENDPOINT,
 			CONTACT_SHARES_ENDPOINT,
 			Captions.Contact,
-			ShareRequestDataType.CONTACT,
-			ContactShareRequestData.class,
-			ContactSyncData.class);
+			ShareRequestDataType.CONTACT);
 	}
 
 	@Override
 	protected BaseAdoService<Contact> getEntityService() {
 		return contactService;
-	}
-
-	@Override
-	protected ShareDataBuilder<Contact, SormasToSormasContactDto, SormasToSormasContactPreview> getShareDataBuilder() {
-		return contactShareDataBuilder;
-	}
-
-	@Override
-	protected ReceivedDataProcessor<ContactDto, SormasToSormasContactDto, ProcessedContactData, SormasToSormasContactPreview> getReceivedDataProcessor() {
-		return receivedContactProcessor;
-	}
-
-	@Override
-	protected ProcessedDataPersister<ProcessedContactData> getProcessedDataPersister() {
-		return processedContactDataPersister;
 	}
 
 	@Override
@@ -127,15 +106,19 @@ public class SormasToSormasContactFacadeEjb
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (Contact contact : entities) {
 			if (!contactService.isContactEditAllowed(contact)) {
-				validationErrors.add(new ValidationErrors(buildContactValidationGroupName(contact),
-						ValidationErrors
-								.create(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasNotEditable))));
-			}
-			if (handOverOwnership && contact.getPerson().isEnrolledInExternalJournal()) {
-				validationErrors.add(new ValidationErrors(
+				validationErrors.add(
+					new ValidationErrors(
 						buildContactValidationGroupName(contact),
 						ValidationErrors
-								.create(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasPersonEnrolled))));
+							.create(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasNotEditable))));
+			}
+			if (handOverOwnership && contact.getPerson().isEnrolledInExternalJournal()) {
+				validationErrors.add(
+					new ValidationErrors(
+						buildContactValidationGroupName(contact),
+						ValidationErrors.create(
+							new ValidationErrorGroup(Captions.Contact),
+							new ValidationErrorMessage(Validations.sormasToSormasPersonEnrolled))));
 			}
 		}
 
@@ -145,53 +128,34 @@ public class SormasToSormasContactFacadeEjb
 	}
 
 	@Override
-	protected ValidationErrors validateSharedEntity(ContactDto entity) {
-		return validateSharedUuids(entity.getUuid(), entity.getCaze());
+	protected void validateEntitiesBeforeShare(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
+		validateEntitiesBeforeShare(
+			shares.stream().map(SormasToSormasShareInfo::getContact).filter(Objects::nonNull).collect(Collectors.toList()),
+			shares.get(0).isOwnershipHandedOver());
 	}
 
 	@Override
-	protected ValidationErrors validateSharedPreview(SormasToSormasContactPreview preview) {
-		return validateSharedUuids(preview.getUuid(), preview.getCaze());
-	}
+	protected List<SormasToSormasShareInfo> getOrCreateShareInfos(Contact contact, SormasToSormasOptionsDto options, User user) {
+		String organizationId = options.getOrganization().getId();
+		SormasToSormasShareInfo eventShareInfo = contact.getSormasToSormasShares()
+			.stream()
+			.filter(s -> s.getOrganizationId().equals(organizationId))
+			.findFirst()
+			.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, contact, SormasToSormasShareInfo::setContact));
 
-	@Override
-	protected void addEntityToShareInfo(SormasToSormasShareInfo shareInfo, List<Contact> contacts) {
-		shareInfo.getContacts().addAll(contacts.stream().map(c -> new ShareInfoContact(shareInfo, c)).collect(Collectors.toList()));
-	}
-
-	@Override
-	protected SormasToSormasShareInfo getShareInfoByEntityAndOrganization(String entityUuid, String receiverId) {
-		return shareInfoService.getByContactAndOrganization(entityUuid, receiverId);
-	}
-
-	@Override
-	protected List<ContactDto> loadExistingEntities(List<String> uuids) {
-		return contactFacade.getByUuids(uuids);
-	}
-
-	@Override
-	protected void setShareRequestPreviewData(SormasToSormasShareRequestDto request, List<SormasToSormasContactPreview> previews) {
-		request.setContacts(previews);
-	}
-
-	@Override
-	protected List<SormasToSormasShareInfo> getEntityShares(Contact contact) {
-		return contact.getShareInfoContacts().stream().map(ShareInfoContact::getShareInfo).collect(Collectors.toList());
-	}
-
-	private ValidationErrors validateSharedUuids(String uuid, CaseReferenceDto caze) {
-		ValidationErrors errors = new ValidationErrors();
-
-		if (contactFacade.exists(uuid)) {
-			errors.add(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasContactExists));
+		Stream<SormasToSormasShareInfo> sampleShareInfos = Stream.empty();
+		if (options.isWithSamples()) {
+			sampleShareInfos = sampleService.findBy(new SampleCriteria().contact(contact.toReference()), user)
+				.stream()
+				.map(
+					s -> s.getSormasToSormasShares()
+						.stream()
+						.filter(share -> share.getOrganizationId().equals(organizationId))
+						.findFirst()
+						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, s, SormasToSormasShareInfo::setSample)));
 		}
 
-		if (caze != null && !caseFacade.exists(caze.getUuid())) {
-			errors
-				.add(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasContactCaseNotExists));
-		}
-
-		return errors;
+		return Stream.of(Stream.of(eventShareInfo), sampleShareInfos).flatMap(Function.identity()).collect(Collectors.toList());
 	}
 
 	@Override

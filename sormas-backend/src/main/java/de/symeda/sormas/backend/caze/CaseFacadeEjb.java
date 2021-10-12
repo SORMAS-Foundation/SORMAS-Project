@@ -279,9 +279,9 @@ import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoCase;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
@@ -2708,7 +2708,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
 		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
-		target.setOwnershipHandedOver(source.getShareInfoCases().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 		target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());
 		if (source.getFollowUpStatusChangeUser() != null) {
 			target.setFollowUpStatusChangeUser(source.getFollowUpStatusChangeUser().toReference());
@@ -3125,7 +3125,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public boolean doesExternalTokenExist(String externalToken, String caseUuid) {
 		return caseService.exists(
-			(cb, caseRoot) -> CriteriaBuilderHelper.and(
+			(cb, caseRoot, cq) -> CriteriaBuilderHelper.and(
 				cb,
 				cb.equal(caseRoot.get(Case.EXTERNAL_TOKEN), externalToken),
 				cb.notEqual(caseRoot.get(Case.UUID), caseUuid),
@@ -3542,7 +3542,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		final Join<Sample, Case> caseJoin = sampleRoot.join(Sample.ASSOCIATED_CASE, JoinType.INNER);
 		final Predicate casePredicate = criteriaBuilder.equal(caseJoin.get(AbstractDomainObject.UUID), caseUuid);
 		final Predicate testPositivityPredicate = criteriaBuilder.equal(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.POSITIVE);
-		return sampleService.exists((cb, root) -> cb.and(casePredicate, testPositivityPredicate));
+		return sampleService.exists((cb, root, cq) -> cb.and(casePredicate, testPositivityPredicate));
 	}
 
 	@Override
@@ -3744,14 +3744,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> caseRoot = cq.from(Case.class);
-		Join<ShareInfoCase, SormasToSormasShareInfo> sormasToSormasJoin =
-			caseRoot.join(Case.SHARE_INFO_CASES, JoinType.LEFT).join(ShareInfoCase.SHARE_INFO, JoinType.LEFT);
+		Join<Case, SormasToSormasOriginInfo> originInfoJoin = caseRoot.join(Case.SORMAS_TO_SORMAS_ORIGIN_INFO, JoinType.LEFT);
+		Join<Case, SormasToSormasShareInfo> shareInfoJoin = caseRoot.join(Case.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT);
 
 		cq.select(caseRoot.get(Case.UUID));
 		cq.where(
 			cb.and(
 				cb.or(
-					cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER)),
+					cb.isFalse(originInfoJoin.get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER)),
+					cb.isTrue(shareInfoJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER)),
 					cb.isTrue(caseRoot.get(Case.DONT_SHARE_WITH_REPORTING_TOOL))),
 				caseRoot.get(Case.UUID).in(caseUuids)));
 		cq.orderBy(cb.asc(caseRoot.get(AbstractDomainObject.CREATION_DATE)));

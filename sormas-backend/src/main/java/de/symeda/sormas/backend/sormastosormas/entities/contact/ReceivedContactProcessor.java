@@ -15,9 +15,6 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.contact;
 
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -26,72 +23,105 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
-import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessorHelper;
 
 @Stateless
 @LocalBean
-public class ReceivedContactProcessor
-	implements ReceivedDataProcessor<ContactDto, SormasToSormasContactDto, ProcessedContactData, SormasToSormasContactPreview> {
+public class ReceivedContactProcessor implements ReceivedDataProcessor<ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview, Contact> {
 
 	@EJB
 	private ReceivedDataProcessorHelper dataProcessorHelper;
+	@EJB
+	private ContactService contactService;
+	@EJB
+	private InfrastructureValidator infraValidator;
 
 	@Override
-	public ProcessedContactData processReceivedData(SormasToSormasContactDto receivedContact, ContactDto existingContact)
-		throws SormasToSormasValidationException {
-		List<ValidationErrors> validationErrors = new ArrayList<>();
+	public ValidationErrors processReceivedData(SormasToSormasContactDto receivedContact, Contact existingContact) {
 
-		PersonDto person = receivedContact.getPerson();
 		ContactDto contact = receivedContact.getEntity();
-		List<SormasToSormasSampleDto> samples = receivedContact.getSamples();
-		SormasToSormasOriginInfoDto originInfo = receivedContact.getOriginInfo();
+		PersonDto person = receivedContact.getPerson();
 
-		ValidationErrors contactValidationErrors = new ValidationErrors();
-
-		ValidationErrors originInfoErrors = dataProcessorHelper.processOriginInfo(originInfo, Captions.Contact);
-		contactValidationErrors.addAll(originInfoErrors);
-
-		ValidationErrors contactDataErrors = dataProcessorHelper.processContactData(contact, person, existingContact);
-		contactValidationErrors.addAll(contactDataErrors);
-
-		if (contactValidationErrors.hasError()) {
-			validationErrors.add(new ValidationErrors(buildContactValidationGroupName(contact), contactValidationErrors));
+		ValidationErrors uuidError = validateSharedUuid(contact.getUuid());
+		if (uuidError.hasError()) {
+			return uuidError;
 		}
 
-		if (samples != null && samples.size() > 0) {
-			List<ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
-			validationErrors.addAll(sampleErrors);
-		}
-
-		if (validationErrors.size() > 0) {
-			throw new SormasToSormasValidationException(validationErrors);
-		}
-
-		return new ProcessedContactData(person, contact, samples, originInfo);
+		return processContactData(contact, person, existingContact);
 	}
 
 	@Override
-	public SormasToSormasContactPreview processReceivedPreview(SormasToSormasContactPreview preview) throws SormasToSormasValidationException {
-		List<ValidationErrors> validationErrors = new ArrayList<>();
-
-		ValidationErrors contactErrors = dataProcessorHelper.processContactPreview(preview);
-
-		if (contactErrors.hasError()) {
-			validationErrors.add(new ValidationErrors(buildContactValidationGroupName(preview), contactErrors));
+	public ValidationErrors processReceivedPreview(SormasToSormasContactPreview preview) {
+		ValidationErrors uuidError = validateSharedUuid(preview.getUuid());
+		if (uuidError.hasError()) {
+			return uuidError;
 		}
 
-		if (validationErrors.size() > 0) {
-			throw new SormasToSormasValidationException(validationErrors);
+		return processContactPreview(preview);
+	}
+
+	private ValidationErrors processContactData(ContactDto contact, PersonDto person, Contact existingContact) {
+		ValidationErrors validationErrors = new ValidationErrors();
+
+		ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(person);
+		validationErrors.addAll(personValidationErrors);
+
+		contact.setPerson(person.toReference());
+		dataProcessorHelper.updateReportingUser(contact, existingContact);
+
+		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
+			infraValidator.validateInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
+
+		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Contact, validationErrors, (infrastructure -> {
+			contact.setRegion(infrastructure.getRegion());
+			contact.setDistrict(infrastructure.getDistrict());
+			contact.setCommunity(infrastructure.getCommunity());
+		}));
+
+		dataProcessorHelper.processEpiData(contact.getEpiData(), validationErrors);
+
+		return validationErrors;
+	}
+
+	private ValidationErrors validateSharedUuid(String uuid) {
+		ValidationErrors errors = new ValidationErrors();
+
+		if (contactService.exists(
+			(cb, contactRoot, cq) -> cb.and(
+				cb.equal(contactRoot.get(Contact.UUID), uuid),
+				cb.isNull(contactRoot.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+				cb.isEmpty(contactRoot.get(Contact.SORMAS_TO_SORMAS_SHARES))))) {
+
+			errors.add(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasContactExists));
 		}
 
-		return preview;
+		return errors;
+	}
+
+	private ValidationErrors processContactPreview(SormasToSormasContactPreview contact) {
+		ValidationErrors validationErrors = new ValidationErrors();
+
+		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
+			infraValidator.validateInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
+
+		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Contact, validationErrors, (infrastructure -> {
+			contact.setRegion(infrastructure.getRegion());
+			contact.setDistrict(infrastructure.getDistrict());
+			contact.setCommunity(infrastructure.getCommunity());
+		}));
+
+		return validationErrors;
 	}
 }

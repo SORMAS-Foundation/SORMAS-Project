@@ -88,7 +88,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoCase;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Therapy;
@@ -197,8 +197,8 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	public static final String CONTACTS = "contacts";
 	public static final String CONVERTED_FROM_CONTACT = "convertedContact";
 	public static final String EVENT_PARTICIPANTS = "eventParticipants";
-	public static final String SHARE_INFO_CASES = "shareInfoCases";
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 	public static final String EXTERNAL_SHARES = "externalShares";
 
 	public static final String CASE_ID_ISM = "caseIdIsm";
@@ -384,7 +384,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	private boolean dontShareWithReportingTool;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
-	private List<ShareInfoCase> shareInfoCases = new ArrayList<>(0);
+	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 	private List<ExternalShareInfo> externalShares = new ArrayList<>(0);
 
 	private CaseReferenceDefinition caseReferenceDefinition;
@@ -1585,14 +1585,14 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.sormasToSormasOriginInfo = originInfo;
 	}
 
-	@OneToMany(mappedBy = ShareInfoCase.CAZE, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = SormasToSormasShareInfo.CAZE, fetch = FetchType.LAZY)
 	@AuditedIgnore
-	public List<ShareInfoCase> getShareInfoCases() {
-		return shareInfoCases;
+	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
+		return sormasToSormasShares;
 	}
 
-	public void setShareInfoCases(List<ShareInfoCase> shareInfoCases) {
-		this.shareInfoCases = shareInfoCases;
+	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
+		this.sormasToSormasShares = sormasToSormasShares;
 	}
 
 	@OneToMany(mappedBy = ExternalShareInfo.CAZE, fetch = FetchType.LAZY)

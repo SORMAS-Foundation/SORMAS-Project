@@ -15,14 +15,11 @@
 
 package de.symeda.sormas.api.sormastosormas.shareinfo;
 
-import java.util.List;
-
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class SormasToSormasShareInfoCriteria extends BaseCriteria {
@@ -38,8 +35,6 @@ public class SormasToSormasShareInfoCriteria extends BaseCriteria {
 	private EventReferenceDto event;
 
 	private EventParticipantReferenceDto eventParticipant;
-
-	private List<ShareRequestStatus> requestStatuses;
 
 	public CaseReferenceDto getCaze() {
 		return caze;
@@ -87,16 +82,6 @@ public class SormasToSormasShareInfoCriteria extends BaseCriteria {
 
 	public SormasToSormasShareInfoCriteria eventParticipant(EventParticipantReferenceDto eventParticipant) {
 		this.eventParticipant = eventParticipant;
-
-		return this;
-	}
-
-	public List<ShareRequestStatus> getRequestStatuses() {
-		return requestStatuses;
-	}
-
-	public SormasToSormasShareInfoCriteria requestStatuses(List<ShareRequestStatus> requestStatusesExcepted) {
-		this.requestStatuses = requestStatusesExcepted;
 
 		return this;
 	}

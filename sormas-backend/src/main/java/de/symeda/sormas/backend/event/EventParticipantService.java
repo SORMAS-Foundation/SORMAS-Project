@@ -404,7 +404,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, EventParticipant> from, Timestamp date) {
 		Predicate dateFilter = super.createChangeDateFilter(cb, from, date);
-		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, EventParticipant.SHARE_INFO_EVENT_PARTICIPANTS));
+		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, EventParticipant.SORMAS_TO_SORMAS_ORIGIN_INFO));
+		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, EventParticipant.SORMAS_TO_SORMAS_SHARES));
 
 		return dateFilter;
 

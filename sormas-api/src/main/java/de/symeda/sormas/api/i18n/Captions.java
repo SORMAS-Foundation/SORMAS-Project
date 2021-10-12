@@ -1849,6 +1849,7 @@ public interface Captions {
 	String SormasToSormasOptions_withAssociatedContacts = "SormasToSormasOptions.withAssociatedContacts";
 	String SormasToSormasOptions_withEventParticipants = "SormasToSormasOptions.withEventParticipants";
 	String SormasToSormasOptions_withSamples = "SormasToSormasOptions.withSamples";
+	String sormasToSormasOriginInfo = "sormasToSormasOriginInfo";
 	String sormasToSormasOwnedBy = "sormasToSormasOwnedBy";
 	String SormasToSormasPerson_address = "SormasToSormasPerson.address";
 	String SormasToSormasPerson_birthdDate = "SormasToSormasPerson.birthdDate";

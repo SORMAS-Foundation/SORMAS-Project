@@ -15,37 +15,19 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.event;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
-import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
-import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
-import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.entities.AssociatedEntityWrapper;
-import de.symeda.sormas.backend.sormastosormas.share.ShareData;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoEventParticipant;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
@@ -56,95 +38,23 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 	private ShareDataBuilderHelper dataBuilderHelper;
 	@EJB
 	private EventFacadeEjbLocal eventFacade;
-	@EJB
-	private EventParticipantFacadeEjbLocal eventParticipantFacade;
-	@EJB
-	private EventParticipantService eventParticipantService;
-	@EJB
-	private SampleService sampleService;
 
 	@Override
-	public ShareData<Event, SormasToSormasEventDto> buildShareData(Event event, User user, SormasToSormasOptionsDto options)
-		throws SormasToSormasException {
-		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(user, options);
+	public SormasToSormasEventDto buildShareData(Event data, ShareRequestInfo requestInfo) {
+		Pseudonymizer pseudonymizer =
+			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 
-		List<EventParticipant> eventParticipants = Collections.emptyList();
-		if (options.isWithEventParticipants()) {
-			eventParticipants = eventParticipantService.getByEventUuids(Collections.singletonList(event.getUuid()));
-		}
+		EventDto eventDto = getEventDto(data, pseudonymizer);
 
-		return createShareData(
-			event,
-			originInfo,
-			eventParticipants,
-			options.isWithSamples(),
-			options.isPseudonymizePersonalData(),
-			options.isPseudonymizeSensitiveData());
+		return new SormasToSormasEventDto(eventDto);
 	}
 
 	@Override
-	public ShareData<Event, SormasToSormasEventPreview> buildShareDataPreview(Event event, User user, SormasToSormasOptionsDto options)
-		throws SormasToSormasException {
-		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(options.isPseudonymizePersonalData(), options.isPseudonymizeSensitiveData());
+	public SormasToSormasEventPreview buildShareDataPreview(Event event, ShareRequestInfo requestInfo) {
+		Pseudonymizer pseudonymizer =
+			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 
-		SormasToSormasEventPreview eventPreview = getEventPreview(event, pseudonymizer);
-
-		List<EventParticipant> eventParticipants = Collections.emptyList();
-		if (options.isWithEventParticipants()) {
-			eventParticipants = eventParticipantService.getAllActiveByEvent(event);
-			eventPreview.setEventParticipants(getEventParticipantPreviews(eventParticipants, pseudonymizer));
-		}
-
-		ShareData<Event, SormasToSormasEventPreview> shareData = new ShareData<>(event, eventPreview);
-		shareData.addAssociatedEntities(AssociatedEntityWrapper.forEventParticipants(eventParticipants));
-
-		return shareData;
-	}
-
-	@Override
-	public List<ShareData<Event, SormasToSormasEventDto>> buildShareData(User user, SormasToSormasShareInfo shareInfo) {
-		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(user, shareInfo);
-
-		return shareInfo.getEvents().stream().map(shareInfoEvent -> {
-			Event event = shareInfoEvent.getEvent();
-
-			return createShareData(
-				event,
-				originInfo,
-				shareInfo.getEventParticipants().stream().map(ShareInfoEventParticipant::getEventParticipant).collect(Collectors.toList()),
-				shareInfo.isWithSamples(),
-				shareInfo.isPseudonymizedPersonalData(),
-				shareInfo.isPseudonymizedSensitiveData());
-		}).collect(Collectors.toList());
-	}
-
-	private ShareData<Event, SormasToSormasEventDto> createShareData(
-		Event event,
-		SormasToSormasOriginInfoDto originInfo,
-		List<EventParticipant> eventParticipants,
-		boolean withSamples,
-		boolean pseudonymizedPersonalData,
-		boolean pseudonymizedSensitiveData) {
-		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(pseudonymizedPersonalData, pseudonymizedSensitiveData);
-
-		EventDto eventDto = getEventDto(event, pseudonymizer);
-
-		SormasToSormasEventDto eventData = new SormasToSormasEventDto(eventDto, originInfo);
-		ShareData<Event, SormasToSormasEventDto> eventShareData = new ShareData<>(event, eventData);
-
-		List<Sample> samples = Collections.emptyList();
-		if (eventParticipants.size() > 0 && withSamples) {
-			samples =
-				sampleService.getByEventParticipantUuids(eventParticipants.stream().map(EventParticipant::getUuid).collect(Collectors.toList()));
-		}
-
-		eventData
-			.setEventParticipants(getEventParticipantDtos(eventParticipants, pseudonymizer, pseudonymizedPersonalData, pseudonymizedSensitiveData));
-		eventData.setSamples(dataBuilderHelper.getSampleDtos(samples, pseudonymizer));
-		eventShareData.addAssociatedEntities(AssociatedEntityWrapper.forEventParticipants(eventParticipants));
-		eventShareData.addAssociatedEntities(AssociatedEntityWrapper.forSamples(samples));
-
-		return eventShareData;
+		return getEventPreview(event, pseudonymizer);
 	}
 
 	private EventDto getEventDto(Event event, Pseudonymizer pseudonymizer) {
@@ -154,23 +64,6 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 		eventDto.setSormasToSormasOriginInfo(null);
 
 		return eventDto;
-	}
-
-	private List<EventParticipantDto> getEventParticipantDtos(
-		List<EventParticipant> eventParticipants,
-		Pseudonymizer pseudonymizer,
-		boolean pseudonymizedPersonalData,
-		boolean pseudonymizedSensitiveData) {
-		return eventParticipants.stream().map(eventParticipant -> {
-			EventParticipantDto dto = eventParticipantFacade.convertToDto(eventParticipant, pseudonymizer);
-
-			dto.setReportingUser(null);
-			dto.setSormasToSormasOriginInfo(null);
-
-			dataBuilderHelper.pseudonymiePerson(dto.getPerson(), pseudonymizedPersonalData, pseudonymizedSensitiveData);
-
-			return dto;
-		}).collect(Collectors.toList());
 	}
 
 	private SormasToSormasEventPreview getEventPreview(Event event, Pseudonymizer pseudonymizer) {
@@ -187,18 +80,5 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 		pseudonymizer.pseudonymizeDto(SormasToSormasEventPreview.class, preview, false, null);
 
 		return preview;
-	}
-
-	private List<SormasToSormasEventParticipantPreview> getEventParticipantPreviews(List<EventParticipant> eventParticipants, Pseudonymizer pseudonymizer) {
-		return eventParticipants.stream().map(eventParticipant -> {
-			SormasToSormasEventParticipantPreview preview = new SormasToSormasEventParticipantPreview();
-
-			preview.setUuid(eventParticipant.getUuid());
-			preview.setPerson(dataBuilderHelper.getPersonPreview(eventParticipant.getPerson()));
-
-			pseudonymizer.pseudonymizeDto(SormasToSormasEventParticipantPreview.class, preview, false,null);
-
-			return preview;
-		}).collect(Collectors.toList());
 	}
 }

@@ -15,49 +15,28 @@
 
 package de.symeda.sormas.backend.sormastosormas.data.received;
 
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildPathogenTestValidationGroupName;
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildSampleValidationGroupName;
-
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
-import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb.ContinentFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb.SubcontinentFacadeEjbLocal;
-import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
@@ -66,24 +45,6 @@ public class ReceivedDataProcessorHelper {
 
 	@EJB
 	private UserService userService;
-	@EJB
-	private ContinentFacadeEjbLocal continentFacade;
-	@EJB
-	private SubcontinentFacadeEjbLocal subcontinentFacade;
-	@EJB
-	private RegionFacadeEjbLocal regionFacade;
-	@EJB
-	private DistrictFacadeEjbLocal districtFacade;
-	@EJB
-	private CommunityFacadeEjbLocal communityFacade;
-	@EJB
-	private FacilityFacadeEjb.FacilityFacadeEjbLocal facilityFacade;
-	@EJB
-	private PointOfEntryFacadeEjbLocal pointOfEntryFacade;
-	@EJB
-	private CountryFacadeEjbLocal countryFacade;
-	@EJB
-	private SampleFacadeEjbLocal sampleFacade;
 	@EJB
 	private InfrastructureValidator infraValidator;
 
@@ -148,112 +109,6 @@ public class ReceivedDataProcessorHelper {
 		return localCountry;
 	}
 
-	public List<ValidationErrors> processSamples(List<SormasToSormasSampleDto> samples) {
-		List<ValidationErrors> validationErrors = new ArrayList<>();
-
-		Map<String, SampleDto> existingSamplesMap =
-			sampleFacade.getByUuids(samples.stream().map(s -> s.getSample().getUuid()).collect(Collectors.toList()))
-				.stream()
-				.collect(Collectors.toMap(SampleDto::getUuid, Function.identity()));
-
-		samples.forEach(sormasToSormasSample -> {
-			SampleDto sample = sormasToSormasSample.getSample();
-			ValidationErrors sampleErrors = new ValidationErrors();
-
-			updateReportingUser(sample, existingSamplesMap.get(sample.getUuid()));
-
-			DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-				infraValidator.validateInfrastructure(
-					null,
-					null,
-					null,
-					null,
-					null,
-					null,
-					// todo shouldn't this be FacilityType.LABORATORY?
-					null,
-					sample.getLab(),
-					sample.getLabDetails(),
-					null,
-					null);
-
-			infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Sample_lab, sampleErrors, (infrastructureData -> {
-				sample.setLab(infrastructureData.getFacility());
-				sample.setLabDetails(infrastructureData.getFacilityDetails());
-			}));
-
-			if (sampleErrors.hasError()) {
-				validationErrors.add(new ValidationErrors(buildSampleValidationGroupName(sample), sampleErrors));
-			}
-
-			sormasToSormasSample.getPathogenTests().forEach(pathogenTest -> {
-				DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> ptInfrastructureAndErrors =
-					infraValidator.validateInfrastructure(
-						null,
-						null,
-						null,
-						null,
-						null,
-						null,
-						FacilityType.LABORATORY,
-						pathogenTest.getLab(),
-						pathogenTest.getLabDetails(),
-						null,
-						null);
-
-				ValidationErrors pathogenTestErrors = new ValidationErrors();
-				infraValidator.handleInfraStructure(ptInfrastructureAndErrors, Captions.PathogenTest_lab, pathogenTestErrors, (infrastructureData -> {
-					pathogenTest.setLab(infrastructureData.getFacility());
-					pathogenTest.setLabDetails(infrastructureData.getFacilityDetails());
-				}));
-
-				if (pathogenTestErrors.hasError()) {
-					validationErrors.add(new ValidationErrors(buildPathogenTestValidationGroupName(pathogenTest), pathogenTestErrors));
-				}
-			});
-		});
-
-		return validationErrors;
-	}
-
-	public ValidationErrors processContactData(ContactDto contact, PersonDto person, ContactDto existingContact) {
-		ValidationErrors validationErrors = new ValidationErrors();
-
-		ValidationErrors personValidationErrors = processPerson(person);
-		validationErrors.addAll(personValidationErrors);
-
-		contact.setPerson(person.toReference());
-		updateReportingUser(contact, existingContact);
-
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-			infraValidator.validateInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
-
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Contact, validationErrors, (infrastructure -> {
-			contact.setRegion(infrastructure.getRegion());
-			contact.setDistrict(infrastructure.getDistrict());
-			contact.setCommunity(infrastructure.getCommunity());
-		}));
-
-		processEpiData(contact.getEpiData(), validationErrors);
-
-		return validationErrors;
-	}
-
-	public ValidationErrors processContactPreview(SormasToSormasContactPreview contact) {
-		ValidationErrors validationErrors = new ValidationErrors();
-
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-			infraValidator.validateInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
-
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Contact, validationErrors, (infrastructure -> {
-			contact.setRegion(infrastructure.getRegion());
-			contact.setDistrict(infrastructure.getDistrict());
-			contact.setCommunity(infrastructure.getCommunity());
-		}));
-
-		return validationErrors;
-	}
-
 	public void processEpiData(EpiDataDto epiData, ValidationErrors validationErrors) {
 		if (epiData != null) {
 			epiData.getExposures().forEach(exposure -> {
@@ -271,8 +126,9 @@ public class ReceivedDataProcessorHelper {
 		}
 	}
 
-	public void updateReportingUser(SormasToSormasEntityDto entity, SormasToSormasEntityDto originalEntiy) {
-		UserReferenceDto reportingUser = originalEntiy == null ? userService.getCurrentUser().toReference() : originalEntiy.getReportingUser();
+	public void updateReportingUser(SormasToSormasEntityDto entity, SormasToSormasEntity originalEntiy) {
+		UserReferenceDto reportingUser =
+			originalEntiy == null ? userService.getCurrentUser().toReference() : originalEntiy.getReportingUser().toReference();
 
 		entity.setReportingUser(reportingUser);
 	}

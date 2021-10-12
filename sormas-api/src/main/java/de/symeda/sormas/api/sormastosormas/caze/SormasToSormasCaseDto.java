@@ -15,91 +15,28 @@
 
 package de.symeda.sormas.api.sormastosormas.caze;
 
-import java.io.Serializable;
-import java.util.List;
-
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 
-public class SormasToSormasCaseDto extends SormasToSormasDto<CaseDataDto> {
+public class SormasToSormasCaseDto extends SormasToSormasEntityDto<CaseDataDto> {
 
 	private static final long serialVersionUID = 1811907980150876134L;
 
 	@Valid
 	private PersonDto person;
 
-	@Valid
-	private List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts;
-
-	@Valid
-	private List<SormasToSormasSampleDto> samples;
-
 	public SormasToSormasCaseDto() {
 	}
 
-	public SormasToSormasCaseDto(PersonDto person, CaseDataDto caze, SormasToSormasOriginInfoDto originInfo) {
-		super(caze, originInfo);
+	public SormasToSormasCaseDto(PersonDto person, CaseDataDto caze) {
+		super(caze);
 		this.person = person;
 	}
 
 	public PersonDto getPerson() {
 		return person;
-	}
-
-	public List<SormasToSormasCaseDto.AssociatedContactDto> getAssociatedContacts() {
-		return associatedContacts;
-	}
-
-	public void setAssociatedContacts(List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts) {
-		this.associatedContacts = associatedContacts;
-	}
-
-	public List<SormasToSormasSampleDto> getSamples() {
-		return samples;
-	}
-
-	public void setSamples(List<SormasToSormasSampleDto> samples) {
-		this.samples = samples;
-	}
-
-	public static final class AssociatedContactDto implements Serializable {
-
-		private static final long serialVersionUID = 1398270981748143566L;
-
-		@Valid
-		private PersonDto person;
-
-		@Valid
-		private ContactDto contact;
-
-		public AssociatedContactDto() {
-		}
-
-		public AssociatedContactDto(PersonDto person, ContactDto contact) {
-			this.person = person;
-			this.contact = contact;
-		}
-
-		public PersonDto getPerson() {
-			return person;
-		}
-
-		public void setPerson(PersonDto person) {
-			this.person = person;
-		}
-
-		public ContactDto getContact() {
-			return contact;
-		}
-
-		public void setContact(ContactDto contact) {
-			this.contact = contact;
-		}
 	}
 }

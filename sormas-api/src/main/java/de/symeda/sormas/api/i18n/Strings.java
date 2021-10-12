@@ -292,7 +292,6 @@ public interface Strings {
 	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
 	String errorSormasToSormasInvalidRequestMethod = "errorSormasToSormasInvalidRequestMethod";
 	String errorSormasToSormasLoadShares = "errorSormasToSormasLoadShares";
-	String errorSormasToSormasOwnershipAlreadyHandedOver = "errorSormasToSormasOwnershipAlreadyHandedOver";
 	String errorSormasToSormasRejectNotPending = "errorSormasToSormasRejectNotPending";
 	String errorSormasToSormasRequestToken = "errorSormasToSormasRequestToken";
 	String errorSormasToSormasResult = "errorSormasToSormasResult";
@@ -300,6 +299,7 @@ public interface Strings {
 	String errorSormasToSormasSend = "errorSormasToSormasSend";
 	String errorSormasToSormasServerAccess = "errorSormasToSormasServerAccess";
 	String errorSormasToSormasShare = "errorSormasToSormasShare";
+	String errorSormasToSormasUpdateNotPending = "errorSormasToSormasUpdateNotPending";
 	String errorTemplateFileCorrupt = "errorTemplateFileCorrupt";
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
