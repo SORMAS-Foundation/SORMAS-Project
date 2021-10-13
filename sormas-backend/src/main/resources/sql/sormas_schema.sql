@@ -7957,7 +7957,32 @@ CREATE TEMP TABLE tmp_vaccinated_entities AS
     SELECT DISTINCT ON (person.id, cases.disease)
         person.id AS person_id, cases.disease, cases.reportdate AS reportdate, cases.diseasedetails, cases.reportinguser_id,
         cases.responsibleregion_id AS responsibleregion_id, cases.responsibledistrict_id AS responsibledistrict_id, cases.responsiblecommunity_id AS responsiblecommunity_id,
-        cases.firstvaccinationdate, cases.lastvaccinationdate, CAST(NULLIF(cases.vaccinationdoses, '') AS int) AS vaccinationdoses,
+        cases.firstvaccinationdate, cases.lastvaccinationdate,
+        CASE
+            WHEN
+                /* Valid numbers of doses are 1 to 10 */
+                cases.vaccinationdoses ~ '^(10|[1-9])$'
+            THEN
+                CAST(cases.vaccinationdoses AS int)
+            WHEN
+                /* If the number of doses is neither valid nor empty, we assume 1 dose */
+                (cases.vaccinationdoses IS NOT NULL AND cases.vaccinationdoses != '')
+            THEN
+            	1
+            ELSE
+                null
+            END
+            AS vaccinationdoses,
+        /* If the number of doses is not valid, save the value as vaccinationdoses_details */
+        CASE
+            WHEN
+                cases.vaccinationdoses ~ '^(10|[1-9])$'
+            THEN
+                null
+            ELSE
+                cases.vaccinationdoses
+            END
+            AS vaccinationdoses_details,
         CASE
             WHEN
                 (cases.vaccinename IS NOT NULL OR cases.vaccine IS NULL)
@@ -8017,7 +8042,32 @@ UNION
                 cases.responsiblecommunity_id
             END
                   AS responsiblecommunity_id,
-        vaccinationinfo.firstvaccinationdate, vaccinationinfo.lastvaccinationdate, CAST(NULLIF(vaccinationinfo.vaccinationdoses, '') AS int) AS vaccinationdoses,
+        vaccinationinfo.firstvaccinationdate, vaccinationinfo.lastvaccinationdate,
+        CASE
+            WHEN
+                /* Valid numbers of doses are 1 to 10 */
+                vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+            THEN
+                CAST(vaccinationinfo.vaccinationdoses AS int)
+            WHEN
+                /* If the number of doses is neither valid nor empty, we assume 1 dose */
+                (vaccinationinfo.vaccinationdoses IS NOT NULL AND vaccinationinfo.vaccinationdoses != '')
+            THEN
+            	1
+            ELSE
+                null
+            END
+            AS vaccinationdoses,
+        /* If the number of doses is not valid, save the value as vaccinationdoses_details */
+        CASE
+            WHEN
+                vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+            THEN
+                null
+            ELSE
+                vaccinationinfo.vaccinationdoses
+            END
+            AS vaccinationdoses_details,
         vaccinationinfo.vaccinename AS vaccinename, vaccinationinfo.othervaccinename AS othervaccinename, vaccinationinfo.vaccinemanufacturer,
         vaccinationinfo.othervaccinemanufacturer, vaccinationinfo.vaccinationinfosource, vaccinationinfo.vaccineinn, vaccinationinfo.vaccinebatchnumber,
         vaccinationinfo.vaccineuniicode, vaccinationinfo.vaccineatccode, null AS pregnant, null AS trimester, contact.healthconditions_id AS healthconditions_id,
@@ -8052,7 +8102,32 @@ UNION
             END
                   AS responsibledistrict_id,
         location.community_id AS responsiblecommunity, vaccinationinfo.firstvaccinationdate, vaccinationinfo.lastvaccinationdate,
-        CAST(NULLIF(vaccinationinfo.vaccinationdoses, '') AS int) AS vaccinationdoses, vaccinationinfo.vaccinename AS vaccinename, vaccinationinfo.othervaccinename AS othervaccinename,
+        CASE
+            WHEN
+                /* Valid numbers of doses are 1 to 10 */
+                vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+            THEN
+                CAST(vaccinationinfo.vaccinationdoses AS int)
+            WHEN
+                /* If the number of doses is neither valid nor empty, we assume 1 dose */
+                (vaccinationinfo.vaccinationdoses IS NOT NULL AND vaccinationinfo.vaccinationdoses != '')
+            THEN
+            	1
+            ELSE
+                null
+            END
+            AS vaccinationdoses,
+        /* If the number of doses is not valid, save the value as vaccinationdoses_details */
+        CASE
+            WHEN
+                vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+            THEN
+                null
+            ELSE
+                vaccinationinfo.vaccinationdoses
+            END
+            AS vaccinationdoses_details,
+        vaccinationinfo.vaccinename AS vaccinename, vaccinationinfo.othervaccinename AS othervaccinename,
         vaccinationinfo.vaccinemanufacturer, vaccinationinfo.othervaccinemanufacturer, vaccinationinfo.vaccinationinfosource, vaccinationinfo.vaccineinn,
         vaccinationinfo.vaccinebatchnumber, vaccinationinfo.vaccineuniicode, vaccinationinfo.vaccineatccode, null AS pregnant, null AS trimester, null AS healthconditions_id,
         coalesce(events.startdate, events.enddate, events.reportdatetime) AS relevancedate
@@ -8068,22 +8143,25 @@ UNION
 DROP TABLE IF EXISTS tmp_vaccinated_persons;
 CREATE TEMP TABLE tmp_vaccinated_persons AS
 SELECT DISTINCT ON (person_id, disease) person_id,
-                                        disease, diseasedetails, reportdate, reportinguser_id, responsibleregion_id, responsibledistrict_id, responsiblecommunity_id,
-                                        firstvaccinationdate, lastvaccinationdate, vaccinationdoses, vaccinename, othervaccinename, vaccinemanufacturer, othervaccinemanufacturer,
-                                        vaccinationinfosource, vaccineinn, vaccinebatchnumber, vaccineuniicode, vaccineatccode, pregnant, trimester, healthconditions_id,
+                                        disease, diseasedetails, reportdate, reportinguser_id, responsibleregion_id, responsibledistrict_id,
+                                        responsiblecommunity_id, firstvaccinationdate, lastvaccinationdate, vaccinationdoses, vaccinationdoses_details,
+                                        vaccinename, othervaccinename, vaccinemanufacturer, othervaccinemanufacturer, vaccinationinfosource, vaccineinn,
+                                        vaccinebatchnumber, vaccineuniicode, vaccineatccode, pregnant, trimester, healthconditions_id,
                                         nextval('entity_seq') AS immunization_id, relevancedate
 FROM tmp_vaccinated_entities
 ORDER BY person_id, disease, relevancedate DESC;
 
 /* Step 2: Create a new immunization entity for each person-disease combination */
+ALTER TABLE immunization ADD COLUMN numberofdoses_details varchar(255);
+
 INSERT INTO immunization
 (
     id, uuid, disease, diseasedetails, person_id, reportdate, reportinguser_id, immunizationstatus, meansofimmunization, immunizationmanagementstatus, responsibleregion_id,
-    responsibledistrict_id, responsiblecommunity_id, startdate, enddate, numberofdoses, changedate, creationdate
+    responsibledistrict_id, responsiblecommunity_id, startdate, enddate, numberofdoses, numberofdoses_details, changedate, creationdate
 )
 SELECT
     immunization_id, generate_base32_uuid(), disease, diseasedetails, person_id, reportdate, reportinguser_id, 'ACQUIRED', 'VACCINATION', 'COMPLETED',
-    responsibleregion_id, responsibledistrict_id, responsiblecommunity_id, firstvaccinationdate, lastvaccinationdate, vaccinationdoses, now(), now()
+    responsibleregion_id, responsibledistrict_id, responsiblecommunity_id, firstvaccinationdate, lastvaccinationdate, vaccinationdoses, vaccinationdoses_details, now(), now()
 FROM tmp_vaccinated_persons;
 
 /* Step 3: Create a new vaccination entity for each immunization start and date (or for each immunization without a start or end date) */

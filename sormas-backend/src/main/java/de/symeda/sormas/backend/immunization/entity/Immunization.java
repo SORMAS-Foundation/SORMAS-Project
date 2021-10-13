@@ -46,6 +46,7 @@ public class Immunization extends BaseImmunization {
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
 	public static final String NUMBER_OF_DOSES = "numberOfDoses";
+	public static final String NUMBER_OF_DOSES_DETAILS = "numberOfDosesDetails";
 	public static final String PREVIOUS_INFECTION = "previousInfection";
 	public static final String LAST_INFECTION_DATE = "lastInfectionDate";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
