@@ -30,7 +30,7 @@ import com.vaadin.ui.UI;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
-import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.caseimport.CaseImportEntities;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
@@ -51,7 +51,6 @@ import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -166,7 +165,7 @@ public class CaseImporter extends DataImporter {
 					CaseSimilarityCriteria criteria =
 						CaseSimilarityCriteria.forCase(importCase, selectedPersonUuid != null ? selectedPersonUuid : importPerson.getUuid());
 
-					List<CaseIndexDto> similarCases = caseFacade.getSimilarCases(criteria);
+					List<CaseSelectionDto> similarCases = caseFacade.getSimilarCases(criteria);
 
 					if (similarCases.size() > 0) {
 						// Call the logic that allows the user to handle the similarity; once this has been done, the LOCK should be notified
@@ -241,20 +240,16 @@ public class CaseImporter extends DataImporter {
 
 			final CommitDiscardWrapperComponent<CasePickOrImportField> component = new CommitDiscardWrapperComponent<>(pickOrImportField);
 
-			component.addCommitListener(new CommitListener() {
-
-				@Override
-				public void onCommit() {
-					CaseIndexDto pickedCase = pickOrImportField.getValue();
-					if (pickedCase != null) {
-						if (pickOrImportField.isOverrideCase()) {
-							resultConsumer.accept(new CaseImportSimilarityResult(null, pickedCase, ImportSimilarityResultOption.OVERRIDE));
-						} else {
-							resultConsumer.accept(new CaseImportSimilarityResult(null, pickedCase, ImportSimilarityResultOption.PICK));
-						}
+			component.addCommitListener(() -> {
+				CaseSelectionDto pickedCase = pickOrImportField.getValue();
+				if (pickedCase != null) {
+					if (pickOrImportField.isOverrideCase()) {
+						resultConsumer.accept(new CaseImportSimilarityResult(null, pickedCase, ImportSimilarityResultOption.OVERRIDE));
 					} else {
-						resultConsumer.accept(new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
+						resultConsumer.accept(new CaseImportSimilarityResult(null, pickedCase, ImportSimilarityResultOption.PICK));
 					}
+				} else {
+					resultConsumer.accept(new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
 				}
 			});
 
@@ -272,9 +267,7 @@ public class CaseImporter extends DataImporter {
 			});
 			component.getButtonsPanel().addComponentAsFirst(skipButton);
 
-			pickOrImportField.setSelectionChangeCallback((commitAllowed) -> {
-				component.getCommitButton().setEnabled(commitAllowed);
-			});
+			pickOrImportField.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
 
 			VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateCase));
 		});

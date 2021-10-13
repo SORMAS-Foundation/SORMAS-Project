@@ -15,7 +15,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -23,7 +23,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
-public class CaseSelectionField extends CustomField<CaseIndexDto> {
+public class CaseSelectionField extends CustomField<CaseSelectionDto> {
 
 	private final Disease disease;
 
@@ -83,8 +83,8 @@ public class CaseSelectionField extends CustomField<CaseIndexDto> {
 	}
 
 	@Override
-	public CaseIndexDto getValue() {
-		return (CaseIndexDto) grid.getSelectedRow();
+	public CaseSelectionDto getValue() {
+		return (CaseSelectionDto) grid.getSelectedRow();
 	}
 
 	@Override
@@ -98,7 +98,7 @@ public class CaseSelectionField extends CustomField<CaseIndexDto> {
 	}
 
 	@Override
-	protected void doSetValue(CaseIndexDto value) {
+	protected void doSetValue(CaseSelectionDto value) {
 		super.setValue(value);
 		grid.select(value);
 	}

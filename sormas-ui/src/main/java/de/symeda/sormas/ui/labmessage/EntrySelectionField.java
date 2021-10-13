@@ -10,7 +10,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -33,7 +33,7 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 	private static final Object SELECT_CONTACT = "selectContact";
 	private static final Object SELECT_EVENT_PARTICIPANT = "selectEventParticipant";
 	private final LabMessageDto labMessageDto;
-	private final List<CaseIndexDto> cases;
+	private final List<CaseSelectionDto> cases;
 	private final List<SimilarContactDto> contacts;
 	private final List<SimilarEventParticipantDto> eventParticipants;
 	private VerticalLayout mainLayout;
@@ -48,7 +48,7 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 
 	public EntrySelectionField(
 		LabMessageDto labMessageDto,
-		List<CaseIndexDto> cases,
+		List<CaseSelectionDto> cases,
 		List<SimilarContactDto> contacts,
 		List<SimilarEventParticipantDto> eventParticipants) {
 
@@ -339,7 +339,7 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 	public SimilarEntriesDto getValue() {
 		if (caseGrid != null && rbSelectCase.getValue() != null) {
 			SimilarEntriesDto value = new SimilarEntriesDto();
-			value.setCaze((CaseIndexDto) caseGrid.getSelectedRow());
+			value.setCaze((CaseSelectionDto) caseGrid.getSelectedRow());
 			return value;
 		} else if (contactGrid != null && rbSelectContact.getValue() != null) {
 			SimilarEntriesDto value = new SimilarEntriesDto();

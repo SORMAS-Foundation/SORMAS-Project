@@ -103,6 +103,7 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -630,8 +631,23 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseIndexDto> getCaseSelectionList(CaseCriteria caseCriteria) {
-		return getIndexList(caseCriteria, null, null, null);
+	public List<CaseSelectionDto> getCaseSelectionList(CaseCriteria caseCriteria) {
+		return getIndexList(caseCriteria, null, null, null).stream()
+			.map(
+				entry -> new CaseSelectionDto(
+					entry.getUuid(),
+					entry.getEpidNumber(),
+					entry.getExternalID(),
+					entry.getPersonFirstName(),
+					entry.getPersonLastName(),
+					entry.getAgeAndBirthDate(),
+					entry.getResponsibleDistrictName(),
+					entry.getHealthFacilityName(),
+					entry.getReportDate(),
+					entry.getSex(),
+					entry.getCaseClassification(),
+					entry.getOutcome()))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -1286,9 +1302,25 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseIndexDto> getSimilarCases(CaseSimilarityCriteria criteria) {
+	public List<CaseSelectionDto> getSimilarCases(CaseSimilarityCriteria criteria) {
 
-		return caseService.getSimilarCases(criteria);
+		return caseService.getSimilarCases(criteria)
+			.stream()
+			.map(
+				entry -> new CaseSelectionDto(
+					entry.getUuid(),
+					entry.getEpidNumber(),
+					entry.getExternalID(),
+					entry.getPersonFirstName(),
+					entry.getPersonLastName(),
+					entry.getAgeAndBirthDate(),
+					entry.getResponsibleDistrictName(),
+					entry.getHealthFacilityName(),
+					entry.getReportDate(),
+					entry.getSex(),
+					entry.getCaseClassification(),
+					entry.getOutcome()))
+			.collect(Collectors.toList());
 	}
 
 	@Override

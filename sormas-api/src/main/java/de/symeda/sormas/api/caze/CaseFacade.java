@@ -65,7 +65,7 @@ public interface CaseFacade {
 
 	List<CaseIndexDto> getIndexList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	List<CaseIndexDto> getCaseSelectionList(CaseCriteria caseCriteria);
+	List<CaseSelectionDto> getCaseSelectionList(CaseCriteria caseCriteria);
 
 	List<CaseListEntryDto> getEntriesList(String personUuid, Integer first, Integer max);
 
@@ -162,7 +162,7 @@ public interface CaseFacade {
 
 	void mergeCase(String leadUuid, String otherUuid);
 
-	List<CaseIndexDto> getSimilarCases(CaseSimilarityCriteria criteria);
+	List<CaseSelectionDto> getSimilarCases(CaseSimilarityCriteria criteria);
 
 	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, boolean showDuplicatesWithDifferentRegion);
 
