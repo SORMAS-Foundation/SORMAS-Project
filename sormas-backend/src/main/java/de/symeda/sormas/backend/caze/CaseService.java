@@ -797,18 +797,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
-		if (caseCriteria.getSourceCaseInfoLike() != null) {
-			String[] textFilters = caseCriteria.getSourceCaseInfoLike().split("\\s+");
-			for (String textFilter : textFilters) {
-				Predicate likeFilters = cb.or(
-					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
-					CriteriaBuilderHelper.ilike(cb, from.get(Case.UUID), textFilter),
-					CriteriaBuilderHelper.ilike(cb, from.get(Case.EPID_NUMBER), textFilter),
-					CriteriaBuilderHelper.ilike(cb, from.get(Case.EXTERNAL_ID), textFilter));
-				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
-			}
-		}
 		if (caseCriteria.getBirthdateYYYY() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_YYYY), caseCriteria.getBirthdateYYYY()));
 		}
@@ -1393,15 +1381,24 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		cq.orderBy(cb.desc(latestChangedDateFunction));
 
-		CaseUserFilterCriteria caseUserFilterCriteria = new CaseUserFilterCriteria();
-		if (caseCriteria != null) {
-			caseUserFilterCriteria.setIncludeCasesFromOtherJurisdictions(caseCriteria.getIncludeCasesFromOtherJurisdictions());
-		}
-		Predicate filter = createUserFilter(cb, cq, root, caseUserFilterCriteria);
+		Predicate filter = createUserFilter(cb, cq, root, new CaseUserFilterCriteria());
 
 		if (caseCriteria != null) {
-			Predicate criteriaFilter = createCriteriaFilter(caseCriteria, caseQueryContext);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+			if (caseCriteria.getDisease() != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(Case.DISEASE), caseCriteria.getDisease()));
+			}
+			if (caseCriteria.getSourceCaseInfoLike() != null) {
+				String[] textFilters = caseCriteria.getSourceCaseInfoLike().split("\\s+");
+				for (String textFilter : textFilters) {
+					Predicate likeFilters = cb.or(
+						CriteriaBuilderHelper.unaccentedIlike(cb, joins.getPerson().get(Person.FIRST_NAME), textFilter),
+						CriteriaBuilderHelper.unaccentedIlike(cb, joins.getPerson().get(Person.LAST_NAME), textFilter),
+						CriteriaBuilderHelper.ilike(cb, root.get(Case.UUID), textFilter),
+						CriteriaBuilderHelper.ilike(cb, root.get(Case.EPID_NUMBER), textFilter),
+						CriteriaBuilderHelper.ilike(cb, root.get(Case.EXTERNAL_ID), textFilter));
+					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+				}
+			}
 		}
 
 		if (filter != null) {
