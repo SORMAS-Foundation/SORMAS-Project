@@ -400,7 +400,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		ShareDataExistingEntities existingEntities = loadExistingEntities(syncData.getShareData());
 		perisist(
 			syncData.getShareData(),
-			(data, existinCaseFacadeEjbTestgData) -> processedDataPersister
+			(data, existinCase) -> processedDataPersister
 				.persistSyncData(data, syncData.getShareData().getOriginInfo(), syncData.getCriteria(), existingEntities));
 	}
 
