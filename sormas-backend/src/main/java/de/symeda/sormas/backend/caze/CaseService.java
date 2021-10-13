@@ -1470,10 +1470,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Root<Case> root = cq.from(Case.class);
 		CaseJoins<Case> joins = new CaseJoins<>(root);
 
-		// This is needed in selection because of the combination of distinct and orderBy clauses - every operator in the orderBy has to be part of the select IF distinct is used
-		Expression<Date> latestChangedDateFunction =
-			cb.function(ExtendedPostgreSQL94Dialect.GREATEST, Date.class, root.get(Case.CHANGE_DATE), joins.getPerson().get(Person.CHANGE_DATE));
-
 		cq.multiselect(
 			root.get(Case.UUID),
 			root.get(Case.EPID_NUMBER),
@@ -1494,11 +1490,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			root.get(Case.CASE_CLASSIFICATION),
 			root.get(Case.OUTCOME),
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new CaseQueryContext(cb, cq, root))),
-			latestChangedDateFunction);
-		cq.distinct(true);
-
-		cq.orderBy(cb.desc(latestChangedDateFunction));
-
+			root.get(Case.CHANGE_DATE));
 		cq.distinct(true);
 
 		Predicate userFilter = createUserFilter(cb, cq, root);
