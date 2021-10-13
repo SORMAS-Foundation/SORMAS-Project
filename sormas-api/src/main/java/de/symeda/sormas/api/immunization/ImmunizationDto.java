@@ -32,6 +32,8 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -103,6 +105,7 @@ public class ImmunizationDto extends PseudonymizableDto implements SormasToSorma
 	@SensitiveData(mandatoryField = true)
 	private String meansOfImmunizationDetails;
 	private ImmunizationManagementStatus immunizationManagementStatus;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
 	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	@SensitiveData(mandatoryField = true)
 	private String externalId;
@@ -135,6 +138,7 @@ public class ImmunizationDto extends PseudonymizableDto implements SormasToSorma
 	private YesNoUnknown previousInfection;
 
 	private Date lastInfectionDate;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
 	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	@SensitiveData
 	private String additionalDetails;

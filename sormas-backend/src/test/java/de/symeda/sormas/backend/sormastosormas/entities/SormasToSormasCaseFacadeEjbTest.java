@@ -33,6 +33,9 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
+import de.symeda.sormas.backend.sormastosormas.share.ShareRequestData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -523,6 +526,8 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setPseudonymizePersonalData(true);
 
+		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
+
 		Mockito
 			.when(
 				MockProducer.getSormasToSormasClient()
@@ -564,6 +569,8 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setPseudonymizeSensitiveData(true);
+
+		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
 
 		Mockito
 			.when(
@@ -965,6 +972,8 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 
 		SormasToSormasEncryptedDataDto encryptedData =
 			encryptShareData(new SyncDataDto(shareData, new ShareTreeCriteria(caze.getUuid(), null, false)));
+
+		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
 
 		Mockito
 			.when(

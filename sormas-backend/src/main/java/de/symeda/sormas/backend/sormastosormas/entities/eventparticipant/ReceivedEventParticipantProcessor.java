@@ -60,7 +60,7 @@ public class ReceivedEventParticipantProcessor
 
 		ValidationErrors validationErrors = new ValidationErrors();
 
-		ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(eventParticipant.getPerson());
+		ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(eventParticipant.getPerson(), dataProcessorHelper.getExistingPerson(existingData));
 		validationErrors.addAll(personValidationErrors);
 
 		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =

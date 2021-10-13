@@ -15,15 +15,13 @@
 
 package de.symeda.sormas.backend.sormastosormas.share;
 
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
@@ -40,17 +38,23 @@ import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
-import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
-import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
-import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import java.lang.reflect.Field;
 
 @Stateless
 @LocalBean
 public class ShareDataBuilderHelper {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ShareDataBuilderHelper.class);
 
 	@EJB
 	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
@@ -58,12 +62,6 @@ public class ShareDataBuilderHelper {
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
-	@EJB
-	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
-	@EJB
-	private PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal pathogenTestFacade;
-	@EJB
-	private AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal additionalTestFacade;
 
 	public Pseudonymizer createPseudonymizer(boolean pseudonymizePersonalData, boolean pseudonymizeSensitiveData) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultNoCheckers(false);
@@ -83,6 +81,8 @@ public class ShareDataBuilderHelper {
 
 		pseudonymiePerson(personDto, pseudonymizedPersonalData, pseudonymizedSensitiveData);
 
+		clearIgnoredProperties(personDto);
+
 		return personDto;
 	}
 
@@ -100,6 +100,8 @@ public class ShareDataBuilderHelper {
 		contactDto.setContactOfficer(null);
 		contactDto.setResultingCaseUser(null);
 		contactDto.setSormasToSormasOriginInfo(null);
+
+		clearIgnoredProperties(contactDto);
 
 		return contactDto;
 	}
@@ -192,5 +194,24 @@ public class ShareDataBuilderHelper {
 
 		return options;
 
+	}
+
+	public <T> void clearIgnoredProperties(T dto) {
+		SormasToSormasConfig s2SConfig = configFacadeEjb.getS2SConfig();
+		Class<?> dtoType = dto.getClass();
+		for (Field field : dtoType.getDeclaredFields()) {
+			if (field.isAnnotationPresent(S2SIgnoreProperty.class)) {
+				String s2sConfigProperty = field.getAnnotation(S2SIgnoreProperty.class).configProperty();
+				if (s2SConfig.getIgnoreProperties().get(s2sConfigProperty)) {
+					field.setAccessible(true);
+					try {
+						field.set(dto, null);
+					} catch (IllegalAccessException e) {
+						LOGGER.error("Could not clear field {} for {}", field.getName(), dtoType.getSimpleName());
+					}
+					field.setAccessible(false);
+				}
+			}
+		}
 	}
 }

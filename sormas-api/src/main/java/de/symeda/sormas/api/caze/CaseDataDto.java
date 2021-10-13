@@ -49,6 +49,8 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
@@ -389,16 +391,20 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	@SensitiveData
 	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String pointOfEntryDetails;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
 	@SensitiveData
 	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String additionalDetails;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
 	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN)
 	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String externalToken;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN)
 	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String internalToken;
 	private boolean sharedToCountry;

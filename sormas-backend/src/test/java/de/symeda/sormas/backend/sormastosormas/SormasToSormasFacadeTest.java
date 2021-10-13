@@ -77,9 +77,7 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 
 	// values are set in server-list.csv located in serveraccessdefault and serveraccesssecond
 	public static final String DEFAULT_SERVER_ID = "2.sormas.id.sormas_a";
-	public static final SormasServerDescriptor DEFAULT_SERVER = new SormasServerDescriptor("2.sormas.id.sormas_a", "sormas_a", "sormas_a:6048");
 	public static final String SECOND_SERVER_ID = "2.sormas.id.sormas_b";
-	public static final SormasServerDescriptor SECOND_SERVER = new SormasServerDescriptor("2.sormas.id.sormas_b", "sormas_b", "sormas_b:6048");
 	private ObjectMapper objectMapper;
 
 	@Override

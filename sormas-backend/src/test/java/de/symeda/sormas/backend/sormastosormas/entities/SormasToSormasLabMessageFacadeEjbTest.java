@@ -34,8 +34,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
@@ -81,7 +79,7 @@ public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeT
 	}
 
 	@Test
-	public void testSaveLabMessages() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
+	public void testSaveLabMessages() throws SormasToSormasException, SormasToSormasValidationException {
 		LabMessageDto labMessage = LabMessageDto.build();
 		Date dateNow = new Date();
 		setLabMessageFields(labMessage, dateNow);

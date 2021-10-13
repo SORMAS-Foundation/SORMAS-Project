@@ -63,6 +63,8 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 		eventDto.setReportingUser(null);
 		eventDto.setSormasToSormasOriginInfo(null);
 
+		dataBuilderHelper.clearIgnoredProperties(eventDto);
+
 		return eventDto;
 	}
 

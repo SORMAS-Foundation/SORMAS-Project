@@ -32,6 +32,7 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
@@ -81,6 +82,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		dataProcessorHelper.updateReportingUser(event, existingEvent);
+		dataProcessorHelper.handleIgnoredProperties(event, EventFacadeEjb.EventFacadeEjbLocal.toDto(existingEvent));
 		if (existingEvent == null || existingEvent.getResponsibleUser() == null) {
 			event.setResponsibleUser(userService.getCurrentUser().toReference());
 		} else {

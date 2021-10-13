@@ -15,8 +15,10 @@
 
 package de.symeda.sormas.backend.sormastosormas.data.received;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 
+import javax.annotation.Nullable;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -27,6 +29,8 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
@@ -35,18 +39,29 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
 import de.symeda.sormas.backend.user.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Stateless
 @LocalBean
 public class ReceivedDataProcessorHelper {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReceivedDataProcessorHelper.class);
+
 	@EJB
 	private UserService userService;
 	@EJB
 	private InfrastructureValidator infraValidator;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	public ValidationErrors processOriginInfo(SormasToSormasOriginInfoDto originInfo, String validationGroupCaption) {
 		if (originInfo == null) {
@@ -74,20 +89,20 @@ public class ReceivedDataProcessorHelper {
 		return validationErrors;
 	}
 
-	public ValidationErrors processPerson(PersonDto person) {
+	public ValidationErrors processPerson(PersonDto person, PersonDto existingPerson) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		infraValidator.validateLocation(person.getAddress(), Captions.Person, validationErrors);
 
-		person.getAddresses().forEach(address -> {
-			infraValidator.validateLocation(address, Captions.Person, validationErrors);
-		});
+		person.getAddresses().forEach(address -> infraValidator.validateLocation(address, Captions.Person, validationErrors));
 
 		CountryReferenceDto birthCountry = processCountry(person.getBirthCountry(), Captions.Person_birthCountry, validationErrors);
 		person.setBirthCountry(birthCountry);
 
 		CountryReferenceDto citizenship = processCountry(person.getCitizenship(), Captions.Person_citizenship, validationErrors);
 		person.setCitizenship(citizenship);
+
+		handleIgnoredProperties(person, existingPerson);
 
 		return validationErrors;
 	}
@@ -133,4 +148,44 @@ public class ReceivedDataProcessorHelper {
 		entity.setReportingUser(reportingUser);
 	}
 
+    public <T> void handleIgnoredProperties(T receivedEntity, T originalEntity) {
+        Class<?> dtoType = receivedEntity.getClass();
+        SormasToSormasConfig s2SConfig = configFacade.getS2SConfig();
+        for (Field field : dtoType.getDeclaredFields()) {
+            if (field.isAnnotationPresent(S2SIgnoreProperty.class)) {
+                String s2sConfigProperty = field.getAnnotation(S2SIgnoreProperty.class).configProperty();
+                if (s2SConfig.getIgnoreProperties().get(s2sConfigProperty)) {
+                    field.setAccessible(true);
+                    try {
+                    	Object originalValue = originalEntity != null ? field.get(originalEntity) : null;
+                        field.set(receivedEntity, originalValue);
+                    } catch (IllegalAccessException e) {
+                        LOGGER.error("Could not set field {} for {}", field.getName(), dtoType.getSimpleName());
+                    }
+                    field.setAccessible(false);
+                }
+            }
+        }
+    }
+
+	public PersonDto getExitingPerson(@Nullable Case existingCase) {
+		if (existingCase == null) {
+			return null;
+		}
+		return PersonFacadeEjbLocal.toDto(existingCase.getPerson());
+	}
+
+	public PersonDto getExistingPerson(@Nullable Contact existingContact) {
+		if (existingContact == null) {
+			return null;
+		}
+		return PersonFacadeEjbLocal.toDto(existingContact.getPerson());
+	}
+
+	public PersonDto getExistingPerson(@Nullable EventParticipant existingEventParticipant) {
+		if (existingEventParticipant == null) {
+			return null;
+		}
+		return PersonFacadeEjbLocal.toDto(existingEventParticipant.getPerson());
+	}
 }

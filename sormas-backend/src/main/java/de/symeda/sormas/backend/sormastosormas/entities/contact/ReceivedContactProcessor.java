@@ -32,6 +32,7 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
@@ -75,7 +76,7 @@ public class ReceivedContactProcessor implements ReceivedDataProcessor<ContactDt
 	private ValidationErrors processContactData(ContactDto contact, PersonDto person, Contact existingContact) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
-		ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(person);
+		ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(person, dataProcessorHelper.getExistingPerson(existingContact));
 		validationErrors.addAll(personValidationErrors);
 
 		contact.setPerson(person.toReference());
@@ -91,7 +92,7 @@ public class ReceivedContactProcessor implements ReceivedDataProcessor<ContactDt
 		}));
 
 		dataProcessorHelper.processEpiData(contact.getEpiData(), validationErrors);
-
+		dataProcessorHelper.handleIgnoredProperties(contact, ContactFacadeEjb.ContactFacadeEjbLocal.toDto(existingContact));
 		return validationErrors;
 	}
 

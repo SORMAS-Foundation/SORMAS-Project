@@ -26,6 +26,10 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePrevie
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
@@ -44,8 +48,6 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
-	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 
 	@Override
 	public SormasToSormasCaseDto buildShareData(Case caze, ShareRequestInfo requestInfo) {
@@ -56,12 +58,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 			.getPersonDto(caze.getPerson(), pseudonymizer, requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 		CaseDataDto cazeDto = getCazeDto(caze, pseudonymizer);
 
-		// external tokens ("Aktenzeichen") are not globally unique in Germany due to SurvNet, therefore, do not
-		// transmit the token to other GAs, but let them generate their own token based on their local, configurable
-		// format
-		if (!configFacadeEjb.getS2SConfig().getRetainCaseExternalToken()) {
-			cazeDto.setExternalToken(null);
-		}
+		dataBuilderHelper.clearIgnoredProperties(cazeDto);
 
 		return new SormasToSormasCaseDto(personDto, cazeDto);
 	}
