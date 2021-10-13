@@ -886,10 +886,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		From<?, ?> contactPath = contactQueryContext.getRoot();
 
 		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
-			userFilter = caseService.createUserFilter(cb, cq, contactPath.join(Contact.CAZE, JoinType.LEFT));
+			userFilter = caseService.createUserFilter(cb, cq, ((ContactJoins) contactQueryContext.getJoins()).getCaze());
 		} else {
 			CaseUserFilterCriteria userFilterCriteria = new CaseUserFilterCriteria();
-			userFilter = caseService.createUserFilter(cb, cq, contactPath.join(Contact.CAZE, JoinType.LEFT), userFilterCriteria);
+			userFilter = caseService.createUserFilter(cb, cq, ((ContactJoins) contactQueryContext.getJoins()).getCaze(), userFilterCriteria);
 		}
 
 		Predicate filter;
