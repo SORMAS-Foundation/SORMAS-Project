@@ -219,7 +219,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		String requestUuid = DataHelper.createUuid();
 		ShareRequestInfo shareRequestInfo =
-			createShareRequestInfoForEntities(requestUuid, ShareRequestStatus.PENDING, options, entities, currentUser);
+			createShareRequestInfoForEntities(requestUuid, ShareRequestStatus.PENDING, options, entities, currentUser, false);
 		ShareRequestPreviews previewsToSend = shareDataBuilder.buildShareDataPreview(shareRequestInfo);
 
 		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, options);
@@ -332,7 +332,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		ensureConsistentOptions(options);
 
 		String requestUuid = DataHelper.createUuid();
-		ShareRequestInfo requestInfo = createShareRequestInfoForEntities(requestUuid, ShareRequestStatus.ACCEPTED, options, entities, currentUser);
+		ShareRequestInfo requestInfo =
+			createShareRequestInfoForEntities(requestUuid, ShareRequestStatus.ACCEPTED, options, entities, currentUser, false);
 		SormasToSormasDto dataToSend = shareDataBuilder.buildShareDataForRequest(requestInfo, currentUser);
 
 		sormasToSormasRestClient.post(options.getOrganization().getId(), saveEndpoint, dataToSend, null);
@@ -381,9 +382,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 					// prevent stopping the iteration through the shares because of a failed sync operation
 					// sync with as much servers as possible
 					try {
-						ShareRequestInfo latestRequestInfo = ShareInfoHelper
-							.getLatestAcceptedRequest(shareInfo.getRequests().stream())
-							.orElse(null);
+						ShareRequestInfo latestRequestInfo = ShareInfoHelper.getLatestAcceptedRequest(shareInfo.getRequests().stream()).orElse(null);
 
 						syncEntityToShares(entity, latestRequestInfo, reShareCriteria, currentUser);
 					} catch (Exception e) {
@@ -528,7 +527,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	private void syncEntityToShares(ADO entity, ShareRequestInfo requestInfo, ShareTreeCriteria criteria, User currentUser)
 		throws SormasToSormasException {
 		SormasToSormasOptionsDto options = dataBuilderHelper.createOptionsFormShareRequestInfo(requestInfo);
-		List<SormasToSormasShareInfo> shares = getOrCreateShareInfos(entity, options, currentUser);
+		List<SormasToSormasShareInfo> shares = getOrCreateShareInfos(entity, options, currentUser, true);
 
 		SormasToSormasDto shareData =
 			shareDataBuilder.buildShareData(shares, dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, requestInfo), requestInfo);
@@ -551,7 +550,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			ShareRequestStatus.ACCEPTED,
 			options,
 			Collections.singletonList(entity),
-			currentUser);
+			currentUser,
+			true);
 
 		SormasToSormasDto shareData = shareDataBuilder
 			.buildShareData(shareRequestInfo.getShares(), dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, options), shareRequestInfo);
@@ -731,13 +731,17 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		ShareRequestStatus requestStatus,
 		SormasToSormasOptionsDto options,
 		List<ADO> entities,
-		User currentUser) {
+		User currentUser,
+		boolean forSync) {
 
 		return createShareRequestInfoForShares(
 			requestUuid,
 			requestStatus,
 			options,
-			entities.stream().map(e -> getOrCreateShareInfos(e, options, currentUser)).flatMap(Collection::stream).collect(Collectors.toList()),
+			entities.stream()
+				.map(e -> getOrCreateShareInfos(e, options, currentUser, forSync))
+				.flatMap(Collection::stream)
+				.collect(Collectors.toList()),
 			currentUser);
 	}
 
@@ -761,7 +765,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		return requestInfo;
 	}
 
-	protected abstract List<SormasToSormasShareInfo> getOrCreateShareInfos(ADO entity, SormasToSormasOptionsDto options, User user);
+	protected abstract List<SormasToSormasShareInfo> getOrCreateShareInfos(ADO entity, SormasToSormasOptionsDto options, User user, boolean forSync);
 
 	private void addOptionsToShareRequestInfo(ShareRequestInfo requestInfo, SormasToSormasOptionsDto options, User currentUser) {
 		requestInfo.setSender(currentUser);

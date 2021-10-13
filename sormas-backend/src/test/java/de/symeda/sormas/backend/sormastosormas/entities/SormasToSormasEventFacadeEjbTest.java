@@ -520,19 +520,31 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 			});
 
 		PersonDto person = creator.createPerson();
-		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, "Involved", officer);
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, "Involved", officer, ep -> {
+			SormasToSormasOriginInfoDto originInfo = new SormasToSormasOriginInfoDto();
+			originInfo.setSenderName("Test Name");
+			originInfo.setSenderEmail("test@email.com");
+			originInfo.setOrganizationId(DEFAULT_SERVER_ID);
+			originInfo.setOwnershipHandedOver(true);
+			originInfo.setWithEventParticipants(true);
 
-		getSormasToSormasShareInfoService().persist(
-			createShareInfo(
+			ep.setSormasToSormasOriginInfo(originInfo);
+		});
+
+		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			getUserService().getByUuid(officer.getUuid()),
 				SECOND_SERVER_ID,
 				false,
-				i -> i.setEvent(getEventService().getByUuid(event.getUuid()))));
-
-		getSormasToSormasShareInfoService().persist(
-			createShareInfo(
-				SECOND_SERVER_ID,
-				false,
-				i -> i.setEventParticipant(getEventParticipantService().getByUuid(eventParticipant.getUuid()))));
+			ShareRequestStatus.ACCEPTED,
+			i -> i.setEvent(getEventService().getByUuid(event.getUuid())));
+		shareRequestInfo.setWithEventParticipants(true);
+		shareRequestInfo.getShares()
+			.add(
+				createShareInfo(
+					SECOND_SERVER_ID,
+					false,
+					i -> i.setEventParticipant(getEventParticipantService().getByUuid(eventParticipant.getUuid()))));
+		getShareRequestInfoService().persist(shareRequestInfo);
 
 		EventParticipantDto newEventParticipant = creator.createEventParticipant(event.toReference(), person, "Involved", officer);
 
@@ -548,7 +560,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 				assertThat(syncData.getCriteria().isForwardOnly(), is(false));
 
 				assertThat(syncData.getShareData().getEvents().get(0).getEntity().getUuid(), is(event.getUuid()));
-				assertThat(syncData.getShareData().getEventParticipants(), hasSize(2));
+				assertThat(syncData.getShareData().getEventParticipants(), hasSize(1)); // new event participant should not be shared
 
 				return Response.noContent().build();
 			});
@@ -565,7 +577,9 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 				assertThat(syncData.getCriteria().isForwardOnly(), is(true));
 
 				assertThat(syncData.getShareData().getEvents().get(0).getEntity().getUuid(), is(event.getUuid()));
-				assertThat(syncData.getShareData().getEventParticipants(), hasSize(2));
+				// the new event participant should not be shared
+				assertThat(syncData.getShareData().getEventParticipants(), hasSize(1));
+				assertThat(syncData.getShareData().getEventParticipants().get(0).getEntity().getUuid(), is(eventParticipant.getUuid()));
 
 				return Response.noContent().build();
 			});
@@ -575,8 +589,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		// new event participant should have share info with ownership handed over
 		List<SormasToSormasShareInfoDto> newEventParticipantShareInfoList = getSormasToSormasShareInfoFacade()
 			.getIndexList(new SormasToSormasShareInfoCriteria().eventParticipant(newEventParticipant.toReference()), 0, 100);
-		assertThat(newEventParticipantShareInfoList, hasSize(1));
-		assertThat(newEventParticipantShareInfoList.get(0).isOwnershipHandedOver(), is(false));
+		assertThat(newEventParticipantShareInfoList, hasSize(0));
 	}
 
 	@Test
@@ -741,7 +754,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 				assertThat(syncData.getCriteria().isForwardOnly(), is(true));
 
 				assertThat(syncData.getShareData().getEvents().get(0).getEntity().getUuid(), is(event.getUuid()));
-				assertThat(syncData.getShareData().getEventParticipants(), hasSize(2));
+				assertThat(syncData.getShareData().getEventParticipants(), hasSize(1));
 
 				return Response.noContent().build();
 			});

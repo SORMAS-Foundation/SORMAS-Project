@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 
@@ -38,10 +39,16 @@ public class ShareInfoHelper {
 				.isPresent();
 	}
 
-	public static <T> SormasToSormasShareInfo createShareInfo(String organizationId, T entity, BiConsumer<SormasToSormasShareInfo, T> setEntity) {
+	public static <T> SormasToSormasShareInfo createShareInfo(
+		String organizationId,
+		T entity,
+		BiConsumer<SormasToSormasShareInfo, T> setEntity,
+		SormasToSormasOptionsDto options) {
 		SormasToSormasShareInfo shareInfo = new SormasToSormasShareInfo();
 		shareInfo.setUuid(DataHelper.createUuid());
 		shareInfo.setOrganizationId(organizationId);
+
+		shareInfo.setOwnershipHandedOver(options.isHandOverOwnership());
 
 		setEntity.accept(shareInfo, entity);
 

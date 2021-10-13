@@ -1006,7 +1006,9 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 
 				assertThat(syncData.getShareData().getCases().get(0).getEntity().getUuid(), is(caze.getUuid()));
 				assertThat(syncData.getShareData().getCases().get(0).getEntity().getAdditionalDetails(), is("Test updated details"));
-				assertThat(syncData.getShareData().getContacts(), hasSize(2));
+				// new contact should not be shared
+				assertThat(syncData.getShareData().getContacts(), hasSize(1));
+				assertThat(syncData.getShareData().getContacts().get(0).getEntity().getUuid(), is(contact.getUuid()));
 
 				return Response.noContent().build();
 			});
