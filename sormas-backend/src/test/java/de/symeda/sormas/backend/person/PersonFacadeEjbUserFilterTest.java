@@ -125,4 +125,39 @@ public class PersonFacadeEjbUserFilterTest extends AbstractBeanTest {
 		List<PersonIndexDto> indexListForDistrictUser2 = getPersonFacade().getIndexList(null, null, null, null);
 		assertEquals(2, indexListForDistrictUser2.size());
 	}
+
+	@Test
+	public void testGetPersonIndexListPersonNotIncludedIfContactOutsideJurisdiction(){
+		loginWith(nationalUser);
+
+		PersonDto person1 = creator.createPerson("John", "Doe");
+		PersonDto person2 = creator.createPerson("John2", "Doe2");
+
+		CaseDataDto caze = creator.createCase(
+				nationalUser.toReference(),
+				person1.toReference(),
+				Disease.EVD,
+				CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING,
+				new Date(),
+				rdcf1);
+
+		ContactDto contactInJurisdiction1 = creator.createContact(nationalUser.toReference(), null, person1.toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf1);
+		contactInJurisdiction1.setRegion(rdcf1.region);
+		contactInJurisdiction1.setDistrict(rdcf1.district);
+		getContactFacade().saveContact(contactInJurisdiction1);
+		ContactDto contactInJurisdiction2 = creator.createContact(nationalUser.toReference(), null, person2.toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		contactInJurisdiction2.setRegion(rdcf2.region);
+		contactInJurisdiction2.setDistrict(rdcf2.district);
+		getContactFacade().saveContact(contactInJurisdiction2);
+
+		loginWith(districtUser1);
+		List<PersonIndexDto> indexListForDistrictUser1 = getPersonFacade().getIndexList(null, null, null, null);
+		assertEquals(2, indexListForDistrictUser1.size());
+
+		loginWith(districtUser2);
+		List<PersonIndexDto> indexListForDistrictUser2 = getPersonFacade().getIndexList(null, null, null, null);
+		assertEquals(1, indexListForDistrictUser2.size());
+		assertEquals(person2.getUuid(), indexListForDistrictUser2.get(0).getUuid());
+	}
 }

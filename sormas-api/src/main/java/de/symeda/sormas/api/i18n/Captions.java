@@ -1275,6 +1275,7 @@ public interface Captions {
 	String HealthConditions_otherConditions = "HealthConditions.otherConditions";
 	String HealthConditions_sickleCellDisease = "HealthConditions.sickleCellDisease";
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
+	String Immunization = "Immunization";
 	String Immunization_additionalDetails = "Immunization.additionalDetails";
 	String Immunization_ageAndBirthDate = "Immunization.ageAndBirthDate";
 	String Immunization_country = "Immunization.country";
@@ -1840,6 +1841,7 @@ public interface Captions {
 	String sormasToSormasErrorDialogTitle = "sormasToSormasErrorDialogTitle";
 	String sormasToSormasEventNotShared = "sormasToSormasEventNotShared";
 	String sormasToSormasEventParticipantNotShared = "sormasToSormasEventParticipantNotShared";
+	String sormasToSormasImmunizationNotShared = "sormasToSormasImmunizationNotShared";
 	String sormasToSormasListTitle = "sormasToSormasListTitle";
 	String SormasToSormasOptions_comment = "SormasToSormasOptions.comment";
 	String SormasToSormasOptions_handOverOwnership = "SormasToSormasOptions.handOverOwnership";
@@ -1848,7 +1850,9 @@ public interface Captions {
 	String SormasToSormasOptions_pseudonymizeSensitiveData = "SormasToSormasOptions.pseudonymizeSensitiveData";
 	String SormasToSormasOptions_withAssociatedContacts = "SormasToSormasOptions.withAssociatedContacts";
 	String SormasToSormasOptions_withEventParticipants = "SormasToSormasOptions.withEventParticipants";
+	String SormasToSormasOptions_withImmunizations = "SormasToSormasOptions.withImmunizations";
 	String SormasToSormasOptions_withSamples = "SormasToSormasOptions.withSamples";
+	String sormasToSormasOriginInfo = "sormasToSormasOriginInfo";
 	String sormasToSormasOwnedBy = "sormasToSormasOwnedBy";
 	String SormasToSormasPerson_address = "SormasToSormasPerson.address";
 	String SormasToSormasPerson_birthdDate = "SormasToSormasPerson.birthdDate";

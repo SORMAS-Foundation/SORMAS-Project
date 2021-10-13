@@ -33,7 +33,6 @@ import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
@@ -42,18 +41,17 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
-import de.symeda.sormas.backend.location.LocationFacadeEjb;
-import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.location.LocationFacadeEjb;
+import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
-import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import org.slf4j.Logger;
@@ -121,8 +119,8 @@ public class ShareDataBuilderHelper {
 		return contactDto;
 	}
 
-	public SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User user, SormasToSormasShareInfo shareInfo) {
-		return createSormasToSormasOriginInfo(user, createOptionsFormShareInfo(shareInfo));
+	public SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User user, ShareRequestInfo requestInfo) {
+		return createSormasToSormasOriginInfo(user, createOptionsFormShareRequestInfo(requestInfo));
 	}
 
 	public SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User user, SormasToSormasOptionsDto options) {
@@ -135,22 +133,10 @@ public class ShareDataBuilderHelper {
 		sormasToSormasOriginInfo.setWithAssociatedContacts(options.isWithAssociatedContacts());
 		sormasToSormasOriginInfo.setWithSamples(options.isWithSamples());
 		sormasToSormasOriginInfo.setWithEventParticipants(options.isWithEventParticipants());
+		sormasToSormasOriginInfo.setWithImmunizations(options.isWithImmunizations());
 		sormasToSormasOriginInfo.setComment(options.getComment());
 
 		return sormasToSormasOriginInfo;
-	}
-
-	public List<SormasToSormasSampleDto> getSampleDtos(List<Sample> samples, Pseudonymizer pseudonymizer) {
-		return samples.stream().map(s -> {
-			SampleDto sampleDto = sampleFacade.convertToDto(s, pseudonymizer);
-			sampleDto.setSormasToSormasOriginInfo(null);
-			clearIgnoredProperties(sampleDto);
-
-			return new SormasToSormasSampleDto(
-				sampleDto,
-				s.getPathogenTests().stream().map(t -> pathogenTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList()),
-				s.getAdditionalTests().stream().map(t -> additionalTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList()));
-		}).collect(Collectors.toList());
 	}
 
 	public SormasToSormasPersonPreview getPersonPreview(Person person) {
@@ -192,17 +178,18 @@ public class ShareDataBuilderHelper {
 		return contactPreview;
 	}
 
-	public SormasToSormasOptionsDto createOptionsFormShareInfo(SormasToSormasShareInfo shareInfo) {
+	public SormasToSormasOptionsDto createOptionsFormShareRequestInfo(ShareRequestInfo requestInfo) {
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 
-		options.setOrganization(new SormasServerDescriptor(shareInfo.getOrganizationId()));
-		options.setHandOverOwnership(shareInfo.isOwnershipHandedOver());
-		options.setWithAssociatedContacts(shareInfo.isWithAssociatedContacts());
-		options.setWithSamples(shareInfo.isWithSamples());
-		options.setWithEventParticipants(shareInfo.isWithEventParticipants());
-		options.setComment(shareInfo.getComment());
-		options.setPseudonymizePersonalData(shareInfo.isPseudonymizedPersonalData());
-		options.setPseudonymizeSensitiveData(shareInfo.isPseudonymizedSensitiveData());
+		options.setOrganization(new SormasServerDescriptor(requestInfo.getShares().get(0).getOrganizationId()));
+		options.setHandOverOwnership(requestInfo.getShares().get(0).isOwnershipHandedOver());
+		options.setWithAssociatedContacts(requestInfo.isWithAssociatedContacts());
+		options.setWithSamples(requestInfo.isWithSamples());
+		options.setWithEventParticipants(requestInfo.isWithEventParticipants());
+		options.setWithImmunizations(requestInfo.isWithImmunizations());
+		options.setComment(requestInfo.getComment());
+		options.setPseudonymizePersonalData(requestInfo.isPseudonymizedPersonalData());
+		options.setPseudonymizeSensitiveData(requestInfo.isPseudonymizedSensitiveData());
 
 		return options;
 

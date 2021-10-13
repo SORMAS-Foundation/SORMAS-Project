@@ -98,7 +98,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoContact;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
@@ -201,7 +201,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Predicate dateFilter = changeDateFilter(cb, date, from);
 		dateFilter = cb.or(dateFilter, epiDataService.createChangeDateFilter(cb, from.join(Contact.EPI_DATA, JoinType.LEFT), date));
 		dateFilter = cb.or(dateFilter, healthConditionsService.createChangeDateFilter(cb, from.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT), date));
-		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SHARE_INFO_CONTACTS));
+		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SORMAS_TO_SORMAS_ORIGIN_INFO));
+		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SORMAS_TO_SORMAS_SHARES));
 
 		return dateFilter;
 	}
@@ -1259,9 +1260,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 		if (Boolean.TRUE.equals(contactCriteria.getOnlyContactsFromOtherInstances())) {
 			Subquery<Long> sharesSubQuery = contactQueryContext.getQuery().subquery(Long.class);
-			Root<ShareInfoContact> sharesRoot = sharesSubQuery.from(ShareInfoContact.class);
-			sharesSubQuery.where(cb.equal(sharesRoot.get(ShareInfoContact.CONTACT), from));
-			sharesSubQuery.select(sharesRoot.get(ShareInfoContact.ID));
+			Root<SormasToSormasShareInfo> sharesRoot = sharesSubQuery.from(SormasToSormasShareInfo.class);
+			sharesSubQuery.where(cb.equal(sharesRoot.get(SormasToSormasShareInfo.CONTACT), from));
+			sharesSubQuery.select(sharesRoot.get(SormasToSormasShareInfo.ID));
 
 			filter =
 				CriteriaBuilderHelper.and(cb, filter, cb.or(cb.exists(sharesSubQuery), cb.isNotNull(from.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO))));

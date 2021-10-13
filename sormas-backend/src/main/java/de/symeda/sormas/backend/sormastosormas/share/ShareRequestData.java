@@ -16,22 +16,24 @@
 package de.symeda.sormas.backend.sormastosormas.share;
 
 import java.io.Serializable;
-import java.util.List;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.backend.sormastosormas.share.sharerequest.ShareRequestPreviews;
 
-public class ShareRequestData<P> implements Serializable {
+public class ShareRequestData implements Serializable {
+
+	private static final long serialVersionUID = -6551795143417885187L;
 
 	private String requestUuid;
 
-	private List<P> previews;
+	private ShareRequestPreviews previews;
 
 	private SormasToSormasOriginInfoDto originInfo;
 
 	public ShareRequestData() {
 	}
 
-	public ShareRequestData(String uuid, List<P> previews, SormasToSormasOriginInfoDto originInfo) {
+	public ShareRequestData(String uuid, ShareRequestPreviews previews, SormasToSormasOriginInfoDto originInfo) {
 		this.requestUuid = uuid;
 		this.previews = previews;
 		this.originInfo = originInfo;
@@ -41,7 +43,7 @@ public class ShareRequestData<P> implements Serializable {
 		return requestUuid;
 	}
 
-	public List<P> getPreviews() {
+	public ShareRequestPreviews getPreviews() {
 		return previews;
 	}
 

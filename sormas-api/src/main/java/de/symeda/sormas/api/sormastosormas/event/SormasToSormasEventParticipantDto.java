@@ -13,10 +13,19 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.entities.contact;
+package de.symeda.sormas.api.sormastosormas.event;
 
-import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
-import de.symeda.sormas.backend.sormastosormas.entities.SyncDataDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 
-public class ContactSyncData extends SyncDataDto<SormasToSormasContactDto> {
+public class SormasToSormasEventParticipantDto extends SormasToSormasEntityDto<EventParticipantDto> {
+
+	private static final long serialVersionUID = -3568483795717699454L;
+
+	public SormasToSormasEventParticipantDto() {
+	}
+
+	public SormasToSormasEventParticipantDto(EventParticipantDto entity) {
+		super(entity);
+	}
 }

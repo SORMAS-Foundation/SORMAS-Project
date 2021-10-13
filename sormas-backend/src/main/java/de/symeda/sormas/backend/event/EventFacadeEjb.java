@@ -105,15 +105,11 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.location.LocationFacadeEjb;
-import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoEvent;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
@@ -917,8 +913,7 @@ public class EventFacadeEjb implements EventFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Event> eventRoot = cq.from(Event.class);
-		Join<ShareInfoEvent, SormasToSormasShareInfo> sormasToSormasJoin =
-			eventRoot.join(Event.SHARE_INFO_EVENTS, JoinType.LEFT).join(ShareInfoEvent.SHARE_INFO, JoinType.LEFT);
+		Join<Event, SormasToSormasShareInfo> sormasToSormasJoin = eventRoot.join(Event.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT);
 
 		cq.select(eventRoot.get(Event.UUID));
 		cq.where(cb.and(eventRoot.get(Event.UUID).in(eventUuids), cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
@@ -1058,7 +1053,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setInternalToken(source.getInternalToken());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
-		target.setOwnershipHandedOver(source.getShareInfoEvents().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
 		target.setEventIdentificationSource(source.getEventIdentificationSource());
 
@@ -1241,7 +1236,7 @@ public class EventFacadeEjb implements EventFacade {
 	@Override
 	public boolean doesExternalTokenExist(String externalToken, String eventUuid) {
 		return eventService.exists(
-			(cb, eventRoot) -> CriteriaBuilderHelper.and(
+			(cb, eventRoot, cq) -> CriteriaBuilderHelper.and(
 				cb,
 				cb.equal(eventRoot.get(Event.EXTERNAL_TOKEN), externalToken),
 				cb.notEqual(eventRoot.get(Event.UUID), eventUuid),

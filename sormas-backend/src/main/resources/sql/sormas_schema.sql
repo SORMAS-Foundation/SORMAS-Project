@@ -8273,4 +8273,128 @@ UPDATE featureconfiguration SET enabled = true, changedate = now() WHERE feature
 /* End of vaccination refactoring */
 
 INSERT INTO schema_version (version_number, comment) VALUES (406, 'Vaccination refactoring #5909');
+
+-- 2021-09-28 - [S2S] re-share data with the same organization #6639
+CREATE TABLE sharerequestinfo(
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+
+    requeststatus varchar(255),
+    sender_id bigint,
+    withassociatedcontacts boolean,
+    withsamples boolean,
+    witheventparticipants boolean,
+    pseudonymizedpersonaldata boolean,
+    pseudonymizedsensitivedata boolean,
+    comment text,
+
+    sys_period tstzrange not null,
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE sharerequestinfo OWNER TO sormas_user;
+ALTER TABLE sharerequestinfo ADD CONSTRAINT fk_sharerequestinfo_sender_id FOREIGN KEY (sender_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+CREATE TABLE sharerequestinfo_history (LIKE sharerequestinfo);
+ALTER TABLE sharerequestinfo_history OWNER TO sormas_user;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON sharerequestinfo
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sharerequestinfo_history', true);
+
+CREATE TABLE sharerequestinfo_shareinfo(
+    sharerequestinfo_id bigint,
+    shareinfo_id bigint
+);
+
+ALTER TABLE sharerequestinfo_shareinfo OWNER TO sormas_user;
+ALTER TABLE sharerequestinfo_shareinfo ADD CONSTRAINT fk_sharerequestinfo_shareinfo_sharerequestinfo_id FOREIGN KEY (sharerequestinfo_id) REFERENCES sharerequestinfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sharerequestinfo_shareinfo ADD CONSTRAINT fk_sharerequestinfo_shareinfo_shareinfo_id FOREIGN KEY (shareinfo_id) REFERENCES sormastosormasshareinfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE sormastosormasshareinfo
+    ADD COLUMN caze_id bigint,
+    ADD COLUMN contact_id bigint,
+    ADD COLUMN event_id bigint,
+    ADD COLUMN eventparticipant_id bigint,
+    ADD COLUMN sample_id bigint,
+    ALTER COLUMN requestuuid DROP NOT NULL;
+
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_contact_id FOREIGN KEY (contact_id) REFERENCES contact (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_event_id FOREIGN KEY (event_id) REFERENCES events (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_eventparticipant_id FOREIGN KEY (eventparticipant_id) REFERENCES eventparticipant (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_sample_id FOREIGN KEY (sample_id) REFERENCES samples (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+DO $$
+    DECLARE shared_entity RECORD;
+        DECLARE share_info RECORD;
+        DECLARE request_info_id bigint;
+        DECLARE new_share_info_id bigint;
+    BEGIN
+        FOR shared_entity IN SELECT * FROM sormastosormasshareinfo_entities
+            LOOP
+                SELECT * FROM sormastosormasshareinfo where id = shared_entity.shareinfo_id INTO share_info;
+
+                SELECT id FROM sharerequestinfo where uuid = share_info.requestUuid INTO request_info_id;
+                IF (request_info_id IS NULL) THEN
+                    INSERT INTO sharerequestinfo(
+                        id, uuid, changedate, creationdate, requeststatus, sender_id,
+                        withassociatedcontacts, withsamples, witheventparticipants, pseudonymizedpersonaldata, pseudonymizedsensitivedata, comment)
+                    VALUES (nextval('entity_seq'), share_info.requestUuid, share_info.creationdate, now(), share_info.requestStatus, share_info.sender_id,
+                            share_info.withassociatedcontacts, share_info.withsamples, share_info.witheventparticipants, share_info.pseudonymizedpersonaldata, share_info.pseudonymizedpersonaldata, share_info.comment)
+                    RETURNING id INTO request_info_id;
+                END IF;
+
+                INSERT INTO sormastosormasshareinfo(id, uuid, changedate, creationdate,
+                                                    organizationid, ownershiphandedover,
+                                                    caze_id, contact_id, event_id, eventparticipant_id, sample_id)
+                VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(),
+                        share_info.organizationid, share_info.ownershiphandedover,
+                        shared_entity.caze_id, shared_entity.contact_id, shared_entity.event_id, shared_entity.eventparticipant_id, shared_entity.sample_id)
+                RETURNING id INTO new_share_info_id;
+
+                INSERT INTO sharerequestinfo_shareinfo (sharerequestinfo_id, shareinfo_id)
+                VALUES (request_info_id, new_share_info_id);
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+ALTER TABLE sormastosormasshareinfo
+    DROP COLUMN requestuuid,
+    DROP COLUMN requeststatus,
+    DROP COLUMN comment,
+    DROP COLUMN withassociatedcontacts,
+    DROP COLUMN withsamples,
+    DROP COLUMN pseudonymizedpersonaldata,
+    DROP COLUMN pseudonymizedsensitivedata,
+    DROP COLUMN witheventparticipants;
+
+DROP TABLE sormastosormasshareinfo_entities;
+DELETE FROM sormastosormasshareinfo WHERE caze_id IS NULL and contact_id IS NULL and event_id IS NULL and eventparticipant_id IS NULL and sample_id is null;
+
+ALTER TABLE sormastosormassharerequest ADD COLUMN eventParticipants json;
+ALTER TABLE sormastosormassharerequest ALTER COLUMN eventParticipants TYPE json USING eventParticipants::json;
+ALTER TABLE sormastosormassharerequest_history ADD COLUMN eventParticipants json;
+ALTER TABLE sormastosormassharerequest_history ALTER COLUMN eventParticipants TYPE json USING eventParticipants::json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (407, '[S2S] re-share data with the same organization #6639');
+
+-- [S2S] When sharing a case the immunization and vaccination information should be shared as well #6886
+ALTER TABLE sormastosormasorigininfo ADD COLUMN withimmunizations boolean DEFAULT false;
+ALTER TABLE sharerequestinfo ADD COLUMN withimmunizations boolean DEFAULT false;
+ALTER TABLE sharerequestinfo_history ADD COLUMN withimmunizations boolean DEFAULT false;
+
+ALTER TABLE sormastosormassharerequest ADD COLUMN withimmunizations boolean DEFAULT false;
+ALTER TABLE sormastosormassharerequest_history ADD COLUMN withimmunizations boolean DEFAULT false;
+
+ALTER TABLE sormastosormasshareinfo ADD COLUMN immunization_id bigint;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_immunization_id FOREIGN KEY (immunization_id) REFERENCES immunization (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE immunization ADD COLUMN sormastosormasorigininfo_id bigint;
+ALTER TABLE immunization ADD CONSTRAINT fk_immunization_sormastosormasorigininfo_id FOREIGN KEY (sormastosormasorigininfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE immunization_history ADD COLUMN sormastosormasorigininfo_id bigint;
+ALTER TABLE immunization_history ADD CONSTRAINT fk_immunization_history_sormastosormasorigininfo_id FOREIGN KEY (sormastosormasorigininfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+INSERT INTO schema_version (version_number, comment) VALUES (408, '[S2S] When sharing a case the immunization and vaccination information should be shared as well #6886');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -42,7 +42,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoEventParticipant;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
@@ -61,7 +61,8 @@ public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 	public static final String SAMPLES = "samples";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
-	public static final String SHARE_INFO_EVENT_PARTICIPANTS = "shareInfoEventParticipants";
+	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
 	private User reportingUser;
@@ -73,7 +74,7 @@ public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 	private Region region;
 	private District district;
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
-	private List<ShareInfoEventParticipant> shareInfoEventParticipants = new ArrayList<>(0);
+	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 	private VaccinationStatus vaccinationStatus;
 
 	@ManyToOne(cascade = {})
@@ -167,13 +168,14 @@ public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
 
-	@OneToMany(mappedBy = ShareInfoEventParticipant.EVENT_PARTICIPANT, fetch = FetchType.LAZY)
-	public List<ShareInfoEventParticipant> getShareInfoEventParticipants() {
-		return shareInfoEventParticipants;
+	@OneToMany(mappedBy = SormasToSormasShareInfo.EVENT_PARTICIPANT, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
+		return sormasToSormasShares;
 	}
 
-	public void setShareInfoEventParticipants(List<ShareInfoEventParticipant> shareInfoEventParticipants) {
-		this.shareInfoEventParticipants = shareInfoEventParticipants;
+	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
+		this.sormasToSormasShares = sormasToSormasShares;
 	}
 
 	@Enumerated(EnumType.STRING)

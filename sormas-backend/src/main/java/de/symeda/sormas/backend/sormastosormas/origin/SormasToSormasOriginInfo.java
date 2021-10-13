@@ -66,6 +66,8 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	private boolean withEventParticipants;
 
+	private boolean withImmunizations;
+
 	private String comment;
 
 	private SormasToSormasShareRequest request;
@@ -152,6 +154,15 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 		this.withEventParticipants = withEventParticipants;
 	}
 
+	@Column
+	public boolean isWithImmunizations() {
+		return withImmunizations;
+	}
+
+	public void setWithImmunizations(boolean withImmunizations) {
+		this.withImmunizations = withImmunizations;
+	}
+
 	@OneToOne(mappedBy = "originInfo")
 	public SormasToSormasShareRequest getRequest() {
 		return request;
@@ -170,7 +181,7 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 		this.comment = comment;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo", orphanRemoval = true)
 	@AuditedIgnore
 	public List<Case> getCases() {
 		return cases;
@@ -180,7 +191,7 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 		this.cases = cases;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo", orphanRemoval = true)
 	@AuditedIgnore
 	public List<Contact> getContacts() {
 		return contacts;
@@ -190,7 +201,7 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 		this.contacts = contacts;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo", orphanRemoval = true)
 	@AuditedIgnore
 	public List<Event> getEvents() {
 		return events;
@@ -200,7 +211,7 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 		this.events = events;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo", orphanRemoval = true)
 	@AuditedIgnore
 	public List<EventParticipant> getEventParticipants() {
 		return eventParticipants;
@@ -210,7 +221,7 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 		this.eventParticipants = eventParticipants;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo", orphanRemoval = true)
 	@AuditedIgnore
 	public List<Sample> getSamples() {
 		return samples;
