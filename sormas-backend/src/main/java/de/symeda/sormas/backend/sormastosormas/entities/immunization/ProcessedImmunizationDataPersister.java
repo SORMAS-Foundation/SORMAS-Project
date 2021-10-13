@@ -50,26 +50,16 @@ public class ProcessedImmunizationDataPersister
 	@Override
 	protected void persistSharedData(SormasToSormasEntityDto<ImmunizationDto> processedData, Immunization existingEntity)
 		throws SormasToSormasValidationException {
-		persistImmunization(processedData);
-
-	}
-
-	@Override
-	protected SormasToSormasShareInfo getShareInfoByEntityAndOrganization(ImmunizationDto entity, String organizationId) {
-		return shareInfoService.getByImmunizationAndOrganization(entity.getUuid(), organizationId);
-	}
-
-	@Override
-	protected void persistSyncData(SormasToSormasEntityDto<ImmunizationDto> processedData) throws SormasToSormasValidationException {
-		persistImmunization(processedData);
-	}
-
-	private void persistImmunization(SormasToSormasEntityDto<ImmunizationDto> processedData) throws SormasToSormasValidationException {
 		ImmunizationDto immunuzation = processedData.getEntity();
 
 		handleValidationError(
 			() -> immunizationFacade.save(immunuzation, false, false),
 			Captions.Immunization,
 			buildImmunizationValidationGroupName(immunuzation));
+	}
+
+	@Override
+	protected SormasToSormasShareInfo getShareInfoByEntityAndOrganization(ImmunizationDto entity, String organizationId) {
+		return shareInfoService.getByImmunizationAndOrganization(entity.getUuid(), organizationId);
 	}
 }

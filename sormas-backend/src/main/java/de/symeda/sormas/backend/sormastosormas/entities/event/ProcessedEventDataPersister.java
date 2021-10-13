@@ -49,22 +49,13 @@ public class ProcessedEventDataPersister extends ProcessedDataPersister<EventDto
 
 	@Override
 	public void persistSharedData(SormasToSormasEventDto processedData, Event existingEvent) throws SormasToSormasValidationException {
-		persistProcessedData(processedData);
-	}
+		EventDto event = processedData.getEntity();
 
-	@Override
-	public void persistSyncData(SormasToSormasEventDto processedData) throws SormasToSormasValidationException {
-		persistProcessedData(processedData);
+		handleValidationError(() -> eventFacade.saveEvent(event, false, false), Captions.CaseData, buildCaseValidationGroupName(event));
 	}
 
 	@Override
 	protected SormasToSormasShareInfo getShareInfoByEntityAndOrganization(EventDto entity, String organizationId) {
 		return shareInfoService.getByEventAndOrganization(entity.getUuid(), organizationId);
-	}
-
-	private void persistProcessedData(SormasToSormasEventDto eventData) throws SormasToSormasValidationException {
-		EventDto event = eventData.getEntity();
-
-		handleValidationError(() -> eventFacade.saveEvent(event, false, false), Captions.CaseData, buildCaseValidationGroupName(event));
 	}
 }

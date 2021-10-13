@@ -55,20 +55,6 @@ public class ProcessedEventParticipantDataPersister
 	@Override
 	public void persistSharedData(SormasToSormasEventParticipantDto processedData, EventParticipant existingEventParticipant)
 		throws SormasToSormasValidationException {
-		persistEventParticipant(processedData);
-	}
-
-	@Override
-	public void persistSyncData(SormasToSormasEventParticipantDto processedData) throws SormasToSormasValidationException {
-		persistEventParticipant(processedData);
-	}
-
-	@Override
-	protected SormasToSormasShareInfo getShareInfoByEntityAndOrganization(EventParticipantDto entity, String organizationId) {
-		return shareInfoService.getByEventParticipantAndOrganization(entity.getUuid(), organizationId);
-	}
-
-	private void persistEventParticipant(SormasToSormasEventParticipantDto processedData) throws SormasToSormasValidationException {
 		EventParticipantDto eventParticipant = processedData.getEntity();
 
 		handleValidationError(
@@ -80,5 +66,10 @@ public class ProcessedEventParticipantDataPersister
 			() -> eventParticipantFacade.saveEventParticipant(eventParticipant, false, false),
 			Captions.EventParticipant,
 			buildEventParticipantValidationGroupName(eventParticipant));
+	}
+
+	@Override
+	protected SormasToSormasShareInfo getShareInfoByEntityAndOrganization(EventParticipantDto entity, String organizationId) {
+		return shareInfoService.getByEventParticipantAndOrganization(entity.getUuid(), organizationId);
 	}
 }

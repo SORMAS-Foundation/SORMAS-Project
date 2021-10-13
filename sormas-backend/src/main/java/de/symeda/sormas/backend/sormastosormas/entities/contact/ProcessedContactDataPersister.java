@@ -60,11 +60,6 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 		return shareInfoService.getByContactAndOrganization(entity.getUuid(), organizationId);
 	}
 
-	@Override
-	public void persistSyncData(SormasToSormasContactDto processedData) throws SormasToSormasValidationException {
-		persistProcessedData(processedData, false);
-	}
-
 	private void persistProcessedData(SormasToSormasContactDto processedData, boolean isCreate) throws SormasToSormasValidationException {
 
 		ValidationErrorGroup contactValidationGroupName = buildContactValidationGroupName(processedData.getEntity());

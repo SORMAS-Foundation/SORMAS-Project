@@ -397,9 +397,11 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	public void saveSyncedEntity(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
 		SyncDataDto syncData = sormasToSormasEncryptionEjb.decryptAndVerify(encryptedData, SyncDataDto.class);
 
+		ShareDataExistingEntities existingEntities = loadExistingEntities(syncData.getShareData());
 		perisist(
 			syncData.getShareData(),
-			(data, existingData) -> processedDataPersister.persistSyncData(data, syncData.getShareData().getOriginInfo(), syncData.getCriteria()));
+			(data, existinCaseFacadeEjbTestgData) -> processedDataPersister
+				.persistSyncData(data, syncData.getShareData().getOriginInfo(), syncData.getCriteria(), existingEntities));
 	}
 
 	@Override
@@ -560,7 +562,9 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		// remove existing shares from the request info
 		shareRequestInfo.setShares(shareRequestInfo.getShares().stream().filter(s -> s.getId() == null).collect(Collectors.toList()));
-		shareRequestInfoService.ensurePersisted(shareRequestInfo);
+		if (!shareRequestInfo.getShares().isEmpty()) {
+			shareRequestInfoService.ensurePersisted(shareRequestInfo);
+		}
 	}
 
 	private SormasToSormasShareRequestDto createShareRequest(

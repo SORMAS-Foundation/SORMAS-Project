@@ -52,7 +52,7 @@ public abstract class ProcessedDataPersister<T extends SormasToSormasEntityDto, 
 
 	@Transactional(rollbackOn = {
 		Exception.class })
-	public void persistSyncData(S processedData, SormasToSormasOriginInfoDto originInfo) throws SormasToSormasValidationException {
+	public void persistSyncData(S processedData, SormasToSormasOriginInfoDto originInfo, E existingEntity) throws SormasToSormasValidationException {
 		T entity = processedData.getEntity();
 		SormasToSormasShareInfo shareInfo = getShareInfoByEntityAndOrganization(entity, originInfo.getOrganizationId());
 
@@ -60,10 +60,8 @@ public abstract class ProcessedDataPersister<T extends SormasToSormasEntityDto, 
 			entity.setSormasToSormasOriginInfo(originInfo);
 		}
 
-		persistSyncData(processedData);
+		persistSharedData(processedData, existingEntity);
 	}
 
 	protected abstract SormasToSormasShareInfo getShareInfoByEntityAndOrganization(T entity, String organizationId);
-
-	protected abstract void persistSyncData(S processedData) throws SormasToSormasValidationException;
 }
