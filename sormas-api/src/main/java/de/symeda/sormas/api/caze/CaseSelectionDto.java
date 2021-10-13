@@ -44,6 +44,8 @@ public class CaseSelectionDto extends PseudonymizableIndexDto implements Seriali
 	private CaseClassification caseClassification;
 	private CaseOutcome outcome;
 
+	private boolean isInJurisdiction;
+
 	public CaseSelectionDto(
 		String uuid,
 		String epidNumber,
@@ -56,7 +58,8 @@ public class CaseSelectionDto extends PseudonymizableIndexDto implements Seriali
 		Date reportDate,
 		Sex sex,
 		CaseClassification caseClassification,
-		CaseOutcome outcome) {
+		CaseOutcome outcome,
+		boolean isInJurisdiction) {
 
 		this.uuid = uuid;
 		this.epidNumber = epidNumber;
@@ -70,6 +73,7 @@ public class CaseSelectionDto extends PseudonymizableIndexDto implements Seriali
 		this.sex = sex;
 		this.caseClassification = caseClassification;
 		this.outcome = outcome;
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public String getUuid() {
@@ -166,6 +170,14 @@ public class CaseSelectionDto extends PseudonymizableIndexDto implements Seriali
 
 	public void setOutcome(CaseOutcome outcome) {
 		this.outcome = outcome;
+	}
+
+	public boolean isInJurisdiction() {
+		return isInJurisdiction;
+	}
+
+	public void setInJurisdiction(boolean inJurisdiction) {
+		isInJurisdiction = inJurisdiction;
 	}
 
 	public CaseReferenceDto toReference() {

@@ -632,22 +632,12 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public List<CaseSelectionDto> getCaseSelectionList(CaseCriteria caseCriteria) {
-		return getIndexList(caseCriteria, null, null, null).stream()
-			.map(
-				entry -> new CaseSelectionDto(
-					entry.getUuid(),
-					entry.getEpidNumber(),
-					entry.getExternalID(),
-					entry.getPersonFirstName(),
-					entry.getPersonLastName(),
-					entry.getAgeAndBirthDate(),
-					entry.getResponsibleDistrictName(),
-					entry.getHealthFacilityName(),
-					entry.getReportDate(),
-					entry.getSex(),
-					entry.getCaseClassification(),
-					entry.getOutcome()))
-			.collect(Collectors.toList());
+		List<CaseSelectionDto> entries = caseService.getCaseSelectionList(caseCriteria);
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(CaseSelectionDto.class, entries, CaseSelectionDto::isInJurisdiction, null);
+
+		return entries;
 	}
 
 	@Override
@@ -1304,23 +1294,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public List<CaseSelectionDto> getSimilarCases(CaseSimilarityCriteria criteria) {
 
-		return caseService.getSimilarCases(criteria)
-			.stream()
-			.map(
-				entry -> new CaseSelectionDto(
-					entry.getUuid(),
-					entry.getEpidNumber(),
-					entry.getExternalID(),
-					entry.getPersonFirstName(),
-					entry.getPersonLastName(),
-					entry.getAgeAndBirthDate(),
-					entry.getResponsibleDistrictName(),
-					entry.getHealthFacilityName(),
-					entry.getReportDate(),
-					entry.getSex(),
-					entry.getCaseClassification(),
-					entry.getOutcome()))
-			.collect(Collectors.toList());
+		return caseService.getSimilarCases(criteria);
 	}
 
 	@Override

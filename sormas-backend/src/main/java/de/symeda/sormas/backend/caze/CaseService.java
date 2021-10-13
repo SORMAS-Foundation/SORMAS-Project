@@ -67,6 +67,7 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
@@ -94,7 +95,9 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
+import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.caze.transformers.CaseListEntryDtoResultTransformer;
+import de.symeda.sormas.backend.caze.transformers.CaseSelectionDtoResultTransformer;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
@@ -1353,6 +1356,64 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	public List<CaseSelectionDto> getCaseSelectionList(CaseCriteria caseCriteria) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		final Root<Case> root = cq.from(Case.class);
+
+		CaseQueryContext<Case> caseQueryContext = new CaseQueryContext<>(cb, cq, root);
+		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+
+		// This is needed in selection because of the combination of distinct and orderBy clauses - every operator in the orderBy has to be part of the select IF distinct is used
+		Expression<Date> latestChangedDateFunction =
+			cb.function(ExtendedPostgreSQL94Dialect.GREATEST, Date.class, root.get(Case.CHANGE_DATE), joins.getPerson().get(Person.CHANGE_DATE));
+
+		cq.multiselect(
+			root.get(Case.UUID),
+			root.get(Case.EPID_NUMBER),
+			root.get(Case.EXTERNAL_ID),
+			joins.getPerson().get(Person.FIRST_NAME),
+			joins.getPerson().get(Person.LAST_NAME),
+			joins.getPerson().get(Person.APPROXIMATE_AGE),
+			joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
+			joins.getPerson().get(Person.BIRTHDATE_DD),
+			joins.getPerson().get(Person.BIRTHDATE_MM),
+			joins.getPerson().get(Person.BIRTHDATE_YYYY),
+			joins.getResponsibleDistrict().get(District.NAME),
+			joins.getFacility().get(Facility.UUID),
+			joins.getFacility().get(Facility.NAME),
+			root.get(Case.HEALTH_FACILITY_DETAILS),
+			root.get(Case.REPORT_DATE),
+			joins.getPerson().get(Person.SEX),
+			root.get(Case.CASE_CLASSIFICATION),
+			root.get(Case.OUTCOME),
+			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(caseQueryContext)),
+			latestChangedDateFunction);
+		cq.distinct(true);
+
+		cq.orderBy(cb.desc(latestChangedDateFunction));
+
+		CaseUserFilterCriteria caseUserFilterCriteria = new CaseUserFilterCriteria();
+		if (caseCriteria != null) {
+			caseUserFilterCriteria.setIncludeCasesFromOtherJurisdictions(caseCriteria.getIncludeCasesFromOtherJurisdictions());
+		}
+		Predicate filter = createUserFilter(cb, cq, root, caseUserFilterCriteria);
+
+		if (caseCriteria != null) {
+			Predicate criteriaFilter = createCriteriaFilter(caseCriteria, caseQueryContext);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		return em.createQuery(cq)
+			.unwrap(org.hibernate.query.Query.class)
+			.setResultTransformer(new CaseSelectionDtoResultTransformer())
+			.getResultList();
+	}
+
 	public List<CaseListEntryDto> getEntriesList(Long personId, Integer first, Integer max) {
 		if (personId == null) {
 			return Collections.emptyList();
@@ -1403,18 +1464,45 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return q.getResultList().stream().findFirst().orElse(null);
 	}
 
-	public List<CaseIndexDto> getSimilarCases(CaseSimilarityCriteria criteria) {
+	public List<CaseSelectionDto> getSimilarCases(CaseSimilarityCriteria criteria) {
 
 		CaseCriteria caseCriteria = criteria.getCaseCriteria();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);
-		cq.distinct(true);
-
 		CaseJoins<Case> joins = new CaseJoins<>(root);
 
-		selectIndexDtoFields(new CaseQueryContext(cb, cq, root));
+		// This is needed in selection because of the combination of distinct and orderBy clauses - every operator in the orderBy has to be part of the select IF distinct is used
+		Expression<Date> latestChangedDateFunction =
+			cb.function(ExtendedPostgreSQL94Dialect.GREATEST, Date.class, root.get(Case.CHANGE_DATE), joins.getPerson().get(Person.CHANGE_DATE));
+
+		cq.multiselect(
+			root.get(Case.UUID),
+			root.get(Case.EPID_NUMBER),
+			root.get(Case.EXTERNAL_ID),
+			joins.getPerson().get(Person.FIRST_NAME),
+			joins.getPerson().get(Person.LAST_NAME),
+			joins.getPerson().get(Person.APPROXIMATE_AGE),
+			joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
+			joins.getPerson().get(Person.BIRTHDATE_DD),
+			joins.getPerson().get(Person.BIRTHDATE_MM),
+			joins.getPerson().get(Person.BIRTHDATE_YYYY),
+			joins.getResponsibleDistrict().get(District.NAME),
+			joins.getFacility().get(Facility.UUID),
+			joins.getFacility().get(Facility.NAME),
+			root.get(Case.HEALTH_FACILITY_DETAILS),
+			root.get(Case.REPORT_DATE),
+			joins.getPerson().get(Person.SEX),
+			root.get(Case.CASE_CLASSIFICATION),
+			root.get(Case.OUTCOME),
+			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new CaseQueryContext(cb, cq, root))),
+			latestChangedDateFunction);
+		cq.distinct(true);
+
+		cq.orderBy(cb.desc(latestChangedDateFunction));
+
+		cq.distinct(true);
 
 		Predicate userFilter = createUserFilter(cb, cq, root);
 
@@ -1449,7 +1537,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		cq.where(filter);
 
-		return em.createQuery(cq).getResultList();
+		return em.createQuery(cq)
+			.unwrap(org.hibernate.query.Query.class)
+			.setResultTransformer(new CaseSelectionDtoResultTransformer())
+			.getResultList();
 	}
 
 	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, boolean ignoreRegion, double nameSimilarityThreshold) {
