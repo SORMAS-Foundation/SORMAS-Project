@@ -7960,10 +7960,12 @@ CREATE TEMP TABLE tmp_vaccinated_entities AS
         cases.firstvaccinationdate, cases.lastvaccinationdate,
         CASE
             WHEN
+                /* Valid numbers of doses are 1 to 10 */
                 cases.vaccinationdoses ~ '^(10|[1-9])$'
             THEN
                 CAST(cases.vaccinationdoses AS int)
             WHEN
+                /* If the number of doses is neither valid nor empty, we assume 1 dose */
                 (cases.vaccinationdoses IS NOT NULL AND cases.vaccinationdoses != '')
             THEN
             	1
@@ -7971,6 +7973,7 @@ CREATE TEMP TABLE tmp_vaccinated_entities AS
                 null
             END
             AS vaccinationdoses,
+        /* If the number of doses is not valid, save the value as vaccinationdoses_details */
         CASE
             WHEN
                 cases.vaccinationdoses ~ '^(10|[1-9])$'
@@ -8042,10 +8045,12 @@ UNION
         vaccinationinfo.firstvaccinationdate, vaccinationinfo.lastvaccinationdate,
         CASE
             WHEN
+                /* Valid numbers of doses are 1 to 10 */
                 vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
             THEN
                 CAST(vaccinationinfo.vaccinationdoses AS int)
             WHEN
+                /* If the number of doses is neither valid nor empty, we assume 1 dose */
                 (vaccinationinfo.vaccinationdoses IS NOT NULL AND vaccinationinfo.vaccinationdoses != '')
             THEN
             	1
@@ -8053,6 +8058,7 @@ UNION
                 null
             END
             AS vaccinationdoses,
+        /* If the number of doses is not valid, save the value as vaccinationdoses_details */
         CASE
             WHEN
                 vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
@@ -8098,10 +8104,12 @@ UNION
         location.community_id AS responsiblecommunity, vaccinationinfo.firstvaccinationdate, vaccinationinfo.lastvaccinationdate,
         CASE
             WHEN
+                /* Valid numbers of doses are 1 to 10 */
                 vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
             THEN
                 CAST(vaccinationinfo.vaccinationdoses AS int)
             WHEN
+                /* If the number of doses is neither valid nor empty, we assume 1 dose */
                 (vaccinationinfo.vaccinationdoses IS NOT NULL AND vaccinationinfo.vaccinationdoses != '')
             THEN
             	1
@@ -8109,6 +8117,7 @@ UNION
                 null
             END
             AS vaccinationdoses,
+        /* If the number of doses is not valid, save the value as vaccinationdoses_details */
         CASE
             WHEN
                 vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
