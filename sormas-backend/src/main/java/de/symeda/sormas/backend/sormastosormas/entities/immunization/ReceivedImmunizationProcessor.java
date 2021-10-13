@@ -30,6 +30,7 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
@@ -64,6 +65,7 @@ public class ReceivedImmunizationProcessor
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		dataProcessorHelper.updateReportingUser(immunization, existingData);
+		dataProcessorHelper.handleIgnoredProperties(immunization, ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal.toDto(existingData));
 
 		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
 			infraValidator.validateInfrastructure(

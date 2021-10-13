@@ -45,14 +45,15 @@ public class EventParticipantShareDataBuilder
 		Pseudonymizer pseudonymizer =
 			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 
-		EventParticipantDto dto = eventParticipantFacade.convertToDto(data, pseudonymizer);
+		EventParticipantDto eventParticipantDto = eventParticipantFacade.convertToDto(data, pseudonymizer);
 
-		dto.setReportingUser(null);
-		dto.setSormasToSormasOriginInfo(null);
+		eventParticipantDto.setReportingUser(null);
+		eventParticipantDto.setSormasToSormasOriginInfo(null);
+		dataBuilderHelper.clearIgnoredProperties(eventParticipantDto.getPerson());
 
-		dataBuilderHelper.pseudonymiePerson(dto.getPerson(), requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+		dataBuilderHelper.pseudonymiePerson(eventParticipantDto.getPerson(), requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 
-		return new SormasToSormasEventParticipantDto(dto);
+		return new SormasToSormasEventParticipantDto(eventParticipantDto);
 	}
 
 	@Override

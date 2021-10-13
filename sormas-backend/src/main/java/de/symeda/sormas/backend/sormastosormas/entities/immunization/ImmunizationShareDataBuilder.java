@@ -45,6 +45,7 @@ public class ImmunizationShareDataBuilder implements ShareDataBuilder<Immunizati
 		ImmunizationDto immunizationDto = immunizationFacade.convertToDto(immunization, pseudonymizer);
 		immunizationDto.setReportingUser(null);
 		immunizationDto.setSormasToSormasOriginInfo(null);
+		dataBuilderHelper.clearIgnoredProperties(immunizationDto);
 
 		return new SormasToSormasEntityDto<>(immunizationDto);
 	}

@@ -15,11 +15,7 @@
 
 package de.symeda.sormas.backend.sormastosormas.data.received;
 
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildPathogenTestValidationGroupName;
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildSampleValidationGroupName;
-
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Date;
 
 import javax.annotation.Nullable;
@@ -27,18 +23,12 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
-import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
@@ -49,9 +39,11 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
-import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
 import de.symeda.sormas.backend.user.UserService;
@@ -69,13 +61,7 @@ public class ReceivedDataProcessorHelper {
 	@EJB
 	private InfrastructureValidator infraValidator;
 	@EJB
-	private SampleFacadeEjbLocal sampleFacade;
-	@EJB
-	private InfrastructureValidator infraValidator;
-	@EJB
 	private ConfigFacadeEjbLocal configFacade;
-	@EJB
-	private PersonFacadeEjbLocal personFacade;
 
 	public ValidationErrors processOriginInfo(SormasToSormasOriginInfoDto originInfo, String validationGroupCaption) {
 		if (originInfo == null) {
@@ -182,24 +168,24 @@ public class ReceivedDataProcessorHelper {
         }
     }
 
-	public PersonDto getExitingPerson(@Nullable CaseDataDto existingCaseDto) {
-		if (existingCaseDto == null) {
+	public PersonDto getExitingPerson(@Nullable Case existingCase) {
+		if (existingCase == null) {
 			return null;
 		}
-		return personFacade.getPersonByUuid(existingCaseDto.getPerson().getUuid());
+		return PersonFacadeEjbLocal.toDto(existingCase.getPerson());
 	}
 
-	public PersonDto getExistingPerson(@Nullable ContactDto existingContactDto) {
-		if (existingContactDto == null) {
+	public PersonDto getExistingPerson(@Nullable Contact existingContact) {
+		if (existingContact == null) {
 			return null;
 		}
-		return personFacade.getPersonByUuid(existingContactDto.getPerson().getUuid());
+		return PersonFacadeEjbLocal.toDto(existingContact.getPerson());
 	}
 
-	public PersonDto getExistingPerson(@Nullable EventParticipantDto eventParticipantDto) {
-		if (eventParticipantDto == null) {
+	public PersonDto getExistingPerson(@Nullable EventParticipant existingEventParticipant) {
+		if (existingEventParticipant == null) {
 			return null;
 		}
-		return personFacade.getPersonByUuid(eventParticipantDto.getPerson().getUuid());
+		return PersonFacadeEjbLocal.toDto(existingEventParticipant.getPerson());
 	}
 }
