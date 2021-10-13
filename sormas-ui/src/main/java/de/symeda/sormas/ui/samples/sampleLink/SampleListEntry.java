@@ -27,6 +27,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -183,7 +184,8 @@ public class SampleListEntry extends HorizontalLayout {
 		topLayout.setComponentAlignment(topRightLayout, Alignment.TOP_RIGHT);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
-			&& sample.getAdditionalTestingStatus() != AdditionalTestingStatus.NOT_REQUESTED) {
+			&& sample.getAdditionalTestingStatus() != AdditionalTestingStatus.NOT_REQUESTED
+			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ADDITIONAL_TESTS)) {
 			Label labelAdditionalTests = new Label(
 				I18nProperties.getString(Strings.entityAdditionalTests) + " " + sample.getAdditionalTestingStatus().toString().toLowerCase());
 			mainLayout.addComponent(labelAdditionalTests);
