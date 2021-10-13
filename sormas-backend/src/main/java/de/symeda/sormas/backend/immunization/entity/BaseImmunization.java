@@ -66,6 +66,7 @@ public class BaseImmunization extends CoreAdo implements SormasToSormasEntity {
 	private Date startDate;
 	private Date endDate;
 	private Integer numberOfDoses;
+	private String numberOfDosesDetails;
 	private YesNoUnknown previousInfection;
 
 	private Date lastInfectionDate;
@@ -251,6 +252,15 @@ public class BaseImmunization extends CoreAdo implements SormasToSormasEntity {
 
 	public void setNumberOfDoses(Integer numberOfDoses) {
 		this.numberOfDoses = numberOfDoses;
+	}
+
+	@Column(name = "numberofdoses_details")
+	public String getNumberOfDosesDetails() {
+		return numberOfDosesDetails;
+	}
+
+	public void setNumberOfDosesDetails(String numberOfDosesDetails) {
+		this.numberOfDosesDetails = numberOfDosesDetails;
 	}
 
 	@Enumerated(EnumType.STRING)
