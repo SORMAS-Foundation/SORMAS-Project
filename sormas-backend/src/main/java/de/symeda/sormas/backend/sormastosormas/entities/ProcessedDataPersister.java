@@ -115,47 +115,52 @@ public class ProcessedDataPersister {
 		}
 	}
 
-	public void persistSyncData(SormasToSormasDto processedData, SormasToSormasOriginInfoDto originInfoDto, ShareTreeCriteria shareTreeCriteria)
+	public void persistSyncData(
+		SormasToSormasDto processedData,
+		SormasToSormasOriginInfoDto originInfoDto,
+		ShareTreeCriteria shareTreeCriteria,
+		ShareDataExistingEntities existingEntities)
 		throws SormasToSormasValidationException {
 		List<SormasToSormasCaseDto> cases = processedData.getCases();
 		if (CollectionUtils.isNotEmpty(cases)) {
 			for (SormasToSormasCaseDto c : cases) {
-				caseDataPersister.persistSyncData(c, originInfoDto);
+				caseDataPersister.persistSyncData(c, originInfoDto, existingEntities.getCases().get(c.getEntity().getUuid()));
 			}
 		}
 
 		List<SormasToSormasContactDto> contacts = processedData.getContacts();
 		if (CollectionUtils.isNotEmpty(contacts)) {
 			for (SormasToSormasContactDto c : contacts) {
-				contactDataPersister.persistSyncData(c, originInfoDto);
+				contactDataPersister.persistSyncData(c, originInfoDto, existingEntities.getContacts().get(c.getEntity().getUuid()));
 			}
 		}
 
 		List<SormasToSormasEventDto> events = processedData.getEvents();
 		if (CollectionUtils.isNotEmpty(events)) {
 			for (SormasToSormasEventDto e : events) {
-				eventDataPersister.persistSyncData(e, originInfoDto);
+				eventDataPersister.persistSyncData(e, originInfoDto, existingEntities.getEvents().get(e.getEntity().getUuid()));
 			}
 		}
 
 		List<SormasToSormasEventParticipantDto> eventParticipants = processedData.getEventParticipants();
 		if (CollectionUtils.isNotEmpty(eventParticipants)) {
 			for (SormasToSormasEventParticipantDto ep : eventParticipants) {
-				eventParticipantDataPersister.persistSyncData(ep, originInfoDto);
+				eventParticipantDataPersister
+					.persistSyncData(ep, originInfoDto, existingEntities.getEventParticipants().get(ep.getEntity().getUuid()));
 			}
 		}
 
 		List<SormasToSormasSampleDto> samples = processedData.getSamples();
 		if (CollectionUtils.isNotEmpty(samples)) {
 			for (SormasToSormasSampleDto s : samples) {
-				sampleDataPersister.persistSyncData(s, originInfoDto);
+				sampleDataPersister.persistSyncData(s, originInfoDto, existingEntities.getSamples().get(s.getEntity().getUuid()));
 			}
 		}
 
 		List<SormasToSormasEntityDto<ImmunizationDto>> immunizations = processedData.getImmunizations();
 		if (CollectionUtils.isNotEmpty(immunizations)) {
 			for (SormasToSormasEntityDto<ImmunizationDto> i : immunizations) {
-				immunizationDataPersister.persistSyncData(i, originInfoDto);
+				immunizationDataPersister.persistSyncData(i, originInfoDto, existingEntities.getImmunizations().get(i.getEntity().getUuid()));
 			}
 		}
 

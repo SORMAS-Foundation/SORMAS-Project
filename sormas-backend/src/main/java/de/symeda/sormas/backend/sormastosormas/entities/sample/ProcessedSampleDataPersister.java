@@ -58,21 +58,6 @@ public class ProcessedSampleDataPersister extends ProcessedDataPersister<SampleD
 
 	@Override
 	public void persistSharedData(SormasToSormasSampleDto processedData, Sample existingSample) throws SormasToSormasValidationException {
-		persistSample(processedData);
-	}
-
-	@Override
-	protected SormasToSormasShareInfo getShareInfoByEntityAndOrganization(SampleDto entity, String organizationId) {
-		return shareInfoService.getBySampleAndOrganization(entity.getUuid(), organizationId);
-	}
-
-	@Override
-	public void persistSyncData(SormasToSormasSampleDto processedData) throws SormasToSormasValidationException {
-		persistSample(processedData);
-	}
-
-	public void persistSample(SormasToSormasSampleDto processedData) throws SormasToSormasValidationException {
-
 		SampleDto sample = processedData.getEntity();
 
 		handleValidationError(() -> sampleFacade.saveSample(sample, true, false, false), Captions.Sample, buildSampleValidationGroupName(sample));
@@ -90,5 +75,10 @@ public class ProcessedSampleDataPersister extends ProcessedDataPersister<SampleD
 				Captions.AdditionalTest,
 				buildValidationGroupName(Captions.AdditionalTest, additionalTest));
 		}
+	}
+
+	@Override
+	protected SormasToSormasShareInfo getShareInfoByEntityAndOrganization(SampleDto entity, String organizationId) {
+		return shareInfoService.getBySampleAndOrganization(entity.getUuid(), organizationId);
 	}
 }

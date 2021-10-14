@@ -217,15 +217,17 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 		final List<Immunization> caseImmunizations = immunizationService.getByPersonIds(Collections.singletonList(caze.getPerson().getId()));
 		List<Immunization> immunizations = new ArrayList<>(caseImmunizations);
 
-		List<Long> contactIds = associatedContacts.stream().map(Contact::getId).collect(Collectors.toList());
-		List<Immunization> contactImmunizations = immunizationService.getByPersonIds(contactIds)
-			.stream()
-			.filter(
-				contactImmunization -> caseImmunizations.stream()
-					.noneMatch(caseImmunization -> DataHelper.isSame(caseImmunization, contactImmunization)))
-			.collect(Collectors.toList());
+		if (!associatedContacts.isEmpty()) {
+			List<Long> contactPersonIds = associatedContacts.stream().map(Contact::getId).collect(Collectors.toList());
+			List<Immunization> contactImmunizations = immunizationService.getByPersonIds(contactPersonIds)
+				.stream()
+				.filter(
+					contactImmunization -> caseImmunizations.stream()
+						.noneMatch(caseImmunization -> DataHelper.isSame(caseImmunization, contactImmunization)))
+				.collect(Collectors.toList());
 
-		immunizations.addAll(contactImmunizations);
+			immunizations.addAll(contactImmunizations);
+		}
 
 		return immunizations;
 	}

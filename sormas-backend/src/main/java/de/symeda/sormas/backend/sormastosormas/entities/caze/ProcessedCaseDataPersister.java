@@ -59,11 +59,6 @@ public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataD
 		return shareInfoService.getByCaseAndOrganization(entity.getUuid(), organizationId);
 	}
 
-	@Override
-	protected void persistSyncData(SormasToSormasCaseDto processedData) throws SormasToSormasValidationException {
-		persistProcessedData(processedData, false);
-	}
-
 	private void persistProcessedData(SormasToSormasCaseDto caseData, boolean isCreate) throws SormasToSormasValidationException {
 		CaseDataDto caze = caseData.getEntity();
 
