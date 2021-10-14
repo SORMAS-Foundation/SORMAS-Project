@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.ui.immunization.components.form;
 
 import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
@@ -14,7 +29,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import com.vaadin.v7.data.util.converter.Converter;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.ui.Button;
@@ -22,6 +36,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.util.converter.StringToIntegerConverter;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -56,6 +71,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -98,7 +114,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 	//@formatter:on
 
 	private final CaseReferenceDto relatedCase;
-	private Boolean ignoreMeansOfImmunizationChange = false;
+	private boolean ignoreMeansOfImmunizationChange = false;
 	private MeansOfImmunization previousMeansOfImmunization;
 
 	public ImmunizationDataForm(boolean isPseudonymized, CaseReferenceDto relatedCase) {
@@ -184,11 +200,13 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		TextField facilityDetails = addField(ImmunizationDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		facilityDetails.setVisible(false);
 
-		addField(ImmunizationDto.START_DATE, DateField.class);
-		addDateField(ImmunizationDto.END_DATE, DateField.class, -1);
+		DateField startDate = addField(ImmunizationDto.START_DATE, DateField.class);
+		DateField endDate = addDateField(ImmunizationDto.END_DATE, DateField.class, -1);
+		DateComparisonValidator.addStartEndValidators(startDate, endDate);
 
-		addDateField(ImmunizationDto.VALID_FROM, DateField.class, -1);
-		addDateField(ImmunizationDto.VALID_UNTIL, DateField.class, -1);
+		DateField validFrom = addDateField(ImmunizationDto.VALID_FROM, DateField.class, -1);
+		DateField validUntil = addDateField(ImmunizationDto.VALID_UNTIL, DateField.class, -1);
+		DateComparisonValidator.addStartEndValidators(validFrom, validUntil);
 
 		MeansOfImmunization meansOfImmunizationValue = (MeansOfImmunization) meansOfImmunizationField.getValue();
 
@@ -391,13 +409,12 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			}
 		});
 
-		facilityTypeGroup.addValueChangeListener(e -> {
-			FieldHelper.updateEnumData(
+		facilityTypeGroup.addValueChangeListener(
+			e -> FieldHelper.updateEnumData(
 				facilityType,
 				facilityTypeGroup.getValue() != null
 					? FacilityType.getTypes((FacilityTypeGroup) facilityTypeGroup.getValue())
-					: Arrays.stream(FacilityType.values()).collect(Collectors.toList()));
-		});
+					: Arrays.stream(FacilityType.values()).collect(Collectors.toList())));
 		facilityType.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facilityCombo);
 			if (facilityType.getValue() != null && responsibleDistrictCombo.getValue() != null) {
@@ -459,7 +476,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			Boolean foundCase =
 				FacadeProvider.getImmunizationFacade().linkRecoveryImmunizationToSearchedCase(searchField.getValue(), this.getValue());
 
-			if (foundCase) {
+			if (Boolean.TRUE == foundCase) {
 				VaadinUiUtil
 					.showSimplePopupWindow(I18nProperties.getString(Strings.headingCaseFound), I18nProperties.getString(Strings.messageCaseFound));
 
