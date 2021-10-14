@@ -12,8 +12,8 @@ public class LabMessageIndexDto implements Serializable {
 
 	public static final String UUID = "uuid";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
-	public static final String TEST_LAB_NAME = "testLabName";
-	public static final String TEST_LAB_POSTAL_CODE = "testLabPostalCode";
+	public static final String TEST_LAB_NAME = "labName";
+	public static final String TEST_LAB_POSTAL_CODE = "labPostalCode";
 	public static final String TESTED_DISEASE = "testedDisease";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
@@ -23,15 +23,20 @@ public class LabMessageIndexDto implements Serializable {
 	private String uuid;
 
 	private Date messageDateTime;
-	private String testLabName;
-	private String testLabPostalCode;
+	private String labName;
+	private String labPostalCode;
 	private Disease testedDisease;
 	private String personFirstName;
 	private String personLastName;
 	private String personPostalCode;
 	private LabMessageStatus status;
 
-	public LabMessageIndexDto(String uuid, Date messageDateTime, String testLabName, String testLabPostalCode, Disease testedDisease,
+	public LabMessageIndexDto(
+		String uuid,
+		Date messageDateTime,
+		String labName,
+		String labPostalCode,
+		Disease testedDisease,
 		String personFirstName,
 		String personLastName,
 		String personPostalCode,
@@ -39,8 +44,8 @@ public class LabMessageIndexDto implements Serializable {
 
 		this.uuid = uuid;
 		this.messageDateTime = messageDateTime;
-		this.testLabName = testLabName;
-		this.testLabPostalCode = testLabPostalCode;
+		this.labName = labName;
+		this.labPostalCode = labPostalCode;
 		this.testedDisease = testedDisease;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
@@ -64,20 +69,20 @@ public class LabMessageIndexDto implements Serializable {
 		this.messageDateTime = messageDateTime;
 	}
 
-	public String getTestLabName() {
-		return testLabName;
+	public String getlabName() {
+		return labName;
 	}
 
-	public void setTestLabName(String testLabName) {
-		this.testLabName = testLabName;
+	public void setTestLabName(String labName) {
+		this.labName = labName;
 	}
 
-	public String getTestLabPostalCode() {
-		return testLabPostalCode;
+	public String getlabPostalCode() {
+		return labPostalCode;
 	}
 
-	public void setTestLabPostalCode(String testLabPostalCode) {
-		this.testLabPostalCode = testLabPostalCode;
+	public void setlabPostalCode(String testLabPostalCode) {
+		this.labPostalCode = testLabPostalCode;
 	}
 
 	public Disease getTestedDisease() {
