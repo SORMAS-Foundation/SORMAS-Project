@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        module: [sormas-api, sormas-backend, sormas-rest]
+        module: [sormas-api, sormas-backend, sormas-rest, sormas-ui]
 
     steps:
       - name: Checkout repository (with token)
