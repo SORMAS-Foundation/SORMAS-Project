@@ -14,6 +14,8 @@
  *
  */
 
+/* Returns a list of all columns that are missing in a _history table */
+
 SELECT concat(c.table_name, '_history'), c.column_name, c.data_type FROM information_schema."columns" c
 LEFT OUTER JOIN information_schema."columns" c_hist
 ON concat(c.table_name, '_history') = c_hist.table_name AND c.column_name = c_hist.column_name

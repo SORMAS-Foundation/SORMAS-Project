@@ -14,6 +14,8 @@
  *
  */
 
+/* Returns a list of all tables that are missing a _history equivalent */
+
 SELECT t.table_name FROM information_schema."tables" t
 WHERE t.table_schema = 'public' AND t.table_name NOT LIKE '%_history'
 AND (SELECT COUNT(t_hist.table_name) FROM information_schema."tables" t_hist WHERE concat(t.table_name,'_history') = t_hist .table_name) = 0;
