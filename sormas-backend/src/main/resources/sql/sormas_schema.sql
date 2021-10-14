@@ -8153,6 +8153,7 @@ ORDER BY person_id, disease, relevancedate DESC;
 
 /* Step 2: Create a new immunization entity for each person-disease combination */
 ALTER TABLE immunization ADD COLUMN numberofdoses_details varchar(255);
+ALTER TABLE immunization_history ADD COLUMN numberofdoses_details varchar(255);
 
 INSERT INTO immunization
 (
@@ -8475,4 +8476,23 @@ ALTER TABLE immunization_history ADD COLUMN sormastosormasorigininfo_id bigint;
 ALTER TABLE immunization_history ADD CONSTRAINT fk_immunization_history_sormastosormasorigininfo_id FOREIGN KEY (sormastosormasorigininfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 INSERT INTO schema_version (version_number, comment) VALUES (408, '[S2S] When sharing a case the immunization and vaccination information should be shared as well #6886');
+
+-- 2021-10-14 add immunization columns if update 406 completed before fix #6861
+DO $$
+    BEGIN
+        BEGIN
+            ALTER TABLE immunization ADD COLUMN numberofdoses_details varchar(255);
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column numberofdoses_details already exists in immunization.';
+        END;
+        BEGIN
+            ALTER TABLE immunization_history ADD COLUMN numberofdoses_details varchar(255);
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column numberofdoses_details already exists in immunization_history.';
+        END;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (409, 'add immunization columns if update 406 completed before fix #6861');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
