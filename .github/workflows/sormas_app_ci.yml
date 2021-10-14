@@ -64,7 +64,7 @@ jobs:
 
       - name: Run mvn install
         working-directory: ./sormas-base
-        run: mvn install -DskipTests=true
+        run: mvn install -pl :sormas-api -am -DskipTests=true
 
       - uses: actions/cache@v2
         with:
