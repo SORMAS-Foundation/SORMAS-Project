@@ -124,13 +124,13 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	}
 
 	@Override
-	protected List<SormasToSormasShareInfo> getOrCreateShareInfos(Event event, SormasToSormasOptionsDto options, User user) {
+	protected List<SormasToSormasShareInfo> getOrCreateShareInfos(Event event, SormasToSormasOptionsDto options, User user, boolean forSync) {
 		String organizationId = options.getOrganization().getId();
 		SormasToSormasShareInfo eventShareInfo = event.getSormasToSormasShares()
 			.stream()
 			.filter(s -> s.getOrganizationId().equals(organizationId))
 			.findFirst()
-			.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, event, SormasToSormasShareInfo::setEvent));
+			.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, event, SormasToSormasShareInfo::setEvent, options));
 
 		Stream<SormasToSormasShareInfo> eventParticipantShareInfos = Stream.empty();
 		List<EventParticipant> eventParticipants = Collections.emptyList();
@@ -142,7 +142,18 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 						.stream()
 						.filter(share -> share.getOrganizationId().equals(organizationId))
 						.findFirst()
-						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, ep, SormasToSormasShareInfo::setEventParticipant)));
+						.orElseGet(() -> {
+							if (forSync) {
+								// do not share new event participants on sync
+								return ep.getSormasToSormasOriginInfo() != null
+									&& ep.getSormasToSormasOriginInfo().getOrganizationId().equals(organizationId)
+										? ShareInfoHelper.createShareInfo(organizationId, ep, SormasToSormasShareInfo::setEventParticipant, options)
+										: null;
+							} else {
+								return ShareInfoHelper.createShareInfo(organizationId, ep, SormasToSormasShareInfo::setEventParticipant, options);
+							}
+						}))
+				.filter(Objects::nonNull);
 		}
 
 		Stream<SormasToSormasShareInfo> sampleShareInfos = Stream.empty();
@@ -157,7 +168,7 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 							.stream()
 							.filter(share -> share.getOrganizationId().equals(organizationId))
 							.findFirst()
-							.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, s, SormasToSormasShareInfo::setSample)));
+							.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, s, SormasToSormasShareInfo::setSample, options)));
 			}
 
 			if (options.isWithImmunizations()) {
@@ -167,7 +178,7 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 							.stream()
 							.filter(share -> share.getOrganizationId().equals(organizationId))
 							.findFirst()
-							.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, i, SormasToSormasShareInfo::setImmunization)));
+							.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, i, SormasToSormasShareInfo::setImmunization, options)));
 			}
 		}
 

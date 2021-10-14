@@ -142,13 +142,13 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	}
 
 	@Override
-	protected List<SormasToSormasShareInfo> getOrCreateShareInfos(Case caze, SormasToSormasOptionsDto options, User user) {
+	protected List<SormasToSormasShareInfo> getOrCreateShareInfos(Case caze, SormasToSormasOptionsDto options, User user, boolean forSync) {
 		String organizationId = options.getOrganization().getId();
 		SormasToSormasShareInfo cazeShareInfo = caze.getSormasToSormasShares()
 			.stream()
 			.filter(s -> s.getOrganizationId().equals(organizationId))
 			.findFirst()
-			.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, caze, SormasToSormasShareInfo::setCaze));
+			.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, caze, SormasToSormasShareInfo::setCaze, options));
 
 		Stream<SormasToSormasShareInfo> contactShareInfos = Stream.empty();
 		List<Contact> contacts = Collections.emptyList();
@@ -161,7 +161,18 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 						.stream()
 						.filter(s -> s.getOrganizationId().equals(organizationId))
 						.findFirst()
-						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, c, SormasToSormasShareInfo::setContact)));
+						.orElseGet(() -> {
+							if (forSync) {
+								// do not share new contacts on sync
+								return c.getSormasToSormasOriginInfo() != null
+									&& c.getSormasToSormasOriginInfo().getOrganizationId().equals(organizationId)
+										? ShareInfoHelper.createShareInfo(organizationId, c, SormasToSormasShareInfo::setContact, options)
+										: null;
+							} else {
+								return ShareInfoHelper.createShareInfo(organizationId, c, SormasToSormasShareInfo::setContact, options);
+							}
+						}))
+				.filter(Objects::nonNull);
 		}
 
 		Stream<SormasToSormasShareInfo> sampleShareInfos = Stream.empty();
@@ -172,7 +183,7 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 						.stream()
 						.filter(share -> share.getOrganizationId().equals(organizationId))
 						.findFirst()
-						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, s, SormasToSormasShareInfo::setSample)));
+						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, s, SormasToSormasShareInfo::setSample, options)));
 		}
 
 		Stream<SormasToSormasShareInfo> immunizationShareInfos = Stream.empty();
@@ -183,7 +194,7 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 						.stream()
 						.filter(share -> share.getOrganizationId().equals(organizationId))
 						.findFirst()
-						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, i, SormasToSormasShareInfo::setImmunization)));
+						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, i, SormasToSormasShareInfo::setImmunization, options)));
 		}
 
 		return Stream.of(Stream.of(cazeShareInfo), contactShareInfos, sampleShareInfos, immunizationShareInfos)

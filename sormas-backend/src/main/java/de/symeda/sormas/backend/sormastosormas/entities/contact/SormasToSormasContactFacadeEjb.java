@@ -133,13 +133,13 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 	}
 
 	@Override
-	protected List<SormasToSormasShareInfo> getOrCreateShareInfos(Contact contact, SormasToSormasOptionsDto options, User user) {
+	protected List<SormasToSormasShareInfo> getOrCreateShareInfos(Contact contact, SormasToSormasOptionsDto options, User user, boolean forSync) {
 		String organizationId = options.getOrganization().getId();
 		SormasToSormasShareInfo eventShareInfo = contact.getSormasToSormasShares()
 			.stream()
 			.filter(s -> s.getOrganizationId().equals(organizationId))
 			.findFirst()
-			.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, contact, SormasToSormasShareInfo::setContact));
+			.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, contact, SormasToSormasShareInfo::setContact, options));
 
 		Stream<SormasToSormasShareInfo> sampleShareInfos = Stream.empty();
 		if (options.isWithSamples()) {
@@ -150,7 +150,7 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 						.stream()
 						.filter(share -> share.getOrganizationId().equals(organizationId))
 						.findFirst()
-						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, s, SormasToSormasShareInfo::setSample)));
+						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, s, SormasToSormasShareInfo::setSample, options)));
 		}
 
 		Stream<SormasToSormasShareInfo> immunizationShareInfos = Stream.empty();
@@ -162,7 +162,7 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 						.stream()
 						.filter(share -> share.getOrganizationId().equals(organizationId))
 						.findFirst()
-						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, i, SormasToSormasShareInfo::setImmunization)));
+						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, i, SormasToSormasShareInfo::setImmunization, options)));
 		}
 
 		return Stream.of(Stream.of(eventShareInfo), sampleShareInfos, immunizationShareInfos)
