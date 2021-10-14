@@ -35,8 +35,7 @@ public class CaseDirectoryPage {
   public static final By CASE_DETAILED_TABLE_ROWS =
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By FIRST_CASE_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
-  public static final By NAME_UUID_EPID_NUMBER_LIKE_INPUT =
-      By.cssSelector("input#nameUuidEpidNumberLike");
+  public static final By NAME_UUID_EPID_NUMBER_LIKE_INPUT = By.cssSelector("input#caseLike");
   public static final By CASE_OUTCOME_FILTER_COMBOBOX =
       By.cssSelector("[id='outcome'] [class='v-filterselect-button']");
   public static final By CASE_CLASSIFICATION_FILTER_COMBOBOX =
