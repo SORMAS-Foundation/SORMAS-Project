@@ -37,6 +37,7 @@ import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
@@ -53,13 +54,17 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.caze.PlaceOfStayEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
@@ -69,17 +74,11 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 	private static final String HOSPITALIZATION_HEADING_LOC = "hospitalizationHeadingLoc";
 	private static final String PREVIOUS_HOSPITALIZATIONS_HEADING_LOC = "previousHospitalizationsHeadingLoc";
 	private static final String HEALTH_FACILITY = Captions.CaseHospitalization_healthFacility;
-	private final CaseDataDto caze;
-	private final ViewMode viewMode;
-
-	private NullableOptionGroup intensiveCareUnit;
-	private DateField intensiveCareUnitStart;
-	private DateField intensiveCareUnitEnd;
-
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			loc(HOSPITALIZATION_HEADING_LOC) +
-			fluidRowLocs(HEALTH_FACILITY, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY) +
+			fluidRowLocs(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY) +
+			fluidRowLocs(HEALTH_FACILITY) +
 			fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE, HospitalizationDto.LEFT_AGAINST_ADVICE, "") +
 			fluidRowLocs(HospitalizationDto.HOSPITALIZATION_REASON, HospitalizationDto.OTHER_HOSPITALIZATION_REASON) +
 					fluidRowLocs(3, HospitalizationDto.INTENSIVE_CARE_UNIT, 3,
@@ -91,6 +90,11 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 			loc(PREVIOUS_HOSPITALIZATIONS_HEADING_LOC) +
 			fluidRowLocs(HospitalizationDto.HOSPITALIZED_PREVIOUSLY) +
 			fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS);
+	private final CaseDataDto caze;
+	private final ViewMode viewMode;
+	private NullableOptionGroup intensiveCareUnit;
+	private DateField intensiveCareUnitStart;
+	private DateField intensiveCareUnitEnd;
 	//@formatter:on
 
 	public HospitalizationForm(CaseDataDto caze, ViewMode viewMode, boolean isPseudonymized) {
@@ -106,6 +110,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		addFields();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
 
@@ -148,11 +153,11 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		PreviousHospitalizationsField previousHospitalizationsField =
 			addField(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS, PreviousHospitalizationsField.class);
 
-		if (!FacilityType.HOSPITAL.equals(caze.getFacilityType())) {
-			FieldHelper.setEnabled(
-				false,
+		FieldHelper.setEnabledWhen(
+			admittedToHealthFacilityField,
+			Arrays.asList(YesNoUnknown.YES),
+			Arrays.asList(
 				facilityField,
-				admittedToHealthFacilityField,
 				admissionDateField,
 				dischargeDateField,
 				intensiveCareUnit,
@@ -162,8 +167,8 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				isolatedField,
 				leftAgainstAdviceField,
 				hospitalizationReason,
-				otherHospitalizationReason);
-		}
+				otherHospitalizationReason),
+			false);
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();

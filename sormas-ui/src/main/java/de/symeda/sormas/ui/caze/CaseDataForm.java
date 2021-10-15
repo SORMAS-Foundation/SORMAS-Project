@@ -117,6 +117,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -233,9 +234,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.NOTIFYING_CLINIC, CaseDataDto.NOTIFYING_CLINIC_DETAILS) +
 					fluidRowLocs(CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL) +
 					loc(CONTACT_TRACING_FIRST_CONTACT_HEADER_LOC) +
-					fluidRowLocs(CaseDataDto.CONTACT_TRACING_FIRST_CONTACT_TYPE, CaseDataDto.CONTACT_TRACING_FIRST_CONTACT_DATE)
-
-			;
+					fluidRowLocs(CaseDataDto.CONTACT_TRACING_FIRST_CONTACT_TYPE, CaseDataDto.CONTACT_TRACING_FIRST_CONTACT_DATE);
 
     private static final String FOLLOWUP_LAYOUT =
             loc(FOLLOW_UP_STATUS_HEADING_LOC) +
@@ -293,6 +292,33 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		this.caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
 
 		addFields();
+	}
+
+	public static void updateFacilityDetails(ComboBox cbFacility, TextField tfFacilityDetails) {
+		if (cbFacility.getValue() != null) {
+			boolean otherHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+			boolean noneHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
+			boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
+
+			tfFacilityDetails.setVisible(visibleAndRequired);
+			tfFacilityDetails.setRequired(otherHealthFacility);
+
+			if (otherHealthFacility) {
+				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
+			}
+			if (noneHealthFacility) {
+				tfFacilityDetails.setCaption(I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails));
+			}
+			if (!visibleAndRequired && !tfFacilityDetails.isReadOnly()) {
+				tfFacilityDetails.clear();
+			}
+		} else {
+			tfFacilityDetails.setVisible(false);
+			tfFacilityDetails.setRequired(false);
+			if (!tfFacilityDetails.isReadOnly()) {
+				tfFacilityDetails.clear();
+			}
+		}
 	}
 
 	@SuppressWarnings("deprecation")
@@ -1525,33 +1551,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 	}
 
-	private void updateFacilityDetails(ComboBox cbFacility, TextField tfFacilityDetails) {
-		if (cbFacility.getValue() != null) {
-			boolean otherHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
-			boolean noneHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
-			boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
-
-			tfFacilityDetails.setVisible(visibleAndRequired);
-			tfFacilityDetails.setRequired(otherHealthFacility);
-
-			if (otherHealthFacility) {
-				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
-			}
-			if (noneHealthFacility) {
-				tfFacilityDetails.setCaption(I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails));
-			}
-			if (!visibleAndRequired && !tfFacilityDetails.isReadOnly()) {
-				tfFacilityDetails.clear();
-			}
-		} else {
-			tfFacilityDetails.setVisible(false);
-			tfFacilityDetails.setRequired(false);
-			if (!tfFacilityDetails.isReadOnly()) {
-				tfFacilityDetails.clear();
-			}
-		}
-	}
-
 	@Override
 	protected String createHtmlLayout() {
 		return MAIN_HTML_LAYOUT + (caseFollowUpEnabled ? FOLLOWUP_LAYOUT : "") + PAPER_FORM_DATES_AND_COMMENTS_HTML_LAYOUT;
@@ -1576,6 +1575,37 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					&& !isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)
 					&& !CaseLogic.isEpidNumberPrefix(fieldValue)
 					&& !CaseLogic.isCompleteEpidNumber(fieldValue));
+		}
+	}
+
+	private void onValueChange() {
+		QuarantineType quarantineType = (QuarantineType) quarantine.getValue();
+		if (QuarantineType.isQuarantineInEffect(quarantineType)) {
+			CaseDataDto caze = this.getInternalValue();
+			if (caze != null) {
+				quarantineFrom.setValue(caze.getQuarantineFrom());
+				if (caze.getQuarantineTo() == null) {
+					if (caseFollowUpEnabled) {
+						quarantineTo.setValue(caze.getFollowUpUntil());
+					}
+				} else {
+					quarantineTo.setValue(caze.getQuarantineTo());
+				}
+				if (caze.isQuarantineExtended()) {
+					quarantineExtended.setValue(true);
+					setVisible(true, CaseDataDto.QUARANTINE_EXTENDED);
+				}
+				if (caze.isQuarantineReduced()) {
+					quarantineReduced.setValue(true);
+					setVisible(true, CaseDataDto.QUARANTINE_REDUCED);
+				}
+			}
+		} else {
+			quarantineFrom.clear();
+			quarantineTo.clear();
+			quarantineExtended.setValue(false);
+			quarantineReduced.setValue(false);
+			setVisible(false, CaseDataDto.QUARANTINE_REDUCED, CaseDataDto.QUARANTINE_EXTENDED);
 		}
 	}
 
@@ -1625,36 +1655,5 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 		}
 
-	}
-
-	private void onValueChange() {
-		QuarantineType quarantineType = (QuarantineType) quarantine.getValue();
-		if (QuarantineType.isQuarantineInEffect(quarantineType)) {
-			CaseDataDto caze = this.getInternalValue();
-			if (caze != null) {
-				quarantineFrom.setValue(caze.getQuarantineFrom());
-				if (caze.getQuarantineTo() == null) {
-					if (caseFollowUpEnabled) {
-						quarantineTo.setValue(caze.getFollowUpUntil());
-					}
-				} else {
-					quarantineTo.setValue(caze.getQuarantineTo());
-				}
-				if (caze.isQuarantineExtended()) {
-					quarantineExtended.setValue(true);
-					setVisible(true, CaseDataDto.QUARANTINE_EXTENDED);
-				}
-				if (caze.isQuarantineReduced()) {
-					quarantineReduced.setValue(true);
-					setVisible(true, CaseDataDto.QUARANTINE_REDUCED);
-				}
-			}
-		} else {
-			quarantineFrom.clear();
-			quarantineTo.clear();
-			quarantineExtended.setValue(false);
-			quarantineReduced.setValue(false);
-			setVisible(false, CaseDataDto.QUARANTINE_REDUCED, CaseDataDto.QUARANTINE_EXTENDED);
-		}
 	}
 }
