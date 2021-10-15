@@ -400,10 +400,14 @@ public class ContactFacadeEjb implements ContactFacade {
 		return toDto(entity);
 	}
 
-	public void onContactChanged(ContactDto existingContact, Contact contact, boolean syncShares) {
+	public void onContactChanged(ContactDto contact, boolean syncShares) {
 		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(new ShareTreeCriteria(contact.getUuid()));
 		}
+	}
+
+	public void onContactChanged(ContactDto existingContact, Contact contact, boolean syncShares) {
+		onContactChanged(toDto(contact), syncShares);
 
 		if (existingContact != null
 			&& existingContact.getQuarantineTo() != null

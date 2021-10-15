@@ -1182,8 +1182,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		if (newSample.getAssociatedContact() != null) {
-			contactFacade
-				.onContactChanged(ContactFacadeEjbLocal.toDto(newSample.getAssociatedContact()), newSample.getAssociatedContact(), syncShares);
+			contactFacade.onContactChanged(ContactFacadeEjbLocal.toDto(newSample.getAssociatedContact()), syncShares);
 		}
 
 		if (newSample.getAssociatedEventParticipant() != null) {

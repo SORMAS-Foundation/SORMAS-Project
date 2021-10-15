@@ -253,7 +253,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		// update contact if necessary
 		Contact associatedContact = pathogenTest.getSample().getAssociatedContact();
 		if (associatedContact != null) {
-			contactFacade.onContactChanged(ContactFacadeEjbLocal.toDto(associatedContact), associatedContact, syncShares);
+			contactFacade.onContactChanged(ContactFacadeEjbLocal.toDto(associatedContact), syncShares);
 		}
 
 		// update event participant if necessary
@@ -505,9 +505,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		if (disease != null) {
 			final String contentLabResultArrived = caze != null
 				? MessageContents.CONTENT_LAB_RESULT_ARRIVED
-				: contact != null
-					? MessageContents.CONTENT_LAB_RESULT_ARRIVED_CONTACT
-					: MessageContents.CONTENT_LAB_RESULT_ARRIVED_EVENT_PARTICIPANT;
+				: contact != null ? MessageContents.CONTENT_LAB_RESULT_ARRIVED_CONTACT : MessageContents.CONTENT_LAB_RESULT_ARRIVED_EVENT_PARTICIPANT;
 
 			final String contentLabResultSpecified = caze != null
 				? MessageContents.CONTENT_LAB_RESULT_SPECIFIED
