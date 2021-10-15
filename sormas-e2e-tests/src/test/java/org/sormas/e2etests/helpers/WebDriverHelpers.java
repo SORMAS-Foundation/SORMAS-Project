@@ -49,6 +49,7 @@ public class WebDriverHelpers {
   private final AssertHelpers assertHelpers;
   private static final String SCROLL_TO_WEB_ELEMENT_SCRIPT =
       "arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"center\"});";
+  public static final String CLICK_ELEMENT_SCRIPT = "arguments[0].click();";
 
   @Inject
   public WebDriverHelpers(BaseSteps baseSteps, AssertHelpers assertHelpers) {
@@ -309,6 +310,22 @@ public class WebDriverHelpers {
     waitForPageLoaded();
   }
 
+  public void javaScriptClickElement(final Object selector) {
+    JavascriptExecutor javascriptExecutor = baseSteps.getDriver();
+    waitUntilIdentifiedElementIsPresent(selector);
+    try {
+      if (selector instanceof WebElement) {
+        javascriptExecutor.executeScript(CLICK_ELEMENT_SCRIPT, selector);
+      } else {
+        waitUntilIdentifiedElementIsPresent(selector);
+        javascriptExecutor.executeScript(
+            CLICK_ELEMENT_SCRIPT, baseSteps.getDriver().findElement((By) selector));
+      }
+    } catch (Exception ignored) {
+    }
+    waitForPageLoaded();
+  }
+
   public void scrollToElementUntilIsVisible(final Object selector) {
     JavascriptExecutor javascriptExecutor = baseSteps.getDriver();
     waitUntilIdentifiedElementIsPresent(selector);
@@ -464,6 +481,14 @@ public class WebDriverHelpers {
     }
   }
 
+  public WebElement getWebElement(By byObject) {
+    try {
+      return baseSteps.getDriver().findElement(byObject);
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
   public String getTextFromPresentWebElement(By byObject) {
     waitUntilIdentifiedElementIsPresent(byObject);
     scrollToElement(byObject);
@@ -476,6 +501,15 @@ public class WebDriverHelpers {
     } else {
       assertHelpers.assertWithPoll20Second(
           () -> assertThat(getNumberOfElements((By) selector) > 0).isTrue());
+    }
+  }
+
+  public void waitUntilIdentifiedElementIsDisplayed(final Object selector) {
+    if (selector instanceof WebElement) {
+      assertHelpers.assertWithPoll20Second(() -> assertThat(selector).isNotNull());
+    } else {
+      assertHelpers.assertWithPoll20Second(
+          () -> assertThat(getWebElement((By) selector).isDisplayed()).isTrue());
     }
   }
 
