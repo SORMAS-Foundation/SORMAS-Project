@@ -694,6 +694,8 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.EVENT_MANAGEMENT_STATUS),
 			event.get(Event.EVENT_IDENTIFICATION_SOURCE));
 
+		cq.distinct(true);
+
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 
 		if (eventCriteria != null) {
