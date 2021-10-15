@@ -8307,4 +8307,15 @@ UPDATE contact set contactclassification = 'UNCONFIRMED' where contactclassifica
 ALTER TABLE contact ALTER COLUMN contactclassification SET NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (410, 'Make contact classification required in the API and backend #6828');
+
+-- 2021-10-14 [DEMIS2SORMAS] Handle New Profile: DiagnosticReport.basedOn #5139
+ALTER TABLE pathogentest ADD COLUMN externalOrderId varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN externalOrderId varchar(512);
+
+ALTER TABLE testreport ADD COLUMN externalOrderId varchar(512);
+ALTER TABLE testreport_history ADD COLUMN externalOrderId varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (411, '[DEMIS2SORMAS] Handle New Profile: DiagnosticReport.basedOn #5139');
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
