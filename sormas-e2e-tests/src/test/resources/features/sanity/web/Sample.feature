@@ -27,8 +27,14 @@ Feature: Sample Functionalities
 
   Scenario: Add a Pathogen test from Samples and verify the fields
     Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     And API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     And API: I create a new sample
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     When I log in with National User
     And I click on the Sample button from navbar
     And I am accessing the created sample via api
@@ -37,9 +43,13 @@ Feature: Sample Functionalities
     Then I check that the created Pathogen is correctly displayed
 
   Scenario: Delete created sample
-    Given I log in with National User
     Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     Given API: I create a new sample
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
     When I click on the Sample button from navbar
     Then I open the last created sample via API
     Then I delete the sample
