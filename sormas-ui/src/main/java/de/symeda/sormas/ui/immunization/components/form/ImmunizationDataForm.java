@@ -473,10 +473,10 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		com.vaadin.ui.TextField searchField = new com.vaadin.ui.TextField();
 		Runnable confirmCallback = () -> {
 
-			Boolean foundCase =
+			boolean foundCase =
 				FacadeProvider.getImmunizationFacade().linkRecoveryImmunizationToSearchedCase(searchField.getValue(), this.getValue());
 
-			if (Boolean.TRUE == foundCase) {
+			if (foundCase) {
 				VaadinUiUtil
 					.showSimplePopupWindow(I18nProperties.getString(Strings.headingCaseFound), I18nProperties.getString(Strings.messageCaseFound));
 
