@@ -39,6 +39,10 @@ public enum FeatureType {
 		new FeatureType[] {
 			CASE_SURVEILANCE,
 			EVENT_SURVEILLANCE }),
+	ADDITIONAL_TESTS(true,
+		false,
+		new FeatureType[] {
+			SAMPLES_LAB }),
 	TASK_MANAGEMENT(true, true, null),
 	WEEKLY_REPORTING(true, true, null),
 	IMMUNIZATION_MANAGEMENT(true, true, null),

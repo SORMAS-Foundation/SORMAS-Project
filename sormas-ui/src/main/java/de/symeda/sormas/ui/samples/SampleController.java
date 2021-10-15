@@ -24,6 +24,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.vaadin.v7.ui.TextField;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -215,6 +216,11 @@ public class SampleController {
 			CheckBox viaLimsField = createForm.getField(PathogenTestDto.VIA_LIMS);
 			if (viaLimsField != null) {
 				pathogenTest.setViaLims(viaLimsField.getValue());
+			}
+
+			TextField externalIdField = createForm.getField(PathogenTestDto.EXTERNAL_ID);
+			if (externalIdField != null) {
+				pathogenTest.setExternalId(externalIdField.getValue());
 			}
 
 			String cqValue = (String) createForm.getField(PathogenTestDto.CQ_VALUE).getValue();

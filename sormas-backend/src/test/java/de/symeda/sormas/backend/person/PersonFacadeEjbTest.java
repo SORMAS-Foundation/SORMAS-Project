@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -197,6 +198,43 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		getPersonFacade().savePerson(person1);
 
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria().presentCondition(PresentCondition.DEAD), null, null, null).size());
+		assertEquals(2, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
+	}
+
+	@Test
+	public void testGetIndexListByName() {
+		final RDCFEntities rdcf = creator.createRDCFEntities();
+		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		user.setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
+		user.setLimitedDisease(Disease.EVD);
+		getUserFacade().saveUser(user);
+		loginWith(user);
+
+		final PersonDto person1 = creator.createPerson("James", "Smith", Sex.MALE, 1920, 1, 1);
+		creator.createCase(
+				user.toReference(),
+				person1.toReference(),
+				Disease.EVD,
+				CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING,
+				new Date(),
+				rdcf);
+		person1.setPresentCondition(PresentCondition.DEAD);
+		final PersonDto person2 = creator.createPerson("Maria", "Garcia", Sex.FEMALE, 1920, 1, 1);
+		creator.createCase(
+				user.toReference(),
+				person2.toReference(),
+				Disease.EVD,
+				CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING,
+				new Date(),
+				rdcf);
+
+		getPersonFacade().savePerson(person1);
+
+		PersonCriteria criteria = new PersonCriteria();
+		criteria.setNameAddressPhoneEmailLike("James");
+		assertEquals(1, getPersonFacade().getIndexList(criteria, null, null, null).size());
 		assertEquals(2, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 	}
 

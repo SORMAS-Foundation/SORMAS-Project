@@ -62,7 +62,9 @@ import de.symeda.sormas.backend.util.QueryHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "SubcontinentFacade")
-public class SubcontinentFacadeEjb extends AbstractInfrastructureEjb<Subcontinent, SubcontinentDto, SubcontinentService, SubcontinentCriteria>
+public class SubcontinentFacadeEjb
+	extends
+	AbstractInfrastructureEjb<Subcontinent, SubcontinentDto, SubcontinentIndexDto, SubcontinentReferenceDto, SubcontinentService, SubcontinentCriteria>
 	implements SubcontinentFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -215,7 +217,7 @@ public class SubcontinentFacadeEjb extends AbstractInfrastructureEjb<Subcontinen
 	}
 
 	@Override
-	public SubcontinentDto save(@Valid SubcontinentDto dtoToSave, boolean allowMerge) {
+	public SubcontinentDto save(SubcontinentDto dtoToSave, boolean allowMerge) {
 		checkInfraDataLocked();
 		return save(dtoToSave, allowMerge, Validations.importSubcontinentAlreadyExists);
 	}

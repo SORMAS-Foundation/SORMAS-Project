@@ -272,10 +272,12 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
 		final From<?, Person> personFrom = personQueryContext.getRoot();
 
-		final Join<Person, Location> location = personFrom.join(Person.ADDRESS, JoinType.LEFT);
-		final Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
-		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
-		final Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
+
+		final PersonJoins personJoins = (PersonJoins) personQueryContext.getJoins();
+		final Join<Person, Location> location = personJoins.getAddress();;
+		final Join<Location, Region> region =  personJoins.getAddressJoins().getRegion();
+		final Join<Location, District> district = personJoins.getAddressJoins().getDistrict();
+		final Join<Location, Community> community = personJoins.getAddressJoins().getCommunity();
 
 		Predicate filter = null;
 		filter = andEquals(cb, personFrom, filter, personCriteria.getBirthdateYYYY(), Person.BIRTHDATE_YYYY);

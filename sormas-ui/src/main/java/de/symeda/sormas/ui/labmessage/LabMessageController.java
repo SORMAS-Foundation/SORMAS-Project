@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.naming.CannotProceedException;
 import javax.naming.NamingException;
 
+import com.vaadin.v7.ui.TextField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -684,6 +685,7 @@ public class LabMessageController {
 		List<TestReportDto> testReportDtos = FacadeProvider.getTestReportFacade().getAllByLabMessage(labMessageDto.toReference());
 		if (!testReportDtos.isEmpty()) {
 			TestReportDto testReportDto = testReportDtos.get(0);
+			((TextField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.EXTERNAL_ID)).setValue(testReportDto.getExternalId());
 			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT)).setValue(testReportDto.getTestResult());
 			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(SampleDto.PATHOGEN_TEST_RESULT)).setValue(testReportDto.getTestResult());
 			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_TYPE)).setValue(testReportDto.getTestType());
@@ -747,6 +749,7 @@ public class LabMessageController {
 			pathogenTestDto.setTestDateTime(testReportDto.getTestDateTime());
 			pathogenTestDto.setTestResultText(testReportDto.getTestResultText());
 			pathogenTestDto.setTypingId(testReportDto.getTypingId());
+			pathogenTestDto.setExternalId(testReportDto.getExternalId());
 		}
 
 		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());
