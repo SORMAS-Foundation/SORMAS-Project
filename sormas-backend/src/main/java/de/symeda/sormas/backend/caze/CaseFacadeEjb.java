@@ -1294,7 +1294,12 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public List<CaseSelectionDto> getSimilarCases(CaseSimilarityCriteria criteria) {
 
-		return caseService.getSimilarCases(criteria);
+		List<CaseSelectionDto> entries = caseService.getSimilarCases(criteria);
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(CaseSelectionDto.class, entries, CaseSelectionDto::isInJurisdiction, null);
+
+		return entries;
 	}
 
 	@Override
