@@ -313,23 +313,19 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	}
 
 	public void updateImmunizationStatusBasedOnVaccinations(Immunization immunization) {
-		ImmunizationManagementStatus immunizationManagementStatus = immunization.getImmunizationManagementStatus();
-		if (immunizationManagementStatus == ImmunizationManagementStatus.SCHEDULED
-			|| immunizationManagementStatus == ImmunizationManagementStatus.ONGOING) {
-			final Integer numberOfDoses = immunization.getNumberOfDoses();
-			final int vaccinationCount = immunization.getVaccinations().size();
+		final Integer numberOfDoses = immunization.getNumberOfDoses();
+		final int vaccinationCount = immunization.getVaccinations().size();
 
-			if (numberOfDoses != null) {
-				final Date startDate = immunization.getStartDate();
-				if ((startDate == null || System.currentTimeMillis() > startDate.getTime())
-					&& vaccinationCount >= 1
-					&& vaccinationCount < numberOfDoses) {
-					immunization.setImmunizationManagementStatus(ImmunizationManagementStatus.ONGOING);
-					immunization.setImmunizationStatus(ImmunizationStatus.PENDING);
-				} else if (vaccinationCount >= numberOfDoses) {
-					immunization.setImmunizationManagementStatus(ImmunizationManagementStatus.COMPLETED);
-					immunization.setImmunizationStatus(ImmunizationStatus.ACQUIRED);
-				}
+		if (numberOfDoses != null) {
+			final Date startDate = immunization.getStartDate();
+			if ((startDate == null || System.currentTimeMillis() > startDate.getTime())
+				&& vaccinationCount >= 1
+				&& vaccinationCount < numberOfDoses) {
+				immunization.setImmunizationManagementStatus(ImmunizationManagementStatus.ONGOING);
+				immunization.setImmunizationStatus(ImmunizationStatus.PENDING);
+			} else if (vaccinationCount >= numberOfDoses) {
+				immunization.setImmunizationManagementStatus(ImmunizationManagementStatus.COMPLETED);
+				immunization.setImmunizationStatus(ImmunizationStatus.ACQUIRED);
 			}
 		}
 	}
