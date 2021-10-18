@@ -16,6 +16,7 @@ import java.util.Date;
 @Stateless(name = "SyncFacade")
 public class SyncFacadeEjb implements SyncFacade {
 
+	private static final String LAST_SYNCHRONIZATION_DATE = "Last synchronization date: ";
 	@EJB
 	private SystemEventFacadeEjb.SystemEventFacadeEjbLocal systemEventFacade;
 
@@ -40,16 +41,24 @@ public class SyncFacadeEjb implements SyncFacade {
 		if (latestSuccess != null) {
 			millis = determineLatestSuccessMillis(latestSuccess);
 		} else {
-			logger.info("No previous successful attempt to synchronize could be found. The synchronization date is set to 0 (UNIX milliseconds)");
+			logger.info(
+				"No previous successful attempt to synchronize {} could be found. The synchronization date is set to 0 (UNIX milliseconds)",
+				type);
 			millis = 0L;
 		}
 		return new Date(millis);
 	}
 
 	@Override
-	public void reportSuccessfulSyncWithTimestamp(SystemEventDto systemEvent, Date syncDate) {
-		String message = "Last synchronization date: " + syncDate.getTime();
-		systemEventFacade.reportSuccess(systemEvent, message, new Date());
+	public void reportSuccessfulSyncWithTimestamp(SystemEventDto sync, Date syncDate) {
+		String message = LAST_SYNCHRONIZATION_DATE + syncDate.getTime();
+		systemEventFacade.reportSuccess(sync, message, new Date());
+	}
+
+	@Override
+	public void reportSyncErrorWithTimestamp(SystemEventDto sync, String errorMessage) {
+		logger.error("Synchronization for event {} failed with error: {}", sync, errorMessage);
+		systemEventFacade.reportError(sync, errorMessage, new Date());
 	}
 
 	private long determineLatestSuccessMillis(SystemEventDto latestSuccess) {
@@ -57,7 +66,7 @@ public class SyncFacadeEjb implements SyncFacade {
 		if (info != null) {
 			try {
 				//parse last synchronization date
-				return Long.parseLong(info.replace("Last synchronization date: ", ""));
+				return Long.parseLong(info.replace(LAST_SYNCHRONIZATION_DATE, ""));
 			} catch (NumberFormatException e) {
 				logger.error("Synchronization date could not be parsed. Falling back to start date.");
 				return latestSuccess.getStartDate().getTime();

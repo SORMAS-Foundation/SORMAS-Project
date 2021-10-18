@@ -317,26 +317,26 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 	/**
 	 * This method marks the previously unfinished system events as UNCLEAR(if any exists) and creates a new event with status STARTED.
-	 * If the fetching succeds, the status of the currentSystemEvent is changed to SUCCESS.
-	 * In case of any Exception, the status of the currentSystemEvent is changed to ERROR.
+	 * If the fetching succeeds, the status of the currentSync is changed to SUCCESS.
+	 * In case of any Exception, the status of the currentSync is changed to ERROR.
 	 *
 	 * @return An indication whether the fetching of new labMessage was successful. If it was not, an error message meant for UI users.
 	 */
 	@Override
 	public LabMessageFetchResult fetchAndSaveExternalLabMessages(Date since) {
 
-		SystemEventDto currentSystemEvent = syncFacadeEjb.startSyncFor(SystemEventType.FETCH_LAB_MESSAGES);
+		SystemEventDto currentSync = syncFacadeEjb.startSyncFor(SystemEventType.FETCH_LAB_MESSAGES);
 
 		try {
-			return fetchAndSaveExternalLabMessages(currentSystemEvent, since);
+			return fetchAndSaveExternalLabMessages(currentSync, since);
 		} catch (CannotProceedException e) {
-			systemEventFacade.reportError(currentSystemEvent, e.getMessage(), new Date());
+			syncFacadeEjb.reportSyncErrorWithTimestamp(currentSync, e.getMessage());
 			return new LabMessageFetchResult(false, NewMessagesState.UNCLEAR, e.getMessage());
 		} catch (NamingException e) {
-			systemEventFacade.reportError(currentSystemEvent, e.getMessage(), new Date());
+			syncFacadeEjb.reportSyncErrorWithTimestamp(currentSync, e.getMessage());
 			return new LabMessageFetchResult(false, NewMessagesState.UNCLEAR, I18nProperties.getString(Strings.errorLabResultsAdapterNotFound));
 		} catch (Exception t) {
-			systemEventFacade.reportError(currentSystemEvent, t.getMessage(), new Date());
+			syncFacadeEjb.reportSyncErrorWithTimestamp(currentSync, t.getMessage());
 			throw t;
 		}
 	}
