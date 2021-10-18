@@ -15,7 +15,9 @@
 package de.symeda.sormas.backend.document;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -26,9 +28,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.document.DocumentCriteria;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.Contact;
@@ -121,6 +125,15 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	public List<DocumentDto> getDocumentsRelatedToEntity(DocumentRelatedEntityType type, String uuid) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return documentService.getRelatedToEntity(type, uuid).stream().map(d -> convertToDto(d, pseudonymizer)).collect(Collectors.toList());
+	}
+
+	@Override
+	public Map<String, List<DocumentDto>> getDocumentRelatedToEntities(DocumentCriteria criteria, List<SortProperty> sortProperties) {
+		Map<String, List<DocumentDto>> documentsPerEntity = new HashMap<>();
+		criteria.getEntityUuids().forEach(entityUuid -> {
+			documentsPerEntity.put(entityUuid, getDocumentsRelatedToEntity(criteria.getDocumentRelatedEntityType(), entityUuid));
+		});
+		return documentsPerEntity;
 	}
 
 	@Override
