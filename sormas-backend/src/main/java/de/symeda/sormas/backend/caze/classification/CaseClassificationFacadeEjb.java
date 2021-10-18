@@ -469,14 +469,14 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		probable = allOf(suspect, xOf(1, caseData(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, YesNoUnknown.YES), partOfEventCluster()));
 
 		confirmed = allOf(
-			suspect,
 			positiveTestResult(
 				Disease.CORONAVIRUS,
 				PathogenTestType.PCR_RT_PCR,
 				PathogenTestType.ANTIGEN_DETECTION,
 				PathogenTestType.ISOLATION,
 				PathogenTestType.SEQUENCING,
-				PathogenTestType.RAPID_TEST));
+				PathogenTestType.RAPID_TEST),
+			suspect);
 
 		// confirmed_no_symptoms = positive test AND at least one symptom set to no AND all covid-relevant symptoms are anything but yes
 		confirmedNoSymptoms = allOf(
@@ -488,7 +488,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				PathogenTestType.SEQUENCING,
 				PathogenTestType.RAPID_TEST),
 			anyOfSymptoms(SymptomState.NO, Disease.CORONAVIRUS),
-			noneOf(anyOfSymptoms(SymptomState.YES, Disease.CORONAVIRUS)));
+			noneOf(suspect));
 
 		// confirmed_unknown_symptoms = positive test AND at least one symptom set to null or unknown AND covid-relevant symptoms are anything but yes or no
 		confirmedUnknownSymptoms = allOf(
@@ -500,7 +500,8 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				PathogenTestType.SEQUENCING,
 				PathogenTestType.RAPID_TEST),
 			xOf(1, anyOfSymptoms(SymptomState.UNKNOWN, Disease.CORONAVIRUS), anyOfSymptoms(null, Disease.CORONAVIRUS)),
-			noneOf(anyOfSymptoms(SymptomState.NO, Disease.CORONAVIRUS), anyOfSymptoms(SymptomState.YES, Disease.CORONAVIRUS)));
+			noneOf(anyOfSymptoms(SymptomState.NO, Disease.CORONAVIRUS)),
+			noneOf(suspect));
 
 		addCriteria(
 			Disease.CORONAVIRUS,

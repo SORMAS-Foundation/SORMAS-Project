@@ -49,6 +49,8 @@ public class SormasToSormasShareRequestDto extends EntityDto {
 	private List<SormasToSormasContactPreview> contacts;
 	@Valid
 	private List<SormasToSormasEventPreview> events;
+	@Valid
+	private List<SormasToSormasEventParticipantPreview> eventParticipants;
 
 	public ShareRequestDataType getDataType() {
 		return dataType;
@@ -96,6 +98,14 @@ public class SormasToSormasShareRequestDto extends EntityDto {
 
 	public void setEvents(List<SormasToSormasEventPreview> events) {
 		this.events = events;
+	}
+
+	public List<SormasToSormasEventParticipantPreview> getEventParticipants() {
+		return eventParticipants;
+	}
+
+	public void setEventParticipants(List<SormasToSormasEventParticipantPreview> eventParticipants) {
+		this.eventParticipants = eventParticipants;
 	}
 
 	public void setRejected() {

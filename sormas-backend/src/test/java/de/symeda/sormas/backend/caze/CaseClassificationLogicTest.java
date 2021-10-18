@@ -1060,7 +1060,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testNotFulfilledReferenceDefinitionGermanServerSymptoms() {
+	public void testFulfilledReferenceDefinitionGermanServerUnknownSymptoms1() {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
 		CaseDataDto caze = buildSuspectCase(Disease.CORONAVIRUS);
 		caze.getSymptoms().setCough(null);
@@ -1068,7 +1068,61 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		caze = getCaseFacade().saveCase(caze);
 		createSampleTestsForAllTestTypesExcept(caze, Disease.CORONAVIRUS, PathogenTestType.ISOLATION);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
-		assertEquals(CaseReferenceDefinition.NOT_FULFILLED, caze.getCaseReferenceDefinition());
+		assertEquals(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS, caze.getCaseClassification());
+		assertEquals(CaseReferenceDefinition.FULFILLED, caze.getCaseReferenceDefinition());
+	}
+
+	@Test
+	public void testFulfilledReferenceDefinitionGermanServerUnknownSymptoms2() {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
+		CaseDataDto caze = buildSuspectCase(Disease.CORONAVIRUS);
+		caze.getSymptoms().setCough(SymptomState.UNKNOWN);
+		caze.getSymptoms().setChillsSweats(SymptomState.YES);
+		caze = getCaseFacade().saveCase(caze);
+		createSampleTestsForAllTestTypesExcept(caze, Disease.CORONAVIRUS, PathogenTestType.ISOLATION);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS, caze.getCaseClassification());
+		assertEquals(CaseReferenceDefinition.FULFILLED, caze.getCaseReferenceDefinition());
+	}
+
+	@Test
+	public void testFulfilledReferenceDefinitionGermanServerUnknownSymptoms3() {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
+		CaseDataDto caze = buildSuspectCase(Disease.CORONAVIRUS);
+		caze.getSymptoms().setCough(null);
+		caze.getSymptoms().setChillsSweats(SymptomState.YES);
+		caze.getSymptoms().setOxygenSaturationLower94(SymptomState.UNKNOWN);
+		caze = getCaseFacade().saveCase(caze);
+		createSampleTestsForAllTestTypesExcept(caze, Disease.CORONAVIRUS, PathogenTestType.ISOLATION);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS, caze.getCaseClassification());
+		assertEquals(CaseReferenceDefinition.FULFILLED, caze.getCaseReferenceDefinition());
+	}
+
+	@Test
+	public void testFulfilledReferenceDefinitionGermanServerNoSymptoms1() {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
+		CaseDataDto caze = buildSuspectCase(Disease.CORONAVIRUS);
+		caze.getSymptoms().setCough(null);
+		caze.getSymptoms().setChillsSweats(SymptomState.NO);
+		caze = getCaseFacade().saveCase(caze);
+		createSampleTestsForAllTestTypesExcept(caze, Disease.CORONAVIRUS, PathogenTestType.ISOLATION);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED_NO_SYMPTOMS, caze.getCaseClassification());
+		assertEquals(CaseReferenceDefinition.FULFILLED, caze.getCaseReferenceDefinition());
+	}
+
+	@Test
+	public void testFulfilledReferenceDefinitionGermanServerNoSymptoms2() {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
+		CaseDataDto caze = buildSuspectCase(Disease.CORONAVIRUS);
+		caze.getSymptoms().setCough(SymptomState.NO);
+		caze.getSymptoms().setChillsSweats(SymptomState.YES);
+		caze = getCaseFacade().saveCase(caze);
+		createSampleTestsForAllTestTypesExcept(caze, Disease.CORONAVIRUS, PathogenTestType.ISOLATION);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED_NO_SYMPTOMS, caze.getCaseClassification());
+		assertEquals(CaseReferenceDefinition.FULFILLED, caze.getCaseReferenceDefinition());
 	}
 
 	@Test

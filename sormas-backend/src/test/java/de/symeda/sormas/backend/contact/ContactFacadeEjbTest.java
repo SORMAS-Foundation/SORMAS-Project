@@ -526,7 +526,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		// "mainUser" is the user which executes the grid query
 		UserDto mainUser = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		when(MockProducer.getPrincipal().getName()).thenReturn("SurvSup");
+		loginWith(mainUser);
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
@@ -587,7 +587,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			"Surv2",
 			"Sup2",
 			UserRole.SURVEILLANCE_SUPERVISOR);
-		when(MockProducer.getPrincipal().getName()).thenReturn("Surv2Sup2");
+		loginWith(user2);
 
 		// 4) contact created by different user, jurisdiction same with main user, no case linked
 		PersonDto contactPersonSameJurisdictionDiffUserNoCase = creator.createPerson("contactSameJurisdictionDiffUserNoCase", "Person4");
@@ -634,7 +634,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		// includeContactsFromOtherJurisdictionsFilter = false - return 1, 3, 4, 6
 		// includeContactsFromOtherJurisdictionsFilter = true - return 1, 2, 3, 4, 6
-		when(MockProducer.getPrincipal().getName()).thenReturn("SurvSup");
+		loginWith(mainUser);
 		ContactCriteria gridContactCriteria = new ContactCriteria();
 		List<ContactIndexDto> contactList = getContactFacade().getIndexList(gridContactCriteria, 0, 100, null);
 		List<String> contactListUuids = new ArrayList<>();

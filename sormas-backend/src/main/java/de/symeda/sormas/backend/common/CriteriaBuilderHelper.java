@@ -92,13 +92,13 @@ public class CriteriaBuilderHelper {
 		return filter;
 	}
 
-	public static Predicate andInValues(Collection<String> values, Predicate filter, CriteriaBuilder cb, Path<Object> path) {
+	public static Predicate andInValues(Collection<?> values, Predicate filter, CriteriaBuilder cb, Path<Object> path) {
 		if (CollectionUtils.isEmpty(values)) {
 			return filter;
 		}
 
 		Predicate or = null;
-		for (List<String> batch : ListUtils.partition(new ArrayList<>(values), ModelConstants.PARAMETER_LIMIT)) {
+		for (List<?> batch : ListUtils.partition(new ArrayList<>(values), ModelConstants.PARAMETER_LIMIT)) {
 			if (CollectionUtils.isNotEmpty(batch)) {
 				or = CriteriaBuilderHelper.or(cb, or, cb.in(path).value(batch));
 			}
