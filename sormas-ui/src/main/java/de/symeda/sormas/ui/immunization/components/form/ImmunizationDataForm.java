@@ -37,10 +37,10 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.util.converter.Converter;
-import com.vaadin.v7.data.util.converter.StringToIntegerConverter;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -51,6 +51,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -75,6 +76,7 @@ import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.NumberValidator;
 import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.vaccination.VaccinationsField;
@@ -215,8 +217,8 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		getContent().addComponent(vaccinationHeadingLabel, VACCINATION_HEADING_LOC);
 		vaccinationHeadingLabel.setVisible(shouldShowVaccinationFields(meansOfImmunizationValue));
 
-		TextField numberOfDosesField = addField(ImmunizationDto.NUMBER_OF_DOSES, TextField.class);
-		numberOfDosesField.setConverter(new StringToIntegerConverter());
+		Field numberOfDosesField = addField(ImmunizationDto.NUMBER_OF_DOSES);
+		numberOfDosesField.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10, false));
 		numberOfDosesField.setVisible(shouldShowVaccinationFields(meansOfImmunizationValue));
 
 		VaccinationsField vaccinationsField = addField(ImmunizationDto.VACCINATIONS, VaccinationsField.class);
@@ -284,8 +286,12 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		});
 
 		meansOfImmunizationField.addValueChangeListener(valueChangeEvent -> {
+			MeansOfImmunization meansOfImmunization = (MeansOfImmunization) valueChangeEvent.getProperty().getValue();
+
+			boolean isVaccinationVisible = shouldShowVaccinationFields(meansOfImmunization);
+			boolean isRecoveryVisible = shouldShowRecoveryFields(meansOfImmunization);
+
 			if (!ignoreMeansOfImmunizationChange) {
-				MeansOfImmunization meansOfImmunization = (MeansOfImmunization) valueChangeEvent.getProperty().getValue();
 				if (MeansOfImmunization.RECOVERY.equals(meansOfImmunization) || MeansOfImmunization.OTHER.equals(meansOfImmunization)) {
 					managementStatusField.setValue(ImmunizationManagementStatus.COMPLETED);
 					if (CollectionUtils.isNotEmpty(vaccinationsField.getValue())) {
@@ -302,6 +308,9 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 									protected void onConfirm() {
 										vaccinationsField.clear();
 										previousMeansOfImmunization = meansOfImmunization;
+										if (!isVaccinationVisible) {
+											numberOfDosesField.setValue(null);
+										}
 										questionWindow.close();
 									}
 
@@ -326,17 +335,13 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 				} else {
 					previousMeansOfImmunization = meansOfImmunization;
 				}
-				boolean isVaccinationVisible = shouldShowVaccinationFields(meansOfImmunization);
-				vaccinationHeadingLabel.setVisible(isVaccinationVisible);
-				numberOfDosesField.setVisible(isVaccinationVisible);
-				if (!isVaccinationVisible) {
-					numberOfDosesField.setValue(null);
-				}
-				boolean isRecoveryVisible = shouldShowRecoveryFields(meansOfImmunization);
-				recoveryHeadingLabel.setVisible(isRecoveryVisible);
-				positiveTestResultDate.setVisible(isRecoveryVisible);
-				recoveryDate.setVisible(isRecoveryVisible);
 			}
+			vaccinationHeadingLabel.setVisible(isVaccinationVisible);
+			numberOfDosesField.setVisible(isVaccinationVisible);
+
+			recoveryHeadingLabel.setVisible(isRecoveryVisible);
+			positiveTestResultDate.setVisible(isRecoveryVisible);
+			recoveryDate.setVisible(isRecoveryVisible);
 		});
 
 		managementStatusField.addValueChangeListener(valueChangeEvent -> {

@@ -20,14 +20,13 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
 import org.junit.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
@@ -35,6 +34,7 @@ import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
 
 public class SormasToSormasEncryptionServiceTest extends SormasToSormasFacadeTest {
 
@@ -51,10 +51,11 @@ public class SormasToSormasEncryptionServiceTest extends SormasToSormasFacadeTes
 			dto.setClassificationUser(officer);
 		});
 
-		List<SormasToSormasCaseDto> bodyToEncrypt = new ArrayList<>();
+		SormasToSormasDto bodyToEncrypt = new SormasToSormasDto();
 		SormasToSormasOriginInfoDto s2sOriginInfo = new SormasToSormasOriginInfoDto();
 		s2sOriginInfo.setComment("Test comment");
-		bodyToEncrypt.add(new SormasToSormasCaseDto(person, caze, s2sOriginInfo));
+		bodyToEncrypt.setOriginInfo(s2sOriginInfo);
+		bodyToEncrypt.setCases(Collections.singletonList(new SormasToSormasCaseDto(person, caze)));
 
 		mockS2Snetwork();
 
@@ -68,16 +69,16 @@ public class SormasToSormasEncryptionServiceTest extends SormasToSormasFacadeTes
 
 		// decrypt
 		mockSecondServerAccess();
-		SormasToSormasCaseDto[] decryptedBody = getSormasToSormasEncryptionFacade().decryptAndVerify(encryptedBody, SormasToSormasCaseDto[].class);
+		SormasToSormasDto decryptedBody = getSormasToSormasEncryptionFacade().decryptAndVerify(encryptedBody, SormasToSormasDto.class);
 		mockDefaultServerAccess();
 
-		assertThat(decryptedBody.length, is(1));
-		SormasToSormasCaseDto decryptedCase = decryptedBody[0];
+		assertThat(decryptedBody.getCases().size(), is(1));
+		SormasToSormasCaseDto decryptedCase = decryptedBody.getCases().get(0);
 		assertThat(decryptedCase.getPerson().getFirstName(), is("FirstName"));
 		assertThat(decryptedCase.getPerson().getLastName(), is("LastName"));
-		assertThat(decryptedCase.getOriginInfo().getComment(), is("Test comment"));
-		assertThat(decryptedCase.getSamples(), is(nullValue()));
-		assertThat(decryptedCase.getAssociatedContacts(), is(nullValue()));
+		assertThat(decryptedBody.getOriginInfo().getComment(), is("Test comment"));
+		assertThat(decryptedBody.getSamples(), is(nullValue()));
+		assertThat(decryptedBody.getContacts(), is(nullValue()));
 
 	}
 }

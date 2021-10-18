@@ -37,13 +37,10 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;

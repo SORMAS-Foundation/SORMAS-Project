@@ -13,10 +13,23 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.entities.contact;
+package de.symeda.sormas.api.sormastosormas;
 
-import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
-import de.symeda.sormas.backend.sormastosormas.entities.SyncDataDto;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class ContactSyncData extends SyncDataDto<SormasToSormasContactDto> {
+/**
+ * @author Alex Vidrean
+ * @since 07-Oct-21
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface S2SIgnoreProperty {
+
+	/**
+	 * Property from sormas.properties file populated trough {@link de.symeda.sormas.api.ConfigFacade}
+	 */
+	String configProperty();
 }
