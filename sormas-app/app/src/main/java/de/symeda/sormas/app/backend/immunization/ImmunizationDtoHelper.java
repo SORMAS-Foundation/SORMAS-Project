@@ -38,6 +38,7 @@ import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
+import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfoDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.backend.vaccination.Vaccination;
@@ -49,6 +50,7 @@ import retrofit2.Call;
 public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, ImmunizationDto> {
 
 	private VaccinationDtoHelper vaccinationDtoHelper = new VaccinationDtoHelper();
+	private SormasToSormasOriginInfoDtoHelper sormasToSormasOriginInfoDtoHelper = new SormasToSormasOriginInfoDtoHelper();
 
 	@Override
 	protected Class<Immunization> getAdoClass() {
@@ -116,6 +118,12 @@ public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, Immunizati
 			}
 		}
 		target.setVaccinations(vaccinations);
+
+		target.setSormasToSormasOriginInfo(
+				sormasToSormasOriginInfoDtoHelper.fillOrCreateFromDto(target.getSormasToSormasOriginInfo(), source.getSormasToSormasOriginInfo()));
+		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
@@ -189,6 +197,12 @@ public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, Immunizati
 			}
 		}
 		target.setVaccinations(vaccinationDtos);
+
+		if (source.getSormasToSormasOriginInfo() != null) {
+			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoDtoHelper.adoToDto(source.getSormasToSormasOriginInfo()));
+		}
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	public static ImmunizationReferenceDto toReferenceDto(Immunization ado) {
