@@ -422,6 +422,7 @@ public interface Strings {
 	String headingCreateNewVisit = "headingCreateNewVisit";
 	String headingCreatePathogenTestResult = "headingCreatePathogenTestResult";
 	String headingCreateSurveillanceReport = "headingCreateSurveillanceReport";
+	String headingCurrentHospitalization = "headingCurrentHospitalization";
 	String headingDatabaseExportFailed = "headingDatabaseExportFailed";
 	String headingDataImport = "headingDataImport";
 	String headingDearchiveCampaign = "headingDearchiveCampaign";
@@ -579,6 +580,7 @@ public interface Strings {
 	String headingPickOrCreatePathogenTest = "headingPickOrCreatePathogenTest";
 	String headingPickOrCreatePerson = "headingPickOrCreatePerson";
 	String headingPickOrCreateSample = "headingPickOrCreateSample";
+	String headingPlaceOfStayInHospital = "headingPlaceOfStayInHospital";
 	String headingPointOfEntryImport = "headingPointOfEntryImport";
 	String headingPointOfEntryInformation = "headingPointOfEntryInformation";
 	String headingPrescriptionsDeleted = "headingPrescriptionsDeleted";
@@ -739,6 +741,7 @@ public interface Strings {
 	String infoMergingHideDescription = "infoMergingHideDescription";
 	String infoMergingMergeDescription = "infoMergingMergeDescription";
 	String infoMergingPickDescription = "infoMergingPickDescription";
+	String infoMoreDetailsAboutHospitalization = "infoMoreDetailsAboutHospitalization";
 	String infoNoAdditionalTests = "infoNoAdditionalTests";
 	String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	String infoNoDiseaseSelected = "infoNoDiseaseSelected";
@@ -764,6 +767,7 @@ public interface Strings {
 	String infoPickOrCreatePathogenTest = "infoPickOrCreatePathogenTest";
 	String infoPickOrCreateSample = "infoPickOrCreateSample";
 	String infoPickOrCreateSuperordinateEventForEvent = "infoPickOrCreateSuperordinateEventForEvent";
+	String infoPlaceOfStayInHospital = "infoPlaceOfStayInHospital";
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	String infoPopulationDataView = "infoPopulationDataView";
 	String infoPopulationReferenceYear = "infoPopulationReferenceYear";
