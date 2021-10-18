@@ -46,6 +46,7 @@ import de.symeda.sormas.backend.labmessage.LabMessage;
 import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb.LabMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.labmessage.LabMessageService;
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 
 @Stateless(name = "SormasToSormasLabMessageFacade")
@@ -59,9 +60,10 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 	private LabMessageFacadeEjbLocal labMessageFacade;
 	@Inject
 	private SormasToSormasRestClient sormasToSormasRestClient;
-
 	@EJB
 	private SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb;
+	@EJB
+	private Sormas2SormasDataValidator dataValidator;
 
 	@Override
 	public void sendLabMessages(List<String> uuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
@@ -83,7 +85,7 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 		List<LabMessageDto> labMessagesToSave = new ArrayList<>(sharedLabMessages.length);
 
 		for (LabMessageDto labMessage : sharedLabMessages) {
-			ValidationErrors errors = validateSharedLabMessage(labMessage);
+			ValidationErrors errors = dataValidator.validateSharedLabMessage(labMessage);
 			if (errors.hasError()) {
 				errors.setGroup(buildLabMessageValidationGroupName(labMessage));
 				validationErrors.add(errors);
@@ -99,16 +101,6 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 		for (LabMessageDto labMessage : labMessagesToSave) {
 			handleValidationError(() -> labMessageFacade.save(labMessage), Captions.LabMessage, buildLabMessageValidationGroupName(labMessage));
 		}
-	}
-
-	private ValidationErrors validateSharedLabMessage(LabMessageDto labMessage) throws ValidationRuntimeException {
-		ValidationErrors errors = new ValidationErrors();
-
-		if (labMessageFacade.exists(labMessage.getUuid())) {
-			errors.add(new ValidationErrorGroup(Captions.LabMessage), new ValidationErrorMessage(Validations.sormasToSormasLabMessageExists));
-		}
-
-		return errors;
 	}
 
 	@LocalBean

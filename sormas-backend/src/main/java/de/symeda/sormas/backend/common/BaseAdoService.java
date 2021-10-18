@@ -243,7 +243,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	@Override
 	public Boolean exists(@NotNull String uuid) {
 
-		return exists((cb, root) -> cb.equal(root.get(AbstractDomainObject.UUID), uuid));
+		return exists((cb, root, cq) -> cb.equal(root.get(AbstractDomainObject.UUID), uuid));
 	}
 
 	@Override
@@ -273,7 +273,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		em.flush();
 	}
 
-	public Boolean exists(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
+	public Boolean exists(ExistsPredicateBuilder<ADO> filterBuilder) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -283,7 +283,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		final Subquery<ADO> subquery = query.subquery(getElementClass());
 		final Root<ADO> subRootEntity = subquery.from(getElementClass());
 		subquery.select(subRootEntity);
-		subquery.where(filterBuilder.apply(cb, subRootEntity));
+		subquery.where(filterBuilder.buildPredicate(cb, subRootEntity, query));
 
 		final Predicate exists = cb.exists(subquery);
 		final Expression<Boolean> trueExpression = cb.literal(true);
@@ -299,6 +299,11 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 			// h2 database entity manager throws "NoResultException" if the entity not found
 			return false;
 		}
+	}
+
+	public interface ExistsPredicateBuilder<ADO extends AbstractDomainObject> {
+
+		Predicate buildPredicate(CriteriaBuilder cb, Root<ADO> root, CriteriaQuery<?> cq);
 	}
 
 	public List<Long> getIdsByReferenceDtos(List<? extends ReferenceDto> references) {

@@ -1,22 +1,13 @@
 package de.symeda.sormas.app.immunization.read;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.databinding.ViewDataBinding;
-import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
 
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
-import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
-import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.component.dialog.AbstractDialog;
-import de.symeda.sormas.app.component.dialog.FormDialog;
 import de.symeda.sormas.app.databinding.DialogImmunizationSearchForCaseLayoutBinding;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
 
 public class ImmunizationSearchCaseDialog extends AbstractDialog {
@@ -41,15 +32,15 @@ public class ImmunizationSearchCaseDialog extends AbstractDialog {
 
 	@Override
 	protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
-		this.contentBinding.setSearchField("");
+		this.contentBinding.setSearchFieldContent("");
 	}
 
-	public static void searchCaseToLinkImmunization(FragmentActivity activity, Consumer<String> caseSearchCallback){
+	public static void searchCaseToLinkImmunization(FragmentActivity activity, Consumer<String> caseSearchCallback) {
 		final ImmunizationSearchCaseDialog searchCaseDialog = new ImmunizationSearchCaseDialog(activity);
 
-			searchCaseDialog.setPositiveCallback(() -> {
-				caseSearchCallback.accept(searchCaseDialog.contentBinding.searchField.getValue());
-			});
+		searchCaseDialog.setPositiveCallback(() -> {
+			caseSearchCallback.accept(searchCaseDialog.contentBinding.searchField.getValue());
+		});
 		searchCaseDialog.show();
 	}
 }

@@ -1,7 +1,7 @@
 package de.symeda.sormas.api.infrastructure;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 import javax.ejb.Remote;
@@ -17,7 +17,7 @@ import java.util.List;
  * @param <CRITERIA>
  */
 @Remote
-public interface GeoLocationFacade<DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, CRITERIA extends BaseCriteria>
+public interface GeoLocationFacade<DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, CRITERIA extends BaseCriteria>
 	extends InfrastructureBaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
 
 	List<REF_DTO> getReferencesByName(String name, boolean includeArchived);

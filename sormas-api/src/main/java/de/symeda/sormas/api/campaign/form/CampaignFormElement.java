@@ -1,8 +1,8 @@
 package de.symeda.sormas.api.campaign.form;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_SMALL;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -58,16 +58,16 @@ public class CampaignFormElement implements Serializable {
 		"h5",
 		"h6" };
 
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String type;
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String id;
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String caption;
-	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String expression;
 	private String[] styles;
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String dependingOn;
 	private String[] dependingOnValues;
 	private boolean important;

@@ -47,10 +47,14 @@ public class ContactApiService {
         .relationToCase("")
         .contactClassification("UNCONFIRMED")
         .followUpStatus("FOLLOW_UP")
-        .person(Person.builder().uuid(person.getUuid()).build())
+        .person(
+            Person.builder()
+                .uuid(person.getUuid())
+                .firstName(person.getFirstName())
+                .lastName(person.getLastName())
+                .build())
         .epiData(EpiData.builder().uuid(UUID.randomUUID().toString()).build())
         .healthConditions(HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
-        .vaccinationInfo(VaccinationInfo.builder().uuid(UUID.randomUUID().toString()).build())
         .relationToCase("SAME_HOUSEHOLD")
         .build();
   }

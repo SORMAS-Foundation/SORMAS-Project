@@ -38,10 +38,13 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
@@ -121,13 +124,13 @@ public class PersonDto extends PseudonymizableDto {
 	@Required
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String firstName;
 	@Outbreaks
 	@Required
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String lastName;
 	@HideForCountriesExcept
 	@PersonalData
@@ -135,33 +138,33 @@ public class PersonDto extends PseudonymizableDto {
 	private Salutation salutation;
 	@PersonalData
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherSalutation;
 	@PersonalData
 	@SensitiveData
 	@HideForCountriesExcept
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String birthName;
 	@PersonalData
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String nickname;
 	@PersonalData
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String mothersName;
 	@PersonalData
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String mothersMaidenName;
 	@PersonalData
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String fathersName;
 	@PersonalData
 	@SensitiveData
 	@HideForCountriesExcept
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String namesOfGuardians;
 	@Outbreaks
 	@Required
@@ -206,7 +209,7 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.CONGENITAL_RUBELLA })
 	@HideForCountries
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String placeOfBirthFacilityDetails;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
@@ -223,7 +226,7 @@ public class PersonDto extends PseudonymizableDto {
 	private CauseOfDeath causeOfDeath;
 	private Disease causeOfDeathDisease;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String causeOfDeathDetails;
 	@Diseases({
 		Disease.AFP,
@@ -245,7 +248,7 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String deathPlaceDescription;
 	@Diseases({
 		Disease.AFP,
@@ -269,7 +272,7 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String burialPlaceDescription;
 	@Diseases({
 		Disease.AFP,
@@ -289,21 +292,21 @@ public class PersonDto extends PseudonymizableDto {
 
 	private EducationType educationType;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String educationDetails;
 
 	private OccupationType occupationType;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String occupationDetails;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private ArmedForcesRelationType armedForcesRelationType;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String passportNumber;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String nationalHealthId;
 	@Valid
 	private List<LocationDto> addresses = new ArrayList<>();
@@ -320,12 +323,15 @@ public class PersonDto extends PseudonymizableDto {
 	private SymptomJournalStatus symptomJournalStatus;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalId;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalToken;
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String internalToken;
 
 	@HideForCountriesExcept
@@ -335,7 +341,8 @@ public class PersonDto extends PseudonymizableDto {
 	@SensitiveData
 	private CountryReferenceDto citizenship;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String additionalDetails;
 
 	@SuppressWarnings("serial")

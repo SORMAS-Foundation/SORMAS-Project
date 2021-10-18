@@ -2,7 +2,7 @@
 Feature: Case end to end tests
 
   Background: Create new case
-    Given I log in with the user
+    Given I log in with National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data

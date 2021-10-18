@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -91,6 +92,7 @@ import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
@@ -1111,7 +1113,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
-		target.setOwnershipHandedOver(source.getShareInfoSamples().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
 		return target;
 	}
@@ -1143,33 +1145,33 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (newSample.isShipped()
 			&& (existingSample == null || !existingSample.isShipped())
 			&& !StringUtils.equals(newSample.getLab().getUuid(), FacilityDto.OTHER_FACILITY_UUID)) {
-			List<User> messageRecipients = userService.getLabUsersOfLab(newSample.getLab());
+			try {
 
-			for (User recipient : messageRecipients) {
-				try {
-					String messageContent = null;
+				messagingService.sendMessages(() -> {
+					final String messageContent;
 					if (newSample.getAssociatedCase() != null) {
 						messageContent = String.format(
-							I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT),
+							I18nProperties.getString(MessageContents.CONTENT_LAB_SAMPLE_SHIPPED_SHORT),
 							DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid()));
 					} else if (newSample.getAssociatedContact() != null) {
 						messageContent = String.format(
-							I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_CONTACT),
+							I18nProperties.getString(MessageContents.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_CONTACT),
 							DataHelper.getShortUuid(newSample.getAssociatedContact().getUuid()));
 					} else if (newSample.getAssociatedEventParticipant() != null) {
 						messageContent = String.format(
-							I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_EVENT_PARTICIPANT),
+							I18nProperties.getString(MessageContents.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_EVENT_PARTICIPANT),
 							DataHelper.getShortUuid(newSample.getAssociatedEventParticipant().getUuid()));
+					} else {
+						messageContent = null;
 					}
-					messagingService.sendMessage(recipient, MessageSubject.LAB_SAMPLE_SHIPPED, messageContent, MessageType.EMAIL, MessageType.SMS);
+					final Map<User, String> mapToReturn = new HashMap<>();
+					userService.getLabUsersOfLab(newSample.getLab()).forEach(user -> mapToReturn.put(user, messageContent));
+					return mapToReturn;
+				}, MessageSubject.LAB_SAMPLE_SHIPPED, MessageType.EMAIL, MessageType.SMS);
 
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format(
-							"EmailDeliveryFailedException when trying to notify supervisors about " + "the shipment of a lab sample. "
-								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-							recipient.getUuid()));
-				}
+			} catch (NotificationDeliveryFailedException e) {
+				logger
+					.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about " + "the shipment of a lab sample."));
 			}
 		}
 	}

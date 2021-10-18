@@ -20,14 +20,14 @@ public abstract class InfrastructureDataReferenceDto extends ReferenceDto implem
 	private static final long serialVersionUID = -3451269378082767059L;
 	private String externalId;
 
-	public InfrastructureDataReferenceDto() {
+	protected InfrastructureDataReferenceDto() {
 	}
 
-	public InfrastructureDataReferenceDto(String uuid) {
+	protected InfrastructureDataReferenceDto(String uuid) {
 		super(uuid);
 	}
 
-	public InfrastructureDataReferenceDto(String uuid, String caption, String externalId) {
+	protected InfrastructureDataReferenceDto(String uuid, String caption, String externalId) {
 		super(uuid, caption);
 		this.externalId = externalId;
 	}

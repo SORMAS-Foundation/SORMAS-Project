@@ -15,16 +15,15 @@
 
 package de.symeda.sormas.app.sample.read;
 
-import static android.view.View.GONE;
+import android.os.Bundle;
+import android.view.View;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
-import android.os.Bundle;
-import android.view.View;
-
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -38,6 +37,8 @@ import de.symeda.sormas.app.backend.sample.AdditionalTest;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.databinding.FragmentSampleReadLayoutBinding;
+
+import static android.view.View.GONE;
 
 public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayoutBinding, Sample, Sample> {
 
@@ -82,7 +83,8 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
 		}
 
 		// Most recent additional tests layout
-		if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+		if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
+			&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.ADDITIONAL_TESTS)) {
 			if (!record.isReceived()
 				|| record.getSpecimenCondition() != SpecimenCondition.ADEQUATE
 				|| !record.getAdditionalTestingRequested()
@@ -104,7 +106,8 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
 	protected void prepareFragmentData(Bundle savedInstanceState) {
 		record = getActivityRootData();
 		mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(record);
-		if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+		if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
+			&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.ADDITIONAL_TESTS)) {
 			mostRecentAdditionalTests = DatabaseHelper.getAdditionalTestDao().queryMostRecentBySample(record);
 		}
 		if (!StringUtils.isEmpty(record.getReferredToUuid())) {
@@ -119,7 +122,8 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
 			}
 		}
 
-		if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+		if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
+			&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.ADDITIONAL_TESTS)) {
 			for (AdditionalTestType additionalTest : record.getRequestedAdditionalTests()) {
 				requestedAdditionalTests.add(additionalTest.toString());
 			}
@@ -151,7 +155,8 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
 			contentBinding.sampleRequestedOtherPathogenTests.setVisibility(GONE);
 		}
 
-		if (!ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+		if (!ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
+			&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.ADDITIONAL_TESTS)) {
 			contentBinding.additionalTestingLayout.setVisibility(GONE);
 		} else {
 			if (!requestedAdditionalTests.isEmpty()) {

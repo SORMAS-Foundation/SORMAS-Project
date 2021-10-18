@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 
@@ -56,6 +56,7 @@ public class PathogenTest extends CoreAdo {
 	public static final String SAMPLE = "sample";
 	public static final String TESTED_DISEASE = "testedDisease";
 	public static final String TESTED_DISEASE_VARIANT = "testedDiseaseVariant";
+	public static final String TESTED_DISEASE_VARIANT_DETAILS = "testedDiseaseVariantDetails";
 	public static final String TYPING_ID = "typingId";
 	public static final String TEST_TYPE = "testType";
 	public static final String PCR_TEST_SPECIFICATION = "pcrTestSpecification";
@@ -77,6 +78,7 @@ public class PathogenTest extends CoreAdo {
 	@Convert(converter = DiseaseVariantConverter.class)
 	private DiseaseVariant testedDiseaseVariant;
 	private String testedDiseaseDetails;
+	private String testedDiseaseVariantDetails;
 	private String typingId;
 	private PathogenTestType testType;
 	private PCRTestSpecification pcrTestSpecification;
@@ -93,6 +95,7 @@ public class PathogenTest extends CoreAdo {
 	private Float cqValue;
 	private Date reportDate;
 	private boolean viaLims;
+	private String externalId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
@@ -113,13 +116,22 @@ public class PathogenTest extends CoreAdo {
 		this.testedDisease = testedDisease;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestedDiseaseDetails() {
 		return testedDiseaseDetails;
 	}
 
 	public void setTestedDiseaseDetails(String testedDiseaseDetails) {
 		this.testedDiseaseDetails = testedDiseaseDetails;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getTestedDiseaseVariantDetails() {
+		return testedDiseaseVariantDetails;
+	}
+
+	public void setTestedDiseaseVariantDetails(String testedDiseaseVariantDetails) {
+		this.testedDiseaseVariantDetails = testedDiseaseVariantDetails;
 	}
 
 	@Column
@@ -160,7 +172,7 @@ public class PathogenTest extends CoreAdo {
 		this.pcrTestSpecification = pcrTestSpecification;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestTypeText() {
 		return testTypeText;
 	}
@@ -189,7 +201,7 @@ public class PathogenTest extends CoreAdo {
 		this.lab = lab;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getLabDetails() {
 		return labDetails;
 	}
@@ -218,7 +230,7 @@ public class PathogenTest extends CoreAdo {
 		this.testResult = testResult;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getTestResultText() {
 		return testResultText;
 	}
@@ -245,7 +257,7 @@ public class PathogenTest extends CoreAdo {
 		this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSerotype() {
 		return serotype;
 	}
@@ -279,6 +291,15 @@ public class PathogenTest extends CoreAdo {
 
 	public void setViaLims(boolean viaLims) {
 		this.viaLims = viaLims;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 
 	public PathogenTestReferenceDto toReference() {

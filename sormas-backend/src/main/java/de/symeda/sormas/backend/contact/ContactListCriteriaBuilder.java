@@ -72,6 +72,7 @@ public class ContactListCriteriaBuilder {
 
 		return Arrays.asList(
 			contact.get(Contact.UUID),
+			joins.getPerson().get(Person.UUID),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			joins.getCaze().get(Case.UUID),

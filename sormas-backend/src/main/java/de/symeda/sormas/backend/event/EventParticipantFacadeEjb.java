@@ -68,7 +68,6 @@ import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -91,6 +90,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
@@ -109,11 +109,6 @@ import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.person.PersonFacadeEjb;
-import de.symeda.sormas.backend.person.PersonQueryContext;
-import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -294,45 +289,41 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 
 	private void notifyEventResponsibleUsersOfCommonEventParticipant(EventParticipant eventParticipant, Event event) {
-		if (!featureConfigurationFacade.isFeatureEnabled(FeatureType.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS_NOTIFICATIONS)) {
-			return;
-		}
+		try {
+			messagingService.sendMessages(() -> {
 
-		Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
-		Map<String, Optional<User>> responsibleUserByEventUuid =
-			eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
-				eventParticipant.getPerson().getUuid(),
-				event.getDisease(),
-				fromDate);
-		if (responsibleUserByEventUuid.size() == 1 && responsibleUserByEventUuid.containsKey(event.getUuid())) {
-			// it means the event participant is only appearing into the current event
-			return;
-		}
-
-		for (Map.Entry<String, Optional<User>> entry : responsibleUserByEventUuid.entrySet()) {
-			entry.getValue().filter(user -> StringUtils.isNotEmpty(user.getUserEmail())).ifPresent(user -> {
-				try {
-					messagingService.sendMessage(
-						user,
-						MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
-						String.format(
-							I18nProperties.getString(MessagingService.CONTENT_EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS),
-							DataHelper.getShortUuid(eventParticipant.getPerson().getUuid()),
-							DataHelper.getShortUuid(eventParticipant.getUuid()),
-							DataHelper.getShortUuid(event.getUuid()),
-							User.buildCaptionForNotification(event.getResponsibleUser()),
-							User.buildCaptionForNotification(userService.getCurrentUser()),
-							buildEventListContentForNotification(responsibleUserByEventUuid)),
-						MessageType.EMAIL,
-						MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format(
-							"NotificationDeliveryFailedException when trying to notify event responsible user about a newly created EventPartipant related to other events. "
-								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-							user.getUuid()));
+				final Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
+				final Map<String, Optional<User>> responsibleUserByEventUuid =
+					eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
+						eventParticipant.getPerson().getUuid(),
+						event.getDisease(),
+						fromDate);
+				if (responsibleUserByEventUuid.size() == 1 && responsibleUserByEventUuid.containsKey(event.getUuid())) {
+					// it means the event participant is only appearing into the current event
+					return new HashMap<>();
 				}
-			});
+
+				final Map<User, String> mapToReturn = new HashMap<>();
+				for (Map.Entry<String, Optional<User>> entry : responsibleUserByEventUuid.entrySet()) {
+					entry.getValue().filter(user -> StringUtils.isNotEmpty(user.getUserEmail())).ifPresent(user -> {
+						mapToReturn.put(
+							user,
+							String.format(
+								I18nProperties.getString(MessageContents.CONTENT_EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS),
+								DataHelper.getShortUuid(eventParticipant.getPerson().getUuid()),
+								DataHelper.getShortUuid(eventParticipant.getUuid()),
+								DataHelper.getShortUuid(event.getUuid()),
+								User.buildCaptionForNotification(event.getResponsibleUser()),
+								User.buildCaptionForNotification(userService.getCurrentUser()),
+								buildEventListContentForNotification(responsibleUserByEventUuid)));
+					});
+				}
+				return mapToReturn;
+			}, MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS, MessageType.EMAIL, MessageType.SMS);
+		} catch (NotificationDeliveryFailedException e) {
+			logger.error(
+				String.format(
+					"NotificationDeliveryFailedException when trying to notify event responsible user about a newly created EventParticipant related to other events."));
 		}
 	}
 
@@ -954,7 +945,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		target.setVaccinationStatus(source.getVaccinationStatus());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
-		target.setOwnershipHandedOver(source.getShareInfoEventParticipants().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
 		return target;
 	}

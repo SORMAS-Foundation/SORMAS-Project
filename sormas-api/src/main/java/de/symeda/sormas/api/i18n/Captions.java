@@ -90,6 +90,7 @@ public interface Captions {
 	String actionResetEnumCache = "actionResetEnumCache";
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
+	String actionSaveAndOpenHospitalization = "actionSaveAndOpenHospitalization";
 	String actionSaveChanges = "actionSaveChanges";
 	String actionSearch = "actionSearch";
 	String actionSelectAll = "actionSelectAll";
@@ -273,6 +274,7 @@ public interface Captions {
 	String CaseData_contactTracingFirstContactType = "CaseData.contactTracingFirstContactType";
 	String CaseData_dengueFeverType = "CaseData.dengueFeverType";
 	String CaseData_differentPlaceOfStayJurisdiction = "CaseData.differentPlaceOfStayJurisdiction";
+	String CaseData_differentPointOfEntryJurisdiction = "CaseData.differentPointOfEntryJurisdiction";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
 	String CaseData_diseaseVariant = "CaseData.diseaseVariant";
 	String CaseData_district = "CaseData.district";
@@ -326,10 +328,13 @@ public interface Captions {
 	String CaseData_person = "CaseData.person";
 	String CaseData_personFirstName = "CaseData.personFirstName";
 	String CaseData_personLastName = "CaseData.personLastName";
+	String CaseData_personUuid = "CaseData.personUuid";
 	String CaseData_plagueType = "CaseData.plagueType";
 	String CaseData_pointOfEntry = "CaseData.pointOfEntry";
 	String CaseData_pointOfEntryDetails = "CaseData.pointOfEntryDetails";
+	String CaseData_pointOfEntryDistrict = "CaseData.pointOfEntryDistrict";
 	String CaseData_pointOfEntryName = "CaseData.pointOfEntryName";
+	String CaseData_pointOfEntryRegion = "CaseData.pointOfEntryRegion";
 	String CaseData_portHealthInfo = "CaseData.portHealthInfo";
 	String CaseData_postpartum = "CaseData.postpartum";
 	String CaseData_pregnant = "CaseData.pregnant";
@@ -598,6 +603,7 @@ public interface Captions {
 	String Contact_numberOfVisits = "Contact.numberOfVisits";
 	String Contact_overwriteFollowUpUntil = "Contact.overwriteFollowUpUntil";
 	String Contact_person = "Contact.person";
+	String Contact_personUuid = "Contact.personUuid";
 	String Contact_prohibitionToWork = "Contact.prohibitionToWork";
 	String Contact_prohibitionToWorkFrom = "Contact.prohibitionToWorkFrom";
 	String Contact_prohibitionToWorkUntil = "Contact.prohibitionToWorkUntil";
@@ -913,6 +919,7 @@ public interface Captions {
 	String DiseaseBurden_eventCount = "DiseaseBurden.eventCount";
 	String DiseaseBurden_outbreakDistrictCount = "DiseaseBurden.outbreakDistrictCount";
 	String DiseaseBurden_previousCaseCount = "DiseaseBurden.previousCaseCount";
+	String diseaseVariantDetails = "diseaseVariantDetails";
 	String district = "district";
 	String District_archived = "District.archived";
 	String District_epidCode = "District.epidCode";
@@ -1275,6 +1282,7 @@ public interface Captions {
 	String HealthConditions_otherConditions = "HealthConditions.otherConditions";
 	String HealthConditions_sickleCellDisease = "HealthConditions.sickleCellDisease";
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
+	String Immunization = "Immunization";
 	String Immunization_additionalDetails = "Immunization.additionalDetails";
 	String Immunization_ageAndBirthDate = "Immunization.ageAndBirthDate";
 	String Immunization_country = "Immunization.country";
@@ -1486,6 +1494,7 @@ public interface Captions {
 	String passportNumber = "passportNumber";
 	String PathogenTest = "PathogenTest";
 	String PathogenTest_cqValue = "PathogenTest.cqValue";
+	String PathogenTest_externalId = "PathogenTest.externalId";
 	String PathogenTest_fourFoldIncreaseAntibodyTiter = "PathogenTest.fourFoldIncreaseAntibodyTiter";
 	String PathogenTest_lab = "PathogenTest.lab";
 	String PathogenTest_labDetails = "PathogenTest.labDetails";
@@ -1496,6 +1505,7 @@ public interface Captions {
 	String PathogenTest_testedDisease = "PathogenTest.testedDisease";
 	String PathogenTest_testedDiseaseDetails = "PathogenTest.testedDiseaseDetails";
 	String PathogenTest_testedDiseaseVariant = "PathogenTest.testedDiseaseVariant";
+	String PathogenTest_testedDiseaseVariantDetails = "PathogenTest.testedDiseaseVariantDetails";
 	String PathogenTest_testResult = "PathogenTest.testResult";
 	String PathogenTest_testResultText = "PathogenTest.testResultText";
 	String PathogenTest_testResultVerified = "PathogenTest.testResultVerified";
@@ -1840,6 +1850,7 @@ public interface Captions {
 	String sormasToSormasErrorDialogTitle = "sormasToSormasErrorDialogTitle";
 	String sormasToSormasEventNotShared = "sormasToSormasEventNotShared";
 	String sormasToSormasEventParticipantNotShared = "sormasToSormasEventParticipantNotShared";
+	String sormasToSormasImmunizationNotShared = "sormasToSormasImmunizationNotShared";
 	String sormasToSormasListTitle = "sormasToSormasListTitle";
 	String SormasToSormasOptions_comment = "SormasToSormasOptions.comment";
 	String SormasToSormasOptions_handOverOwnership = "SormasToSormasOptions.handOverOwnership";
@@ -1848,7 +1859,9 @@ public interface Captions {
 	String SormasToSormasOptions_pseudonymizeSensitiveData = "SormasToSormasOptions.pseudonymizeSensitiveData";
 	String SormasToSormasOptions_withAssociatedContacts = "SormasToSormasOptions.withAssociatedContacts";
 	String SormasToSormasOptions_withEventParticipants = "SormasToSormasOptions.withEventParticipants";
+	String SormasToSormasOptions_withImmunizations = "SormasToSormasOptions.withImmunizations";
 	String SormasToSormasOptions_withSamples = "SormasToSormasOptions.withSamples";
+	String sormasToSormasOriginInfo = "sormasToSormasOriginInfo";
 	String sormasToSormasOwnedBy = "sormasToSormasOwnedBy";
 	String SormasToSormasPerson_address = "SormasToSormasPerson.address";
 	String SormasToSormasPerson_birthdDate = "SormasToSormasPerson.birthdDate";

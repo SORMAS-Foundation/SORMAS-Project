@@ -24,11 +24,11 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -41,6 +41,7 @@ public class TravelEntry extends CoreAdo {
 	public static final String TABLE_NAME = "travelentry";
 
 	public static final String PERSON = "person";
+	public static final String PERSON_ID = "personId";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String ARCHIVED = "archived";
@@ -55,6 +56,7 @@ public class TravelEntry extends CoreAdo {
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 	public static final String RESULTING_CASE = "resultingCase";
+	public static final String RESULTING_CASE_ID = "resultingCaseId";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String RECOVERED = "recovered";
 	public static final String VACCINATED = "vaccinated";
@@ -69,6 +71,7 @@ public class TravelEntry extends CoreAdo {
 	private Disease disease;
 	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
+	private String diseaseVariantDetails;
 	private Region responsibleRegion;
 	private District responsibleDistrict;
 	private Community responsibleCommunity;
@@ -100,6 +103,18 @@ public class TravelEntry extends CoreAdo {
 	private boolean quarantineReduced;
 	private boolean quarantineOfficialOrderSent;
 	private Date quarantineOfficialOrderSentDate;
+
+	private Long personId;
+	private Long resultingCaseId;
+
+	@Column(name = "person_id", updatable = false, insertable = false)
+	public Long getPersonId() {
+		return personId;
+	}
+
+	public void setPersonId(Long personId) {
+		this.personId = personId;
+	}
 
 	@ManyToOne()
 	@JoinColumn(nullable = false)
@@ -178,6 +193,15 @@ public class TravelEntry extends CoreAdo {
 		this.diseaseVariant = diseaseVariant;
 	}
 
+	@Column(columnDefinition = "text")
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
+	}
+
 	@ManyToOne()
 	public Region getResponsibleRegion() {
 		return responsibleRegion;
@@ -239,6 +263,15 @@ public class TravelEntry extends CoreAdo {
 
 	public void setPointOfEntryDetails(String pointOfEntryDetails) {
 		this.pointOfEntryDetails = pointOfEntryDetails;
+	}
+
+	@Column(name = "resultingcase_id", updatable = false, insertable = false)
+	public Long getResultingCaseId() {
+		return resultingCaseId;
+	}
+
+	public void setResultingCaseId(Long resultingCaseId) {
+		this.resultingCaseId = resultingCaseId;
 	}
 
 	@ManyToOne()

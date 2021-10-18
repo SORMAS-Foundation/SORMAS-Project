@@ -17,7 +17,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
 @Stateless
 @LocalBean
-public class ContinentService extends AbstractInfrastructureAdoService<Continent> {
+public class ContinentService extends AbstractInfrastructureAdoService<Continent, ContinentCriteria> {
 
 	public ContinentService() {
 		super(Continent.class);

@@ -1349,8 +1349,8 @@ public class DevModeView extends AbstractConfigurationView {
 						caze.setReportingUser(UserProvider.getCurrent().getUserReference());
 						caze.setReportDate(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 						caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
-						caze.setRegion(config.getRegion());
-						caze.setDistrict(config.getDistrict());
+						caze.setResponsibleRegion(config.getRegion());
+						caze.setResponsibleDistrict(config.getDistrict());
 						FacilityIndexDto facility = random(healthFacilities);
 						caze.setHealthFacility(facility.toReference());
 						caze.setFacilityType(facility.getType());

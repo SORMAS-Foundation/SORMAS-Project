@@ -54,6 +54,7 @@ public class ContactDirectorySteps implements En {
                   + "/sormas-ui/#!contacts/data/"
                   + apiState.getCreatedContact().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CONTACT_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
         });
 
     When(
@@ -91,7 +92,7 @@ public class ContactDirectorySteps implements En {
     Then(
         "I check that number of displayed contact results is (\\d+)",
         (Integer number) ->
-            assertHelpers.assertWithPoll15Second(
+            assertHelpers.assertWithPoll20Second(
                 () ->
                     Truth.assertThat(
                             webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS))

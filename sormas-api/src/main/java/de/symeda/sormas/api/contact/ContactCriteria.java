@@ -43,7 +43,7 @@ import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public static final String DISEASE_VARIANT = "diseaseVariant";
-	public static final String NAME_UUID_CASE_LIKE = "nameUuidCaseLike";
+	public static final String CONTACT_OR_CASE_LIKE = "contactOrCaseLike";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -72,6 +72,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE = "onlyContactsSharingEventWithSourceCase";
 	public static final String ONLY_CONTACTS_FROM_OTHER_INSTANCES = "onlyContactsFromOtherInstances";
 	public static final String REPORTING_USER_LIKE = "reportingUserLike";
+	public static final String PERSON_LIKE = "personLike";
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -107,7 +108,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Date lastContactDateFrom;
 	private Date lastContactDateTo;
 	private Boolean deleted = Boolean.FALSE;
-	private String nameUuidCaseLike;
+	private String contactOrCaseLike;
 	private EntityRelevanceStatus relevanceStatus;
 	private Boolean onlyHighPriorityContacts;
 	private ContactCategory contactCategory;
@@ -136,6 +137,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Date creationDateFrom;
 	private Date creationDateTo;
 	private String reportingUserLike;
+	private String personLike;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -400,13 +402,13 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	/**
 	 * returns all entries that match ALL of the passed words
 	 */
-	public void setNameUuidCaseLike(String nameUuidCaseLike) {
-		this.nameUuidCaseLike = nameUuidCaseLike;
+	public void setContactOrCaseLike(String contactOrCaseLike) {
+		this.contactOrCaseLike = contactOrCaseLike;
 	}
 
 	@IgnoreForUrl
-	public String getNameUuidCaseLike() {
-		return nameUuidCaseLike;
+	public String getContactOrCaseLike() {
+		return contactOrCaseLike;
 	}
 
 	public Boolean getOnlyHighPriorityContacts() {
@@ -595,6 +597,11 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.includeContactsFromOtherJurisdictions = includeContactsFromOtherJurisdictions;
 	}
 
+	public ContactCriteria includeContactsFromOtherJurisdictions(Boolean includeContactsFromOtherJurisdictions) {
+		this.includeContactsFromOtherJurisdictions = includeContactsFromOtherJurisdictions;
+		return this;
+	}
+
 	public void setEventParticipant(EventParticipantReferenceDto eventParticipant) {
 		this.eventParticipant = eventParticipant;
 	}
@@ -692,5 +699,13 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public void setFollowUpVisitsInterval(Integer followUpVisitsInterval) {
 		this.followUpVisitsInterval = followUpVisitsInterval;
+	}
+
+	public String getPersonLike() {
+		return personLike;
+	}
+
+	public void setPersonLike(String personLike) {
+		this.personLike = personLike;
 	}
 }

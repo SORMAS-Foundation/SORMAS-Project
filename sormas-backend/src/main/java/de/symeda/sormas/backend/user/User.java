@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -46,12 +46,12 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
-import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.location.Location;
 
 @Entity(name = User.TABLE_NAME)
 @Audited
@@ -115,7 +115,7 @@ public class User extends AbstractDomainObject {
 
 	private boolean hasConsentedToGdpr;
 
-	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
+	@Column(nullable = false, length = CHARACTER_LIMIT_DEFAULT)
 	public String getUserName() {
 		return userName;
 	}
@@ -154,7 +154,7 @@ public class User extends AbstractDomainObject {
 		this.active = active;
 	}
 
-	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
+	@Column(nullable = false, length = CHARACTER_LIMIT_DEFAULT)
 	public String getFirstName() {
 		return firstName;
 	}
@@ -163,7 +163,7 @@ public class User extends AbstractDomainObject {
 		this.firstName = firstName;
 	}
 
-	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
+	@Column(nullable = false, length = CHARACTER_LIMIT_DEFAULT)
 	public String getLastName() {
 		return lastName;
 	}

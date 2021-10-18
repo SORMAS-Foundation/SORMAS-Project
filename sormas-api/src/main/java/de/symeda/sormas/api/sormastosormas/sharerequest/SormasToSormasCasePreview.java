@@ -15,21 +15,10 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_UUID_MAX;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_UUID_MIN;
-
-import de.symeda.sormas.api.utils.EmbeddedPersonalData;
-import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
-import de.symeda.sormas.api.utils.PersonalData;
-import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
@@ -45,6 +34,12 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.FieldConstraints;
+import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class SormasToSormasCasePreview extends PseudonymizableDto implements HasUuid, Serializable {
 
@@ -73,7 +68,7 @@ public class SormasToSormasCasePreview extends PseudonymizableDto implements Has
 	private Date reportDate;
 	private Disease disease;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
 	private CaseClassification caseClassification;
@@ -92,23 +87,20 @@ public class SormasToSormasCasePreview extends PseudonymizableDto implements Has
 	private FacilityReferenceDto healthFacility;
 	@PersonalData
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
 	@PersonalData
 	@SensitiveData
 	private PointOfEntryReferenceDto pointOfEntry;
 	@PersonalData
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String pointOfEntryDetails;
 
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
 	@Valid
 	private SormasToSormasPersonPreview person;
-
-	@Valid
-	private List<SormasToSormasContactPreview> contacts;
 
 	public Date getReportDate() {
 		return reportDate;
@@ -244,13 +236,5 @@ public class SormasToSormasCasePreview extends PseudonymizableDto implements Has
 
 	public void setPerson(SormasToSormasPersonPreview person) {
 		this.person = person;
-	}
-
-	public List<SormasToSormasContactPreview> getContacts() {
-		return contacts;
-	}
-
-	public void setContacts(List<SormasToSormasContactPreview> contacts) {
-		this.contacts = contacts;
 	}
 }

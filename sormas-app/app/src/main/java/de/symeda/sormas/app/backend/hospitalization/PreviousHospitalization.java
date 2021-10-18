@@ -15,8 +15,8 @@
 
 package de.symeda.sormas.app.backend.hospitalization;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 
@@ -72,13 +72,13 @@ public class PreviousHospitalization extends PseudonymizableAdo {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility healthFacility;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String healthFacilityDetails;
 
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown isolated;
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	private String description;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)

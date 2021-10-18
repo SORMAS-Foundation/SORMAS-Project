@@ -33,16 +33,6 @@ public class LoginSteps implements En {
   public LoginSteps(
       WebDriverHelpers webDriverHelpers, @Named("ENVIRONMENT_URL") String environmentUrl) {
 
-    When(
-        "^I fill the username with ([^\"]*)$",
-        (String userName) ->
-            webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, userName));
-
-    When(
-        "^I fill the password with ([^\"]*)$",
-        (String password) ->
-            webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, password));
-
     Given(
         "^I am logged in with name ([^\"]*)$",
         (String name) ->
@@ -56,11 +46,12 @@ public class LoginSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON));
 
     And(
-        "I log in with the user",
+        "I log in with National User",
         () -> {
           webDriverHelpers.accessWebSite(environmentUrl);
-          webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, "NatUser");
-          webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, "NatUser38118");
+          webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, NATIONAL_USER.getUsername());
+          webDriverHelpers.fillInWebElement(
+              LoginPage.USER_PASSWORD_INPUT, NATIONAL_USER.getPassword());
           webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
           webDriverHelpers.waitForPageLoaded();
         });

@@ -32,18 +32,23 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
-public class ImmunizationDto extends PseudonymizableDto {
+public class ImmunizationDto extends PseudonymizableDto implements SormasToSormasEntityDto {
 
 	private static final long serialVersionUID = -6538566879882613529L;
 
@@ -84,7 +89,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 	@Required
 	private Disease disease;
 	@Outbreaks
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	@Required
 	@EmbeddedPersonalData
@@ -97,11 +102,12 @@ public class ImmunizationDto extends PseudonymizableDto {
 	private ImmunizationStatus immunizationStatus;
 	@Required
 	private MeansOfImmunization meansOfImmunization;
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	@SensitiveData(mandatoryField = true)
 	private String meansOfImmunizationDetails;
 	private ImmunizationManagementStatus immunizationManagementStatus;
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	@SensitiveData(mandatoryField = true)
 	private String externalId;
 
@@ -124,7 +130,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 	@Outbreaks
 	@PersonalData
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
 
 	private Date startDate;
@@ -133,7 +139,8 @@ public class ImmunizationDto extends PseudonymizableDto {
 	private YesNoUnknown previousInfection;
 
 	private Date lastInfectionDate;
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	@SensitiveData
 	private String additionalDetails;
 
@@ -146,6 +153,10 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	@Valid
 	private List<VaccinationDto> vaccinations = new ArrayList<>();
+
+	@Valid
+	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
+	private boolean ownershipHandedOver;
 
 	public static ImmunizationDto build(PersonReferenceDto person) {
 
@@ -402,4 +413,19 @@ public class ImmunizationDto extends PseudonymizableDto {
 		this.vaccinations = vaccinations;
 	}
 
+	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
+
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
+		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
+	}
+
+	public boolean isOwnershipHandedOver() {
+		return ownershipHandedOver;
+	}
+
+	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
+		this.ownershipHandedOver = ownershipHandedOver;
+	}
 }

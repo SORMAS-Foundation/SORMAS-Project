@@ -105,15 +105,11 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.location.LocationFacadeEjb;
-import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoEvent;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
@@ -654,6 +650,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_VARIANT),
 			event.get(Event.DISEASE_DETAILS),
+			event.get(Event.DISEASE_VARIANT_DETAILS),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
 			event.get(Event.EVOLUTION_DATE),
@@ -695,6 +692,8 @@ public class EventFacadeEjb implements EventFacade {
 			JurisdictionHelper.booleanSelector(cb, eventService.inJurisdictionOrOwned(eventQueryContext)),
 			event.get(Event.EVENT_MANAGEMENT_STATUS),
 			event.get(Event.EVENT_IDENTIFICATION_SOURCE));
+
+		cq.distinct(true);
 
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 
@@ -917,8 +916,7 @@ public class EventFacadeEjb implements EventFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Event> eventRoot = cq.from(Event.class);
-		Join<ShareInfoEvent, SormasToSormasShareInfo> sormasToSormasJoin =
-			eventRoot.join(Event.SHARE_INFO_EVENTS, JoinType.LEFT).join(ShareInfoEvent.SHARE_INFO, JoinType.LEFT);
+		Join<Event, SormasToSormasShareInfo> sormasToSormasJoin = eventRoot.join(Event.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT);
 
 		cq.select(eventRoot.get(Event.UUID));
 		cq.where(cb.and(eventRoot.get(Event.UUID).in(eventUuids), cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
@@ -1034,6 +1032,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setDisease(source.getDisease());
 		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
 		target.setResponsibleUser(UserFacadeEjb.toReferenceDto(source.getResponsibleUser()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
@@ -1058,7 +1057,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setInternalToken(source.getInternalToken());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
-		target.setOwnershipHandedOver(source.getShareInfoEvents().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
 		target.setEventIdentificationSource(source.getEventIdentificationSource());
 
@@ -1162,6 +1161,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setDisease(source.getDisease());
 		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
 		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
@@ -1241,7 +1241,7 @@ public class EventFacadeEjb implements EventFacade {
 	@Override
 	public boolean doesExternalTokenExist(String externalToken, String eventUuid) {
 		return eventService.exists(
-			(cb, eventRoot) -> CriteriaBuilderHelper.and(
+			(cb, eventRoot, cq) -> CriteriaBuilderHelper.and(
 				cb,
 				cb.equal(eventRoot.get(Event.EXTERNAL_TOKEN), externalToken),
 				cb.notEqual(eventRoot.get(Event.UUID), eventUuid),

@@ -20,6 +20,7 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
@@ -35,16 +36,16 @@ public class DocumentDto extends PseudonymizableDto {
 	@Required
 	private UserReferenceDto uploadingUser;
 	@Required
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
 	@Required
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String mimeType;
 	@Required
 	private long size;
 	@Required
 	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
-	@Size(min = COLUMN_LENGTH_UUID_MIN, max = COLUMN_LENGTH_UUID_MAX, message = Validations.textSizeNotInRange)
+	@Size(min = FieldConstraints.CHARACTER_LIMIT_UUID_MIN, max = FieldConstraints.CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
 	private String relatedEntityUuid;
 	@Required
 	private DocumentRelatedEntityType relatedEntityType;

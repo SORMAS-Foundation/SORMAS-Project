@@ -1,10 +1,9 @@
 package de.symeda.sormas.ui.person;
 
-import static de.symeda.sormas.ui.travelentry.travelentrylink.TravelEntryListComponent.TRAVEL_ENTRIES_LOC;
-
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.CustomLayout;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
@@ -12,6 +11,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
@@ -36,6 +36,7 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 	public static final String CASES_LOC = "cases";
 	public static final String CONTACTS_LOC = "contacts";
 	public static final String EVENT_PARTICIPANTS_LOC = "events";
+	public static final String TRAVEL_ENTRIES_LOC = "travelEntries";
 	public static final String IMMUNIZATION_LOC = "immunizations";
 
 	private CommitDiscardWrapperComponent<PersonEditForm> editComponent;
@@ -107,10 +108,18 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 			layout.addComponent(new SideComponentLayout(new EventParticipantListComponent(getReference())), EVENT_PARTICIPANTS_LOC);
 		}
 
-		TravelEntryListComponent.addTravelEntryListComponent(layout, getReference());
+		UserProvider currentUser = UserProvider.getCurrent();
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TRAVEL_ENTRIES)
+			&& currentUser != null
+			&& currentUser.hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
+			TravelEntryListCriteria travelEntryListCriteria = new TravelEntryListCriteria.Builder().withPerson(getReference()).build();
+			layout.addComponent(new SideComponentLayout(new TravelEntryListComponent(travelEntryListCriteria)), TRAVEL_ENTRIES_LOC);
+		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+			&& currentUser != null
+			&& currentUser.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
 			final ImmunizationListCriteria immunizationListCriteria = new ImmunizationListCriteria.Builder(getReference()).build();
 			layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
 		}

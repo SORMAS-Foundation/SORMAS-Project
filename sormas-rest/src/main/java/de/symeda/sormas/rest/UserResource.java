@@ -76,4 +76,10 @@ public class UserResource {
 		return FacadeProvider.getUserFacade().getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
+	@GET
+	@Path("/{uuid}")
+	public UserDto getByUuid(@PathParam("uuid") String uuid) {
+		return FacadeProvider.getUserFacade().getByUuid(uuid);
+	}
+
 }

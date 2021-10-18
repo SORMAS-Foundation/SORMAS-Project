@@ -22,6 +22,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class SormasToSormasShareInfoDto extends EntityDto {
 
@@ -33,9 +34,10 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 	private boolean withAssociatedContacts;
 	private boolean withSamples;
 	private boolean withEvenParticipants;
+	private boolean withImmunizations;
 	private boolean pseudonymizedPersonalData;
 	private boolean pseudonymizedSensitiveData;
-	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String comment;
 	private ShareRequestStatus requestStatus;
 
@@ -92,6 +94,14 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 
 	public void setWithEvenParticipants(boolean withEvenParticipants) {
 		this.withEvenParticipants = withEvenParticipants;
+	}
+
+	public boolean isWithImmunizations() {
+		return withImmunizations;
+	}
+
+	public void setWithImmunizations(boolean withImmunizations) {
+		this.withImmunizations = withImmunizations;
 	}
 
 	public boolean isPseudonymizedPersonalData() {

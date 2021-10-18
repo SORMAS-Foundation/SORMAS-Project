@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,7 +62,7 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoSample;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "samples")
@@ -108,6 +108,8 @@ public class Sample extends CoreAdo implements SormasToSormasEntity {
 	public static final String PATHOGENTESTS = "pathogenTests";
 	public static final String SAMPLING_REASON = "samplingReason";
 	public static final String SAMPLING_REASON_DETAILS = "samplingReasonDetails";
+	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 
 	private Case associatedCase;
 	private Contact associatedContact;
@@ -155,7 +157,7 @@ public class Sample extends CoreAdo implements SormasToSormasEntity {
 	private List<AdditionalTest> additionalTests;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
-	private List<ShareInfoSample> shareInfoSamples = new ArrayList<>(0);
+	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn
@@ -187,7 +189,7 @@ public class Sample extends CoreAdo implements SormasToSormasEntity {
 		this.associatedEventParticipant = associatedEventParticipant;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getLabSampleID() {
 		return labSampleID;
 	}
@@ -196,7 +198,7 @@ public class Sample extends CoreAdo implements SormasToSormasEntity {
 		this.labSampleID = labSampleID;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getFieldSampleID() {
 		return fieldSampleID;
 	}
@@ -245,7 +247,7 @@ public class Sample extends CoreAdo implements SormasToSormasEntity {
 		this.sampleMaterial = sampleMaterial;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSampleMaterialText() {
 		return sampleMaterialText;
 	}
@@ -274,7 +276,7 @@ public class Sample extends CoreAdo implements SormasToSormasEntity {
 		this.lab = lab;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getLabDetails() {
 		return labDetails;
 	}
@@ -292,7 +294,7 @@ public class Sample extends CoreAdo implements SormasToSormasEntity {
 		this.shipmentDate = shipmentDate;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getShipmentDetails() {
 		return shipmentDetails;
 	}
@@ -319,7 +321,7 @@ public class Sample extends CoreAdo implements SormasToSormasEntity {
 		this.specimenCondition = specimenCondition;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getNoTestPossibleReason() {
 		return noTestPossibleReason;
 	}
@@ -346,7 +348,7 @@ public class Sample extends CoreAdo implements SormasToSormasEntity {
 		this.additionalTests = additionalTests;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getComment() {
 		return comment;
 	}
@@ -508,7 +510,7 @@ public class Sample extends CoreAdo implements SormasToSormasEntity {
 		requestedAdditionalTests = null;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getRequestedOtherPathogenTests() {
 		return requestedOtherPathogenTests;
 	}
@@ -517,7 +519,7 @@ public class Sample extends CoreAdo implements SormasToSormasEntity {
 		this.requestedOtherPathogenTests = requestedOtherPathogenTests;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getRequestedOtherAdditionalTests() {
 		return requestedOtherAdditionalTests;
 	}
@@ -598,12 +600,13 @@ public class Sample extends CoreAdo implements SormasToSormasEntity {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
 
-	@OneToMany(mappedBy = ShareInfoSample.SAMPLE, fetch = FetchType.LAZY)
-	public List<ShareInfoSample> getShareInfoSamples() {
-		return shareInfoSamples;
+	@OneToMany(mappedBy = SormasToSormasShareInfo.SAMPLE, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
+		return sormasToSormasShares;
 	}
 
-	public void setShareInfoSamples(List<ShareInfoSample> shareInfoSamples) {
-		this.shareInfoSamples = shareInfoSamples;
+	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
+		this.sormasToSormasShares = sormasToSormasShares;
 	}
 }

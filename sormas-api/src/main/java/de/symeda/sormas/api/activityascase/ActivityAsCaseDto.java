@@ -35,6 +35,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -73,12 +74,12 @@ public class ActivityAsCaseDto extends PseudonymizableDto {
 	private Date startDate;
 	private Date endDate;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String description;
 	@Required
 	private ActivityAsCaseType activityAsCaseType;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String activityAsCaseTypeDetails;
 	@Valid
 	private LocationDto location;
@@ -88,17 +89,17 @@ public class ActivityAsCaseDto extends PseudonymizableDto {
 	// Type of Place
 	private TypeOfPlace typeOfPlace;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String typeOfPlaceDetails;
 	private MeansOfTransport meansOfTransport;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String meansOfTransportDetails;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String connectionNumber;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String seatNumber;
 
 	private WorkEnvironment workEnvironment;
@@ -106,13 +107,13 @@ public class ActivityAsCaseDto extends PseudonymizableDto {
 	// Exposure sub-types
 	private GatheringType gatheringType;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String gatheringDetails;
 	@HideForCountries
 	private HabitationType habitationType;
 	@HideForCountries
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String habitationDetails;
 
 	public static ActivityAsCaseDto build(ActivityAsCaseType activityAsCaseType) {

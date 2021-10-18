@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.caze.maternalhistory;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 
@@ -200,7 +200,7 @@ public class MaternalHistory extends AbstractDomainObject {
 		this.otherComplicationsMonth = otherComplicationsMonth;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getOtherComplicationsDetails() {
 		return otherComplicationsDetails;
 	}

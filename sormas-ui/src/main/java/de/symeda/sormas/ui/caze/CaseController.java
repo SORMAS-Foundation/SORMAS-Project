@@ -25,6 +25,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -73,18 +75,19 @@ import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
@@ -223,15 +226,12 @@ public class CaseController {
 			if (uuid == null) {
 				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null, null, false);
 				caseCreateComponent.addCommitListener(() -> {
-					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
-					updatedContact.setContactClassification(ContactClassification.CONFIRMED);
-					FacadeProvider.getContactFacade().saveContact(updatedContact);
-					if (updatedContact.getResultingCase() != null) {
-						String caseUuid = updatedContact.getResultingCase().getUuid();
+					if (contact.getResultingCase() != null) {
+						String caseUuid = contact.getResultingCase().getUuid();
 						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 						convertSamePersonContactsAndEventparticipants(
 							caze,
-							ContactLogic.getStartDate(updatedContact.getLastContactDate(), updatedContact.getReportDateTime()));
+							ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime()));
 					}
 				});
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
@@ -318,7 +318,7 @@ public class CaseController {
 
 			convertToCaseConfirmComponent.addCommitListener(() -> {
 				caze.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
-				saveCase(caze);
+				saveCase(caze, true);
 				setResultingCase(caze, matchingContacts, matchingEventParticipants);
 				SormasUI.refreshView();
 			});
@@ -356,7 +356,7 @@ public class CaseController {
 			if (!selectedContacts.isEmpty()) {
 				caze.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
 			}
-			saveCase(caze);
+			saveCase(caze, true);
 			setResultingCase(caze, selectedContacts, convertToCaseSelectionField.getSelectedEventParticipants());
 			SormasUI.refreshView();
 		});
@@ -458,7 +458,7 @@ public class CaseController {
 		return FacadeProvider.getCaseFacade().getCaseDataByUuid(uuid);
 	}
 
-	private void saveCase(CaseDataDto cazeDto) {
+	protected CaseDataDto saveCase(CaseDataDto cazeDto, boolean refreshUI) {
 
 		// Compare old and new case
 		CaseDataDto existingDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(cazeDto.getUuid());
@@ -491,7 +491,9 @@ public class CaseController {
 					} else {
 						Notification.show(I18nProperties.getString(Strings.messageCaseSaved), Type.WARNING_MESSAGE);
 					}
-					SormasUI.refreshView();
+					if (refreshUI) {
+						SormasUI.refreshView();
+					}
 				}
 			});
 		} else {
@@ -509,8 +511,11 @@ public class CaseController {
 			} else {
 				Notification.show(I18nProperties.getString(Strings.messageCaseSaved), Type.WARNING_MESSAGE);
 			}
-			SormasUI.refreshView();
+			if (refreshUI) {
+				SormasUI.refreshView();
+			}
 		}
+		return resultDto;
 	}
 
 	private void onCaseChanged(CaseDataDto existingCase, CaseDataDto changedCase) {
@@ -538,7 +543,7 @@ public class CaseController {
 			|| (convertedEventParticipant == null && convertedTravelEntry == null));
 		assert (unrelatedDisease == null || (convertedEventParticipant == null && convertedTravelEntry == null));
 
-		CaseCreateForm createForm = new CaseCreateForm();
+		CaseCreateForm createForm = new CaseCreateForm(convertedTravelEntry);
 
 		CaseDataDto caze;
 		PersonDto person;
@@ -645,7 +650,7 @@ public class CaseController {
 					transferDataToPerson(createForm, person);
 					FacadeProvider.getPersonFacade().savePerson(person);
 
-					saveCase(dto);
+					saveCase(dto, true);
 					// retrieve the contact just in case it has been changed during case saving
 					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(convertedContact.getUuid());
 					// automatically change the contact status to "converted"
@@ -662,7 +667,7 @@ public class CaseController {
 					selectOrCreateCase(dto, convertedEventParticipant.getPerson(), uuid -> {
 						if (uuid == null) {
 							dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
-							saveCase(dto);
+							saveCase(dto, true);
 							// retrieve the event participant just in case it has been changed during case saving
 							EventParticipantDto updatedEventParticipant =
 								FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(convertedEventParticipant.getUuid());
@@ -690,7 +695,7 @@ public class CaseController {
 					transferDataToPerson(createForm, person);
 					FacadeProvider.getPersonFacade().savePerson(person);
 
-					saveCase(dto);
+					saveCase(dto, true);
 
 					// retrieve the travel entry just in case it has been changed during case saving
 					TravelEntryDto updatedTravelEntry = FacadeProvider.getTravelEntryFacade().getByUuid(convertedTravelEntry.getUuid());
@@ -709,12 +714,12 @@ public class CaseController {
 						FacadeProvider.getPersonFacade().savePerson(personDto);
 						dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 						dto.setPerson(personDto.toReference());
-						saveCase(dto);
+						saveCase(dto, true);
 					} else {
 						transferDataToPerson(createForm, dbPerson);
 						FacadeProvider.getPersonFacade().savePerson(dbPerson);
 						dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
-						saveCase(dto);
+						saveCase(dto, true);
 					}
 				} else {
 					// look for potential duplicate
@@ -728,7 +733,7 @@ public class CaseController {
 								selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
 									if (uuid == null) {
 										dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
-										saveCase(dto);
+										saveCase(dto, true);
 										navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 									} else {
 										navigateToView(CaseDataView.VIEW_NAME, uuid, null);
@@ -855,7 +860,7 @@ public class CaseController {
 			if (cazeDto.getHealthFacility() != null && !cazeDto.getHealthFacility().getUuid().equals(oldCase.getHealthFacility().getUuid())) {
 				saveCaseWithFacilityChangedPrompt(cazeDto, oldCase);
 			} else {
-				saveCase(cazeDto);
+				saveCase(cazeDto, true);
 			}
 		});
 
@@ -1104,9 +1109,31 @@ public class CaseController {
 			hospitalizationForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
-			CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
+			final CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
+			final YesNoUnknown initialAdmittedToHealthFacility = cazeDto.getHospitalization().getAdmittedToHealthFacility();
 			cazeDto.setHospitalization(hospitalizationForm.getValue());
-			saveCase(cazeDto);
+			final CaseDataDto caseDataDto = saveCase(cazeDto, true);
+			final YesNoUnknown admittedToHealthFacility = caseDataDto.getHospitalization().getAdmittedToHealthFacility();
+			if (YesNoUnknown.YES == admittedToHealthFacility && initialAdmittedToHealthFacility != admittedToHealthFacility) {
+				PlaceOfStayEditForm placeOfStayEditForm = new PlaceOfStayEditForm(caze);
+				placeOfStayEditForm.setValue(caze);
+				final CommitDiscardWrapperComponent<PlaceOfStayEditForm> wrapperComponent = new CommitDiscardWrapperComponent<>(
+					placeOfStayEditForm,
+					UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
+					placeOfStayEditForm.getFieldGroup());
+				wrapperComponent.addCommitListener(() -> {
+					final CaseDataDto dto = placeOfStayEditForm.getValue();
+					caseDataDto.setRegion(dto.getRegion());
+					caseDataDto.setDistrict(dto.getDistrict());
+					caseDataDto.setCommunity(dto.getCommunity());
+					caseDataDto.setFacilityType(FacilityType.HOSPITAL);
+					caseDataDto.setHealthFacility(dto.getHealthFacility());
+					caseDataDto.setHealthFacilityDetails(dto.getHealthFacilityDetails());
+					FacadeProvider.getCaseFacade().saveCase(caseDataDto);
+					ControllerProvider.getCaseController().navigateToView(HospitalizationView.VIEW_NAME, caze.getUuid(), null);
+				});
+				VaadinUiUtil.showModalPopupWindow(wrapperComponent, I18nProperties.getString(Strings.headingPlaceOfStayInHospital));
+			}
 		});
 
 		return editView;
@@ -1125,7 +1152,7 @@ public class CaseController {
 		component.addCommitListener(() -> {
 			CaseDataDto caze1 = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 			caze1.setMaternalHistory(form.getValue());
-			saveCase(caze1);
+			saveCase(caze1, true);
 		});
 
 		return component;
@@ -1151,7 +1178,7 @@ public class CaseController {
 		component.addCommitListener(() -> {
 			CaseDataDto caze1 = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 			caze1.setPortHealthInfo(form.getValue());
-			saveCase(caze1);
+			saveCase(caze1, true);
 		});
 
 		return component;
@@ -1179,7 +1206,7 @@ public class CaseController {
 		editView.addCommitListener(() -> {
 			CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 			cazeDto.setSymptoms(symptomsForm.getValue());
-			saveCase(cazeDto);
+			saveCase(cazeDto, true);
 		});
 
 		return editView;
@@ -1199,7 +1226,7 @@ public class CaseController {
 		editView.addCommitListener(() -> {
 			CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 			cazeDto.setEpiData(epiDataForm.getValue());
-			saveCase(cazeDto);
+			saveCase(cazeDto, true);
 		});
 
 		return editView;
@@ -1217,7 +1244,7 @@ public class CaseController {
 			if (!form.getFieldGroup().isModified()) {
 				CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 				cazeDto.setClinicalCourse(form.getValue());
-				saveCase(cazeDto);
+				saveCase(cazeDto, true);
 			}
 		});
 
@@ -1234,7 +1261,41 @@ public class CaseController {
 			500,
 			e -> {
 				CaseLogic.handleHospitalization(caze, oldCase, e.booleanValue());
-				saveCase(caze);
+				CaseDataDto savedCaseDto = saveCase(caze, false);
+
+				if (FacilityType.HOSPITAL == caze.getFacilityType() && oldCase.getFacilityType() != FacilityType.HOSPITAL) {
+					CurrentHospitalizationForm currentHospitalizationForm = new CurrentHospitalizationForm();
+					currentHospitalizationForm.setValue(savedCaseDto.getHospitalization());
+					VaadinUiUtil.showThreeOptionsPopup(
+						I18nProperties.getString(Strings.headingCurrentHospitalization),
+						currentHospitalizationForm,
+						I18nProperties.getCaption(Captions.actionSaveAndOpenHospitalization),
+						I18nProperties.getCaption(Captions.actionSave),
+						I18nProperties.getCaption(Captions.actionDiscard),
+						500,
+						option -> {
+							final NullableOptionGroup admittedToHealthFacilityField = currentHospitalizationForm.getField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY);
+							switch (option) {
+								case OPTION1: {
+								savedCaseDto.getHospitalization().setAdmittedToHealthFacility((YesNoUnknown) admittedToHealthFacilityField.getNullableValue());
+								saveCase(savedCaseDto, true);
+								ControllerProvider.getCaseController().navigateToView(HospitalizationView.VIEW_NAME, caze.getUuid(), null);
+							}
+								break;
+							case OPTION2: {
+								savedCaseDto.getHospitalization().setAdmittedToHealthFacility((YesNoUnknown) admittedToHealthFacilityField.getNullableValue());
+								saveCase(savedCaseDto, true);
+								ControllerProvider.getCaseController().navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null);
+							}
+								break;
+							case OPTION3:
+								SormasUI.refreshView();
+								break;
+							}
+						});
+				} else {
+					SormasUI.refreshView();
+				}
 			});
 	}
 
