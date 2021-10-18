@@ -75,14 +75,7 @@ public class PlaceOfStayEditForm extends AbstractEditForm<CaseDataDto> {
 	public PlaceOfStayEditForm(CaseDataDto caseDataDto) {
 
 		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, false, null, null);
-
 		addFields();
-//		responsibleRegion.setValue(caseDataDto.getResponsibleRegion());
-//		responsibleDistrict.setValue(caseDataDto.getResponsibleDistrict());
-//		responsibleCommunity.setValue(caseDataDto.getResponsibleCommunity());
-//		responsibleRegion.setReadOnly(true);
-//		responsibleDistrict.setReadOnly(true);
-//		responsibleCommunity.setReadOnly(true);
 	}
 
 	@Override
