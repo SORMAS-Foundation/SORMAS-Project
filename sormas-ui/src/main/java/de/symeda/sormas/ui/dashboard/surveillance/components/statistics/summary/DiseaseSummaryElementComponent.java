@@ -15,12 +15,17 @@ public class DiseaseSummaryElementComponent extends HorizontalLayout {
 		setSpacing(false);
 
 		Label headingLabel = new Label(I18nProperties.getString(heading));
-		CssStyles.style(headingLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4);
+		headingLabel.addStyleNames(CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4);
 		addComponent(headingLabel);
 
 		totalLabel = new Label();
-		CssStyles
-			.style(totalLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_LEFT_3, CssStyles.VSPACE_TOP_5);
+		totalLabel.addStyleNames(
+			CssStyles.LABEL_PRIMARY,
+			CssStyles.LABEL_CAPTION_TRUNCATED,
+			CssStyles.LABEL_BOLD,
+			CssStyles.LABEL_LARGE,
+			CssStyles.HSPACE_LEFT_3,
+			CssStyles.VSPACE_TOP_5);
 		addComponent(totalLabel);
 	}
 
