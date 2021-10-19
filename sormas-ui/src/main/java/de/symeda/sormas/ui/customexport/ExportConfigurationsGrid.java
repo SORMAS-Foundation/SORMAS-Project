@@ -74,9 +74,9 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 	public void reload(boolean isPublic) {
 		List<ExportConfigurationDto> configs =
 			FacadeProvider.getExportFacade().getExportConfigurations(new ExportConfigurationCriteria().exportType(exportType), isPublic);
-		if(!configs.isEmpty()){
+		if (!configs.isEmpty()) {
 			setItems(configs);
-		}else {
+		} else {
 			setItems(new ExportConfigurationDto());
 		}
 
@@ -95,20 +95,15 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 		layout.setSpacing(true);
 
 		Button btnExport;
-		btnExport = ButtonHelper.createIconButtonWithCaption(
-			config.getUuid() + "-download",
-			null,
-			VaadinIcons.DOWNLOAD,
-			e -> {
-				if (config.getUuid()!=null){
-					exportCallback.accept(config);
-				}
-			},
-			ValoTheme.BUTTON_PRIMARY);
+		btnExport = ButtonHelper.createIconButtonWithCaption(config.getUuid() + "-download", null, VaadinIcons.DOWNLOAD, e -> {
+			if (config.getUuid() != null) {
+				exportCallback.accept(config);
+			}
+		}, ValoTheme.BUTTON_PRIMARY);
 		layout.addComponent(btnExport);
 
 		Button btnEdit = ButtonHelper.createIconButtonWithCaption(config.getUuid() + "-edit", null, VaadinIcons.EDIT, e -> {
-			if (config.getUuid()!=null){
+			if (config.getUuid() != null) {
 				ControllerProvider.getCustomExportController().openEditExportConfigurationWindow(this, config, availableProperties);
 			}
 		});
@@ -116,10 +111,10 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 		layout.addComponent(btnEdit);
 
 		Button btnDelete = ButtonHelper.createIconButtonWithCaption(config.getUuid() + "-delete", null, VaadinIcons.TRASH, e -> {
-			if(config.getUuid()!=null){
+			if (config.getUuid() != null) {
 				FacadeProvider.getExportFacade().deleteExportConfiguration(config.getUuid());
 				new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationDeleted), Type.WARNING_MESSAGE, false)
-						.show(Page.getCurrent());
+					.show(Page.getCurrent());
 				reload(false);
 			}
 		});
