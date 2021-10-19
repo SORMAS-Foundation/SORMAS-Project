@@ -33,7 +33,7 @@ public class DocumentResource {
 
 	@POST
 	@Path("/entityDocuments")
-	public Map<String, List<DocumentDto>> getDocumentRelatedToEntities(CriteriaWithSorting<DocumentCriteria> criteriaWithSorting) {
+	public Map<String, List<DocumentDto>> getDocumentsRelatedToEntities(CriteriaWithSorting<DocumentCriteria> criteriaWithSorting) {
 		return FacadeProvider.getDocumentFacade()
 			.getDocumentsRelatedToEntities(criteriaWithSorting.getCriteria(), criteriaWithSorting.getSortProperties());
 	}
