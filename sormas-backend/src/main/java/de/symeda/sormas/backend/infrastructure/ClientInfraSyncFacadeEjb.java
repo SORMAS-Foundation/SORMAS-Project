@@ -5,7 +5,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
-import de.symeda.sormas.api.infrastructure.InfrastructureSyncFacade;
+import de.symeda.sormas.api.infrastructure.ClientInfraSyncFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
 import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
@@ -27,8 +27,8 @@ import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEj
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 
-@Stateless(name = "InfrastructureSyncFacade")
-public class InfrastructureSyncFacadeEjb implements InfrastructureSyncFacade {
+@Stateless(name = "ClientInfraSyncFacadeEjb")
+public class ClientInfraSyncFacadeEjb implements ClientInfraSyncFacade {
 
 	@EJB
 	private ContinentFacadeEjb.ContinentFacadeEjbLocal continentFacade;
