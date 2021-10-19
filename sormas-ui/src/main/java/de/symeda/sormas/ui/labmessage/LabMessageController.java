@@ -14,7 +14,9 @@
  */
 package de.symeda.sormas.ui.labmessage;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 import javax.naming.CannotProceedException;
 import javax.naming.NamingException;
 
+import de.symeda.sormas.ui.samples.SampleController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +44,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
-import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
@@ -103,8 +104,6 @@ import de.symeda.sormas.ui.samples.SampleSelectionField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateTimeField;
-import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class LabMessageController {
@@ -667,52 +666,38 @@ public class LabMessageController {
 		SampleDto sampleDto,
 		LabMessageDto labMessageDto,
 		Window window) {
+		SampleController sampleController = ControllerProvider.getSampleController();
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
-			ControllerProvider.getSampleController().getSampleCreateComponent(sampleDto, (savedSampleDto, pathogenTestDto) -> {
+			sampleController.getSampleCreateComponent(sampleDto, (savedSampleDto, pathogenTestDto) -> {
 				finishProcessingLabMessage(labMessageDto, pathogenTestDto);
 			});
 
+		// including a pathogen test is not an option here, it is mandatory.
 		CheckBox includeTestCheckbox = sampleCreateComponent.getWrappedComponent().getField(Captions.sampleIncludeTestOnCreation);
-		includeTestCheckbox.setValue(Boolean.TRUE);
-		includeTestCheckbox.setEnabled(false);
+		includeTestCheckbox.setVisible(false);
 
-		CheckBox viaLimsCheckbox = sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.VIA_LIMS);
-		if (viaLimsCheckbox != null) {
-			viaLimsCheckbox.setValue(Boolean.TRUE);
-			viaLimsCheckbox.setEnabled(false);
-		}
-		// TODO currently just the first testReport is picked here. That must be temporary. Will be fixed with #5899
-		List<TestReportDto> testReportDtos = FacadeProvider.getTestReportFacade().getAllByLabMessage(labMessageDto.toReference());
-		if (!testReportDtos.isEmpty()) {
-			TestReportDto testReportDto = testReportDtos.get(0);
-			((TextField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.EXTERNAL_ID)).setValue(testReportDto.getExternalId());
-			((TextField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.EXTERNAL_ORDER_ID))
-				.setValue(testReportDto.getExternalOrderId());
-			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT)).setValue(testReportDto.getTestResult());
-			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(SampleDto.PATHOGEN_TEST_RESULT)).setValue(testReportDto.getTestResult());
-			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_TYPE)).setValue(testReportDto.getTestType());
-			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TESTED_DISEASE))
-				.setValue(labMessageDto.getTestedDisease());
-			((NullableOptionGroup) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT_VERIFIED))
-				.setValue(testReportDto.isTestResultVerified());
-			((DateTimeField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_DATE_TIME))
-				.setValue(testReportDto.getTestDateTime());
-			if (testReportDto.getTypingId() != null) {
-				Field typingIdField = sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TYPING_ID);
-				typingIdField.setValue(testReportDto.getTypingId());
-				typingIdField.setVisible(true);
-			}
-		}
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			((DateField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.REPORT_DATE))
-				.setValue(labMessageDto.getMessageDateTime());
+		// add pathogen test create components
+		//********************
+		List<PathogenTestDto> pathogenTests = buildPathogenTests(sampleDto, labMessageDto);
+		// the first pathogenTestCreateComponent must not be removable. It is expected to exist because the buildPathogenTests shall always return at least one.
+		CommitDiscardWrapperComponent pathogenTestCreateComponent =
+			sampleController.addPathogenTestCreateComponent(sampleCreateComponent, pathogenTests.get(0), false);
+		setViaLimsFieldCheckedAndDisabled(pathogenTestCreateComponent);
+		// all other pathogen test create components may be removed.
+		for (PathogenTestDto pathogenTest : pathogenTests.stream().skip(1).collect(Collectors.toList())) {
+			pathogenTestCreateComponent = sampleController.addPathogenTestCreateComponent(sampleCreateComponent, pathogenTest, true);
+			setViaLimsFieldCheckedAndDisabled(pathogenTestCreateComponent);
 		}
 
-		sampleCreateComponent.addCommitListener(() -> {
-			window.close();
-		});
+		sampleCreateComponent.addCommitListener(window::close);
 		sampleCreateComponent.addDiscardListener(window::close);
 		return sampleCreateComponent;
+	}
+
+	private void setViaLimsFieldCheckedAndDisabled(CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent) {
+		CheckBox viaLimsCheckbox = pathogenTestCreateComponent.getWrappedComponent().getField(PathogenTestDto.VIA_LIMS);
+		viaLimsCheckbox.setValue(Boolean.TRUE);
+		viaLimsCheckbox.setEnabled(false);
 	}
 
 	private void createPathogenTest(SampleDto sampleDto, LabMessageDto labMessageDto) {
@@ -741,7 +726,7 @@ public class LabMessageController {
 	private PathogenTestDto buildPathogenTest(SampleDto sampleDto, LabMessageDto labMessageDto) {
 		PathogenTestDto pathogenTestDto = PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser());
 
-		// TODO currently just the first testReport is picked here. That must be temporary. Will be fixed with #5899
+		// TODO this method has to be removed completely!
 		List<TestReportDto> testReportDtos = labMessageDto.getTestReports();
 		if (!testReportDtos.isEmpty()) {
 			TestReportDto testReportDto = testReportDtos.get(0);
@@ -758,6 +743,46 @@ public class LabMessageController {
 		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());
 		pathogenTestDto.setReportDate(labMessageDto.getMessageDateTime());
 		return pathogenTestDto;
+	}
+
+	private List<PathogenTestDto> buildPathogenTests(SampleDto sample, LabMessageDto labMessage) {
+		ArrayList pathogenTests = new ArrayList();
+		Disease disease = labMessage.getTestedDisease();
+		Date reportDate = null;
+
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			reportDate = labMessage.getMessageDateTime();
+		}
+		for (TestReportDto testReport : labMessage.getTestReports()) {
+			pathogenTests.add(buildPathogenTest(sample, testReport, disease, reportDate));
+		}
+		// always build at least one PathogenTestDto
+		if (pathogenTests.isEmpty()) {
+			pathogenTests.add(buildPathogenTest(sample, null, disease, reportDate));
+		}
+		return pathogenTests;
+	}
+
+	private PathogenTestDto buildPathogenTest(SampleDto sample, TestReportDto testReport, Disease testedDisease, Date reportDate) {
+		PathogenTestDto pathogenTest = PathogenTestDto.build(sample, UserProvider.getCurrent().getUser());
+		if (testReport != null) {
+			migrateAttributes(testReport, pathogenTest);
+		}
+		pathogenTest.setTestedDisease(testedDisease);
+
+		pathogenTest.setReportDate(reportDate);
+		return pathogenTest;
+	}
+
+	private void migrateAttributes(TestReportDto source, PathogenTestDto target) {
+		target.setTestResult(source.getTestResult());
+		target.setTestType(source.getTestType());
+		target.setTestResultVerified(source.isTestResultVerified());
+		target.setTestDateTime(source.getTestDateTime());
+		target.setTestResultText(source.getTestResultText());
+		target.setTypingId(source.getTypingId());
+		target.setExternalId(source.getExternalId());
+		target.setExternalOrderId(source.getExternalOrderId());
 	}
 
 	private CommitDiscardWrapperComponent<PathogenTestForm> getPathogenTestCreateComponent(

@@ -126,6 +126,49 @@ public class SampleController {
 		});
 	}
 
+	/**
+	 * 
+	 * @param sampleCreateComponent
+	 *            to add the pathogen test create component to.
+	 * @param pathogenTest
+	 *            the insert preset values. May be null.
+	 * @param removable
+	 *            if true, a button is shown to remove the pathogen test create component again from the sample create component.
+	 * @return the pathogen test create component added.
+	 */
+	public CommitDiscardWrapperComponent<PathogenTestForm> addPathogenTestCreateComponent(
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent,
+		PathogenTestDto pathogenTest,
+		boolean removable) {
+		PathogenTestController pathogenTestController = ControllerProvider.getPathogenTestController();
+		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
+			pathogenTestController.getPathogenTestCreateComponent(sampleCreateComponent.getWrappedComponent().getValue(), 0, () -> {
+			}, (pathogenTestDto, callback) -> {
+			});
+		// prefill fields
+		if (pathogenTest != null) {
+			pathogenTestCreateComponent.getWrappedComponent().setValue(pathogenTest);
+		}
+		// show typingId field when it has a preset value
+		if (pathogenTest.getTypingId() != null && !"".equals(pathogenTest.getTypingId())) {
+			pathogenTestCreateComponent.getWrappedComponent().getField(PathogenTestDto.TYPING_ID).setVisible(true);
+		} ;
+		// Discard button configuration
+		if (removable) {
+			pathogenTestCreateComponent.addDiscardListener(() -> {
+				sampleCreateComponent.removeComponent(pathogenTestCreateComponent);
+			});
+			pathogenTestCreateComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.pathogenTestRemove));
+		} else {
+			pathogenTestCreateComponent.getDiscardButton().setVisible(false);
+		}
+		// hide save button
+		pathogenTestCreateComponent.getCommitButton().setVisible(false);
+		// add the pathogenTestCreateComponent above the discard and commit buttons
+		sampleCreateComponent.addComponent(pathogenTestCreateComponent, sampleCreateComponent.getComponentCount() - 1);
+		return pathogenTestCreateComponent;
+	}
+
 	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, Runnable callback) {
 		return getSampleCreateComponent(sampleDto, (savedSampleDto, savedPathogenTestDto) -> {
 		}, callback);
