@@ -16,9 +16,12 @@ package de.symeda.sormas.api.document;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface DocumentFacade {
@@ -30,6 +33,8 @@ public interface DocumentFacade {
 	void deleteDocument(String uuid);
 
 	List<DocumentDto> getDocumentsRelatedToEntity(DocumentRelatedEntityType type, String uuid);
+
+	Map<String, List<DocumentDto>> getDocumentsRelatedToEntities(DocumentCriteria criteria, List<SortProperty> sortProperties);
 
 	String isExistingDocument(DocumentRelatedEntityType type, String uuid, String name);
 
