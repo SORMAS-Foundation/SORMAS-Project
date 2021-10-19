@@ -99,10 +99,10 @@ public class CentralInfraSyncFacade {
 
 		// find the newest change date in the received data
 		Date newestChangeDate = newDtos.stream().map(DTO::getChangeDate).max(Date::compareTo).orElse(lastSync);
+		logger.info("The newest change date is {}", newestChangeDate);
 
 		newDtos.forEach(facade::save);
 		return newestChangeDate;
-
 	}
 
 	public void syncAll() {
@@ -115,7 +115,6 @@ public class CentralInfraSyncFacade {
 			SystemEventDto currentSync = syncFacadeEjb.startSyncFor(SystemEventType.CENTRAL_SYNC_INFRA);
 			Date lastSync = syncFacadeEjb.findLastSyncDateFor(SystemEventType.CENTRAL_SYNC_INFRA);
 			Date[] latestChangeDates = {
-				loadAndStoreContinents(lastSync),
 				loadAndStoreContinents(lastSync),
 				loadAndStoreSubcontinents(lastSync),
 				loadAndStoreCountries(lastSync),
