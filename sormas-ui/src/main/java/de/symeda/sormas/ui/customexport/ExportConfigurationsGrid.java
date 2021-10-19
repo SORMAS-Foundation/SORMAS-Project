@@ -99,21 +99,29 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 			config.getUuid() + "-download",
 			null,
 			VaadinIcons.DOWNLOAD,
-			e -> exportCallback.accept(config),
+			e -> {
+				if (config.getUuid()!=null){
+					exportCallback.accept(config);
+				}
+			},
 			ValoTheme.BUTTON_PRIMARY);
 		layout.addComponent(btnExport);
 
 		Button btnEdit = ButtonHelper.createIconButtonWithCaption(config.getUuid() + "-edit", null, VaadinIcons.EDIT, e -> {
-			ControllerProvider.getCustomExportController().openEditExportConfigurationWindow(this, config, availableProperties);
+			if (config.getUuid()!=null){
+				ControllerProvider.getCustomExportController().openEditExportConfigurationWindow(this, config, availableProperties);
+			}
 		});
 		btnEdit.setEnabled(canEditOrDelete);
 		layout.addComponent(btnEdit);
 
 		Button btnDelete = ButtonHelper.createIconButtonWithCaption(config.getUuid() + "-delete", null, VaadinIcons.TRASH, e -> {
-			FacadeProvider.getExportFacade().deleteExportConfiguration(config.getUuid());
-			new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationDeleted), Type.WARNING_MESSAGE, false)
-				.show(Page.getCurrent());
-			reload(false);
+			if(config.getUuid()!=null){
+				FacadeProvider.getExportFacade().deleteExportConfiguration(config.getUuid());
+				new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationDeleted), Type.WARNING_MESSAGE, false)
+						.show(Page.getCurrent());
+				reload(false);
+			}
 		});
 		btnDelete.setEnabled(canEditOrDelete);
 		layout.addComponent(btnDelete);
