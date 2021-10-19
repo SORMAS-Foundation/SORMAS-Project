@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.caze.components.caseselection;
 
 import java.util.function.Consumer;
 
@@ -12,9 +12,10 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -22,16 +23,17 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
-public class CaseSelectionField extends CustomField<CaseIndexDto> {
+public class CaseSelectionField extends CustomField<CaseSelectionDto> {
 
-	protected CaseCriteria criteria;
+	private final Disease disease;
+
 	protected CaseSelectionGrid grid;
 	protected Consumer<Boolean> selectionChangeCallback;
 	protected VerticalLayout mainLayout;
 
-	public CaseSelectionField(CaseCriteria criteria) {
+	public CaseSelectionField(Disease disease) {
 
-		this.criteria = criteria;
+		this.disease = disease;
 
 		mainLayout = new VerticalLayout();
 		mainLayout.setSpacing(true);
@@ -54,9 +56,10 @@ public class CaseSelectionField extends CustomField<CaseIndexDto> {
 		filterLayout.addComponent(searchField);
 
 		Button searchButton = ButtonHelper.createButton(Captions.caseSearchCase, e -> {
+			CaseCriteria criteria = new CaseCriteria().disease(disease);
 			if (StringUtils.isNotEmpty(searchField.getValue()) && StringUtils.isNotEmpty(searchField.getValue().trim())) {
 				criteria.setSourceCaseInfoLike(searchField.getValue());
-				grid.setCases(FacadeProvider.getCaseFacade().getIndexList(criteria, null, null, null));
+				grid.setCases(FacadeProvider.getCaseFacade().getCaseSelectionList(criteria));
 			} else {
 				criteria.setSourceCaseInfoLike(null);
 				grid.clearCases();
@@ -80,8 +83,8 @@ public class CaseSelectionField extends CustomField<CaseIndexDto> {
 	}
 
 	@Override
-	public CaseIndexDto getValue() {
-		return (CaseIndexDto) grid.getSelectedRow();
+	public CaseSelectionDto getValue() {
+		return (CaseSelectionDto) grid.getSelectedRow();
 	}
 
 	@Override
@@ -95,7 +98,7 @@ public class CaseSelectionField extends CustomField<CaseIndexDto> {
 	}
 
 	@Override
-	protected void doSetValue(CaseIndexDto value) {
+	protected void doSetValue(CaseSelectionDto value) {
 		super.setValue(value);
 		grid.select(value);
 	}

@@ -51,8 +51,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -172,7 +172,7 @@ public class LabMessageController {
 					CaseSimilarityCriteria caseSimilarityCriteria = new CaseSimilarityCriteria();
 					caseSimilarityCriteria.caseCriteria(caseCriteria);
 					caseSimilarityCriteria.personUuid(selectedPerson.getUuid());
-					List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(caseSimilarityCriteria);
+					List<CaseSelectionDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(caseSimilarityCriteria);
 
 					ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
 					contactSimilarityCriteria.setPerson(selectedPerson);
@@ -235,7 +235,7 @@ public class LabMessageController {
 
 	private void pickOrCreateEntry(
 		LabMessageDto labMessageDto,
-		List<CaseIndexDto> cases,
+		List<CaseSelectionDto> cases,
 		List<SimilarContactDto> contacts,
 		List<SimilarEventParticipantDto> eventParticipants,
 		PersonDto person) {
