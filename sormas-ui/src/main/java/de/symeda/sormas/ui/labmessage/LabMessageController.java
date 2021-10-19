@@ -686,6 +686,8 @@ public class LabMessageController {
 		if (!testReportDtos.isEmpty()) {
 			TestReportDto testReportDto = testReportDtos.get(0);
 			((TextField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.EXTERNAL_ID)).setValue(testReportDto.getExternalId());
+			((TextField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.EXTERNAL_ORDER_ID))
+				.setValue(testReportDto.getExternalOrderId());
 			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT)).setValue(testReportDto.getTestResult());
 			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(SampleDto.PATHOGEN_TEST_RESULT)).setValue(testReportDto.getTestResult());
 			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_TYPE)).setValue(testReportDto.getTestType());
@@ -750,6 +752,7 @@ public class LabMessageController {
 			pathogenTestDto.setTestResultText(testReportDto.getTestResultText());
 			pathogenTestDto.setTypingId(testReportDto.getTypingId());
 			pathogenTestDto.setExternalId(testReportDto.getExternalId());
+			pathogenTestDto.setExternalOrderId(testReportDto.getExternalOrderId());
 		}
 
 		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());

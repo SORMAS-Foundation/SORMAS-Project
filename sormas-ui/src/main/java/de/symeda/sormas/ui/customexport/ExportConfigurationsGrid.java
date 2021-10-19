@@ -74,9 +74,9 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 	public void reload(boolean isPublic) {
 		List<ExportConfigurationDto> configs =
 			FacadeProvider.getExportFacade().getExportConfigurations(new ExportConfigurationCriteria().exportType(exportType), isPublic);
-		if(!configs.isEmpty()){
+		if (!configs.isEmpty()) {
 			setItems(configs);
-		}else {
+		} else {
 			setItems(new ExportConfigurationDto());
 		}
 
