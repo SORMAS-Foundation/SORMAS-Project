@@ -85,8 +85,6 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
-	private SystemEventFacadeEjb.SystemEventFacadeEjbLocal systemEventFacade;
-	@EJB
 	private SyncFacadeEjb.SyncFacadeEjbLocal syncFacadeEjb;
 
 	LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target, boolean checkChangeDate) {
@@ -307,12 +305,6 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		cq.orderBy(order);
 
 		return QueryHelper.getResultList(em, cq, first, max);
-	}
-
-	@Override
-	public boolean atLeastOneFetchExecuted() {
-		SystemEventDto latestSuccessEvent = systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES);
-		return latestSuccessEvent != null;
 	}
 
 	/**

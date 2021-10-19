@@ -16,4 +16,6 @@ public interface SyncFacade {
 	void reportSuccessfulSyncWithTimestamp(SystemEventDto systemEvent, Date syncDate);
 
 	void reportSyncErrorWithTimestamp(SystemEventDto sync, String errorMessage);
+
+    boolean atLeastOneSuccessfullSyncOf(SystemEventType type);
 }

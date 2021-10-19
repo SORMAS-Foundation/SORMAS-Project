@@ -89,6 +89,7 @@ import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoFaca
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
+import de.symeda.sormas.api.systemevents.sync.SyncFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
 import de.symeda.sormas.api.therapy.TherapyFacade;
@@ -467,6 +468,10 @@ public class FacadeProvider {
 
 	public static TestReportFacade getTestReportFacade() {
 		return get().lookupEjbRemote(TestReportFacade.class);
+	}
+
+	public static SyncFacade getSyncFacade() {
+		return get().lookupEjbRemote(SyncFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

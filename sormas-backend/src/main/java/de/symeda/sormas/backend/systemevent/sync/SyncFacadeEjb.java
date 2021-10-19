@@ -61,6 +61,12 @@ public class SyncFacadeEjb implements SyncFacade {
 		systemEventFacade.reportError(sync, errorMessage, new Date());
 	}
 
+	@Override
+	public boolean atLeastOneSuccessfullSyncOf(SystemEventType type) {
+		SystemEventDto latestSuccessEvent = systemEventFacade.getLatestSuccessByType(type);
+		return latestSuccessEvent != null;
+	}
+
 	private long determineLatestSuccessMillis(SystemEventDto latestSuccess) {
 		String info = latestSuccess.getAdditionalInfo();
 		if (info != null) {
