@@ -485,7 +485,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	private ChangeDateFilterBuilder addChangeDateFilter(ChangeDateFilterBuilder filterBuilder, From<?, Event> eventPath) {
 
-		filterBuilder.add(eventPath).add(eventPath, Event.EVENT_LOCATION).add(eventPath, Event.SHARE_INFO_EVENTS);
+		filterBuilder.add(eventPath)
+			.add(eventPath, Event.EVENT_LOCATION)
+			.add(eventPath, Event.SORMAS_TO_SORMAS_ORIGIN_INFO)
+			.add(eventPath, Event.SORMAS_TO_SORMAS_SHARES);
 
 		return filterBuilder;
 	}

@@ -129,6 +129,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		target.setVaccineType(source.getVaccineType());
 		target.setVaccineDose(source.getVaccineDose());
 		target.setVaccineInn(source.getVaccineInn());
+		target.setVaccineBatchNumber(source.getVaccineBatchNumber());
 		target.setVaccineUniiCode(source.getVaccineUniiCode());
 		target.setVaccineAtcCode(source.getVaccineAtcCode());
 		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
@@ -157,6 +158,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		dto.setVaccineType(entity.getVaccineType());
 		dto.setVaccineDose(entity.getVaccineDose());
 		dto.setVaccineInn(entity.getVaccineInn());
+		dto.setVaccineBatchNumber(entity.getVaccineBatchNumber());
 		dto.setVaccineUniiCode(entity.getVaccineUniiCode());
 		dto.setVaccineAtcCode(entity.getVaccineAtcCode());
 		dto.setVaccinationInfoSource(entity.getVaccinationInfoSource());

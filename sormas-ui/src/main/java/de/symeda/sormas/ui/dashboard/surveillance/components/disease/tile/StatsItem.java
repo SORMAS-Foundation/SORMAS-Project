@@ -46,16 +46,16 @@ public class StatsItem extends HorizontalLayout {
 		setSpacing(false);
 
 		Label nameLabel = new Label(I18nProperties.getCaption(builder.label));
-		CssStyles.style(nameLabel, CssStyles.LABEL_PRIMARY, builder.isCritical ? CssStyles.LABEL_CRITICAL : "", CssStyles.HSPACE_LEFT_3);
+		nameLabel.addStyleNames(CssStyles.LABEL_PRIMARY, builder.isCritical ? CssStyles.LABEL_CRITICAL : "", CssStyles.HSPACE_LEFT_3);
 		addComponent(nameLabel);
 		if (!builder.isSingleColumn) {
 			setExpandRatio(nameLabel, 1);
 		}
 
 		Label valueLabel = new Label(builder.value);
-		CssStyles.style(
-			valueLabel,
+		valueLabel.addStyleNames(
 			CssStyles.LABEL_PRIMARY,
+			CssStyles.LABEL_CAPTION_TRUNCATED,
 			builder.isCritical ? CssStyles.LABEL_CRITICAL : "",
 			builder.isSingleColumn ? CssStyles.HSPACE_LEFT_5 : CssStyles.ALIGN_CENTER);
 		addComponent(valueLabel);

@@ -15,36 +15,26 @@
 
 package de.symeda.sormas.backend.sormastosormas.share.shareinfo;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 
-@Entity
-@DiscriminatorValue("CASE")
-public class ShareInfoCase extends ShareInfoEntity {
+@Stateless
+@LocalBean
+public class ShareRequestInfoService extends AdoServiceWithUserFilter<ShareRequestInfo> {
 
-	private static final long serialVersionUID = 7389931026555830033L;
-
-	public static final String CAZE = "caze";
-
-	private Case caze;
-
-	public ShareInfoCase() {
+	public ShareRequestInfoService() {
+		super(ShareRequestInfo.class);
 	}
 
-	public ShareInfoCase(SormasToSormasShareInfo shareInfo, Case caze) {
-		super(shareInfo);
-		this.caze = caze;
-	}
-
-	@ManyToOne
-	public Case getCaze() {
-		return caze;
-	}
-
-	public void setCaze(Case caze) {
-		this.caze = caze;
+	@Override
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ShareRequestInfo> from) {
+		// no user filter needed right now
+		return null;
 	}
 }

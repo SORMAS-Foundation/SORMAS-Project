@@ -13,38 +13,27 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.share.shareinfo;
+package de.symeda.sormas.api.sormastosormas;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import java.io.Serializable;
 
-import de.symeda.sormas.backend.contact.Contact;
+import javax.validation.Valid;
 
-@Entity
-@DiscriminatorValue("CONTACT")
-public class ShareInfoContact extends ShareInfoEntity {
+public class SormasToSormasEntityDto<T> implements Serializable {
 
-	private static final long serialVersionUID = -4405499048071738561L;
+	private static final long serialVersionUID = -1142043326721172412L;
 
-	public static final String CONTACT = "contact";
+	@Valid
+	private T entity;
 
-	private Contact contact;
-
-	public ShareInfoContact() {
+	public SormasToSormasEntityDto() {
 	}
 
-	public ShareInfoContact(SormasToSormasShareInfo shareInfo, Contact contact) {
-		super(shareInfo);
-		this.contact = contact;
+	public SormasToSormasEntityDto(T entity) {
+		this.entity = entity;
 	}
 
-	@ManyToOne
-	public Contact getContact() {
-		return contact;
-	}
-
-	public void setContact(Contact contact) {
-		this.contact = contact;
+	public T getEntity() {
+		return entity;
 	}
 }

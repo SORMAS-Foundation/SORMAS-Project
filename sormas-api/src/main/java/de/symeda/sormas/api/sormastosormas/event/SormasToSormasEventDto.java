@@ -15,46 +15,17 @@
 
 package de.symeda.sormas.api.sormastosormas.event;
 
-import java.util.List;
-
-import javax.validation.Valid;
-
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 
-public class SormasToSormasEventDto extends SormasToSormasDto<EventDto> {
+public class SormasToSormasEventDto extends SormasToSormasEntityDto<EventDto> {
 
 	private static final long serialVersionUID = 5998850723108574369L;
-
-	@Valid
-	private List<EventParticipantDto> eventParticipants;
-
-	@Valid
-	private List<SormasToSormasSampleDto> samples;
 
 	public SormasToSormasEventDto() {
 	}
 
-	public SormasToSormasEventDto(EventDto data, SormasToSormasOriginInfoDto originInfo) {
-		super(data, originInfo);
-	}
-
-	public List<EventParticipantDto> getEventParticipants() {
-		return eventParticipants;
-	}
-
-	public void setEventParticipants(List<EventParticipantDto> eventParticipants) {
-		this.eventParticipants = eventParticipants;
-	}
-
-	public List<SormasToSormasSampleDto> getSamples() {
-		return samples;
-	}
-
-	public void setSamples(List<SormasToSormasSampleDto> samples) {
-		this.samples = samples;
+	public SormasToSormasEventDto(EventDto data) {
+		super(data);
 	}
 }

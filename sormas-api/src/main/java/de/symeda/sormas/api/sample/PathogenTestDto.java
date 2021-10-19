@@ -65,6 +65,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String REPORT_DATE = "reportDate";
 	public static final String VIA_LIMS = "viaLims";
 	public static final String EXTERNAL_ID = "externalId";
+	public static final String EXTERNAL_ORDER_ID = "externalOrderId";
 
 	@Required
 	private SampleReferenceDto sample;
@@ -113,6 +114,9 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalId;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String externalOrderId;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
@@ -323,5 +327,13 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
+	}
+
+	public String getExternalOrderId() {
+		return externalOrderId;
+	}
+
+	public void setExternalOrderId(String externalOrderId) {
+		this.externalOrderId = externalOrderId;
 	}
 }

@@ -1047,7 +1047,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public boolean doesExternalTokenExist(String externalToken, String personUuid) {
 		return personService.exists(
-			(cb, personRoot) -> CriteriaBuilderHelper
+			(cb, personRoot, cq) -> CriteriaBuilderHelper
 				.and(cb, cb.equal(personRoot.get(Person.EXTERNAL_TOKEN), externalToken), cb.notEqual(personRoot.get(Person.UUID), personUuid)));
 	}
 
@@ -1293,10 +1293,11 @@ public class PersonFacadeEjb implements PersonFacade {
 		final Root<Person> person = cq.from(Person.class);
 
 		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
-		((PersonJoins) personQueryContext.getJoins()).configure(criteria);
+		final PersonJoins personJoins = (PersonJoins) personQueryContext.getJoins();
+		personJoins.configure(criteria);
 
-		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
-		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
+		final Join<Person, Location> location = personJoins.getAddress();
+		final Join<Location, District> district = personJoins.getAddressJoins().getDistrict();
 
 		final Subquery<String> phoneSubQuery = cq.subquery(String.class);
 		final Root<PersonContactDetail> phoneRoot = phoneSubQuery.from(PersonContactDetail.class);

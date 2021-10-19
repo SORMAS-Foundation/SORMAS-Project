@@ -13,38 +13,19 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.share.shareinfo;
+package de.symeda.sormas.api.sormastosormas.event;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 
-import de.symeda.sormas.backend.event.Event;
+public class SormasToSormasEventParticipantDto extends SormasToSormasEntityDto<EventParticipantDto> {
 
-@Entity
-@DiscriminatorValue("EVENT")
-public class ShareInfoEvent extends ShareInfoEntity {
+	private static final long serialVersionUID = -3568483795717699454L;
 
-	private static final long serialVersionUID = -3233186010547248114L;
-
-	public static final String EVENT = "event";
-
-	private Event event;
-
-	public ShareInfoEvent() {
+	public SormasToSormasEventParticipantDto() {
 	}
 
-	public ShareInfoEvent(SormasToSormasShareInfo shareInfo, Event event) {
-		super(shareInfo);
-		this.event = event;
-	}
-
-	@ManyToOne
-	public Event getEvent() {
-		return event;
-	}
-
-	public void setEvent(Event event) {
-		this.event = event;
+	public SormasToSormasEventParticipantDto(EventParticipantDto entity) {
+		super(entity);
 	}
 }

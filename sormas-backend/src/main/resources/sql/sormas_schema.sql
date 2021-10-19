@@ -7957,7 +7957,32 @@ CREATE TEMP TABLE tmp_vaccinated_entities AS
     SELECT DISTINCT ON (person.id, cases.disease)
         person.id AS person_id, cases.disease, cases.reportdate AS reportdate, cases.diseasedetails, cases.reportinguser_id,
         cases.responsibleregion_id AS responsibleregion_id, cases.responsibledistrict_id AS responsibledistrict_id, cases.responsiblecommunity_id AS responsiblecommunity_id,
-        cases.firstvaccinationdate, cases.lastvaccinationdate, CAST(NULLIF(cases.vaccinationdoses, '') AS int) AS vaccinationdoses,
+        cases.firstvaccinationdate, cases.lastvaccinationdate,
+        CASE
+            WHEN
+                /* Valid numbers of doses are 1 to 10 */
+                cases.vaccinationdoses ~ '^(10|[1-9])$'
+            THEN
+                CAST(cases.vaccinationdoses AS int)
+            WHEN
+                /* If the number of doses is neither valid nor empty, we assume 1 dose */
+                (cases.vaccinationdoses IS NOT NULL AND cases.vaccinationdoses != '')
+            THEN
+            	1
+            ELSE
+                null
+            END
+            AS vaccinationdoses,
+        /* If the number of doses is not valid, save the value as vaccinationdoses_details */
+        CASE
+            WHEN
+                cases.vaccinationdoses ~ '^(10|[1-9])$'
+            THEN
+                null
+            ELSE
+                cases.vaccinationdoses
+            END
+            AS vaccinationdoses_details,
         CASE
             WHEN
                 (cases.vaccinename IS NOT NULL OR cases.vaccine IS NULL)
@@ -8017,7 +8042,32 @@ UNION
                 cases.responsiblecommunity_id
             END
                   AS responsiblecommunity_id,
-        vaccinationinfo.firstvaccinationdate, vaccinationinfo.lastvaccinationdate, CAST(NULLIF(vaccinationinfo.vaccinationdoses, '') AS int) AS vaccinationdoses,
+        vaccinationinfo.firstvaccinationdate, vaccinationinfo.lastvaccinationdate,
+        CASE
+            WHEN
+                /* Valid numbers of doses are 1 to 10 */
+                vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+            THEN
+                CAST(vaccinationinfo.vaccinationdoses AS int)
+            WHEN
+                /* If the number of doses is neither valid nor empty, we assume 1 dose */
+                (vaccinationinfo.vaccinationdoses IS NOT NULL AND vaccinationinfo.vaccinationdoses != '')
+            THEN
+            	1
+            ELSE
+                null
+            END
+            AS vaccinationdoses,
+        /* If the number of doses is not valid, save the value as vaccinationdoses_details */
+        CASE
+            WHEN
+                vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+            THEN
+                null
+            ELSE
+                vaccinationinfo.vaccinationdoses
+            END
+            AS vaccinationdoses_details,
         vaccinationinfo.vaccinename AS vaccinename, vaccinationinfo.othervaccinename AS othervaccinename, vaccinationinfo.vaccinemanufacturer,
         vaccinationinfo.othervaccinemanufacturer, vaccinationinfo.vaccinationinfosource, vaccinationinfo.vaccineinn, vaccinationinfo.vaccinebatchnumber,
         vaccinationinfo.vaccineuniicode, vaccinationinfo.vaccineatccode, null AS pregnant, null AS trimester, contact.healthconditions_id AS healthconditions_id,
@@ -8052,7 +8102,32 @@ UNION
             END
                   AS responsibledistrict_id,
         location.community_id AS responsiblecommunity, vaccinationinfo.firstvaccinationdate, vaccinationinfo.lastvaccinationdate,
-        CAST(NULLIF(vaccinationinfo.vaccinationdoses, '') AS int) AS vaccinationdoses, vaccinationinfo.vaccinename AS vaccinename, vaccinationinfo.othervaccinename AS othervaccinename,
+        CASE
+            WHEN
+                /* Valid numbers of doses are 1 to 10 */
+                vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+            THEN
+                CAST(vaccinationinfo.vaccinationdoses AS int)
+            WHEN
+                /* If the number of doses is neither valid nor empty, we assume 1 dose */
+                (vaccinationinfo.vaccinationdoses IS NOT NULL AND vaccinationinfo.vaccinationdoses != '')
+            THEN
+            	1
+            ELSE
+                null
+            END
+            AS vaccinationdoses,
+        /* If the number of doses is not valid, save the value as vaccinationdoses_details */
+        CASE
+            WHEN
+                vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+            THEN
+                null
+            ELSE
+                vaccinationinfo.vaccinationdoses
+            END
+            AS vaccinationdoses_details,
+        vaccinationinfo.vaccinename AS vaccinename, vaccinationinfo.othervaccinename AS othervaccinename,
         vaccinationinfo.vaccinemanufacturer, vaccinationinfo.othervaccinemanufacturer, vaccinationinfo.vaccinationinfosource, vaccinationinfo.vaccineinn,
         vaccinationinfo.vaccinebatchnumber, vaccinationinfo.vaccineuniicode, vaccinationinfo.vaccineatccode, null AS pregnant, null AS trimester, null AS healthconditions_id,
         coalesce(events.startdate, events.enddate, events.reportdatetime) AS relevancedate
@@ -8068,22 +8143,26 @@ UNION
 DROP TABLE IF EXISTS tmp_vaccinated_persons;
 CREATE TEMP TABLE tmp_vaccinated_persons AS
 SELECT DISTINCT ON (person_id, disease) person_id,
-                                        disease, diseasedetails, reportdate, reportinguser_id, responsibleregion_id, responsibledistrict_id, responsiblecommunity_id,
-                                        firstvaccinationdate, lastvaccinationdate, vaccinationdoses, vaccinename, othervaccinename, vaccinemanufacturer, othervaccinemanufacturer,
-                                        vaccinationinfosource, vaccineinn, vaccinebatchnumber, vaccineuniicode, vaccineatccode, pregnant, trimester, healthconditions_id,
+                                        disease, diseasedetails, reportdate, reportinguser_id, responsibleregion_id, responsibledistrict_id,
+                                        responsiblecommunity_id, firstvaccinationdate, lastvaccinationdate, vaccinationdoses, vaccinationdoses_details,
+                                        vaccinename, othervaccinename, vaccinemanufacturer, othervaccinemanufacturer, vaccinationinfosource, vaccineinn,
+                                        vaccinebatchnumber, vaccineuniicode, vaccineatccode, pregnant, trimester, healthconditions_id,
                                         nextval('entity_seq') AS immunization_id, relevancedate
 FROM tmp_vaccinated_entities
 ORDER BY person_id, disease, relevancedate DESC;
 
 /* Step 2: Create a new immunization entity for each person-disease combination */
+ALTER TABLE immunization ADD COLUMN numberofdoses_details varchar(255);
+ALTER TABLE immunization_history ADD COLUMN numberofdoses_details varchar(255);
+
 INSERT INTO immunization
 (
     id, uuid, disease, diseasedetails, person_id, reportdate, reportinguser_id, immunizationstatus, meansofimmunization, immunizationmanagementstatus, responsibleregion_id,
-    responsibledistrict_id, responsiblecommunity_id, startdate, enddate, numberofdoses, changedate, creationdate
+    responsibledistrict_id, responsiblecommunity_id, startdate, enddate, numberofdoses, numberofdoses_details, changedate, creationdate
 )
 SELECT
     immunization_id, generate_base32_uuid(), disease, diseasedetails, person_id, reportdate, reportinguser_id, 'ACQUIRED', 'VACCINATION', 'COMPLETED',
-    responsibleregion_id, responsibledistrict_id, responsiblecommunity_id, firstvaccinationdate, lastvaccinationdate, vaccinationdoses, now(), now()
+    responsibleregion_id, responsibledistrict_id, responsiblecommunity_id, firstvaccinationdate, lastvaccinationdate, vaccinationdoses, vaccinationdoses_details, now(), now()
 FROM tmp_vaccinated_persons;
 
 /* Step 3: Create a new vaccination entity for each immunization start and date (or for each immunization without a start or end date) */
@@ -8274,42 +8353,353 @@ UPDATE featureconfiguration SET enabled = true, changedate = now() WHERE feature
 
 INSERT INTO schema_version (version_number, comment) VALUES (406, 'Vaccination refactoring #5909');
 
--- 2021-09-16 - Make Person.sex required #6673
-UPDATE person SET sex = 'UNKNOWN' WHERE sex IS NULL;
-ALTER TABLE person ALTER COLUMN sex DROP DEFAULT;
-ALTER TABLE person ALTER COLUMN sex SET NOT NULL;
+-- 2021-09-28 - [S2S] re-share data with the same organization #6639
+CREATE TABLE sharerequestinfo(
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
 
-INSERT INTO schema_version (version_number, comment) VALUES (407, 'Make Person.sex required #6673');
+    requeststatus varchar(255),
+    sender_id bigint,
+    withassociatedcontacts boolean,
+    withsamples boolean,
+    witheventparticipants boolean,
+    pseudonymizedpersonaldata boolean,
+    pseudonymizedsensitivedata boolean,
+    comment text,
 
--- 2021-09-27 Add disease variant details #5935
-ALTER TABLE cases ADD COLUMN diseasevariantdetails varchar(512);
-ALTER TABLE cases_history ADD COLUMN diseasevariantdetails varchar(512);
-ALTER TABLE events ADD COLUMN diseasevariantdetails varchar(512);
-ALTER TABLE events_history ADD COLUMN diseasevariantdetails varchar(512);
-ALTER TABLE pathogentest ADD COLUMN testeddiseasevariantdetails varchar(512);
-ALTER TABLE pathogentest_history ADD COLUMN testeddiseasevariantdetails varchar(512);
-ALTER TABLE travelentry ADD COLUMN diseasevariantdetails text;
-ALTER TABLE travelentry_history ADD COLUMN diseasevariantdetails text;
+    sys_period tstzrange not null,
+    PRIMARY KEY (id)
+);
 
-INSERT INTO schema_version (version_number, comment) VALUES (408, 'Add disease variant details #5935');
+ALTER TABLE sharerequestinfo OWNER TO sormas_user;
+ALTER TABLE sharerequestinfo ADD CONSTRAINT fk_sharerequestinfo_sender_id FOREIGN KEY (sender_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
--- 2021-10-06 - Add PathogenTest.externalId and transfer it from lab messages #5713
-ALTER TABLE pathogentest ADD COLUMN externalid varchar(512);
-ALTER TABLE pathogentest_history ADD COLUMN externalid varchar(512);
+CREATE TABLE sharerequestinfo_history (LIKE sharerequestinfo);
+ALTER TABLE sharerequestinfo_history OWNER TO sormas_user;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON sharerequestinfo
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sharerequestinfo_history', true);
 
-ALTER TABLE testreport ADD COLUMN externalid varchar(512);
-ALTER TABLE testreport_history ADD COLUMN externalid varchar(512);
+CREATE TABLE sharerequestinfo_shareinfo(
+    sharerequestinfo_id bigint,
+    shareinfo_id bigint
+);
 
-INSERT INTO schema_version (version_number, comment) VALUES (409, 'Add PathogenTest.externalId and transfer it from lab messages #5713');
+ALTER TABLE sharerequestinfo_shareinfo OWNER TO sormas_user;
+ALTER TABLE sharerequestinfo_shareinfo ADD CONSTRAINT fk_sharerequestinfo_shareinfo_sharerequestinfo_id FOREIGN KEY (sharerequestinfo_id) REFERENCES sharerequestinfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sharerequestinfo_shareinfo ADD CONSTRAINT fk_sharerequestinfo_shareinfo_shareinfo_id FOREIGN KEY (shareinfo_id) REFERENCES sormastosormasshareinfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE sormastosormasshareinfo
+    ADD COLUMN caze_id bigint,
+    ADD COLUMN contact_id bigint,
+    ADD COLUMN event_id bigint,
+    ADD COLUMN eventparticipant_id bigint,
+    ADD COLUMN sample_id bigint,
+    ALTER COLUMN requestuuid DROP NOT NULL;
+
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_contact_id FOREIGN KEY (contact_id) REFERENCES contact (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_event_id FOREIGN KEY (event_id) REFERENCES events (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_eventparticipant_id FOREIGN KEY (eventparticipant_id) REFERENCES eventparticipant (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_sample_id FOREIGN KEY (sample_id) REFERENCES samples (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+DO $$
+    DECLARE shared_entity RECORD;
+        DECLARE share_info RECORD;
+        DECLARE request_info_id bigint;
+        DECLARE new_share_info_id bigint;
+    BEGIN
+        FOR shared_entity IN SELECT * FROM sormastosormasshareinfo_entities
+            LOOP
+                SELECT * FROM sormastosormasshareinfo where id = shared_entity.shareinfo_id INTO share_info;
+
+                SELECT id FROM sharerequestinfo where uuid = share_info.requestUuid INTO request_info_id;
+                IF (request_info_id IS NULL) THEN
+                    INSERT INTO sharerequestinfo(
+                        id, uuid, changedate, creationdate, requeststatus, sender_id,
+                        withassociatedcontacts, withsamples, witheventparticipants, pseudonymizedpersonaldata, pseudonymizedsensitivedata, comment)
+                    VALUES (nextval('entity_seq'), share_info.requestUuid, share_info.creationdate, now(), share_info.requestStatus, share_info.sender_id,
+                            share_info.withassociatedcontacts, share_info.withsamples, share_info.witheventparticipants, share_info.pseudonymizedpersonaldata, share_info.pseudonymizedpersonaldata, share_info.comment)
+                    RETURNING id INTO request_info_id;
+                END IF;
+
+                INSERT INTO sormastosormasshareinfo(id, uuid, changedate, creationdate,
+                                                    organizationid, ownershiphandedover,
+                                                    caze_id, contact_id, event_id, eventparticipant_id, sample_id)
+                VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(),
+                        share_info.organizationid, share_info.ownershiphandedover,
+                        shared_entity.caze_id, shared_entity.contact_id, shared_entity.event_id, shared_entity.eventparticipant_id, shared_entity.sample_id)
+                RETURNING id INTO new_share_info_id;
+
+                INSERT INTO sharerequestinfo_shareinfo (sharerequestinfo_id, shareinfo_id)
+                VALUES (request_info_id, new_share_info_id);
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+ALTER TABLE sormastosormasshareinfo
+    DROP COLUMN requestuuid,
+    DROP COLUMN requeststatus,
+    DROP COLUMN comment,
+    DROP COLUMN withassociatedcontacts,
+    DROP COLUMN withsamples,
+    DROP COLUMN pseudonymizedpersonaldata,
+    DROP COLUMN pseudonymizedsensitivedata,
+    DROP COLUMN witheventparticipants;
+
+DROP TABLE sormastosormasshareinfo_entities;
+DELETE FROM sormastosormasshareinfo WHERE caze_id IS NULL and contact_id IS NULL and event_id IS NULL and eventparticipant_id IS NULL and sample_id is null;
+
+ALTER TABLE sormastosormassharerequest ADD COLUMN eventParticipants json;
+ALTER TABLE sormastosormassharerequest ALTER COLUMN eventParticipants TYPE json USING eventParticipants::json;
+ALTER TABLE sormastosormassharerequest_history ADD COLUMN eventParticipants json;
+ALTER TABLE sormastosormassharerequest_history ALTER COLUMN eventParticipants TYPE json USING eventParticipants::json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (407, '[S2S] re-share data with the same organization #6639');
+
+-- [S2S] When sharing a case the immunization and vaccination information should be shared as well #6886
+ALTER TABLE sormastosormasorigininfo ADD COLUMN withimmunizations boolean DEFAULT false;
+ALTER TABLE sharerequestinfo ADD COLUMN withimmunizations boolean DEFAULT false;
+ALTER TABLE sharerequestinfo_history ADD COLUMN withimmunizations boolean DEFAULT false;
+
+ALTER TABLE sormastosormassharerequest ADD COLUMN withimmunizations boolean DEFAULT false;
+ALTER TABLE sormastosormassharerequest_history ADD COLUMN withimmunizations boolean DEFAULT false;
+
+ALTER TABLE sormastosormasshareinfo ADD COLUMN immunization_id bigint;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_immunization_id FOREIGN KEY (immunization_id) REFERENCES immunization (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE immunization ADD COLUMN sormastosormasorigininfo_id bigint;
+ALTER TABLE immunization ADD CONSTRAINT fk_immunization_sormastosormasorigininfo_id FOREIGN KEY (sormastosormasorigininfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE immunization_history ADD COLUMN sormastosormasorigininfo_id bigint;
+ALTER TABLE immunization_history ADD CONSTRAINT fk_immunization_history_sormastosormasorigininfo_id FOREIGN KEY (sormastosormasorigininfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+INSERT INTO schema_version (version_number, comment) VALUES (408, '[S2S] When sharing a case the immunization and vaccination information should be shared as well #6886');
+
+-- 2021-10-14 add immunization columns if update 406 completed before fix #6861
+DO $$
+    BEGIN
+        BEGIN
+            ALTER TABLE immunization ADD COLUMN numberofdoses_details varchar(255);
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column numberofdoses_details already exists in immunization.';
+        END;
+        BEGIN
+            ALTER TABLE immunization_history ADD COLUMN numberofdoses_details varchar(255);
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column numberofdoses_details already exists in immunization_history.';
+        END;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (409, 'add immunization columns if update 406 completed before fix #6861');
 
 -- 2021-09-30 Make contact classification required in the API and backend #6828
 UPDATE contact set contactclassification = 'UNCONFIRMED' where contactclassification IS NULL;
 ALTER TABLE contact ALTER COLUMN contactclassification SET NOT NULL;
-ALTER TABLE contact_history ALTER COLUMN contactclassification SET NOT NULL;
-
-ALTER TABLE cases ALTER COLUMN responsibleRegion_id SET NOT NULL;
-ALTER TABLE cases ALTER COLUMN responsibleDistrict_id SET NOT NULL;
-ALTER TABLE cases ALTER COLUMN healthfacility_id SET NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (410, 'Make contact classification required in the API and backend #6828');
+
+-- 2021-10-15 - rerun 407 from 1.64.1: [S2S] re-share data with the same organization #6639
+DO $$
+    BEGIN
+        CREATE TABLE sharerequestinfo(
+            id bigint not null,
+            uuid varchar(36) not null unique,
+            changedate timestamp not null,
+            creationdate timestamp not null,
+
+            requeststatus varchar(255),
+            sender_id bigint,
+            withassociatedcontacts boolean,
+            withsamples boolean,
+            witheventparticipants boolean,
+            pseudonymizedpersonaldata boolean,
+            pseudonymizedsensitivedata boolean,
+            comment text,
+
+            sys_period tstzrange not null,
+            PRIMARY KEY (id)
+        );
+
+        ALTER TABLE sharerequestinfo OWNER TO sormas_user;
+        ALTER TABLE sharerequestinfo ADD CONSTRAINT fk_sharerequestinfo_sender_id FOREIGN KEY (sender_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+        CREATE TABLE sharerequestinfo_history (LIKE sharerequestinfo);
+        ALTER TABLE sharerequestinfo_history OWNER TO sormas_user;
+        CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON sharerequestinfo
+            FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sharerequestinfo_history', true);
+
+        CREATE TABLE sharerequestinfo_shareinfo(
+            sharerequestinfo_id bigint,
+            shareinfo_id bigint
+        );
+
+        ALTER TABLE sharerequestinfo_shareinfo OWNER TO sormas_user;
+        ALTER TABLE sharerequestinfo_shareinfo ADD CONSTRAINT fk_sharerequestinfo_shareinfo_sharerequestinfo_id FOREIGN KEY (sharerequestinfo_id) REFERENCES sharerequestinfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+        ALTER TABLE sharerequestinfo_shareinfo ADD CONSTRAINT fk_sharerequestinfo_shareinfo_shareinfo_id FOREIGN KEY (shareinfo_id) REFERENCES sormastosormasshareinfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+        ALTER TABLE sormastosormasshareinfo
+            ADD COLUMN caze_id bigint,
+            ADD COLUMN contact_id bigint,
+            ADD COLUMN event_id bigint,
+            ADD COLUMN eventparticipant_id bigint,
+            ADD COLUMN sample_id bigint,
+            ALTER COLUMN requestuuid DROP NOT NULL;
+
+        ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+        ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_contact_id FOREIGN KEY (contact_id) REFERENCES contact (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+        ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_event_id FOREIGN KEY (event_id) REFERENCES events (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+        ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_eventparticipant_id FOREIGN KEY (eventparticipant_id) REFERENCES eventparticipant (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+        ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_sample_id FOREIGN KEY (sample_id) REFERENCES samples (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+        DECLARE shared_entity RECORD;
+            DECLARE share_info RECORD;
+            DECLARE request_info_id bigint;
+            DECLARE new_share_info_id bigint;
+        BEGIN
+            FOR shared_entity IN SELECT * FROM sormastosormasshareinfo_entities
+                LOOP
+                    SELECT * FROM sormastosormasshareinfo where id = shared_entity.shareinfo_id INTO share_info;
+
+                    SELECT id FROM sharerequestinfo where uuid = share_info.requestUuid INTO request_info_id;
+                    IF (request_info_id IS NULL) THEN
+                        INSERT INTO sharerequestinfo(
+                            id, uuid, changedate, creationdate, requeststatus, sender_id,
+                            withassociatedcontacts, withsamples, witheventparticipants, pseudonymizedpersonaldata, pseudonymizedsensitivedata, comment)
+                        VALUES (nextval('entity_seq'), share_info.requestUuid, share_info.creationdate, now(), share_info.requestStatus, share_info.sender_id,
+                                share_info.withassociatedcontacts, share_info.withsamples, share_info.witheventparticipants, share_info.pseudonymizedpersonaldata, share_info.pseudonymizedpersonaldata, share_info.comment)
+                        RETURNING id INTO request_info_id;
+                    END IF;
+
+                    INSERT INTO sormastosormasshareinfo(id, uuid, changedate, creationdate,
+                                                        organizationid, ownershiphandedover,
+                                                        caze_id, contact_id, event_id, eventparticipant_id, sample_id)
+                    VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(),
+                            share_info.organizationid, share_info.ownershiphandedover,
+                            shared_entity.caze_id, shared_entity.contact_id, shared_entity.event_id, shared_entity.eventparticipant_id, shared_entity.sample_id)
+                    RETURNING id INTO new_share_info_id;
+
+                    INSERT INTO sharerequestinfo_shareinfo (sharerequestinfo_id, shareinfo_id)
+                    VALUES (request_info_id, new_share_info_id);
+                END LOOP;
+        END;
+
+        ALTER TABLE sormastosormasshareinfo
+            DROP COLUMN requestuuid,
+            DROP COLUMN requeststatus,
+            DROP COLUMN comment,
+            DROP COLUMN withassociatedcontacts,
+            DROP COLUMN withsamples,
+            DROP COLUMN pseudonymizedpersonaldata,
+            DROP COLUMN pseudonymizedsensitivedata,
+            DROP COLUMN witheventparticipants;
+
+        DROP TABLE sormastosormasshareinfo_entities;
+        DELETE FROM sormastosormasshareinfo WHERE caze_id IS NULL and contact_id IS NULL and event_id IS NULL and eventparticipant_id IS NULL and sample_id is null;
+
+        ALTER TABLE sormastosormassharerequest ADD COLUMN eventParticipants json;
+        ALTER TABLE sormastosormassharerequest ALTER COLUMN eventParticipants TYPE json USING eventParticipants::json;
+        ALTER TABLE sormastosormassharerequest_history ADD COLUMN eventParticipants json;
+        ALTER TABLE sormastosormassharerequest_history ALTER COLUMN eventParticipants TYPE json USING eventParticipants::json;
+    EXCEPTION
+        WHEN duplicate_table THEN RAISE NOTICE 'Skip update 411, update already executed previously';
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (411, 'rerun 407 from 1.64.1 - [S2S] re-share data with the same organization #6639');
+
+-- 2021-10-15 rerun 408 [S2S] When sharing a case the immunization and vaccination information should be shared as well #6886
+DO $$
+    BEGIN
+        ALTER TABLE sormastosormasorigininfo ADD COLUMN withimmunizations boolean DEFAULT false;
+        ALTER TABLE sharerequestinfo ADD COLUMN withimmunizations boolean DEFAULT false;
+        ALTER TABLE sharerequestinfo_history ADD COLUMN withimmunizations boolean DEFAULT false;
+
+        ALTER TABLE sormastosormassharerequest ADD COLUMN withimmunizations boolean DEFAULT false;
+        ALTER TABLE sormastosormassharerequest_history ADD COLUMN withimmunizations boolean DEFAULT false;
+
+        ALTER TABLE sormastosormasshareinfo ADD COLUMN immunization_id bigint;
+        ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_immunization_id FOREIGN KEY (immunization_id) REFERENCES immunization (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+        ALTER TABLE immunization ADD COLUMN sormastosormasorigininfo_id bigint;
+        ALTER TABLE immunization ADD CONSTRAINT fk_immunization_sormastosormasorigininfo_id FOREIGN KEY (sormastosormasorigininfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+        ALTER TABLE immunization_history ADD COLUMN sormastosormasorigininfo_id bigint;
+        ALTER TABLE immunization_history ADD CONSTRAINT fk_immunization_history_sormastosormasorigininfo_id FOREIGN KEY (sormastosormasorigininfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+    EXCEPTION
+        WHEN duplicate_column THEN RAISE NOTICE 'Skip update 412, update already executed previously';
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (412, 'rerun 408 from 1.64.1 - [S2S] When sharing a case the immunization and vaccination information should be shared as well #6886');
+
+-- 2021-10-15 rerun 409 from 1.64.1: add immunization columns if update 406 completed before fix #6861
+DO $$
+    BEGIN
+        BEGIN
+            ALTER TABLE immunization ADD COLUMN numberofdoses_details varchar(255);
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column numberofdoses_details already exists in immunization.';
+        END;
+        BEGIN
+            ALTER TABLE immunization_history ADD COLUMN numberofdoses_details varchar(255);
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column numberofdoses_details already exists in immunization_history.';
+        END;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (413, 'rerun 408 from 1.64.1 - add immunization columns if update 406 completed before fix #6861');
+
+-- 2021-10-15 rerun 407 from 1.65.0-SNAPSHOT: Make Person.sex required #6673
+UPDATE person SET sex = 'UNKNOWN' WHERE sex IS NULL;
+ALTER TABLE person ALTER COLUMN sex DROP DEFAULT;
+ALTER TABLE person ALTER COLUMN sex SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (414, 'rerun 407 from 1.65.0-SNAPSHOT - Make Person.sex required #6673');
+
+-- 2021-09-27 Add disease variant details #5935
+DO $$
+    BEGIN
+        ALTER TABLE cases ADD COLUMN diseasevariantdetails varchar(512);
+        ALTER TABLE cases_history ADD COLUMN diseasevariantdetails varchar(512);
+        ALTER TABLE events ADD COLUMN diseasevariantdetails varchar(512);
+        ALTER TABLE events_history ADD COLUMN diseasevariantdetails varchar(512);
+        ALTER TABLE pathogentest ADD COLUMN testeddiseasevariantdetails varchar(512);
+        ALTER TABLE pathogentest_history ADD COLUMN testeddiseasevariantdetails varchar(512);
+        ALTER TABLE travelentry ADD COLUMN diseasevariantdetails text;
+        ALTER TABLE travelentry_history ADD COLUMN diseasevariantdetails text;
+    EXCEPTION
+        WHEN duplicate_column THEN RAISE NOTICE 'Skip update 415, update already executed previously';
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (415, 'rerun 408 from 1.65.0-SNAPSHOT - Add disease variant details #5935');
+
+-- 2021-10-06 - Add PathogenTest.externalId and transfer it from lab messages #5713
+DO $$
+    BEGIN
+        ALTER TABLE pathogentest ADD COLUMN externalid varchar(512);
+        ALTER TABLE pathogentest_history ADD COLUMN externalid varchar(512);
+
+        ALTER TABLE testreport ADD COLUMN externalid varchar(512);
+        ALTER TABLE testreport_history ADD COLUMN externalid varchar(512);
+    EXCEPTION
+        WHEN duplicate_column THEN RAISE NOTICE 'Skip update 416, update already executed previously';
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (416, 'rerun 409 from 1.65.0-SNAPSHOT - Add PathogenTest.externalId and transfer it from lab messages #5713');
+
+-- 2021-10-14 [DEMIS2SORMAS] Handle New Profile: DiagnosticReport.basedOn #5139
+ALTER TABLE pathogentest ADD COLUMN externalOrderId varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN externalOrderId varchar(512);
+
+ALTER TABLE testreport ADD COLUMN externalOrderId varchar(512);
+ALTER TABLE testreport_history ADD COLUMN externalOrderId varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (417, '[DEMIS2SORMAS] Handle New Profile: DiagnosticReport.basedOn #5139');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
