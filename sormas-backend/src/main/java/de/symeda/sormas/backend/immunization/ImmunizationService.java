@@ -40,6 +40,7 @@ import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -50,6 +51,7 @@ import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.immunization.joins.ImmunizationJoins;
 import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -63,6 +65,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 	@EJB
 	private UserService userService;
+	@EJB
+	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
 	public ImmunizationService() {
 		super(Immunization.class);
@@ -127,7 +131,11 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Immunization> immunization, Timestamp date) {
 		Join<Immunization, Vaccination> vaccinations = immunization.join(Immunization.VACCINATIONS, JoinType.LEFT);
 
-		return new ChangeDateFilterBuilder(cb, date).add(immunization).add(vaccinations).build();
+		return new ChangeDateFilterBuilder(cb, date).add(immunization)
+			.add(vaccinations)
+			.add(immunization, Immunization.SORMAS_TO_SORMAS_ORIGIN_INFO)
+			.add(immunization, Immunization.SORMAS_TO_SORMAS_SHARES)
+			.build();
 	}
 
 	public List<Immunization> getAllActiveAfter(Date date) {
@@ -313,7 +321,9 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 			if (numberOfDoses != null) {
 				final Date startDate = immunization.getStartDate();
-				if (System.currentTimeMillis() > startDate.getTime() && vaccinationCount >= 1 && vaccinationCount < numberOfDoses) {
+				if ((startDate == null || System.currentTimeMillis() > startDate.getTime())
+					&& vaccinationCount >= 1
+					&& vaccinationCount < numberOfDoses) {
 					immunization.setImmunizationManagementStatus(ImmunizationManagementStatus.ONGOING);
 					immunization.setImmunizationStatus(ImmunizationStatus.PENDING);
 				} else if (vaccinationCount >= numberOfDoses) {
@@ -339,6 +349,21 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 				cb.lessThanOrEqualTo(root.get(Immunization.VALID_UNTIL), new Date())));
 
 		em.createQuery(cu).executeUpdate();
+	}
+
+	public List<Immunization> getByPersonIds(List<Long> personIds) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Immunization> cq = cb.createQuery(Immunization.class);
+		Root<Immunization> from = cq.from(Immunization.class);
+
+		ImmunizationQueryContext<Immunization> immunizationQueryContext = new ImmunizationQueryContext<>(cb, cq, from);
+
+		Predicate filter = createUserFilter(immunizationQueryContext);
+		filter = CriteriaBuilderHelper.andInValues(personIds, filter, cb, from.get(Immunization.PERSON_ID));
+
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultList();
 	}
 
 	private Predicate createUserFilter(ImmunizationQueryContext<Immunization> qc) {
@@ -391,5 +416,17 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Immunization.DELETED)));
 
 		return filter;
+	}
+
+	public boolean isImmunizationEditAllowed(Immunization immunization) {
+		if (!userService.hasRight(UserRight.IMMUNIZATION_EDIT)) {
+			return false;
+		}
+
+		if (immunization.getSormasToSormasOriginInfo() != null && !immunization.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
+			return false;
+		}
+
+		return inJurisdictionOrOwned(immunization) && !sormasToSormasShareInfoService.isImmunizationsOwnershipHandedOver(immunization);
 	}
 }

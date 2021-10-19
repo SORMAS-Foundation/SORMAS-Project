@@ -34,6 +34,7 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 	private boolean withAssociatedContacts;
 	private boolean withSamples;
 	private boolean withEvenParticipants;
+	private boolean withImmunizations;
 	private boolean pseudonymizedPersonalData;
 	private boolean pseudonymizedSensitiveData;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
@@ -93,6 +94,14 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 
 	public void setWithEvenParticipants(boolean withEvenParticipants) {
 		this.withEvenParticipants = withEvenParticipants;
+	}
+
+	public boolean isWithImmunizations() {
+		return withImmunizations;
+	}
+
+	public void setWithImmunizations(boolean withImmunizations) {
+		this.withImmunizations = withImmunizations;
 	}
 
 	public boolean isPseudonymizedPersonalData() {

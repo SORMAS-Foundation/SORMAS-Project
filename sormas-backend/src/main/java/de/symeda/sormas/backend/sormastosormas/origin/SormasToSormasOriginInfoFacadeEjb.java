@@ -61,6 +61,7 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 		target.setWithAssociatedContacts(source.isWithAssociatedContacts());
 		target.setWithSamples(source.isWithSamples());
 		target.setWithEventParticipants(source.isWithEventParticipants());
+		target.setWithImmunizations(source.isWithImmunizations());
 		target.setComment(source.getComment());
 
 		return target;
@@ -83,6 +84,7 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 		target.setWithAssociatedContacts(source.isWithAssociatedContacts());
 		target.setWithSamples(source.isWithSamples());
 		target.setWithEventParticipants(source.isWithEventParticipants());
+		target.setWithImmunizations(source.isWithImmunizations());
 		target.setComment(source.getComment());
 
 		return target;

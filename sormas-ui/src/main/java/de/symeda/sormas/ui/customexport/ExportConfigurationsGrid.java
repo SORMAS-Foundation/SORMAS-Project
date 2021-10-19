@@ -74,7 +74,12 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 	public void reload(boolean isPublic) {
 		List<ExportConfigurationDto> configs =
 			FacadeProvider.getExportFacade().getExportConfigurations(new ExportConfigurationCriteria().exportType(exportType), isPublic);
-		setItems(configs);
+		if (!configs.isEmpty()) {
+			setItems(configs);
+		} else {
+			setItems(new ExportConfigurationDto());
+		}
+
 		setHeightByRows(configs.size() > 0 ? (Math.min(configs.size(), 10)) : 1);
 		if (isPublic) {
 			setNbOfSharedExportsToPublic(configs.size());

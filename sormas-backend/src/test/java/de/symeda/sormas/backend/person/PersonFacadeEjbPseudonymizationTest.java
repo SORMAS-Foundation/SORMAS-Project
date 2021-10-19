@@ -28,7 +28,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -386,10 +388,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(exportedPerson.getLastName(), is("Smith"));
 		assertThat(exportedPerson.getBirthdate().getDateOfBirthDD(), is(1));
 
-		PersonExportDto exportedPerson2 = exportList.stream().filter(p -> p.getUuid().equals(person2.getUuid())).findFirst().get();
-		assertThat(exportedPerson2.getFirstName(), is("Confidential"));
-		assertThat(exportedPerson2.getLastName(), is("Confidential"));
-		assertThat(exportedPerson2.getBirthdate().getDateOfBirthDD(), is(nullValue()));
+		Assert.assertEquals(Optional.empty(), exportList.stream().filter(p -> p.getUuid().equals(person2.getUuid())).findFirst());
 	}
 
 	private PersonDto createPerson() {
