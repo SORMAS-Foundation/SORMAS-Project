@@ -100,6 +100,7 @@ public class CaseImporter extends DataImporter {
 		boolean firstLine)
 		throws IOException, InvalidColumnException, InterruptedException {
 
+		// regenerate the UUID to prevent overwrite in case of export and import of the same entities
 		setValueUuid(values, entityProperties, DataHelper.createUuid());
 
 		ImportLineResultDto<CaseImportEntities> importResult =
@@ -227,7 +228,6 @@ public class CaseImporter extends DataImporter {
 	}
 
 	private void setValueUuid(String[] values, String[] entityProperties, String uuid) {
-		// regenerate the UUID to prevent overwrite in case of export and import of the same entities
 		int uuidIndex = ArrayUtils.indexOf(entityProperties, CaseDataDto.UUID);
 		if (uuidIndex >= 0) {
 			values[uuidIndex] = uuid;
