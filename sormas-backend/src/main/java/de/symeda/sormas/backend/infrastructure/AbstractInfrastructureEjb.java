@@ -25,7 +25,7 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 	protected FeatureConfigurationFacadeEjb featureConfiguration;
 
 	@EJB
-	private UserService userService;
+	protected UserService userService;
 
 	protected AbstractInfrastructureEjb() {
 		super();
@@ -97,8 +97,7 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 		}
 	}
 
-	// todo this can be moved up easily, but I want to keep the diff small for now...
-	// todo service has a count() method, maybe this should be here?
+	// todo this can be moved up later
 	public long count(CRITERIA criteria) {
 		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}

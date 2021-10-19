@@ -43,7 +43,6 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		this.userService = userService;
 	}
 
-
 	@Override
 	public DTO save(DTO dtoToSave) {
 		return save(dtoToSave, false);
