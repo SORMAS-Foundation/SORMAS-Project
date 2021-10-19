@@ -35,7 +35,7 @@ public class DocumentResource {
 	@Path("/entityDocuments")
 	public Map<String, List<DocumentDto>> getDocumentRelatedToEntities(CriteriaWithSorting<DocumentCriteria> criteriaWithSorting) {
 		return FacadeProvider.getDocumentFacade()
-			.getDocumentRelatedToEntities(criteriaWithSorting.getCriteria(), criteriaWithSorting.getSortProperties());
+			.getDocumentsRelatedToEntities(criteriaWithSorting.getCriteria(), criteriaWithSorting.getSortProperties());
 	}
 
 }

@@ -57,6 +57,43 @@ public class DocumentService extends AdoServiceWithUserFilter<Document> {
 		return getRelatedToEntity(type, uuid, null);
 	}
 
+	public List<Document> getRelatedToEntities(DocumentRelatedEntityType type, List<String> uuids, List<SortProperty> sortProperties) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Document> cq = cb.createQuery(getElementClass());
+		Root<Document> from = cq.from(getElementClass());
+		from.fetch(Document.UPLOADING_USER);
+
+		Predicate filter = cb.and(
+			cb.isFalse(from.get(Document.DELETED)),
+			cb.equal(from.get(Document.RELATED_ENTITY_TYPE), type),
+			cb.in(from.get(Document.RELATED_ENTITY_UUID)).value(uuids));
+
+		cq.where(filter);
+
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case DocumentDto.UUID:
+				case DocumentDto.NAME:
+				case DocumentDto.CONTENT_TYPE:
+				case DocumentDto.SIZE:
+					expression = from.get(sortProperty.propertyName);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(from.get(Document.CHANGE_DATE)));
+		}
+		cq.distinct(true);
+		return em.createQuery(cq).getResultList();
+	}
+
 	public List<Document> getRelatedToEntity(DocumentRelatedEntityType type, String uuid, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Document> cq = cb.createQuery(getElementClass());

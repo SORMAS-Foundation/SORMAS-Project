@@ -15,7 +15,6 @@
 package de.symeda.sormas.backend.document;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -128,12 +127,11 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	}
 
 	@Override
-	public Map<String, List<DocumentDto>> getDocumentRelatedToEntities(DocumentCriteria criteria, List<SortProperty> sortProperties) {
-		Map<String, List<DocumentDto>> documentsPerEntity = new HashMap<>();
-		criteria.getEntityUuids().forEach(entityUuid -> {
-			documentsPerEntity.put(entityUuid, getDocumentsRelatedToEntity(criteria.getDocumentRelatedEntityType(), entityUuid));
-		});
-		return documentsPerEntity;
+	public Map<String, List<DocumentDto>> getDocumentsRelatedToEntities(DocumentCriteria criteria, List<SortProperty> sortProperties) {
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		List<Document> allDocuments =
+			documentService.getRelatedToEntities(criteria.getDocumentRelatedEntityType(), criteria.getEntityUuids(), sortProperties);
+		return allDocuments.stream().map(d -> convertToDto(d, pseudonymizer)).collect(Collectors.groupingBy(DocumentDto::getRelatedEntityUuid));
 	}
 
 	@Override

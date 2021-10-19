@@ -34,7 +34,7 @@ public interface DocumentFacade {
 
 	List<DocumentDto> getDocumentsRelatedToEntity(DocumentRelatedEntityType type, String uuid);
 
-	Map<String, List<DocumentDto>> getDocumentRelatedToEntities(DocumentCriteria criteria, List<SortProperty> sortProperties);
+	Map<String, List<DocumentDto>> getDocumentsRelatedToEntities(DocumentCriteria criteria, List<SortProperty> sortProperties);
 
 	String isExistingDocument(DocumentRelatedEntityType type, String uuid, String name);
 
