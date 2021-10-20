@@ -77,6 +77,7 @@ public class RegionService extends AbstractInfrastructureAdoService<Region, Regi
 		return null;
 	}
 
+	@Override
 	public Predicate buildCriteriaFilter(RegionCriteria criteria, CriteriaBuilder cb, Root<Region> from) {
 
 		Predicate filter = null;
