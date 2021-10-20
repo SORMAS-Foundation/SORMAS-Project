@@ -26,10 +26,16 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Stateless
 @LocalBean
@@ -51,8 +57,16 @@ public class ReceivedSampleProcessor implements ReceivedDataProcessor<SampleDto,
 
 		ValidationErrors validationErrors = dataValidator.validateSample(existingData, sample);
 
+		Map<String, PathogenTest> existingPathogenTests;
+		if(existingData != null) {
+			existingPathogenTests = existingData.getPathogenTests().stream().collect(Collectors.toMap(PathogenTest::getUuid, Function.identity()));
+		} else {
+			existingPathogenTests = Collections.emptyMap();
+		}
+
 		sharedData.getPathogenTests().forEach(pathogenTest -> {
 			dataValidator.validatePathogenTest(validationErrors, pathogenTest);
+			dataValidator.handleIgnoredProperties(pathogenTest, existingPathogenTests.get(pathogenTest.getUuid()));
 		});
 
 		return validationErrors;
