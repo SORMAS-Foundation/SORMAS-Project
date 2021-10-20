@@ -64,7 +64,6 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	implements SormasToSormasEventFacade {
 
 	public static final String EVENT_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.EVENT_REQUEST_ENDPOINT;
-	public static final String EVENT_REQUEST_REJECT_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.EVENT_REQUEST_REJECT_ENDPOINT;
 	public static final String EVENT_REQUEST_GET_DATA_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.EVENT_REQUEST_GET_DATA_ENDPOINT;
 	public static final String SAVE_SHARED_EVENTS_ENDPOINT = RESOURCE_PATH + EVENT_ENDPOINT;
 	public static final String SYNC_SHARED_EVENTS_ENDPOINT = RESOURCE_PATH + EVENT_SYNC_ENDPOINT;
@@ -84,7 +83,6 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	public SormasToSormasEventFacadeEjb() {
 		super(
 			EVENT_REQUEST_ENDPOINT,
-			EVENT_REQUEST_REJECT_ENDPOINT,
 			EVENT_REQUEST_GET_DATA_ENDPOINT,
 			SAVE_SHARED_EVENTS_ENDPOINT,
 			SYNC_SHARED_EVENTS_ENDPOINT,
