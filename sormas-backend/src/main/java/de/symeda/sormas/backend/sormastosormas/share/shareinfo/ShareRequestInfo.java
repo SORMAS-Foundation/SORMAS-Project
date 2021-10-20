@@ -64,6 +64,8 @@ public class ShareRequestInfo extends AbstractDomainObject {
 
 	private String comment;
 
+	private String responseComment;
+
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = SHARE_REQUEST_INFO_SHARE_INFO_TABLE,
 		joinColumns = @JoinColumn(name = SHARE_REQUEST_INFO_SHARE_INFO_JOIN_COLUMN),
@@ -156,5 +158,14 @@ public class ShareRequestInfo extends AbstractDomainObject {
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	@Column(length = FieldConstraints.CHARACTER_LIMIT_BIG)
+	public String getResponseComment() {
+		return responseComment;
+	}
+
+	public void setResponseComment(String responseComment) {
+		this.responseComment = responseComment;
 	}
 }

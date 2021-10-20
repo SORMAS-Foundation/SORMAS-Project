@@ -42,6 +42,7 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePrevie
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
@@ -57,6 +58,7 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 	public static final String CASES = "cases";
 	public static final String CONTACTS = "contacts";
 	public static final String EVENTS = "events";
+	public static final String RESPONSE_COMMENT = "responseComment";
 
 	private ShareRequestDataType dataType;
 
@@ -68,6 +70,8 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 	private String contacts;
 	private String events;
 	private String eventParticipants;
+
+	private String responseComment;
 
 	private List<SormasToSormasCasePreview> casesList;
 	private List<SormasToSormasContactPreview> contactsList;
@@ -149,6 +153,15 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 
 	public void setEventParticipants(String eventParticipants) {
 		this.eventParticipants = eventParticipants;
+	}
+
+	@Column(length = FieldConstraints.CHARACTER_LIMIT_BIG)
+	public String getResponseComment() {
+		return responseComment;
+	}
+
+	public void setResponseComment(String responseComment) {
+		this.responseComment = responseComment;
 	}
 
 	@Transient
