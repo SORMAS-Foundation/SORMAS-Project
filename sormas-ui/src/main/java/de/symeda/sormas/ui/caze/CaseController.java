@@ -696,6 +696,7 @@ public class CaseController {
 					transferDataToPerson(createForm, person);
 					FacadeProvider.getPersonFacade().savePerson(person);
 
+					dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 					saveCase(dto, true);
 
 					// retrieve the travel entry just in case it has been changed during case saving
