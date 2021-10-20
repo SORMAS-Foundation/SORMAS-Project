@@ -1878,12 +1878,14 @@ public interface Captions {
 	String sormasToSormasSharedDate = "sormasToSormasSharedDate";
 	String sormasToSormasSharedWith = "sormasToSormasSharedWith";
 	String SormasToSormasShareRequest_cases = "SormasToSormasShareRequest.cases";
+	String SormasToSormasShareRequest_comment = "SormasToSormasShareRequest.comment";
 	String SormasToSormasShareRequest_contacts = "SormasToSormasShareRequest.contacts";
 	String SormasToSormasShareRequest_creationDate = "SormasToSormasShareRequest.creationDate";
 	String SormasToSormasShareRequest_dataType = "SormasToSormasShareRequest.dataType";
 	String SormasToSormasShareRequest_events = "SormasToSormasShareRequest.events";
 	String SormasToSormasShareRequest_organizationName = "SormasToSormasShareRequest.organizationName";
 	String SormasToSormasShareRequest_ownershipHandedOver = "SormasToSormasShareRequest.ownershipHandedOver";
+	String SormasToSormasShareRequest_responseComment = "SormasToSormasShareRequest.responseComment";
 	String SormasToSormasShareRequest_senderName = "SormasToSormasShareRequest.senderName";
 	String SormasToSormasShareRequest_status = "SormasToSormasShareRequest.status";
 	String SormasToSormasShareRequest_uuid = "SormasToSormasShareRequest.uuid";

@@ -25,14 +25,19 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 	protected FeatureConfigurationFacadeEjb featureConfiguration;
 
 	@EJB
-	private UserService userService;
+	protected UserService userService;
 
 	protected AbstractInfrastructureEjb() {
 		super();
 	}
 
-	protected AbstractInfrastructureEjb(SRV service, FeatureConfigurationFacadeEjb featureConfiguration) {
-		super(service);
+	protected AbstractInfrastructureEjb(
+		Class<ADO> adoClass,
+		Class<DTO> dtoClass,
+		SRV service,
+		FeatureConfigurationFacadeEjb featureConfiguration,
+		UserService userService) {
+		super(adoClass, dtoClass, service, userService);
 		this.featureConfiguration = featureConfiguration;
 	}
 
@@ -90,5 +95,10 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
 		}
+	}
+
+	// todo this can be moved up later
+	public long count(CRITERIA criteria) {
+		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}
 }

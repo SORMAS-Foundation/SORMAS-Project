@@ -187,6 +187,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		target.setContactsList(source.getContacts());
 		target.setEventsList(source.getEvents());
 		target.setEventParticipantsList(source.getEventParticipants());
+		target.setResponseComment(source.getResponseComment());
 
 		return target;
 	}
@@ -205,6 +206,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		target.setContacts(source.getContactsList());
 		target.setEvents(source.getEventsList());
 		target.setEventParticipants(source.getEventParticipantsList());
+		target.setResponseComment(source.getResponseComment());
 
 		return target;
 	}

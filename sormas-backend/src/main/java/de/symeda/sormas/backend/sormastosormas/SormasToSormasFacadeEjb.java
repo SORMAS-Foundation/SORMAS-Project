@@ -42,6 +42,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
+import de.symeda.sormas.api.sormastosormas.sharerequest.RequestResponseDataDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
@@ -69,6 +70,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SormasToSormasFacadeEjb.class);
 
+	private static final String REJECT_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.REJECT_REQUESTS_ENDPOINT;
 	private static final String REVOKE_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.REVOKE_REQUESTS_ENDPOINT;
 
 	@EJB
@@ -95,6 +97,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb;
 
 	@Override
 	public String getOrganizationId() {
@@ -112,8 +116,40 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	}
 
 	@Override
-	public void rejectShareRequest(ShareRequestDataType dataType, String uuid) throws SormasToSormasException {
-		getEntityInterface(dataType).sendRejectShareRequest(uuid);
+	@Transactional(rollbackOn = {
+		Exception.class })
+	public void rejectRequest(ShareRequestDataType dataType, String uuid, String comment) throws SormasToSormasException {
+		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(uuid);
+
+		if (shareRequest.getStatus() != ShareRequestStatus.PENDING) {
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRejectNotPending);
+		}
+
+		String organizationId = shareRequest.getOriginInfo().getOrganizationId();
+		sormasToSormasRestClient.post(organizationId, REJECT_REQUEST_ENDPOINT, new RequestResponseDataDto(uuid, comment), null);
+
+		shareRequest.setChangeDate(new Date());
+		shareRequest.setRejected(comment);
+
+		shareRequestFacade.saveShareRequest(shareRequest);
+	}
+
+	@Override
+	@Transactional(rollbackOn = {
+		Exception.class })
+	public void requestRejected(SormasToSormasEncryptedDataDto encryptedRejectData) throws SormasToSormasException {
+		RequestResponseDataDto rejectData = sormasToSormasEncryptionEjb.decryptAndVerify(encryptedRejectData, RequestResponseDataDto.class);
+		ShareRequestInfo requestInfo = shareRequestInfoService.getByUuid(rejectData.getRequestUuid());
+
+		if (requestInfo == null || requestInfo.getRequestStatus() != ShareRequestStatus.PENDING) {
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRejectNotPending);
+		}
+
+		requestInfo.setRequestStatus(ShareRequestStatus.REJECTED);
+		requestInfo.setResponseComment(rejectData.getComment());
+		requestInfo.getShares().forEach(s -> s.setOwnershipHandedOver(false));
+
+		shareRequestInfoService.ensurePersisted(requestInfo);
 	}
 
 	@Override

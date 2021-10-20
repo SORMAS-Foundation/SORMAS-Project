@@ -46,6 +46,7 @@ public class AreaService extends AbstractInfrastructureAdoService<Area, AreaCrit
 		return em.createQuery(cq).getResultList();
 	}
 
+	@Override
 	public Predicate buildCriteriaFilter(AreaCriteria criteria, CriteriaBuilder cb, Root<Area> areaRoot) {
 		Predicate filter = null;
 		if (StringUtils.isNotBlank(criteria.getTextFilter())) {

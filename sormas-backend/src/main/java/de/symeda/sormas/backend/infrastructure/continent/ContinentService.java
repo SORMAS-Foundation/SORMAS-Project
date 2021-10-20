@@ -47,6 +47,7 @@ public class ContinentService extends AbstractInfrastructureAdoService<Continent
 		return null;
 	}
 
+	@Override
 	public Predicate buildCriteriaFilter(ContinentCriteria criteria, CriteriaBuilder cb, Root<Continent> from) {
 
 		Predicate filter = null;
