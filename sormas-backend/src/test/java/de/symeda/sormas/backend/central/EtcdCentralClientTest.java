@@ -1,4 +1,4 @@
-package de.symeda.central;
+package de.symeda.sormas.backend.central;
 
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.backend.MockProducer;

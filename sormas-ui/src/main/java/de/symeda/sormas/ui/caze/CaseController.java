@@ -25,8 +25,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.hospitalization.HospitalizationDto;
-import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -77,6 +75,7 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -128,6 +127,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -1275,16 +1275,19 @@ public class CaseController {
 						I18nProperties.getCaption(Captions.actionDiscard),
 						500,
 						option -> {
-							final NullableOptionGroup admittedToHealthFacilityField = currentHospitalizationForm.getField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY);
+							final NullableOptionGroup admittedToHealthFacilityField =
+								currentHospitalizationForm.getField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY);
 							switch (option) {
-								case OPTION1: {
-								savedCaseDto.getHospitalization().setAdmittedToHealthFacility((YesNoUnknown) admittedToHealthFacilityField.getNullableValue());
+							case OPTION1: {
+								savedCaseDto.getHospitalization()
+									.setAdmittedToHealthFacility((YesNoUnknown) admittedToHealthFacilityField.getNullableValue());
 								saveCase(savedCaseDto, true);
 								ControllerProvider.getCaseController().navigateToView(HospitalizationView.VIEW_NAME, caze.getUuid(), null);
 							}
 								break;
 							case OPTION2: {
-								savedCaseDto.getHospitalization().setAdmittedToHealthFacility((YesNoUnknown) admittedToHealthFacilityField.getNullableValue());
+								savedCaseDto.getHospitalization()
+									.setAdmittedToHealthFacility((YesNoUnknown) admittedToHealthFacilityField.getNullableValue());
 								saveCase(savedCaseDto, true);
 								ControllerProvider.getCaseController().navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null);
 							}

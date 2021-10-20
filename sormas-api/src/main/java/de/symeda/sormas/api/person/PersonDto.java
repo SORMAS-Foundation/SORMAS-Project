@@ -24,6 +24,8 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -548,7 +550,7 @@ public class PersonDto extends PseudonymizableDto {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public String getPhone(boolean onlyPrimary) throws SeveralNonPrimaryContactDetailsException {
 		String primaryPhone = getPhone();
-		if (onlyPrimary || !(primaryPhone.equals(""))) {
+		if (onlyPrimary || StringUtils.isNotBlank(primaryPhone)) {
 			return primaryPhone;
 		} else {
 			List<String> allPhones = getAllPhoneNumbers();
@@ -613,7 +615,7 @@ public class PersonDto extends PseudonymizableDto {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public String getEmailAddress(boolean onlyPrimary) throws SeveralNonPrimaryContactDetailsException {
 		String primaryEmail = getEmailAddress();
-		if (onlyPrimary || !(primaryEmail.equals(""))) {
+		if (onlyPrimary || StringUtils.isNotBlank(primaryEmail)) {
 			return primaryEmail;
 		} else {
 			List<String> allEmails = getAllEmailAddresses();
