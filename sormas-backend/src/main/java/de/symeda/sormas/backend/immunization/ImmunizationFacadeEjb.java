@@ -418,6 +418,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		dto.setStartDate(entity.getStartDate());
 		dto.setEndDate(entity.getEndDate());
 		dto.setNumberOfDoses(entity.getNumberOfDoses());
+		dto.setNumberOfDosesDetails(entity.getNumberOfDosesDetails());
 		dto.setPreviousInfection(entity.getPreviousInfection());
 		dto.setLastInfectionDate(entity.getLastInfectionDate());
 		dto.setAdditionalDetails(entity.getAdditionalDetails());
@@ -464,6 +465,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		target.setStartDate(source.getStartDate());
 		target.setEndDate(source.getEndDate());
 		target.setNumberOfDoses(source.getNumberOfDoses());
+		target.setNumberOfDosesDetails(source.getNumberOfDosesDetails());
 		target.setPreviousInfection(source.getPreviousInfection());
 		target.setLastInfectionDate(source.getLastInfectionDate());
 		target.setAdditionalDetails(source.getAdditionalDetails());
