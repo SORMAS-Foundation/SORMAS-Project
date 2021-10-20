@@ -148,11 +148,13 @@ public class SampleController {
 		// prefill fields
 		if (pathogenTest != null) {
 			pathogenTestCreateComponent.getWrappedComponent().setValue(pathogenTest);
+
+			// show typingId field when it has a preset value
+			if (pathogenTest.getTypingId() != null && !"".equals(pathogenTest.getTypingId())) {
+				pathogenTestCreateComponent.getWrappedComponent().getField(PathogenTestDto.TYPING_ID).setVisible(true);
+			}
 		}
-		// show typingId field when it has a preset value
-		if (pathogenTest.getTypingId() != null && !"".equals(pathogenTest.getTypingId())) {
-			pathogenTestCreateComponent.getWrappedComponent().getField(PathogenTestDto.TYPING_ID).setVisible(true);
-		} ;
+
 		// Discard button configuration
 		if (removable) {
 			pathogenTestCreateComponent.addDiscardListener(() -> {
@@ -195,6 +197,9 @@ public class SampleController {
 				callback.run();
 			}
 		});
+		Button addPathogenTestButton = new Button(I18nProperties.getCaption(Captions.pathogenTestAdd));
+		addPathogenTestButton.addClickListener((e) -> addPathogenTestCreateComponent(editView, null, true));
+		editView.getButtonsPanel().addComponent(addPathogenTestButton, 0);
 
 		return editView;
 	}
