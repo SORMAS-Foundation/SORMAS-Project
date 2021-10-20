@@ -38,17 +38,15 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 
 	private final ContactJoins<?> joins;
 	private final CriteriaQuery<?> cq;
-	private final User user;
 
 	private ContactJurisdictionPredicateValidator(ContactQueryContext qc, User user) {
 		super(
 			qc.getCriteriaBuilder(),
-			Collections.singletonList(
+                user, null, Collections.singletonList(
 				CaseJurisdictionPredicateValidator
 					.of(new CaseQueryContext<>(qc.getCriteriaBuilder(), qc.getQuery(), ((ContactJoins) qc.getJoins()).getCaze()), user)));
 
 		this.joins = (ContactJoins<?>) qc.getJoins();
-		this.user = user;
 		this.cq = qc.getQuery();
 	}
 
@@ -67,7 +65,7 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 
 	@Override
 	protected Predicate isInJurisdiction() {
-		return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
+		return isInJurisdictionByJurisdictionLevel(user.getCalculatedJurisdictionLevel());
 	}
 
 	@Override

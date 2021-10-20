@@ -23,12 +23,10 @@ public class EventParticipantJurisdictionPredicateValidator extends PredicateJur
 
 	private final CriteriaQuery<?> cq;
 	private EventParticipantJoins<?> joins;
-	private User user;
 
 	private EventParticipantJurisdictionPredicateValidator(EventParticipantQueryContext qc, User user) {
-		super(qc.getCriteriaBuilder(), null);
+		super(qc.getCriteriaBuilder(), user, null, null);
 		this.joins = (EventParticipantJoins<?>) qc.getJoins();
-		this.user = user;
 		this.cq = qc.getQuery();
 	}
 
@@ -46,7 +44,7 @@ public class EventParticipantJurisdictionPredicateValidator extends PredicateJur
 
 	@Override
 	protected Predicate isInJurisdiction() {
-		return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
+		return isInJurisdictionByJurisdictionLevel(user.getCalculatedJurisdictionLevel());
 	}
 
 	@Override

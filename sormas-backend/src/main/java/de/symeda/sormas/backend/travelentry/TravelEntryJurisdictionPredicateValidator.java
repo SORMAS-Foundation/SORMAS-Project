@@ -20,7 +20,6 @@ import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
 	private final TravelEntryJoins<?> joins;
-	private final User user;
 
 	private TravelEntryJurisdictionPredicateValidator(
 		CriteriaQuery<?> cq,
@@ -28,9 +27,8 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 		TravelEntryJoins<?> joins,
 		User user,
 		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
-		super(cb, associatedJurisdictionValidators);
+		super(cb, user, null, associatedJurisdictionValidators);
 		this.joins = joins;
-		this.user = user;
 	}
 
 	public static TravelEntryJurisdictionPredicateValidator of(TravelEntryQueryContext qc, User user) {
@@ -47,7 +45,7 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 
 	@Override
 	protected Predicate isInJurisdiction() {
-		return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
+		return isInJurisdictionByJurisdictionLevel(user.getCalculatedJurisdictionLevel());
 	}
 
 	@Override

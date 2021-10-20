@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
@@ -35,12 +36,15 @@ import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
     private final SampleJoins<?> joins;
-    private final User user;
 
     private SampleJurisdictionPredicateValidator(CriteriaBuilder cb, SampleJoins<?> joins, User user, List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
-        super(cb, associatedJurisdictionValidators);
+        super(cb, user, null, associatedJurisdictionValidators);
         this.joins = joins;
-        this.user = user;
+    }
+
+    private SampleJurisdictionPredicateValidator(CriteriaBuilder cb, SampleJoins<?> joins, Path userPath, List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
+        super(cb, null, userPath, associatedJurisdictionValidators);
+        this.joins = joins;
     }
 
 	public static SampleJurisdictionPredicateValidator of(SampleQueryContext qc, User user) {
@@ -63,18 +67,19 @@ public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionV
 	public static SampleJurisdictionPredicateValidator withoutAssociations(CriteriaBuilder cb, SampleJoins<?> joins, User user) {
 		return new SampleJurisdictionPredicateValidator(cb, joins, user, null);
 	}
+	public static SampleJurisdictionPredicateValidator withoutAssociations(CriteriaBuilder cb, SampleJoins<?> joins, Path userPath) {
+		return new SampleJurisdictionPredicateValidator(cb, joins, userPath, null);
+	}
 
 	@Override
 	protected Predicate isInJurisdictionOrOwned() {
-		final Predicate reportedByCurrentUser =
-			cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), user.getUuid()));
+		final Predicate reportedByCurrentUser = cb.and(
+			cb.isNotNull(joins.getReportingUser()),
+			user != null
+				? cb.equal(joins.getReportingUser().get(User.ID), user.getId())
+				: cb.equal(joins.getReportingUser().get(User.ID), userPath.get(User.ID)));
 		return cb.or(reportedByCurrentUser, isInJurisdiction());
 	}
-
-    @Override
-    protected Predicate isInJurisdiction() {
-        return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
-    }
 
     @Override
     protected Predicate whenNotAllowed() {
@@ -111,8 +116,10 @@ public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionV
         return cb.disjunction();
     }
 
-    @Override
-    protected Predicate whenLaboratoryLevel() {
-        return cb.equal(joins.getLab().get(Facility.ID), user.getLaboratory().getId());
-    }
+	@Override
+	protected Predicate whenLaboratoryLevel() {
+		return user != null
+			? cb.equal(joins.getLab().get(Facility.ID), user.getLaboratory().getId())
+			: cb.equal(joins.getLab().get(Facility.ID), userPath.get(User.LABORATORY).get(Facility.ID));
+	}
 }

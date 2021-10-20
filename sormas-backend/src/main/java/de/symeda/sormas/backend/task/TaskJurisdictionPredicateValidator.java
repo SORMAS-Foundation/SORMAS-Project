@@ -34,12 +34,10 @@ import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 public class TaskJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
     private final TaskJoins joins;
-    private final User user;
 
     private TaskJurisdictionPredicateValidator(CriteriaBuilder cb, TaskJoins joins, User user, List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
-        super(cb, associatedJurisdictionValidators);
+        super(cb, user, null, associatedJurisdictionValidators);
         this.joins = joins;
-        this.user = user;
     }
 
 	public static TaskJurisdictionPredicateValidator of(TaskQueryContext qc, User user) {
@@ -70,7 +68,7 @@ public class TaskJurisdictionPredicateValidator extends PredicateJurisdictionVal
 
     @Override
     protected Predicate isInJurisdiction() {
-        return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
+        return isInJurisdictionByJurisdictionLevel(user.getCalculatedJurisdictionLevel());
     }
 
     @Override

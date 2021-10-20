@@ -41,6 +41,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 
@@ -69,6 +70,8 @@ import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -328,35 +331,29 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public List<UserReferenceDto> getUsersHavingCaseInJurisdiction(CaseReferenceDto caseReferenceDto) {
 
-		final List<UserReferenceDto> users = new ArrayList<>();
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<User> cq = cb.createQuery(User.class);
+		final Root<User> root = cq.from(User.class);
+		cq.select(root);
 
-		final Case caze = caseService.getByReferenceDto(caseReferenceDto);
-		final Region responsibleRegion = caze.getResponsibleRegion();
-		final District responsibleDistrict = caze.getResponsibleDistrict();
-		if (responsibleDistrict != null) {
-			final List<DistrictReferenceDto> caseDistricts = new ArrayList<>();
-			caseDistricts.add(DistrictFacadeEjb.toReferenceDto(responsibleDistrict));
-			final District district = caze.getDistrict();
-			if (district != null) {
-				caseDistricts.add(DistrictFacadeEjb.toReferenceDto(district));
-			}
-			users.addAll(getUserRefsByDistricts(caseDistricts, true));
-		} else if (responsibleRegion != null) {
+		final Subquery<Case> caseJurisdictionSubquery = cq.subquery(Case.class);
+		final Root<Case> caseRoot = caseJurisdictionSubquery.from(Case.class);
 
-			final List<RegionReferenceDto> caseRegions = new ArrayList<>();
-			caseRegions.add(RegionFacadeEjb.toReferenceDto(responsibleRegion));
-			final Region region = caze.getRegion();
-			if (region != null) {
-				caseRegions.add(RegionFacadeEjb.toReferenceDto(region));
-			}
-			users.addAll(getUsersByRegionsAndRoles(caseRegions));
-		} else {
-			users.addAll(getAllUserRefs(false));
-		}
+		final CaseJurisdictionPredicateValidator caseJurisdictionPredicateValidator =
+			CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, caseRoot), root);
 
-		return users.stream()
-			.filter(userReferenceDto -> caseService.inJurisdictionOrOwned(caze, userService.getByUuid(userReferenceDto.getUuid())))
-			.collect(Collectors.toList());
+		caseJurisdictionSubquery.select(caseRoot)
+			.where(
+				cb.and(
+					cb.equal(caseRoot.get(Case.UUID), caseReferenceDto.getUuid()),
+					cb.isTrue(caseJurisdictionPredicateValidator.inJurisdictionOrOwned())));
+
+		cq.where(cb.exists(caseJurisdictionSubquery));
+
+		cq.distinct(true);
+		cq.orderBy(cb.asc(root.get(User.ID)));
+		List<User> resultList = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+		return resultList.stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -593,7 +590,9 @@ public class UserFacadeEjb implements UserFacade {
 		target.setLanguage(source.getLanguage());
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 
-		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
+		final Set<UserRole> userRoles = source.getUserRoles();
+		target.setUserRoles(new HashSet<UserRole>(userRoles));
+		target.setJurisdictionLevel(UserRole.getJurisdictionLevel(userRoles));
 
 		return target;
 	}

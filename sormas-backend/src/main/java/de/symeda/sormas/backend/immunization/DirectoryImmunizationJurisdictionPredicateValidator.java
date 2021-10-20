@@ -17,16 +17,14 @@ import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 public final class DirectoryImmunizationJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
 	private final DirectoryImmunizationJoins<?> joins;
-	private final User user;
 
 	private DirectoryImmunizationJurisdictionPredicateValidator(
 		CriteriaBuilder cb,
 		DirectoryImmunizationJoins<?> joins,
 		User user,
 		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
-		super(cb, associatedJurisdictionValidators);
+		super(cb, user, null, associatedJurisdictionValidators);
 		this.joins = joins;
-		this.user = user;
 	}
 
 	public static DirectoryImmunizationJurisdictionPredicateValidator of(DirectoryImmunizationQueryContext qc, User user) {
@@ -39,7 +37,7 @@ public final class DirectoryImmunizationJurisdictionPredicateValidator extends P
 
 	@Override
 	protected Predicate isInJurisdiction() {
-		return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
+		return isInJurisdictionByJurisdictionLevel(user.getCalculatedJurisdictionLevel());
 	}
 
 	@Override

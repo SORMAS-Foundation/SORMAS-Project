@@ -73,7 +73,7 @@ public class EventGroupService extends AdoServiceWithUserFilter<EventGroup> {
 		EventUserFilterCriteria eventUserFilterCriteria) {
 
 		final User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
 		if (jurisdictionLevel == JurisdictionLevel.NATION || currentUser.hasAnyUserRole(UserRole.REST_USER)) {
 			return null;
 		}
@@ -136,7 +136,7 @@ public class EventGroupService extends AdoServiceWithUserFilter<EventGroup> {
 		Predicate filter = cb.in(caseJoin.get(Case.ID)).value(caseSubquery);
 
 		final User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
 		if (jurisdictionLevel == JurisdictionLevel.REGION || jurisdictionLevel == JurisdictionLevel.DISTRICT) {
 			Subquery<Long> eventParticipantSubquery = cq.subquery(Long.class);
 			Root<EventParticipant> epRoot = eventParticipantSubquery.from(EventParticipant.class);
