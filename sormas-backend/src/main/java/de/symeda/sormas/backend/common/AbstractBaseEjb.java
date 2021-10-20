@@ -48,8 +48,6 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		return save(dtoToSave, false);
 	}
 
-	public abstract DTO save(@Valid DTO dtoToSave, boolean allowMerge);
-
 	// todo cannot be filled right now as we are missing ArchivableAbstractDomainObject
 	// with this abstract class e.g., ImmunizationFacadeEjb could be wired up to this as well
 	public abstract void archive(String uuid);
