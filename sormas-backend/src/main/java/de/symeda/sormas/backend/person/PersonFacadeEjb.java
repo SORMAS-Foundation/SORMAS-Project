@@ -357,7 +357,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 	}
 
-	public String getEmailAddress(PersonDto person, boolean onlyPrimary) {
+	private String getEmailAddress(PersonDto person, boolean onlyPrimary) {
 		try {
 			return person.getEmailAddress(onlyPrimary);
 		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
@@ -365,7 +365,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 	}
 
-	public String getPhone(PersonDto person, boolean onlyPrimary) {
+	private String getPhone(PersonDto person, boolean onlyPrimary) {
 		try {
 			return person.getPhone(onlyPrimary);
 		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {

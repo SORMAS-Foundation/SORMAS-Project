@@ -48,7 +48,7 @@ public final class DtoHelper {
 		if (checkChangeDate
 			&& entity.getChangeDate() != null
 			&& (dto.getChangeDate() == null || dto.getChangeDate().getTime() + CHANGE_DATE_TOLERANCE_MS < entity.getChangeDate().getTime())) {
-			throw new OutdatedEntityException(dto.getUuid(), dto.getClass());
+			throw new OutdatedEntityException(dto.getUuid(), dto.getClass(), dto.getChangeDate(), entity.getChangeDate());
 		}
 	}
 

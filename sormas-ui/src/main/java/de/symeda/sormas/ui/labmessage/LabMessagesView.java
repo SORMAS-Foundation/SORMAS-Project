@@ -235,9 +235,9 @@ public class LabMessagesView extends AbstractView {
 			askForSinceDateAndFetch();
 		}
 	}
-	
+
 	private void askForSinceDateAndFetch() {
-		boolean atLeastOneFetchExecuted = FacadeProvider.getLabMessageFacade().atLeastOneFetchExecuted();
+		boolean atLeastOneFetchExecuted = FacadeProvider.getSyncFacade().atLeastOneSuccessfullSyncOf(SystemEventType.FETCH_LAB_MESSAGES);
 		if (atLeastOneFetchExecuted) {
 			fetchLabMessages(null);
 		} else {
@@ -302,7 +302,7 @@ public class LabMessagesView extends AbstractView {
 					window.close();
 				} else {
 					new Notification(I18nProperties.getString(Strings.messageCheckInputData), null, Notification.Type.ERROR_MESSAGE, true)
-							.show(Page.getCurrent());
+						.show(Page.getCurrent());
 				}
 			});
 		});
