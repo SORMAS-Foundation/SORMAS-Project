@@ -375,7 +375,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testUpdateImmunizationStatusBasedOnVaccinationsOngoing(){
+	public void testUpdateImmunizationStatusBasedOnVaccinationsOngoing() {
 		loginWith(nationalUser);
 
 		final PersonDto person = creator.createPerson("John", "Doe");
@@ -384,14 +384,15 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			Disease.DENGUE,
 			person.toReference(),
 			nationalUser.toReference(),
-			ImmunizationStatus.NOT_ACQUIRED,
+			ImmunizationStatus.PENDING,
 			MeansOfImmunization.VACCINATION,
 			ImmunizationManagementStatus.SCHEDULED,
 			rdcf1);
 
 		immunization.setNumberOfDoses(2);
 		immunization.setStartDate(DateHelper.subtractDays(new Date(), 1));
-		immunization.setVaccinations(Arrays.asList(creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto())));
+		immunization.setVaccinations(
+			Arrays.asList(creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto())));
 		getImmunizationFacade().save(immunization);
 
 		final ImmunizationDto immWithOneVac = getImmunizationFacade().getByUuid(immunization.getUuid());
@@ -401,7 +402,65 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testUpdateImmunizationStatusBasedOnVaccinationsCompleted(){
+	public void testUpdateImmunizationStatusBasedOnVaccinationsCompleted() {
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+
+		final ImmunizationDto immunization = creator.createImmunizationDto(
+			Disease.DENGUE,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.PENDING,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.SCHEDULED,
+			rdcf1);
+
+		immunization.setNumberOfDoses(2);
+		immunization.setStartDate(DateHelper.subtractDays(new Date(), 1));
+		immunization.setVaccinations(
+			Arrays.asList(
+				creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto()),
+				creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto())));
+		getImmunizationFacade().save(immunization);
+
+		final ImmunizationDto immWithTwoVac = getImmunizationFacade().getByUuid(immunization.getUuid());
+		Assert.assertEquals(2, immWithTwoVac.getVaccinations().size());
+		Assert.assertEquals(ImmunizationManagementStatus.COMPLETED, immWithTwoVac.getImmunizationManagementStatus());
+		Assert.assertEquals(ImmunizationStatus.ACQUIRED, immWithTwoVac.getImmunizationStatus());
+	}
+
+	@Test
+	public void testNoImmunizationStatusUpdateWhenExpired() {
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+
+		final ImmunizationDto immunization = creator.createImmunizationDto(
+			Disease.DENGUE,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.EXPIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.SCHEDULED,
+			rdcf1);
+
+		immunization.setNumberOfDoses(2);
+		immunization.setStartDate(DateHelper.subtractDays(new Date(), 1));
+		immunization.setVaccinations(
+			Arrays.asList(
+				creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto()),
+				creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto())));
+		getImmunizationFacade().save(immunization);
+
+		final ImmunizationDto immWithTwoVac = getImmunizationFacade().getByUuid(immunization.getUuid());
+		Assert.assertEquals(2, immWithTwoVac.getVaccinations().size());
+		Assert.assertEquals(ImmunizationManagementStatus.SCHEDULED, immWithTwoVac.getImmunizationManagementStatus());
+		Assert.assertEquals(ImmunizationStatus.EXPIRED, immWithTwoVac.getImmunizationStatus());
+	}
+
+	@Test
+	public void testNoImmunizationStatusUpdateWhenNotAcquired() {
 		loginWith(nationalUser);
 
 		final PersonDto person = creator.createPerson("John", "Doe");
@@ -425,8 +484,8 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 
 		final ImmunizationDto immWithTwoVac = getImmunizationFacade().getByUuid(immunization.getUuid());
 		Assert.assertEquals(2, immWithTwoVac.getVaccinations().size());
-		Assert.assertEquals(ImmunizationManagementStatus.COMPLETED, immWithTwoVac.getImmunizationManagementStatus());
-		Assert.assertEquals(ImmunizationStatus.ACQUIRED, immWithTwoVac.getImmunizationStatus());
+		Assert.assertEquals(ImmunizationManagementStatus.SCHEDULED, immWithTwoVac.getImmunizationManagementStatus());
+		Assert.assertEquals(ImmunizationStatus.NOT_ACQUIRED, immWithTwoVac.getImmunizationStatus());
 	}
 
 	// This is currently not executed because modifying immunizations leads to the entity not being attached to the persistence context anymore.
