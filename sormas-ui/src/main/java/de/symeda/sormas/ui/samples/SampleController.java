@@ -164,6 +164,10 @@ public class SampleController {
 		}
 		// hide save button
 		pathogenTestCreateComponent.getCommitButton().setVisible(false);
+		// add horizontal rule to clearly distinguish the component
+		Label horizontalRule = new Label("<br><hr /><br>", ContentMode.HTML);
+		horizontalRule.setWidth(100f, Unit.PERCENTAGE);
+		pathogenTestCreateComponent.addComponent(horizontalRule, 0);
 		// add the pathogenTestCreateComponent above the discard and commit buttons
 		sampleCreateComponent.addComponent(pathogenTestCreateComponent, sampleCreateComponent.getComponentCount() - 1);
 		return pathogenTestCreateComponent;
