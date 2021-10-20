@@ -54,6 +54,7 @@ import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
+import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "ContinentFacade")
 public class ContinentFacadeEjb
@@ -128,7 +129,7 @@ public class ContinentFacadeEjb
 			cq.where(filter).distinct(true);
 		}
 
-		if (sortProperties != null && !sortProperties.isEmpty()) {
+		if (CollectionUtils.isNotEmpty(sortProperties)) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;

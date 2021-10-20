@@ -56,6 +56,7 @@ import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
+import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "CommunityFacade")
 public class CommunityFacadeEjb
@@ -120,7 +121,7 @@ public class CommunityFacadeEjb
 			cq.where(filter);
 		}
 
-		if (sortProperties != null && !sortProperties.isEmpty()) {
+		if (CollectionUtils.isNotEmpty(sortProperties)) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
