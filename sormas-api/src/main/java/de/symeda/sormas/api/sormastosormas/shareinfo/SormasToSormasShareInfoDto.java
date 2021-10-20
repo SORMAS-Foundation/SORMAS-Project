@@ -40,6 +40,8 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String comment;
 	private ShareRequestStatus requestStatus;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	private String responseComment;
 
 	/**
 	 * @return Get the target server of the share operation.
@@ -134,5 +136,13 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 
 	public void setRequestStatus(ShareRequestStatus requestStatus) {
 		this.requestStatus = requestStatus;
+	}
+
+	public String getResponseComment() {
+		return responseComment;
+	}
+
+	public void setResponseComment(String responseComment) {
+		this.responseComment = responseComment;
 	}
 }

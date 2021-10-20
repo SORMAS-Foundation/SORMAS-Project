@@ -18,10 +18,13 @@ package de.symeda.sormas.api.sormastosormas.sharerequest;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class SormasToSormasShareRequestDto extends EntityDto {
 
@@ -51,6 +54,9 @@ public class SormasToSormasShareRequestDto extends EntityDto {
 	private List<SormasToSormasEventPreview> events;
 	@Valid
 	private List<SormasToSormasEventParticipantPreview> eventParticipants;
+
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	private String responseComment;
 
 	public ShareRequestDataType getDataType() {
 		return dataType;
@@ -108,11 +114,20 @@ public class SormasToSormasShareRequestDto extends EntityDto {
 		this.eventParticipants = eventParticipants;
 	}
 
-	public void setRejected() {
+	public String getResponseComment() {
+		return responseComment;
+	}
+
+	public void setResponseComment(String responseComment) {
+		this.responseComment = responseComment;
+	}
+
+	public void setRejected(String comment) {
 		setStatus(ShareRequestStatus.REJECTED);
 		setCases(null);
 		setContacts(null);
 		setEvents(null);
+		setResponseComment(comment);
 	}
 
 	public void setRevoked() {
