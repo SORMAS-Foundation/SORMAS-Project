@@ -15,30 +15,18 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.contact;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sample.SampleCriteria;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.entities.AssociatedEntityWrapper;
-import de.symeda.sormas.backend.sormastosormas.share.ShareData;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
@@ -46,73 +34,26 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 public class ContactShareDataBuilder implements ShareDataBuilder<Contact, SormasToSormasContactDto, SormasToSormasContactPreview> {
 
 	@EJB
-	private SampleService sampleService;
-	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
 
-	public ShareData<Contact, SormasToSormasContactDto> buildShareData(Contact contact, User user, SormasToSormasOptionsDto options)
-		throws SormasToSormasException {
-		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(user, options);
-
-		return createShareData(
-			contact,
-			originInfo,
-			user,
-			options.isWithSamples(),
-			options.isPseudonymizePersonalData(),
-			options.isPseudonymizeSensitiveData());
-	}
-
 	@Override
-	public ShareData<Contact, SormasToSormasContactPreview> buildShareDataPreview(Contact contact, User user, SormasToSormasOptionsDto options)
-		throws SormasToSormasException {
-		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(options.isPseudonymizePersonalData(), options.isPseudonymizeSensitiveData());
+	public SormasToSormasContactDto buildShareData(Contact contact, ShareRequestInfo requestInfo) {
+		Pseudonymizer pseudonymizer =
+			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 
-		SormasToSormasContactPreview contactPreview = dataBuilderHelper.getContactPreview(contact, pseudonymizer);
-
-		return new ShareData<>(contact, contactPreview);
-	}
-
-	@Override
-	public List<ShareData<Contact, SormasToSormasContactDto>> buildShareData(User user, SormasToSormasShareInfo shareInfo)
-		throws SormasToSormasException {
-		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(user, shareInfo);
-
-		return shareInfo.getContacts().stream().map(shareInfoContact -> {
-			Contact contact = shareInfoContact.getContact();
-
-			return createShareData(
-				contact,
-				originInfo,
-				user,
-				shareInfo.isWithSamples(),
-				shareInfo.isPseudonymizedPersonalData(),
-				shareInfo.isPseudonymizedSensitiveData());
-		}).collect(Collectors.toList());
-	}
-
-	private ShareData<Contact, SormasToSormasContactDto> createShareData(
-		Contact contact,
-		SormasToSormasOriginInfoDto originInfo,
-		User user,
-		boolean withSamples,
-		boolean pseudonymizePersonalData,
-		boolean pseudonymizeSensitiveData) {
-		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(pseudonymizePersonalData, pseudonymizeSensitiveData);
-
-		PersonDto personDto = dataBuilderHelper.getPersonDto(contact.getPerson(), pseudonymizer, pseudonymizePersonalData, pseudonymizeSensitiveData);
+		PersonDto personDto = dataBuilderHelper
+			.getPersonDto(contact.getPerson(), pseudonymizer, requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 		ContactDto contactDto = dataBuilderHelper.getContactDto(contact, pseudonymizer);
 
-		SormasToSormasContactDto contactData = new SormasToSormasContactDto(personDto, contactDto, originInfo);
-		ShareData<Contact, SormasToSormasContactDto> shareData = new ShareData<>(contact, contactData);
+		return new SormasToSormasContactDto(personDto, contactDto);
+	}
 
-		if (withSamples) {
-			List<Sample> samples = sampleService.findBy(new SampleCriteria().contact(contact.toReference()), user);
+	@Override
+	public SormasToSormasContactPreview buildShareDataPreview(Contact contact, ShareRequestInfo requestInfo) {
+		Pseudonymizer pseudonymizer =
+			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 
-			contactData.setSamples(dataBuilderHelper.getSampleDtos(samples, pseudonymizer));
-			shareData.addAssociatedEntities(AssociatedEntityWrapper.forSamples(samples));
-		}
+		return dataBuilderHelper.getContactPreview(contact, pseudonymizer);
 
-		return shareData;
 	}
 }

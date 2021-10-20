@@ -597,6 +597,11 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.includeContactsFromOtherJurisdictions = includeContactsFromOtherJurisdictions;
 	}
 
+	public ContactCriteria includeContactsFromOtherJurisdictions(Boolean includeContactsFromOtherJurisdictions) {
+		this.includeContactsFromOtherJurisdictions = includeContactsFromOtherJurisdictions;
+		return this;
+	}
+
 	public void setEventParticipant(EventParticipantReferenceDto eventParticipant) {
 		this.eventParticipant = eventParticipant;
 	}

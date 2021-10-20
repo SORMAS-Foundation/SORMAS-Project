@@ -45,6 +45,7 @@ import com.vaadin.v7.data.Buffered.SourceException;
 import com.vaadin.v7.data.Validator.InvalidValueException;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -215,6 +216,16 @@ public class SampleController {
 			CheckBox viaLimsField = createForm.getField(PathogenTestDto.VIA_LIMS);
 			if (viaLimsField != null) {
 				pathogenTest.setViaLims(viaLimsField.getValue());
+			}
+
+			TextField externalIdField = createForm.getField(PathogenTestDto.EXTERNAL_ID);
+			if (externalIdField != null) {
+				pathogenTest.setExternalId(externalIdField.getValue());
+			}
+
+			TextField externalOrderIdField = createForm.getField(PathogenTestDto.EXTERNAL_ORDER_ID);
+			if (externalOrderIdField != null) {
+				pathogenTest.setExternalOrderId(externalOrderIdField.getValue());
 			}
 
 			String cqValue = (String) createForm.getField(PathogenTestDto.CQ_VALUE).getValue();

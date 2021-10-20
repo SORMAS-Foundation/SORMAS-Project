@@ -280,6 +280,73 @@ public final class VaadinUiUtil {
 		return popupWindow;
 	}
 
+	public static Window showThreeOptionsPopup(
+		String caption,
+		Component content,
+		String optionACaption,
+		String optionBCaption,
+		String optionCCaption,
+		Integer width,
+		Consumer<PopupOption> resultConsumer) {
+
+		Window popupWindow = VaadinUiUtil.createPopupWindow();
+		if (width != null) {
+			popupWindow.setWidth(width, Unit.PIXELS);
+		} else {
+			popupWindow.setWidthUndefined();
+		}
+		popupWindow.setCaption(caption);
+
+		VerticalLayout layout = new VerticalLayout();
+		layout.setMargin(true);
+		content.setWidth(100, Unit.PERCENTAGE);
+		layout.addComponent(content);
+
+		ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void onConfirm() {
+				resultConsumer.accept(PopupOption.OPTION1);
+				popupWindow.close();
+			}
+
+			@Override
+			protected void onCancel() {
+				resultConsumer.accept(PopupOption.OPTION2);
+				popupWindow.close();
+			}
+		};
+		confirmationComponent.getConfirmButton().setCaption(optionACaption);
+		Button cancelButton = confirmationComponent.getCancelButton();
+		cancelButton.setCaption(optionBCaption);
+		cancelButton.removeStyleName(ValoTheme.BUTTON_LINK);
+		cancelButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+
+		confirmationComponent
+			.addExtraButton(ButtonHelper.createButton(Strings.unsavedChanges_cancel, optionCCaption, null, ValoTheme.BUTTON_PRIMARY), buttonEvent -> {
+				resultConsumer.accept(PopupOption.OPTION3);
+				popupWindow.close();
+			});
+
+		layout.addComponent(confirmationComponent);
+		layout.setComponentAlignment(confirmationComponent, Alignment.BOTTOM_RIGHT);
+		layout.setWidth(100, Unit.PERCENTAGE);
+		layout.setSpacing(true);
+		popupWindow.setContent(layout);
+		popupWindow.setClosable(false);
+
+		UI.getCurrent().addWindow(popupWindow);
+		return popupWindow;
+	}
+
+	public enum PopupOption {
+		OPTION1,
+		OPTION2,
+		OPTION3;
+	}
+
 	public static Window showDeleteConfirmationWindow(String content, Runnable callback) {
 		Window popupWindow = VaadinUiUtil.createPopupWindow();
 

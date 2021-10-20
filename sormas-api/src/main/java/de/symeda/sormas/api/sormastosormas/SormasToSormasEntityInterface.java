@@ -27,32 +27,19 @@ public interface SormasToSormasEntityInterface {
 
 	void share(List<String> entityUuids, @Valid SormasToSormasOptionsDto options) throws SormasToSormasException;
 
-	void sendShareRequest(List<String> entityUuids, @Valid SormasToSormasOptionsDto options) throws SormasToSormasException;
-
 	void saveShareRequest(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;
-
-	void sendRejectShareRequest(String uuid) throws SormasToSormasException;
-
-	void rejectShareRequest(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException;
 
 	void acceptShareRequest(String uuid) throws SormasToSormasException, SormasToSormasValidationException;
 
 	SormasToSormasEncryptedDataDto getDataForShareRequest(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException;
 
-	void shareEntities(List<String> entityUuids, @Valid SormasToSormasOptionsDto options) throws SormasToSormasException;
-
-	void saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData, SormasToSormasOriginInfoDto originInfo)
-		throws SormasToSormasException, SormasToSormasValidationException;
-
-	void returnEntity(String entityUuid, @Valid SormasToSormasOptionsDto options) throws SormasToSormasException;
-
-	void saveReturnedEntity(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;
+	void saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;
 
 	void syncShares(ShareTreeCriteria criteria);
 
 	void saveSyncedEntity(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;
 
-	List<SormasToSormasShareTree> getAllShares(String uuid) throws SormasToSormasException;
+	List<SormasToSormasShareTree> getAllShares(String uuid);
 
 	SormasToSormasEncryptedDataDto getShareTrees(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException;
 

@@ -20,38 +20,26 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
+import de.symeda.sormas.api.travelentry.TravelEntryListEntryDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 
-public class TravelEntryListEntry extends HorizontalLayout {
+public class TravelEntryListEntry extends SideComponentField {
 
 	public static final String SEPARATOR = ": ";
 
-	private final TravelEntryIndexDto travelEntry;
+	private final TravelEntryListEntryDto travelEntry;
 	private Button editButton;
 
-	public TravelEntryListEntry(TravelEntryIndexDto travelEntry) {
+	public TravelEntryListEntry(TravelEntryListEntryDto travelEntry) {
 
 		this.travelEntry = travelEntry;
-
-		setMargin(false);
-		setSpacing(true);
-		setWidth(100, Unit.PERCENTAGE);
-		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
-
-		VerticalLayout mainLayout = new VerticalLayout();
-		mainLayout.setWidth(100, Unit.PERCENTAGE);
-		mainLayout.setMargin(false);
-		mainLayout.setSpacing(false);
-		addComponent(mainLayout);
-		setExpandRatio(mainLayout, 1);
 
 		HorizontalLayout uuidReportDateLayout = new HorizontalLayout();
 		uuidReportDateLayout.setMargin(false);
@@ -62,7 +50,7 @@ public class TravelEntryListEntry extends HorizontalLayout {
 		uuidReportDateLayout.addComponent(travelEntryUuidLabel);
 
 		Label reportDateLabel = new Label(
-			I18nProperties.getPrefixCaption(TravelEntryIndexDto.I18N_PREFIX, TravelEntryIndexDto.REPORT_DATE)
+			I18nProperties.getPrefixCaption(TravelEntryListEntryDto.I18N_PREFIX, TravelEntryListEntryDto.REPORT_DATE)
 				+ SEPARATOR
 				+ DateFormatHelper.formatDate(travelEntry.getReportDate()));
 		uuidReportDateLayout.addComponent(reportDateLabel);
@@ -70,7 +58,7 @@ public class TravelEntryListEntry extends HorizontalLayout {
 		uuidReportDateLayout.setWidthFull();
 		uuidReportDateLayout.setComponentAlignment(travelEntryUuidLabel, Alignment.MIDDLE_LEFT);
 		uuidReportDateLayout.setComponentAlignment(reportDateLabel, Alignment.MIDDLE_RIGHT);
-		mainLayout.addComponent(uuidReportDateLayout);
+		addComponentToField(uuidReportDateLayout);
 
 		HorizontalLayout diseasePointOfEntryLayout = new HorizontalLayout();
 		diseasePointOfEntryLayout.setMargin(false);
@@ -80,13 +68,14 @@ public class TravelEntryListEntry extends HorizontalLayout {
 		CssStyles.style(diseaseLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 		diseasePointOfEntryLayout.addComponent(diseaseLabel);
 
-		Label pointOfEntryLabel = new Label(travelEntry.getPointOfEntryName());
+		Label pointOfEntryLabel =
+			new Label(I18nProperties.getPrefixCaption(TravelEntryListEntryDto.POINT_OF_ENTRY_I18N_PREFIX, travelEntry.getPointOfEntryName()));
 		diseasePointOfEntryLayout.addComponent(pointOfEntryLabel);
 
 		diseasePointOfEntryLayout.setWidthFull();
 		diseasePointOfEntryLayout.setComponentAlignment(diseaseLabel, Alignment.MIDDLE_LEFT);
 		diseasePointOfEntryLayout.setComponentAlignment(pointOfEntryLabel, Alignment.MIDDLE_RIGHT);
-		mainLayout.addComponent(diseasePointOfEntryLayout);
+		addComponentToField(diseasePointOfEntryLayout);
 	}
 
 	public void addEditListener(Button.ClickListener editClickListener) {
@@ -105,7 +94,7 @@ public class TravelEntryListEntry extends HorizontalLayout {
 		}
 	}
 
-	public TravelEntryIndexDto getTravelEntry() {
+	public TravelEntryListEntryDto getTravelEntry() {
 		return travelEntry;
 	}
 }

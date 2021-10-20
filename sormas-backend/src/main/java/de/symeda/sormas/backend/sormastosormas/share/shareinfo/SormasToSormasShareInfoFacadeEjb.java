@@ -80,15 +80,19 @@ public class SormasToSormasShareInfoFacadeEjb implements SormasToSormasShareInfo
 
 		target.setTargetDescriptor(sormasServerDescriptor);
 
-		target.setRequestStatus(source.getRequestStatus());
-		target.setSender(source.getSender().toReference());
+		ShareRequestInfo latestRequest = ShareInfoHelper.getLatestRequest(source.getRequests().stream()).orElseGet(ShareRequestInfo::new);
+
+		target.setRequestStatus(latestRequest.getRequestStatus());
+		target.setSender(latestRequest.getSender().toReference());
 		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
-		target.setWithAssociatedContacts(source.isWithAssociatedContacts());
-		target.setWithSamples(source.isWithSamples());
-		target.setWithEvenParticipants(source.isWithEventParticipants());
-		target.setPseudonymizedPersonalData(source.isPseudonymizedPersonalData());
-		target.setPseudonymizedSensitiveData(source.isPseudonymizedSensitiveData());
-		target.setComment(source.getComment());
+		target.setWithAssociatedContacts(latestRequest.isWithAssociatedContacts());
+		target.setWithSamples(latestRequest.isWithSamples());
+		target.setWithEvenParticipants(latestRequest.isWithEventParticipants());
+		target.setWithImmunizations(latestRequest.isWithImmunizations());
+		target.setPseudonymizedPersonalData(latestRequest.isPseudonymizedPersonalData());
+		target.setPseudonymizedSensitiveData(latestRequest.isPseudonymizedSensitiveData());
+		target.setComment(latestRequest.getComment());
+		target.setResponseComment(latestRequest.getResponseComment());
 
 		return target;
 	}

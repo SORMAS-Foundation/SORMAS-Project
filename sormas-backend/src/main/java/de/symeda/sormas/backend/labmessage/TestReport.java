@@ -55,6 +55,8 @@ public class TestReport extends CoreAdo {
 	private Boolean testResultVerified;
 	private String testResultText;
 	private String typingId;
+	private String externalId;
+	private String externalOrderId;
 
 	private PathogenTest pathogenTest;
 
@@ -164,5 +166,23 @@ public class TestReport extends CoreAdo {
 
 	public void setTypingId(String typingId) {
 		this.typingId = typingId;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getExternalOrderId() {
+		return externalOrderId;
+	}
+
+	public void setExternalOrderId(String externalOrderId) {
+		this.externalOrderId = externalOrderId;
 	}
 }

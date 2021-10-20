@@ -389,6 +389,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setCqValue(source.getCqValue());
 		target.setReportDate(source.getReportDate());
 		target.setViaLims(source.isViaLims());
+		target.setExternalId(source.getExternalId());
+		target.setExternalOrderId(source.getExternalOrderId());
 
 		return target;
 	}
@@ -442,6 +444,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setCqValue(source.getCqValue());
 		target.setReportDate(source.getReportDate());
 		target.setViaLims(source.isViaLims());
+		target.setExternalId(source.getExternalId());
+		target.setExternalOrderId(source.getExternalOrderId());
 
 		return target;
 	}

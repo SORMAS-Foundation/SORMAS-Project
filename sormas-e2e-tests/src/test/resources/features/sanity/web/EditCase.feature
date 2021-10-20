@@ -4,7 +4,7 @@ Feature: Create cases
   Background: Create a case via API
     Given API: I create a new person
     Given API: I create a new case
-    Given I log in with the user
+    Given I log in with National User
 
   Scenario: Edit all fields from Symptoms tab
     When I am accessing the Symptoms tab using of created case via api

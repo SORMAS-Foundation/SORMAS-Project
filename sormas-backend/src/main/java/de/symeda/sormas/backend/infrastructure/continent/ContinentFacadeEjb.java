@@ -38,7 +38,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.continent.ContinentCriteria;
@@ -61,7 +60,9 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "ContinentFacade")
-public class ContinentFacadeEjb extends AbstractInfrastructureEjb<Continent, ContinentService> implements ContinentFacade {
+public class ContinentFacadeEjb
+	extends AbstractInfrastructureEjb<Continent, ContinentDto, ContinentIndexDto, ContinentReferenceDto, ContinentService, ContinentCriteria>
+	implements ContinentFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -120,11 +121,6 @@ public class ContinentFacadeEjb extends AbstractInfrastructureEjb<Continent, Con
 		List<ContinentIndexDto> continentIndexList = getIndexList(criteria, offset, size, sortProperties);
 		long totalElementCount = count(criteria);
 		return new Page<>(continentIndexList, offset, size, totalElementCount);
-	}
-
-	@Override
-	public ContinentDto getByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
 	}
 
 	@Override
@@ -190,33 +186,13 @@ public class ContinentFacadeEjb extends AbstractInfrastructureEjb<Continent, Con
 	}
 
 	@Override
-	public ContinentDto save(@Valid ContinentDto dto) {
-		return save(dto, false);
+	public ContinentDto save(ContinentDto dtoToSave, boolean allowMerge) {
+		return save(dtoToSave, allowMerge, Validations.importContinentAlreadyExists);
 	}
 
 	@Override
-	public ContinentDto save(@Valid ContinentDto dto, boolean allowMerge) {
-		checkInfraDataLocked();
-
-		Continent continent = service.getByUuid(dto.getUuid());
-
-		if (continent == null) {
-			List<Continent> duplicates = service.getByDefaultName(dto.getDefaultName(), true);
-			if (!duplicates.isEmpty()) {
-				if (allowMerge) {
-					continent = duplicates.get(0);
-					ContinentDto dtoToMerge = getByUuid(continent.getUuid());
-					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
-				} else {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importContinentAlreadyExists));
-				}
-			}
-		}
-
-		continent = fillOrBuildEntity(dto, continent, true);
-		service.ensurePersisted(continent);
-
-		return toDto(continent);
+	protected List<Continent> findDuplicates(ContinentDto dto) {
+		return service.getByDefaultName(dto.getDefaultName(), true);
 	}
 
 	@Override
@@ -224,6 +200,7 @@ public class ContinentFacadeEjb extends AbstractInfrastructureEjb<Continent, Con
 		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}
 
+	@Override
 	public ContinentDto toDto(Continent entity) {
 		if (entity == null) {
 			return null;
@@ -255,21 +232,23 @@ public class ContinentFacadeEjb extends AbstractInfrastructureEjb<Continent, Con
 		return dto;
 	}
 
+	@Override
 	public List<ContinentReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
 		return service.getByExternalId(externalId, includeArchived).stream().map(ContinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
+	@Override
 	public List<ContinentReferenceDto> getReferencesByName(String name, boolean includeArchived) {
 		return service.getByDefaultName(name, includeArchived).stream().map(ContinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
-	private Continent fillOrBuildEntity(@NotNull ContinentDto source, Continent target, boolean checkChangeDate) {
+	@Override
+	protected Continent fillOrBuildEntity(@NotNull ContinentDto source, Continent target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Continent::new, checkChangeDate);
 
 		target.setDefaultName(source.getDefaultName());
 		target.setArchived(source.isArchived());
 		target.setExternalId(source.getExternalId());
-
 		return target;
 	}
 

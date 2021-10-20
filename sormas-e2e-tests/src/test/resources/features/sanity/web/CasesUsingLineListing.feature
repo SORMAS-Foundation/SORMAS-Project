@@ -2,7 +2,7 @@
 Feature: Cases using Line Listing feature
 
   Scenario: Create cases using Line Listing feature and validate the entries
-    Given I log in with the user
+    Given I log in with National User
     And I click on the Cases button from navbar
     Then I click on Case Line Listing button
     And I create a new case using line listing feature
