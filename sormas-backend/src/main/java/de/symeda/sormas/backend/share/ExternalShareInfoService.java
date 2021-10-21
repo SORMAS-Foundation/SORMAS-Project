@@ -89,11 +89,11 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilter<ExternalS
 	}
 
 	public boolean isCaseShared(Long caseId) {
-		return exists((cb, root) -> cb.equal(root.get(ExternalShareInfo.CAZE).get(Case.ID), caseId));
+		return exists((cb, root, cq) -> cb.equal(root.get(ExternalShareInfo.CAZE).get(Case.ID), caseId));
 	}
 
 	public boolean isEventShared(Long eventId) {
-		return exists((cb, root) -> cb.equal(root.get(ExternalShareInfo.EVENT).get(Event.ID), eventId));
+		return exists((cb, root, cq) -> cb.equal(root.get(ExternalShareInfo.EVENT).get(Event.ID), eventId));
 	}
 
 	private <T> void createAndPersistShareInfo(ExternalShareStatus status, T associatedEntity, BiConsumer<ExternalShareInfo, T> setAssociatedEntity) {

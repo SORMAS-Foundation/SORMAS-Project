@@ -25,17 +25,12 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
@@ -43,6 +38,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.backend.MockProducer;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
 
 public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeTest {
 
@@ -81,7 +77,7 @@ public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeT
 	}
 
 	@Test
-	public void testSaveLabMessages() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
+	public void testSaveLabMessages() throws SormasToSormasException, SormasToSormasValidationException {
 		LabMessageDto labMessage = LabMessageDto.build();
 		Date dateNow = new Date();
 		setLabMessageFields(labMessage, dateNow);

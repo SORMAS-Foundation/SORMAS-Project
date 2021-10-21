@@ -19,6 +19,7 @@
 package de.symeda.sormas.app.backend.immunization;
 
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.sample.SampleJurisdictionBooleanValidator;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.JurisdictionHelper;
 
@@ -26,9 +27,14 @@ public class ImmunizationEditAuthorization {
 
     public static boolean isImmunizationEditAllowed(Immunization immunization) {
 
+        if (immunization.getSormasToSormasOriginInfo() != null) {
+            return immunization.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+        }
+
         final User user = ConfigProvider.getUser();
         final ImmunizationJurisdictionBooleanValidator jurisdictionBooleanValidator =
                 ImmunizationJurisdictionBooleanValidator.of(JurisdictionHelper.createImmunizationJurisdictionDto(immunization), JurisdictionHelper.createUserJurisdiction(user));
-        return jurisdictionBooleanValidator.inJurisdictionOrOwned();
+        return !immunization.isOwnershipHandedOver() && jurisdictionBooleanValidator.inJurisdictionOrOwned();
+
     }
 }

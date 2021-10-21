@@ -24,6 +24,8 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -38,6 +40,8 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -321,11 +325,14 @@ public class PersonDto extends PseudonymizableDto {
 	private SymptomJournalStatus symptomJournalStatus;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalId;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalToken;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String internalToken;
 
@@ -336,6 +343,7 @@ public class PersonDto extends PseudonymizableDto {
 	@SensitiveData
 	private CountryReferenceDto citizenship;
 	@SensitiveData
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String additionalDetails;
 
@@ -542,7 +550,7 @@ public class PersonDto extends PseudonymizableDto {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public String getPhone(boolean onlyPrimary) throws SeveralNonPrimaryContactDetailsException {
 		String primaryPhone = getPhone();
-		if (onlyPrimary || !(primaryPhone.equals(""))) {
+		if (onlyPrimary || StringUtils.isNotBlank(primaryPhone)) {
 			return primaryPhone;
 		} else {
 			List<String> allPhones = getAllPhoneNumbers();
@@ -607,7 +615,7 @@ public class PersonDto extends PseudonymizableDto {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public String getEmailAddress(boolean onlyPrimary) throws SeveralNonPrimaryContactDetailsException {
 		String primaryEmail = getEmailAddress();
-		if (onlyPrimary || !(primaryEmail.equals(""))) {
+		if (onlyPrimary || StringUtils.isNotBlank(primaryEmail)) {
 			return primaryEmail;
 		} else {
 			List<String> allEmails = getAllEmailAddresses();

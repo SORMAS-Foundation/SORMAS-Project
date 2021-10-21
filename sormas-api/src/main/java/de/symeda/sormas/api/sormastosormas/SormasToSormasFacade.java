@@ -31,7 +31,9 @@ public interface SormasToSormasFacade {
 
 	SormasServerDescriptor getSormasServerDescriptorById(String id);
 
-	void rejectShareRequest(ShareRequestDataType dataType, String uuid) throws SormasToSormasException;
+	void rejectRequest(ShareRequestDataType dataType, String uuid, String comment) throws SormasToSormasException;
+
+	void requestRejected(SormasToSormasEncryptedDataDto encryptedRejectData) throws SormasToSormasException;
 
 	void acceptShareRequest(ShareRequestDataType dataType, String uuid) throws SormasToSormasException, SormasToSormasValidationException;
 

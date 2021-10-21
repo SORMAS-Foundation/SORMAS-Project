@@ -42,10 +42,10 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareReque
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestFacade;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -186,6 +186,8 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		target.setCasesList(source.getCases());
 		target.setContactsList(source.getContacts());
 		target.setEventsList(source.getEvents());
+		target.setEventParticipantsList(source.getEventParticipants());
+		target.setResponseComment(source.getResponseComment());
 
 		return target;
 	}
@@ -203,6 +205,8 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		target.setCases(source.getCasesList());
 		target.setContacts(source.getContactsList());
 		target.setEvents(source.getEventsList());
+		target.setEventParticipants(source.getEventParticipantsList());
+		target.setResponseComment(source.getResponseComment());
 
 		return target;
 	}

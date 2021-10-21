@@ -112,4 +112,6 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 
 	public abstract List<ADO> getByExternalId(String externalId, boolean includeArchived);
 
+	// todo move this up later
+	public abstract Predicate buildCriteriaFilter(CRITERIA criteria, CriteriaBuilder cb, Root<ADO> from);
 }

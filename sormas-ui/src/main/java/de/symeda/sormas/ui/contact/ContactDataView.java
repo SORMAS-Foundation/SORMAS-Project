@@ -150,7 +150,7 @@ public class ContactDataView extends AbstractContactView {
 							Disease selectedDisease = ((ContactDataForm) editComponent.getWrappedComponent()).getSelectedDisease();
 							ControllerProvider.getContactController().openSelectCaseForContactWindow(selectedDisease, selectedCase -> {
 								if (selectedCase != null) {
-									((ContactDataForm) editComponent.getWrappedComponent()).setSourceCase(selectedCase);
+									((ContactDataForm) editComponent.getWrappedComponent()).setSourceCase(selectedCase.toReference());
 									ContactDto contactToChange = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
 									contactToChange.setCaze(selectedCase.toReference());
 									FacadeProvider.getContactFacade().saveContact(contactToChange);

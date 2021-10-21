@@ -15,14 +15,13 @@
 
 package de.symeda.sormas.backend.sormastosormas.data.received;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
-import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
-import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
-import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedData;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
 
-public interface ReceivedDataProcessor<ENTITY extends SormasToSormasEntityDto, SHARED extends SormasToSormasDto<ENTITY>, PROCESED extends ProcessedData<ENTITY>, PREVIEW> {
+public interface ReceivedDataProcessor<DTO extends de.symeda.sormas.api.utils.SormasToSormasEntityDto, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW, ENTITY extends SormasToSormasEntity> {
 
-	PROCESED processReceivedData(SHARED sharedData, ENTITY existingData) throws SormasToSormasValidationException;
+	ValidationErrors processReceivedData(SHARED sharedData, ENTITY existingData);
 
-	PREVIEW processReceivedPreview(PREVIEW sharedPreview) throws SormasToSormasValidationException;
+	ValidationErrors processReceivedPreview(PREVIEW sharedPreview);
 }

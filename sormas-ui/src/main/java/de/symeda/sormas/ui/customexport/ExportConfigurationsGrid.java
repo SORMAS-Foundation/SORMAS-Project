@@ -74,7 +74,12 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 	public void reload(boolean isPublic) {
 		List<ExportConfigurationDto> configs =
 			FacadeProvider.getExportFacade().getExportConfigurations(new ExportConfigurationCriteria().exportType(exportType), isPublic);
-		setItems(configs);
+		if (!configs.isEmpty()) {
+			setItems(configs);
+		} else {
+			setItems(new ExportConfigurationDto());
+		}
+
 		setHeightByRows(configs.size() > 0 ? (Math.min(configs.size(), 10)) : 1);
 		if (isPublic) {
 			setNbOfSharedExportsToPublic(configs.size());
@@ -90,25 +95,28 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 		layout.setSpacing(true);
 
 		Button btnExport;
-		btnExport = ButtonHelper.createIconButtonWithCaption(
-			config.getUuid() + "-download",
-			null,
-			VaadinIcons.DOWNLOAD,
-			e -> exportCallback.accept(config),
-			ValoTheme.BUTTON_PRIMARY);
+		btnExport = ButtonHelper.createIconButtonWithCaption(config.getUuid() + "-download", null, VaadinIcons.DOWNLOAD, e -> {
+			if (config.getUuid() != null) {
+				exportCallback.accept(config);
+			}
+		}, ValoTheme.BUTTON_PRIMARY);
 		layout.addComponent(btnExport);
 
 		Button btnEdit = ButtonHelper.createIconButtonWithCaption(config.getUuid() + "-edit", null, VaadinIcons.EDIT, e -> {
-			ControllerProvider.getCustomExportController().openEditExportConfigurationWindow(this, config, availableProperties);
+			if (config.getUuid() != null) {
+				ControllerProvider.getCustomExportController().openEditExportConfigurationWindow(this, config, availableProperties);
+			}
 		});
 		btnEdit.setEnabled(canEditOrDelete);
 		layout.addComponent(btnEdit);
 
 		Button btnDelete = ButtonHelper.createIconButtonWithCaption(config.getUuid() + "-delete", null, VaadinIcons.TRASH, e -> {
-			FacadeProvider.getExportFacade().deleteExportConfiguration(config.getUuid());
-			new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationDeleted), Type.WARNING_MESSAGE, false)
-				.show(Page.getCurrent());
-			reload(false);
+			if (config.getUuid() != null) {
+				FacadeProvider.getExportFacade().deleteExportConfiguration(config.getUuid());
+				new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationDeleted), Type.WARNING_MESSAGE, false)
+					.show(Page.getCurrent());
+				reload(false);
+			}
 		});
 		btnDelete.setEnabled(canEditOrDelete);
 		layout.addComponent(btnDelete);

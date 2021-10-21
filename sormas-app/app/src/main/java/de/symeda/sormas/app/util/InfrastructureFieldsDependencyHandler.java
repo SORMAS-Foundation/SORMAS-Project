@@ -527,6 +527,9 @@ public class InfrastructureFieldsDependencyHandler {
 					}
 				} else {
 					newFacilities = addUnknownItem(itemsWithEmpty(), unknownFacility);
+					if (initialFacility != null && !newFacilities.contains(facilityItem)) {
+						newFacilities.add(facilityItem);
+					}
 				}
 
 				Facility selectedFacility = (Facility) facilityField.getValue();
@@ -646,6 +649,9 @@ public class InfrastructureFieldsDependencyHandler {
 				}
 			} else {
 				newFacilities = itemsWithEmpty();
+				if (initialFacility != null && !newFacilities.contains(facilityItem)) {
+					newFacilities.add(facilityItem);
+				}
 			}
 		}
 

@@ -34,11 +34,14 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 	private boolean withAssociatedContacts;
 	private boolean withSamples;
 	private boolean withEvenParticipants;
+	private boolean withImmunizations;
 	private boolean pseudonymizedPersonalData;
 	private boolean pseudonymizedSensitiveData;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String comment;
 	private ShareRequestStatus requestStatus;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	private String responseComment;
 
 	/**
 	 * @return Get the target server of the share operation.
@@ -95,6 +98,14 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 		this.withEvenParticipants = withEvenParticipants;
 	}
 
+	public boolean isWithImmunizations() {
+		return withImmunizations;
+	}
+
+	public void setWithImmunizations(boolean withImmunizations) {
+		this.withImmunizations = withImmunizations;
+	}
+
 	public boolean isPseudonymizedPersonalData() {
 		return pseudonymizedPersonalData;
 	}
@@ -125,5 +136,13 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 
 	public void setRequestStatus(ShareRequestStatus requestStatus) {
 		this.requestStatus = requestStatus;
+	}
+
+	public String getResponseComment() {
+		return responseComment;
+	}
+
+	public void setResponseComment(String responseComment) {
+		this.responseComment = responseComment;
 	}
 }
