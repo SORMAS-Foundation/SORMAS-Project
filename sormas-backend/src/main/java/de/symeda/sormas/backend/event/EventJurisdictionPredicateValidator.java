@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.event;
 
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -36,22 +37,38 @@ public class EventJurisdictionPredicateValidator extends PredicateJurisdictionVa
 		this.cq = qc.getQuery();
 	}
 
+	private EventJurisdictionPredicateValidator(EventQueryContext qc, Path userPath) {
+		super(qc.getCriteriaBuilder(), null, userPath, null);
+		this.joins = (EventJoins<?>) qc.getJoins();
+		this.cq = qc.getQuery();
+	}
+
 	public static EventJurisdictionPredicateValidator of(EventQueryContext qc, User user) {
 		return new EventJurisdictionPredicateValidator(qc, user);
 	}
 
+	public static EventJurisdictionPredicateValidator of(EventQueryContext qc, Path userPath) {
+		return new EventJurisdictionPredicateValidator(qc, userPath);
+	}
+
 	@Override
 	protected Predicate isInJurisdiction() {
-		return isInJurisdictionByJurisdictionLevel(user.getCalculatedJurisdictionLevel());
+		return super.isInJurisdiction();
 	}
 
 	@Override
 	protected Predicate isInJurisdictionOrOwned() {
-		final Predicate reportedByCurrentUser =
-				cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), user.getUuid()));
+		final Predicate reportedByCurrentUser = cb.and(
+			cb.isNotNull(joins.getReportingUser()),
+			user != null
+				? cb.equal(joins.getReportingUser().get(User.ID), user.getId())
+				: cb.equal(joins.getReportingUser().get(User.ID), userPath.get(User.ID)));
 
-		final Predicate currentUserResponsible =
-				cb.and(cb.isNotNull(joins.getResponsibleUser()), cb.equal(joins.getResponsibleUser().get(User.UUID), user.getUuid()));
+		final Predicate currentUserResponsible = cb.and(
+			cb.isNotNull(joins.getResponsibleUser()),
+			user != null
+				? cb.equal(joins.getResponsibleUser().get(User.ID), user.getId())
+				: cb.equal(joins.getResponsibleUser().get(User.ID), userPath.get(User.ID)));
 
 		return cb.or(reportedByCurrentUser, currentUserResponsible, isInJurisdiction());
 	}
