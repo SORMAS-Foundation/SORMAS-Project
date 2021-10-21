@@ -313,9 +313,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	}
 
 	public void updateImmunizationStatusBasedOnVaccinations(Immunization immunization) {
-		ImmunizationManagementStatus immunizationManagementStatus = immunization.getImmunizationManagementStatus();
-		if (immunizationManagementStatus == ImmunizationManagementStatus.SCHEDULED
-			|| immunizationManagementStatus == ImmunizationManagementStatus.ONGOING) {
+		ImmunizationStatus immunizationStatus = immunization.getImmunizationStatus();
+		if (immunizationStatus != ImmunizationStatus.NOT_ACQUIRED && immunizationStatus != ImmunizationStatus.EXPIRED) {
 			final Integer numberOfDoses = immunization.getNumberOfDoses();
 			final int vaccinationCount = immunization.getVaccinations().size();
 
