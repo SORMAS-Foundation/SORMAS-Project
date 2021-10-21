@@ -65,4 +65,14 @@ public class SystemEventDto extends EntityDto {
 		return systemEvent;
 	}
 
+	@Override
+	public String toString() {
+		return "SystemEventDto{" +
+				"type=" + type +
+				", startDate=" + startDate +
+				", endDate=" + endDate +
+				", status=" + status +
+				", additionalInfo='" + additionalInfo + '\'' +
+				'}';
+	}
 }

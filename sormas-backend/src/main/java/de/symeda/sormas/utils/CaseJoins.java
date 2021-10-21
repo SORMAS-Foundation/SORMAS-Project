@@ -26,15 +26,15 @@ import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
@@ -61,7 +61,6 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 	private Join<Location, District> personAddressDistrict;
 	private Join<Location, Community> personAddressCommunity;
 	private Join<Location, Facility> personAddressFacility;
-	private Join<Person, Facility> occupationFacility;
 	private Join<Case, Hospitalization> hospitalization;
 	private Join<Case, EpiData> epiData;
 	private Join<Case, Symptoms> symptoms;
@@ -73,8 +72,7 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 	private Join<Sample, Facility> sampleLabs;
 	private Join<Person, Country> personBirthCountry;
 	private Join<Person, Country> personCitizenship;
-	private Join<Case, District> reportingDistrict;
-	private Join<Case, SormasToSormasShareInfo> shareInfoCases;
+	private Join<Case, SormasToSormasShareInfo> sormasToSormasShareInfo;
 	private Join<Case, ExternalShareInfo> externalShareInfo;
 	private Join<Case, User> followUpStatusChangeUser;
 
@@ -306,12 +304,12 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 		this.personCitizenship = personCitizenship;
 	}
 
-	public Join<Case, SormasToSormasShareInfo> getShareInfoCases() {
-		return getOrCreate(shareInfoCases, Case.SHARE_INFO_CASES, JoinType.LEFT, this::setShareInfoCases);
+	public Join<Case, SormasToSormasShareInfo> getSormasToSormasShareInfo() {
+		return getOrCreate(sormasToSormasShareInfo, Case.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT, this::setSormasToSormasShareInfo);
 	}
 
-	private void setShareInfoCases(Join<Case, SormasToSormasShareInfo> shareInfoCases) {
-		this.shareInfoCases = shareInfoCases;
+	private void setSormasToSormasShareInfo(Join<Case, SormasToSormasShareInfo> sormasToSormasShareInfo) {
+		this.sormasToSormasShareInfo = sormasToSormasShareInfo;
 	}
 
 	public Join<Case, ExternalShareInfo> getExternalShareInfo() {

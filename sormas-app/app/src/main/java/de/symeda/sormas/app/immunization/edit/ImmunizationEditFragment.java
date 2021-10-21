@@ -52,6 +52,7 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
+import de.symeda.sormas.app.component.validation.ValidationHelper;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentImmunizationEditLayoutBinding;
@@ -186,8 +187,10 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		contentBinding.immunizationRecoveryDate.initializeDateField(getFragmentManager());
 		contentBinding.immunizationStartDate.initializeDateField(getFragmentManager());
 		contentBinding.immunizationEndDate.initializeDateField(getFragmentManager());
+		ValidationHelper.initDateIntervalValidator(contentBinding.immunizationStartDate, contentBinding.immunizationEndDate);
 		contentBinding.immunizationValidFrom.initializeDateField(getFragmentManager());
 		contentBinding.immunizationValidUntil.initializeDateField(getFragmentManager());
+		ValidationHelper.initDateIntervalValidator(contentBinding.immunizationValidFrom, contentBinding.immunizationValidUntil);
 		contentBinding.immunizationLastInfectionDate.initializeDateField(getFragmentManager());
 
 		contentBinding.immunizationMeansOfImmunization.addValueChangedListener(new ValueChangeListener() {

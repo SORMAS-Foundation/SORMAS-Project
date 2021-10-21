@@ -47,6 +47,8 @@ public class TestReportDto extends EntityDto {
 	private String typingId;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalId;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String externalOrderId;
 
 	private PathogenTestReferenceDto pathogenTest;
 
@@ -158,5 +160,13 @@ public class TestReportDto extends EntityDto {
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
+	}
+
+	public String getExternalOrderId() {
+		return externalOrderId;
+	}
+
+	public void setExternalOrderId(String externalOrderId) {
+		this.externalOrderId = externalOrderId;
 	}
 }

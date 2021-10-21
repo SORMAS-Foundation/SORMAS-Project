@@ -35,6 +35,7 @@ public class DiseaseSummaryComponent extends DashboardStatisticsSubComponent {
 
 		lastReportedDistrict =
 			new DiseaseSummaryElementComponent(Strings.headingLastReportedDistrict, I18nProperties.getString(Strings.none).toUpperCase());
+		lastReportedDistrict.setWidth(100, Unit.PERCENTAGE);
 		addComponent(lastReportedDistrict);
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {

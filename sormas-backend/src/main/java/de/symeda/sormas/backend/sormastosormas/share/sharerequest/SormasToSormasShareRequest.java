@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.auditlog.api.AuditedIgnore;
@@ -39,7 +40,9 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
@@ -55,6 +58,7 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 	public static final String CASES = "cases";
 	public static final String CONTACTS = "contacts";
 	public static final String EVENTS = "events";
+	public static final String RESPONSE_COMMENT = "responseComment";
 
 	private ShareRequestDataType dataType;
 
@@ -65,10 +69,14 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 	private String cases;
 	private String contacts;
 	private String events;
+	private String eventParticipants;
+
+	private String responseComment;
 
 	private List<SormasToSormasCasePreview> casesList;
 	private List<SormasToSormasContactPreview> contactsList;
 	private List<SormasToSormasEventPreview> eventsList;
+	private List<SormasToSormasEventParticipantPreview> eventParticipantsList;
 
 	public SormasToSormasShareRequest() {
 	}
@@ -136,6 +144,26 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 		eventsList = null;
 	}
 
+	@AuditedIgnore
+	@Type(type = "json")
+	@Column(columnDefinition = "json")
+	public String getEventParticipants() {
+		return eventParticipants;
+	}
+
+	public void setEventParticipants(String eventParticipants) {
+		this.eventParticipants = eventParticipants;
+	}
+
+	@Column(length = FieldConstraints.CHARACTER_LIMIT_BIG)
+	public String getResponseComment() {
+		return responseComment;
+	}
+
+	public void setResponseComment(String responseComment) {
+		this.responseComment = responseComment;
+	}
+
 	@Transient
 	public List<SormasToSormasCasePreview> getCasesList() {
 		if (casesList == null) {
@@ -143,7 +171,7 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 				casesList = new ArrayList<>();
 			} else {
 				try {
-					ObjectMapper mapper = new ObjectMapper();
+					ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 					casesList = Arrays.asList(mapper.readValue(cases, SormasToSormasCasePreview[].class));
 				} catch (IOException e) {
 					throw new ValidationRuntimeException(
@@ -164,7 +192,7 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 		}
 
 		try {
-			ObjectMapper mapper = new ObjectMapper();
+			ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			cases = mapper.writeValueAsString(casesList);
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException("Content of casesList could not be parsed to JSON String - ID: " + getId());
@@ -178,7 +206,7 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 				contactsList = new ArrayList<>();
 			} else {
 				try {
-					ObjectMapper mapper = new ObjectMapper();
+					ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 					contactsList = Arrays.asList(mapper.readValue(contacts, SormasToSormasContactPreview[].class));
 				} catch (IOException e) {
 					throw new ValidationRuntimeException(
@@ -198,7 +226,7 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 		}
 
 		try {
-			ObjectMapper mapper = new ObjectMapper();
+			ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			contacts = mapper.writeValueAsString(contactsList);
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException("Content of contactsList could not be parsed to JSON String - ID: " + getId());
@@ -212,7 +240,7 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 				eventsList = new ArrayList<>();
 			} else {
 				try {
-					ObjectMapper mapper = new ObjectMapper();
+					ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 					eventsList = Arrays.asList(mapper.readValue(events, SormasToSormasEventPreview[].class));
 				} catch (IOException e) {
 					throw new ValidationRuntimeException(
@@ -232,10 +260,44 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 		}
 
 		try {
-			ObjectMapper mapper = new ObjectMapper();
+			ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			events = mapper.writeValueAsString(eventsList);
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException("Content of eventsList could not be parsed to JSON String - ID: " + getId());
+		}
+	}
+
+	@Transient
+	public List<SormasToSormasEventParticipantPreview> getEventParticipantsList() {
+		if (eventParticipantsList == null) {
+			if (StringUtils.isBlank(eventParticipants)) {
+				eventParticipantsList = new ArrayList<>();
+			} else {
+				try {
+					ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+					eventParticipantsList = Arrays.asList(mapper.readValue(eventParticipants, SormasToSormasEventParticipantPreview[].class));
+				} catch (IOException e) {
+					throw new ValidationRuntimeException(
+						"Content of event participants could not be parsed to List<SormasToSormasEventPreview> - ID: " + getId());
+				}
+			}
+		}
+		return eventParticipantsList;
+	}
+
+	public void setEventParticipantsList(List<SormasToSormasEventParticipantPreview> eventParticipantsList) {
+		this.eventParticipantsList = eventParticipantsList;
+
+		if (this.eventParticipantsList == null) {
+			eventParticipants = null;
+			return;
+		}
+
+		try {
+			ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			eventParticipants = mapper.writeValueAsString(eventParticipantsList);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException("Content of eventParticipantList could not be parsed to JSON String - ID: " + getId());
 		}
 	}
 }

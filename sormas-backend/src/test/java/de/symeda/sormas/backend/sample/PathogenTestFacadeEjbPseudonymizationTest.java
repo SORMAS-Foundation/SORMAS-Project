@@ -19,7 +19,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -39,7 +38,6 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 
@@ -63,12 +61,14 @@ public class PathogenTestFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 		user2 = creator
 			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
 
-		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
 
 	@Test
 	public void testPathogenTestOnSampleInJurisdiction() {
 		Facility lab = getFacilityService().getByUuid(creator.createFacility("Lab", rdcf2.region, rdcf2.district, rdcf2.community).getUuid());
+
+		loginWith(user2);
+
 		CaseDataDto caze = creator.createCase(user2.toReference(), creator.createPerson("First", "Last").toReference(), rdcf2);
 		SampleDto sample = creator.createSample(caze.toReference(), user2.toReference(), lab);
 
@@ -80,6 +80,7 @@ public class PathogenTestFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 	@Test
 	public void testPathogenTestOnSampleOutsideJurisdiction() {
 		Facility lab = getFacilityService().getByUuid(creator.createFacility("Lab", rdcf1.region, rdcf1.district, rdcf1.community).getUuid());
+		loginWith(user2);
 		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson("First", "Last").toReference(), rdcf1);
 		SampleDto sample = creator.createSample(caze.toReference(), user1.toReference(), lab);
 
@@ -91,12 +92,14 @@ public class PathogenTestFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 	@Test
 	public void testPseudonymizeGetAllActive() {
 		Facility lab1 = getFacilityService().getByUuid(creator.createFacility("Lab", rdcf2.region, rdcf2.district, rdcf2.community).getUuid());
+		Facility lab2 = getFacilityService().getByUuid(creator.createFacility("Lab", rdcf1.region, rdcf1.district, rdcf1.community).getUuid());
+
+		loginWith(user2);
 		CaseDataDto caze1 = creator.createCase(user2.toReference(), creator.createPerson("First", "Last").toReference(), rdcf2);
 		SampleDto sample1 = creator.createSample(caze1.toReference(), user2.toReference(), lab1);
 
 		PathogenTestDto pathogenTest1 = createPathogenTest(lab1, sample1, user2);
 
-		Facility lab2 = getFacilityService().getByUuid(creator.createFacility("Lab", rdcf1.region, rdcf1.district, rdcf1.community).getUuid());
 		CaseDataDto caze2 = creator.createCase(user1.toReference(), creator.createPerson("First", "Last").toReference(), rdcf1);
 		creator.createContact(user2.toReference(), creator.createPerson("First", "Last").toReference(), caze2);
 		SampleDto sample2 = creator.createSample(caze2.toReference(), user1.toReference(), lab2);
@@ -114,12 +117,13 @@ public class PathogenTestFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 	@Test
 	public void testPseudonymizeGetAllByUuds() {
 		Facility lab1 = getFacilityService().getByUuid(creator.createFacility("Lab", rdcf2.region, rdcf2.district, rdcf2.community).getUuid());
+		Facility lab2 = getFacilityService().getByUuid(creator.createFacility("Lab", rdcf1.region, rdcf1.district, rdcf1.community).getUuid());
+		loginWith(user2);
 		CaseDataDto caze1 = creator.createCase(user2.toReference(), creator.createPerson("First", "Last").toReference(), rdcf2);
 		SampleDto sample1 = creator.createSample(caze1.toReference(), user2.toReference(), lab1);
 
 		PathogenTestDto pathogenTest1 = createPathogenTest(lab1, sample1, user2);
 
-		Facility lab2 = getFacilityService().getByUuid(creator.createFacility("Lab", rdcf1.region, rdcf1.district, rdcf1.community).getUuid());
 		CaseDataDto caze2 = creator.createCase(user1.toReference(), creator.createPerson("First", "Last").toReference(), rdcf1);
 		creator.createContact(user2.toReference(), creator.createPerson("First", "Last").toReference(), caze2);
 		SampleDto sample2 = creator.createSample(caze2.toReference(), user1.toReference(), lab2);
@@ -135,12 +139,15 @@ public class PathogenTestFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 	@Test
 	public void testPseudonymizeGetAllBySample() {
 		Facility lab1 = getFacilityService().getByUuid(creator.createFacility("Lab", rdcf2.region, rdcf2.district, rdcf2.community).getUuid());
+		Facility lab2 = getFacilityService().getByUuid(creator.createFacility("Lab", rdcf1.region, rdcf1.district, rdcf1.community).getUuid());
+
+		loginWith(user2);
+
 		CaseDataDto caze1 = creator.createCase(user2.toReference(), creator.createPerson("First", "Last").toReference(), rdcf2);
 		SampleDto sample1 = creator.createSample(caze1.toReference(), user2.toReference(), lab1);
 
 		PathogenTestDto pathogenTest1 = createPathogenTest(lab1, sample1, user2);
 
-		Facility lab2 = getFacilityService().getByUuid(creator.createFacility("Lab", rdcf1.region, rdcf1.district, rdcf1.community).getUuid());
 		CaseDataDto caze2 = creator.createCase(user1.toReference(), creator.createPerson("First", "Last").toReference(), rdcf1);
 		SampleDto sample2 = creator.createSample(caze2.toReference(), user1.toReference(), lab2);
 
@@ -156,12 +163,15 @@ public class PathogenTestFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 	@Test
 	public void testPseudonymizeGetAllBySampleUuds() {
 		Facility lab1 = getFacilityService().getByUuid(creator.createFacility("Lab", rdcf2.region, rdcf2.district, rdcf2.community).getUuid());
+		Facility lab2 = getFacilityService().getByUuid(creator.createFacility("Lab", rdcf1.region, rdcf1.district, rdcf1.community).getUuid());
+
+		loginWith(user2);
+
 		CaseDataDto caze1 = creator.createCase(user2.toReference(), creator.createPerson("First", "Last").toReference(), rdcf2);
 		SampleDto sample1 = creator.createSample(caze1.toReference(), user2.toReference(), lab1);
 
 		PathogenTestDto pathogenTest1 = createPathogenTest(lab1, sample1, user2);
 
-		Facility lab2 = getFacilityService().getByUuid(creator.createFacility("Lab", rdcf1.region, rdcf1.district, rdcf1.community).getUuid());
 		CaseDataDto caze2 = creator.createCase(user1.toReference(), creator.createPerson("First", "Last").toReference(), rdcf1);
 		SampleDto sample2 = creator.createSample(caze2.toReference(), user1.toReference(), lab2);
 
@@ -176,6 +186,8 @@ public class PathogenTestFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 	@Test
 	public void updatePathogenTestOutsideJurisdiction() {
 		Facility lab = getFacilityService().getByUuid(creator.createFacility("Lab", rdcf1.region, rdcf1.district, rdcf1.community).getUuid());
+
+		loginWith(user2);
 		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson("First", "Last").toReference(), rdcf1);
 		SampleDto sample = creator.createSample(caze.toReference(), user1.toReference(), lab);
 
@@ -195,6 +207,8 @@ public class PathogenTestFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 	@Test
 	public void updatePathogenTestInJurisdictionWithPseudonymizedDto() {
 		Facility lab = getFacilityService().getByUuid(creator.createFacility("Lab", rdcf2.region, rdcf2.district, rdcf2.community).getUuid());
+		loginWith(user2);
+
 		CaseDataDto caze = creator.createCase(user2.toReference(), creator.createPerson("First", "Last").toReference(), rdcf2);
 		SampleDto sample = creator.createSample(caze.toReference(), user2.toReference(), lab);
 

@@ -47,6 +47,8 @@ public class Vaccination extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 5143588610408312351L;
 
+	public static final String TABLE_NAME = "vaccination";
+
 	public static final String IMMUNIZATION = "immunization";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
 	public static final String REPORT_DATE = "reportDate";

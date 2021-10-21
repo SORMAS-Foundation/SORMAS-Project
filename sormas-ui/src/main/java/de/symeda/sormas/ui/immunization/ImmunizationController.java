@@ -122,9 +122,7 @@ public class ImmunizationController {
 		return null;
 	}
 
-	public CommitDiscardWrapperComponent<ImmunizationDataForm> getImmunizationDataEditComponent(String immunizationUuid) {
-
-		ImmunizationDto immunizationDto = findImmunization(immunizationUuid);
+	public CommitDiscardWrapperComponent<ImmunizationDataForm> getImmunizationDataEditComponent(ImmunizationDto immunizationDto) {
 
 		ImmunizationDataForm immunizationDataForm = new ImmunizationDataForm(immunizationDto.isPseudonymized(), immunizationDto.getRelatedCase());
 		immunizationDataForm.setValue(immunizationDto);
@@ -166,10 +164,10 @@ public class ImmunizationController {
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_ARCHIVE)) {
-			boolean archived = FacadeProvider.getImmunizationFacade().isArchived(immunizationUuid);
+			boolean archived = FacadeProvider.getImmunizationFacade().isArchived(immunizationDto.getUuid());
 			Button archiveButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
 				editComponent.commit();
-				archiveOrDearchiveImmunization(immunizationUuid, !archived);
+				archiveOrDearchiveImmunization(immunizationDto.getUuid(), !archived);
 			}, ValoTheme.BUTTON_LINK);
 
 			editComponent.getButtonsPanel().addComponentAsFirst(archiveButton);

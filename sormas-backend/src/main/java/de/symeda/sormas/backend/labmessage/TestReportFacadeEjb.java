@@ -81,6 +81,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		if (source.getPathogenTest() != null) {
 			target.setPathogenTest(source.getPathogenTest().toReference());
 		}
+		target.setExternalOrderId(source.getExternalOrderId());
 
 		return target;
 	}
@@ -101,6 +102,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTypingId(source.getTypingId());
 		target.setExternalId(source.getExternalId());
 		target.setPathogenTest(pathogenTestService.getByReferenceDto(source.getPathogenTest()));
+		target.setExternalOrderId(source.getExternalOrderId());
 
 		return target;
 	}
