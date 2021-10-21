@@ -1,5 +1,8 @@
 package de.symeda.sormas.app.epidata;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
+
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +21,10 @@ import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -39,9 +42,6 @@ import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogExposureEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
-
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
 
 public class ExposureDialog extends FormDialog {
 
@@ -113,7 +113,7 @@ public class ExposureDialog extends FormDialog {
 			setLiveValidationDisabled(true);
 		}
 
-		contentBinding.exposureExposureType.initializeSpinner(DataUtils.getEnumItems(ExposureType.class, true));
+		contentBinding.exposureExposureType.initializeSpinner(DataUtils.getEnumItems(ExposureType.class, true, fieldVisibilityCheckers));
 		contentBinding.exposureGatheringType.initializeSpinner(DataUtils.getEnumItems(GatheringType.class, true));
 		contentBinding.exposureHabitationType.initializeSpinner(DataUtils.getEnumItems(HabitationType.class, true));
 		contentBinding.exposureTypeOfAnimal.initializeSpinner(DataUtils.getEnumItems(TypeOfAnimal.class, true));

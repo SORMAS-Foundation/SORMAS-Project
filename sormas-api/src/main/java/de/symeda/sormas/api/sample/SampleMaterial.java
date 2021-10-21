@@ -17,29 +17,45 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.Diseases;
 
 public enum SampleMaterial {
 
 	BLOOD,
 	SERA,
+	@Diseases(value = {
+		Disease.CORONAVIRUS }, except = true)
 	STOOL,
 	NASAL_SWAB,
 	THROAT_SWAB,
 	NP_SWAB,
+	@Diseases(value = {
+		Disease.CORONAVIRUS }, except = true)
 	RECTAL_SWAB,
 	CEREBROSPINAL_FLUID,
+	@Diseases(value = {
+		Disease.CORONAVIRUS }, except = true)
 	CRUST,
 	TISSUE,
+	@Diseases(value = {
+		Disease.CORONAVIRUS }, except = true)
 	URINE,
+	@Diseases(value = {
+		Disease.CORONAVIRUS }, except = true)
 	CORNEA_PM,
 	SALIVA,
 	URINE_PM,
+	@Diseases(value = {
+		Disease.CORONAVIRUS }, except = true)
 	NUCHAL_SKIN_BIOPSY,
 	SPUTUM,
 	ENDOTRACHEAL_ASPIRATE,
 	BRONCHOALVEOLAR_LAVAGE,
+	@Diseases(value = {
+		Disease.CORONAVIRUS }, except = true)
 	BRAIN_TISSUE,
 	ANTERIOR_NARES_SWAB,
 	OP_ASPIRATE,

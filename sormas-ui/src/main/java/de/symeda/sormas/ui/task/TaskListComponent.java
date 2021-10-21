@@ -25,6 +25,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -42,7 +43,7 @@ public class TaskListComponent extends VerticalLayout {
 	private TaskList list;
 	private Button createButton;
 
-	public TaskListComponent(TaskContext context, ReferenceDto entityRef) {
+	public TaskListComponent(TaskContext context, ReferenceDto entityRef, Disease disease) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -65,7 +66,7 @@ public class TaskListComponent extends VerticalLayout {
 			createButton = ButtonHelper.createIconButton(
 				Captions.taskNewTask,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getTaskController().create(context, entityRef, this::reload),
+				e -> ControllerProvider.getTaskController().create(context, entityRef, disease, this::reload),
 				ValoTheme.BUTTON_PRIMARY);
 
 			componentHeader.addComponent(createButton);

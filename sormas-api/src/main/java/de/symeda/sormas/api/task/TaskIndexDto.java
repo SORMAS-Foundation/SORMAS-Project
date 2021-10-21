@@ -62,6 +62,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
+	public static final String DISEASE = "disease";
 
 	private String uuid;
 	private TaskContext taskContext;
@@ -90,6 +91,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 	private Date dueDate;
 	private Date suggestedStart;
 	private TaskStatus taskStatus;
+	private Disease disease;
 
 	private UserReferenceDto creatorUser;
 	private String creatorComment;
@@ -103,7 +105,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 			String eventUuid, String eventTitle, Disease eventDisease, String eventDiseaseDetails, EventStatus eventStatus, EventInvestigationStatus eventInvestigationStatus, Date eventDate,
 			String contactUuid, String contactFirstName, String contactLastName, String contactCaseFirstName, String contactCaseLastName,
 			String travelEntryUuid, String travelEntryExternalId, String travelEntryFirstName, String travelEntryLastName,
-			TaskType taskType, TaskPriority priority, Date dueDate, Date suggestedStart, TaskStatus taskStatus,
+			TaskType taskType, TaskPriority priority, Date dueDate, Date suggestedStart, TaskStatus taskStatus, Disease disease,
 			String creatorUserUuid, String creatorUserFirstName, String creatorUserLastName, String creatorComment,
 			String assigneeUserUuid, String assigneeUserFirstName, String assigneeUserLastName, String assigneeReply, String region, String district, String community,
 			boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventInJurisdiction, boolean isTravelEntryInJurisdiction) {
@@ -137,6 +139,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.dueDate = dueDate;
 		this.suggestedStart = suggestedStart;
 		this.taskStatus = taskStatus;
+		this.disease = disease;
 		this.creatorUser = new UserReferenceDto(creatorUserUuid, creatorUserFirstName, creatorUserLastName, null);
 		this.creatorComment = creatorComment;
 		this.assigneeUser = new UserReferenceDto(assigneeUserUuid, assigneeUserFirstName, assigneeUserLastName, null);
@@ -317,5 +320,13 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 
 	public TaskJurisdictionFlagsDto getTaskJurisdictionFlagsDto() {
 		return taskJurisdictionFlagsDto;
+	}
+
+	public Disease getDisease() {
+		return disease;
+	}
+
+	public void setDisease(Disease disease) {
+		this.disease = disease;
 	}
 }
