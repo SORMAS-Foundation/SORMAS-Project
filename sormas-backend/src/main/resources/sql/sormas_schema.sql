@@ -8702,4 +8702,13 @@ ALTER TABLE testreport_history ADD COLUMN externalOrderId varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (417, '[DEMIS2SORMAS] Handle New Profile: DiagnosticReport.basedOn #5139');
 
+-- 2021-10-19 [SORMAS2SORMAS] Shares > Share Requests > Response Comment (reject/accept) #6122
+ALTER TABLE sharerequestinfo ADD COLUMN responseComment text;
+ALTER TABLE sharerequestinfo_history ADD COLUMN responseComment text;
+
+ALTER TABLE sormastosormassharerequest ADD COLUMN responseComment text;
+ALTER TABLE sormastosormassharerequest_history ADD COLUMN responseComment text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (418, '[SORMAS2SORMAS] Shares > Share Requests > Response Comment (reject/accept) #6122');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

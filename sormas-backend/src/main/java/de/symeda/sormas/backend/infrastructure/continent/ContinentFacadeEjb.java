@@ -18,7 +18,6 @@ package de.symeda.sormas.backend.infrastructure.continent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,8 +25,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -48,24 +45,21 @@ import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "ContinentFacade")
 public class ContinentFacadeEjb
 	extends AbstractInfrastructureEjb<Continent, ContinentDto, ContinentIndexDto, ContinentReferenceDto, ContinentService, ContinentCriteria>
 	implements ContinentFacade {
-
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
 
 	@EJB
 	private CountryService countryService;
@@ -76,8 +70,8 @@ public class ContinentFacadeEjb
 	}
 
 	@Inject
-	protected ContinentFacadeEjb(ContinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(service, featureConfiguration);
+	protected ContinentFacadeEjb(ContinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
+		super(Continent.class, ContinentDto.class, service, featureConfiguration, userService);
 	}
 
 	public static ContinentReferenceDto toReferenceDto(Continent entity) {
@@ -135,7 +129,7 @@ public class ContinentFacadeEjb
 			cq.where(filter).distinct(true);
 		}
 
-		if (sortProperties != null && sortProperties.size() > 0) {
+		if (CollectionUtils.isNotEmpty(sortProperties)) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
@@ -162,21 +156,6 @@ public class ContinentFacadeEjb
 	}
 
 	@Override
-	public List<ContinentDto> getAllAfter(Date date) {
-		return service.getAll((cb, root) -> service.createChangeDateFilter(cb, root, date)).stream().map(this::toDto).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<ContinentDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<String> getAllUuids() {
-		return service.getAllUuids();
-	}
-
-	@Override
 	public List<ContinentReferenceDto> getAllActiveAsReference() {
 		return service.getAllActive(Continent.DEFAULT_NAME, true)
 			.stream()
@@ -191,13 +170,13 @@ public class ContinentFacadeEjb
 	}
 
 	@Override
-	protected List<Continent> findDuplicates(ContinentDto dto) {
-		return service.getByDefaultName(dto.getDefaultName(), true);
+	protected void selectDtoFields(CriteriaQuery<ContinentDto> cq, Root<Continent> root) {
+		// we do not select DTO fields in getAllAfter query
 	}
 
 	@Override
-	public long count(ContinentCriteria criteria) {
-		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
+	protected List<Continent> findDuplicates(ContinentDto dto) {
+		return service.getByDefaultName(dto.getDefaultName(), true);
 	}
 
 	@Override
@@ -257,12 +236,14 @@ public class ContinentFacadeEjb
 	public static class ContinentFacadeEjbLocal extends ContinentFacadeEjb {
 
 		public ContinentFacadeEjbLocal() {
-
 		}
 
 		@Inject
-		protected ContinentFacadeEjbLocal(ContinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-			super(service, featureConfiguration);
+		protected ContinentFacadeEjbLocal(
+			ContinentService service,
+			FeatureConfigurationFacadeEjbLocal featureConfiguration,
+			UserService userService) {
+			super(service, featureConfiguration, userService);
 		}
 	}
 }

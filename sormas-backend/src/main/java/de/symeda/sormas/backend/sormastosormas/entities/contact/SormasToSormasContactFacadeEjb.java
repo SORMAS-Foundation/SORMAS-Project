@@ -62,7 +62,6 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 	implements SormasToSormasContactFacade {
 
 	private static final String CONTACT_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CONTACT_REQUEST_ENDPOINT;
-	private static final String CONTACT_REQUEST_REJECT_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CONTACT_REQUEST_REJECT_ENDPOINT;
 	private static final String CONTACT_REQUEST_GET_DATA_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CONTACT_REQUEST_GET_DATA_ENDPOINT;
 	private static final String SAVE_SHARED_CONTACT_ENDPOINT = RESOURCE_PATH + CONTACT_ENDPOINT;
 	public static final String SYNC_SHARED_CONTACT_ENDPOINT = RESOURCE_PATH + CONTACT_SYNC_ENDPOINT;
@@ -80,7 +79,6 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 	public SormasToSormasContactFacadeEjb() {
 		super(
 			CONTACT_REQUEST_ENDPOINT,
-			CONTACT_REQUEST_REJECT_ENDPOINT,
 			CONTACT_REQUEST_GET_DATA_ENDPOINT,
 			SAVE_SHARED_CONTACT_ENDPOINT,
 			SYNC_SHARED_CONTACT_ENDPOINT,
