@@ -226,6 +226,7 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility, 
 		return null;
 	}
 
+	@Override
 	public Predicate buildCriteriaFilter(FacilityCriteria facilityCriteria, CriteriaBuilder cb, Root<Facility> from) {
 		Predicate filter = null;
 
