@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.ui.immunization.components.form;
 
 import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
@@ -15,12 +30,12 @@ import java.util.Collections;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.Label;
-import com.vaadin.v7.data.util.converter.StringToIntegerConverter;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -49,8 +64,10 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
+import de.symeda.sormas.ui.utils.NumberValidator;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
 public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> {
@@ -163,14 +180,16 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		TextField facilityDetails = addField(ImmunizationDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		facilityDetails.setVisible(false);
 
-		addField(ImmunizationDto.START_DATE, DateField.class);
-		addDateField(ImmunizationDto.END_DATE, DateField.class, -1);
+		DateField startDate = addField(ImmunizationDto.START_DATE, DateField.class);
+		DateField endDate = addDateField(ImmunizationDto.END_DATE, DateField.class, -1);
+		DateComparisonValidator.addStartEndValidators(startDate, endDate);
 
-		addDateField(ImmunizationDto.VALID_FROM, DateField.class, -1);
-		addDateField(ImmunizationDto.VALID_UNTIL, DateField.class, -1);
+		DateField validFrom = addDateField(ImmunizationDto.VALID_FROM, DateField.class, -1);
+		DateField validUntil = addDateField(ImmunizationDto.VALID_UNTIL, DateField.class, -1);
+		DateComparisonValidator.addStartEndValidators(validFrom, validUntil);
 
-		TextField numberOfDosesField = addField(ImmunizationDto.NUMBER_OF_DOSES, TextField.class);
-		numberOfDosesField.setConverter(new StringToIntegerConverter());
+		Field numberOfDosesField = addField(ImmunizationDto.NUMBER_OF_DOSES);
+		numberOfDosesField.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10, false));
 		numberOfDosesField.setVisible(false);
 
 		addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);

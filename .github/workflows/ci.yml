@@ -17,6 +17,9 @@ jobs:
   test:
     name: mvn verify
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module: [sormas-api, sormas-backend, sormas-rest, sormas-ui]
 
     steps:
       - name: Checkout repository (with token)
@@ -54,12 +57,12 @@ jobs:
       - name: Run mvn verify
         # FIXME(@JonasCir) see https://github.com/hzi-braunschweig/SORMAS-Project/issues/3730#issuecomment-745165678
         working-directory: ./sormas-base
-        run: mvn verify -B -ntp
+        run: mvn verify -B -ntp -pl :${{ matrix.module }} -am
 
       - name: Commit external visits API spec to development
         # Privileged action needing a secret token. Since this only runs on development in our own repo
         # the token will be available through a privileged checkout.
-        if: github.event_name == 'push' && github.ref == 'refs/heads/development' && hashFiles('sormas-rest/target/external_visits_API.yaml') != hashFiles('openapi/external_visits_API.yaml')
+        if: github.event_name == 'push' && github.ref == 'refs/heads/development' && matrix.module == 'sormas-rest' && hashFiles('sormas-rest/target/external_visits_API.yaml') != hashFiles('openapi/external_visits_API.yaml')
         # https://stackoverflow.com/questions/59604922/authorize-bash-to-access-github-protected-branch
         run: |
             git config --global user.name "sormas-vitagroup"

@@ -17,7 +17,6 @@ package de.symeda.sormas.api.sormastosormas.sharerequest;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
@@ -61,9 +60,6 @@ public class SormasToSormasEventPreview extends PseudonymizableDto implements Ha
 	@EmbeddedSensitiveData
 	@Valid
 	private LocationDto eventLocation;
-
-	@Valid
-	private List<SormasToSormasEventParticipantPreview> eventParticipants;
 
 	public Date getReportDateTime() {
 		return reportDateTime;
@@ -111,13 +107,5 @@ public class SormasToSormasEventPreview extends PseudonymizableDto implements Ha
 
 	public void setEventLocation(LocationDto eventLocation) {
 		this.eventLocation = eventLocation;
-	}
-
-	public List<SormasToSormasEventParticipantPreview> getEventParticipants() {
-		return eventParticipants;
-	}
-
-	public void setEventParticipants(List<SormasToSormasEventParticipantPreview> eventParticipants) {
-		this.eventParticipants = eventParticipants;
 	}
 }

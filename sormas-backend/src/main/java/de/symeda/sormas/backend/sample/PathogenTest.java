@@ -96,6 +96,7 @@ public class PathogenTest extends CoreAdo {
 	private Date reportDate;
 	private boolean viaLims;
 	private String externalId;
+	private String externalOrderId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
@@ -300,6 +301,15 @@ public class PathogenTest extends CoreAdo {
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getExternalOrderId() {
+		return externalOrderId;
+	}
+
+	public void setExternalOrderId(String externalOrderId) {
+		this.externalOrderId = externalOrderId;
 	}
 
 	public PathogenTestReferenceDto toReference() {

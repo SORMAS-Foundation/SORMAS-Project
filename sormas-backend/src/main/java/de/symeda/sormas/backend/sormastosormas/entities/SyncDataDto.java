@@ -18,28 +18,29 @@ package de.symeda.sormas.backend.sormastosormas.entities;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 
-public class SyncDataDto<S> implements Serializable {
+public class SyncDataDto implements Serializable {
 
 	private static final long serialVersionUID = -739984061456636096L;
 
-	private S shareData;
+	private SormasToSormasDto shareData;
 
 	private ShareTreeCriteria criteria;
 
 	public SyncDataDto() {
 	}
 
-	public SyncDataDto(S shareData, ShareTreeCriteria criteria) {
+	public SyncDataDto(SormasToSormasDto shareData, ShareTreeCriteria criteria) {
 		this.shareData = shareData;
 		this.criteria = criteria;
 	}
 
-	public S getShareData() {
+	public SormasToSormasDto getShareData() {
 		return shareData;
 	}
 
-	public void setShareData(S shareData) {
+	public void setShareData(SormasToSormasDto shareData) {
 		this.shareData = shareData;
 	}
 

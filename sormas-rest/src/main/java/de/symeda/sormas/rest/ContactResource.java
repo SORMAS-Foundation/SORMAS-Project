@@ -126,4 +126,10 @@ public class ContactResource extends EntityDtoResource {
 		return FacadeProvider.getContactFacade().deleteContacts(uuids);
 	}
 
+	@GET
+	@Path("/{uuid}")
+	public ContactDto getByUuid(@PathParam("uuid") String uuid) {
+		return FacadeProvider.getContactFacade().getContactByUuid(uuid);
+	}
+
 }

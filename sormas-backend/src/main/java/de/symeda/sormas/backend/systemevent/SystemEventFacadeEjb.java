@@ -42,7 +42,7 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 
 	public boolean existsStartedEvent(SystemEventType type) {
 		return systemEventService.exists(
-			(cb, root) -> cb.and(cb.equal(root.get(SystemEvent.STATUS), SystemEventStatus.STARTED), cb.equal(root.get(SystemEvent.TYPE), type)));
+			(cb, root, cq) -> cb.and(cb.equal(root.get(SystemEvent.STATUS), SystemEventStatus.STARTED), cb.equal(root.get(SystemEvent.TYPE), type)));
 	}
 
 	/**
@@ -61,6 +61,7 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 
 		return QueryHelper.getFirstResult(em, cq, this::toDto);
 	}
+
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

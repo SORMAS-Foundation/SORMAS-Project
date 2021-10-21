@@ -37,8 +37,6 @@ public interface LabMessageFacade {
 
 	List<LabMessageIndexDto> getIndexList(LabMessageCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	boolean atLeastOneFetchExecuted();
-
 	/**
 	 * Fetches external lab messages from the connected external system and saves them in the database.
 	 *

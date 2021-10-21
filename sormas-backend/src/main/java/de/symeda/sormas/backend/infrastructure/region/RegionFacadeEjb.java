@@ -16,8 +16,6 @@ package de.symeda.sormas.backend.infrastructure.region;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -26,8 +24,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -37,8 +33,9 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.Validations;
@@ -66,19 +63,12 @@ import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
-import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "RegionFacade")
 public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto, RegionIndexDto, RegionReferenceDto, RegionService, RegionCriteria>
 	implements RegionFacade {
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
-
-	@EJB
-	private UserService userService;
 	@EJB
 	private PopulationDataFacadeEjbLocal populationDataFacade;
 	@EJB
@@ -92,8 +82,8 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 	}
 
 	@Inject
-	protected RegionFacadeEjb(RegionService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(service, featureConfiguration);
+	protected RegionFacadeEjb(RegionService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
+		super(Region.class, RegionDto.class, service, featureConfiguration, userService);
 	}
 
 	@Override
@@ -126,29 +116,11 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 	}
 
 	@Override
-	public List<RegionDto> getAllAfter(Date date) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<RegionDto> cq = cb.createQuery(RegionDto.class);
-		Root<Region> region = cq.from(Region.class);
-
-		selectDtoFields(cq, region);
-
-		Predicate filter = service.createChangeDateFilter(cb, region, date);
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	// Need to be in the same order as in the constructor
-	private void selectDtoFields(CriteriaQuery<RegionDto> cq, Root<Region> root) {
+	protected void selectDtoFields(CriteriaQuery<RegionDto> cq, Root<Region> root) {
 
 		Join<Region, Country> country = root.join(Region.COUNTRY, JoinType.LEFT);
 		Join<Region, Area> area = root.join(Region.AREA, JoinType.LEFT);
-
+		// Needs to be in the same order as in the constructor
 		cq.multiselect(
 			root.get(Region.CREATION_DATE),
 			root.get(Region.CHANGE_DATE),
@@ -217,42 +189,6 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 		List<RegionIndexDto> regionIndexList = getIndexList(regionCriteria, offset, size, sortProperties);
 		long totalElementCount = count(regionCriteria);
 		return new Page<>(regionIndexList, offset, size, totalElementCount);
-	}
-
-	@Override
-	public long count(RegionCriteria criteria) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Region> root = cq.from(Region.class);
-
-		Predicate filter = null;
-
-		if (criteria != null) {
-			filter = service.buildCriteriaFilter(criteria, cb, root);
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.select(cb.count(root));
-		return em.createQuery(cq).getSingleResult();
-	}
-
-	@Override
-	public List<String> getAllUuids() {
-
-		if (userService.getCurrentUser() == null) {
-			return Collections.emptyList();
-		}
-
-		return service.getAllUuids();
-	}
-
-	@Override
-	public List<RegionDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -396,8 +332,8 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 		}
 
 		@Inject
-		protected RegionFacadeEjbLocal(RegionService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-			super(service, featureConfiguration);
+		protected RegionFacadeEjbLocal(RegionService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
+			super(service, featureConfiguration, userService);
 		}
 	}
 }

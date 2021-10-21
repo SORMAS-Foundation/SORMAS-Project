@@ -49,7 +49,8 @@ public class SampleCreateForm extends AbstractSampleForm {
 	private static final String HTML_LAYOUT = SAMPLE_COMMON_HTML_LAYOUT
 		+ fluidRowLocs(Captions.sampleIncludeTestOnCreation)
 		+ fluidRowLocs(HORIZONTAL_RULE)
-		+ fluidRowLocs(PathogenTestDto.REPORT_DATE, PathogenTestDto.EXTERNAL_ID, PathogenTestDto.VIA_LIMS)
+		+ fluidRowLocs(PathogenTestDto.REPORT_DATE, PathogenTestDto.VIA_LIMS)
+		+ fluidRowLocs(PathogenTestDto.EXTERNAL_ID, PathogenTestDto.EXTERNAL_ORDER_ID)
 		+ fluidRowLocs(PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED)
 		+ fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.PCR_TEST_SPECIFICATION)
 		+ fluidRowLocs(PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TESTED_DISEASE_VARIANT)
@@ -84,11 +85,12 @@ public class SampleCreateForm extends AbstractSampleForm {
 				DateField.class);
 
 			TextField externalIdField = addCustomField(PathogenTestDto.EXTERNAL_ID, String.class, TextField.class);
+			TextField externalOrderIdField = addCustomField(PathogenTestDto.EXTERNAL_ORDER_ID, String.class, TextField.class);
 			CheckBox viaLimsField = addCustomField(PathogenTestDto.VIA_LIMS, Boolean.class, CheckBox.class);
 
 			FieldHelper.setVisibleWhen(
 				includeTestField,
-				Arrays.asList(reportDateField, externalIdField, viaLimsField),
+				Arrays.asList(reportDateField, externalIdField, externalOrderIdField, viaLimsField),
 				Collections.singletonList(true),
 				true);
 		}
@@ -247,6 +249,9 @@ public class SampleCreateForm extends AbstractSampleForm {
 
 			final TextField externalIdField = getField(PathogenTestDto.EXTERNAL_ID);
 			externalIdField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.EXTERNAL_ID));
+
+			final TextField externalOrderIdField = getField(PathogenTestDto.EXTERNAL_ORDER_ID);
+			externalOrderIdField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.EXTERNAL_ORDER_ID));
 
 			final CheckBox viaLimsField = getField(PathogenTestDto.VIA_LIMS);
 			viaLimsField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.VIA_LIMS));

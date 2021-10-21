@@ -21,8 +21,12 @@ import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RES
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -34,32 +38,32 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.immunization.ImmunizationService;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
-import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
-import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoEvent;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.user.User;
 
 @Stateless(name = "SormasToSormasEventFacade")
-public class SormasToSormasEventFacadeEjb
-	extends AbstractSormasToSormasInterface<Event, EventDto, SormasToSormasEventDto, SormasToSormasEventPreview, ProcessedEventData>
+public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterface<Event, EventDto, SormasToSormasEventDto>
 	implements SormasToSormasEventFacade {
 
 	public static final String EVENT_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.EVENT_REQUEST_ENDPOINT;
-	public static final String EVENT_REQUEST_REJECT_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.EVENT_REQUEST_REJECT_ENDPOINT;
 	public static final String EVENT_REQUEST_GET_DATA_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.EVENT_REQUEST_GET_DATA_ENDPOINT;
 	public static final String SAVE_SHARED_EVENTS_ENDPOINT = RESOURCE_PATH + EVENT_ENDPOINT;
 	public static final String SYNC_SHARED_EVENTS_ENDPOINT = RESOURCE_PATH + EVENT_SYNC_ENDPOINT;
@@ -68,28 +72,23 @@ public class SormasToSormasEventFacadeEjb
 	@EJB
 	private EventService eventService;
 	@EJB
-	private EventShareDataBuilder shareDataBuilder;
+	private EventParticipantService eventParticipantService;
 	@EJB
-	private ReceivedEventProcessor receivedEventProcessor;
+	private SampleService sampleService;
 	@EJB
-	private ProcessedEventDataPersister processedEventDataPersister;
-	@EJB
-	private EventFacadeEjbLocal eventFacade;
+	private ImmunizationService immunizationService;
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
 
 	public SormasToSormasEventFacadeEjb() {
 		super(
 			EVENT_REQUEST_ENDPOINT,
-			EVENT_REQUEST_REJECT_ENDPOINT,
 			EVENT_REQUEST_GET_DATA_ENDPOINT,
 			SAVE_SHARED_EVENTS_ENDPOINT,
 			SYNC_SHARED_EVENTS_ENDPOINT,
 			EVENT_SHARES_ENDPOINT,
 			Captions.Event,
-			ShareRequestDataType.EVENT,
-			EventShareRequestData.class,
-			EventSyncData.class);
+			ShareRequestDataType.EVENT);
 	}
 
 	@Override
@@ -102,10 +101,11 @@ public class SormasToSormasEventFacadeEjb
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (Event event : entities) {
 			if (!eventService.isEventEditAllowed(event)) {
-				validationErrors.add(new ValidationErrors(
+				validationErrors.add(
+					new ValidationErrors(
 						buildEventValidationGroupName(event),
 						ValidationErrors
-								.create(new ValidationErrorGroup(Captions.Event), new ValidationErrorMessage(Validations.sormasToSormasNotEditable))));
+							.create(new ValidationErrorGroup(Captions.Event), new ValidationErrorMessage(Validations.sormasToSormasNotEditable))));
 			}
 		}
 
@@ -115,23 +115,74 @@ public class SormasToSormasEventFacadeEjb
 	}
 
 	@Override
-	protected ValidationErrors validateSharedEntity(EventDto entity) {
-		return validateSharedUuid(entity.getUuid());
+	protected void validateEntitiesBeforeShare(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
+		validateEntitiesBeforeShare(
+			shares.stream().map(SormasToSormasShareInfo::getEvent).filter(Objects::nonNull).collect(Collectors.toList()),
+			shares.get(0).isOwnershipHandedOver());
 	}
 
 	@Override
-	protected ValidationErrors validateSharedPreview(SormasToSormasEventPreview preview) {
-		return validateSharedUuid(preview.getUuid());
-	}
+	protected List<SormasToSormasShareInfo> getOrCreateShareInfos(Event event, SormasToSormasOptionsDto options, User user, boolean forSync) {
+		String organizationId = options.getOrganization().getId();
+		SormasToSormasShareInfo eventShareInfo = event.getSormasToSormasShares()
+			.stream()
+			.filter(s -> s.getOrganizationId().equals(organizationId))
+			.findFirst()
+			.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, event, SormasToSormasShareInfo::setEvent, options));
 
-	@Override
-	protected void addEntityToShareInfo(SormasToSormasShareInfo shareInfo, List<Event> events) {
-		shareInfo.getEvents().addAll(events.stream().map(e -> new ShareInfoEvent(shareInfo, e)).collect(Collectors.toList()));
-	}
+		Stream<SormasToSormasShareInfo> eventParticipantShareInfos = Stream.empty();
+		List<EventParticipant> eventParticipants = Collections.emptyList();
+		if (options.isWithEventParticipants()) {
+			eventParticipants = eventParticipantService.getAllActiveByEvent(event);
+			eventParticipantShareInfos = eventParticipants.stream()
+				.map(
+					ep -> ep.getSormasToSormasShares()
+						.stream()
+						.filter(share -> share.getOrganizationId().equals(organizationId))
+						.findFirst()
+						.orElseGet(() -> {
+							if (forSync) {
+								// do not share new event participants on sync
+								return ep.getSormasToSormasOriginInfo() != null
+									&& ep.getSormasToSormasOriginInfo().getOrganizationId().equals(organizationId)
+										? ShareInfoHelper.createShareInfo(organizationId, ep, SormasToSormasShareInfo::setEventParticipant, options)
+										: null;
+							} else {
+								return ShareInfoHelper.createShareInfo(organizationId, ep, SormasToSormasShareInfo::setEventParticipant, options);
+							}
+						}))
+				.filter(Objects::nonNull);
+		}
 
-	@Override
-	protected SormasToSormasShareInfo getShareInfoByEntityAndOrganization(String entityUuid, String receiverId) {
-		return shareInfoService.getByEventAndOrganization(entityUuid, receiverId);
+		Stream<SormasToSormasShareInfo> sampleShareInfos = Stream.empty();
+		Stream<SormasToSormasShareInfo> immunizationShareInfos = Stream.empty();
+		if (eventParticipants.size() > 0) {
+			if (options.isWithSamples()) {
+				List<String> eventParticipantUuids = eventParticipants.stream().map(EventParticipant::getUuid).collect(Collectors.toList());
+				sampleShareInfos = sampleService.getByEventParticipantUuids(eventParticipantUuids)
+					.stream()
+					.map(
+						s -> s.getSormasToSormasShares()
+							.stream()
+							.filter(share -> share.getOrganizationId().equals(organizationId))
+							.findFirst()
+							.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, s, SormasToSormasShareInfo::setSample, options)));
+			}
+
+			if (options.isWithImmunizations()) {
+				immunizationShareInfos = getAssociatedImmunizations(eventParticipants).stream()
+					.map(
+						i -> i.getSormasToSormasShares()
+							.stream()
+							.filter(share -> share.getOrganizationId().equals(organizationId))
+							.findFirst()
+							.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, i, SormasToSormasShareInfo::setImmunization, options)));
+			}
+		}
+
+		return Stream.of(Stream.of(eventShareInfo), eventParticipantShareInfos, sampleShareInfos, immunizationShareInfos)
+			.flatMap(Function.identity())
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -140,48 +191,13 @@ public class SormasToSormasEventFacadeEjb
 	}
 
 	@Override
-	protected ShareDataBuilder<Event, SormasToSormasEventDto, SormasToSormasEventPreview> getShareDataBuilder() {
-		return shareDataBuilder;
-	}
-
-	@Override
-	protected ReceivedEventProcessor getReceivedDataProcessor() {
-		return receivedEventProcessor;
-	}
-
-	@Override
-	protected ProcessedDataPersister<ProcessedEventData> getProcessedDataPersister() {
-		return processedEventDataPersister;
-	}
-
-	@Override
-	protected List<EventDto> loadExistingEntities(List<String> uuids) {
-		return eventFacade.getByUuids(uuids);
-	}
-
-	@Override
-	protected void setShareRequestPreviewData(SormasToSormasShareRequestDto request, List<SormasToSormasEventPreview> previews) {
-		request.setEvents(previews);
-	}
-
-	@Override
-	protected List<SormasToSormasShareInfo> getEntityShares(Event event) {
-		return event.getShareInfoEvents().stream().map(ShareInfoEvent::getShareInfo).collect(Collectors.toList());
-	}
-
-	private ValidationErrors validateSharedUuid(String uuid) {
-		ValidationErrors errors = new ValidationErrors();
-
-		if (eventFacade.exists(uuid)) {
-			errors.add(new ValidationErrorGroup(Captions.Event), new ValidationErrorMessage(Validations.sormasToSormasEventExists));
-		}
-
-		return errors;
-	}
-
-	@Override
 	protected List<String> getUuidsWithPendingOwnershipHandedOver(List<Event> entities) {
 		return shareInfoService.getEventUuidsWithPendingOwnershipHandOver(entities);
+	}
+
+	private List<Immunization> getAssociatedImmunizations(List<EventParticipant> eventParticipants) {
+		List<Long> personIds = eventParticipants.stream().map(ep -> ep.getPerson().getId()).collect(Collectors.toList());
+		return immunizationService.getByPersonIds(personIds);
 	}
 
 	@LocalBean

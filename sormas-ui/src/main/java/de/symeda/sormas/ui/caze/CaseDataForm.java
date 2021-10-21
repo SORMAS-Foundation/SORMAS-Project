@@ -296,6 +296,33 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addFields();
 	}
 
+	public static void updateFacilityDetails(ComboBox cbFacility, TextField tfFacilityDetails) {
+		if (cbFacility.getValue() != null) {
+			boolean otherHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+			boolean noneHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
+			boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
+
+			tfFacilityDetails.setVisible(visibleAndRequired);
+			tfFacilityDetails.setRequired(otherHealthFacility);
+
+			if (otherHealthFacility) {
+				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
+			}
+			if (noneHealthFacility) {
+				tfFacilityDetails.setCaption(I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails));
+			}
+			if (!visibleAndRequired && !tfFacilityDetails.isReadOnly()) {
+				tfFacilityDetails.clear();
+			}
+		} else {
+			tfFacilityDetails.setVisible(false);
+			tfFacilityDetails.setRequired(false);
+			if (!tfFacilityDetails.isReadOnly()) {
+				tfFacilityDetails.clear();
+			}
+		}
+	}
+
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
@@ -1529,33 +1556,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				facilityCombo.setReadOnly(readOnly);
 			} else {
 				FieldHelper.removeItems(facilityCombo);
-			}
-		}
-	}
-
-	private void updateFacilityDetails(ComboBox cbFacility, TextField tfFacilityDetails) {
-		if (cbFacility.getValue() != null) {
-			boolean otherHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
-			boolean noneHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
-			boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
-
-			tfFacilityDetails.setVisible(visibleAndRequired);
-			tfFacilityDetails.setRequired(otherHealthFacility);
-
-			if (otherHealthFacility) {
-				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
-			}
-			if (noneHealthFacility) {
-				tfFacilityDetails.setCaption(I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails));
-			}
-			if (!visibleAndRequired && !tfFacilityDetails.isReadOnly()) {
-				tfFacilityDetails.clear();
-			}
-		} else {
-			tfFacilityDetails.setVisible(false);
-			tfFacilityDetails.setRequired(false);
-			if (!tfFacilityDetails.isReadOnly()) {
-				tfFacilityDetails.clear();
 			}
 		}
 	}
