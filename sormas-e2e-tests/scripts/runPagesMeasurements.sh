@@ -25,4 +25,4 @@ rm -rf ./allureReports
   rm -rf ./allure-results
   ./gradlew clean
   echo "Run: $i "
-  ./gradlew startTests -Dcucumber.tags="@PageLoad" -Dheadless=true -Dcourgette.threads=9
+  ./gradlew startTests -Dcucumber.tags="@PagesMeasurements" -Dheadless=true -Dcourgette.threads=9

@@ -43,6 +43,7 @@ public class NavBarSteps implements En {
 
   private long startTime;
   private long endTime;
+  public static String elapsedTime;
 
   @Inject
   public NavBarSteps(WebDriverHelpers webDriverHelpers) {
@@ -100,6 +101,8 @@ public class NavBarSteps implements En {
         "^I click on the Dashboard button from navbar and access Surveillance Dashboard$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.PERSONS_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
         });
@@ -147,39 +150,43 @@ public class NavBarSteps implements En {
     Then(
         "I wait for {string} page to load and calculate elapsed time",
         (String page) -> {
-          switch (page) {
-            case ("Surveillance Dashboard"):
-              webDriverHelpers.waitUntilIdentifiedElementIsPresent(SURVEILLANCE_DASHBOARD_NAME);
-              break;
-            case ("Contacts Dashboard"):
-              webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACTS_DASHBOARD_NAME);
-              break;
-            case ("Tasks"):
-              webDriverHelpers.waitUntilIdentifiedElementIsPresent(GENERAL_SEARCH_INPUT);
-              break;
-            case ("Persons"):
-              webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEARCH_PERSON_BY_FREE_TEXT);
-              break;
-            case ("Cases"):
-              webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_CASE_BUTTON);
-              break;
-            case ("Contacts"):
-              webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_CONTACT_BUTTON);
-              break;
-            case ("Events"):
-              webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_EVENT_BUTTON);
-              break;
-            case ("Samples"):
-              webDriverHelpers.waitUntilIdentifiedElementIsPresent(SAMPLE_SEARCH_INPUT);
-              break;
-            case ("Immunizations"):
-              webDriverHelpers.waitUntilIdentifiedElementIsPresent(ADD_NEW_IMMUNIZATION_BUTTON);
-              break;
+          try {
+            switch (page) {
+              case ("Surveillance Dashboard"):
+                webDriverHelpers.wait20SecondsOrThrowException(SURVEILLANCE_DASHBOARD_NAME);
+                break;
+              case ("Contacts Dashboard"):
+                webDriverHelpers.wait20SecondsOrThrowException(CONTACTS_DASHBOARD_NAME);
+                break;
+              case ("Tasks"):
+                webDriverHelpers.wait20SecondsOrThrowException(GENERAL_SEARCH_INPUT);
+                break;
+              case ("Persons"):
+                webDriverHelpers.wait20SecondsOrThrowException(SEARCH_PERSON_BY_FREE_TEXT);
+                break;
+              case ("Cases"):
+                webDriverHelpers.wait20SecondsOrThrowException(NEW_CASE_BUTTON);
+                break;
+              case ("Contacts"):
+                webDriverHelpers.wait20SecondsOrThrowException(NEW_CONTACT_BUTTON);
+                break;
+              case ("Events"):
+                webDriverHelpers.wait20SecondsOrThrowException(NEW_EVENT_BUTTON);
+                break;
+              case ("Samples"):
+                webDriverHelpers.wait20SecondsOrThrowException(SAMPLE_SEARCH_INPUT);
+                break;
+              case ("Immunizations"):
+                webDriverHelpers.wait20SecondsOrThrowException(ADD_NEW_IMMUNIZATION_BUTTON);
+                break;
+            }
+            endTime = ZonedDateTime.now().toInstant().toEpochMilli();
+            long diff = endTime - startTime;
+            String totalTime = new SimpleDateFormat("s:SS").format(diff).replace(":", ".");
+            elapsedTime = totalTime;
+          } catch (Exception exception) {
+            elapsedTime = "22";
           }
-          endTime = ZonedDateTime.now().toInstant().toEpochMilli();
-          long diff = endTime - startTime;
-          String totalTime = new SimpleDateFormat("s:SS").format(diff).replace(":", ".");
-          log.info("Total time to load " + page + " was: " + totalTime + " seconds");
         });
   }
 }

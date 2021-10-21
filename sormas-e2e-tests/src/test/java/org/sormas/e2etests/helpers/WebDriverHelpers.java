@@ -382,19 +382,6 @@ public class WebDriverHelpers {
     }
   }
 
-  public void waitUntilElementsHasText(By selector, String text) {
-    waitForPageLoaded();
-    try {
-      assertHelpers.assertWithPoll(
-          () -> {
-            WebElement webElement = baseSteps.getDriver().findElement(selector);
-            assertThat(webElement.getText()).isEqualTo(text);
-          },
-          3);
-    } catch (Throwable ignored) {
-    }
-  }
-
   public void waitUntilAListOfElementsIsPresent(By selector, int number) {
     waitForPageLoaded();
     try {
@@ -504,15 +491,6 @@ public class WebDriverHelpers {
     }
   }
 
-  public void waitUntilIdentifiedElementIsDisplayed(final Object selector) {
-    if (selector instanceof WebElement) {
-      assertHelpers.assertWithPoll20Second(() -> assertThat(selector).isNotNull());
-    } else {
-      assertHelpers.assertWithPoll20Second(
-          () -> assertThat(getWebElement((By) selector).isDisplayed()).isTrue());
-    }
-  }
-
   public void waitUntilWebElementHasAttributeWithValue(
       final By selector, String attribute, String value) {
     assertHelpers.assertWithPoll20Second(
@@ -596,5 +574,18 @@ public class WebDriverHelpers {
     String style = getAttributeFromWebElement(header, "style");
     By selector = By.cssSelector("[style*='" + style.substring(style.length() - 17) + "']");
     return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
+  }
+
+  public void wait20SecondsOrThrowException(By selector) {
+    try {
+      await()
+          .pollInterval(ONE_HUNDRED_MILLISECONDS)
+          .ignoreExceptions()
+          .catchUncaughtExceptions()
+          .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
+          .until(() -> baseSteps.getDriver().findElement(selector).isDisplayed());
+    } catch (Exception e) {
+      throw new NoSuchElementException("Element: " + selector + " is not visible");
+    }
   }
 }
