@@ -8711,4 +8711,16 @@ ALTER TABLE sormastosormassharerequest_history ADD COLUMN responseComment text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (418, '[SORMAS2SORMAS] Shares > Share Requests > Response Comment (reject/accept) #6122');
 
+-- 2021-09-23 - Change of quarantine end should be documented #6782
+ALTER TABLE cases ADD COLUMN previousquarantineto timestamp;
+ALTER TABLE cases ADD COLUMN quarantinechangecomment varchar(4096);
+ALTER TABLE cases_history ADD COLUMN previousquarantineto timestamp;
+ALTER TABLE cases_history ADD COLUMN quarantinechangecomment varchar(4096);
+ALTER TABLE contact ADD COLUMN previousquarantineto timestamp;
+ALTER TABLE contact ADD COLUMN quarantinechangecomment varchar(4096);
+ALTER TABLE contact_history ADD COLUMN previousquarantineto timestamp;
+ALTER TABLE contact_history ADD COLUMN quarantinechangecomment varchar(4096);
+
+INSERT INTO schema_version (version_number, comment) VALUES (419, 'Change of quarantine end should be documented #6782');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
