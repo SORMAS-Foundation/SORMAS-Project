@@ -367,14 +367,14 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	@Override
 	public List<SormasToSormasShareTree> getAllShares(String uuid) {
-		return getShareTrees(new ShareTreeCriteria(uuid));
+		return getShareTrees(new ShareTreeCriteria(uuid), true);
 	}
 
 	@Override
 	public SormasToSormasEncryptedDataDto getShareTrees(SormasToSormasEncryptedDataDto encryptedCriteria) throws SormasToSormasException {
 		ShareTreeCriteria criteria = sormasToSormasEncryptionEjb.decryptAndVerify(encryptedCriteria, ShareTreeCriteria.class);
 
-		List<SormasToSormasShareTree> shares = getShareTrees(criteria);
+		List<SormasToSormasShareTree> shares = getShareTrees(criteria, false);
 
 		return sormasToSormasEncryptionEjb.signAndEncrypt(shares, encryptedCriteria.getSenderId());
 	}
@@ -567,7 +567,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	protected abstract List<String> getUuidsWithPendingOwnershipHandedOver(List<ADO> entities);
 
-	private List<SormasToSormasShareTree> getShareTrees(ShareTreeCriteria criteria) {
+	private List<SormasToSormasShareTree> getShareTrees(ShareTreeCriteria criteria, boolean rootCall) {
 		String ownOrganizationId = configFacadeEjb.getS2SConfig().getId();
 		List<SormasToSormasShareTree> shares = new ArrayList<>();
 		List<SormasToSormasShareTree> reShareTrees = new ArrayList<>();
@@ -606,7 +606,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 					new SormasToSormasShareTree(
 						SormasToSormasOriginInfoFacadeEjb.toDto(entity.getSormasToSormasOriginInfo()),
 						shareInfoFacade.toDto(shareInfo),
-						reShares));
+						reShares,
+						rootCall));
 			} catch (SormasToSormasException e) {
 				// stop iteration and fail in case of error
 				throw new RuntimeException("Failed to get all shares form server [" + shareInfo.getOrganizationId() + "]", e);
