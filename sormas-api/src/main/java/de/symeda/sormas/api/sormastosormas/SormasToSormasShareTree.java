@@ -30,13 +30,20 @@ public class SormasToSormasShareTree implements Serializable {
 
 	private List<SormasToSormasShareTree> reShares;
 
+	private boolean directShare;
+
 	public SormasToSormasShareTree() {
 	}
 
-	public SormasToSormasShareTree(SormasToSormasOriginInfoDto origin, SormasToSormasShareInfoDto share, List<SormasToSormasShareTree> reShares) {
+	public SormasToSormasShareTree(
+		SormasToSormasOriginInfoDto origin,
+		SormasToSormasShareInfoDto share,
+		List<SormasToSormasShareTree> reShares,
+		boolean directShare) {
 		this.origin = origin;
 		this.share = share;
 		this.reShares = reShares;
+		this.directShare = directShare;
 	}
 
 	public SormasToSormasOriginInfoDto getOrigin() {
@@ -53,5 +60,13 @@ public class SormasToSormasShareTree implements Serializable {
 
 	public void setReShares(List<SormasToSormasShareTree> reShares) {
 		this.reShares = reShares;
+	}
+
+	public boolean isDirectShare() {
+		return directShare;
+	}
+
+	public void setDirectShare(boolean directShare) {
+		this.directShare = directShare;
 	}
 }

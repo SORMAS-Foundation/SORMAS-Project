@@ -2,19 +2,19 @@
 Feature: Create events
 
   Scenario: Create a new event
-    Given I log in as a National User
+    Given I log in with National User
       And I click on the Events button from navbar
       And I click on the NEW EVENT button
       And I create a new event
 
   Scenario: Validate a new event creation
-    Given I log in as a National User
+    Given I log in with National User
       And I click on the Events button from navbar
       And I click on the NEW EVENT button
       And I validate all fields are rendered correctly on create a new event popup window
 
   Scenario: Create a new event and change its status multiple times
-    Given I log in as a National User
+    Given I log in with National User
       And I click on the Events button from navbar
       And I click on the NEW EVENT button
      When I create a new event with status CLUSTER
@@ -39,7 +39,7 @@ Feature: Create events
      Then I check if it appears under Dropped filter in event directory
 
   Scenario: Create and check a new event data
-    Given I log in as a National User
+    Given I log in with National User
       And I click on the Events button from navbar
       And I click on the NEW EVENT button
      When I create a new event with specific data
@@ -49,7 +49,7 @@ Feature: Create events
      Then I check the created data is correctly displayed in event edit page
 
   Scenario: Add a participant to an event
-    Given I log in as a National User
+    Given I log in with National User
       And I click on the Events button from navbar
       And I click on the NEW EVENT button
       And I create a new event with status EVENT
@@ -65,7 +65,7 @@ Feature: Create events
      Then I check if event is available at person information
 
   Scenario: Create and edit a new event
-    Given I log in as a National User
+    Given I log in with National User
       And I click on the Events button from navbar
       And I click on the NEW EVENT button
      When I create a new event with specific data
@@ -80,7 +80,9 @@ Feature: Create events
 
   Scenario: Add a New action from event and verify the fields.
     Given API: I create a new event
-    Given I log in as a National User
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
     And I click on the Events button from navbar
     Then I open the last created event via api
     And I click on New Action button from Event tab
@@ -92,6 +94,8 @@ Feature: Create events
   Scenario: Add a New action from Event Actions tab and verify the fields.
     Given I log in with National User
     Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     Then I navigate to Event Action tab for created Event
     And I click on New Action from Event Actions tab
     And I create New Action from event tab
@@ -103,6 +107,8 @@ Feature: Create events
   Scenario: Add a New action for an Event and verify the Action in EventActions table
       Given I log in with National User
       Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
       Then I navigate to Event Action tab for created Event
       And I click on New Action from Event Actions tab
       And I create New Action from event tab
@@ -115,6 +121,8 @@ Feature: Create events
 
   Scenario: Add a Task from event and verify the fields
     Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     Given I log in with National User
      When I am accessing the event tab using the created event via api
      Then I click on New Task from event tab
@@ -126,6 +134,8 @@ Feature: Create events
 
   Scenario: Add a New Groups Event from event and verify the fields
     Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     Given I log in with National User
      When I am accessing the event tab using the created event via api
       And I click on link event group
