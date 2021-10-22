@@ -27,6 +27,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,6 @@ import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.labmessage.NewMessagesState;
 import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
-import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -85,7 +85,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
-	private SystemEventFacadeEjb.SystemEventFacadeEjbLocal systemEventFacade;
+	private SyncFacadeEjb.SyncFacadeEjbLocal syncFacadeEjb;
 
 	LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target, boolean checkChangeDate) {
 
@@ -307,46 +307,42 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		return QueryHelper.getResultList(em, cq, first, max);
 	}
 
-	@Override
-	public boolean atLeastOneFetchExecuted() {
-		SystemEventDto latestSuccessEvent = systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES);
-		return latestSuccessEvent != null;
-	}
-
 	/**
 	 * This method marks the previously unfinished system events as UNCLEAR(if any exists) and creates a new event with status STARTED.
-	 * If the fetching succeds, the status of the currentSystemEvent is changed to SUCCESS.
-	 * In case of any Exception, the status of the currentSystemEvent is changed to ERROR.
+	 * If the fetching succeeds, the status of the currentSync is changed to SUCCESS.
+	 * In case of any Exception, the status of the currentSync is changed to ERROR.
 	 *
 	 * @return An indication whether the fetching of new labMessage was successful. If it was not, an error message meant for UI users.
 	 */
 	@Override
 	public LabMessageFetchResult fetchAndSaveExternalLabMessages(Date since) {
-		systemEventFacade.markPreviouslyStartedAsUnclear(SystemEventType.FETCH_LAB_MESSAGES);
-		SystemEventDto currentSystemEvent = initializeFetchEvent();
+
+		SystemEventDto currentSync = syncFacadeEjb.startSyncFor(SystemEventType.FETCH_LAB_MESSAGES);
+
 		try {
-			return fetchAndSaveExternalLabMessages(currentSystemEvent, since);
+			return fetchAndSaveExternalLabMessages(currentSync, since);
 		} catch (CannotProceedException e) {
-			systemEventFacade.reportError(currentSystemEvent, e.getMessage(), new Date());
+			syncFacadeEjb.reportSyncErrorWithTimestamp(currentSync, e.getMessage());
 			return new LabMessageFetchResult(false, NewMessagesState.UNCLEAR, e.getMessage());
 		} catch (NamingException e) {
-			systemEventFacade.reportError(currentSystemEvent, e.getMessage(), new Date());
+			syncFacadeEjb.reportSyncErrorWithTimestamp(currentSync, e.getMessage());
 			return new LabMessageFetchResult(false, NewMessagesState.UNCLEAR, I18nProperties.getString(Strings.errorLabResultsAdapterNotFound));
 		} catch (Exception t) {
-			systemEventFacade.reportError(currentSystemEvent, t.getMessage(), new Date());
+			syncFacadeEjb.reportSyncErrorWithTimestamp(currentSync, t.getMessage());
 			throw t;
 		}
 	}
 
-	protected LabMessageFetchResult fetchAndSaveExternalLabMessages(SystemEventDto currentSystemEvent, Date since) throws NamingException {
+	protected LabMessageFetchResult fetchAndSaveExternalLabMessages(SystemEventDto currentSync, Date since) throws NamingException {
 		if (since == null) {
-			since = findLastUpdateDate();
+			since = syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_LAB_MESSAGES);
 		}
 		ExternalMessageResult<List<LabMessageDto>> externalMessageResult = fetchExternalMessages(since);
 		if (externalMessageResult.isSuccess()) {
 			externalMessageResult.getValue().forEach(this::save);
-			String message = "Last synchronization date: " + externalMessageResult.getSynchronizationDate().getTime();
-			systemEventFacade.reportSuccess(currentSystemEvent, message, new Date());
+			// we have successfully completed our synchronization
+			syncFacadeEjb.reportSuccessfulSyncWithTimestamp(currentSync, externalMessageResult.getSynchronizationDate());
+
 			return getSuccessfulFetchResult(externalMessageResult);
 		} else {
 			throw new CannotProceedException(externalMessageResult.getError());
@@ -363,45 +359,6 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 		ExternalLabResultsFacade labResultsFacade = (ExternalLabResultsFacade) ic.lookup(jndiName);
 		return labResultsFacade.getExternalLabMessages(since);
-	}
-
-	protected SystemEventDto initializeFetchEvent() {
-		Date startDate = new Date();
-		SystemEventDto systemEvent = SystemEventDto.build();
-		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
-		systemEvent.setStatus(SystemEventStatus.STARTED);
-		systemEvent.setStartDate(startDate);
-		systemEventFacade.saveSystemEvent(systemEvent);
-		return systemEvent;
-	}
-
-	protected Date findLastUpdateDate() {
-		SystemEventDto latestSuccess = systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES);
-		Long millis;
-		if (latestSuccess != null) {
-			millis = determineLatestSuccessMillis(latestSuccess);
-		} else {
-			logger.info(
-				"No previous successful attempt to fetch external lab message could be found. The synchronization date is set to 0 (UNIX milliseconds)");
-			millis = 0L;
-		}
-		return new Date(millis);
-	}
-
-	private long determineLatestSuccessMillis(SystemEventDto latestSuccess) {
-		String info = latestSuccess.getAdditionalInfo();
-		if (info != null) {
-			try {
-				//parse last synchronization date
-				return Long.parseLong(info.replace("Last synchronization date: ", ""));
-			} catch (NumberFormatException e) {
-				logger.error("Synchronization date could not be parsed for the last successful lab message retrieval. Falling back to start date.");
-				return latestSuccess.getStartDate().getTime();
-			}
-		} else {
-			logger.warn("Synchronization date could not be found for the last successful lab message retrieval. Falling back to start date.");
-			return latestSuccess.getStartDate().getTime();
-		}
 	}
 
 	private LabMessageFetchResult getSuccessfulFetchResult(ExternalMessageResult<List<LabMessageDto>> externalMessageResult) {

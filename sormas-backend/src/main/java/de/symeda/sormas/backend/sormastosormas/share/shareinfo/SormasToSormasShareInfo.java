@@ -15,129 +15,116 @@
 
 package de.symeda.sormas.backend.sormastosormas.share.shareinfo;
 
-import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
-import org.hibernate.annotations.Where;
-
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.sample.Sample;
 
 @Entity(name = "sormastosormasshareinfo")
 public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -8368155805122562791L;
 
-	public static final String CASES = "cases";
-	public static final String CONTACTS = "contacts";
-	public static final String SAMPLES = "samples";
-	public static final String EVENTS = "events";
-	public static final String EVENT_PARTICIPANTS = "eventParticipants";
-	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
+	public static final String CAZE = "caze";
+	public static final String CONTACT = "contact";
+	public static final String SAMPLE = "sample";
+	public static final String EVENT = "event";
+	public static final String EVENT_PARTICIPANT = "eventParticipant";
+	public static final String IMMUNIZATION = "immunization";
 	public static final String ORGANIZATION_ID = "organizationId";
-	public static final String REQUEST_UUID = "requestUuid";
-	public static final String REQUEST_STATUS = "requestStatus";
+	public static final String REQUESTS = "requests";
+	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
 
-	private List<ShareInfoCase> cases;
+	private Case caze;
 
-	private List<ShareInfoContact> contacts;
+	private Contact contact;
 
-	private List<ShareInfoSample> samples;
+	private Sample sample;
 
-	private List<ShareInfoEvent> events;
+	private Event event;
 
-	private List<ShareInfoEventParticipant> eventParticipants;
+	private EventParticipant eventParticipant;
+
+	private Immunization immunization;
 
 	private String organizationId;
 
-	private User sender;
+	private List<ShareRequestInfo> requests;
 
 	private boolean ownershipHandedOver;
 
-	private boolean withAssociatedContacts;
-
-	private boolean withSamples;
-
-	private boolean withEventParticipants;
-
-	private boolean pseudonymizedPersonalData;
-
-	private boolean pseudonymizedSensitiveData;
-
-	private String comment;
-
-	private String requestUuid;
-	private ShareRequestStatus requestStatus;
-
 	public SormasToSormasShareInfo() {
-		cases = new ArrayList<>();
-		contacts = new ArrayList<>();
-		samples = new ArrayList<>();
-		events = new ArrayList<>();
-		eventParticipants = new ArrayList<>();
+		requests = new ArrayList<>();
 	}
 
-	@OneToMany(mappedBy = ShareInfoCase.SHARE_INFO, cascade = CascadeType.ALL, targetEntity = ShareInfoCase.class)
-	@Where(clause = "type='CASE'")
-	public List<ShareInfoCase> getCases() {
-		return cases;
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Case getCaze() {
+		return caze;
 	}
 
-	public void setCases(List<ShareInfoCase> cases) {
-		this.cases = cases;
+	public void setCaze(Case caze) {
+		this.caze = caze;
 	}
 
-	@OneToMany(mappedBy = ShareInfoContact.SHARE_INFO, cascade = CascadeType.ALL, targetEntity = ShareInfoContact.class)
-	@Where(clause = "type='CONTACT'")
-	public List<ShareInfoContact> getContacts() {
-		return contacts;
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Contact getContact() {
+		return contact;
 	}
 
-	public void setContacts(List<ShareInfoContact> contacts) {
-		this.contacts = contacts;
+	public void setContact(Contact contact) {
+		this.contact = contact;
 	}
 
-	@OneToMany(mappedBy = ShareInfoSample.SHARE_INFO, cascade = CascadeType.ALL, targetEntity = ShareInfoSample.class)
-	@Where(clause = "type='SAMPLE'")
-	public List<ShareInfoSample> getSamples() {
-		return samples;
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Sample getSample() {
+		return sample;
 	}
 
-	public void setSamples(List<ShareInfoSample> samples) {
-		this.samples = samples;
+	public void setSample(Sample sample) {
+		this.sample = sample;
 	}
 
-	@OneToMany(mappedBy = ShareInfoEvent.SHARE_INFO, cascade = CascadeType.ALL, targetEntity = ShareInfoEvent.class)
-	@Where(clause = "type='EVENT'")
-	public List<ShareInfoEvent> getEvents() {
-		return events;
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Event getEvent() {
+		return event;
 	}
 
-	public void setEvents(List<ShareInfoEvent> events) {
-		this.events = events;
+	public void setEvent(Event event) {
+		this.event = event;
 	}
 
-	@OneToMany(mappedBy = ShareInfoEventParticipant.SHARE_INFO, cascade = CascadeType.ALL, targetEntity = ShareInfoEventParticipant.class)
-	@Where(clause = "type='EVENT_PARTICIPANT'")
-	public List<ShareInfoEventParticipant> getEventParticipants() {
-		return eventParticipants;
+	@ManyToOne(fetch = FetchType.LAZY)
+	public EventParticipant getEventParticipant() {
+		return eventParticipant;
 	}
 
-	public void setEventParticipants(List<ShareInfoEventParticipant> eventParticipants) {
-		this.eventParticipants = eventParticipants;
+	public void setEventParticipant(EventParticipant eventParticipant) {
+		this.eventParticipant = eventParticipant;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Immunization getImmunization() {
+		return immunization;
+	}
+
+	public void setImmunization(Immunization immunization) {
+		this.immunization = immunization;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT, nullable = false)
@@ -149,14 +136,16 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 		this.organizationId = organizationId;
 	}
 
-	@ManyToOne
-	@JoinColumn(nullable = false)
-	public User getSender() {
-		return sender;
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = ShareRequestInfo.SHARE_REQUEST_INFO_SHARE_INFO_TABLE,
+		joinColumns = @JoinColumn(name = ShareRequestInfo.SHARE_REQUEST_INFO_SHARE_INFO_INVERS_JOIN_COLUMN),
+		inverseJoinColumns = @JoinColumn(name = ShareRequestInfo.SHARE_REQUEST_INFO_SHARE_INFO_JOIN_COLUMN))
+	public List<ShareRequestInfo> getRequests() {
+		return requests;
 	}
 
-	public void setSender(User sender) {
-		this.sender = sender;
+	public void setRequests(List<ShareRequestInfo> requests) {
+		this.requests = requests;
 	}
 
 	@Column
@@ -166,77 +155,5 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
 		this.ownershipHandedOver = ownershipHandedOver;
-	}
-
-	@Column
-	public boolean isWithAssociatedContacts() {
-		return withAssociatedContacts;
-	}
-
-	public void setWithAssociatedContacts(boolean withAssociatedContacts) {
-		this.withAssociatedContacts = withAssociatedContacts;
-	}
-
-	@Column
-	public boolean isWithSamples() {
-		return withSamples;
-	}
-
-	public void setWithSamples(boolean withSamples) {
-		this.withSamples = withSamples;
-	}
-
-	@Column
-	public boolean isWithEventParticipants() {
-		return withEventParticipants;
-	}
-
-	public void setWithEventParticipants(boolean withEventParticipants) {
-		this.withEventParticipants = withEventParticipants;
-	}
-
-	@Column
-	public boolean isPseudonymizedPersonalData() {
-		return pseudonymizedPersonalData;
-	}
-
-	public void setPseudonymizedPersonalData(boolean pseudonymizedPersonalData) {
-		this.pseudonymizedPersonalData = pseudonymizedPersonalData;
-	}
-
-	@Column
-	public boolean isPseudonymizedSensitiveData() {
-		return pseudonymizedSensitiveData;
-	}
-
-	public void setPseudonymizedSensitiveData(boolean pseudonymizedSensitiveData) {
-		this.pseudonymizedSensitiveData = pseudonymizedSensitiveData;
-	}
-
-	@Column(length = CHARACTER_LIMIT_BIG)
-	public String getComment() {
-		return comment;
-	}
-
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
-
-	@Column(unique = true, length = 36)
-	public String getRequestUuid() {
-		return requestUuid;
-	}
-
-	public void setRequestUuid(String requestUuid) {
-		this.requestUuid = requestUuid;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public ShareRequestStatus getRequestStatus() {
-		return requestStatus;
-	}
-
-	public void setRequestStatus(ShareRequestStatus requestStatus) {
-		this.requestStatus = requestStatus;
 	}
 }

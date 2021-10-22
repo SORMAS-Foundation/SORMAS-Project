@@ -89,6 +89,7 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 		return getByExternalId(externalId, PointOfEntry.EXTERNAL_ID, includeArchivedEntities);
 	}
 
+	@Override
 	public Predicate buildCriteriaFilter(PointOfEntryCriteria criteria, CriteriaBuilder cb, Root<PointOfEntry> pointOfEntry) {
 
 		Predicate filter = null;

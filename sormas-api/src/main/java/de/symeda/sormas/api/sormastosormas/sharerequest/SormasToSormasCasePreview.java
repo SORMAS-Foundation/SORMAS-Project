@@ -17,7 +17,6 @@ package de.symeda.sormas.api.sormastosormas.sharerequest;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
@@ -102,9 +101,6 @@ public class SormasToSormasCasePreview extends PseudonymizableDto implements Has
 	@EmbeddedSensitiveData
 	@Valid
 	private SormasToSormasPersonPreview person;
-
-	@Valid
-	private List<SormasToSormasContactPreview> contacts;
 
 	public Date getReportDate() {
 		return reportDate;
@@ -240,13 +236,5 @@ public class SormasToSormasCasePreview extends PseudonymizableDto implements Has
 
 	public void setPerson(SormasToSormasPersonPreview person) {
 		this.person = person;
-	}
-
-	public List<SormasToSormasContactPreview> getContacts() {
-		return contacts;
-	}
-
-	public void setContacts(List<SormasToSormasContactPreview> contacts) {
-		this.contacts = contacts;
 	}
 }
