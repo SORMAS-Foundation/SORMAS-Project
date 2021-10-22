@@ -1116,7 +1116,9 @@ public class CaseController {
 			cazeDto.setHospitalization(hospitalizationForm.getValue());
 			final CaseDataDto caseDataDto = saveCase(cazeDto, true);
 			final YesNoUnknown admittedToHealthFacility = caseDataDto.getHospitalization().getAdmittedToHealthFacility();
-			if (YesNoUnknown.YES == admittedToHealthFacility && initialAdmittedToHealthFacility != admittedToHealthFacility) {
+			if (YesNoUnknown.YES == admittedToHealthFacility
+				&& initialAdmittedToHealthFacility != admittedToHealthFacility
+				&& cazeDto.getFacilityType() != FacilityType.HOSPITAL) {
 				PlaceOfStayEditForm placeOfStayEditForm = new PlaceOfStayEditForm(caze);
 				placeOfStayEditForm.setValue(caze);
 				final CommitDiscardWrapperComponent<PlaceOfStayEditForm> wrapperComponent = new CommitDiscardWrapperComponent<>(
