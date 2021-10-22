@@ -71,7 +71,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoContact;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
@@ -125,10 +125,12 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	public static final String PERSON = "person";
 	public static final String PERSON_ID = "personId";
+	public static final String PREVIOUS_QUARANTINE_TO = "previousQuarantineTo";
 	public static final String PROHIBITION_TO_WORK = "prohibitionToWork";
 	public static final String PROHIBITION_TO_WORK_FROM = "prohibitionToWorkFrom";
 	public static final String PROHIBITION_TO_WORK_UNTIL = "prohibitionToWorkUntil";
 	public static final String QUARANTINE = "quarantine";
+	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
 	public static final String QUARANTINE_EXTENDED = "quarantineExtended";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
@@ -157,8 +159,8 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 	public static final String RESULTING_CASE = "resultingCase";
 	public static final String RETURNING_TRAVELER = "returningTraveler";
 	public static final String SAMPLES = "samples";
-	public static final String SHARE_INFO_CONTACTS = "shareInfoContacts";
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 	public static final String TASKS = "tasks";
 	public static final String TRACING_APP = "tracingApp";
 	public static final String TRACING_APP_DETAILS = "tracingAppDetails";
@@ -256,9 +258,12 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 	private User followUpStatusChangeUser;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
-	private List<ShareInfoContact> shareInfoContacts = new ArrayList<>(0);
+	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 
 	private Contact duplicateOf;
+
+	private Date previousQuarantineTo;
+	private String quarantineChangeComment;
 
 	@Diseases({
 		Disease.AFP,
@@ -612,7 +617,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 
 	/**
 	 * Extra setter for externalID needed to comply with the HasExternalData interface
-	 * 
+	 *
 	 * @param externalId
 	 *            the value to be set for externalID
 	 */
@@ -954,13 +959,15 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.sormasToSormasOriginInfo = originInfo;
 	}
 
-	@OneToMany(mappedBy = ShareInfoContact.CONTACT, fetch = FetchType.LAZY)
-	public List<ShareInfoContact> getShareInfoContacts() {
-		return shareInfoContacts;
+	@Override
+	@OneToMany(mappedBy = SormasToSormasShareInfo.CONTACT, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
+		return sormasToSormasShares;
 	}
 
-	public void setShareInfoContacts(List<ShareInfoContact> shareInfoContacts) {
-		this.shareInfoContacts = shareInfoContacts;
+	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
+		this.sormasToSormasShares = sormasToSormasShares;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -1061,5 +1068,23 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 
 	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
 		this.vaccinationStatus = vaccinationStatus;
+	}
+
+	@Temporal(TemporalType.DATE)
+	public Date getPreviousQuarantineTo() {
+		return previousQuarantineTo;
+	}
+
+	public void setPreviousQuarantineTo(Date previousQuarantineTo) {
+		this.previousQuarantineTo = previousQuarantineTo;
+	}
+
+	@Column(length = CHARACTER_LIMIT_BIG)
+	public String getQuarantineChangeComment() {
+		return quarantineChangeComment;
+	}
+
+	public void setQuarantineChangeComment(String quarantineChangeComment) {
+		this.quarantineChangeComment = quarantineChangeComment;
 	}
 }

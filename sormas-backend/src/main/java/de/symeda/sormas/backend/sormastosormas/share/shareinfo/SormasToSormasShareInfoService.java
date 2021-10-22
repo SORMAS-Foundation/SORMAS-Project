@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.sormastosormas.share.shareinfo;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -25,10 +26,11 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
@@ -43,8 +45,8 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 
 @Stateless
 @LocalBean
@@ -67,39 +69,25 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		Predicate filter = null;
 
 		if (criteria.getCaze() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.equal(
-					from.join(SormasToSormasShareInfo.CASES, JoinType.LEFT).join(ShareInfoCase.CAZE, JoinType.LEFT).get(Case.UUID),
-					criteria.getCaze().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(SormasToSormasShareInfo.CAZE, JoinType.LEFT).get(Case.UUID), criteria.getCaze().getUuid()));
 		}
 
 		if (criteria.getContact() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.equal(
-					from.join(SormasToSormasShareInfo.CONTACTS, JoinType.LEFT).join(ShareInfoContact.CONTACT, JoinType.LEFT).get(Contact.UUID),
-					criteria.getContact().getUuid()));
+				cb.equal(from.join(SormasToSormasShareInfo.CONTACT, JoinType.LEFT).get(Contact.UUID), criteria.getContact().getUuid()));
 		}
 
 		if (criteria.getSample() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.equal(
-					from.join(SormasToSormasShareInfo.SAMPLES, JoinType.LEFT).join(ShareInfoSample.SAMPLE, JoinType.LEFT).get(Sample.UUID),
-					criteria.getSample().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(SormasToSormasShareInfo.SAMPLE, JoinType.LEFT).get(Sample.UUID), criteria.getSample().getUuid()));
 		}
 
 		if (criteria.getEvent() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.equal(
-					from.join(SormasToSormasShareInfo.EVENTS, JoinType.LEFT).join(ShareInfoEvent.EVENT, JoinType.LEFT).get(Event.UUID),
-					criteria.getEvent().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(SormasToSormasShareInfo.EVENT, JoinType.LEFT).get(Event.UUID), criteria.getEvent().getUuid()));
 		}
 
 		if (criteria.getEventParticipant() != null) {
@@ -107,87 +95,104 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 				cb,
 				filter,
 				cb.equal(
-					from.join(SormasToSormasShareInfo.EVENT_PARTICIPANTS, JoinType.LEFT)
-						.join(ShareInfoEventParticipant.EVENT_PARTICIPANT, JoinType.LEFT)
-						.get(EventParticipant.UUID),
+					from.join(SormasToSormasShareInfo.EVENT_PARTICIPANT, JoinType.LEFT).get(EventParticipant.UUID),
 					criteria.getEventParticipant().getUuid()));
 		}
 
-		if (criteria.getRequestStatuses() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, from.get(SormasToSormasShareInfo.REQUEST_STATUS).in(criteria.getRequestStatuses()));
+		if (criteria.getImmunization() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.equal(
+					from.join(SormasToSormasShareInfo.IMMUNIZATION, JoinType.LEFT).get(Immunization.UUID),
+					criteria.getImmunization().getUuid()));
 		}
 
 		return filter;
 	}
 
 	public boolean isCaseOwnershipHandedOver(Case caze) {
-		return isOwnerShipHandedOver(SormasToSormasShareInfo.CASES, ShareInfoCase.CAZE, caze);
+		return isOwnerShipHandedOver(SormasToSormasShareInfo.CAZE, caze);
 	}
 
 	public boolean isEventOwnershipHandedOver(Event event) {
-		return isOwnerShipHandedOver(SormasToSormasShareInfo.EVENTS, ShareInfoEvent.EVENT, event);
+		return isOwnerShipHandedOver(SormasToSormasShareInfo.EVENT, event);
 	}
 
 	public boolean isEventParticipantOwnershipHandedOver(EventParticipant eventParticipant) {
-		return isOwnerShipHandedOver(SormasToSormasShareInfo.EVENT_PARTICIPANTS, ShareInfoEventParticipant.EVENT_PARTICIPANT, eventParticipant);
+		return isOwnerShipHandedOver(SormasToSormasShareInfo.EVENT_PARTICIPANT, eventParticipant);
 	}
 
 	public boolean isContactOwnershipHandedOver(Contact contact) {
-		return isOwnerShipHandedOver(SormasToSormasShareInfo.CONTACTS, ShareInfoContact.CONTACT, contact);
+		return isOwnerShipHandedOver(SormasToSormasShareInfo.CONTACT, contact);
 	}
 
 	public boolean isSamlpeOwnershipHandedOver(Sample sample) {
-		return isOwnerShipHandedOver(SormasToSormasShareInfo.SAMPLES, ShareInfoSample.SAMPLE, sample);
+		return isOwnerShipHandedOver(SormasToSormasShareInfo.SAMPLE, sample);
 	}
 
-	private boolean isOwnerShipHandedOver(String associatedObjectField, String associatedObjectName, AbstractDomainObject associatedObject) {
+	public boolean isImmunizationsOwnershipHandedOver(Immunization immunization) {
+		return isOwnerShipHandedOver(SormasToSormasShareInfo.IMMUNIZATION, immunization);
+	}
+
+	private boolean isOwnerShipHandedOver(String associatedObjectField, AbstractDomainObject associatedObject) {
 		return exists(
-			(cb, root) -> cb.and(
-				cb.equal(root.join(associatedObjectField).get(associatedObjectName), associatedObject),
-				getOwnershipHandedOverFilter(cb, root, ShareRequestStatus.ACCEPTED)));
+			(cb, root, cq) -> cb.and(
+				cb.equal(root.get(associatedObjectField), associatedObject),
+				getOwnershipHandedOverFilter(cq, cb, root, ShareRequestStatus.ACCEPTED)));
 	}
 
-	private Predicate getOwnershipHandedOverFilter(CriteriaBuilder cb, Root<SormasToSormasShareInfo> root, ShareRequestStatus requestStatus) {
+	private Predicate getOwnershipHandedOverFilter(
+		CriteriaQuery<?> cq,
+		CriteriaBuilder cb,
+		Root<SormasToSormasShareInfo> root,
+		ShareRequestStatus requestStatus) {
+		Subquery<Number> latestRequestDateQuery = cq.subquery(Number.class);
+		Root<ShareRequestInfo> shareRequestInfoRoot = latestRequestDateQuery.from(ShareRequestInfo.class);
+		latestRequestDateQuery.select(cb.max(shareRequestInfoRoot.get(ShareRequestInfo.CREATION_DATE)));
+		latestRequestDateQuery.where(
+			cb.equal(
+				shareRequestInfoRoot.join(ShareRequestInfo.SHARES, JoinType.LEFT).get(SormasToSormasShareInfo.ID),
+				root.get(SormasToSormasShareInfo.ID)));
+
+		Join<Object, Object> requests = root.join(SormasToSormasShareInfo.REQUESTS, JoinType.LEFT);
 		return cb.and(
-			cb.equal(root.get(SormasToSormasShareInfo.REQUEST_STATUS), requestStatus),
+			cb.equal(requests.get(ShareRequestInfo.REQUEST_STATUS), requestStatus),
+			cb.equal(requests.get(ShareRequestInfo.CREATION_DATE), latestRequestDateQuery),
 			cb.isTrue(root.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER)));
 	}
 
 	public SormasToSormasShareInfo getByCaseAndOrganization(String caseUuid, String organizationId) {
-		return getByOrganization(SormasToSormasShareInfo.CASES, ShareInfoCase.CAZE, caseUuid, organizationId);
+		return getByOrganization(SormasToSormasShareInfo.CAZE, caseUuid, organizationId);
 	}
 
 	public SormasToSormasShareInfo getByContactAndOrganization(String contactUuid, String organizationId) {
-		return getByOrganization(SormasToSormasShareInfo.CONTACTS, ShareInfoContact.CONTACT, contactUuid, organizationId);
+		return getByOrganization(SormasToSormasShareInfo.CONTACT, contactUuid, organizationId);
 	}
 
 	public SormasToSormasShareInfo getByEventAndOrganization(String eventUuid, String organizationId) {
-		return getByOrganization(SormasToSormasShareInfo.EVENTS, ShareInfoEvent.EVENT, eventUuid, organizationId);
+		return getByOrganization(SormasToSormasShareInfo.EVENT, eventUuid, organizationId);
 	}
 
 	public SormasToSormasShareInfo getByEventParticipantAndOrganization(String eventParticipantUuid, String organizationId) {
-		return getByOrganization(
-			SormasToSormasShareInfo.EVENT_PARTICIPANTS,
-			ShareInfoEventParticipant.EVENT_PARTICIPANT,
-			eventParticipantUuid,
-			organizationId);
+		return getByOrganization(SormasToSormasShareInfo.EVENT_PARTICIPANT, eventParticipantUuid, organizationId);
 	}
 
 	public SormasToSormasShareInfo getBySampleAndOrganization(String sampleUuid, String organizationId) {
-		return getByOrganization(SormasToSormasShareInfo.SAMPLES, ShareInfoSample.SAMPLE, sampleUuid, organizationId);
+		return getByOrganization(SormasToSormasShareInfo.SAMPLE, sampleUuid, organizationId);
 	}
 
-	public SormasToSormasShareInfo getByOrganization(
-		String associatedObjectField,
-		String associatedObjectName,
-		String associatedObjectUuid,
-		String organizationId) {
+	public SormasToSormasShareInfo getByImmunizationAndOrganization(String immunizationUuid, String organizationId) {
+		return getByOrganization(SormasToSormasShareInfo.IMMUNIZATION, immunizationUuid, organizationId);
+	}
+
+	public SormasToSormasShareInfo getByOrganization(String associatedObjectField, String associatedObjectUuid, String organizationId) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SormasToSormasShareInfo> cq = cb.createQuery(SormasToSormasShareInfo.class);
 		Root<SormasToSormasShareInfo> from = cq.from(SormasToSormasShareInfo.class);
 
 		cq.where(
-			cb.equal(from.join(associatedObjectField).join(associatedObjectName, JoinType.LEFT).get(AbstractDomainObject.UUID), associatedObjectUuid),
+			cb.equal(from.join(associatedObjectField, JoinType.LEFT).get(AbstractDomainObject.UUID), associatedObjectUuid),
 			cb.equal(from.get(SormasToSormasShareInfo.ORGANIZATION_ID), organizationId));
 
 		TypedQuery<SormasToSormasShareInfo> q = em.createQuery(cq);
@@ -195,39 +200,41 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		return q.getResultList().stream().findFirst().orElse(null);
 	}
 
-	public SormasToSormasShareInfo getByRequestUuid(String requestUuid) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<SormasToSormasShareInfo> cq = cb.createQuery(SormasToSormasShareInfo.class);
-		Root<SormasToSormasShareInfo> from = cq.from(SormasToSormasShareInfo.class);
-
-		cq.where(cb.equal(from.get(SormasToSormasShareInfo.REQUEST_UUID), requestUuid));
-
-		return em.createQuery(cq).getSingleResult();
-	}
-
 	public List<String> getCaseUuidsWithPendingOwnershipHandOver(List<Case> cases) {
-		return getUuidsWithPendingOwnershipHandOver(SormasToSormasShareInfo.CASES, ShareInfoCase.CAZE, cases);
+		return getUuidsWithPendingOwnershipHandOver(SormasToSormasShareInfo.CAZE, cases);
 	}
 
 	public List<String> getContactUuidsWithPendingOwnershipHandOver(List<Contact> contacts) {
-		return getUuidsWithPendingOwnershipHandOver(SormasToSormasShareInfo.CONTACTS, ShareInfoContact.CONTACT, contacts);
+		return getUuidsWithPendingOwnershipHandOver(SormasToSormasShareInfo.CONTACT, contacts);
 	}
 
 	public List<String> getEventUuidsWithPendingOwnershipHandOver(List<Event> events) {
-		return getUuidsWithPendingOwnershipHandOver(SormasToSormasShareInfo.EVENTS, ShareInfoEvent.EVENT, events);
+		return getUuidsWithPendingOwnershipHandOver(SormasToSormasShareInfo.EVENT, events);
 	}
 
-	public void handleOwnershipChangeInExternalSurvTool(SormasToSormasOriginInfo originInfo)
-		throws ExternalSurveillanceToolException {
-		handleOwnershipChangeInExternalSurvTool(originInfo.isOwnershipHandedOver(), originInfo.getCases(), originInfo.getEvents());
+	public void handleOwnershipChangeInExternalSurvTool(ShareRequestInfo requestInfo) throws ExternalSurveillanceToolException {
+		List<Case> cases =
+			requestInfo.getShares().stream().map(SormasToSormasShareInfo::getCaze).filter(Objects::nonNull).collect(Collectors.toList());
+		List<Event> events =
+			requestInfo.getShares().stream().map(SormasToSormasShareInfo::getEvent).filter(Objects::nonNull).collect(Collectors.toList());
+
+		handleOwnershipChangeInExternalSurvTool(requestInfo.getShares().get(0).isOwnershipHandedOver(), cases, events);
 	}
 
-	public void handleOwnershipChangeInExternalSurvTool(SormasToSormasShareInfo shareInfo)
-		throws ExternalSurveillanceToolException {
-		handleOwnershipChangeInExternalSurvTool(
-			shareInfo.isOwnershipHandedOver(),
-			shareInfo.getCases().stream().map(ShareInfoCase::getCaze).collect(Collectors.toList()),
-			shareInfo.getEvents().stream().map(ShareInfoEvent::getEvent).collect(Collectors.toList()));
+	private <ADO extends AbstractDomainObject> List<String> getUuidsWithPendingOwnershipHandOver(
+		String associatedObjectField,
+		List<ADO> associatedObjects) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+
+		final CriteriaQuery<String> query = cb.createQuery(String.class);
+		Root<SormasToSormasShareInfo> root = query.from(SormasToSormasShareInfo.class);
+
+		Join<SormasToSormasShareInfo, AbstractDomainObject> associatedObjectJoin = root.join(associatedObjectField, JoinType.LEFT);
+
+		query.select(associatedObjectJoin.get(AbstractDomainObject.UUID));
+		query.where(associatedObjectJoin.in(associatedObjects), cb.and(getOwnershipHandedOverFilter(query, cb, root, ShareRequestStatus.PENDING)));
+
+		return em.createQuery(query).getResultList();
 	}
 
 	private void handleOwnershipChangeInExternalSurvTool(boolean isOwnershipHandedOver, List<Case> cases, List<Event> events)
@@ -241,22 +248,5 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 				externalSurveillanceToolGatewayFacade.deleteEvents(events.stream().map(EventFacadeEjb::toDto).collect(Collectors.toList()));
 			}
 		}
-	}
-
-	private <ADO extends AbstractDomainObject> List<String> getUuidsWithPendingOwnershipHandOver(
-		String associatedObjectField,
-		String associatedObjectName,
-		List<ADO> associatedObjects) {
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-
-		final CriteriaQuery<String> query = cb.createQuery(String.class);
-		Root<SormasToSormasShareInfo> root = query.from(SormasToSormasShareInfo.class);
-
-		Path<Object> associatedObjectPath = root.join(associatedObjectField).get(associatedObjectName);
-
-		query.select(associatedObjectPath.get(AbstractDomainObject.UUID));
-		query.where(associatedObjectPath.in(associatedObjects), cb.and(getOwnershipHandedOverFilter(cb, root, ShareRequestStatus.PENDING)));
-
-		return em.createQuery(query).getResultList();
 	}
 }

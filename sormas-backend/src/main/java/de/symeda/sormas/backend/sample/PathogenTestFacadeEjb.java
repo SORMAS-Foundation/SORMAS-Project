@@ -390,6 +390,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setReportDate(source.getReportDate());
 		target.setViaLims(source.isViaLims());
 		target.setExternalId(source.getExternalId());
+		target.setExternalOrderId(source.getExternalOrderId());
 
 		return target;
 	}
@@ -444,6 +445,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setReportDate(source.getReportDate());
 		target.setViaLims(source.isViaLims());
 		target.setExternalId(source.getExternalId());
+		target.setExternalOrderId(source.getExternalOrderId());
 
 		return target;
 	}
@@ -505,9 +507,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		if (disease != null) {
 			final String contentLabResultArrived = caze != null
 				? MessageContents.CONTENT_LAB_RESULT_ARRIVED
-				: contact != null
-					? MessageContents.CONTENT_LAB_RESULT_ARRIVED_CONTACT
-					: MessageContents.CONTENT_LAB_RESULT_ARRIVED_EVENT_PARTICIPANT;
+				: contact != null ? MessageContents.CONTENT_LAB_RESULT_ARRIVED_CONTACT : MessageContents.CONTENT_LAB_RESULT_ARRIVED_EVENT_PARTICIPANT;
 
 			final String contentLabResultSpecified = caze != null
 				? MessageContents.CONTENT_LAB_RESULT_SPECIFIED

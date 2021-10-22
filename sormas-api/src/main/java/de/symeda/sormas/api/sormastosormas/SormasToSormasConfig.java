@@ -1,6 +1,8 @@
 package de.symeda.sormas.api.sormastosormas;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class SormasToSormasConfig implements Serializable {
@@ -12,6 +14,11 @@ public class SormasToSormasConfig implements Serializable {
 	// resort in the REST client, as it needs to be shared between REST client and sormas-rest.
 	public static final String SENDER_SERVER_ID = "senderServerId";
 
+	public static final String SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS = "sormas2sormas.ignoreProperty.additionalDetails";
+	public static final String SORMAS2SORMAS_IGNORE_EXTERNAL_ID = "sormas2sormas.ignoreProperty.externalId";
+	public static final String SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN = "sormas2sormas.ignoreProperty.externalToken";
+	public static final String SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN = "sormas2sormas.ignoreProperty.internalToken";
+
 	private String id;
 	private String path;
 	private String keystoreName;
@@ -19,7 +26,13 @@ public class SormasToSormasConfig implements Serializable {
 	private String rootCaAlias;
 	private String truststoreName;
 	private String truststorePass;
-	private boolean retainCaseExternalToken;
+	private Map<String, Boolean> ignoreProperties = new HashMap<>();
+	{
+		this.ignoreProperties.put(SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, true);
+		this.ignoreProperties.put(SORMAS2SORMAS_IGNORE_EXTERNAL_ID, true);
+		this.ignoreProperties.put(SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, true);
+		this.ignoreProperties.put(SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, true);
+	}
 
 	private String oidcServer;
 	private String oidcRealm;
@@ -76,12 +89,12 @@ public class SormasToSormasConfig implements Serializable {
 		this.truststorePass = truststorePass;
 	}
 
-	public boolean getRetainCaseExternalToken() {
-		return retainCaseExternalToken;
+	public Map<String, Boolean> getIgnoreProperties() {
+		return ignoreProperties;
 	}
 
-	public void setRetainCaseExternalToken(boolean retainCaseExternalToken) {
-		this.retainCaseExternalToken = retainCaseExternalToken;
+	public void setIgnoreProperties(Map<String, Boolean> ignoreProperties) {
+		this.ignoreProperties = ignoreProperties;
 	}
 
 	@Override

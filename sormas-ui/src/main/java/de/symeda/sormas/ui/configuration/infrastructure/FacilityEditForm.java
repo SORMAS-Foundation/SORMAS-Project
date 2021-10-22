@@ -96,7 +96,7 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		addField(FacilityDto.STREET, TextField.class);
 		addField(FacilityDto.HOUSE_NUMBER, TextField.class);
 		addField(FacilityDto.ADDITIONAL_INFORMATION, TextField.class);
-		addInfrastructureField(FacilityDto.AREA_TYPE);
+		addField(FacilityDto.AREA_TYPE, ComboBox.class);
 		addField(FacilityDto.CONTACT_PERSON_FIRST_NAME, TextField.class);
 		addField(FacilityDto.CONTACT_PERSON_LAST_NAME, TextField.class);
 		TextField contactPersonPhone = addField(FacilityDto.CONTACT_PERSON_PHONE, TextField.class);
@@ -115,9 +115,7 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 
 		setRequired(true, FacilityDto.NAME, TYPE_GROUP_LOC, FacilityDto.TYPE, FacilityDto.REGION, FacilityDto.DISTRICT);
 
-		typeGroup.addValueChangeListener(e -> {
-			FieldHelper.updateEnumData(type, FacilityType.getTypes((FacilityTypeGroup) typeGroup.getValue()));
-		});
+		typeGroup.addValueChangeListener(e -> FieldHelper.updateEnumData(type, FacilityType.getTypes((FacilityTypeGroup) typeGroup.getValue())));
 
 		type.addValueChangeListener(e -> {
 			boolean notLab = !FacilityType.LABORATORY.equals(type.getValue());

@@ -19,6 +19,7 @@ package de.symeda.sormas.api.contact;
 
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
 import java.util.Date;
 
@@ -41,6 +42,8 @@ import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -138,12 +141,16 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	public static final String TRACING_APP_DETAILS = "tracingAppDetails";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String VISITS = "visits";
+	public static final String VACCINATION_INFO = "vaccinationInfo";
+	public static final String PREVIOUS_QUARANTINE_TO = "previousQuarantineTo";
+	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
+
 
 	private CaseReferenceDto caze;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String caseIdExternalSystem;
 	@SensitiveData
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String caseOrEventInformation;
 	private Disease disease;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -197,12 +204,12 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
 	@SensitiveData
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String followUpComment;
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
 	@SensitiveData
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String description;
 	private ContactRelation relationToCase;
 	@SensitiveData
@@ -211,10 +218,13 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalToken;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String internalToken;
 
@@ -285,6 +295,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOfficialOrderSentDate;
 	@SensitiveData
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String additionalDetails;
 	private EpiDataDto epiData;
@@ -331,6 +342,11 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 		Disease.OTHER })
 	@Outbreaks
 	private VaccinationStatus vaccinationStatus;
+
+	private Date previousQuarantineTo;
+	@SensitiveData
+	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	private String quarantineChangeComment;
 
 	public static ContactDto build() {
 		final ContactDto contact = new ContactDto();
@@ -997,5 +1013,21 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 
 	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
 		this.vaccinationStatus = vaccinationStatus;
+	}
+
+	public Date getPreviousQuarantineTo() {
+		return previousQuarantineTo;
+	}
+
+	public void setPreviousQuarantineTo(Date previousQuarantineTo) {
+		this.previousQuarantineTo = previousQuarantineTo;
+	}
+
+	public String getQuarantineChangeComment() {
+		return quarantineChangeComment;
+	}
+
+	public void setQuarantineChangeComment(String quarantineChangeComment) {
+		this.quarantineChangeComment = quarantineChangeComment;
 	}
 }
