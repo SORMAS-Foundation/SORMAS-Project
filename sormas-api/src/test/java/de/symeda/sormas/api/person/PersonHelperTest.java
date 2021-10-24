@@ -19,6 +19,7 @@ package de.symeda.sormas.api.person;
 
 import static org.junit.Assert.assertEquals;
 
+import de.symeda.sormas.api.utils.DateFormatHelper;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Language;
@@ -27,25 +28,25 @@ public class PersonHelperTest {
 
 	@Test
 	public void testFormatBirthdateEN() throws Exception {
-		assertEquals("", PersonHelper.formatBirthdate(null, null, null, Language.EN));
-		assertEquals("1990", PersonHelper.formatBirthdate(null, null, 1990, Language.EN));
-		assertEquals("7//1990", PersonHelper.formatBirthdate(null, 7, 1990, Language.EN));
-		assertEquals("7", PersonHelper.formatBirthdate(null, 7, null, Language.EN));
-		assertEquals("7/5", PersonHelper.formatBirthdate(5, 7, null, Language.EN));
-		assertEquals("5", PersonHelper.formatBirthdate(5, null, null, Language.EN));
-		assertEquals("5/1990", PersonHelper.formatBirthdate(5, null, 1990, Language.EN));
-		assertEquals("7/5/1990", PersonHelper.formatBirthdate(5, 7, 1990, Language.EN));
+		assertEquals("", DateFormatHelper.formatDate(null, null, null, Language.EN));
+		assertEquals("1990", DateFormatHelper.formatDate(null, null, 1990, Language.EN));
+		assertEquals("7//1990", DateFormatHelper.formatDate(null, 7, 1990, Language.EN));
+		assertEquals("7", DateFormatHelper.formatDate(null, 7, null, Language.EN));
+		assertEquals("7/5", DateFormatHelper.formatDate(5, 7, null, Language.EN));
+		assertEquals("5", DateFormatHelper.formatDate(5, null, null, Language.EN));
+		assertEquals("5/1990", DateFormatHelper.formatDate(5, null, 1990, Language.EN));
+		assertEquals("7/5/1990", DateFormatHelper.formatDate(5, 7, 1990, Language.EN));
 	}
 
 	@Test
 	public void testFormatBirthdateDE() throws Exception {
-		assertEquals("", PersonHelper.formatBirthdate(null, null, null, Language.DE));
-		assertEquals("1990", PersonHelper.formatBirthdate(null, null, 1990, Language.DE));
-		assertEquals("7.1990", PersonHelper.formatBirthdate(null, 7, 1990, Language.DE));
-		assertEquals("7", PersonHelper.formatBirthdate(null, 7, null, Language.DE));
-		assertEquals("5.7", PersonHelper.formatBirthdate(5, 7, null, Language.DE));
-		assertEquals("5", PersonHelper.formatBirthdate(5, null, null, Language.DE));
-		assertEquals("5..1990", PersonHelper.formatBirthdate(5, null, 1990, Language.DE));
-		assertEquals("5.7.1990", PersonHelper.formatBirthdate(5, 7, 1990, Language.DE));
+		assertEquals("", DateFormatHelper.formatDate(null, null, null, Language.DE));
+		assertEquals("1990", DateFormatHelper.formatDate(null, null, 1990, Language.DE));
+		assertEquals("7.1990", DateFormatHelper.formatDate(null, 7, 1990, Language.DE));
+		assertEquals("7", DateFormatHelper.formatDate(null, 7, null, Language.DE));
+		assertEquals("5.7", DateFormatHelper.formatDate(5, 7, null, Language.DE));
+		assertEquals("5", DateFormatHelper.formatDate(5, null, null, Language.DE));
+		assertEquals("5..1990", DateFormatHelper.formatDate(5, null, 1990, Language.DE));
+		assertEquals("5.7.1990", DateFormatHelper.formatDate(5, 7, 1990, Language.DE));
 	}
 }

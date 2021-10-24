@@ -47,6 +47,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -85,7 +86,7 @@ public class PersonController {
 			if (personDto.getBirthdateDD() != null && personDto.getBirthdateMM() != null && personDto.getBirthdateYYYY() != null) {
 				personLabelSb.append(" (* ")
 					.append(
-						PersonHelper.formatBirthdate(
+						DateFormatHelper.formatDate(
 							personDto.getBirthdateDD(),
 							personDto.getBirthdateMM(),
 							personDto.getBirthdateYYYY(),

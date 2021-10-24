@@ -43,11 +43,10 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonFacade;
-import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -344,7 +343,7 @@ public class EventParticipantsController {
 
 				eventLabelSb.append(" (* ")
 					.append(
-						PersonHelper.formatBirthdate(
+						de.symeda.sormas.api.utils.DateFormatHelper.formatDate(
 							eventParticipant.getPerson().getBirthdateDD(),
 							eventParticipant.getPerson().getBirthdateMM(),
 							eventParticipant.getPerson().getBirthdateYYYY(),
