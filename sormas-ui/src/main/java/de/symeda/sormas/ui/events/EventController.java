@@ -77,7 +77,6 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -1045,24 +1044,19 @@ public class EventController {
 
 		TitleLayout titleLayout = new TitleLayout();
 
-		Label statusLabel = new Label(event.getEventStatus().toString());
-		statusLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-		titleLayout.addComponents(statusLabel);
+		titleLayout.addRow(event.getEventStatus().toString());
 
 		if (event.getStartDate() != null) {
-			Label eventStartDateLabel = new Label(
-				event.getEndDate() != null
-					? DateFormatHelper.buildPeriodString(event.getStartDate(), event.getEndDate())
-					: DateFormatHelper.formatDate(event.getStartDate()));
-			eventStartDateLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-			titleLayout.addComponent(eventStartDateLabel);
+			String eventStartDateLabel = event.getEndDate() != null
+				? DateFormatHelper.buildPeriodString(event.getStartDate(), event.getEndDate())
+				: DateFormatHelper.formatDate(event.getStartDate());
+			titleLayout.addRow(eventStartDateLabel);
 		}
 
 		String shortUuid = DataHelper.getShortUuid(event.getUuid());
 		String eventTitle = event.getEventTitle();
-		Label eventLabel = new Label(StringUtils.isNotBlank(eventTitle) ? eventTitle + " (" + shortUuid + ")" : shortUuid);
-		eventLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		titleLayout.addComponent(eventLabel);
+		String mainRowText = StringUtils.isNotBlank(eventTitle) ? eventTitle + " (" + shortUuid + ")" : shortUuid;
+		titleLayout.addMainRow(mainRowText);
 
 		return titleLayout;
 	}

@@ -125,7 +125,6 @@ import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -1664,31 +1663,24 @@ public class CaseController {
 	public TitleLayout getCaseViewTitleLayout(CaseDataDto caseData) {
 		TitleLayout titleLayout = new TitleLayout();
 
-		Label diseaseLabel = new Label(DiseaseHelper.toString(caseData.getDisease(), caseData.getDiseaseDetails()));
-		CssStyles.style(diseaseLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-		titleLayout.addComponents(diseaseLabel);
-
-		Label classificationLabel = new Label(caseData.getCaseClassification().toString());
-		classificationLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-		titleLayout.addComponent(classificationLabel);
+		titleLayout.addRow(DiseaseHelper.toString(caseData.getDisease(), caseData.getDiseaseDetails()));
+		titleLayout.addRow(caseData.getCaseClassification().toString());
 
 		String shortUuid = DataHelper.getShortUuid(caseData.getUuid());
 		String casePersonFullName = caseData.getPerson().getCaption();
-		StringBuilder caseLabelSb = new StringBuilder();
+		StringBuilder mainRowText = new StringBuilder();
 		if (StringUtils.isNotBlank(casePersonFullName)) {
-			caseLabelSb.append(casePersonFullName);
+			mainRowText.append(casePersonFullName);
 
 			PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
 			if (casePerson.getBirthdateDD() != null && casePerson.getBirthdateMM() != null && casePerson.getBirthdateYYYY() != null) {
-				caseLabelSb.append(" (* ")
+				mainRowText.append(" (* ")
 					.append(DateFormatHelper.formatDate(casePerson.getBirthdateDD(), casePerson.getBirthdateMM(), casePerson.getBirthdateYYYY()))
 					.append(")");
 			}
 		}
-		caseLabelSb.append(caseLabelSb.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
-		Label caseLabel = new Label(caseLabelSb.toString());
-		caseLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		titleLayout.addComponent(caseLabel);
+		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
+		titleLayout.addMainRow(mainRowText.toString());
 
 		return titleLayout;
 	}

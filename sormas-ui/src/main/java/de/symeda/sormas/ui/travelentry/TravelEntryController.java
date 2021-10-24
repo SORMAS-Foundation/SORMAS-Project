@@ -28,7 +28,6 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.travelentry.components.TravelEntryCreateForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
@@ -165,29 +164,23 @@ public class TravelEntryController {
 		String pointOfEntryDetails = travelEntry.getPointOfEntryDetails();
 		String travelEntryPointOfEntry = StringUtils.isNotBlank(pointOfEntryDetails) ? pointOfEntryDetails : pointOfEntryName;
 
-		if (StringUtils.isNotBlank(travelEntryPointOfEntry)) {
-			Label travelEntryLabel = new Label(travelEntryPointOfEntry);
-			travelEntryLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-			titleLayout.addComponent(travelEntryLabel);
-		}
+		titleLayout.addRow(travelEntryPointOfEntry);
 
 		String shortUuid = DataHelper.getShortUuid(travelEntry.getUuid());
 		String personFullName = travelEntry.getPerson().getCaption();
-		StringBuilder lastRowText = new StringBuilder();
+		StringBuilder mainRowText = new StringBuilder();
 		if (StringUtils.isNotBlank(personFullName)) {
-			lastRowText.append(personFullName);
+			mainRowText.append(personFullName);
 
 			PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(travelEntry.getPerson().getUuid());
 			if (person.getBirthdateDD() != null && person.getBirthdateMM() != null && person.getBirthdateYYYY() != null) {
-				lastRowText.append(" (* ")
+				mainRowText.append(" (* ")
 					.append(DateFormatHelper.formatDate(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY()))
 					.append(")");
 			}
 		}
-		lastRowText.append(lastRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
-		Label lastRow = new Label(lastRowText.toString());
-		lastRow.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		titleLayout.addComponent(lastRow);
+		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
+		titleLayout.addMainRow(mainRowText.toString());
 
 		return titleLayout;
 	}

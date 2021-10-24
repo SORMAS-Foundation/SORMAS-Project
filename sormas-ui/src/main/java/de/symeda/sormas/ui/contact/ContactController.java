@@ -801,35 +801,31 @@ public class ContactController {
 		diseaseLayout.addComponent(diseaseVariantLabel);
 		titleLayout.addComponents(diseaseLayout);
 
-		Label classificationLabel = new Label(contact.getContactClassification().toString());
-		classificationLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-		titleLayout.addComponent(classificationLabel);
+		titleLayout.addRow(contact.getContactClassification().toString());
 
 		String shortUuid = DataHelper.getShortUuid(contact.getUuid());
 		String contactPersonFullName = contact.getPerson().getCaption();
-		StringBuilder contactLabelSb = new StringBuilder();
+		StringBuilder mainRowText = new StringBuilder();
 		if (StringUtils.isNotBlank(contactPersonFullName)) {
-			contactLabelSb.append(contactPersonFullName);
+			mainRowText.append(contactPersonFullName);
 
 			PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 			if (contactPerson.getBirthdateDD() != null && contactPerson.getBirthdateMM() != null && contactPerson.getBirthdateYYYY() != null) {
-				contactLabelSb.append(" (* ")
+				mainRowText.append(" (* ")
 					.append(
 						DateFormatHelper.formatDate(contactPerson.getBirthdateDD(), contactPerson.getBirthdateMM(), contactPerson.getBirthdateYYYY()))
 					.append(")");
 			}
 
 			if (contact.getCaze() != null && (contact.getCaze().getFirstName() != null || contact.getCaze().getLastName() != null)) {
-				contactLabelSb.append(" ")
+				mainRowText.append(" ")
 					.append(I18nProperties.getString(Strings.toCase))
 					.append(" ")
 					.append(PersonDto.buildCaption(contact.getCaze().getFirstName(), contact.getCaze().getLastName()));
 			}
 		}
-		contactLabelSb.append(contactLabelSb.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
-		Label contactLabel = new Label(contactLabelSb.toString());
-		contactLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		titleLayout.addComponent(contactLabel);
+		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
+		titleLayout.addMainRow(mainRowText.toString());
 
 		return titleLayout;
 	}

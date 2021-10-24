@@ -51,7 +51,6 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.events.groups.EventGroupSelectionField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
@@ -234,9 +233,8 @@ public class EventGroupController {
 		TitleLayout titleLayout = new TitleLayout();
 
 		String shortUuid = DataHelper.getShortUuid(eventGroup.getUuid());
-		Label eventLabel = new Label(eventGroup.getName() + " (" + shortUuid + ")");
-		eventLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		titleLayout.addComponent(eventLabel);
+		String mainRowText = eventGroup.getName() + " (" + shortUuid + ")";
+		titleLayout.addMainRow(mainRowText);
 
 		return titleLayout;
 	}
