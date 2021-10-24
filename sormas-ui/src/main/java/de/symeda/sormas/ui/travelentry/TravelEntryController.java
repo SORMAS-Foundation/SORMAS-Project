@@ -163,7 +163,9 @@ public class TravelEntryController {
 		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
 		titleLayout.setSpacing(false);
 
-		String travelEntryPointOfEntry = FacadeProvider.getPointOfEntryFacade().getByUuid(travelEntry.getPointOfEntry().getUuid()).getName();
+		String pointOfEntryName = FacadeProvider.getPointOfEntryFacade().getByUuid(travelEntry.getPointOfEntry().getUuid()).getName();
+		String pointOfEntryDetails = travelEntry.getPointOfEntryDetails();
+		String travelEntryPointOfEntry = StringUtils.isNotBlank(pointOfEntryDetails) ? pointOfEntryDetails : pointOfEntryName;
 
 		if (StringUtils.isNotBlank(travelEntryPointOfEntry)) {
 			Label travelEntryLabel = new Label(travelEntryPointOfEntry);
