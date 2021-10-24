@@ -18,6 +18,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -162,12 +163,36 @@ public class TravelEntryController {
 		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
 		titleLayout.setSpacing(false);
 
-		String shortUuid = DataHelper.getShortUuid(travelEntry.getUuid());
 		String travelEntryPointOfEntry = FacadeProvider.getPointOfEntryFacade().getByUuid(travelEntry.getPointOfEntry().getUuid()).getName();
-		Label travelEntryLabel =
-			new Label(StringUtils.isNotBlank(travelEntryPointOfEntry) ? travelEntryPointOfEntry + " (" + shortUuid + ")" : shortUuid);
-		travelEntryLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		titleLayout.addComponent(travelEntryLabel);
+
+		if (StringUtils.isNotBlank(travelEntryPointOfEntry)) {
+			Label travelEntryLabel = new Label(travelEntryPointOfEntry);
+			travelEntryLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
+			titleLayout.addComponent(travelEntryLabel);
+		}
+
+		String shortUuid = DataHelper.getShortUuid(travelEntry.getUuid());
+		String personFullName = travelEntry.getPerson().getCaption();
+		StringBuilder lastRowText = new StringBuilder();
+		if (StringUtils.isNotBlank(personFullName)) {
+			lastRowText.append(personFullName);
+
+			PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(travelEntry.getPerson().getUuid());
+			if (person.getBirthdateDD() != null && person.getBirthdateMM() != null && person.getBirthdateYYYY() != null) {
+				lastRowText.append(" (* ")
+					.append(
+						PersonHelper.formatBirthdate(
+							person.getBirthdateDD(),
+							person.getBirthdateMM(),
+							person.getBirthdateYYYY(),
+							I18nProperties.getUserLanguage()))
+					.append(")");
+			}
+		}
+		lastRowText.append(lastRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
+		Label lastRow = new Label(lastRowText.toString());
+		lastRow.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
+		titleLayout.addComponent(lastRow);
 
 		return titleLayout;
 	}
