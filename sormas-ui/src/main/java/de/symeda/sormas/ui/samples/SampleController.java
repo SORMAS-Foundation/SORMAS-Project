@@ -83,6 +83,7 @@ import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class SampleController {
 
@@ -461,11 +462,9 @@ public class SampleController {
 		}
 	}
 
-	public VerticalLayout getSampleViewTitleLayout(SampleDto sample) {
+	public TitleLayout getSampleViewTitleLayout(SampleDto sample) {
 
-		VerticalLayout titleLayout = new VerticalLayout();
-		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
-		titleLayout.setSpacing(false);
+		TitleLayout titleLayout = new TitleLayout();
 
 		Label uuidLabel = new Label(DataHelper.getShortUuid(sample.getUuid()));
 		uuidLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);

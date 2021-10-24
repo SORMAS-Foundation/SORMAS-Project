@@ -28,7 +28,6 @@ import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.Validator;
 
 import de.symeda.sormas.api.Disease;
@@ -57,6 +56,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class PersonController {
 
@@ -72,10 +72,8 @@ public class PersonController {
 		navigator.addView(CaseDataView.VIEW_NAME, CaseDataView.class);
 	}
 
-	public VerticalLayout getPersonViewTitleLayout(PersonDto personDto) {
-		final VerticalLayout titleLayout = new VerticalLayout();
-		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
-		titleLayout.setSpacing(false);
+	public TitleLayout getPersonViewTitleLayout(PersonDto personDto) {
+		final TitleLayout titleLayout = new TitleLayout();
 
 		final String shortUuid = DataHelper.getShortUuid(personDto.getUuid());
 		final String personFullName = personDto.toReference().getCaption();
