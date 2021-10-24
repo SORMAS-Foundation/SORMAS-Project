@@ -16,19 +16,8 @@ public class DateFormatHelper {
 		return DateHelper.formatLocalDate(date, I18nProperties.getUserLanguage());
 	}
 
-	public static String formatDate(Integer dateDD, Integer dateMM, Integer dateYYYY, Language language) {
-
-		if (dateDD == null && dateMM == null && dateYYYY == null) {
-			return "";
-		} else {
-			String birthDate = DateHelper.getLocalDateFormat(language).toPattern();
-			birthDate = birthDate.replaceAll("d+", dateDD != null ? dateDD.toString() : "");
-			birthDate = birthDate.replaceAll("M+", dateMM != null ? dateMM.toString() : "");
-			birthDate = birthDate.replaceAll("y+", dateYYYY != null ? dateYYYY.toString() : "");
-			birthDate = birthDate.replaceAll("^[^\\d]*", "").replaceAll("[^\\d]*$", "");
-
-			return birthDate;
-		}
+	public static String formatDate(Integer dateDD, Integer dateMM, Integer dateYYYY) {
+		return DateHelper.formatLocalDate(dateDD, dateMM, dateYYYY, I18nProperties.getUserLanguage());
 	}
 
 	public static String getDateFormatPattern() {

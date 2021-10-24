@@ -817,11 +817,7 @@ public class ContactController {
 			if (contactPerson.getBirthdateDD() != null && contactPerson.getBirthdateMM() != null && contactPerson.getBirthdateYYYY() != null) {
 				contactLabelSb.append(" (* ")
 					.append(
-						DateFormatHelper.formatDate(
-							contactPerson.getBirthdateDD(),
-							contactPerson.getBirthdateMM(),
-							contactPerson.getBirthdateYYYY(),
-							I18nProperties.getUserLanguage()))
+						DateFormatHelper.formatDate(contactPerson.getBirthdateDD(), contactPerson.getBirthdateMM(), contactPerson.getBirthdateYYYY()))
 					.append(")");
 			}
 

@@ -182,12 +182,7 @@ public class TravelEntryController {
 			PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(travelEntry.getPerson().getUuid());
 			if (person.getBirthdateDD() != null && person.getBirthdateMM() != null && person.getBirthdateYYYY() != null) {
 				lastRowText.append(" (* ")
-					.append(
-						DateFormatHelper.formatDate(
-							person.getBirthdateDD(),
-							person.getBirthdateMM(),
-							person.getBirthdateYYYY(),
-							I18nProperties.getUserLanguage()))
+					.append(DateFormatHelper.formatDate(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY()))
 					.append(")");
 			}
 		}

@@ -39,17 +39,14 @@ public class PreviewGridHelper {
 	}
 
 	public static <T> List<String> createPersonColumns(Grid<T> grid, Function<T, SormasToSormasPersonPreview> getPerson) {
-		((Grid.Column<PseudonymizableDto, ?>)grid.addComponentColumn(
-			previewData -> {
-				SormasToSormasPersonPreview person = getPerson.apply(previewData);
-				if(person.isPseudonymized()){
-					return new Label(I18nProperties.getCaption(Captions.inaccessibleValue));
-				}
-				return new Label(person.getFirstName() + " " + person.getLastName());
-			}))
-			.setId(PERSON_NAME)
-		.setStyleGenerator(item -> {
-			if(item.isPseudonymized()) {
+		((Grid.Column<PseudonymizableDto, ?>) grid.addComponentColumn(previewData -> {
+			SormasToSormasPersonPreview person = getPerson.apply(previewData);
+			if (person.isPseudonymized()) {
+				return new Label(I18nProperties.getCaption(Captions.inaccessibleValue));
+			}
+			return new Label(person.getFirstName() + " " + person.getLastName());
+		})).setId(PERSON_NAME).setStyleGenerator(item -> {
+			if (item.isPseudonymized()) {
 				return CssStyles.INACCESSIBLE_COLUMN;
 			}
 
@@ -60,8 +57,7 @@ public class PreviewGridHelper {
 				DateFormatHelper.formatDate(
 					getPerson.apply(previewData).getBirthdateDD(),
 					getPerson.apply(previewData).getBirthdateMM(),
-					getPerson.apply(previewData).getBirthdateYYYY(),
-					I18nProperties.getUserLanguage())))
+					getPerson.apply(previewData).getBirthdateYYYY())))
 			.setId(BIRTH_DATE);
 		grid.addComponentColumn(previewData -> new Label(getPerson.apply(previewData).getSex().toString())).setId(SormasToSormasPersonPreview.SEX);
 		grid.addComponentColumn(previewData -> new Label(LocationHelper.buildLocationString(getPerson.apply(previewData).getAddress())))

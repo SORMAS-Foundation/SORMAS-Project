@@ -1682,12 +1682,7 @@ public class CaseController {
 			PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
 			if (casePerson.getBirthdateDD() != null && casePerson.getBirthdateMM() != null && casePerson.getBirthdateYYYY() != null) {
 				caseLabelSb.append(" (* ")
-					.append(
-						DateFormatHelper.formatDate(
-							casePerson.getBirthdateDD(),
-							casePerson.getBirthdateMM(),
-							casePerson.getBirthdateYYYY(),
-							I18nProperties.getUserLanguage()))
+					.append(DateFormatHelper.formatDate(casePerson.getBirthdateDD(), casePerson.getBirthdateMM(), casePerson.getBirthdateYYYY()))
 					.append(")");
 			}
 		}

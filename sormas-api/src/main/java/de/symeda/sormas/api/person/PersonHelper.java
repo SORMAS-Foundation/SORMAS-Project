@@ -124,11 +124,10 @@ public final class PersonHelper {
 		ApproximateAgeType ageType,
 		Integer birthdateDD,
 		Integer birthdateMM,
-		Integer birthdateYYYY,
-		Language language) {
+		Integer birthdateYYYY) {
 
 		String ageStr = ApproximateAgeHelper.formatApproximateAge(age, ageType);
-		String birthdateStr = DateFormatHelper.formatDate(birthdateDD, birthdateMM, birthdateYYYY, language);
+		String birthdateStr = DateFormatHelper.formatDate(birthdateDD, birthdateMM, birthdateYYYY);
 		return !StringUtils.isEmpty(ageStr)
 			? (ageStr + (!StringUtils.isEmpty(birthdateStr) ? " (" + birthdateStr + ")" : ""))
 			: !StringUtils.isEmpty(birthdateStr) ? birthdateStr : "";

@@ -85,12 +85,7 @@ public class PersonController {
 
 			if (personDto.getBirthdateDD() != null && personDto.getBirthdateMM() != null && personDto.getBirthdateYYYY() != null) {
 				personLabelSb.append(" (* ")
-					.append(
-						DateFormatHelper.formatDate(
-							personDto.getBirthdateDD(),
-							personDto.getBirthdateMM(),
-							personDto.getBirthdateYYYY(),
-							I18nProperties.getUserLanguage()))
+					.append(DateFormatHelper.formatDate(personDto.getBirthdateDD(), personDto.getBirthdateMM(), personDto.getBirthdateYYYY()))
 					.append(")");
 			}
 		}

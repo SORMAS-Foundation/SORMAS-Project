@@ -346,8 +346,7 @@ public class EventParticipantsController {
 						de.symeda.sormas.api.utils.DateFormatHelper.formatDate(
 							eventParticipant.getPerson().getBirthdateDD(),
 							eventParticipant.getPerson().getBirthdateMM(),
-							eventParticipant.getPerson().getBirthdateYYYY(),
-							I18nProperties.getUserLanguage()))
+							eventParticipant.getPerson().getBirthdateYYYY()))
 					.append(")");
 			}
 		}

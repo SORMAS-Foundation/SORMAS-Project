@@ -110,6 +110,21 @@ public final class DateHelper {
 		}
 	}
 
+	public static String formatLocalDate(Integer dateDD, Integer dateMM, Integer dateYYYY, Language language) {
+
+		if (dateDD == null && dateMM == null && dateYYYY == null) {
+			return "";
+		} else {
+			String birthDate = DateHelper.getLocalDateFormat(language).toPattern();
+			birthDate = birthDate.replaceAll("d+", dateDD != null ? dateDD.toString() : "");
+			birthDate = birthDate.replaceAll("M+", dateMM != null ? dateMM.toString() : "");
+			birthDate = birthDate.replaceAll("y+", dateYYYY != null ? dateYYYY.toString() : "");
+			birthDate = birthDate.replaceAll("^[^\\d]*", "").replaceAll("[^\\d]*$", "");
+
+			return birthDate;
+		}
+	}
+
 	public static String formatLocalDateTime(Date date, Language language) {
 
 		if (date != null) {
