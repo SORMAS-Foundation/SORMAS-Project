@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -82,6 +81,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
+import de.symeda.sormas.ui.utils.components.page.title.RowLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class ContactController {
@@ -790,16 +790,11 @@ public class ContactController {
 	public TitleLayout getContactViewTitleLayout(ContactDto contact) {
 		TitleLayout titleLayout = new TitleLayout();
 
-		HorizontalLayout diseaseLayout = new HorizontalLayout();
-		Label diseaseLabel = new Label(DiseaseHelper.toString(contact.getDisease(), contact.getDiseaseDetails()));
-		CssStyles.style(diseaseLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		RowLayout diseaseRow = new RowLayout();
+		diseaseRow.addToLayout(DiseaseHelper.toString(contact.getDisease(), contact.getDiseaseDetails()));
+		diseaseRow.addToLayout(DiseaseHelper.variantInBrackets(contact.getDiseaseVariant()), CssStyles.LABEL_PRIMARY);
 
-		Label diseaseVariantLabel = new Label(DiseaseHelper.variantInBrackets(contact.getDiseaseVariant()));
-		CssStyles.style(diseaseVariantLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-
-		diseaseLayout.addComponent(diseaseLabel);
-		diseaseLayout.addComponent(diseaseVariantLabel);
-		titleLayout.addComponents(diseaseLayout);
+		titleLayout.addRow(diseaseRow);
 
 		titleLayout.addRow(contact.getContactClassification().toString());
 

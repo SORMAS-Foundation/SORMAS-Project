@@ -18,6 +18,10 @@ public class TitleLayout extends VerticalLayout {
 		addRow(text, CssStyles.H3);
 	}
 
+	public void addRow(RowLayout rowLayout) {
+		addComponent(rowLayout);
+	}
+
 	public void addMainRow(String text) {
 		addRow(text, CssStyles.H2, CssStyles.LABEL_PRIMARY);
 	}
