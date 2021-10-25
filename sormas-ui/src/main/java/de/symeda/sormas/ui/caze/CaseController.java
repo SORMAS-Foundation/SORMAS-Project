@@ -859,7 +859,7 @@ public class CaseController {
 		editView.addCommitListener(() -> {
 			CaseDataDto oldCase = findCase(caseUuid);
 			CaseDataDto cazeDto = caseEditForm.getValue();
-			if (cazeDto.getHealthFacility() != null && !cazeDto.getHealthFacility().getUuid().equals(oldCase.getHealthFacility().getUuid())) {
+			if (cazeDto.getFacilityType() != oldCase.getFacilityType()) {
 				saveCaseWithFacilityChangedPrompt(cazeDto, oldCase);
 			} else {
 				saveCase(cazeDto, true);
@@ -1257,53 +1257,50 @@ public class CaseController {
 
 	public void saveCaseWithFacilityChangedPrompt(CaseDataDto caze, CaseDataDto oldCase) {
 
-		VaadinUiUtil.showChooseOptionPopup(
-			I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
-			new Label(I18nProperties.getString(Strings.messageFacilityChanged)),
-			I18nProperties.getCaption(Captions.caseTransferCase),
-			I18nProperties.getCaption(Captions.caseEditData),
-			500,
-			e -> {
-				CaseLogic.handleHospitalization(caze, oldCase, e.booleanValue());
-				CaseDataDto savedCaseDto = saveCase(caze, false);
-
-				if (FacilityType.HOSPITAL == caze.getFacilityType() && oldCase.getFacilityType() != FacilityType.HOSPITAL) {
-					CurrentHospitalizationForm currentHospitalizationForm = new CurrentHospitalizationForm();
-					currentHospitalizationForm.setValue(savedCaseDto.getHospitalization());
-					VaadinUiUtil.showThreeOptionsPopup(
-						I18nProperties.getString(Strings.headingCurrentHospitalization),
-						currentHospitalizationForm,
-						I18nProperties.getCaption(Captions.actionSaveAndOpenHospitalization),
-						I18nProperties.getCaption(Captions.actionSave),
-						I18nProperties.getCaption(Captions.actionDiscard),
-						500,
-						option -> {
-							final NullableOptionGroup admittedToHealthFacilityField =
-								currentHospitalizationForm.getField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY);
-							switch (option) {
-							case OPTION1: {
-								savedCaseDto.getHospitalization()
-									.setAdmittedToHealthFacility((YesNoUnknown) admittedToHealthFacilityField.getNullableValue());
-								saveCase(savedCaseDto, true);
-								ControllerProvider.getCaseController().navigateToView(HospitalizationView.VIEW_NAME, caze.getUuid(), null);
-							}
-								break;
-							case OPTION2: {
-								savedCaseDto.getHospitalization()
-									.setAdmittedToHealthFacility((YesNoUnknown) admittedToHealthFacilityField.getNullableValue());
-								saveCase(savedCaseDto, true);
-								ControllerProvider.getCaseController().navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null);
-							}
-								break;
-							case OPTION3:
-								SormasUI.refreshView();
-								break;
-							}
-						});
-				} else {
+		if (FacilityType.HOSPITAL == caze.getFacilityType() && oldCase.getFacilityType() != FacilityType.HOSPITAL) {
+			CurrentHospitalizationForm currentHospitalizationForm = new CurrentHospitalizationForm();
+			currentHospitalizationForm.setValue(caze.getHospitalization());
+			VaadinUiUtil.showThreeOptionsPopup(
+				I18nProperties.getString(Strings.headingCurrentHospitalization),
+				currentHospitalizationForm,
+				I18nProperties.getCaption(Captions.actionSaveAndOpenHospitalization),
+				I18nProperties.getCaption(Captions.actionSave),
+				I18nProperties.getCaption(Captions.actionDiscard),
+				500,
+				option -> {
+					final NullableOptionGroup admittedToHealthFacilityField =
+						currentHospitalizationForm.getField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY);
+					switch (option) {
+					case OPTION1: {
+						caze.getHospitalization().setAdmittedToHealthFacility((YesNoUnknown) admittedToHealthFacilityField.getNullableValue());
+						saveCase(caze, true);
+						ControllerProvider.getCaseController().navigateToView(HospitalizationView.VIEW_NAME, caze.getUuid(), null);
+					}
+						break;
+					case OPTION2: {
+						caze.getHospitalization().setAdmittedToHealthFacility((YesNoUnknown) admittedToHealthFacilityField.getNullableValue());
+						saveCase(caze, true);
+						ControllerProvider.getCaseController().navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null);
+					}
+						break;
+					case OPTION3:
+						SormasUI.refreshView();
+						break;
+					}
+				});
+		} else if (FacilityType.HOSPITAL != caze.getFacilityType() && oldCase.getFacilityType() == FacilityType.HOSPITAL) {
+			VaadinUiUtil.showChooseOptionPopup(
+				I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
+				new Label(I18nProperties.getString(Strings.messageFacilityChanged)),
+				I18nProperties.getCaption(Captions.caseTransferCase),
+				I18nProperties.getCaption(Captions.caseEditData),
+				500,
+				e -> {
+					CaseLogic.handleHospitalization(caze, oldCase, e.booleanValue());
+					saveCase(caze, false);
 					SormasUI.refreshView();
-				}
-			});
+				});
+		}
 	}
 
 	public void referFromPointOfEntry(CaseDataDto caze) {
