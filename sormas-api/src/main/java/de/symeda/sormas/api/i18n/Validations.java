@@ -95,6 +95,7 @@ public interface Validations {
 	String importFacilityAlreadyExists = "importFacilityAlreadyExists";
 	String importFacilityNotUniqueInCommunity = "importFacilityNotUniqueInCommunity";
 	String importFacilityNotUniqueInDistrict = "importFacilityNotUniqueInDistrict";
+	String importIncompleteContent = "importIncompleteContent";
 	String importInvalidDate = "importInvalidDate";
 	String importLabNotUnique = "importLabNotUnique";
 	String importLaboratoryAlreadyExists = "importLaboratoryAlreadyExists";
@@ -102,6 +103,7 @@ public interface Validations {
 	String importPersonContactDetailsWithoutFacilityType = "importPersonContactDetailsWithoutFacilityType";
 	String importPointOfEntryAlreadyExists = "importPointOfEntryAlreadyExists";
 	String importPointOfEntryNotUniqueInDistrict = "importPointOfEntryNotUniqueInDistrict";
+	String importProbablyInvalidSeparator = "importProbablyInvalidSeparator";
 	String importPropertyTypeNotAllowed = "importPropertyTypeNotAllowed";
 	String importRegionAlreadyExists = "importRegionAlreadyExists";
 	String importRegionNotInServerCountry = "importRegionNotInServerCountry";

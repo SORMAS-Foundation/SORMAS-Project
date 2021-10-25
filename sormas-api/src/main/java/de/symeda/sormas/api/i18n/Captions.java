@@ -339,10 +339,12 @@ public interface Captions {
 	String CaseData_postpartum = "CaseData.postpartum";
 	String CaseData_pregnant = "CaseData.pregnant";
 	String CaseData_previousInfectionDate = "CaseData.previousInfectionDate";
+	String CaseData_previousQuarantineTo = "CaseData.previousQuarantineTo";
 	String CaseData_prohibitionToWork = "CaseData.prohibitionToWork";
 	String CaseData_prohibitionToWorkFrom = "CaseData.prohibitionToWorkFrom";
 	String CaseData_prohibitionToWorkUntil = "CaseData.prohibitionToWorkUntil";
 	String CaseData_quarantine = "CaseData.quarantine";
+	String CaseData_quarantineChangeComment = "CaseData.quarantineChangeComment";
 	String CaseData_quarantineExtended = "CaseData.quarantineExtended";
 	String CaseData_quarantineFrom = "CaseData.quarantineFrom";
 	String CaseData_quarantineHelpNeeded = "CaseData.quarantineHelpNeeded";
@@ -604,10 +606,12 @@ public interface Captions {
 	String Contact_overwriteFollowUpUntil = "Contact.overwriteFollowUpUntil";
 	String Contact_person = "Contact.person";
 	String Contact_personUuid = "Contact.personUuid";
+	String Contact_previousQuarantineTo = "Contact.previousQuarantineTo";
 	String Contact_prohibitionToWork = "Contact.prohibitionToWork";
 	String Contact_prohibitionToWorkFrom = "Contact.prohibitionToWorkFrom";
 	String Contact_prohibitionToWorkUntil = "Contact.prohibitionToWorkUntil";
 	String Contact_quarantine = "Contact.quarantine";
+	String Contact_quarantineChangeComment = "Contact.quarantineChangeComment";
 	String Contact_quarantineExtended = "Contact.quarantineExtended";
 	String Contact_quarantineFrom = "Contact.quarantineFrom";
 	String Contact_quarantineHelpNeeded = "Contact.quarantineHelpNeeded";
@@ -1302,6 +1306,7 @@ public interface Captions {
 	String Immunization_meansOfImmunization = "Immunization.meansOfImmunization";
 	String Immunization_meansOfImmunizationDetails = "Immunization.meansOfImmunizationDetails";
 	String Immunization_numberOfDoses = "Immunization.numberOfDoses";
+	String Immunization_numberOfDosesDetails = "Immunization.numberOfDosesDetails";
 	String Immunization_overwriteImmunizationManagementStatus = "Immunization.overwriteImmunizationManagementStatus";
 	String Immunization_personFirstName = "Immunization.personFirstName";
 	String Immunization_personLastName = "Immunization.personLastName";
