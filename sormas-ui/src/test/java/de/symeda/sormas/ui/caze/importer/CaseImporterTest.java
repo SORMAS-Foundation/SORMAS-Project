@@ -249,13 +249,41 @@ public class CaseImporterTest extends AbstractBeanTest {
 		assertEquals(10, getCaseFacade().count(null));
 	}
 
+	@Test
+	public void testImportWithInvalidCsvContent()
+		throws InterruptedException, InvalidColumnException, CsvValidationException, IOException, URISyntaxException {
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		// csv with missing header
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_case_import_test_one_data_line_missing_header.csv").toURI());
+		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, true, user);
+		ImportResultStatus importResult = caseImporter.runImport();
+
+		assertEquals(ImportResultStatus.CANCELED_WITH_ERRORS, importResult);
+
+		// csv with wrong separator
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_success.csv").toURI());
+		caseImporter = new CaseImporterExtension(csvFile, true, user, ValueSeparator.SEMICOLON);
+		importResult = caseImporter.runImport();
+
+		assertEquals(ImportResultStatus.CANCELED_WITH_ERRORS, importResult);
+
+	}
+
 	public static class CaseImporterExtension extends CaseImporter {
 
 		public StringBuilder stringBuilder = new StringBuilder("");
 		private StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
 
 		public CaseImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) throws IOException {
-			super(inputFile, hasEntityClassRow, currentUser, ValueSeparator.DEFAULT);
+			this(inputFile, hasEntityClassRow, currentUser, ValueSeparator.DEFAULT);
+		}
+
+		public CaseImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator valueSeparator)
+			throws IOException {
+			super(inputFile, hasEntityClassRow, currentUser, valueSeparator);
 		}
 
 		@Override

@@ -23,6 +23,8 @@ import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.util.UUID;
 import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.pojo.web.Case;
 
 public class CaseService {
@@ -73,14 +75,12 @@ public class CaseService {
         .outcomeOfCase("RECOVERED")
         .reportingDistrict("Voreingestellter Landkreis")
         .caseIdentificationSource("Suspicion report")
-        .region("Voreingestellte Bundesländer")
-        .district("Voreingestellter Landkreis")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
         .community("Voreingestellte Gemeinde")
-        .responsibleJurisdiction(
-            "Responsible jurisdiction of this case differs from its place of stay")
-        .responsibleDistrict("Voreingestellter Landkreis")
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
         .responsibleCommunity("Voreingestellte Gemeinde")
-        .responsibleRegion("Voreingestellte Bundesländer")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .prohibitionToWork("NO")
         .homeBasedQuarantinePossible("NO")
         .quarantine("None")
@@ -102,7 +102,7 @@ public class CaseService {
 
   public Case buildCaseForLineListingFeature() {
     return Case.builder()
-        .disease(DiseasesValues.MONKEYPOX.getDiseaseName())
+        .disease(DiseasesValues.MONKEYPOX.getDiseaseCaption())
         .region("Voreingestellte")
         .district("Voreingestellter Landkreis")
         .facilityCategory("Accommodation")
