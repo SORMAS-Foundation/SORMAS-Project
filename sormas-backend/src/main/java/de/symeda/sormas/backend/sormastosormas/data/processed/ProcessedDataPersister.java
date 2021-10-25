@@ -19,12 +19,12 @@ import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
-import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
+import de.symeda.sormas.api.utils.SormasToSormasEntityDtoInterface;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 
-public abstract class ProcessedDataPersister<T extends SormasToSormasEntityDto, S extends de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto<T>, E extends SormasToSormasEntity> {
+public abstract class ProcessedDataPersister<T extends SormasToSormasEntityDtoInterface, S extends de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto<T>, E extends SormasToSormasEntity> {
 
 	protected abstract SormasToSormasShareInfoService getShareInfoService();
 

@@ -30,17 +30,22 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
-import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
+import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasCommonDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
+import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
 public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, SormasToSormasEventDto, SormasToSormasEventPreview, Event> {
 
 	@EJB
-	private Sormas2SormasDataValidator dataValidator;
+	private Sormas2SormasCommonDataValidator commonDataValidator;
 	@EJB
 	private EventService eventService;
+	@EJB
+	private UserService userService;
+	@EJB
+	private EventValidatorS2S eventValidator;
 
 	@Override
 	public ValidationErrors processReceivedData(SormasToSormasEventDto receivedEvent, Event existingEvent) {
@@ -51,9 +56,16 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 
 		EventDto event = receivedEvent.getEntity();
 
-		dataValidator.handleIgnoredProperties(event, EventFacadeEjb.EventFacadeEjbLocal.toDto(existingEvent));
+		commonDataValidator.handleIgnoredProperties(event, EventFacadeEjb.toDto(existingEvent));
+		commonDataValidator.updateReportingUser(event, existingEvent);
+		
+		if (existingEvent == null || existingEvent.getResponsibleUser() == null) {
+			event.setResponsibleUser(userService.getCurrentUser().toReference());
+		} else {
+			event.setResponsibleUser(existingEvent.getResponsibleUser().toReference());
+		}
 
-		return dataValidator.validateEventData(event, existingEvent);
+		return eventValidator.validateInboundEntity(event);
 	}
 
 	@Override
@@ -64,8 +76,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 		}
 
 		ValidationErrors eventValidationErrors = new ValidationErrors();
-
-		dataValidator.validateLocation(preview.getEventLocation(), Captions.Event, eventValidationErrors);
+		commonDataValidator.validateLocation(preview.getEventLocation(), Captions.Event, eventValidationErrors);
 
 		return eventValidationErrors;
 	}

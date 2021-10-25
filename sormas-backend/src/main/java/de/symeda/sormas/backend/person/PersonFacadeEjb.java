@@ -547,7 +547,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (source.getAddress() != null) {
 			if (source.getAddress().getRegion() != null
 				&& source.getAddress().getDistrict() != null
-				&& !districtFacade.getDistrictByUuid(source.getAddress().getDistrict().getUuid())
+				&& !districtFacade.getByUuid(source.getAddress().getDistrict().getUuid())
 					.getRegion()
 					.equals(source.getAddress().getRegion())) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressDistrictInAddressRegion));

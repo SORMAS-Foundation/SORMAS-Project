@@ -4,13 +4,10 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.ejb.Remote;
-import javax.validation.Valid;
 
 import de.symeda.sormas.api.BaseFacade;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 @Remote

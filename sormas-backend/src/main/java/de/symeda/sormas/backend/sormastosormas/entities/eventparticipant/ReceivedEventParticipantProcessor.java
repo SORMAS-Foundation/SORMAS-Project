@@ -29,7 +29,7 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
-import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
+import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasCommonDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 
 @Stateless
@@ -39,9 +39,11 @@ public class ReceivedEventParticipantProcessor
 	ReceivedDataProcessor<EventParticipantDto, SormasToSormasEventParticipantDto, SormasToSormasEventParticipantPreview, EventParticipant> {
 
 	@EJB
-	private Sormas2SormasDataValidator dataValidator;
+	private Sormas2SormasCommonDataValidator dataValidator;
 	@EJB
 	private EventParticipantService eventParticipantService;
+	@EJB
+	private EventParticipantValidatorS2S eventParticipantValidator;
 
 	@Override
 	public ValidationErrors processReceivedData(SormasToSormasEventParticipantDto receivedData, EventParticipant existingData) {
@@ -54,17 +56,17 @@ public class ReceivedEventParticipantProcessor
 
 		dataValidator.handleIgnoredProperties(eventParticipant.getPerson(), dataValidator.getExistingPerson(existingData));
 
-		return dataValidator.validateEventParticipant(eventParticipant);
+		return eventParticipantValidator.validateInboundEntity(eventParticipant);
 	}
 
 	@Override
-	public ValidationErrors processReceivedPreview(SormasToSormasEventParticipantPreview eventParticipant) {
-		ValidationErrors uuidError = validateSharedUuid(eventParticipant.getUuid());
+	public ValidationErrors processReceivedPreview(SormasToSormasEventParticipantPreview preview) {
+		ValidationErrors uuidError = validateSharedUuid(preview.getUuid());
 		if (uuidError.hasError()) {
 			return uuidError;
 		}
 
-		return dataValidator.validatePersonPreview(eventParticipant.getPerson());
+		return eventParticipantValidator.validateInboundPreviewEntity(preview);
 	}
 
 	private ValidationErrors validateSharedUuid(String uuid) {

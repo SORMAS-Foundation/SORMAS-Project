@@ -28,7 +28,7 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
+import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasCommonDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 
 @Stateless
@@ -36,12 +36,14 @@ import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcess
 public class ReceivedSampleProcessor implements ReceivedDataProcessor<SampleDto, SormasToSormasSampleDto, Void, Sample> {
 
 	@EJB
-	private Sormas2SormasDataValidator dataValidator;
+	private Sormas2SormasCommonDataValidator commonDataValidator;
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private SampleValidatorS2S sampleValidator;
 
 	@Override
-	public ValidationErrors processReceivedData(SormasToSormasSampleDto sharedData, Sample existingData) {
+	public ValidationErrors processReceivedData(SormasToSormasSampleDto sharedData, Sample existingSample) {
 		SampleDto sample = sharedData.getEntity();
 
 		ValidationErrors uuidError = validateSharedUuid(sample.getUuid());
@@ -49,11 +51,10 @@ public class ReceivedSampleProcessor implements ReceivedDataProcessor<SampleDto,
 			return uuidError;
 		}
 
-		ValidationErrors validationErrors = dataValidator.validateSample(existingData, sample);
+		commonDataValidator.updateReportingUser(sample, existingSample);
+		ValidationErrors validationErrors = sampleValidator.validateInboundEntity(sample);
 
-		sharedData.getPathogenTests().forEach(pathogenTest -> {
-			dataValidator.validatePathogenTest(validationErrors, pathogenTest);
-		});
+		sharedData.getPathogenTests().forEach(pathogenTest -> commonDataValidator.validatePathogenTest(validationErrors, pathogenTest));
 
 		return validationErrors;
 	}

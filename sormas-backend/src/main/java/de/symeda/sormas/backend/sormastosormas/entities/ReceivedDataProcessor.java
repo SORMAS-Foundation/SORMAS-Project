@@ -37,7 +37,7 @@ import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantD
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.sormastosormas.ValidationHelper;
-import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
+import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasCommonDataValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.ReceivedCaseProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.contact.ReceivedContactProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.event.ReceivedEventProcessor;
@@ -51,7 +51,7 @@ import de.symeda.sormas.backend.sormastosormas.share.ShareRequestData;
 public class ReceivedDataProcessor {
 
 	@EJB
-	private Sormas2SormasDataValidator dataValidator;
+	private Sormas2SormasCommonDataValidator dataValidator;
 	@EJB
 	private ReceivedCaseProcessor caseProcessor;
 	@EJB

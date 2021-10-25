@@ -173,19 +173,8 @@ public class DistrictFacadeEjb
 
 	@Override
 	public int getCountByRegion(String regionUuid) {
-
 		Region region = regionService.getByUuid(regionUuid);
 		return service.getCountByRegion(region);
-	}
-
-	@Override
-	public DistrictDto getDistrictByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
-	}
-
-	@Override
-	public DistrictReferenceDto getDistrictReferenceByUuid(String uuid) {
-		return toReferenceDto(service.getByUuid(uuid));
 	}
 
 	@Override
@@ -308,6 +297,11 @@ public class DistrictFacadeEjb
 		dto.setExternalID(entity.getExternalID());
 
 		return dto;
+	}
+
+	@Override
+	public DistrictReferenceDto toRefDto(District district) {
+		return toReferenceDto(district);
 	}
 
 	public DistrictIndexDto toIndexDto(District entity) {

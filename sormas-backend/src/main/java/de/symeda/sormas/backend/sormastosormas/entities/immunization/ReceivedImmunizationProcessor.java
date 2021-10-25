@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.immunization;
 
-import java.util.List;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -25,15 +23,15 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasImmunizationPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
-import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
+import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasCommonDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 import de.symeda.sormas.backend.user.UserService;
@@ -47,51 +45,27 @@ public class ReceivedImmunizationProcessor
 	@EJB
 	private ImmunizationService immunizationService;
 	@EJB
-	private Sormas2SormasDataValidator dataValidator;
-
+	private Sormas2SormasCommonDataValidator commonDataValidator;
 	@EJB
 	private InfrastructureValidator infraValidator;
 	@EJB
 	private UserService userService;
+	@EJB
+	private ImmunizationValidatorS2S immunizationValidator;
 
 	@Override
 	public ValidationErrors processReceivedData(SormasToSormasEntityDto<ImmunizationDto> sharedData, Immunization existingData) {
-		ImmunizationDto immunization = sharedData.getEntity();
+		ImmunizationDto im = sharedData.getEntity();
 
-		ValidationErrors uuidError = validateSharedUuid(immunization.getUuid());
+		ValidationErrors uuidError = validateSharedUuid(im.getUuid());
 		if (uuidError.hasError()) {
 			return uuidError;
 		}
 
-		ValidationErrors validationErrors = new ValidationErrors();
+		commonDataValidator.handleIgnoredProperties(im, ImmunizationFacadeEjb.toDto(existingData));
+		commonDataValidator.updateReportingUser(im, existingData);
 
-		dataValidator.updateReportingUser(immunization, existingData);
-		dataValidator.handleIgnoredProperties(immunization, ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal.toDto(existingData));
-
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-			infraValidator.validateInfrastructure(
-				null,
-				null,
-				immunization.getCountry(),
-				immunization.getResponsibleRegion(),
-				immunization.getResponsibleDistrict(),
-				immunization.getResponsibleCommunity(),
-				immunization.getFacilityType(),
-				immunization.getHealthFacility(),
-				immunization.getHealthFacilityDetails(),
-				null,
-				null);
-
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Sample_lab, validationErrors, (infrastructureData -> {
-			immunization.setCountry(infrastructureData.getCountry());
-			immunization.setResponsibleRegion(infrastructureData.getRegion());
-			immunization.setResponsibleDistrict(infrastructureData.getDistrict());
-			immunization.setResponsibleCommunity(infrastructureData.getCommunity());
-			immunization.setHealthFacility(infrastructureData.getFacility());
-			immunization.setHealthFacilityDetails(infrastructureData.getFacilityDetails());
-		}));
-
-		immunization.getVaccinations().forEach(vaccination -> {
+		im.getVaccinations().forEach(vaccination -> {
 			Vaccination existingVaccination = existingData == null
 				? null
 				: existingData.getVaccinations().stream().filter(v -> v.getUuid().equals(vaccination.getUuid())).findFirst().orElse(null);
@@ -101,12 +75,12 @@ public class ReceivedImmunizationProcessor
 			vaccination.setReportingUser(reportingUser);
 		});
 
-		return validationErrors;
+		return immunizationValidator.validateInboundEntity(im);
 	}
 
 	@Override
 	public ValidationErrors processReceivedPreview(Void sharedPreview) {
-		throw new RuntimeException("Immunizations preview not yet implemented");
+		return immunizationValidator.validateInboundPreviewEntity(new SormasToSormasImmunizationPreview());
 	}
 
 	private ValidationErrors validateSharedUuid(String uuid) {

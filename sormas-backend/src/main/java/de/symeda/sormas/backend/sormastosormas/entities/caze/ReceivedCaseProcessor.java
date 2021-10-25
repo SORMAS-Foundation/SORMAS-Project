@@ -31,7 +31,7 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
+import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasCommonDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 
 @Stateless
@@ -39,9 +39,11 @@ import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcess
 public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto, SormasToSormasCaseDto, SormasToSormasCasePreview, Case> {
 
 	@EJB
-	private Sormas2SormasDataValidator dataValidator;
+	private Sormas2SormasCommonDataValidator commonDataValidator;
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private CaseValidatorS2S caseValidator;
 
 	@Override
 	public ValidationErrors processReceivedData(SormasToSormasCaseDto receivedCase, Case existingCase) {
@@ -53,11 +55,15 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 			return uuidError;
 		}
 
-		dataValidator.handleIgnoredProperties(caze, CaseFacadeEjb.CaseFacadeEjbLocal.toDto(existingCase));
-		dataValidator.handleIgnoredProperties(person, dataValidator.getExitingPerson(existingCase));
+		commonDataValidator.handleIgnoredProperties(caze, CaseFacadeEjb.toDto(existingCase));
+		commonDataValidator.handleIgnoredProperties(person, commonDataValidator.getExitingPerson(existingCase));
 
+		caze.setPerson(person.toReference());
+		commonDataValidator.updateReportingUser(caze, existingCase);
 
-		return dataValidator.validateCaseData(caze, person, existingCase);
+		ValidationErrors validationErrors = new ValidationErrors();
+		validationErrors.addAll(commonDataValidator.validatePerson(person));
+		return caseValidator.validateInboundEntity(caze);
 	}
 
 	@Override
@@ -67,11 +73,11 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 			return uuidError;
 		}
 
-		ValidationErrors caseValidationErrors = dataValidator.validateCasePreview(preview);
-		ValidationErrors personValidationErrors = dataValidator.validatePersonPreview(preview.getPerson());
-		caseValidationErrors.addAll(personValidationErrors);
-
-		return caseValidationErrors;
+		ValidationErrors validationErrors = new ValidationErrors();
+		ValidationErrors personValidationErrors = commonDataValidator.validatePersonPreview(preview.getPerson());
+		validationErrors.addAll(personValidationErrors);
+		validationErrors.addAll(caseValidator.validateInboundPreviewEntity(preview));
+		return validationErrors;
 	}
 
 	private ValidationErrors validateSharedUuid(String uuid) {

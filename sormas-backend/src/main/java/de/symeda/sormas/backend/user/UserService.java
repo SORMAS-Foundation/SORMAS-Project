@@ -251,7 +251,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		// WHERE OR
 		if (includeSupervisors) {
 			Predicate supervisorFilter = rolesJoin.in(
-					Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR));
+				Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR));
 			filter = CriteriaBuilderHelper.or(cb, filter, supervisorFilter);
 		}
 
@@ -541,13 +541,14 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return getCurrentUser().getUserRoles().contains(userRoleName);
 	}
 
-	public boolean hasAnyRole(Set<UserRole> typeRoles) {
-		Set<UserRole> userRoles = getCurrentUser().getUserRoles();
-		return !userRoles.stream().filter(userRole -> typeRoles.contains(userRole)).collect(Collectors.toList()).isEmpty();
-	}
-
 	public boolean hasRight(UserRight right) {
 		User currentUser = getCurrentUser();
+		// currentUser is the currently logged-in user. There are cases e.g., in AbstractInfrastructureEjb where this check
+		// will be called. However, there is no user session active as the call to AbstractInfrastructureEjb::save is the result
+		// of a cron service invocation. In this case it is safe to grant access.
+		if (currentUser == null) {
+			return true;
+		}
 		return userRoleConfigFacade.getEffectiveUserRights(currentUser.getUserRoles().toArray(new UserRole[0])).contains(right);
 	}
 

@@ -31,7 +31,7 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
-import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
+import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasCommonDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 
 @Stateless
@@ -39,9 +39,10 @@ import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcess
 public class ReceivedContactProcessor implements ReceivedDataProcessor<ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview, Contact> {
 
 	@EJB
-	private Sormas2SormasDataValidator dataValidator;
+	private Sormas2SormasCommonDataValidator commonDataValidator;
 	@EJB
 	private ContactService contactService;
+	private ContactValidatorS2S contactValidator;
 
 	@Override
 	public ValidationErrors processReceivedData(SormasToSormasContactDto receivedContact, Contact existingContact) {
@@ -54,10 +55,17 @@ public class ReceivedContactProcessor implements ReceivedDataProcessor<ContactDt
 			return uuidError;
 		}
 
-		dataValidator.handleIgnoredProperties(contact, ContactFacadeEjb.ContactFacadeEjbLocal.toDto(existingContact));
-		dataValidator.handleIgnoredProperties(person, dataValidator.getExistingPerson(existingContact));
+		commonDataValidator.handleIgnoredProperties(contact, ContactFacadeEjb.toDto(existingContact));
+		commonDataValidator.handleIgnoredProperties(person, commonDataValidator.getExistingPerson(existingContact));
 
-		return dataValidator.validateContactData(contact, person, existingContact);
+		contact.setPerson(person.toReference());
+		commonDataValidator.updateReportingUser(contact, existingContact);
+
+		ValidationErrors validationErrors = new ValidationErrors();
+		validationErrors.addAll(commonDataValidator.validatePerson(person));
+		validationErrors.addAll(contactValidator.validateInboundEntity(contact));
+
+		return validationErrors;
 	}
 
 	@Override
@@ -67,7 +75,7 @@ public class ReceivedContactProcessor implements ReceivedDataProcessor<ContactDt
 			return uuidError;
 		}
 
-		return dataValidator.validateContactPreview(preview);
+		return contactValidator.validateInboundPreviewEntity(preview);
 	}
 
 	private ValidationErrors validateSharedUuid(String uuid) {
