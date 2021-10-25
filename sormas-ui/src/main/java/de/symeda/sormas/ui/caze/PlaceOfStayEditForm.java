@@ -136,7 +136,7 @@ public class PlaceOfStayEditForm extends AbstractEditForm<CaseDataDto> {
 			true);
 		FieldHelper.setRequiredWhen(
 			differentPlaceOfStayJurisdiction,
-			Arrays.asList(regionCombo, districtCombo, communityCombo),
+			Arrays.asList(regionCombo, districtCombo),
 			Collections.singletonList(Boolean.TRUE),
 			false, null);
 
