@@ -1,13 +1,11 @@
 package de.symeda.sormas.backend.geo;
 
-import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.sql.Timestamp;
-import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -58,15 +56,20 @@ public class CountryFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetAllAfter() {
+	public void testGetAllAfter() throws InterruptedException {
 		Country country1 = creator.createCountry("Romania", "ROU", "642");
-		Country country2 = creator.createCountry("Germany", "DEU", "276");
-		country2.setChangeDate(Timestamp.from(Instant.now().minus(2, DAYS)));
 		getCountryService().doFlush();
+		Date date = new Date();
+		assertEquals(0, getCommunityFacade().getAllAfter(date).size());
+		Thread.sleep(1); // delay ignoring known rounding issues in change date filter
 
-		List<CountryDto> actualList = getCountryFacade().getAllAfter(Timestamp.from(Instant.now().minus(1, DAYS)));
-		CountryDto actual = actualList.get(0);
-		assertTrue(entityIsEqualToDto(country1, actual));
+		Country country2 = creator.createCountry("Germany", "DEU", "276");
+		getCountryService().doFlush();
+		List<CountryDto> results = getCountryFacade().getAllAfter(date);
+
+		// List should have one entry
+		assertEquals(1, results.size());
+		assertTrue(entityIsEqualToDto(country2, results.get(0)));
 	}
 
 	@Test
