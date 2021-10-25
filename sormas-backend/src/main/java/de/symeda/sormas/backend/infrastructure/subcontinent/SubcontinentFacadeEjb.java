@@ -46,6 +46,8 @@ import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentIndexDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import de.symeda.sormas.backend.infrastructure.continent.Continent;
@@ -53,6 +55,8 @@ import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentService;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -203,7 +207,18 @@ public class SubcontinentFacadeEjb
 
 	@Override
 	protected void selectDtoFields(CriteriaQuery<SubcontinentDto> cq, Root<Subcontinent> root) {
-		// we do not select DTO fields in getAllAfter query
+		Join<Subcontinent, Continent> continent = root.join(Subcontinent.CONTINENT, JoinType.LEFT);
+		// Need to be in the same order as in the constructor
+		cq.multiselect(
+			root.get(AbstractDomainObject.CREATION_DATE),
+			root.get(AbstractDomainObject.CHANGE_DATE),
+			root.get(AbstractDomainObject.UUID),
+			root.get(Subcontinent.DEFAULT_NAME),
+			root.get(Subcontinent.EXTERNAL_ID),
+			root.get(InfrastructureAdo.ARCHIVED),
+			continent.get(AbstractDomainObject.UUID),
+			continent.get(Continent.DEFAULT_NAME),
+			continent.get(Continent.EXTERNAL_ID));
 	}
 
 	@Override

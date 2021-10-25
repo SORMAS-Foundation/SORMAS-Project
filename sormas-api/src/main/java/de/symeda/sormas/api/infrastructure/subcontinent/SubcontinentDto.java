@@ -3,10 +3,13 @@ package de.symeda.sormas.api.infrastructure.subcontinent;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
+
+import java.util.Date;
 
 public class SubcontinentDto extends EntityDto {
 
@@ -22,10 +25,32 @@ public class SubcontinentDto extends EntityDto {
 	private boolean archived;
 	private ContinentReferenceDto continent;
 
+	public SubcontinentDto() {
+	}
+
 	public static SubcontinentDto build() {
 		SubcontinentDto dto = new SubcontinentDto();
 		dto.setUuid(DataHelper.createUuid());
 		return dto;
+	}
+
+	public SubcontinentDto(
+		Date creationDate,
+		Date changeDate,
+		String uuid,
+		String defaultName,
+		String externalId,
+		boolean archived,
+		String continentUuid,
+		String continentName,
+		String continentExternalId) {
+		super(creationDate, changeDate, uuid);
+		this.defaultName = defaultName;
+		this.externalId = externalId;
+		this.archived = archived;
+		if (continentUuid != null) {
+			this.continent = new ContinentReferenceDto(continentUuid, I18nProperties.getContinentName(continentName), continentExternalId);
+		}
 	}
 
 	public String getDefaultName() {

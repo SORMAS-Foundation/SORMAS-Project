@@ -45,8 +45,11 @@ import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
+import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
@@ -171,7 +174,14 @@ public class ContinentFacadeEjb
 
 	@Override
 	protected void selectDtoFields(CriteriaQuery<ContinentDto> cq, Root<Continent> root) {
-		// we do not select DTO fields in getAllAfter query
+		// Need to be in the same order as in the constructor
+		cq.multiselect(
+			root.get(AbstractDomainObject.CREATION_DATE),
+			root.get(AbstractDomainObject.CHANGE_DATE),
+			root.get(AbstractDomainObject.UUID),
+			root.get(Continent.DEFAULT_NAME),
+			root.get(Continent.EXTERNAL_ID),
+			root.get(InfrastructureAdo.ARCHIVED));
 	}
 
 	@Override

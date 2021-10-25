@@ -45,6 +45,8 @@ import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -88,16 +90,16 @@ public class CommunityFacadeEjb
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
 		// Need to be in the same order as in the constructor
 		cq.multiselect(
-			root.get(Community.CREATION_DATE),
-			root.get(Community.CHANGE_DATE),
-			root.get(Community.UUID),
-			root.get(Community.ARCHIVED),
+			root.get(AbstractDomainObject.CREATION_DATE),
+			root.get(AbstractDomainObject.CHANGE_DATE),
+			root.get(AbstractDomainObject.UUID),
+			root.get(InfrastructureAdo.ARCHIVED),
 			root.get(Community.NAME),
 			root.get(Community.GROWTH_RATE),
-			region.get(Region.UUID),
+			region.get(AbstractDomainObject.UUID),
 			region.get(Region.NAME),
 			region.get(Region.EXTERNAL_ID),
-			district.get(District.UUID),
+			district.get(AbstractDomainObject.UUID),
 			district.get(District.NAME),
 			district.get(District.EXTERNAL_ID),
 			root.get(Community.EXTERNAL_ID));

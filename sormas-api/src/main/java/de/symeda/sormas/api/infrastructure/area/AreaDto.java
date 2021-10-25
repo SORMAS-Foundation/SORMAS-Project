@@ -7,6 +7,8 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
+import java.util.Date;
+
 public class AreaDto extends EntityDto {
 
 	public static final String I18N_PREFIX = "Area";
@@ -20,6 +22,16 @@ public class AreaDto extends EntityDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalId;
 	private boolean archived;
+
+	public AreaDto() {
+	}
+
+	public AreaDto(Date creationDate, Date changeDate, String uuid, String name, String externalId, boolean archived) {
+		super(creationDate, changeDate, uuid);
+		this.name = name;
+		this.externalId = externalId;
+		this.archived = archived;
+	}
 
 	public static AreaDto build() {
 		AreaDto area = new AreaDto();

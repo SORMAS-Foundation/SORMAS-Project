@@ -35,6 +35,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -106,14 +108,14 @@ public class DistrictFacadeEjb
 		Join<District, Region> region = root.join(District.REGION, JoinType.LEFT);
 		// Need to be in the same order as in the constructor
 		cq.multiselect(
-			root.get(District.CREATION_DATE),
-			root.get(District.CHANGE_DATE),
-			root.get(District.UUID),
-			root.get(District.ARCHIVED),
+			root.get(AbstractDomainObject.CREATION_DATE),
+			root.get(AbstractDomainObject.CHANGE_DATE),
+			root.get(AbstractDomainObject.UUID),
+			root.get(InfrastructureAdo.ARCHIVED),
 			root.get(District.NAME),
 			root.get(District.EPID_CODE),
 			root.get(District.GROWTH_RATE),
-			region.get(Region.UUID),
+			region.get(AbstractDomainObject.UUID),
 			region.get(Region.NAME),
 			region.get(Region.EXTERNAL_ID),
 			root.get(District.EXTERNAL_ID));

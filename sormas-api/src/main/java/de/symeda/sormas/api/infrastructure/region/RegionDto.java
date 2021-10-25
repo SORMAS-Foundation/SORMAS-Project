@@ -31,7 +31,8 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
-public class RegionDto extends EntityDto {
+public class
+RegionDto extends EntityDto {
 
 	private static final long serialVersionUID = -1610675328037466348L;
 

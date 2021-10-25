@@ -23,6 +23,8 @@ import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.api.infrastructure.area.AreaFacade;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -105,7 +107,14 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, Area
 
 	@Override
 	protected void selectDtoFields(CriteriaQuery<AreaDto> cq, Root<Area> root) {
-		// we do not select DTO fields in getAllAfter query
+		// Need to be in the same order as in the constructor
+		cq.multiselect(
+			root.get(AbstractDomainObject.CREATION_DATE),
+			root.get(AbstractDomainObject.CHANGE_DATE),
+			root.get(AbstractDomainObject.UUID),
+			root.get(Area.NAME),
+			root.get(Area.EXTERNAL_ID),
+			root.get(InfrastructureAdo.ARCHIVED));
 	}
 
 	@Override

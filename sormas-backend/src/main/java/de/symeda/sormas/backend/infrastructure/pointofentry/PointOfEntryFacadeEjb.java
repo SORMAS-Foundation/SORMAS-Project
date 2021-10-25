@@ -19,6 +19,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import org.apache.commons.collections.CollectionUtils;
@@ -95,16 +97,16 @@ public class PointOfEntryFacadeEjb
 		Join<PointOfEntry, Region> region = root.join(Facility.REGION, JoinType.LEFT);
 		// Needs to be in the same order as in the constructor
 		cq.multiselect(
-			root.get(PointOfEntry.CREATION_DATE),
-			root.get(PointOfEntry.CHANGE_DATE),
-			root.get(PointOfEntry.UUID),
-			root.get(PointOfEntry.ARCHIVED),
+			root.get(AbstractDomainObject.CREATION_DATE),
+			root.get(AbstractDomainObject.CHANGE_DATE),
+			root.get(AbstractDomainObject.UUID),
+			root.get(InfrastructureAdo.ARCHIVED),
 			root.get(PointOfEntry.POINT_OF_ENTRY_TYPE),
 			root.get(PointOfEntry.NAME),
-			region.get(Region.UUID),
+			region.get(AbstractDomainObject.UUID),
 			region.get(Region.NAME),
 			region.get(Region.EXTERNAL_ID),
-			district.get(District.UUID),
+			district.get(AbstractDomainObject.UUID),
 			district.get(District.NAME),
 			district.get(District.EXTERNAL_ID),
 			root.get(PointOfEntry.LATITUDE),

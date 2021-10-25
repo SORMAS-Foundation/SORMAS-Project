@@ -37,6 +37,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -328,15 +330,15 @@ public class CountryFacadeEjb
 		Join<Country, Subcontinent> subcontinent = root.join(Country.SUBCONTINENT, JoinType.LEFT);
 		// Need to be in the same order as in the constructor
 		cq.multiselect(
-			root.get(Country.CREATION_DATE),
-			root.get(Country.CHANGE_DATE),
-			root.get(Country.UUID),
-			root.get(Country.ARCHIVED),
+			root.get(AbstractDomainObject.CREATION_DATE),
+			root.get(AbstractDomainObject.CHANGE_DATE),
+			root.get(AbstractDomainObject.UUID),
+			root.get(InfrastructureAdo.ARCHIVED),
 			root.get(Country.DEFAULT_NAME),
 			root.get(Country.EXTERNAL_ID),
 			root.get(Country.ISO_CODE),
 			root.get(Country.UNO_CODE),
-			subcontinent.get(Subcontinent.UUID),
+			subcontinent.get(AbstractDomainObject.UUID),
 			subcontinent.get(Subcontinent.DEFAULT_NAME),
 			subcontinent.get(Subcontinent.EXTERNAL_ID));
 	}

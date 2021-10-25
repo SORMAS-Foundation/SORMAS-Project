@@ -40,6 +40,8 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -199,18 +201,18 @@ public class FacilityFacadeEjb
 		Join<Facility, Region> region = root.join(Facility.REGION, JoinType.LEFT);
 		// Need to be in the same order as in the constructor
 		cq.multiselect(
-			root.get(Facility.CREATION_DATE),
-			root.get(Facility.CHANGE_DATE),
-			root.get(Facility.UUID),
-			root.get(Facility.ARCHIVED),
+			root.get(AbstractDomainObject.CREATION_DATE),
+			root.get(AbstractDomainObject.CHANGE_DATE),
+			root.get(AbstractDomainObject.UUID),
+			root.get(InfrastructureAdo.ARCHIVED),
 			root.get(Facility.NAME),
-			region.get(Region.UUID),
+			region.get(AbstractDomainObject.UUID),
 			region.get(Region.NAME),
 			region.get(Region.EXTERNAL_ID),
-			district.get(District.UUID),
+			district.get(AbstractDomainObject.UUID),
 			district.get(District.NAME),
 			district.get(District.EXTERNAL_ID),
-			community.get(Community.UUID),
+			community.get(AbstractDomainObject.UUID),
 			community.get(Community.NAME),
 			community.get(Community.EXTERNAL_ID),
 			root.get(Facility.CITY),

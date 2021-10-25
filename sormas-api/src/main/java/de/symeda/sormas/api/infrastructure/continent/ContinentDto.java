@@ -7,6 +7,8 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
+import java.util.Date;
+
 public class ContinentDto extends EntityDto {
 
 	public static final String I18N_PREFIX = "Continent";
@@ -18,6 +20,16 @@ public class ContinentDto extends EntityDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String externalId;
 	private boolean archived;
+
+	public ContinentDto() {
+	}
+
+	public ContinentDto(Date creationDate, Date changeDate, String uuid, String defaultName, String externalId, boolean archived) {
+		super(creationDate, changeDate, uuid);
+		this.defaultName = defaultName;
+		this.externalId = externalId;
+		this.archived = archived;
+	}
 
 	public static ContinentDto build() {
 		ContinentDto dto = new ContinentDto();
