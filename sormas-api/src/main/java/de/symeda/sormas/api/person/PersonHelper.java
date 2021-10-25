@@ -32,6 +32,7 @@ import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
+import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -81,21 +82,6 @@ public final class PersonHelper {
 		return pattern.matcher(nfdNormalizedString).replaceAll("");
 	}
 
-	public static String formatBirthdate(Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Language language) {
-
-		if (birthdateDD == null && birthdateMM == null && birthdateYYYY == null) {
-			return "";
-		} else {
-			String birthDate = DateHelper.getLocalDateFormat(language).toPattern();
-			birthDate = birthDate.replaceAll("d+", birthdateDD != null ? birthdateDD.toString() : "");
-			birthDate = birthDate.replaceAll("M+", birthdateMM != null ? birthdateMM.toString() : "");
-			birthDate = birthDate.replaceAll("y+", birthdateYYYY != null ? birthdateYYYY.toString() : "");
-			birthDate = birthDate.replaceAll("^[^\\d]*", "").replaceAll("[^\\d]*$", "");
-
-			return birthDate;
-		}
-	}
-
 	public static BirthDateDto parseBirthdate(String birthDate, Language language) {
 
 		if (StringUtils.isEmpty(birthDate)) {
@@ -138,11 +124,10 @@ public final class PersonHelper {
 		ApproximateAgeType ageType,
 		Integer birthdateDD,
 		Integer birthdateMM,
-		Integer birthdateYYYY,
-		Language language) {
+		Integer birthdateYYYY) {
 
 		String ageStr = ApproximateAgeHelper.formatApproximateAge(age, ageType);
-		String birthdateStr = formatBirthdate(birthdateDD, birthdateMM, birthdateYYYY, language);
+		String birthdateStr = DateFormatHelper.formatDate(birthdateDD, birthdateMM, birthdateYYYY);
 		return !StringUtils.isEmpty(ageStr)
 			? (ageStr + (!StringUtils.isEmpty(birthdateStr) ? " (" + birthdateStr + ")" : ""))
 			: !StringUtils.isEmpty(birthdateStr) ? birthdateStr : "";

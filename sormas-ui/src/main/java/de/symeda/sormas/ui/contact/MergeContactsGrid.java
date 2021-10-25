@@ -70,8 +70,7 @@ public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, C
 					value.getAgeType(),
 					value.getDateOfBirthDD(),
 					value.getDateOfBirthMM(),
-					value.getDateOfBirthYYYY(),
-					I18nProperties.getUserLanguage()),
+					value.getDateOfBirthYYYY()),
 			new TextRenderer());
 	}
 

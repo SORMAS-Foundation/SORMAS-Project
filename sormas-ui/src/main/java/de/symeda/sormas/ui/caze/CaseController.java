@@ -87,7 +87,6 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
@@ -97,6 +96,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -125,11 +125,11 @@ import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class CaseController {
 
@@ -1660,41 +1660,27 @@ public class CaseController {
 		ControllerProvider.getCaseController().navigateToIndex();
 	}
 
-	public VerticalLayout getCaseViewTitleLayout(CaseDataDto caseData) {
-		VerticalLayout titleLayout = new VerticalLayout();
-		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
-		titleLayout.setSpacing(false);
+	public TitleLayout getCaseViewTitleLayout(CaseDataDto caseData) {
+		TitleLayout titleLayout = new TitleLayout();
 
-		Label diseaseLabel = new Label(DiseaseHelper.toString(caseData.getDisease(), caseData.getDiseaseDetails()));
-		CssStyles.style(diseaseLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-		titleLayout.addComponents(diseaseLabel);
-
-		Label classificationLabel = new Label(caseData.getCaseClassification().toString());
-		classificationLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-		titleLayout.addComponent(classificationLabel);
+		titleLayout.addRow(DiseaseHelper.toString(caseData.getDisease(), caseData.getDiseaseDetails()));
+		titleLayout.addRow(caseData.getCaseClassification().toString());
 
 		String shortUuid = DataHelper.getShortUuid(caseData.getUuid());
 		String casePersonFullName = caseData.getPerson().getCaption();
-		StringBuilder caseLabelSb = new StringBuilder();
+		StringBuilder mainRowText = new StringBuilder();
 		if (StringUtils.isNotBlank(casePersonFullName)) {
-			caseLabelSb.append(casePersonFullName);
+			mainRowText.append(casePersonFullName);
 
 			PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
 			if (casePerson.getBirthdateDD() != null && casePerson.getBirthdateMM() != null && casePerson.getBirthdateYYYY() != null) {
-				caseLabelSb.append(" (* ")
-					.append(
-						PersonHelper.formatBirthdate(
-							casePerson.getBirthdateDD(),
-							casePerson.getBirthdateMM(),
-							casePerson.getBirthdateYYYY(),
-							I18nProperties.getUserLanguage()))
+				mainRowText.append(" (* ")
+					.append(DateFormatHelper.formatDate(casePerson.getBirthdateDD(), casePerson.getBirthdateMM(), casePerson.getBirthdateYYYY()))
 					.append(")");
 			}
 		}
-		caseLabelSb.append(caseLabelSb.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
-		Label caseLabel = new Label(caseLabelSb.toString());
-		caseLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		titleLayout.addComponent(caseLabel);
+		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
+		titleLayout.addMainRow(mainRowText.toString());
 
 		return titleLayout;
 	}
