@@ -23,7 +23,7 @@ public class DateFormatHelper {
 	}
 
 	public static String formatBirthdate(Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY) {
-		return DateHelper.formatLocalDate(birthdateDD, birthdateMM, birthdateYYYY);
+		return DateHelper.formatLocalDate(birthdateDD, birthdateMM, birthdateYYYY, I18nProperties.getUserLanguage());
 	}
 
 	public static String getAgeAndBirthdateString(
