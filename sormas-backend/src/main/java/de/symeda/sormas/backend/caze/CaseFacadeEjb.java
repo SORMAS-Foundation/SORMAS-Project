@@ -773,6 +773,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.CLINICIAN_EMAIL),
 				joins.getReportingUser().get(User.ID),
 				joins.getFollowUpStatusChangeUser().get(User.ID),
+				caseRoot.get(Case.PREVIOUS_QUARANTINE_TO),
+				caseRoot.get(Case.QUARANTINE_CHANGE_COMMENT),
 				JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(caseQueryContext)));
 		//@formatter:on
 
@@ -1934,6 +1936,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (existingCase != null && syncShares && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(new ShareTreeCriteria(existingCase.getUuid()));
 		}
+
+		if (existingCase != null && existingCase.getQuarantineTo() != null && !existingCase.getQuarantineTo().equals(newCase.getQuarantineTo())) {
+			newCase.setPreviousQuarantineTo(existingCase.getQuarantineTo());
+		}
 	}
 
 	public boolean evaluateFulfilledCondition(CaseDataDto newCase, CaseClassification caseClassification) {
@@ -2550,6 +2556,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 		target.setDontShareWithReportingTool(source.isDontShareWithReportingTool());
 		target.setCaseReferenceDefinition(source.getCaseReferenceDefinition());
+		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
+		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
 
 		return target;
 	}
@@ -2717,6 +2725,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
 		target.setDontShareWithReportingTool(source.isDontShareWithReportingTool());
 		target.setCaseReferenceDefinition(source.getCaseReferenceDefinition());
+		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
+		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
 
 		return target;
 	}

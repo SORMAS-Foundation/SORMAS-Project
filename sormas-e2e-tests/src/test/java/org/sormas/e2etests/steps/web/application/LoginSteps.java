@@ -25,7 +25,7 @@ import cucumber.api.java8.En;
 import javax.inject.Named;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.LoginPage;
-import org.sormas.e2etests.pages.application.MainPage;
+import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
 
 public class LoginSteps implements En {
 
@@ -36,7 +36,8 @@ public class LoginSteps implements En {
     Given(
         "^I am logged in with name ([^\"]*)$",
         (String name) ->
-            webDriverHelpers.checkWebElementContainsText(MainPage.LOGOUT_BUTTON, name));
+            webDriverHelpers.checkWebElementContainsText(
+                SurveillanceDashboardPage.LOGOUT_BUTTON, name));
 
     Given(
         "^I navigate to SORMAS login page$", () -> webDriverHelpers.accessWebSite(environmentUrl));
