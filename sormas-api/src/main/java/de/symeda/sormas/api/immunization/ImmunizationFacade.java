@@ -21,6 +21,8 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.BaseFacade;
+import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, ImmunizationIndexDto, ImmunizationReferenceDto, ImmunizationCriteria> {
@@ -35,6 +37,8 @@ public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, Immuniza
 
 	void deleteImmunization(String uuid);
 
+	List<String> deleteImmunizations(List<String> immunizationUuids);
+
 	boolean isArchived(String uuid);
 
 	void archiveOrDearchiveImmunization(String uuid, boolean archive);
@@ -46,6 +50,12 @@ public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, Immuniza
 	void updateImmunizationStatuses();
 
 	List<ImmunizationListEntryDto> getEntriesList(ImmunizationListCriteria criteria, Integer first, Integer max);
+
+	Page<ImmunizationIndexDto> getIndexPage(
+		ImmunizationCriteria immunizationCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties);
 
 	boolean linkRecoveryImmunizationToSearchedCase(String specificCaseSearchValue, ImmunizationDto immunization);
 }
