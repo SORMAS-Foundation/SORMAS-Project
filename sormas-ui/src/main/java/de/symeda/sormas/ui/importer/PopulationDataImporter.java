@@ -145,7 +145,7 @@ public class PopulationDataImporter extends DataImporter {
 									communityDto.setGrowthRate(growthRate);
 									FacadeProvider.getCommunityFacade().save(communityDto);
 								} else if (finalDistrict != null) {
-									DistrictDto districtDto = FacadeProvider.getDistrictFacade().getDistrictByUuid(finalDistrict.getUuid());
+									DistrictDto districtDto = FacadeProvider.getDistrictFacade().getByUuid(finalDistrict.getUuid());
 									districtDto.setGrowthRate(growthRate);
 									FacadeProvider.getDistrictFacade().save(districtDto);
 								} else {

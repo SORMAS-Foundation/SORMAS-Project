@@ -39,10 +39,6 @@ public interface DistrictFacade extends GeoLocationFacade<DistrictDto, DistrictI
 
 	Page<DistrictIndexDto> getIndexPage(DistrictCriteria districtCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
-	DistrictDto getDistrictByUuid(String uuid);
-
-	DistrictReferenceDto getDistrictReferenceByUuid(String uuid);
-
 	DistrictReferenceDto getDistrictReferenceById(long id);
 
 	List<DistrictReferenceDto> getAllActiveAsReference();
