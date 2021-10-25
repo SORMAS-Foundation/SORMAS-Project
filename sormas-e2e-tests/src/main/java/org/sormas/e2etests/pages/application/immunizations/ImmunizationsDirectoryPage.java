@@ -16,19 +16,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.pages.application;
+package org.sormas.e2etests.pages.application.immunizations;
 
 import org.openqa.selenium.By;
 
-public class NavBarPage {
-  public static final By CASES_BUTTON = By.cssSelector("div#cases");
-  public static final By CONTACTS_BUTTON = By.cssSelector("div#contacts");
-  public static final By EVENTS_BUTTON = By.cssSelector("div#events");
-  public static final By TASKS_BUTTON = By.cssSelector("div#tasks");
-  public static final By PERSONS_BUTTON = By.cssSelector("div#persons");
-  public static final By DASHBOARD_BUTTON = By.cssSelector("div#dashboard");
-  public static final By SAMPLE_BUTTON = By.cssSelector("[id='samples']");
-  public static final By IMMUNIZATIONS_BUTTON = By.cssSelector("#immunizations");
-  public static final By USERS_BUTTON = By.cssSelector("div#users");
-  public static final By CONFIRM_NAVIGATION = By.cssSelector(("[id=actionConfirm]"));
+public class ImmunizationsDirectoryPage {
+
+  public static final By ADD_NEW_IMMUNIZATION_BUTTON =
+      By.cssSelector("#immunizationNewImmunization");
 }
