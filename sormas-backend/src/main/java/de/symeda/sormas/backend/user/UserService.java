@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+*/
 package de.symeda.sormas.backend.user;
 
 import java.util.Arrays;
@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -148,7 +147,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			filter = from.get(User.REGION).in(regions);
 		}
 
-		if (userRoles.size() > 0) {
+		if (!userRoles.isEmpty()) {
 			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
 			Predicate rolesFilter = joinRoles.in(userRoles);
 			filter = CriteriaBuilderHelper.and(cb, filter, rolesFilter);
@@ -288,12 +287,12 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 
 	public User getRandomUser(District district, UserRole... userRoles) {
 
-		return getRandomUser(getReferenceList(null, Arrays.asList(district.getUuid()), false, false, true, userRoles));
+		return getRandomUser(getReferenceList(null, Collections.singletonList(district.getUuid()), false, false, true, userRoles));
 	}
 
 	public User getRandomUser(Region region, UserRole... userRoles) {
 
-		return getRandomUser(getReferenceList(Arrays.asList(region.getUuid()), null, false, false, true, userRoles));
+		return getRandomUser(getReferenceList(Collections.singletonList(region.getUuid()), null, false, false, true, userRoles));
 	}
 
 	public User getRandomUser(List<UserReference> candidates) {
@@ -320,7 +319,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		Predicate filter = cb.and(
 			createDefaultFilter(cb, from),
 			cb.equal(from.get(User.HEALTH_FACILITY), facility),
-			joinRoles.in(Arrays.asList(UserRole.HOSPITAL_INFORMANT)));
+			joinRoles.in(Collections.singletonList(UserRole.HOSPITAL_INFORMANT)));
 
 		cq.where(filter).distinct(true);
 		return em.createQuery(cq).getResultList();
@@ -433,7 +432,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		}
 		if (userCriteria.getUserRole() != null) {
 			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
-			filter = CriteriaBuilderHelper.and(cb, filter, joinRoles.in(Arrays.asList(userCriteria.getUserRole())));
+			filter = CriteriaBuilderHelper.and(cb, filter, joinRoles.in(Collections.singletonList(userCriteria.getUserRole())));
 		}
 		if (userCriteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper
@@ -505,7 +504,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 
 	public Predicate buildUserRolesFilter(Root<User> from, Collection<UserRole> userRoles) {
 
-		if (userRoles.size() > 0) {
+		if (!userRoles.isEmpty()) {
 			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
 			return joinRoles.in(Collections.singletonList(userRoles));
 		}
@@ -543,12 +542,6 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 
 	public boolean hasRight(UserRight right) {
 		User currentUser = getCurrentUser();
-		// currentUser is the currently logged-in user. There are cases e.g., in AbstractInfrastructureEjb where this check
-		// will be called. However, there is no user session active as the call to AbstractInfrastructureEjb::save is the result
-		// of a cron service invocation. In this case it is safe to grant access.
-		if (currentUser == null) {
-			return true;
-		}
 		return userRoleConfigFacade.getEffectiveUserRights(currentUser.getUserRoles().toArray(new UserRole[0])).contains(right);
 	}
 
