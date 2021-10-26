@@ -3,6 +3,8 @@ Feature: Case Classification functionality
 
   Scenario: Case Classification for a suspect case
     Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     And API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200

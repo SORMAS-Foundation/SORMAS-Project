@@ -30,7 +30,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -52,8 +51,8 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.events.groups.EventGroupSelectionField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class EventGroupController {
 
@@ -142,7 +141,9 @@ public class EventGroupController {
 		return EventGroupDto.build();
 	}
 
-	public CommitDiscardWrapperComponent<EventGroupDataForm> getEventGroupCreateComponent(List<EventReferenceDto> eventReferences, Runnable callback) {
+	public CommitDiscardWrapperComponent<EventGroupDataForm> getEventGroupCreateComponent(
+		List<EventReferenceDto> eventReferences,
+		Runnable callback) {
 		EventGroupDataForm createForm = new EventGroupDataForm(true);
 		createForm.setValue(createNewEventGroup());
 
@@ -184,10 +185,8 @@ public class EventGroupController {
 		EventGroupDataForm eventGroupEditForm = new EventGroupDataForm(false);
 		eventGroupEditForm.setValue(eventGroup);
 		UserProvider user = UserProvider.getCurrent();
-		final CommitDiscardWrapperComponent<EventGroupDataForm> editView = new CommitDiscardWrapperComponent<>(
-			eventGroupEditForm,
-			user.hasUserRight(UserRight.EVENTGROUP_EDIT),
-			eventGroupEditForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventGroupDataForm> editView =
+			new CommitDiscardWrapperComponent<>(eventGroupEditForm, user.hasUserRight(UserRight.EVENTGROUP_EDIT), eventGroupEditForm.getFieldGroup());
 
 		List<RegionReferenceDto> regions = FacadeProvider.getEventGroupFacade().getEventGroupRelatedRegions(uuid);
 		boolean hasRegion = user.hasNationalJurisdictionLevel() || regions.stream().allMatch(user::hasRegion);
@@ -228,25 +227,22 @@ public class EventGroupController {
 
 	}
 
-	public VerticalLayout getEventGroupViewTitleLayout(String uuid) {
+	public TitleLayout getEventGroupViewTitleLayout(String uuid) {
 		EventGroupDto eventGroup = FacadeProvider.getEventGroupFacade().getEventGroupByUuid(uuid);
 
-		VerticalLayout titleLayout = new VerticalLayout();
-		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
-		titleLayout.setSpacing(false);
+		TitleLayout titleLayout = new TitleLayout();
 
 		String shortUuid = DataHelper.getShortUuid(eventGroup.getUuid());
-		Label eventLabel = new Label( eventGroup.getName() + " (" + shortUuid + ")");
-		eventLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		titleLayout.addComponent(eventLabel);
+		String mainRowText = eventGroup.getName() + " (" + shortUuid + ")";
+		titleLayout.addMainRow(mainRowText);
 
 		return titleLayout;
 	}
 
-    public void navigateToData(String uuid) {
+	public void navigateToData(String uuid) {
 		String navigationState = EventGroupDataView.VIEW_NAME + "/" + uuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
-    }
+	}
 
 	private void deleteEventGroup(EventGroupDto eventGroup) {
 		FacadeProvider.getEventGroupFacade().deleteEventGroup(eventGroup.getUuid());
@@ -270,7 +266,9 @@ public class EventGroupController {
 					if (confirmed) {
 						FacadeProvider.getEventGroupFacade().archiveOrDearchiveEventGroup(uuid, true);
 						Notification.show(
-							String.format(I18nProperties.getString(Strings.messageEventGroupArchived), I18nProperties.getString(Strings.entityEventGroup)),
+							String.format(
+								I18nProperties.getString(Strings.messageEventGroupArchived),
+								I18nProperties.getString(Strings.entityEventGroup)),
 							Type.ASSISTIVE_NOTIFICATION);
 						navigateToData(uuid);
 					}
@@ -291,7 +289,9 @@ public class EventGroupController {
 					if (confirmed) {
 						FacadeProvider.getEventGroupFacade().archiveOrDearchiveEventGroup(uuid, false);
 						Notification.show(
-							String.format(I18nProperties.getString(Strings.messageEventGroupDearchived), I18nProperties.getString(Strings.entityEventGroup)),
+							String.format(
+								I18nProperties.getString(Strings.messageEventGroupDearchived),
+								I18nProperties.getString(Strings.entityEventGroup)),
 							Type.ASSISTIVE_NOTIFICATION);
 						navigateToData(uuid);
 					}

@@ -102,8 +102,7 @@ public class CasePickOrCreateField extends CustomField<CaseSelectionDto> {
 					newPerson.getApproximateAgeType(),
 					newPerson.getBirthdateDD(),
 					newPerson.getBirthdateMM(),
-					newPerson.getBirthdateYYYY(),
-					I18nProperties.getUserLanguage()));
+					newPerson.getBirthdateYYYY()));
 			ageAndBirthDateField.setWidthUndefined();
 			caseInfoLayout.addComponent(ageAndBirthDateField);
 

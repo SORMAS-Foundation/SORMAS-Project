@@ -70,17 +70,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	}
 
 	public List<DTO> getAllAfter(Date date) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DTO> cq = cb.createQuery(dtoClass);
-		Root<ADO> ado = cq.from(adoClass);
-
-		selectDtoFields(cq, ado);
-		Predicate filter = service.createChangeDateFilter(cb, ado, date);
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-		return em.createQuery(cq).getResultList();
+		return service.getAll((cb, root) -> service.createChangeDateFilter(cb, root, date)).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	// todo find a better name, it is not clear what it does

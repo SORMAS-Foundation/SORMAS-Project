@@ -138,8 +138,7 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 					value.getAgeType(),
 					value.getDateOfBirthDD(),
 					value.getDateOfBirthMM(),
-					value.getDateOfBirthYYYY(),
-					I18nProperties.getUserLanguage()),
+					value.getDateOfBirthYYYY()),
 			new TextRenderer());
 
 		((Column<CaseIndexDetailedDto, Date>) getColumn(CaseIndexDetailedDto.SYMPTOM_ONSET_DATE))
