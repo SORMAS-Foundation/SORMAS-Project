@@ -855,7 +855,8 @@ public class CaseController {
 		editView.addCommitListener(() -> {
 			CaseDataDto oldCase = findCase(caseUuid);
 			CaseDataDto cazeDto = caseEditForm.getValue();
-			if (cazeDto.getFacilityType() != oldCase.getFacilityType()) {
+			if (cazeDto.getFacilityType() != oldCase.getFacilityType()
+				|| cazeDto.getHealthFacility() != null && !cazeDto.getHealthFacility().getUuid().equals(oldCase.getHealthFacility().getUuid())) {
 				saveCaseWithFacilityChangedPrompt(cazeDto, oldCase);
 			} else {
 				saveCase(cazeDto);
@@ -1284,7 +1285,8 @@ public class CaseController {
 						break;
 					}
 				});
-		} else if (FacilityType.HOSPITAL != caze.getFacilityType() && oldCase.getFacilityType() == FacilityType.HOSPITAL) {
+		} else if (FacilityType.HOSPITAL != caze.getFacilityType() && oldCase.getFacilityType() == FacilityType.HOSPITAL
+			|| caze.getHealthFacility() != null && !caze.getHealthFacility().getUuid().equals(oldCase.getHealthFacility().getUuid())) {
 			VaadinUiUtil.showChooseOptionPopup(
 				I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
 				new Label(I18nProperties.getString(Strings.messageFacilityChanged)),
