@@ -29,10 +29,10 @@ public enum ExposureType {
 	HABITATION,
 	PERSONAL_SERVICES,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, except = true)
+		Disease.CORONAVIRUS }, hide = true)
 	BURIAL,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, except = true)
+		Disease.CORONAVIRUS }, hide = true)
 	ANIMAL_CONTACT,
 	OTHER,
 	UNKNOWN;

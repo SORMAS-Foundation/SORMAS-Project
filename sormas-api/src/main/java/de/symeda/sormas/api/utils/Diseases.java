@@ -41,10 +41,10 @@ public @interface Diseases {
 	Disease[] value() default {};
 
 	/**
-	 * If true, the field or enum value is supposed to be visible for all diseases except the ones that are specified in
-	 * {@link Diseases#value()}
+	 * If true, the field or enum value is supposed to be hidden for all diseases that are specified in
+	 * {@link Diseases#value()}, and it will be visible for all other diseases.
 	 */
-	boolean except() default false;
+	boolean hide() default false;
 
 	final class DiseasesConfiguration {
 
@@ -100,7 +100,7 @@ public @interface Diseases {
 				for (Annotation annotation : annotations) {
 					if (annotation instanceof Diseases) {
 						List<Disease> diseases;
-						if (((Diseases) annotation).except()) {
+						if (((Diseases) annotation).hide()) {
 							List<Disease> diseasesList = Arrays.asList(((Diseases) annotation).value());
 							diseases = Arrays.stream(Disease.values()).filter(d -> !diseasesList.contains(d)).collect(Collectors.toList());
 							diseases.add(null);

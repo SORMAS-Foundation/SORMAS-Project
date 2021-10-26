@@ -48,9 +48,9 @@ public class DiseasesConfigurationTest {
 
 		@Diseases(value = {
 			Disease.CHOLERA,
-			Disease.EVD }, except = true)
+			Disease.EVD }, hide = true)
 		@SuppressWarnings("unused")
-		private String testExcept;
+		private String testHide;
 	}
 
 	@Test
@@ -75,10 +75,10 @@ public class DiseasesConfigurationTest {
 	}
 
 	@Test
-	public void testExcept() {
+	public void testHide() {
 
-		assertTrue(DiseasesConfiguration.isDefined(TestClass.class, "testExcept", Disease.NEW_INFLUENZA));
-		assertFalse(DiseasesConfiguration.isDefined(TestClass.class, "textExcept", Disease.CHOLERA));
+		assertTrue(DiseasesConfiguration.isDefined(TestClass.class, "testHide", Disease.NEW_INFLUENZA));
+		assertFalse(DiseasesConfiguration.isDefined(TestClass.class, "testHide", Disease.CHOLERA));
 	}
 
 }

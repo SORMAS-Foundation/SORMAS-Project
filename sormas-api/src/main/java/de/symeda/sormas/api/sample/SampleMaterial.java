@@ -27,35 +27,35 @@ public enum SampleMaterial {
 	BLOOD,
 	SERA,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, except = true)
+		Disease.CORONAVIRUS }, hide = true)
 	STOOL,
 	NASAL_SWAB,
 	THROAT_SWAB,
 	NP_SWAB,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, except = true)
+		Disease.CORONAVIRUS }, hide = true)
 	RECTAL_SWAB,
 	CEREBROSPINAL_FLUID,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, except = true)
+		Disease.CORONAVIRUS }, hide = true)
 	CRUST,
 	TISSUE,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, except = true)
+		Disease.CORONAVIRUS }, hide = true)
 	URINE,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, except = true)
+		Disease.CORONAVIRUS }, hide = true)
 	CORNEA_PM,
 	SALIVA,
 	URINE_PM,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, except = true)
+		Disease.CORONAVIRUS }, hide = true)
 	NUCHAL_SKIN_BIOPSY,
 	SPUTUM,
 	ENDOTRACHEAL_ASPIRATE,
 	BRONCHOALVEOLAR_LAVAGE,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, except = true)
+		Disease.CORONAVIRUS }, hide = true)
 	BRAIN_TISSUE,
 	ANTERIOR_NARES_SWAB,
 	OP_ASPIRATE,
