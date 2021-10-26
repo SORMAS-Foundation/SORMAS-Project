@@ -55,8 +55,6 @@ public interface FacilityFacade extends InfrastructureBaseFacade<FacilityDto, Fa
 
 	List<FacilityDto> getAllWithoutRegionAfter(Date date);
 
-	FacilityReferenceDto getFacilityReferenceByUuid(String uuid);
-
 	FacilityReferenceDto getFacilityReferenceById(long id);
 
 	List<FacilityReferenceDto> getByNameAndType(

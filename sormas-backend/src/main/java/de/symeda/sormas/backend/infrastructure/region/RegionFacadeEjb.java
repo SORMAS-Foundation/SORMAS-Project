@@ -192,11 +192,6 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 	}
 
 	@Override
-	public RegionReferenceDto getRegionReferenceByUuid(String uuid) {
-		return toReferenceDto(service.getByUuid(uuid));
-	}
-
-	@Override
 	public RegionReferenceDto getRegionReferenceById(int id) {
 		return toReferenceDto(service.getById(id));
 	}
@@ -247,6 +242,11 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 		dto.setCountry(CountryFacadeEjb.toReferenceDto(entity.getCountry()));
 
 		return dto;
+	}
+
+	@Override
+	public RegionReferenceDto toRefDto(Region region) {
+		return toReferenceDto(region);
 	}
 
 	public RegionIndexDto toIndexDto(Region entity) {

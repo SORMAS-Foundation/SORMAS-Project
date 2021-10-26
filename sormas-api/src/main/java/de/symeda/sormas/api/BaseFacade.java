@@ -23,6 +23,8 @@ public interface BaseFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 
 	DTO getByUuid(String uuid);
 
+	REF_DTO getReferenceByUuid(String uuid);
+
 	List<DTO> getByUuids(List<String> uuids);
 
 	List<String> getAllUuids();

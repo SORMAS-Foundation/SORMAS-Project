@@ -86,6 +86,8 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		return convertToDto(travelEntryService.getByUuid(uuid), pseudonymizer);
 	}
 
+
+
 	@Override
 	public TravelEntryReferenceDto getReferenceByUuid(String uuid) {
 		return Optional.of(uuid).map(u -> travelEntryService.getByUuid(u)).map(TravelEntryFacadeEjb::toReferenceDto).orElse(null);
@@ -142,7 +144,7 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		travelEntryService.delete(travelEntry);
 
 		if (travelEntry.getResultingCase() != null) {
-			caseFacade.onCaseChanged(CaseFacadeEjb.CaseFacadeEjbLocal.toDto(travelEntry.getResultingCase()), travelEntry.getResultingCase());
+			caseFacade.onCaseChanged(CaseFacadeEjb.toDto(travelEntry.getResultingCase()), travelEntry.getResultingCase());
 		}
 	}
 
