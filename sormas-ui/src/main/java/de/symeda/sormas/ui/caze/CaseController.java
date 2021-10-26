@@ -1286,7 +1286,7 @@ public class CaseController {
 					}
 				});
 		} else if (FacilityType.HOSPITAL != caze.getFacilityType() && oldCase.getFacilityType() == FacilityType.HOSPITAL
-			|| caze.getHealthFacility() != null && !caze.getHealthFacility().getUuid().equals(oldCase.getHealthFacility().getUuid())) {
+			|| (caze.getHealthFacility() != null && !caze.getHealthFacility().getUuid().equals(oldCase.getHealthFacility().getUuid()))) {
 			VaadinUiUtil.showChooseOptionPopup(
 				I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
 				new Label(I18nProperties.getString(Strings.messageFacilityChanged)),
