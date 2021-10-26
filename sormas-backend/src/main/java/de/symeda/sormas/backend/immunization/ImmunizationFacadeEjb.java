@@ -42,6 +42,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -388,6 +389,32 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	public List<ImmunizationListEntryDto> getEntriesList(ImmunizationListCriteria criteria, Integer first, Integer max) {
 		Long personId = personService.getIdByUuid(criteria.getPerson().getUuid());
 		return immunizationService.getEntriesList(personId, criteria.getDisease(), first, max);
+	}
+
+	@Override
+	public Page<ImmunizationIndexDto> getIndexPage(
+		ImmunizationCriteria immunizationCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+		List<ImmunizationIndexDto> immunizationIndexList = getIndexList(immunizationCriteria, offset, size, sortProperties);
+		long totalElementCount = count(immunizationCriteria);
+		return new Page<>(immunizationIndexList, offset, size, totalElementCount);
+	}
+
+	public List<String> deleteImmunizations(List<String> immunizationUuids) {
+		if (!userService.hasRight(UserRight.IMMUNIZATION_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete immunizations.");
+		}
+		List<String> deletedImmunizationUuids = new ArrayList<>();
+		List<Immunization> immunizationsToBeDeleted = immunizationService.getByUuids(immunizationUuids);
+		if (immunizationsToBeDeleted != null) {
+			immunizationsToBeDeleted.forEach(immunizationToBeDeleted -> {
+				immunizationService.delete(immunizationToBeDeleted);
+				deletedImmunizationUuids.add(immunizationToBeDeleted.getUuid());
+			});
+		}
+		return deletedImmunizationUuids;
 	}
 
 	public static ImmunizationDto toDto(Immunization entity) {

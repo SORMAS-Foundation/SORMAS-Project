@@ -80,9 +80,9 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class SampleController {
 
@@ -461,28 +461,19 @@ public class SampleController {
 		}
 	}
 
-	public VerticalLayout getSampleViewTitleLayout(SampleDto sample) {
+	public TitleLayout getSampleViewTitleLayout(SampleDto sample) {
 
-		VerticalLayout titleLayout = new VerticalLayout();
-		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
-		titleLayout.setSpacing(false);
+		TitleLayout titleLayout = new TitleLayout();
 
-		Label uuidLabel = new Label(DataHelper.getShortUuid(sample.getUuid()));
-		uuidLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-		titleLayout.addComponent(uuidLabel);
+		titleLayout.addRow(DataHelper.getShortUuid(sample.getUuid()));
+		titleLayout.addRow(DateFormatHelper.formatDate(sample.getSampleDateTime()));
 
-		Label sampleDateLabel = new Label(DateFormatHelper.formatDate(sample.getSampleDateTime()));
-		sampleDateLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-		titleLayout.addComponent(sampleDateLabel);
-
-		Label sampleCaptionLabel = new Label(
-			SampleReferenceDto.buildCaption(
-				sample.getSampleMaterial(),
-				sample.getAssociatedCase() != null ? sample.getAssociatedCase().getUuid() : null,
-				sample.getAssociatedContact() != null ? sample.getAssociatedContact().getUuid() : null,
-				sample.getAssociatedEventParticipant() != null ? sample.getAssociatedEventParticipant().getUuid() : null));
-		sampleCaptionLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		titleLayout.addComponents(sampleCaptionLabel);
+		String mainRowText = SampleReferenceDto.buildCaption(
+			sample.getSampleMaterial(),
+			sample.getAssociatedCase() != null ? sample.getAssociatedCase().getUuid() : null,
+			sample.getAssociatedContact() != null ? sample.getAssociatedContact().getUuid() : null,
+			sample.getAssociatedEventParticipant() != null ? sample.getAssociatedEventParticipant().getUuid() : null);
+		titleLayout.addMainRow(mainRowText);
 
 		return titleLayout;
 	}

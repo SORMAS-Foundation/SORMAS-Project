@@ -32,11 +32,11 @@ import de.symeda.sormas.ui.immunization.components.fields.pickorcreate.Immunizat
 import de.symeda.sormas.ui.immunization.components.fields.popup.SimilarImmunizationPopup;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationCreationForm;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationDataForm;
-import de.symeda.sormas.ui.immunization.components.layout.MainHeaderLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class ImmunizationController {
 
@@ -183,14 +183,18 @@ public class ImmunizationController {
 		SormasUI.refreshView();
 	}
 
-	public MainHeaderLayout getImmunizationMainHeaderLayout(String uuid) {
+	public TitleLayout getImmunizationMainHeaderLayout(String uuid) {
 		ImmunizationDto immunizationDto = findImmunization(uuid);
+
+		TitleLayout titleLayout = new TitleLayout();
 
 		String shortUuid = DataHelper.getShortUuid(immunizationDto.getUuid());
 		PersonReferenceDto person = immunizationDto.getPerson();
-		String text = person.getFirstName() + " " + person.getLastName() + " (" + shortUuid + ")";
+		String mainRowText = person.getFirstName() + " " + person.getLastName() + " (" + shortUuid + ")";
 
-		return new MainHeaderLayout(text);
+		titleLayout.addMainRow(mainRowText);
+
+		return titleLayout;
 	}
 
 	private ImmunizationDto findImmunization(String uuid) {

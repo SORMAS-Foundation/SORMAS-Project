@@ -860,8 +860,7 @@ public class PersonFacadeEjb implements PersonFacade {
 				approximateAgeType,
 				entity.getBirthdateDD(),
 				entity.getBirthdateMM(),
-				entity.getBirthdateYYYY(),
-				I18nProperties.getUserLanguage()));
+				entity.getBirthdateYYYY()));
 		similarPersonDto.setSex(entity.getSex());
 		similarPersonDto.setPresentCondition(entity.getPresentCondition());
 		similarPersonDto.setPhone(entity.getPhone());
