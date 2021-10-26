@@ -53,6 +53,12 @@ public class ImmunizationResource extends EntityDtoResource {
 	}
 
 	@POST
+	@Path("/query/persons")
+	public List<ImmunizationDto> getByPersonUuids(List<String> uuids) {
+		return FacadeProvider.getImmunizationFacade().getByPersonUuids(uuids);
+	}
+
+	@POST
 	@Path("/push")
 	public List<PushResult> post(@Valid List<ImmunizationDto> dtos) {
 		return savePushedDto(dtos, FacadeProvider.getImmunizationFacade()::save);

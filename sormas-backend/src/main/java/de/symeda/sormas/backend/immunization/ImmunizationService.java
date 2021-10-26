@@ -17,7 +17,9 @@ package de.symeda.sormas.backend.immunization;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -54,10 +56,13 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.LastVaccinationDate;
 import de.symeda.sormas.backend.vaccination.Vaccination;
+import org.apache.commons.collections.CollectionUtils;
 
 @Stateless
 @LocalBean
@@ -362,6 +367,31 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		filter = CriteriaBuilderHelper.andInValues(personIds, filter, cb, from.get(Immunization.PERSON_ID));
 
 		cq.where(filter);
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<Immunization> getByPersonUuids(List<String> personUuids) {
+		if (CollectionUtils.isEmpty(personUuids)) {
+			// Avoid empty IN clause
+			return Collections.emptyList();
+		} else if (personUuids.size() > ModelConstants.PARAMETER_LIMIT) {
+			List<Immunization> immunizations = new LinkedList<>();
+			IterableHelper
+					.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> immunizations.addAll(getImmunizationsByPersonUuids(personUuids)));
+			return immunizations;
+		} else {
+			return getImmunizationsByPersonUuids(personUuids);
+		}
+	}
+
+	private List<Immunization> getImmunizationsByPersonUuids(List<String> personUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Immunization> cq = cb.createQuery(Immunization.class);
+		Root<Immunization> immunizationRoot = cq.from(Immunization.class);
+		Join<Immunization, Person> personJoin = immunizationRoot.join(Immunization.PERSON, JoinType.LEFT);
+
+		cq.where(personJoin.get(AbstractDomainObject.UUID).in(personUuids));
 
 		return em.createQuery(cq).getResultList();
 	}
