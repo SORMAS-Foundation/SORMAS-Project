@@ -30,7 +30,7 @@ public class TitleLayout extends VerticalLayout {
 		if (StringUtils.isNotBlank(text)) {
 			Label row = new Label(text);
 			row.addStyleNames(styles);
-			row.addStyleNames(CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+			row.addStyleNames(CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_CAPTION_TRUNCATED);
 			addComponent(row);
 		}
 	}
