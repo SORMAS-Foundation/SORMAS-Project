@@ -166,7 +166,6 @@ public class InfrastructureValidator {
 				validationErrors.add(new ValidationErrorGroup(groupNameTag), new ValidationErrorMessage(i18property, caption, dto.getCaption()));
 			}
 		}
-
 	}
 
 	public void validateContinent(

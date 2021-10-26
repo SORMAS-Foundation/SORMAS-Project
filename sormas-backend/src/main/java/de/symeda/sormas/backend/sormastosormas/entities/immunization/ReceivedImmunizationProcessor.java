@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.immunization;
 
-import java.util.List;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -30,7 +28,7 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
+
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;

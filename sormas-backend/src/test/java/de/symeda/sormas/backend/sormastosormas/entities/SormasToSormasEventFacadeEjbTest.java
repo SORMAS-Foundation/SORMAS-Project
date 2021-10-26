@@ -774,7 +774,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
 	private EventParticipantDto createEventParticipantDto(EventReferenceDto event, UserReferenceDto user, MappableRdcf rdcf) {
 		EventParticipantDto participantDto = EventParticipantDto.build(event, user);
-		participantDto.setPerson(createPersonDto(rdcf));
+		participantDto.setPerson(createPersonDto(rdcf.centralRdcf));
 
 		participantDto.setReportingUser(user);
 		participantDto.setRegion(rdcf.remoteRdcf.region);

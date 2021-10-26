@@ -110,15 +110,15 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		return source;
 	}
 
-	protected PersonDto createPersonDto(MappableRdcf rdcf) {
+	protected PersonDto createPersonDto(TestDataCreator.RDCF rdcf) {
 		PersonDto person = PersonDto.build();
 		person.setFirstName("John");
 		person.setLastName("Smith");
 		person.setSex(Sex.MALE);
 
-		person.getAddress().setDistrict(rdcf.remoteRdcf.district);
-		person.getAddress().setRegion(rdcf.remoteRdcf.region);
-		person.getAddress().setCommunity(rdcf.remoteRdcf.community);
+		person.getAddress().setDistrict(rdcf.district);
+		person.getAddress().setRegion(rdcf.region);
+		person.getAddress().setCommunity(rdcf.community);
 
 		return person;
 	}
@@ -153,10 +153,7 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		return new SormasToSormasSampleDto(sample, Collections.singletonList(pathogenTest), Collections.singletonList(additionalTest));
 	}
 
-	protected SormasToSormasShareInfo createShareInfo(
-		String serverId,
-		boolean ownershipHandedOver,
-		Consumer<SormasToSormasShareInfo> setTarget) {
+	protected SormasToSormasShareInfo createShareInfo(String serverId, boolean ownershipHandedOver, Consumer<SormasToSormasShareInfo> setTarget) {
 
 		SormasToSormasShareInfo shareInfo = new SormasToSormasShareInfo();
 
@@ -323,12 +320,16 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 			new CommunityReferenceDto(community.getUuid(), community.getName(), community.getExternalID()),
 			new FacilityReferenceDto(facility.getUuid(), facility.getName(), facility.getExternalID()),
 			new PointOfEntryReferenceDto(pointOfEntry.getUuid(), pointOfEntry.getName(), PointOfEntryType.AIRPORT, pointOfEntry.getExternalID()));
-
+		rdcf.centralRdcf = rdcf.localRdcf;
 		return rdcf;
 	}
 
 	public static class MappableRdcf {
+		// IMPORTANT: This is used to simulate a setup where central infra sync is enabled and all instances are
+		// guaranteed to have the same infra with the same global uuids.
+		public TestDataCreator.RDCF centralRdcf;
 
+		// These two will only be used in the future to simulate and test for sync errors and recovery.
 		public TestDataCreator.RDCF remoteRdcf;
 		public TestDataCreator.RDCF localRdcf;
 	}

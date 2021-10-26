@@ -15,14 +15,10 @@
 
 package de.symeda.sormas.backend.sormastosormas.data;
 
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventParticipantValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildPathogenTestValidationGroupName;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.ejb.EJB;
@@ -42,7 +38,6 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.location.LocationDto;
@@ -54,7 +49,6 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
@@ -241,20 +235,6 @@ public class Sormas2SormasDataValidator {
 		return validationErrors;
 	}
 
-	public List<ValidationErrors> validateContactPreviews(List<SormasToSormasContactPreview> contacts) {
-		List<ValidationErrors> validationErrors = new ArrayList<>();
-
-		for (SormasToSormasContactPreview contact : contacts) {
-			ValidationErrors contactErrors = validateContactPreview(contact);
-
-			if (contactErrors.hasError()) {
-				validationErrors.add(new ValidationErrors(buildContactValidationGroupName(contact), contactErrors));
-			}
-		}
-
-		return validationErrors;
-	}
-
 	public ValidationErrors validateContactPreview(SormasToSormasContactPreview contact) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
@@ -282,20 +262,6 @@ public class Sormas2SormasDataValidator {
 		validateLocation(event.getEventLocation(), Captions.CaseData, validationErrors);
 
 		return validationErrors;
-	}
-
-	public List<ValidationErrors> validateEventParticipantPreviews(List<SormasToSormasEventParticipantPreview> eventParticipants) {
-		List<ValidationErrors> errors = new ArrayList<>();
-
-		eventParticipants.forEach(eventParticipant -> {
-			ValidationErrors validationErrors = validatePersonPreview(eventParticipant.getPerson());
-
-			if (validationErrors.hasError()) {
-				errors.add(new ValidationErrors(buildEventParticipantValidationGroupName(eventParticipant), validationErrors));
-			}
-		});
-
-		return errors;
 	}
 
 	public ValidationErrors validateEventParticipant(EventParticipantDto ep) {
@@ -442,20 +408,20 @@ public class Sormas2SormasDataValidator {
 		if (existingCase == null) {
 			return null;
 		}
-		return PersonFacadeEjb.PersonFacadeEjbLocal.toDto(existingCase.getPerson());
+		return PersonFacadeEjb.toDto(existingCase.getPerson());
 	}
 
 	public PersonDto getExistingPerson(@Nullable Contact existingContact) {
 		if (existingContact == null) {
 			return null;
 		}
-		return PersonFacadeEjb.PersonFacadeEjbLocal.toDto(existingContact.getPerson());
+		return PersonFacadeEjb.toDto(existingContact.getPerson());
 	}
 
 	public PersonDto getExistingPerson(@Nullable EventParticipant existingEventParticipant) {
 		if (existingEventParticipant == null) {
 			return null;
 		}
-		return PersonFacadeEjb.PersonFacadeEjbLocal.toDto(existingEventParticipant.getPerson());
+		return PersonFacadeEjb.toDto(existingEventParticipant.getPerson());
 	}
 }
