@@ -543,6 +543,12 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 
 	public boolean hasRight(UserRight right) {
 		User currentUser = getCurrentUser();
+		// currentUser is the currently logged-in user. There are cases e.g., in AbstractInfrastructureEjb where this check
+		// will be called. However, there is no user session active as the call to AbstractInfrastructureEjb::save is the result
+		// of a cron service invocation. In this case it is safe to grant access.
+		if (currentUser == null) {
+			return true;
+		}
 		return userRoleConfigFacade.getEffectiveUserRights(currentUser.getUserRoles().toArray(new UserRole[0])).contains(right);
 	}
 
