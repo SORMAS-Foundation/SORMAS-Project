@@ -19,10 +19,9 @@ public class TitleLayoutHelper {
 			personString.append(personFullName);
 
 			PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(personRefrence.getUuid());
-			if (person.getBirthdateDD() != null && person.getBirthdateMM() != null && person.getBirthdateYYYY() != null) {
-				personString.append(" (* ")
-					.append(DateFormatHelper.formatDate(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY()))
-					.append(")");
+			String dateOfBirth = DateFormatHelper.formatDate(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
+			if (StringUtils.isNotBlank(dateOfBirth)) {
+				personString.append(" (* ").append(dateOfBirth).append(")");
 			}
 		}
 		return personString;

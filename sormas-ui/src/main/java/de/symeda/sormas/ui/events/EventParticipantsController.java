@@ -331,17 +331,10 @@ public class EventParticipantsController {
 		if (StringUtils.isNotBlank(personFullName)) {
 			mainRowText.append(personFullName);
 
-			if (eventParticipant.getPerson().getBirthdateDD() != null
-				&& eventParticipant.getPerson().getBirthdateMM() != null
-				&& eventParticipant.getPerson().getBirthdateYYYY() != null) {
-
-				mainRowText.append(" (* ")
-					.append(
-						de.symeda.sormas.api.utils.DateFormatHelper.formatDate(
-							eventParticipant.getPerson().getBirthdateDD(),
-							eventParticipant.getPerson().getBirthdateMM(),
-							eventParticipant.getPerson().getBirthdateYYYY()))
-					.append(")");
+			PersonDto person = eventParticipant.getPerson();
+			String dateOfBirth = DateFormatHelper.formatDate(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
+			if (StringUtils.isNotBlank(dateOfBirth)) {
+				mainRowText.append(" (* ").append(dateOfBirth).append(")");
 			}
 		}
 		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);

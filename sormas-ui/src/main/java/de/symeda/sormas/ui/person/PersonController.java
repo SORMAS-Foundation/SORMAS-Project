@@ -79,10 +79,9 @@ public class PersonController {
 		if (StringUtils.isNotBlank(personFullName)) {
 			mainRowText.append(personFullName);
 
-			if (personDto.getBirthdateDD() != null && personDto.getBirthdateMM() != null && personDto.getBirthdateYYYY() != null) {
-				mainRowText.append(" (* ")
-					.append(DateFormatHelper.formatDate(personDto.getBirthdateDD(), personDto.getBirthdateMM(), personDto.getBirthdateYYYY()))
-					.append(")");
+			String dateOfBirth = DateFormatHelper.formatDate(personDto.getBirthdateDD(), personDto.getBirthdateMM(), personDto.getBirthdateYYYY());
+			if (StringUtils.isNotBlank(dateOfBirth)) {
+				mainRowText.append(" (* ").append(dateOfBirth).append(")");
 			}
 		}
 		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
