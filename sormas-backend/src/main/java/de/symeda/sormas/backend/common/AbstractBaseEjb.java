@@ -4,6 +4,7 @@ import de.symeda.sormas.api.BaseFacade;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -20,6 +21,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AdoServiceWithUserFilter<ADO>, CRITERIA extends BaseCriteria>
@@ -54,14 +56,22 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 
 	public abstract void dearchive(String uuid);
 
+	@Override
 	public DTO getByUuid(String uuid) {
 		return toDto(service.getByUuid(uuid));
 	}
 
+	@Override
+	public REF_DTO getReferenceByUuid(String uuid) {
+		return Optional.ofNullable(uuid).map(u -> service.getByUuid(u)).map(this::toRefDto).orElse(null);
+	}
+
+	@Override
 	public List<DTO> getByUuids(List<String> uuids) {
 		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
+	@Override
 	public List<String> getAllUuids() {
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
@@ -69,6 +79,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		return service.getAllUuids();
 	}
 
+	@Override
 	public List<DTO> getAllAfter(Date date) {
 		return service.getAll((cb, root) -> service.createChangeDateFilter(cb, root, date)).stream().map(this::toDto).collect(Collectors.toList());
 	}
@@ -95,4 +106,6 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	protected abstract ADO fillOrBuildEntity(@NotNull DTO source, ADO target, boolean checkChangeDate);
 
 	public abstract DTO toDto(ADO ado);
+
+	public abstract REF_DTO toRefDto(ADO ado);
 }

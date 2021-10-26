@@ -245,6 +245,11 @@ public class CountryFacadeEjb
 		return dto;
 	}
 
+	@Override
+	public CountryReferenceDto toRefDto(Country country) {
+		return toReferenceDto(country);
+	}
+
 	public CountryIndexDto toIndexDto(Country entity) {
 		if (entity == null) {
 			return null;

@@ -33,7 +33,7 @@ public class PopulationDataFacadeEjbTest extends AbstractBeanTest {
 	public void testGetProjectedDistrictPopulation() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		DistrictDto district = getDistrictFacade().getDistrictByUuid(rdcf.district.getUuid());
+		DistrictDto district = getDistrictFacade().getByUuid(rdcf.district.getUuid());
 		district.setGrowthRate(2.7f);
 		getDistrictFacade().save(district);
 		creator.createPopulationData(

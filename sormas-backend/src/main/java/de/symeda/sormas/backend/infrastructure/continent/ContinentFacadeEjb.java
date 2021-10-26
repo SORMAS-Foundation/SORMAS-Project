@@ -195,6 +195,11 @@ public class ContinentFacadeEjb
 		return dto;
 	}
 
+	@Override
+	public ContinentReferenceDto toRefDto(Continent continent) {
+		return toReferenceDto(continent);
+	}
+
 	public ContinentIndexDto toIndexDto(Continent entity) {
 		if (entity == null) {
 			return null;
