@@ -37,10 +37,10 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareable;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
-public class SampleDto extends PseudonymizableDto implements SormasToSormasEntityDto {
+public class SampleDto extends PseudonymizableDto implements SormasToSormasShareable {
 
 	private static final long serialVersionUID = -6975445672442728938L;
 

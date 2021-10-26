@@ -13,12 +13,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.utils;
+package de.symeda.sormas.api.sormastosormas;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public interface SormasToSormasEntityDto {
+public interface SormasToSormasShareable {
 
 	SormasToSormasOriginInfoDto getSormasToSormasOriginInfo();
 

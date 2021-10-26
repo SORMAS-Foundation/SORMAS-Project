@@ -60,7 +60,7 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareable;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -531,7 +531,7 @@ public class Sormas2SormasDataValidator {
 		return errors;
 	}
 
-	public void updateReportingUser(SormasToSormasEntityDto entity, SormasToSormasEntity originalEntiy) {
+	public void updateReportingUser(SormasToSormasShareable entity, SormasToSormasEntity originalEntiy) {
 		UserReferenceDto reportingUser =
 			originalEntiy == null ? userService.getCurrentUser().toReference() : originalEntiy.getReportingUser().toReference();
 		entity.setReportingUser(reportingUser);
