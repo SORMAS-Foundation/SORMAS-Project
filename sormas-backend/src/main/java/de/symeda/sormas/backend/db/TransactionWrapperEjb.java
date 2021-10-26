@@ -17,7 +17,6 @@ public class TransactionWrapperEjb implements TransactionWrapperFacade {
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public <T, R> R execute(Function<T, R> function, T data) {
-
 		return function.apply(data);
 	}
 
