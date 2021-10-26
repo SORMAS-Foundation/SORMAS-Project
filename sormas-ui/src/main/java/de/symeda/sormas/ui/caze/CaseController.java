@@ -1667,7 +1667,8 @@ public class CaseController {
 		titleLayout.addRow(caseData.getCaseClassification().toString());
 
 		String shortUuid = DataHelper.getShortUuid(caseData.getUuid());
-		StringBuilder mainRowText = TitleLayoutHelper.buildPersonString(caseData.getPerson());
+		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
+		StringBuilder mainRowText = TitleLayoutHelper.buildPersonString(person);
 		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
 		titleLayout.addMainRow(mainRowText.toString());
 

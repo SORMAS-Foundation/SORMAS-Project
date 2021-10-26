@@ -190,7 +190,8 @@ public class ImmunizationController {
 		TitleLayout titleLayout = new TitleLayout();
 
 		String shortUuid = DataHelper.getShortUuid(immunizationDto.getUuid());
-		StringBuilder mainRowText = TitleLayoutHelper.buildPersonString(immunizationDto.getPerson());
+		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(immunizationDto.getPerson().getUuid());
+		StringBuilder mainRowText = TitleLayoutHelper.buildPersonString(person);
 		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
 		titleLayout.addMainRow(mainRowText.toString());
 

@@ -56,6 +56,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
 public class EventParticipantsController {
 
@@ -326,17 +327,7 @@ public class EventParticipantsController {
 		}
 
 		String shortUuid = DataHelper.getShortUuid(eventParticipant.getUuid());
-		String personFullName = eventParticipant.getPerson().toReference().getCaption();
-		StringBuilder mainRowText = new StringBuilder();
-		if (StringUtils.isNotBlank(personFullName)) {
-			mainRowText.append(personFullName);
-
-			PersonDto person = eventParticipant.getPerson();
-			String dateOfBirth = DateFormatHelper.formatDate(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
-			if (StringUtils.isNotBlank(dateOfBirth)) {
-				mainRowText.append(" (* ").append(dateOfBirth).append(")");
-			}
-		}
+		StringBuilder mainRowText = TitleLayoutHelper.buildPersonString(eventParticipant.getPerson());
 		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
 		titleLayout.addMainRow(mainRowText.toString());
 
