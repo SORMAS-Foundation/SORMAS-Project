@@ -172,7 +172,7 @@ public class PointOfEntryFacadeEjb
 		if (pointOfEntry.getDistrict() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
-		if (!districtFacade.getDistrictByUuid(pointOfEntry.getDistrict().getUuid()).getRegion().equals(pointOfEntry.getRegion())) {
+		if (!districtFacade.getByUuid(pointOfEntry.getDistrict().getUuid()).getRegion().equals(pointOfEntry.getRegion())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noDistrictInRegion));
 		}
 	}
@@ -321,6 +321,11 @@ public class PointOfEntryFacadeEjb
 		dto.setExternalID(entity.getExternalID());
 
 		return dto;
+	}
+
+	@Override
+	public PointOfEntryReferenceDto toRefDto(PointOfEntry pointOfEntry) {
+		return toReferenceDto(pointOfEntry);
 	}
 
 	@LocalBean

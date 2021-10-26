@@ -27,7 +27,7 @@ import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEj
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 
-@Stateless(name = "ClientInfraSyncFacadeEjb")
+@Stateless(name = "ClientInfraSyncFacade")
 public class ClientInfraSyncFacadeEjb implements ClientInfraSyncFacade {
 
 	@EJB

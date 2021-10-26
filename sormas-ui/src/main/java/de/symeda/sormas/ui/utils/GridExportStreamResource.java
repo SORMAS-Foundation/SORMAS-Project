@@ -178,8 +178,7 @@ public class GridExportStreamResource {
 						ageAndBirthDate.getAgeType(),
 						ageAndBirthDate.getDateOfBirthDD(),
 						ageAndBirthDate.getDateOfBirthMM(),
-						ageAndBirthDate.getDateOfBirthYYYY(),
-						I18nProperties.getUserLanguage());
+						ageAndBirthDate.getDateOfBirthYYYY());
 				} else if (value instanceof Label) {
 					valueString = ((Label) value).getValue();
 				} else {

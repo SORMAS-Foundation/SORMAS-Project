@@ -227,6 +227,11 @@ public class SubcontinentFacadeEjb
 		return dto;
 	}
 
+	@Override
+	public SubcontinentReferenceDto toRefDto(Subcontinent subcontinent) {
+		return toReferenceDto(subcontinent);
+	}
+
 	public SubcontinentIndexDto toIndexDto(Subcontinent entity) {
 		if (entity == null) {
 			return null;

@@ -98,9 +98,9 @@ public class TestDataCreator {
 		user.setLastName(lastName);
 		user.setUserName(firstName + lastName);
 		user.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
-		user.setRegion(FacadeProvider.getRegionFacade().getRegionReferenceByUuid(regionUuid));
-		user.setDistrict(FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid));
-		user.setHealthFacility(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(facilityUuid));
+		user.setRegion(FacadeProvider.getRegionFacade().getReferenceByUuid(regionUuid));
+		user.setDistrict(FacadeProvider.getDistrictFacade().getReferenceByUuid(districtUuid));
+		user.setHealthFacility(FacadeProvider.getFacilityFacade().getReferenceByUuid(facilityUuid));
 		if (pointOfEntryUuid != null) {
 			PointOfEntryDto pointOfEntry = FacadeProvider.getPointOfEntryFacade().getByUuid(pointOfEntryUuid);
 			if (pointOfEntry != null) {
@@ -200,9 +200,9 @@ public class TestDataCreator {
 		caze.setReportingUser(user);
 		caze.setCaseClassification(caseClassification);
 		caze.setInvestigationStatus(investigationStatus);
-		caze.setResponsibleRegion(FacadeProvider.getRegionFacade().getRegionReferenceByUuid(rdcf.region.getUuid()));
-		caze.setResponsibleDistrict(FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
-		caze.setResponsibleCommunity(FacadeProvider.getCommunityFacade().getCommunityReferenceByUuid(rdcf.community.getUuid()));
+		caze.setResponsibleRegion(FacadeProvider.getRegionFacade().getReferenceByUuid(rdcf.region.getUuid()));
+		caze.setResponsibleDistrict(FacadeProvider.getDistrictFacade().getReferenceByUuid(rdcf.district.getUuid()));
+		caze.setResponsibleCommunity(FacadeProvider.getCommunityFacade().getReferenceByUuid(rdcf.community.getUuid()));
 		FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(rdcf.facility.getUuid());
 		caze.setFacilityType(facility.getType());
 		caze.setHealthFacility(facility.toReference());
@@ -283,7 +283,7 @@ public class TestDataCreator {
 
 		WeeklyReportDto report = new WeeklyReportDto();
 		report.setUuid(DataHelper.createUuid());
-		report.setHealthFacility(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(facilityUuid));
+		report.setHealthFacility(FacadeProvider.getFacilityFacade().getReferenceByUuid(facilityUuid));
 		report.setReportingUser(informant);
 		report.setReportDateTime(reportDateTime);
 		report.setEpiWeek(epiWeek);
