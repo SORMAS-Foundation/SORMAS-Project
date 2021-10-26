@@ -29,6 +29,7 @@
         <activity android:name=".login.LoginActivity"
             android:theme="@style/LoginActivityTheme"
             android:screenOrientation="portrait"
+            android:exported="true"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -429,7 +430,8 @@
 
         <receiver
             android:name=".SormasBootstrap"
-            android:enabled="true">
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
