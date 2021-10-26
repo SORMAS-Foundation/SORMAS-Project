@@ -297,7 +297,7 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		}
 
 		MappableRdcf rdcf = new MappableRdcf();
-		rdcf.remoteRdcf = new TestDataCreator.RDCF(
+		rdcf.invalidRemoteRdcf = new TestDataCreator.RDCF(
 			new RegionReferenceDto(DataHelper.createUuid(), withExternalId ? null : regionName, regionExternalId),
 			new DistrictReferenceDto(DataHelper.createUuid(), withExternalId ? null : districtName, districtExternalId),
 			new CommunityReferenceDto(DataHelper.createUuid(), withExternalId ? null : communityName, communityExternalId),
@@ -314,13 +314,13 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		Facility facility = creator.createFacility(facilityName, FacilityType.HOSPITAL, region, district, community, facilityExternalId);
 		PointOfEntry pointOfEntry = creator.createPointOfEntry(pointOfEntryName, region, district, pointOfEntryExternalId);
 
-		rdcf.localRdcf = new TestDataCreator.RDCF(
+		rdcf.invalidLocalRdcf = new TestDataCreator.RDCF(
 			new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalID()),
 			new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalID()),
 			new CommunityReferenceDto(community.getUuid(), community.getName(), community.getExternalID()),
 			new FacilityReferenceDto(facility.getUuid(), facility.getName(), facility.getExternalID()),
 			new PointOfEntryReferenceDto(pointOfEntry.getUuid(), pointOfEntry.getName(), PointOfEntryType.AIRPORT, pointOfEntry.getExternalID()));
-		rdcf.centralRdcf = rdcf.localRdcf;
+		rdcf.centralRdcf = rdcf.invalidLocalRdcf;
 		return rdcf;
 	}
 
@@ -330,7 +330,7 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		public TestDataCreator.RDCF centralRdcf;
 
 		// These two will only be used in the future to simulate and test for sync errors and recovery.
-		public TestDataCreator.RDCF remoteRdcf;
-		public TestDataCreator.RDCF localRdcf;
+		public TestDataCreator.RDCF invalidRemoteRdcf;
+		public TestDataCreator.RDCF invalidLocalRdcf;
 	}
 }
