@@ -29,6 +29,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +82,7 @@ import de.symeda.sormas.backend.user.UserService;
 @LocalBean
 public class Sormas2SormasDataValidator {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
 	private UserService userService;
@@ -127,15 +128,11 @@ public class Sormas2SormasDataValidator {
 
 		validateLocation(person.getAddress(), Captions.Person, validationErrors);
 
-		person.getAddresses().forEach(address -> {
-			validateLocation(address, Captions.Person, validationErrors);
-		});
+		person.getAddresses().forEach(address -> validateLocation(address, Captions.Person, validationErrors));
 
-		CountryReferenceDto birthCountry = validateCountry(person.getBirthCountry(), Captions.Person_birthCountry, validationErrors);
-		person.setBirthCountry(birthCountry);
+		infraValidator.validateCountry(person.getBirthCountry(), Captions.Person_birthCountry, validationErrors, person::setBirthCountry);
 
-		CountryReferenceDto citizenship = validateCountry(person.getCitizenship(), Captions.Person_citizenship, validationErrors);
-		person.setCitizenship(citizenship);
+		infraValidator.validateCountry(person.getCitizenship(), Captions.Person_citizenship, validationErrors, person::setCitizenship);
 
 		return validationErrors;
 	}
@@ -152,83 +149,74 @@ public class Sormas2SormasDataValidator {
 	 * CASES
 	 *****************/
 	public ValidationErrors validateCaseData(CaseDataDto caze, PersonDto person, Case existingCaseData) {
-		ValidationErrors caseValidationErrors = new ValidationErrors();
+
+		ValidationErrors validationErrors = new ValidationErrors();
 
 		ValidationErrors personValidationErrors = validatePerson(person);
-		caseValidationErrors.addAll(personValidationErrors);
+		validationErrors.addAll(personValidationErrors);
 
 		caze.setPerson(person.toReference());
 		updateReportingUser(caze, existingCaseData);
 
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-			infraValidator.validateInfrastructure(caze);
+		final String groupNameTag = Captions.CaseData;
+		infraValidator.validateResponsibleRegion(caze.getResponsibleRegion(), groupNameTag, validationErrors, caze::setResponsibleRegion);
+		infraValidator.validateResponsibleDistrict(caze.getResponsibleDistrict(), groupNameTag, validationErrors, caze::setResponsibleDistrict);
+		infraValidator.validateResponsibleCommunity(caze.getResponsibleCommunity(), groupNameTag, validationErrors, caze::setResponsibleCommunity);
 
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, caseValidationErrors, infrastructureData -> {
-			caze.setResponsibleRegion(infrastructureData.getResponsibleRegion());
-			caze.setResponsibleDistrict(infrastructureData.getResponsibleDistrict());
-			caze.setResponsibleCommunity(infrastructureData.getResponsibleCommunity());
-			caze.setRegion(infrastructureData.getRegion());
-			caze.setDistrict(infrastructureData.getDistrict());
-			caze.setCommunity(infrastructureData.getCommunity());
-			caze.setHealthFacility(infrastructureData.getFacility());
-			caze.setHealthFacilityDetails(infrastructureData.getFacilityDetails());
-			caze.setPointOfEntry(infrastructureData.getPointOfEntry());
-			caze.setPointOfEntryDetails(infrastructureData.getPointOfEntryDetails());
+		infraValidator.validateRegion(caze.getRegion(), groupNameTag, validationErrors, caze::setRegion);
+		infraValidator.validateDistrit(caze.getDistrict(), groupNameTag, validationErrors, caze::setDistrict);
+		infraValidator.validateCommunity(caze.getCommunity(), groupNameTag, validationErrors, caze::setCommunity);
+
+		infraValidator.validateFacility(
+			caze.getHealthFacility(),
+			caze.getFacilityType(),
+			caze.getHealthFacilityDetails(),
+			groupNameTag,
+			validationErrors,
+			f -> {
+				caze.setHealthFacility(f.getEntity());
+				caze.setHealthFacilityDetails(f.getDetails());
+			});
+
+		infraValidator.validatePointOfEntry(caze.getPointOfEntry(), caze.getPointOfEntryDetails(), groupNameTag, validationErrors, p -> {
+			caze.setPointOfEntry(p.getEntity());
+			caze.setPointOfEntryDetails(p.getDetails());
 		});
 
-		ValidationErrors embeddedObjectErrors = validateCaseData(caze);
-		caseValidationErrors.addAll(embeddedObjectErrors);
-
-		return caseValidationErrors;
-	}
-
-	public ValidationErrors validateCaseData(CaseDataDto caze) {
-		// todo this function should be inlined above, it really does not help
-		ValidationErrors validationErrors = new ValidationErrors();
-
-		if (caze.getHospitalization() != null) {
-
-			caze.getHospitalization().getPreviousHospitalizations().forEach(ph -> {
-				validatePreviousHospitalization(validationErrors, ph);
-			});
+		final HospitalizationDto hospitalization = caze.getHospitalization();
+		if (hospitalization != null) {
+			hospitalization.getPreviousHospitalizations().forEach(ph -> validatePreviousHospitalization(validationErrors, ph));
 		}
 
-		MaternalHistoryDto maternalHistory = caze.getMaternalHistory();
+		final MaternalHistoryDto maternalHistory = caze.getMaternalHistory();
 		if (maternalHistory != null) {
 			validateMaternalHistory(validationErrors, maternalHistory);
 		}
 
 		validateEpiData(caze.getEpiData(), validationErrors);
+
 		return validationErrors;
 	}
 
 	public ValidationErrors validateCasePreview(SormasToSormasCasePreview preview) {
-		ValidationErrors caseValidationErrors = new ValidationErrors();
+		ValidationErrors validationErrors = new ValidationErrors();
 
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-			infraValidator.validateInfrastructure(
-				null,
-				null,
-				null,
-				preview.getRegion(),
-				preview.getDistrict(),
-				preview.getCommunity(),
-				preview.getFacilityType(),
-				preview.getHealthFacility(),
-				preview.getHealthFacilityDetails(),
-				preview.getPointOfEntry(),
-				preview.getPointOfEntryDetails());
+		final String groupNameTag = Captions.CaseData;
+		infraValidator.validateRegion(preview.getRegion(), groupNameTag, validationErrors, preview::setRegion);
+		infraValidator.validateDistrit(preview.getDistrict(), groupNameTag, validationErrors, preview::setDistrict);
+		infraValidator.validateCommunity(preview.getCommunity(), groupNameTag, validationErrors, preview::setCommunity);
+		infraValidator.validateFacility(
+			preview.getHealthFacility(),
+			preview.getFacilityType(),
+			preview.getHealthFacilityDetails(),
+			groupNameTag,
+			validationErrors,
+			f -> {
+				preview.setHealthFacility(f.getEntity());
+				preview.setHealthFacilityDetails(f.getDetails());
+			});
 
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, caseValidationErrors, infrastructureData -> {
-			preview.setRegion(infrastructureData.getRegion());
-			preview.setDistrict(infrastructureData.getDistrict());
-			preview.setCommunity(infrastructureData.getCommunity());
-			preview.setHealthFacility(infrastructureData.getFacility());
-			preview.setHealthFacilityDetails(infrastructureData.getFacilityDetails());
-			preview.setPointOfEntry(infrastructureData.getPointOfEntry());
-			preview.setPointOfEntryDetails(infrastructureData.getPointOfEntryDetails());
-		});
-		return caseValidationErrors;
+		return validationErrors;
 	}
 
 	/*****************
@@ -243,14 +231,10 @@ public class Sormas2SormasDataValidator {
 		contact.setPerson(person.toReference());
 		updateReportingUser(contact, existingContact);
 
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-			infraValidator.validateInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
-
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Contact, validationErrors, (infrastructure -> {
-			contact.setRegion(infrastructure.getRegion());
-			contact.setDistrict(infrastructure.getDistrict());
-			contact.setCommunity(infrastructure.getCommunity());
-		}));
+		String groupNameTag = Captions.Contact;
+		infraValidator.validateRegion(contact.getRegion(), groupNameTag, validationErrors, contact::setRegion);
+		infraValidator.validateDistrit(contact.getDistrict(), groupNameTag, validationErrors, contact::setDistrict);
+		infraValidator.validateCommunity(contact.getCommunity(), groupNameTag, validationErrors, contact::setCommunity);
 
 		validateEpiData(contact.getEpiData(), validationErrors);
 
@@ -274,14 +258,10 @@ public class Sormas2SormasDataValidator {
 	public ValidationErrors validateContactPreview(SormasToSormasContactPreview contact) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-			infraValidator.validateInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
-
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Contact, validationErrors, (infrastructure -> {
-			contact.setRegion(infrastructure.getRegion());
-			contact.setDistrict(infrastructure.getDistrict());
-			contact.setCommunity(infrastructure.getCommunity());
-		}));
+		String groupNameTag = Captions.Contact;
+		infraValidator.validateRegion(contact.getRegion(), groupNameTag, validationErrors, contact::setRegion);
+		infraValidator.validateDistrit(contact.getDistrict(), groupNameTag, validationErrors, contact::setDistrict);
+		infraValidator.validateCommunity(contact.getCommunity(), groupNameTag, validationErrors, contact::setCommunity);
 
 		return validationErrors;
 	}
@@ -299,30 +279,7 @@ public class Sormas2SormasDataValidator {
 			event.setResponsibleUser(existingEvent.getResponsibleUser().toReference());
 		}
 
-		LocationDto eventLocation = event.getEventLocation();
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-			infraValidator.validateInfrastructure(
-				eventLocation.getContinent(),
-				eventLocation.getSubcontinent(),
-				eventLocation.getCountry(),
-				eventLocation.getRegion(),
-				eventLocation.getDistrict(),
-				eventLocation.getCommunity(),
-				eventLocation.getFacilityType(),
-				eventLocation.getFacility(),
-				eventLocation.getFacilityDetails(),
-				null,
-				null);
-
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, validationErrors, infrastructureData -> {
-			eventLocation.setContinent(infrastructureData.getContinent());
-			eventLocation.setSubcontinent(infrastructureData.getSubcontinent());
-			eventLocation.setCountry(infrastructureData.getCountry());
-			eventLocation.setRegion(infrastructureData.getRegion());
-			eventLocation.setDistrict(infrastructureData.getDistrict());
-			eventLocation.setCommunity(infrastructureData.getCommunity());
-			eventLocation.setFacility(infrastructureData.getFacility());
-		});
+		validateLocation(event.getEventLocation(), Captions.CaseData, validationErrors);
 
 		return validationErrors;
 	}
@@ -341,18 +298,15 @@ public class Sormas2SormasDataValidator {
 		return errors;
 	}
 
-	public ValidationErrors validateEventParticipant(EventParticipantDto eventParticipant) {
+	public ValidationErrors validateEventParticipant(EventParticipantDto ep) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
-		ValidationErrors personValidationErrors = validatePerson(eventParticipant.getPerson());
+		ValidationErrors personValidationErrors = validatePerson(ep.getPerson());
 		validationErrors.addAll(personValidationErrors);
 
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-			infraValidator.validateInfrastructure(eventParticipant.getRegion(), eventParticipant.getDistrict(), null);
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.EventParticipant, validationErrors, (infrastructureData -> {
-			eventParticipant.setRegion(infrastructureData.getRegion());
-			eventParticipant.setDistrict(infrastructureData.getDistrict());
-		}));
+		final String groupNameTag = Captions.EventParticipant;
+		infraValidator.validateRegion(ep.getRegion(), groupNameTag, validationErrors, ep::setRegion);
+		infraValidator.validateDistrit(ep.getDistrict(), groupNameTag, validationErrors, ep::setDistrict);
 
 		return validationErrors;
 	}
@@ -360,57 +314,27 @@ public class Sormas2SormasDataValidator {
 	/*****************
 	 * SAMPLES
 	 *****************/
-	public void validatePathogenTest(ValidationErrors validationErrors, PathogenTestDto pathogenTest) {
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> ptInfrastructureAndErrors =
-			infraValidator.validateInfrastructure(
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				FacilityType.LABORATORY,
-				pathogenTest.getLab(),
-				pathogenTest.getLabDetails(),
-				null,
-				null);
-
+	public void validatePathogenTest(ValidationErrors validationErrors, PathogenTestDto pt) {
 		ValidationErrors pathogenTestErrors = new ValidationErrors();
-		infraValidator.handleInfraStructure(ptInfrastructureAndErrors, Captions.PathogenTest_lab, pathogenTestErrors, (infrastructureData -> {
-			pathogenTest.setLab(infrastructureData.getFacility());
-			pathogenTest.setLabDetails(infrastructureData.getFacilityDetails());
-		}));
+		infraValidator.validateFacility(pt.getLab(), FacilityType.LABORATORY, pt.getLabDetails(), Captions.PathogenTest_lab, validationErrors, f -> {
+			pt.setLab(f.getEntity());
+			pt.setLabDetails(f.getDetails());
+		});
 
 		if (pathogenTestErrors.hasError()) {
-			validationErrors.addAll(new ValidationErrors(buildPathogenTestValidationGroupName(pathogenTest), pathogenTestErrors));
+			validationErrors.addAll(new ValidationErrors(buildPathogenTestValidationGroupName(pt), pathogenTestErrors));
 		}
 	}
 
 	public ValidationErrors validateSample(Sample existingSample, SampleDto sample) {
-
 		ValidationErrors validationErrors = new ValidationErrors();
-
 		updateReportingUser(sample, existingSample);
 
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-			infraValidator.validateInfrastructure(
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				// todo shouldn't this be FacilityType.LABORATORY?
-				null,
-				sample.getLab(),
-				sample.getLabDetails(),
-				null,
-				null);
-
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Sample_lab, validationErrors, (infrastructureData -> {
-			sample.setLab(infrastructureData.getFacility());
-			sample.setLabDetails(infrastructureData.getFacilityDetails());
-		}));
+		// todo shouldn't this be FacilityType.LABORATORY?
+		infraValidator.validateFacility(sample.getLab(), null, sample.getLabDetails(), Captions.Sample_lab, validationErrors, f -> {
+			sample.setLab(f.getEntity());
+			sample.setLabDetails(f.getDetails());
+		});
 
 		return validationErrors;
 	}
@@ -419,62 +343,27 @@ public class Sormas2SormasDataValidator {
 	 * HOSPITALIZATION
 	 *****************/
 	public void validatePreviousHospitalization(ValidationErrors validationErrors, PreviousHospitalizationDto ph) {
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> phInfrastructureAndErrors =
-			infraValidator.validateInfrastructure(
-				null,
-				null,
-				null,
-				ph.getRegion(),
-				ph.getDistrict(),
-				ph.getCommunity(),
-				FacilityType.HOSPITAL,
-				ph.getHealthFacility(),
-				ph.getHealthFacilityDetails(),
-				null,
-				null);
+		final String groupNameTag = Captions.CaseHospitalization_previousHospitalizations;
 
-		infraValidator.handleInfraStructure(
-			phInfrastructureAndErrors,
-			Captions.CaseHospitalization_previousHospitalizations,
-			validationErrors,
-			(phInfrastructure) -> {
-				ph.setRegion(phInfrastructure.getRegion());
-				ph.setDistrict(phInfrastructure.getDistrict());
-				ph.setCommunity(phInfrastructure.getCommunity());
-				ph.setHealthFacility(phInfrastructure.getFacility());
-				ph.setHealthFacilityDetails(phInfrastructure.getFacilityDetails());
+		infraValidator.validateRegion(ph.getRegion(), groupNameTag, validationErrors, ph::setRegion);
+		infraValidator.validateDistrit(ph.getDistrict(), groupNameTag, validationErrors, ph::setDistrict);
+		infraValidator.validateCommunity(ph.getCommunity(), groupNameTag, validationErrors, ph::setCommunity);
+		infraValidator
+			.validateFacility(ph.getHealthFacility(), FacilityType.HOSPITAL, ph.getHealthFacilityDetails(), groupNameTag, validationErrors, f -> {
+				ph.setHealthFacility(f.getEntity());
+				ph.setHealthFacilityDetails(f.getDetails());
 			});
+
 	}
 
 	/*****************
 	 * MISC
 	 *****************/
-	public void validateMaternalHistory(ValidationErrors validationErrors, MaternalHistoryDto maternalHistory) {
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> rashExposureInfrastructureAndErrors =
-			infraValidator.validateInfrastructure(
-				maternalHistory.getRashExposureRegion(),
-				maternalHistory.getRashExposureDistrict(),
-				maternalHistory.getRashExposureCommunity());
-
-		infraValidator.handleInfraStructure(
-			rashExposureInfrastructureAndErrors,
-			Captions.MaternalHistory_rashExposure,
-			validationErrors,
-			(rashExposureInfrastructure) -> {
-				maternalHistory.setRashExposureRegion(rashExposureInfrastructure.getRegion());
-				maternalHistory.setRashExposureDistrict(rashExposureInfrastructure.getDistrict());
-				maternalHistory.setRashExposureCommunity(rashExposureInfrastructure.getCommunity());
-			});
-	}
-
-	private CountryReferenceDto validateCountry(CountryReferenceDto country, String errorCaption, ValidationErrors validationErrors) {
-		// todo this method looks like it should be handled in infraValidator
-		CountryReferenceDto localCountry = infraValidator.lookupLocalCountry(country);
-		if (country != null && localCountry == null) {
-			validationErrors
-				.add(new ValidationErrorGroup(errorCaption), new ValidationErrorMessage(Validations.sormasToSormasCountry, country.getCaption()));
-		}
-		return localCountry;
+	public void validateMaternalHistory(ValidationErrors validationErrors, MaternalHistoryDto mh) {
+		final String groupNameTag = Captions.MaternalHistory_rashExposure;
+		infraValidator.validateRegion(mh.getRashExposureRegion(), groupNameTag, validationErrors, mh::setRashExposureRegion);
+		infraValidator.validateDistrit(mh.getRashExposureDistrict(), groupNameTag, validationErrors, mh::setRashExposureDistrict);
+		infraValidator.validateCommunity(mh.getRashExposureCommunity(), groupNameTag, validationErrors, mh::setRashExposureCommunity);
 	}
 
 	public void validateEpiData(EpiDataDto epiData, ValidationErrors validationErrors) {
@@ -494,31 +383,23 @@ public class Sormas2SormasDataValidator {
 		}
 	}
 
-	public void validateLocation(LocationDto address, String groupNameTag, ValidationErrors validationErrors) {
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-			infraValidator.validateInfrastructure(
-				address.getContinent(),
-				address.getSubcontinent(),
-				address.getCountry(),
-				address.getRegion(),
-				address.getDistrict(),
-				address.getCommunity(),
-				address.getFacilityType(),
-				address.getFacility(),
-				address.getFacilityDetails(),
-				null,
-				null);
-
-		infraValidator.handleInfraStructure(infrastructureAndErrors, groupNameTag, validationErrors, (infrastructure -> {
-			address.setContinent(infrastructure.getContinent());
-			address.setSubcontinent(infrastructure.getSubcontinent());
-			address.setCountry(infrastructure.getCountry());
-			address.setRegion(infrastructure.getRegion());
-			address.setDistrict(infrastructure.getDistrict());
-			address.setCommunity(infrastructure.getCommunity());
-			address.setFacility(infrastructure.getFacility());
-			address.setFacilityDetails(infrastructure.getFacilityDetails());
-		}));
+	public void validateLocation(LocationDto location, String groupNameTag, ValidationErrors validationErrors) {
+		infraValidator.validateContinent(location.getContinent(), groupNameTag, validationErrors, location::setContinent);
+		infraValidator.validateSubcontinent(location.getSubcontinent(), groupNameTag, validationErrors, location::setSubcontinent);
+		infraValidator.validateCountry(location.getCountry(), groupNameTag, validationErrors, location::setCountry);
+		infraValidator.validateRegion(location.getRegion(), groupNameTag, validationErrors, location::setRegion);
+		infraValidator.validateDistrit(location.getDistrict(), groupNameTag, validationErrors, location::setDistrict);
+		infraValidator.validateCommunity(location.getCommunity(), groupNameTag, validationErrors, location::setCommunity);
+		infraValidator.validateFacility(
+			location.getFacility(),
+			location.getFacilityType(),
+			location.getFacilityDetails(),
+			groupNameTag,
+			validationErrors,
+			f -> {
+				location.setFacility(f.getEntity());
+				location.setFacilityDetails(f.getDetails());
+			});
 	}
 
 	public ValidationErrors validateSharedLabMessage(LabMessageDto labMessage) throws ValidationRuntimeException {
@@ -549,7 +430,7 @@ public class Sormas2SormasDataValidator {
 						Object originalValue = originalEntity != null ? field.get(originalEntity) : null;
 						field.set(receivedEntity, originalValue);
 					} catch (IllegalAccessException e) {
-						LOGGER.error("Could not set field {} for {}", field.getName(), dtoType.getSimpleName());
+						logger.error("Could not set field {} for {}", field.getName(), dtoType.getSimpleName());
 					}
 					field.setAccessible(false);
 				}
