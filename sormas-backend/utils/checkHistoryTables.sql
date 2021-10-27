@@ -14,9 +14,7 @@
  *
  */
 
-/* Returns a list of all columns that are missing in a _history table */
-
-SELECT concat(c.table_name, '_history') as table_name, c.column_name, c.data_type FROM information_schema."columns" c
+SELECT 'missing column' as remark, concat(c.table_name, '_history') as table_name, c.column_name as column_name, c.data_type as data_type FROM information_schema."columns" c
 LEFT OUTER JOIN information_schema."columns" c_hist
 ON concat(c.table_name, '_history') = c_hist.table_name AND c.column_name = c_hist.column_name
 WHERE c.table_schema = 'public' AND c.table_name NOT LIKE '%_history'
@@ -26,4 +24,8 @@ AND c.table_name NOT IN
   (SELECT t.table_name FROM information_schema."tables" t
    WHERE t.table_schema = 'public' AND t.table_name NOT LIKE '%_history'
    AND (SELECT COUNT(t_hist.table_name) FROM information_schema."tables" t_hist WHERE concat(t.table_name,'_history') = t_hist .table_name) = 0)
-ORDER BY c.table_name , c.column_name;
+UNION
+SELECT 'no history table' as remark, t.table_name, null as column_name, null as data_type FROM information_schema."tables" t
+WHERE t.table_schema = 'public' AND t.table_name NOT LIKE '%_history'
+AND (SELECT COUNT(t_hist.table_name) FROM information_schema."tables" t_hist WHERE concat(t.table_name,'_history') = t_hist .table_name) = 0
+ORDER BY remark, table_name , column_name;
