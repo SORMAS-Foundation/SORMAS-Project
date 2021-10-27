@@ -11,22 +11,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 public enum Language {
 
 	EN(new Locale("en"), "M/d/yyyy", "M/d/yyyy h:mm a", "M/d"),
-	EN_NG(new Locale("en", "NG"), "dd/MM/yyyy", "dd/MM/yyyy h:mm a", "dd/MM"),
-	EN_GH(new Locale("en", "GH"), "dd/MM/yyyy", "dd/MM/yyyy h:mm a", "dd/MM"),
-	EN_AF(new Locale("en", "AF"), "dd/MM/yyyy", "dd/MM/yyyy h:mm a", "dd/MM"),
 	FR(new Locale("fr", "FR"), "dd/MM/yyyy", "dd/MM/yyyy HH:mm", "dd/MM"),
-	FR_CH(new Locale("fr", "CH"), "dd/MM/yyyy", "dd/MM/yyyy HH:mm", "dd/MM"),
-	DE(new Locale("de", "DE"), "dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM"),
-	DE_CH(new Locale("de", "CH"), "dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM"),
-	ES_EC(new Locale("es", "EC"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM"),
-	ES_CU(new Locale("es", "CU"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM"),
-	IT(new Locale("it", "IT"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM"),
-	IT_CH(new Locale("it", "CH"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM"),
-	FI(new Locale("fi", "FI"), "dd.MM.yyyy", "dd.MM.yyyy H.mm", "dd.MM"),
-	PS(new Locale("ps", "AF"), "dd/MM/yyyy", "dd/MM/yyyy HH:mm", "dd/MM"),
-	FA(new Locale("fa", "AF"), "dd/MM/yyyy", "dd/MM/yyyy HH:mm", "dd/MM"),
-	CZ(new Locale("cs", "CZ"), "dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM.");
-
+	ES_EC(new Locale("es", "ES"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM"),
+	
 	/**
 	 * Links locale strings to Languages
 	 */
