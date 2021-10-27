@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import javax.ejb.EJB;
-
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.db.TransactionWrapperFacade;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +19,13 @@ public abstract class EntityDtoResource {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	@EJB
-	private TransactionWrapper transactionWrapper;
+	private final TransactionWrapperFacade transactionWrapper;
 
-	protected <T extends Object> List<PushResult> savePushedDto(List<T> dtos, Function<T, T> saveEntityDto) {
+	protected EntityDtoResource() {
+		this.transactionWrapper = FacadeProvider.getTransactionWrapperFacade();
+	}
+
+	protected <T> List<PushResult> savePushedDto(List<T> dtos, Function<T, T> saveEntityDto) {
 
 		List<PushResult> results = new ArrayList<>(dtos.size());
 		for (T dto : dtos) {
@@ -46,7 +49,7 @@ public abstract class EntityDtoResource {
 		return results;
 	}
 
-	protected <T extends Object> String createErrorMessage(T dto) {
+	protected <T> String createErrorMessage(T dto) {
 
 		final EntityDto entityDto = (EntityDto) dto;
 		if (entityDto.getChangeDate() == null) {
