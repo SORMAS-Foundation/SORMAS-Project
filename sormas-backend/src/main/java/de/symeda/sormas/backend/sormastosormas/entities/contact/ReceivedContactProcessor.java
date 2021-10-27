@@ -18,16 +18,14 @@ package de.symeda.sormas.backend.sormastosormas.entities.contact;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -36,12 +34,19 @@ import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcess
 
 @Stateless
 @LocalBean
-public class ReceivedContactProcessor extends ReceivedDataProcessor<ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview, Contact> {
+public class ReceivedContactProcessor
+	extends ReceivedDataProcessor<Contact, ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview, Contact, ContactService> {
 
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;
-	@EJB
-	private ContactService contactService;
+
+	protected ReceivedContactProcessor() {
+	}
+
+	@Inject
+	protected ReceivedContactProcessor(ContactService service) {
+		super(service);
+	}
 
 	@Override
 	public void handleReceivedData(SormasToSormasContactDto sharedData, Contact existingData) {
@@ -50,22 +55,17 @@ public class ReceivedContactProcessor extends ReceivedDataProcessor<ContactDto, 
 	}
 
 	@Override
-	public ValidationErrors exists(String uuid) {
-		ValidationErrors errors = new ValidationErrors();
-		if (contactService.exists(
-			(cb, contactRoot, cq) -> cb.and(
-				cb.equal(contactRoot.get(AbstractDomainObject.UUID), uuid),
-				cb.isNull(contactRoot.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO)),
-				cb.isEmpty(contactRoot.get(Contact.SORMAS_TO_SORMAS_SHARES))))) {
-
-			errors.add(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasContactExists));
-		}
-
-		return errors;
+	public ValidationErrors existsNotShared(String uuid) {
+		return existsNotShared(
+			uuid,
+			Contact.SORMAS_TO_SORMAS_ORIGIN_INFO,
+			Contact.SORMAS_TO_SORMAS_SHARES,
+			Captions.Contact,
+			Validations.sormasToSormasContactExists);
 	}
 
 	@Override
-	public ValidationErrors validation(SormasToSormasContactDto sharedData, Contact existingData) {
+	public ValidationErrors validate(SormasToSormasContactDto sharedData, Contact existingData) {
 		return dataValidator.validateContactData(sharedData.getEntity(), sharedData.getPerson(), existingData);
 	}
 

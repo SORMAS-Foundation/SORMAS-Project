@@ -18,16 +18,14 @@ package de.symeda.sormas.backend.sormastosormas.entities.sample;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
@@ -35,12 +33,19 @@ import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcess
 
 @Stateless
 @LocalBean
-public class ReceivedSampleProcessor extends ReceivedDataProcessor<SampleDto, SormasToSormasSampleDto, PreviewNotImplementedDto, Sample> {
+public class ReceivedSampleProcessor
+	extends ReceivedDataProcessor<Sample, SampleDto, SormasToSormasSampleDto, PreviewNotImplementedDto, Sample, SampleService> {
 
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;
-	@EJB
-	private SampleService sampleService;
+
+	protected ReceivedSampleProcessor() {
+	}
+
+	@Inject
+	protected ReceivedSampleProcessor(SampleService service) {
+		super(service);
+	}
 
 	@Override
 	public void handleReceivedData(SormasToSormasSampleDto sharedData, Sample existingData) {
@@ -52,22 +57,17 @@ public class ReceivedSampleProcessor extends ReceivedDataProcessor<SampleDto, So
 	}
 
 	@Override
-	public ValidationErrors exists(String uuid) {
-		ValidationErrors errors = new ValidationErrors();
-
-		if (sampleService.exists(
-			(cb, sampleRoot, cq) -> cb.and(
-				cb.equal(sampleRoot.get(AbstractDomainObject.UUID), uuid),
-				cb.isNull(sampleRoot.get(Sample.SORMAS_TO_SORMAS_ORIGIN_INFO)),
-				cb.isEmpty(sampleRoot.get(Sample.SORMAS_TO_SORMAS_SHARES))))) {
-			errors.add(new ValidationErrorGroup(Captions.Sample), new ValidationErrorMessage(Validations.sormasToSormasSampleExists));
-		}
-
-		return errors;
+	public ValidationErrors existsNotShared(String uuid) {
+		return existsNotShared(
+			uuid,
+			Sample.SORMAS_TO_SORMAS_ORIGIN_INFO,
+			Sample.SORMAS_TO_SORMAS_SHARES,
+			Captions.Sample,
+			Validations.sormasToSormasSampleExists);
 	}
 
 	@Override
-	public ValidationErrors validation(SormasToSormasSampleDto sharedData, Sample existingData) {
+	public ValidationErrors validate(SormasToSormasSampleDto sharedData, Sample existingData) {
 		ValidationErrors validationErrors = dataValidator.validateSample(existingData, sharedData.getEntity());
 		sharedData.getPathogenTests().forEach(pathogenTest -> dataValidator.validatePathogenTest(validationErrors, pathogenTest));
 
