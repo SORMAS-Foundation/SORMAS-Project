@@ -273,7 +273,11 @@ public class WebDriverHelpers {
   }
 
   public void accessWebSite(String url) {
+    log.info("WebDriver session ID: " + baseSteps.getDriver().getSessionId());
+    log.info("Navigating to: " + url);
     baseSteps.getDriver().navigate().to(url);
+    log.info("WebDriver object is null?: " + String.valueOf(baseSteps.getDriver() == null));
+    log.info("Current URL is: " + baseSteps.getDriver().getCurrentUrl());
   }
 
   public boolean isElementVisibleWithTimeout(By selector, int seconds) {
