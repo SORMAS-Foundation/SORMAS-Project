@@ -450,9 +450,14 @@ public class ContactController {
 		person.setLastName(createForm.getPersonLastName());
 		person.setNationalHealthId(createForm.getNationalHealthId());
 		person.setPassportNumber(createForm.getPassportNumber());
-		person.setBirthdateYYYY(createForm.getBirthdateYYYY());
-		person.setBirthdateMM(createForm.getBirthdateMM());
-		person.setBirthdateDD(createForm.getBirthdateDD());
+//		person.setBirthdateYYYY(createForm.getBirthdateYYYY());
+//		person.setBirthdateMM(createForm.getBirthdateMM());
+//		person.setBirthdateDD(createForm.getBirthdateDD());
+		if (Integer.valueOf(createForm.getApproximateAge()) > 0) {
+			person.setApproximateAge(Integer.valueOf(createForm.getApproximateAge()));
+			person.setApproximateAgeType(createForm.getApproximateAgeType());
+			person.setApproximateAgeReferenceDate(createForm.getReportDate());
+		}
 		person.setSex(createForm.getSex());
 		if (StringUtils.isNotEmpty(createForm.getPhone())) {
 			person.setPhone(createForm.getPhone());

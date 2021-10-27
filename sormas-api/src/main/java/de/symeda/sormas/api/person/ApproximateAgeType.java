@@ -20,11 +20,14 @@ package de.symeda.sormas.api.person;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Months;
 import org.joda.time.Years;
+import org.joda.time.Period;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -87,14 +90,12 @@ public enum ApproximateAgeType {
 			return getApproximateAge(birthDate, null);
 		}
 
-		public static Pair<Integer, ApproximateAgeType> getApproximateAge(
-			Integer birthdateYYYY,
-			Integer birthdateMM,
-			Integer birthdateDD,
-			Date deathDate) {
+		public static Pair<Integer, ApproximateAgeType> getApproximateAge(Integer birthdateYYYY, Integer birthdateMM,
+				Integer birthdateDD, Date deathDate) {
 
 			Calendar birthdate = new GregorianCalendar();
-			birthdate.set(birthdateYYYY, birthdateMM != null ? birthdateMM - 1 : 0, birthdateDD != null ? birthdateDD : 1);
+			birthdate.set(birthdateYYYY, birthdateMM != null ? birthdateMM - 1 : 0,
+					birthdateDD != null ? birthdateDD : 1);
 
 			return getApproximateAge(birthdate.getTime(), deathDate);
 		}
@@ -139,7 +140,7 @@ public enum ApproximateAgeType {
 		public static String getAgeGroupFromAge(Integer age, ApproximateAgeType ageType) {
 			Integer ageYears = ApproximateAgeHelper.getAgeYears(age, ageType);
 			if (ageYears == null) {
-				return null;
+				return null;	
 			}
 
 			int lowerAgeBoundary = (int) Math.floor(ageYears / 5f) * 5;
@@ -148,6 +149,38 @@ public enum ApproximateAgeType {
 			} else {
 				return lowerAgeBoundary + "--" + (lowerAgeBoundary + 4);
 			}
+		}
+
+
+		public static Map<String, Integer> calculateBirthDateFromAge(Integer age, ApproximateAgeType approximateAgeType) {
+			final Map<String, Integer> birthDateMap = new HashMap<>();
+
+			if (age == null || approximateAgeType == null) {
+				birthDateMap.put("BIRTH_DATE_YYYY",null);
+				birthDateMap.put("BIRTH_DATE_MM",null);
+				birthDateMap.put("BIRTH_DATE_DD",null);
+				return birthDateMap;
+			}
+			
+			Period agePeriod;
+			switch (approximateAgeType) {
+				case YEARS:
+					agePeriod = new Period( "P"+age+"Y0M0D" );
+					break;
+				case MONTHS:
+					agePeriod = new Period( "P0Y"+age+"M0D" );
+				case DAYS:
+					agePeriod = new Period( "P0Y0M"+age+"D" );
+				default:
+					throw new IllegalArgumentException(approximateAgeType.toString());
+			}
+			
+			DateTime now = DateTime.now();
+			DateTime birthDate = now.minus(agePeriod);
+			birthDateMap.put("BIRTH_DATE_YYYY", birthDate.getYear());
+			birthDateMap.put("BIRTH_DATE_MM", birthDate.getMonthOfYear());
+			birthDateMap.put("BIRTH_DATE_DD",birthDate.getDayOfMonth());
+			return birthDateMap;
 		}
 	}
 }

@@ -130,7 +130,7 @@ import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
-
+import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 public class CaseController {
 
 	public CaseController() {
@@ -754,9 +754,15 @@ public class CaseController {
 	private void transferDataToPerson(CaseCreateForm createForm, PersonDto person) {
 		person.setFirstName(createForm.getPersonFirstName());
 		person.setLastName(createForm.getPersonLastName());
-		person.setBirthdateDD(createForm.getBirthdateDD());
-		person.setBirthdateMM(createForm.getBirthdateMM());
-		person.setBirthdateYYYY(createForm.getBirthdateYYYY());
+//		Map<String, Integer> birthDate = ApproximateAgeHelper.calculateBirthDateFromAge(Integer.valueOf(createForm.getApproximateAge()), createForm.getApproximateAgeType());
+//		person.setBirthdateDD(birthDate.get("BIRTH_DATE_DD"));
+//		person.setBirthdateMM(birthDate.get("BIRTH_DATE_MM"));
+//		person.setBirthdateYYYY(birthDate.get("BIRTH_DATE_YYYY"));
+		if (Integer.valueOf(createForm.getApproximateAge()) > 0) {
+			person.setApproximateAge(Integer.valueOf(createForm.getApproximateAge()));
+			person.setApproximateAgeType(createForm.getApproximateAgeType());
+			person.setApproximateAgeReferenceDate(createForm.getReportDate());
+		}
 		person.setSex(createForm.getSex());
 		person.setPresentCondition(createForm.getPresentCondition());
 		if (StringUtils.isNotEmpty(createForm.getPhone())) {
@@ -1634,11 +1640,15 @@ public class CaseController {
 			final PersonDto newPerson = PersonDto.build();
 			newPerson.setFirstName(caseLineDto.getPerson().getFirstName());
 			newPerson.setLastName(caseLineDto.getPerson().getLastName());
-			if (caseLineDto.getPerson().getBirthDate() != null) {
-				newPerson.setBirthdateYYYY(caseLineDto.getPerson().getBirthDate().getDateOfBirthYYYY());
-				newPerson.setBirthdateMM(caseLineDto.getPerson().getBirthDate().getDateOfBirthMM());
-				newPerson.setBirthdateDD(caseLineDto.getPerson().getBirthDate().getDateOfBirthDD());
+			if (caseLineDto.getPerson().getApproximateAge() != null) {
+				newPerson.setApproximateAge(caseLineDto.getPerson().getApproximateAge());
+				newPerson.setApproximateAgeType(caseLineDto.getPerson().getApproximateAgeType());
 			}
+//			if (caseLineDto.getPerson().getBirthDate() != null) {
+//				newPerson.setBirthdateYYYY(caseLineDto.getPerson().getBirthDate().getDateOfBirthYYYY());
+//				newPerson.setBirthdateMM(caseLineDto.getPerson().getBirthDate().getDateOfBirthMM());
+//				newPerson.setBirthdateDD(caseLineDto.getPerson().getBirthDate().getDateOfBirthDD());
+//			}
 			newPerson.setSex(caseLineDto.getPerson().getSex());
 
 			ControllerProvider.getPersonController()

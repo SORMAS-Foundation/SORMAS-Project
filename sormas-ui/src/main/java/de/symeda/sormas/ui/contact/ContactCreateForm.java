@@ -19,11 +19,13 @@ package de.symeda.sormas.ui.contact;
 
 import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
 import static de.symeda.sormas.ui.utils.CssStyles.LAYOUT_COL_HIDE_INVSIBLE;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 
 import org.joda.time.LocalDate;
 
@@ -60,6 +62,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -87,8 +90,10 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private static final String HTML_LAYOUT =
 			LayoutUtil.loc(PERSON_NAME_LOC) +
 			LayoutUtil.fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
-					LayoutUtil.fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
-							fluidRowLocs(PersonDto.SEX)) +
+//					LayoutUtil.fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
+//							fluidRowLocs(PersonDto.SEX)) +
+					LayoutUtil.fluidRow(fluidRowLocs(PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE),
+					fluidRowLocs(PersonDto.SEX))+
 					LayoutUtil.fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER) +
 					LayoutUtil.fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS) +
 					LayoutUtil.fluidRowLocs(ContactDto.RETURNING_TRAVELER) +
@@ -184,44 +189,47 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.CASE_ID_EXTERNAL_SYSTEM, TextField.class);
 		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(4);
 
-		birthDateDay = addCustomField(PersonDto.BIRTH_DATE_DD, Integer.class, ComboBox.class);
-		birthDateDay.addStyleName(FORCE_CAPTION);
-		birthDateDay.setInputPrompt(I18nProperties.getString(Strings.day));
-		ComboBox birthDateMonth = addCustomField(PersonDto.BIRTH_DATE_MM, Integer.class, ComboBox.class);
-		birthDateMonth.addItems(DateHelper.getMonthsInYear());
-		birthDateMonth.setPageLength(12);
-		birthDateMonth.addStyleName(FORCE_CAPTION);
-		birthDateMonth.setInputPrompt(I18nProperties.getString(Strings.month));
-		setItemCaptionsForMonths(birthDateMonth);
-		ComboBox birthDateYear = addCustomField(PersonDto.BIRTH_DATE_YYYY, Integer.class, ComboBox.class);
-		birthDateYear.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
-		birthDateYear.addItems(DateHelper.getYearsToNow());
-		birthDateYear.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
-		birthDateYear.setInputPrompt(I18nProperties.getString(Strings.year));
-		birthDateDay.addValidator(
-			e -> ControllerProvider.getPersonController()
-				.validateBirthDate((Integer) birthDateYear.getValue(), (Integer) birthDateMonth.getValue(), (Integer) e));
-		birthDateMonth.addValidator(
-			e -> ControllerProvider.getPersonController()
-				.validateBirthDate((Integer) birthDateYear.getValue(), (Integer) e, (Integer) birthDateDay.getValue()));
-		birthDateYear.addValidator(
-			e -> ControllerProvider.getPersonController()
-				.validateBirthDate((Integer) e, (Integer) birthDateMonth.getValue(), (Integer) birthDateDay.getValue()));
-		// Update the list of days according to the selected month and year
-		birthDateYear.addValueChangeListener(e -> {
-			updateListOfDays((Integer) e.getProperty().getValue(), (Integer) birthDateMonth.getValue());
-			birthDateMonth.markAsDirty();
-			birthDateDay.markAsDirty();
-		});
-		birthDateMonth.addValueChangeListener(e -> {
-			updateListOfDays((Integer) birthDateYear.getValue(), (Integer) e.getProperty().getValue());
-			birthDateYear.markAsDirty();
-			birthDateDay.markAsDirty();
-		});
-		birthDateDay.addValueChangeListener(e -> {
-			birthDateYear.markAsDirty();
-			birthDateMonth.markAsDirty();
-		});
+		addCustomField(PersonDto.APPROXIMATE_AGE, String.class, TextField.class).setCaption(I18nProperties.getCaption(Captions.Person_approximateAge));
+		ComboBox approximateAgeTypeField = addCustomField(PersonDto.APPROXIMATE_AGE_TYPE , ApproximateAgeType.class, ComboBox.class);
+		approximateAgeTypeField.setCaption(I18nProperties.getCaption(Captions.Person_approximateAgeType));
+//		birthDateDay = addCustomField(PersonDto.BIRTH_DATE_DD, Integer.class, ComboBox.class);
+//		birthDateDay.addStyleName(FORCE_CAPTION);
+//		birthDateDay.setInputPrompt(I18nProperties.getString(Strings.day));
+//		ComboBox birthDateMonth = addCustomField(PersonDto.BIRTH_DATE_MM, Integer.class, ComboBox.class);
+//		birthDateMonth.addItems(DateHelper.getMonthsInYear());
+//		birthDateMonth.setPageLength(12);
+//		birthDateMonth.addStyleName(FORCE_CAPTION);
+//		birthDateMonth.setInputPrompt(I18nProperties.getString(Strings.month));
+//		setItemCaptionsForMonths(birthDateMonth);
+//		ComboBox birthDateYear = addCustomField(PersonDto.BIRTH_DATE_YYYY, Integer.class, ComboBox.class);
+//		birthDateYear.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
+//		birthDateYear.addItems(DateHelper.getYearsToNow());
+//		birthDateYear.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
+//		birthDateYear.setInputPrompt(I18nProperties.getString(Strings.year));
+//		birthDateDay.addValidator(
+//			e -> ControllerProvider.getPersonController()
+//				.validateBirthDate((Integer) birthDateYear.getValue(), (Integer) birthDateMonth.getValue(), (Integer) e));
+//		birthDateMonth.addValidator(
+//			e -> ControllerProvider.getPersonController()
+//				.validateBirthDate((Integer) birthDateYear.getValue(), (Integer) e, (Integer) birthDateDay.getValue()));
+//		birthDateYear.addValidator(
+//			e -> ControllerProvider.getPersonController()
+//				.validateBirthDate((Integer) e, (Integer) birthDateMonth.getValue(), (Integer) birthDateDay.getValue()));
+//		// Update the list of days according to the selected month and year
+//		birthDateYear.addValueChangeListener(e -> {
+//			updateListOfDays((Integer) e.getProperty().getValue(), (Integer) birthDateMonth.getValue());
+//			birthDateMonth.markAsDirty();
+//			birthDateDay.markAsDirty();
+//		});
+//		birthDateMonth.addValueChangeListener(e -> {
+//			updateListOfDays((Integer) birthDateYear.getValue(), (Integer) e.getProperty().getValue());
+//			birthDateYear.markAsDirty();
+//			birthDateDay.markAsDirty();
+//		});
+//		birthDateDay.addValueChangeListener(e -> {
+//			birthDateYear.markAsDirty();
+//			birthDateMonth.markAsDirty();
+//		});
 
 		ComboBox sex = addCustomField(PersonDto.SEX, Sex.class, ComboBox.class);
 		sex.setCaption(I18nProperties.getCaption(Captions.Person_sex));
@@ -242,6 +250,20 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		});
 
 		setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, ContactDto.REPORT_DATE_TIME, PersonDto.SEX);
+		FieldHelper.setRequiredWhenNotNull(getFieldGroup(), PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE);
+		addFieldListeners(PersonDto.APPROXIMATE_AGE, e -> {
+			@SuppressWarnings("unchecked")
+			Field<ApproximateAgeType> ageTypeField = (Field<ApproximateAgeType>) getField(PersonDto.APPROXIMATE_AGE_TYPE);
+			if (!ageTypeField.isReadOnly()) {
+				if (e.getProperty().getValue() == null) {
+					ageTypeField.clear();
+				} else {
+					if (ageTypeField.isEmpty()) {
+						ageTypeField.setValue(ApproximateAgeType.YEARS);
+					}
+				}
+			}
+		});
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			ContactDto.RELATION_DESCRIPTION,
@@ -455,6 +477,18 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		return (String) getField(PersonDto.PASSPORT_NUMBER).getValue();
 	}
 
+	public String getApproximateAge() {
+		return (String) getField(PersonDto.APPROXIMATE_AGE).getValue();
+	}
+
+	public ApproximateAgeType getApproximateAgeType() {
+		return (ApproximateAgeType) getField(PersonDto.APPROXIMATE_AGE_TYPE).getValue();
+	}
+
+	public Date getReportDate() {
+		return (Date) getField(ContactDto.REPORT_DATE_TIME).getValue();	
+	}
+	
 	public Integer getBirthdateDD() {
 		return (Integer) getField(PersonDto.BIRTH_DATE_DD).getValue();
 	}
@@ -488,9 +522,11 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		if (person != null) {
 			((TextField) getField(PersonDto.FIRST_NAME)).setValue(person.getFirstName());
 			((TextField) getField(PersonDto.LAST_NAME)).setValue(person.getLastName());
-			((ComboBox) getField(PersonDto.BIRTH_DATE_YYYY)).setValue(person.getBirthdateYYYY());
-			((ComboBox) getField(PersonDto.BIRTH_DATE_MM)).setValue(person.getBirthdateMM());
-			((ComboBox) getField(PersonDto.BIRTH_DATE_DD)).setValue(person.getBirthdateDD());
+			((TextField) getField(PersonDto.APPROXIMATE_AGE)).setValue(person.getApproximateAge().toString());
+			((ComboBox) getField(PersonDto.APPROXIMATE_AGE_TYPE)).setValue(person.getApproximateAgeType());
+//			((ComboBox) getField(PersonDto.BIRTH_DATE_YYYY)).setValue(person.getBirthdateYYYY());
+//			((ComboBox) getField(PersonDto.BIRTH_DATE_MM)).setValue(person.getBirthdateMM());
+//			((ComboBox) getField(PersonDto.BIRTH_DATE_DD)).setValue(person.getBirthdateDD());
 			((ComboBox) getField(PersonDto.SEX)).setValue(person.getSex());
 			((TextField) getField(PersonDto.NATIONAL_HEALTH_ID)).setValue(person.getNationalHealthId());
 			((TextField) getField(PersonDto.PASSPORT_NUMBER)).setValue(person.getPassportNumber());
@@ -499,9 +535,11 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		} else {
 			getField(PersonDto.FIRST_NAME).clear();
 			getField(PersonDto.LAST_NAME).clear();
-			getField(PersonDto.BIRTH_DATE_DD).clear();
-			getField(PersonDto.BIRTH_DATE_MM).clear();
-			getField(PersonDto.BIRTH_DATE_YYYY).clear();
+			getField(PersonDto.APPROXIMATE_AGE).clear();
+			getField(PersonDto.APPROXIMATE_AGE_TYPE).clear();
+//			getField(PersonDto.BIRTH_DATE_DD).clear();
+//			getField(PersonDto.BIRTH_DATE_MM).clear();
+//			getField(PersonDto.BIRTH_DATE_YYYY).clear();
 			getField(PersonDto.SEX).clear();
 			getField(PersonDto.NATIONAL_HEALTH_ID).clear();
 			getField(PersonDto.PASSPORT_NUMBER).clear();
@@ -516,9 +554,11 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			PersonDto.FIRST_NAME,
 			PersonDto.LAST_NAME,
 			PersonDto.SEX,
-			PersonDto.BIRTH_DATE_YYYY,
-			PersonDto.BIRTH_DATE_MM,
-			PersonDto.BIRTH_DATE_DD,
+			PersonDto.APPROXIMATE_AGE,
+			PersonDto.APPROXIMATE_AGE_TYPE,
+//			PersonDto.BIRTH_DATE_YYYY,
+//			PersonDto.BIRTH_DATE_MM,
+//			PersonDto.BIRTH_DATE_DD,
 			PersonDto.NATIONAL_HEALTH_ID,
 			PersonDto.PASSPORT_NUMBER,
 			PersonDto.PHONE,
