@@ -17,18 +17,15 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 #
 
-#This shell script is the execution entry point for the jenkins job used to meassure the loading time for all main pages
-
-echo "Script started at:"
-date +"%T"
+#This shell script is the execution entry point for the jenkins job used to trigger a specific UI/API test or a testing suite
+#Note that when running this script, the BDD tag name is mandatory as parameter. Example: Login/Sanity/Smoke etc
 
 echo "Deleting allure report folder..."
 rm -rf ./allureReports
-echo "Deleting custom report"
-rm -rf ./customReports/customReport.html
-eho "Deleting BarChart image"
-rm -rf ./customReports/images/BarChart.jpeg
 echo "Executing gradle clean..."
 ./gradlew clean goJF
-echo "Starting all BDD tests under @PagesMeasurements tag..."
-./gradlew startTests -Dcucumber.tags="@PagesMeasurements" -Dheadless=true -Dcourgette.threads=9
+echo "Starting all BDD tests under @$1 tag..."
+./gradlew startTests -Dcucumber.tags=\"@$1\" -Dheadless=true -Dcourgette.threads=9
+
+
+
