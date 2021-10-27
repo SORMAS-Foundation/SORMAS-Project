@@ -14,7 +14,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -44,7 +43,6 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -85,7 +83,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 		fluidRowLocs(PersonDto.SEX))
 		+ fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
-		+ fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE)
+		+ fluidRowLocs(PersonDto.PRESENT_CONDITION, "")
 		+ fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS);
 	//@formatter:on
 
@@ -207,12 +205,6 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		sex.setCaption(I18nProperties.getCaption(Captions.Person_sex));
 		ComboBox presentCondition = addCustomField(PersonDto.PRESENT_CONDITION, PresentCondition.class, ComboBox.class);
 		presentCondition.setCaption(I18nProperties.getCaption(Captions.Person_presentCondition));
-
-		addCustomField(
-			SymptomsDto.ONSET_DATE,
-			Date.class,
-			DateField.class,
-			I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
 
 		TextField phone = addCustomField(PersonDto.PHONE, String.class, TextField.class);
 		phone.setCaption(I18nProperties.getCaption(Captions.Person_phone));

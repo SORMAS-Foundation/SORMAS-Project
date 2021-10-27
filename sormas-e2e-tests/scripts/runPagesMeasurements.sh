@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # SORMAS® - Surveillance Outbreak Response Management & Analysis System
 # Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
@@ -17,6 +17,14 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 #
 
-set -ex
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-sudo apt install ./google-chrome-stable_current_amd64.deb
+echo "Script started at:"
+date +"%T"
+
+rm -rf ./allureReports
+rm -rf ./customReports/customReport.html
+rm -rf ./customReports/images/BarChart.jpeg
+./gradlew clean goJF
+  rm -rf ./allure-results
+  ./gradlew clean
+  echo "Run: $i "
+  ./gradlew startTests -Dcucumber.tags="@PagesMeasurements" -Dheadless=true

@@ -18,7 +18,6 @@ package de.symeda.sormas.backend.infrastructure.subcontinent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,8 +25,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -56,8 +53,8 @@ import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentService;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -66,9 +63,6 @@ public class SubcontinentFacadeEjb
 	extends
 	AbstractInfrastructureEjb<Subcontinent, SubcontinentDto, SubcontinentIndexDto, SubcontinentReferenceDto, SubcontinentService, SubcontinentCriteria>
 	implements SubcontinentFacade {
-
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
 
 	@EJB
 	private ContinentService continentService;
@@ -79,8 +73,8 @@ public class SubcontinentFacadeEjb
 	}
 
 	@Inject
-	protected SubcontinentFacadeEjb(SubcontinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(service, featureConfiguration);
+	protected SubcontinentFacadeEjb(SubcontinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
+		super(Subcontinent.class, SubcontinentDto.class, service, featureConfiguration, userService);
 	}
 
 	public static SubcontinentReferenceDto toReferenceDto(Subcontinent entity) {
@@ -186,21 +180,6 @@ public class SubcontinentFacadeEjb
 	}
 
 	@Override
-	public List<SubcontinentDto> getAllAfter(Date date) {
-		return service.getAll((cb, root) -> service.createChangeDateFilter(cb, root, date)).stream().map(this::toDto).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<SubcontinentDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<String> getAllUuids() {
-		return service.getAllUuids();
-	}
-
-	@Override
 	public Page<SubcontinentIndexDto> getIndexPage(SubcontinentCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
 		List<SubcontinentIndexDto> subcontinentIndexList = getIndexList(criteria, offset, size, sortProperties);
 		long totalElementCount = count(criteria);
@@ -223,16 +202,15 @@ public class SubcontinentFacadeEjb
 	}
 
 	@Override
+	protected void selectDtoFields(CriteriaQuery<SubcontinentDto> cq, Root<Subcontinent> root) {
+		// we do not select DTO fields in getAllAfter query
+	}
+
+	@Override
 	protected List<Subcontinent> findDuplicates(SubcontinentDto dto) {
 		return service.getByDefaultName(dto.getDefaultName(), true);
 	}
 
-	@Override
-	public long count(SubcontinentCriteria criteria) {
-		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
-	}
-
-	@Override
 	public SubcontinentDto toDto(Subcontinent entity) {
 		if (entity == null) {
 			return null;
@@ -247,6 +225,11 @@ public class SubcontinentFacadeEjb
 		dto.setContinent(ContinentFacadeEjb.toReferenceDto(entity.getContinent()));
 
 		return dto;
+	}
+
+	@Override
+	public SubcontinentReferenceDto toRefDto(Subcontinent subcontinent) {
+		return toReferenceDto(subcontinent);
 	}
 
 	public SubcontinentIndexDto toIndexDto(Subcontinent entity) {
@@ -296,8 +279,11 @@ public class SubcontinentFacadeEjb
 		}
 
 		@Inject
-		protected SubcontinentFacadeEjbLocal(SubcontinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-			super(service, featureConfiguration);
+		protected SubcontinentFacadeEjbLocal(
+			SubcontinentService service,
+			FeatureConfigurationFacadeEjbLocal featureConfiguration,
+			UserService userService) {
+			super(service, featureConfiguration, userService);
 		}
 	}
 }

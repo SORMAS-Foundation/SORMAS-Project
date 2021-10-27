@@ -2,8 +2,6 @@ package de.symeda.sormas.backend.infrastructure.pointofentry;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,8 +9,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -21,12 +17,12 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import org.apache.commons.collections.CollectionUtils;
+import de.symeda.sormas.backend.user.UserService;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.common.Page;
@@ -48,9 +44,7 @@ import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "PointOfEntryFacade")
@@ -59,24 +53,19 @@ public class PointOfEntryFacadeEjb
 	AbstractInfrastructureEjb<PointOfEntry, PointOfEntryDto, PointOfEntryDto, PointOfEntryReferenceDto, PointOfEntryService, PointOfEntryCriteria>
 	implements PointOfEntryFacade {
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
-
 	@EJB
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
 	@EJB
 	private DistrictFacadeEjbLocal districtFacade;
-	@EJB
-	private UserService userService;
 
 	public PointOfEntryFacadeEjb() {
 	}
 
 	@Inject
-	protected PointOfEntryFacadeEjb(PointOfEntryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(service, featureConfiguration);
+	protected PointOfEntryFacadeEjb(PointOfEntryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
+		super(PointOfEntry.class, PointOfEntryDto.class, service, featureConfiguration, userService);
 	}
 
 	public static PointOfEntryReferenceDto toReferenceDto(PointOfEntry entity) {
@@ -100,29 +89,11 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
-	public List<PointOfEntryDto> getAllAfter(Date date) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<PointOfEntryDto> cq = cb.createQuery(PointOfEntryDto.class);
-		Root<PointOfEntry> pointOfEntry = cq.from(PointOfEntry.class);
-
-		selectDtoFields(cq, pointOfEntry);
-
-		Predicate filter = service.createChangeDateFilter(cb, pointOfEntry, date);
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	// Need to be in the same order as in the constructor
-	private void selectDtoFields(CriteriaQuery<PointOfEntryDto> cq, Root<PointOfEntry> root) {
+	protected void selectDtoFields(CriteriaQuery<PointOfEntryDto> cq, Root<PointOfEntry> root) {
 
 		Join<PointOfEntry, District> district = root.join(Facility.DISTRICT, JoinType.LEFT);
 		Join<PointOfEntry, Region> region = root.join(Facility.REGION, JoinType.LEFT);
-
+		// Needs to be in the same order as in the constructor
 		cq.multiselect(
 			root.get(PointOfEntry.CREATION_DATE),
 			root.get(PointOfEntry.CHANGE_DATE),
@@ -140,20 +111,6 @@ public class PointOfEntryFacadeEjb
 			root.get(PointOfEntry.LONGITUDE),
 			root.get(PointOfEntry.ACTIVE),
 			root.get(PointOfEntry.EXTERNAL_ID));
-	}
-
-	@Override
-	public List<String> getAllUuids() {
-
-		if (userService.getCurrentUser() == null) {
-			return Collections.emptyList();
-		}
-		return service.getAllUuids();
-	}
-
-	@Override
-	public List<PointOfEntryDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -215,7 +172,7 @@ public class PointOfEntryFacadeEjb
 		if (pointOfEntry.getDistrict() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
-		if (!districtFacade.getDistrictByUuid(pointOfEntry.getDistrict().getUuid()).getRegion().equals(pointOfEntry.getRegion())) {
+		if (!districtFacade.getByUuid(pointOfEntry.getDistrict().getUuid()).getRegion().equals(pointOfEntry.getRegion())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noDistrictInRegion));
 		}
 	}
@@ -366,6 +323,11 @@ public class PointOfEntryFacadeEjb
 		return dto;
 	}
 
+	@Override
+	public PointOfEntryReferenceDto toRefDto(PointOfEntry pointOfEntry) {
+		return toReferenceDto(pointOfEntry);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class PointOfEntryFacadeEjbLocal extends PointOfEntryFacadeEjb {
@@ -374,8 +336,11 @@ public class PointOfEntryFacadeEjb
 		}
 
 		@Inject
-		protected PointOfEntryFacadeEjbLocal(PointOfEntryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-			super(service, featureConfiguration);
+		protected PointOfEntryFacadeEjbLocal(
+			PointOfEntryService service,
+			FeatureConfigurationFacadeEjbLocal featureConfiguration,
+			UserService userService) {
+			super(service, featureConfiguration, userService);
 		}
 	}
 }

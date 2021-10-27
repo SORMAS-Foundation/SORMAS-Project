@@ -26,11 +26,17 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.caze.CriteriaWithSorting;
+import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Path("/immunizations")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
@@ -81,4 +87,21 @@ public class ImmunizationResource extends EntityDtoResource {
 	public ImmunizationDto getByUuid(@PathParam("uuid") String uuid) {
 		return FacadeProvider.getImmunizationFacade().getByUuid(uuid);
 	}
+
+	@POST
+	@Path("/indexList")
+	public Page<ImmunizationIndexDto> getIndexList(
+		@RequestBody CriteriaWithSorting<ImmunizationCriteria> criteriaWithSorting,
+		@QueryParam("offset") int offset,
+		@QueryParam("size") int size) {
+		return FacadeProvider.getImmunizationFacade()
+			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
+	}
+
+	@POST
+	@Path("/delete")
+	public List<String> delete(List<String> uuids) {
+		return FacadeProvider.getImmunizationFacade().deleteImmunizations(uuids);
+	}
+
 }
