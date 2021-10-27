@@ -389,7 +389,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Immunization> cq = cb.createQuery(Immunization.class);
 		Root<Immunization> immunizationRoot = cq.from(Immunization.class);
-		Join<Immunization, Person> personJoin = immunizationRoot.join(Immunization.PERSON, JoinType.LEFT);
+		Join<Immunization, Person> personJoin = immunizationRoot.join(Immunization.PERSON, JoinType.INNER);
 
 		cq.where(personJoin.get(AbstractDomainObject.UUID).in(personUuids));
 
