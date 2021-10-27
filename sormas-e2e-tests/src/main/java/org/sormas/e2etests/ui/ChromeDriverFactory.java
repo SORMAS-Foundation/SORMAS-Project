@@ -35,15 +35,18 @@ public class ChromeDriverFactory implements DriverFactory {
   private final boolean headless;
   private final DesiredCapabilities desiredCapabilities;
   private final String userDirProperty;
+  private final boolean isRemoteDriver;
 
   @Inject
   public ChromeDriverFactory(
       @Named("HEADLESS") boolean headless,
       DesiredCapabilities desiredCapabilities,
+      @Named("REMOTE_DRIVER") boolean isRemoteDriver,
       @Named("USER_DIR") String userDirProperty) {
     this.headless = headless;
     this.desiredCapabilities = desiredCapabilities;
     this.userDirProperty = userDirProperty;
+    this.isRemoteDriver = isRemoteDriver;
   }
 
   @Override

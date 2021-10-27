@@ -70,8 +70,7 @@ public class ImmunizationGrid extends FilteredGrid<ImmunizationIndexDto, Immuniz
 					value.getAgeType(),
 					value.getDateOfBirthDD(),
 					value.getDateOfBirthMM(),
-					value.getDateOfBirthYYYY(),
-					I18nProperties.getUserLanguage()),
+					value.getDateOfBirthYYYY()),
 			new TextRenderer());
 
 		((Column<ImmunizationIndexDto, Date>) getColumn(ImmunizationIndexDto.START_DATE))

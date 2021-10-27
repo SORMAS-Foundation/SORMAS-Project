@@ -129,13 +129,6 @@ public class DataUtils {
 		return items;
 	}
 
-	public static <E> List<Item> addItems(List<Item> items, List<E> listIn) {
-		for (E listInEntry : listIn) {
-			items.add(new Item<E>(listInEntry.toString(), listInEntry));
-		}
-		return items;
-	}
-
 	public static void updateListOfDays(ControlSpinnerField birthdateDD, Integer selectedYear, Integer selectedMonth) {
 		Integer currentlySelected = (Integer) birthdateDD.getValue();
 		List<Item> days = DataUtils.toItems(DateHelper.getDaysInMonth(selectedMonth, selectedYear));
