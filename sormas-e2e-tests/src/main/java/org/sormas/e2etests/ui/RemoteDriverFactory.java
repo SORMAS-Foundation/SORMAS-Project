@@ -54,19 +54,14 @@ public class RemoteDriverFactory implements DriverFactory {
     log.info("Setting Chrome Driver's path");
     System.setProperty("webdriver.chrome.driver", "/usr/lib64/chromium-browser/chromedriver");
     log.info("Adding all chrome preferences");
-    final HashMap<String, Object> chromePreferences = new HashMap<>();
-    chromePreferences.put("profile.password_manager_enabled", Boolean.FALSE);
-    chromePreferences.put("download.default_directory", userDirProperty + "/downloads");
     final ChromeOptions options = new ChromeOptions();
     options.merge(desiredCapabilities);
     options.addArguments("--no-default-browser-check");
-    options.setExperimentalOption("prefs", chromePreferences);
     options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.IGNORE);
     options.addArguments("disable-infobars");
-    options.addArguments("--incognito");
+    options.addArguments("--headless");
     options.addArguments("enable-automation");
     options.addArguments("--no-sandbox");
-    options.addArguments("--window-size=1920,1080");
     options.addArguments("--disable-browser-side-navigation");
     options.addArguments("--disable-gpu-sandbox");
     options.addArguments("--disable-gpu");
@@ -76,7 +71,7 @@ public class RemoteDriverFactory implements DriverFactory {
     options.addArguments("--disable-dev-shm-usage");
     options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
     options.setCapability(SUPPORTS_ALERTS, false);
-    log.info("Returning ChromDriver instance with provided arguments");
+    log.info("Returning ChromeDriver instance with provided arguments");
     return new ChromeDriver(options);
   }
 }
