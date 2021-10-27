@@ -21,8 +21,10 @@ echo "Script started at:"
 date +"%T"
 
 rm -rf ./allureReports
+rm -rf ./customReports/customReport.html
+rm -rf ./customReports/images/BarChart.jpeg
 ./gradlew clean goJF
   rm -rf ./allure-results
   ./gradlew clean
   echo "Run: $i "
-  ./gradlew startTests -Dcucumber.tags="@PagesMeasurements" -Dheadless=true -Dcourgette.threads=9
+  ./gradlew startTests -Dcucumber.tags="@PagesMeasurements" -Dheadless=true

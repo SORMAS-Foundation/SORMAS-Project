@@ -539,7 +539,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		typeField.addValueChangeListener(e -> updateFacilities(facilityField, typeField, communityField, districtField, allowNoneFacility));
 		FieldHelper.updateItems(
 			facilityField,
-			Collections.singletonList(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
+			Collections.singletonList(FacadeProvider.getFacilityFacade().getReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
 
 		facilityField.addValueChangeListener(e -> {
 			updateFacilityDetailsVisibility(detailsField, (FacilityReferenceDto) e.getProperty().getValue());
@@ -580,7 +580,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				// "home or other place" as fallback
 				FieldHelper.updateItems(
 					facilityField,
-					Collections.singletonList(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
+					Collections.singletonList(FacadeProvider.getFacilityFacade().getReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
 			} else {
 				FieldHelper.removeItems(facilityField);
 			}

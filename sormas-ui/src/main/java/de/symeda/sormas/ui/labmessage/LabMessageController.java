@@ -659,7 +659,7 @@ public class LabMessageController {
 		if (labs != null && labs.size() == 1) {
 			return labs.get(0);
 		} else {
-			return facilityFacade.getFacilityReferenceByUuid(FacilityDto.OTHER_FACILITY_UUID);
+			return facilityFacade.getReferenceByUuid(FacilityDto.OTHER_FACILITY_UUID);
 		}
 	}
 

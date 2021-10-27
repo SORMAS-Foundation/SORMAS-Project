@@ -189,7 +189,7 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 		String[] params = event.getParameters().split("\\?");
 		if (params.length > 0) {
 			String regionUuid = params[0].replaceAll("/", "");
-			this.region = FacadeProvider.getRegionFacade().getRegionReferenceByUuid(regionUuid);
+			this.region = FacadeProvider.getRegionFacade().getReferenceByUuid(regionUuid);
 			if (params.length > 1) {
 				disease = Disease.valueOf(params[1].substring(params[1].indexOf("=") + 1));
 			}
