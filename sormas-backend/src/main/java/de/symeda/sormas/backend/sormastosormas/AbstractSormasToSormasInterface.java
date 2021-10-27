@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +93,7 @@ import de.symeda.sormas.backend.sormastosormas.entities.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.entities.ReceivedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.entities.ShareDataExistingEntities;
-import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.entities.SyncDataDto;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
@@ -112,7 +113,7 @@ import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormas
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
-public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomainObject & SormasToSormasEntity, DTO extends EntityDto & de.symeda.sormas.api.utils.SormasToSormasEntityDto, S extends SormasToSormasEntityDto<DTO>>
+public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomainObject & SormasToSormasShareable, DTO extends EntityDto & SormasToSormasShareableDto, S extends SormasToSormasEntityDto<DTO>>
 	implements SormasToSormasEntityInterface {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSormasToSormasInterface.class);

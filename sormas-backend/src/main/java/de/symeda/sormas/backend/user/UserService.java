@@ -208,13 +208,13 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	 * @param userRoles
 	 */
 	public List<UserReference> getReferenceList(
-			List<String> regionUuids,
-			List<String> districtUuids,
-			List<String> communityUuids,
-			boolean includeSupervisors,
-			boolean filterByJurisdiction,
-			boolean activeOnly,
-			List<UserRole> userRoles) {
+		List<String> regionUuids,
+		List<String> districtUuids,
+		List<String> communityUuids,
+		boolean includeSupervisors,
+		boolean filterByJurisdiction,
+		boolean activeOnly,
+		List<UserRole> userRoles) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<UserReference> cq = cb.createQuery(UserReference.class);
@@ -251,7 +251,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		// WHERE OR
 		if (includeSupervisors) {
 			Predicate supervisorFilter = rolesJoin.in(
-					Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR));
+				Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR));
 			filter = CriteriaBuilderHelper.or(cb, filter, supervisorFilter);
 		}
 
@@ -539,11 +539,6 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 
 	public boolean hasRole(UserRole userRoleName) {
 		return getCurrentUser().getUserRoles().contains(userRoleName);
-	}
-
-	public boolean hasAnyRole(Set<UserRole> typeRoles) {
-		Set<UserRole> userRoles = getCurrentUser().getUserRoles();
-		return !userRoles.stream().filter(userRole -> typeRoles.contains(userRole)).collect(Collectors.toList()).isEmpty();
 	}
 
 	public boolean hasRight(UserRight right) {

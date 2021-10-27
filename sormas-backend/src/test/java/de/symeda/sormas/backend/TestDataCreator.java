@@ -170,10 +170,10 @@ public class TestDataCreator {
 		user1.setUserName(firstName + lastName);
 		user1.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
 		UserDto user = user1;
-		user.setRegion(beanTest.getRegionFacade().getRegionReferenceByUuid(regionUuid));
-		user.setDistrict(beanTest.getDistrictFacade().getDistrictReferenceByUuid(districtUuid));
-		user.setCommunity(beanTest.getCommunityFacade().getCommunityReferenceByUuid(communityUuid));
-		user.setHealthFacility(beanTest.getFacilityFacade().getFacilityReferenceByUuid(facilityUuid));
+		user.setRegion(beanTest.getRegionFacade().getReferenceByUuid(regionUuid));
+		user.setDistrict(beanTest.getDistrictFacade().getReferenceByUuid(districtUuid));
+		user.setCommunity(beanTest.getCommunityFacade().getReferenceByUuid(communityUuid));
+		user.setHealthFacility(beanTest.getFacilityFacade().getReferenceByUuid(facilityUuid));
 		user = beanTest.getUserFacade().saveUser(user);
 
 		return user;
@@ -944,7 +944,7 @@ public class TestDataCreator {
 		sample.setReportDateTime(new Date());
 		sample.setSampleMaterial(SampleMaterial.BLOOD);
 		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
-		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+		sample.setLab(beanTest.getFacilityFacade().getReferenceByUuid(lab.getUuid()));
 
 		if (customSettings != null) {
 			customSettings.accept(sample);
@@ -978,7 +978,7 @@ public class TestDataCreator {
 		sample.setReportDateTime(reportDateTime);
 		sample.setSampleMaterial(sampleMaterial);
 		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
-		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+		sample.setLab(beanTest.getFacilityFacade().getReferenceByUuid(lab.getUuid()));
 
 		if (customConfig != null) {
 			customConfig.accept(sample);
@@ -1022,7 +1022,7 @@ public class TestDataCreator {
 		sample.setReportDateTime(reportDateTime);
 		sample.setSampleMaterial(sampleMaterial);
 		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
-		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+		sample.setLab(beanTest.getFacilityFacade().getReferenceByUuid(lab.getUuid()));
 
 		sample = beanTest.getSampleFacade().saveSample(sample);
 		return sample;
@@ -1058,7 +1058,7 @@ public class TestDataCreator {
 		sample.setReportDateTime(new Date());
 		sample.setSampleMaterial(SampleMaterial.BLOOD);
 		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
-		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+		sample.setLab(beanTest.getFacilityFacade().getReferenceByUuid(lab.getUuid()));
 
 		if (customSettings != null) {
 			customSettings.accept(sample);
@@ -1117,7 +1117,7 @@ public class TestDataCreator {
 		sampleTest.setTestedDisease(testedDisease);
 		sampleTest.setTestType(testType);
 		sampleTest.setTestDateTime(testDateTime);
-		sampleTest.setLab(lab != null ? beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()) : null);
+		sampleTest.setLab(lab != null ? beanTest.getFacilityFacade().getReferenceByUuid(lab.getUuid()) : null);
 		sampleTest.setTestResult(testResult);
 		sampleTest.setTestResultText(testResultText);
 		sampleTest.setTestResultVerified(verified);
