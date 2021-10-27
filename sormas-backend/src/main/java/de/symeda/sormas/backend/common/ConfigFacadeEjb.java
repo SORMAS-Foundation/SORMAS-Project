@@ -186,7 +186,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		try {
 			return Boolean.parseBoolean(getProperty(name, Boolean.toString(defaultValue)));
 		} catch (Exception e) {
-			logger.error("Could not parse boolean value of property '" + name + "': " + e.getMessage());
+			logger.debug("Could not parse boolean value of property '" + name + "': " + e.getMessage());
 			return defaultValue;
 		}
 	}
@@ -196,7 +196,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		try {
 			return Double.parseDouble(getProperty(name, Double.toString(defaultValue)));
 		} catch (Exception e) {
-			logger.error("Could not parse numeric value of property '" + name + "': " + e.getMessage());
+			logger.debug("Could not parse numeric value of property '" + name + "': " + e.getMessage());
 			return defaultValue;
 		}
 	}
@@ -206,7 +206,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		try {
 			return Integer.parseInt(getProperty(name, Integer.toString(defaultValue)));
 		} catch (Exception e) {
-			logger.error("Could not parse integer value of property '" + name + "': " + e.getMessage());
+			logger.debug("Could not parse integer value of property '" + name + "': " + e.getMessage());
 			return defaultValue;
 		}
 	}
@@ -216,7 +216,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		try {
 			return Long.parseLong(getProperty(name, Long.toString(defaultValue)));
 		} catch (Exception e) {
-			logger.error("Could not parse long value of property '" + name + "': " + e.getMessage());
+			logger.debug("Could not parse long value of property '" + name + "': " + e.getMessage());
 			return defaultValue;
 		}
 	}
@@ -226,7 +226,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 		String countryName = getProperty(COUNTRY_NAME, "");
 		if (countryName.isEmpty()) {
-			logger.info("No country name is specified in sormas.properties.");
+			logger.debug("No country name is specified in sormas.properties.");
 		}
 		return new String(countryName.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
 	}
