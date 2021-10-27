@@ -855,12 +855,7 @@ public class CaseController {
 		editView.addCommitListener(() -> {
 			CaseDataDto oldCase = findCase(caseUuid);
 			CaseDataDto cazeDto = caseEditForm.getValue();
-			if (cazeDto.getFacilityType() != oldCase.getFacilityType()
-				|| (cazeDto.getHealthFacility() != null && !cazeDto.getHealthFacility().getUuid().equals(oldCase.getHealthFacility().getUuid()))) {
-				saveCaseWithFacilityChangedPrompt(cazeDto, oldCase);
-			} else {
-				saveCase(cazeDto);
-			}
+			saveCaseWithFacilityChangedPrompt(cazeDto, oldCase);
 		});
 
 		appendSpecialCommands(caze, editView);
@@ -1116,21 +1111,22 @@ public class CaseController {
 			if (YesNoUnknown.YES == admittedToHealthFacility
 				&& initialAdmittedToHealthFacility != admittedToHealthFacility
 				&& cazeDto.getFacilityType() != FacilityType.HOSPITAL) {
-				PlaceOfStayEditForm placeOfStayEditForm = new PlaceOfStayEditForm(caze);
-				placeOfStayEditForm.setValue(caze);
+				PlaceOfStayEditForm placeOfStayEditForm = new PlaceOfStayEditForm(caseDataDto);
+				placeOfStayEditForm.setValue(caseDataDto);
 				final CommitDiscardWrapperComponent<PlaceOfStayEditForm> wrapperComponent = new CommitDiscardWrapperComponent<>(
 					placeOfStayEditForm,
 					UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
 					placeOfStayEditForm.getFieldGroup());
 				wrapperComponent.addCommitListener(() -> {
+					final CaseDataDto cazeDtoInner = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 					final CaseDataDto dto = placeOfStayEditForm.getValue();
-					caseDataDto.setRegion(dto.getRegion());
-					caseDataDto.setDistrict(dto.getDistrict());
-					caseDataDto.setCommunity(dto.getCommunity());
-					caseDataDto.setFacilityType(FacilityType.HOSPITAL);
-					caseDataDto.setHealthFacility(dto.getHealthFacility());
-					caseDataDto.setHealthFacilityDetails(dto.getHealthFacilityDetails());
-					FacadeProvider.getCaseFacade().saveCase(caseDataDto);
+					cazeDtoInner.setRegion(dto.getRegion());
+					cazeDtoInner.setDistrict(dto.getDistrict());
+					cazeDtoInner.setCommunity(dto.getCommunity());
+					cazeDtoInner.setFacilityType(FacilityType.HOSPITAL);
+					cazeDtoInner.setHealthFacility(dto.getHealthFacility());
+					cazeDtoInner.setHealthFacilityDetails(dto.getHealthFacilityDetails());
+					FacadeProvider.getCaseFacade().saveCase(cazeDtoInner);
 					ControllerProvider.getCaseController().navigateToView(HospitalizationView.VIEW_NAME, caze.getUuid(), null);
 				});
 				VaadinUiUtil.showModalPopupWindow(wrapperComponent, I18nProperties.getString(Strings.headingPlaceOfStayInHospital));
@@ -1285,8 +1281,9 @@ public class CaseController {
 						break;
 					}
 				});
-		} else if (FacilityType.HOSPITAL != caze.getFacilityType() && oldCase.getFacilityType() == FacilityType.HOSPITAL
-			|| (caze.getHealthFacility() != null && !caze.getHealthFacility().getUuid().equals(oldCase.getHealthFacility().getUuid()))) {
+		} else if (oldCase.getFacilityType() == FacilityType.HOSPITAL
+			&& caze.getHealthFacility() != null
+			&& !caze.getHealthFacility().getUuid().equals(oldCase.getHealthFacility().getUuid())) {
 			VaadinUiUtil.showChooseOptionPopup(
 				I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
 				new Label(I18nProperties.getString(Strings.messageFacilityChanged)),
