@@ -273,6 +273,7 @@ public class WebDriverHelpers {
   }
 
   public void accessWebSite(String url) {
+    //TODO remove extra loggers after jenkins checks
     log.info("WebDriver session ID: " + baseSteps.getDriver().getSessionId());
     log.info("Navigating to: " + url);
     baseSteps.getDriver().navigate().to(url);
