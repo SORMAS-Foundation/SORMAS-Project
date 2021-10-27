@@ -60,14 +60,14 @@ import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "samples")
 @Audited
-public class Sample extends CoreAdo implements SormasToSormasEntity {
+public class Sample extends CoreAdo implements SormasToSormasShareable {
 
     private static final long serialVersionUID = -7196712070188634978L;
 
