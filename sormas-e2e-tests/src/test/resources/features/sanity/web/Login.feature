@@ -17,7 +17,7 @@ Feature: Login with different type of users
 
     @Login
     Scenario: Open google page for jenkins checks
-      Given I navigate to SORMAS google page
+      Given I navigate to google page
 
 
 

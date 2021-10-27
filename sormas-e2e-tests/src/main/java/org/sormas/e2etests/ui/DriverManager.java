@@ -21,7 +21,6 @@ package org.sormas.e2etests.ui;
 import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
-
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
