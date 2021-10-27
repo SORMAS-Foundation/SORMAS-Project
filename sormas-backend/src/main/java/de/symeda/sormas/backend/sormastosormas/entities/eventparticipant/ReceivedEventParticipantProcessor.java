@@ -27,6 +27,7 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParti
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
@@ -35,8 +36,7 @@ import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcess
 @Stateless
 @LocalBean
 public class ReceivedEventParticipantProcessor
-	implements
-	ReceivedDataProcessor<EventParticipantDto, SormasToSormasEventParticipantDto, SormasToSormasEventParticipantPreview, EventParticipant> {
+	extends ReceivedDataProcessor<EventParticipantDto, SormasToSormasEventParticipantDto, SormasToSormasEventParticipantPreview, EventParticipant> {
 
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;
@@ -44,42 +44,32 @@ public class ReceivedEventParticipantProcessor
 	private EventParticipantService eventParticipantService;
 
 	@Override
-	public ValidationErrors processReceivedData(SormasToSormasEventParticipantDto receivedData, EventParticipant existingData) {
-		EventParticipantDto eventParticipant = receivedData.getEntity();
-
-		ValidationErrors uuidError = validateSharedUuid(eventParticipant.getUuid());
-		if (uuidError.hasError()) {
-			return uuidError;
-		}
-
-		dataValidator.handleIgnoredProperties(eventParticipant.getPerson(), dataValidator.getExistingPerson(existingData));
-
-		return dataValidator.validateEventParticipant(eventParticipant);
+	public void handleReceivedData(SormasToSormasEventParticipantDto sharedData, EventParticipant existingData) {
+		dataValidator.handleIgnoredProperties(sharedData.getEntity().getPerson(), dataValidator.getExistingPerson(existingData));
 	}
 
 	@Override
-	public ValidationErrors processReceivedPreview(SormasToSormasEventParticipantPreview eventParticipant) {
-		ValidationErrors uuidError = validateSharedUuid(eventParticipant.getUuid());
-		if (uuidError.hasError()) {
-			return uuidError;
-		}
-
-		return dataValidator.validatePersonPreview(eventParticipant.getPerson());
-	}
-
-	private ValidationErrors validateSharedUuid(String uuid) {
+	public ValidationErrors exists(String uuid) {
 		ValidationErrors errors = new ValidationErrors();
-
 		if (eventParticipantService.exists(
 			(cb, epRoot, cq) -> cb.and(
-				cb.equal(epRoot.get(EventParticipant.UUID), uuid),
+				cb.equal(epRoot.get(AbstractDomainObject.UUID), uuid),
 				cb.isNull(epRoot.get(EventParticipant.SORMAS_TO_SORMAS_ORIGIN_INFO)),
 				cb.isEmpty(epRoot.get(EventParticipant.SORMAS_TO_SORMAS_SHARES))))) {
 			errors.add(
 				new ValidationErrorGroup(Captions.EventParticipant),
 				new ValidationErrorMessage(Validations.sormasToSormasEventParticipantExists));
 		}
-
 		return errors;
+	}
+
+	@Override
+	public ValidationErrors validation(SormasToSormasEventParticipantDto sharedData, EventParticipant existingData) {
+		return dataValidator.validateEventParticipant(sharedData.getEntity());
+	}
+
+	@Override
+	public ValidationErrors validatePreview(SormasToSormasEventParticipantPreview preview) {
+		return dataValidator.validatePersonPreview(preview.getPerson());
 	}
 }

@@ -18,11 +18,34 @@ package de.symeda.sormas.backend.sormastosormas.data.received;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 
-public interface ReceivedDataProcessor<DTO extends SormasToSormasShareableDto, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW, ENTITY extends SormasToSormasShareable> {
+public abstract class ReceivedDataProcessor<DTO extends SormasToSormasShareableDto, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW extends PseudonymizableDto, ENTITY extends SormasToSormasShareable> {
 
-	ValidationErrors processReceivedData(SHARED sharedData, ENTITY existingData);
+	public ValidationErrors processReceivedData(SHARED sharedData, ENTITY existingData) {
+		ValidationErrors uuidError = exists(sharedData.getEntity().getUuid());
+		if (uuidError.hasError()) {
+			return uuidError;
+		}
 
-	ValidationErrors processReceivedPreview(PREVIEW sharedPreview);
+		handleReceivedData(sharedData, existingData);
+		return validation(sharedData, existingData);
+	}
+
+	public abstract void handleReceivedData(SHARED sharedData, ENTITY existingData);
+
+	public ValidationErrors processReceivedPreview(PREVIEW sharedPreview) {
+		ValidationErrors uuidError = exists(sharedPreview.getUuid());
+		if (uuidError.hasError()) {
+			return uuidError;
+		}
+		return validatePreview(sharedPreview);
+	}
+
+	public abstract ValidationErrors exists(String uuid);
+
+	public abstract ValidationErrors validation(SHARED sharedData, ENTITY existingData);
+
+	public abstract ValidationErrors validatePreview(PREVIEW preview);
 }

@@ -22,12 +22,12 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -36,7 +36,7 @@ import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcess
 
 @Stateless
 @LocalBean
-public class ReceivedContactProcessor implements ReceivedDataProcessor<ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview, Contact> {
+public class ReceivedContactProcessor extends ReceivedDataProcessor<ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview, Contact> {
 
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;
@@ -44,38 +44,17 @@ public class ReceivedContactProcessor implements ReceivedDataProcessor<ContactDt
 	private ContactService contactService;
 
 	@Override
-	public ValidationErrors processReceivedData(SormasToSormasContactDto receivedContact, Contact existingContact) {
-
-		ContactDto contact = receivedContact.getEntity();
-		PersonDto person = receivedContact.getPerson();
-
-		ValidationErrors uuidError = validateSharedUuid(contact.getUuid());
-		if (uuidError.hasError()) {
-			return uuidError;
-		}
-
-		dataValidator.handleIgnoredProperties(contact, ContactFacadeEjb.ContactFacadeEjbLocal.toDto(existingContact));
-		dataValidator.handleIgnoredProperties(person, dataValidator.getExistingPerson(existingContact));
-
-		return dataValidator.validateContactData(contact, person, existingContact);
+	public void handleReceivedData(SormasToSormasContactDto sharedData, Contact existingData) {
+		dataValidator.handleIgnoredProperties(sharedData.getEntity(), ContactFacadeEjb.toDto(existingData));
+		dataValidator.handleIgnoredProperties(sharedData.getPerson(), dataValidator.getExistingPerson(existingData));
 	}
 
 	@Override
-	public ValidationErrors processReceivedPreview(SormasToSormasContactPreview preview) {
-		ValidationErrors uuidError = validateSharedUuid(preview.getUuid());
-		if (uuidError.hasError()) {
-			return uuidError;
-		}
-
-		return dataValidator.validateContactPreview(preview);
-	}
-
-	private ValidationErrors validateSharedUuid(String uuid) {
+	public ValidationErrors exists(String uuid) {
 		ValidationErrors errors = new ValidationErrors();
-
 		if (contactService.exists(
 			(cb, contactRoot, cq) -> cb.and(
-				cb.equal(contactRoot.get(Contact.UUID), uuid),
+				cb.equal(contactRoot.get(AbstractDomainObject.UUID), uuid),
 				cb.isNull(contactRoot.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO)),
 				cb.isEmpty(contactRoot.get(Contact.SORMAS_TO_SORMAS_SHARES))))) {
 
@@ -83,5 +62,15 @@ public class ReceivedContactProcessor implements ReceivedDataProcessor<ContactDt
 		}
 
 		return errors;
+	}
+
+	@Override
+	public ValidationErrors validation(SormasToSormasContactDto sharedData, Contact existingData) {
+		return dataValidator.validateContactData(sharedData.getEntity(), sharedData.getPerson(), existingData);
+	}
+
+	@Override
+	public ValidationErrors validatePreview(SormasToSormasContactPreview preview) {
+		return dataValidator.validateContactPreview(preview);
 	}
 }

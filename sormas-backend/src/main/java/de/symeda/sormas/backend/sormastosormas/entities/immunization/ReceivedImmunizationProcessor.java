@@ -25,11 +25,13 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -42,7 +44,7 @@ import de.symeda.sormas.backend.vaccination.Vaccination;
 @Stateless
 @LocalBean
 public class ReceivedImmunizationProcessor
-	implements ReceivedDataProcessor<ImmunizationDto, SormasToSormasEntityDto<ImmunizationDto>, Void, Immunization> {
+	extends ReceivedDataProcessor<ImmunizationDto, SormasToSormasEntityDto<ImmunizationDto>, PreviewNotImplementedDto, Immunization> {
 
 	@EJB
 	private ImmunizationService immunizationService;
@@ -55,19 +57,33 @@ public class ReceivedImmunizationProcessor
 	private UserService userService;
 
 	@Override
-	public ValidationErrors processReceivedData(SormasToSormasEntityDto<ImmunizationDto> sharedData, Immunization existingData) {
-		ImmunizationDto immunization = sharedData.getEntity();
+	public void handleReceivedData(SormasToSormasEntityDto<ImmunizationDto> sharedData, Immunization existingData) {
+		dataValidator.updateReportingUser(sharedData.getEntity(), existingData);
+		dataValidator.handleIgnoredProperties(sharedData.getEntity(), ImmunizationFacadeEjb.toDto(existingData));
+	}
 
-		ValidationErrors uuidError = validateSharedUuid(immunization.getUuid());
-		if (uuidError.hasError()) {
-			return uuidError;
+	@Override
+	public ValidationErrors processReceivedPreview(PreviewNotImplementedDto sharedPreview) {
+		throw new RuntimeException("Immunizations preview not yet implemented");
+	}
+
+	@Override
+	public ValidationErrors exists(String uuid) {
+		ValidationErrors errors = new ValidationErrors();
+		if (immunizationService.exists(
+			(cb, immunizationRoot, cq) -> cb.and(
+				cb.equal(immunizationRoot.get(AbstractDomainObject.UUID), uuid),
+				cb.isNull(immunizationRoot.get(Immunization.SORMAS_TO_SORMAS_ORIGIN_INFO)),
+				cb.isEmpty(immunizationRoot.get(Immunization.SORMAS_TO_SORMAS_SHARES))))) {
+			errors.add(new ValidationErrorGroup(Captions.Immunization), new ValidationErrorMessage(Validations.sormasToSormasImmunizationExists));
 		}
 
-		ValidationErrors validationErrors = new ValidationErrors();
+		return errors;
+	}
 
-		dataValidator.updateReportingUser(immunization, existingData);
-		dataValidator.handleIgnoredProperties(immunization, ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal.toDto(existingData));
-
+	@Override
+	public ValidationErrors validation(SormasToSormasEntityDto<ImmunizationDto> sharedData, Immunization existingData) {
+		ImmunizationDto immunization = sharedData.getEntity();
 		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
 			infraValidator.validateInfrastructure(
 				null,
@@ -82,6 +98,7 @@ public class ReceivedImmunizationProcessor
 				null,
 				null);
 
+		ValidationErrors validationErrors = new ValidationErrors();
 		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Sample_lab, validationErrors, (infrastructureData -> {
 			immunization.setCountry(infrastructureData.getCountry());
 			immunization.setResponsibleRegion(infrastructureData.getRegion());
@@ -105,21 +122,7 @@ public class ReceivedImmunizationProcessor
 	}
 
 	@Override
-	public ValidationErrors processReceivedPreview(Void sharedPreview) {
+	public ValidationErrors validatePreview(PreviewNotImplementedDto previewNotImplementedDto) {
 		throw new RuntimeException("Immunizations preview not yet implemented");
-	}
-
-	private ValidationErrors validateSharedUuid(String uuid) {
-		ValidationErrors errors = new ValidationErrors();
-
-		if (immunizationService.exists(
-			(cb, immunizationRoot, cq) -> cb.and(
-				cb.equal(immunizationRoot.get(Immunization.UUID), uuid),
-				cb.isNull(immunizationRoot.get(Immunization.SORMAS_TO_SORMAS_ORIGIN_INFO)),
-				cb.isEmpty(immunizationRoot.get(Immunization.SORMAS_TO_SORMAS_SHARES))))) {
-			errors.add(new ValidationErrorGroup(Captions.Immunization), new ValidationErrorMessage(Validations.sormasToSormasImmunizationExists));
-		}
-
-		return errors;
 	}
 }
