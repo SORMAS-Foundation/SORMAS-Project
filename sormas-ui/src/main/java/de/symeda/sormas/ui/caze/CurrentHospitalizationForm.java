@@ -15,7 +15,8 @@
 
 package de.symeda.sormas.ui.caze;
 
-import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.CssStyles.LABEL_WHITE_SPACE_NORMAL;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import com.vaadin.ui.Label;
@@ -45,7 +46,8 @@ public class CurrentHospitalizationForm extends AbstractEditForm<Hospitalization
 	protected void addFields() {
 		addField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, NullableOptionGroup.class);
 		Label moreDetailsLabel = new Label(I18nProperties.getString(Strings.infoMoreDetailsAboutHospitalization));
-		moreDetailsLabel.addStyleName(H3);
+		moreDetailsLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
+		moreDetailsLabel.setWidthFull();
 		getContent().addComponent(moreDetailsLabel, MORE_DETAILS_LABEL);
 	}
 }
