@@ -17,10 +17,10 @@ package de.symeda.sormas.backend.sormastosormas.data.received;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareable;
-import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 
-public interface ReceivedDataProcessor<DTO extends SormasToSormasShareable, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW, ENTITY extends SormasToSormasEntity> {
+public interface ReceivedDataProcessor<DTO extends SormasToSormasShareableDto, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW, ENTITY extends SormasToSormasShareable> {
 
 	ValidationErrors processReceivedData(SHARED sharedData, ENTITY existingData);
 

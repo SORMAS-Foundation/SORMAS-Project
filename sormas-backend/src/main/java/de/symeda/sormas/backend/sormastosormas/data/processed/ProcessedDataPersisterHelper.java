@@ -24,7 +24,7 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoFacade;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareable;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
@@ -39,7 +39,7 @@ public class ProcessedDataPersisterHelper {
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
 
-	public <T extends SormasToSormasShareable, U extends SormasToSormasShareable> void sharedAssociatedEntityCallback(U parent, T entity) {
+	public <T extends SormasToSormasShareableDto, U extends SormasToSormasShareableDto> void sharedAssociatedEntityCallback(U parent, T entity) {
 		entity.setSormasToSormasOriginInfo(parent.getSormasToSormasOriginInfo());
 	}
 
@@ -65,7 +65,7 @@ public class ProcessedDataPersisterHelper {
 			this.shareInfoService = shareInfoService;
 		}
 
-		public <T extends HasUuid & SormasToSormasShareable> void apply(T entity, BiFunction<String, String, SormasToSormasShareInfo> findShareInfo) {
+		public <T extends HasUuid & SormasToSormasShareableDto> void apply(T entity, BiFunction<String, String, SormasToSormasShareInfo> findShareInfo) {
 			if (entity.getSormasToSormasOriginInfo() != null) {
 				entity.getSormasToSormasOriginInfo().setOwnershipHandedOver(false);
 			} else {
@@ -98,7 +98,7 @@ public class ProcessedDataPersisterHelper {
 			this.oriInfoFacade = originInfoFacade;
 		}
 
-		public <T extends HasUuid & SormasToSormasShareable> void apply(T entity, BiFunction<String, String, SormasToSormasShareInfo> findShareInfo) {
+		public <T extends HasUuid & SormasToSormasShareableDto> void apply(T entity, BiFunction<String, String, SormasToSormasShareInfo> findShareInfo) {
 			SormasToSormasShareInfo shareInfo = findShareInfo.apply(entity.getUuid(), originInfo.getOrganizationId());
 
 			if (shareInfo == null) {

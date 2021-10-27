@@ -43,12 +43,12 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareable;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
-public class ImmunizationDto extends PseudonymizableDto implements SormasToSormasShareable {
+public class ImmunizationDto extends PseudonymizableDto implements SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -6538566879882613529L;
 

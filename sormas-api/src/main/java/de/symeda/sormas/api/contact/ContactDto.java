@@ -54,14 +54,14 @@ import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareable;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
-public class ContactDto extends PseudonymizableDto implements SormasToSormasShareable {
+public class ContactDto extends PseudonymizableDto implements SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 

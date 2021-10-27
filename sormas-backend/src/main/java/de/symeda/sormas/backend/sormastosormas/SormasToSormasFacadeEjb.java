@@ -52,7 +52,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
@@ -241,7 +241,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		}
 	}
 
-	private void updateOriginInfoOnShareAccepted(SormasToSormasEntity entity, SormasToSormasShareInfo shareInfo) {
+	private void updateOriginInfoOnShareAccepted(SormasToSormasShareable entity, SormasToSormasShareInfo shareInfo) {
 		if (entity != null) {
 			SormasToSormasOriginInfo originInfo = entity.getSormasToSormasOriginInfo();
 			if (originInfo != null) {

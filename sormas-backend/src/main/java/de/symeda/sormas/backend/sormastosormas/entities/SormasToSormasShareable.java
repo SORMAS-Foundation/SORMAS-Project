@@ -13,19 +13,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas;
+package de.symeda.sormas.backend.sormastosormas.entities;
 
-import de.symeda.sormas.api.user.UserReferenceDto;
+import java.util.List;
+
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.user.User;
 
 public interface SormasToSormasShareable {
 
-	SormasToSormasOriginInfoDto getSormasToSormasOriginInfo();
+	SormasToSormasOriginInfo getSormasToSormasOriginInfo();
 
-	void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto originInfo);
+	void setSormasToSormasOriginInfo(SormasToSormasOriginInfo originInfo);
 
-	boolean isOwnershipHandedOver();
+	List<SormasToSormasShareInfo> getSormasToSormasShares();
 
-	UserReferenceDto getReportingUser();
-
-	void setReportingUser(UserReferenceDto user);
+	User getReportingUser();
 }
