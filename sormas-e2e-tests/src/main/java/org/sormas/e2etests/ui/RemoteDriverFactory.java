@@ -24,12 +24,14 @@ import java.util.HashMap;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
 
+@Slf4j
 public class RemoteDriverFactory implements DriverFactory {
 
   private final String userDirProperty;
@@ -48,7 +50,10 @@ public class RemoteDriverFactory implements DriverFactory {
 
   @SneakyThrows
   @Override
-  public RemoteWebDriver getRemoteWebDriver() {
+  public ChromeDriver getRemoteWebDriver() {
+    log.info("Setting Chrome Driver's path");
+    System.setProperty("webdriver.chrome.driver", "/usr/lib64/chromium-browser/chromedriver");
+    log.info("Adding all chrome preferences");
     final HashMap<String, Object> chromePreferences = new HashMap<>();
     chromePreferences.put("profile.password_manager_enabled", Boolean.FALSE);
     chromePreferences.put("download.default_directory", userDirProperty + "/downloads");
@@ -71,6 +76,7 @@ public class RemoteDriverFactory implements DriverFactory {
     options.addArguments("--disable-dev-shm-usage");
     options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
     options.setCapability(SUPPORTS_ALERTS, false);
-    return new RemoteWebDriver(driverMetaData.getGridUrl().toURL(), options);
+    log.info("Returning ChromDriver instance with provided arguments");
+    return new ChromeDriver(options);
   }
 }
