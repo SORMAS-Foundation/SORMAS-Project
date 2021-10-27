@@ -175,12 +175,14 @@ public class CountryFacadeEjb
 
 		Country country = service.getByUuid(dtoToSave.getUuid());
 
-		if (country != null && !userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to edit country.");
-		}
+		if (userService.getCurrentUser() != null) {
+			if (country != null && !userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
+				throw new UnsupportedOperationException(String.format("User %s is not allowed to edit country.", userService.getCurrentUser().getUuid()));
+			}
 
-		if (country == null && !userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to create country.");
+			if (country == null && !userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
+				throw new UnsupportedOperationException(String.format("User %s is not allowed to create country.", userService.getCurrentUser().getUuid()));
+			}
 		}
 
 		if (country == null) {
