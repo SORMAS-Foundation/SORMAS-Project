@@ -404,12 +404,10 @@ public final class DataHelper {
 				ageAndBirthDate.getAgeType(),
 				ageAndBirthDate.getDateOfBirthDD(),
 				ageAndBirthDate.getDateOfBirthMM(),
-				ageAndBirthDate.getDateOfBirthYYYY(),
-				userLanguage);
+				ageAndBirthDate.getDateOfBirthYYYY());
 		} else if (value instanceof BirthDateDto) {
 			BirthDateDto birthDate = (BirthDateDto) value;
-			return PersonHelper
-				.formatBirthdate(birthDate.getDateOfBirthDD(), birthDate.getDateOfBirthMM(), birthDate.getDateOfBirthYYYY(), userLanguage);
+			return DateFormatHelper.formatDate(birthDate.getDateOfBirthDD(), birthDate.getDateOfBirthMM(), birthDate.getDateOfBirthYYYY());
 		} else {
 			return value.toString();
 		}

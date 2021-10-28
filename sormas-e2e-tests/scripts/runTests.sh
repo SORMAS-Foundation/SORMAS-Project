@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # SORMAS® - Surveillance Outbreak Response Management & Analysis System
 # Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
@@ -17,6 +17,15 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 #
 
-set -ex
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-sudo apt install ./google-chrome-stable_current_amd64.deb
+#This shell script is the execution entry point for the jenkins job used to trigger a specific UI/API test or a testing suite
+#Note that when running this script, the BDD tag name is mandatory as parameter. Example: Login/Sanity/Smoke etc
+
+echo "Deleting allure report folder..."
+rm -rf ./allureReports
+echo "Executing gradle clean..."
+./gradlew clean goJF
+echo "Starting all BDD tests under @$1 tag..."
+./gradlew startTests -Dcucumber.tags=\"@$1\" -Dheadless=true -Dcourgette.threads=9
+
+
+
