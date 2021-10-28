@@ -18,13 +18,15 @@
 package de.symeda.sormas.ui.samples;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
+import com.vaadin.v7.ui.ComboBox;
+import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
+import de.symeda.sormas.ui.utils.DateTimeField;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
@@ -43,15 +45,10 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Buffered.SourceException;
 import com.vaadin.v7.data.Validator.InvalidValueException;
-import com.vaadin.v7.ui.CheckBox;
-import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.TextField;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -59,10 +56,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
@@ -71,7 +66,6 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -156,6 +150,13 @@ public class SampleController {
 		} else {
 			pathogenTestForm
 				.setValue(PathogenTestDto.build(sampleCreateComponent.getWrappedComponent().getValue(), UserProvider.getCurrent().getUser()));
+			// remove value invalid for newly created pathogen tests
+			ComboBox pathogenTestResultField = pathogenTestForm.getField(PathogenTestDto.TEST_RESULT);
+			pathogenTestResultField.removeItem(PathogenTestResultType.NOT_DONE);
+			pathogenTestResultField.setValue(PathogenTestResultType.PENDING);
+			ComboBox testDiseaseField = pathogenTestForm.getField(PathogenTestDto.TESTED_DISEASE);
+			testDiseaseField.setValue(FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease());
+
 		}
 		// validate pathogen test create component before saving the sample
 		sampleCreateComponent.addFieldGroups(pathogenTestForm.getFieldGroup());
@@ -178,6 +179,23 @@ public class SampleController {
 				pathogenTestForm.discard();
 			});
 		}
+		// Country specific configuration
+		boolean germanInstance = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY);
+		pathogenTestForm.getField(PathogenTestDto.REPORT_DATE).setVisible(germanInstance);
+		pathogenTestForm.getField(PathogenTestDto.EXTERNAL_ID).setVisible(germanInstance);
+		pathogenTestForm.getField(PathogenTestDto.EXTERNAL_ORDER_ID).setVisible(germanInstance);
+		pathogenTestForm.getField(PathogenTestDto.VIA_LIMS).setVisible(germanInstance);
+		// Sample creation specific configuration
+		final DateTimeField sampleDateField = sampleCreateComponent.getWrappedComponent().getField(SampleDto.SAMPLE_DATE_TIME);
+		final DateTimeField testDateField = pathogenTestForm.getField(PathogenTestDto.TEST_DATE_TIME);
+		testDateField.addValidator(
+			new DateComparisonValidator(
+				testDateField,
+				sampleDateField,
+				false,
+				false,
+				I18nProperties.getValidationError(Validations.afterDate, testDateField.getCaption(), sampleDateField.getCaption())));
+
 		// add the pathogenTestForm above the overall discard and commit buttons
 		sampleCreateComponent.addComponent(pathogenTestForm, sampleCreateComponent.getComponentCount() - 1);
 		return pathogenTestForm;
@@ -254,66 +272,8 @@ public class SampleController {
 	private void saveSample(SampleCreateForm createForm, BiConsumer<SampleDto, PathogenTestDto> consumer, CommitDiscardWrapperComponent createView) {
 
 		final SampleDto newSample = createForm.getValue();
-		final PathogenTestResultType testResult = (PathogenTestResultType) createForm.getField(PathogenTestDto.TEST_RESULT).getValue();
-		if (testResult != null) {
-			final PathogenTestDto pathogenTest = PathogenTestDto.build(newSample, UserProvider.getCurrent().getUser());
-			pathogenTest.setLab(newSample.getLab());
-			pathogenTest.setTestResult(testResult);
-			pathogenTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
-			pathogenTest.setTestedDiseaseVariant((DiseaseVariant) (createForm.getField(PathogenTestDto.TESTED_DISEASE_VARIANT)).getValue());
-			pathogenTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
-			pathogenTest.setTestResultText((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());
-			final Boolean testResultVerified = (Boolean) createForm.getField(PathogenTestDto.TEST_RESULT_VERIFIED).getValue();
-			pathogenTest.setTestResultVerified(testResultVerified);
-			pathogenTest.setTestType((PathogenTestType) (createForm.getField(PathogenTestDto.TEST_TYPE)).getValue());
-			pathogenTest.setPcrTestSpecification((PCRTestSpecification) (createForm.getField(PathogenTestDto.PCR_TEST_SPECIFICATION)).getValue());
-
-			DateField dateField = createForm.getField(PathogenTestDto.REPORT_DATE);
-			if (dateField != null) {
-				pathogenTest.setReportDate(dateField.getValue());
-			}
-
-			CheckBox viaLimsField = createForm.getField(PathogenTestDto.VIA_LIMS);
-			if (viaLimsField != null) {
-				pathogenTest.setViaLims(viaLimsField.getValue());
-			}
-
-			TextField externalIdField = createForm.getField(PathogenTestDto.EXTERNAL_ID);
-			if (externalIdField != null) {
-				pathogenTest.setExternalId(externalIdField.getValue());
-			}
-
-			TextField externalOrderIdField = createForm.getField(PathogenTestDto.EXTERNAL_ORDER_ID);
-			if (externalOrderIdField != null) {
-				pathogenTest.setExternalOrderId(externalOrderIdField.getValue());
-			}
-
-			String cqValue = (String) createForm.getField(PathogenTestDto.CQ_VALUE).getValue();
-			if (cqValue != null && !StringUtils.isBlank(cqValue)) {
-				cqValue = cqValue.replaceAll(",", "."); // Replace , with . to make sure that the value can be parsed
-				try {
-					pathogenTest.setCqValue(Float.parseFloat(cqValue));
-				} catch (NumberFormatException e) {
-					throw new ValidationRuntimeException(
-						I18nProperties.getValidationError(
-							Validations.onlyNumbersAllowed,
-							I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.CQ_VALUE)));
-				}
-			}
-			pathogenTest.setTypingId((String) createForm.getField(PathogenTestDto.TYPING_ID).getValue());
-
-			SampleDto savedSample = FacadeProvider.getSampleFacade().saveSample(newSample);
-
-			// save the pathogenTest. The pathogenTestController will handle any further stuff like creating new cases, updating sample result...
-			// Do not start a separate implementation here, as saving sample & pathogenTest in one go should be identical to doing it in two steps!
-			PathogenTestDto savedPathogenTest = ControllerProvider.getPathogenTestController().savePathogenTest(pathogenTest, null);
-
-			consumer.accept(savedSample, savedPathogenTest);
-
-		} else {
-			SampleDto savedSample = FacadeProvider.getSampleFacade().saveSample(newSample);
-			consumer.accept(savedSample, null);
-		}
+		SampleDto savedSample = FacadeProvider.getSampleFacade().saveSample(newSample);
+		consumer.accept(savedSample, null);
 	}
 
 	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid, boolean isPseudonymized) {
