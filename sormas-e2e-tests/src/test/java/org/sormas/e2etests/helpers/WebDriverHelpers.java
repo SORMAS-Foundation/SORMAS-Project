@@ -273,6 +273,7 @@ public class WebDriverHelpers {
   }
 
   public void accessWebSite(String url) {
+    log.info("Navigating to: " + url);
     baseSteps.getDriver().navigate().to(url);
   }
 
