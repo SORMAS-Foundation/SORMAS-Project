@@ -59,8 +59,8 @@ public class SampleCreateForm extends AbstractSampleForm {
 
 	CheckBox includeTestField;
 
-	public SampleCreateForm() {
-		super(SampleDto.class, SampleDto.I18N_PREFIX);
+	public SampleCreateForm(Disease disease) {
+		super(SampleDto.class, SampleDto.I18N_PREFIX, disease, null);
 		setPathogenTestFieldCaptions();
 	}
 

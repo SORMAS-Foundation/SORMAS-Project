@@ -20,7 +20,6 @@ package org.sormas.e2etests.ui;
 
 import static org.openqa.selenium.remote.CapabilityType.SUPPORTS_ALERTS;
 
-import java.util.HashMap;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.SneakyThrows;

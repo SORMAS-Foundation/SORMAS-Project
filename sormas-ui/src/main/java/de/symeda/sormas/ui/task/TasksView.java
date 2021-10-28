@@ -146,7 +146,7 @@ public class TasksView extends AbstractView {
 			Button createButton = ButtonHelper.createIconButton(
 				Captions.taskNewTask,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getTaskController().create(TaskContext.GENERAL, null, taskListComponent.getGrid()::reload),
+				e -> ControllerProvider.getTaskController().create(TaskContext.GENERAL, null, null, taskListComponent.getGrid()::reload),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);

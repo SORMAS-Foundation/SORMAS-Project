@@ -42,9 +42,10 @@ public class LoginSteps implements En {
     Given(
         "^I navigate to SORMAS login page$", () -> webDriverHelpers.accessWebSite(environmentUrl));
 
-    //TODO remove it after checks
-      Given(
-              "^I navigate to SORMAS google page$", () -> webDriverHelpers.accessWebSite("https://www.google.com/"));
+    // TODO remove it after checks
+    Given(
+        "^I navigate to google page$",
+        () -> webDriverHelpers.accessWebSite("https://www.google.com/"));
 
     Given(
         "I click on the Log In button",
