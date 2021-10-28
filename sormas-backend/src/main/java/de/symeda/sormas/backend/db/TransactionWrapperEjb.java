@@ -10,7 +10,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
-@Stateless
+@Stateless(name = "TransactionWrapperFacade")
 @PermitAll
 public class TransactionWrapperEjb implements TransactionWrapperFacade {
 
