@@ -132,7 +132,8 @@ public class SampleDataView extends AbstractSampleView {
 			layout.addComponent(eventParticipantInfoLayout, EVENT_PARTICIPANT_LOC);
 		}
 
-		editComponent = ControllerProvider.getSampleController().getSampleEditComponent(getSampleRef().getUuid(), sampleDto.isPseudonymized());
+		editComponent =
+			ControllerProvider.getSampleController().getSampleEditComponent(getSampleRef().getUuid(), sampleDto.isPseudonymized(), disease);
 		editComponent.setMargin(new MarginInfo(false, false, true, false));
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);

@@ -17,7 +17,7 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 #
 
-#This shell script is the execution entry point for the jenkins job used to trigger a specific UI/API test or a testing suite
+#This shell script is the execution entry point to trigger a specific UI/API test or a testing suite
 #Note that when running this script, the BDD tag name is mandatory as parameter. Example: Login/Sanity/Smoke etc
 
 echo "Deleting allure report folder..."

@@ -200,7 +200,7 @@ public class ContactDataView extends AbstractContactView {
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
-			TaskListComponent taskList = new TaskListComponent(TaskContext.CONTACT, getContactRef());
+			TaskListComponent taskList = new TaskListComponent(TaskContext.CONTACT, getContactRef(), contactDto.getDisease());
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(taskList, TASKS_LOC);
 		}
@@ -210,7 +210,7 @@ public class ContactDataView extends AbstractContactView {
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);
 
-			SampleListComponent sampleList = new SampleListComponent(getContactRef());
+			SampleListComponent sampleList = new SampleListComponent(getContactRef(), contactDto.getDisease());
 			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
 			sampleLocLayout.addComponent(sampleList);
 
