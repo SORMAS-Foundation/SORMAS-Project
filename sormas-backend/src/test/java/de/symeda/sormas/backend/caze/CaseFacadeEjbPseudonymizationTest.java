@@ -23,7 +23,6 @@ import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
-import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -60,7 +59,6 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -93,7 +91,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		observerUser = creator.createUser(null, null, null, null, "National", "Observer", UserRole.NATIONAL_OBSERVER);
 
-		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
+		loginWith(user2);
 	}
 
 	@Test

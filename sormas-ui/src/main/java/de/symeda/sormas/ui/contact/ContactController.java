@@ -31,22 +31,19 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -64,10 +61,10 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -75,7 +72,7 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseContactsView;
-import de.symeda.sormas.ui.caze.CaseSelectionField;
+import de.symeda.sormas.ui.caze.components.caseselection.CaseSelectionField;
 import de.symeda.sormas.ui.contact.components.linelisting.layout.LineListingLayout;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
@@ -84,6 +81,8 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
+import de.symeda.sormas.ui.utils.components.page.title.RowLayout;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class ContactController {
 
@@ -261,7 +260,7 @@ public class ContactController {
 	}
 
 	public void navigateToData(String contactUuid, boolean openTab) {
-		navigateToView(ContactDataView.VIEW_NAME , contactUuid, openTab);
+		navigateToView(ContactDataView.VIEW_NAME, contactUuid, openTab);
 	}
 
 	public void navigateToView(String viewName, String contactUuid, boolean openTab) {
@@ -555,20 +554,16 @@ public class ContactController {
 			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
 			editForm.getFieldGroup());
 
-		editComponent.addCommitListener(new CommitDiscardWrapperComponent.CommitListener() {
+		editComponent.addCommitListener(() -> {
+			if (!editForm.getFieldGroup().isModified()) {
+				ContactDto dto = editForm.getValue();
 
-			@Override
-			public void onCommit() {
-				if (!editForm.getFieldGroup().isModified()) {
-					ContactDto dto = editForm.getValue();
+				fillPersonAddressIfEmpty(dto, () -> FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid()));
 
-					fillPersonAddressIfEmpty(dto, () -> FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid()));
+				FacadeProvider.getContactFacade().saveContact(dto);
 
-					FacadeProvider.getContactFacade().saveContact(dto);
-
-					Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
-					SormasUI.refreshView();
-				}
+				Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
+				SormasUI.refreshView();
 			}
 		});
 
@@ -604,7 +599,7 @@ public class ContactController {
 			}
 		}
 
-		DistrictReferenceDto district = districtUuid != null ? FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid) : null;
+		DistrictReferenceDto district = districtUuid != null ? FacadeProvider.getDistrictFacade().getReferenceByUuid(districtUuid) : null;
 
 		// Create a temporary contact in order to use the CommitDiscardWrapperComponent
 		ContactBulkEditData bulkEditData = new ContactBulkEditData();
@@ -615,31 +610,27 @@ public class ContactController {
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditContacts));
 
-		editView.addCommitListener(new CommitDiscardWrapperComponent.CommitListener() {
-
-			@Override
-			public void onCommit() {
-				ContactBulkEditData updatedBulkEditData = form.getValue();
-				for (ContactIndexDto indexDto : selectedContacts) {
-					ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(indexDto.getUuid());
-					if (form.getClassificationCheckBox().getValue() == true) {
-						contactDto.setContactClassification(updatedBulkEditData.getContactClassification());
-					}
-					// Setting the contact officer is only allowed if all selected contacts are in the same district
-					if (district != null && form.getContactOfficerCheckBox().getValue() == true) {
-						contactDto.setContactOfficer(updatedBulkEditData.getContactOfficer());
-					}
-
-					FacadeProvider.getContactFacade().saveContact(contactDto);
+		editView.addCommitListener(() -> {
+			ContactBulkEditData updatedBulkEditData = form.getValue();
+			for (ContactIndexDto indexDto : selectedContacts) {
+				ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(indexDto.getUuid());
+				if (form.getClassificationCheckBox().getValue() == true) {
+					contactDto.setContactClassification(updatedBulkEditData.getContactClassification());
 				}
-				popupWindow.close();
-				if (caseUuid == null) {
-					overview();
-				} else {
-					caseContactsOverview(caseUuid);
+				// Setting the contact officer is only allowed if all selected contacts are in the same district
+				if (district != null && form.getContactOfficerCheckBox().getValue() == true) {
+					contactDto.setContactOfficer(updatedBulkEditData.getContactOfficer());
 				}
-				Notification.show(I18nProperties.getString(Strings.messageContactsEdited), Type.HUMANIZED_MESSAGE);
+
+				FacadeProvider.getContactFacade().saveContact(contactDto);
 			}
+			popupWindow.close();
+			if (caseUuid == null) {
+				overview();
+			} else {
+				caseContactsOverview(caseUuid);
+			}
+			Notification.show(I18nProperties.getString(Strings.messageContactsEdited), Type.HUMANIZED_MESSAGE);
 		});
 
 		editView.addDiscardListener(() -> popupWindow.close());
@@ -746,10 +737,9 @@ public class ContactController {
 		}
 	}
 
-	public void openSelectCaseForContactWindow(Disease disease, Consumer<CaseIndexDto> selectedCaseCallback) {
+	public void openSelectCaseForContactWindow(Disease disease, Consumer<CaseSelectionDto> selectedCaseCallback) {
 
-		CaseCriteria criteria = new CaseCriteria().disease(disease);
-		CaseSelectionField selectionField = new CaseSelectionField(criteria);
+		CaseSelectionField selectionField = new CaseSelectionField(disease);
 		selectionField.setWidth(1280, Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<CaseSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
@@ -797,55 +787,40 @@ public class ContactController {
 			});
 	}
 
-	public VerticalLayout getContactViewTitleLayout(ContactDto contact) {
-		VerticalLayout titleLayout = new VerticalLayout();
-		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
-		titleLayout.setSpacing(false);
+	public TitleLayout getContactViewTitleLayout(ContactDto contact) {
+		TitleLayout titleLayout = new TitleLayout();
 
-		HorizontalLayout diseaseLayout = new HorizontalLayout();
-		Label diseaseLabel = new Label(DiseaseHelper.toString(contact.getDisease(), contact.getDiseaseDetails()));
-		CssStyles.style(diseaseLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
+		RowLayout diseaseRow = new RowLayout();
+		diseaseRow.addToLayout(DiseaseHelper.toString(contact.getDisease(), contact.getDiseaseDetails()));
+		diseaseRow.addToLayout(DiseaseHelper.variantInBrackets(contact.getDiseaseVariant()), CssStyles.LABEL_PRIMARY);
 
-		Label diseaseVariantLabel = new Label(DiseaseHelper.variantInBrackets(contact.getDiseaseVariant()));
-		CssStyles.style(diseaseVariantLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
+		titleLayout.addRow(diseaseRow);
 
-		diseaseLayout.addComponent(diseaseLabel);
-		diseaseLayout.addComponent(diseaseVariantLabel);
-		titleLayout.addComponents(diseaseLayout);
-
-		Label classificationLabel = new Label(contact.getContactClassification().toString());
-		classificationLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-		titleLayout.addComponent(classificationLabel);
+		titleLayout.addRow(contact.getContactClassification().toString());
 
 		String shortUuid = DataHelper.getShortUuid(contact.getUuid());
 		String contactPersonFullName = contact.getPerson().getCaption();
-		StringBuilder contactLabelSb = new StringBuilder();
+		StringBuilder mainRowText = new StringBuilder();
 		if (StringUtils.isNotBlank(contactPersonFullName)) {
-			contactLabelSb.append(contactPersonFullName);
+			mainRowText.append(contactPersonFullName);
 
 			PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 			if (contactPerson.getBirthdateDD() != null && contactPerson.getBirthdateMM() != null && contactPerson.getBirthdateYYYY() != null) {
-				contactLabelSb.append(" (* ")
+				mainRowText.append(" (* ")
 					.append(
-						PersonHelper.formatBirthdate(
-							contactPerson.getBirthdateDD(),
-							contactPerson.getBirthdateMM(),
-							contactPerson.getBirthdateYYYY(),
-							I18nProperties.getUserLanguage()))
+						DateFormatHelper.formatDate(contactPerson.getBirthdateDD(), contactPerson.getBirthdateMM(), contactPerson.getBirthdateYYYY()))
 					.append(")");
 			}
 
 			if (contact.getCaze() != null && (contact.getCaze().getFirstName() != null || contact.getCaze().getLastName() != null)) {
-				contactLabelSb.append(" ")
+				mainRowText.append(" ")
 					.append(I18nProperties.getString(Strings.toCase))
 					.append(" ")
 					.append(PersonDto.buildCaption(contact.getCaze().getFirstName(), contact.getCaze().getLastName()));
 			}
 		}
-		contactLabelSb.append(contactLabelSb.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
-		Label contactLabel = new Label(contactLabelSb.toString());
-		contactLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		titleLayout.addComponent(contactLabel);
+		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
+		titleLayout.addMainRow(mainRowText.toString());
 
 		return titleLayout;
 	}

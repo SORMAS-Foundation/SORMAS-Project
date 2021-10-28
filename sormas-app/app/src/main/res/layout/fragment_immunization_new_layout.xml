@@ -208,6 +208,8 @@
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/immunization_numberOfDoses"
+                app:inputType="number"
+                app:maxLength="2"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.numberOfDoses}" />
 

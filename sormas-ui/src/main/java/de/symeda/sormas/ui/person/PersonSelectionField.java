@@ -100,8 +100,7 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 				referencePerson.getApproximateAgeType(),
 				referencePerson.getBirthdateDD(),
 				referencePerson.getBirthdateMM(),
-				referencePerson.getBirthdateYYYY(),
-				I18nProperties.getUserLanguage()));
+				referencePerson.getBirthdateYYYY()));
 		lblBirthDateAndAge.setWidthUndefined();
 		lblBirthDateAndAge.setCaption(I18nProperties.getCaption(Captions.personAgeAndBirthdate));
 		personDetailsLayout1.addComponent(lblBirthDateAndAge);

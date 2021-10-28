@@ -62,6 +62,7 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 		return QueryHelper.getFirstResult(em, cq, this::toDto);
 	}
 
+
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void saveSystemEvent(@Valid SystemEventDto dto) {

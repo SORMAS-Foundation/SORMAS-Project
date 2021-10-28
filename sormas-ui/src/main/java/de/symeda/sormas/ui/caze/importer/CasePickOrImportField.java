@@ -12,11 +12,11 @@ import com.vaadin.v7.ui.Label;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseIndexDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
+import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.ui.caze.CasePickOrCreateField;
@@ -28,7 +28,7 @@ public class CasePickOrImportField extends CasePickOrCreateField {
 
 	private CheckBox overrideCheckBox;
 
-	public CasePickOrImportField(CaseDataDto newCase, PersonDto importedPerson, List<CaseIndexDto> similarCases) {
+	public CasePickOrImportField(CaseDataDto newCase, PersonDto importedPerson, List<CaseSelectionDto> similarCases) {
 		super(newCase, importedPerson, similarCases);
 	}
 
@@ -132,8 +132,7 @@ public class CasePickOrImportField extends CasePickOrCreateField {
 					newPerson.getApproximateAgeType(),
 					newPerson.getBirthdateDD(),
 					newPerson.getBirthdateMM(),
-					newPerson.getBirthdateYYYY(),
-					I18nProperties.getUserLanguage()));
+					newPerson.getBirthdateYYYY()));
 			ageAndBirthDateField.setWidthUndefined();
 			caseInfoLayout.addComponent(ageAndBirthDateField);
 

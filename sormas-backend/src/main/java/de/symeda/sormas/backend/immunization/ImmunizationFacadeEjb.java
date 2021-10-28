@@ -42,6 +42,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -65,6 +66,7 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
@@ -348,6 +350,21 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@Override
 	public void validate(ImmunizationDto immunizationDto) throws ValidationRuntimeException {
+		if (DateHelper.isStartDateBeforeEndDate(immunizationDto.getStartDate(), immunizationDto.getEndDate())) {
+			String validationError = String.format(
+				I18nProperties.getValidationError(Validations.afterDate),
+				I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.END_DATE),
+				I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.START_DATE));
+			throw new ValidationRuntimeException(validationError);
+		}
+
+		if (DateHelper.isStartDateBeforeEndDate(immunizationDto.getValidFrom(), immunizationDto.getValidUntil())) {
+			String validationError = String.format(
+				I18nProperties.getValidationError(Validations.afterDate),
+				I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.VALID_UNTIL),
+				I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.VALID_FROM));
+			throw new ValidationRuntimeException(validationError);
+		}
 
 		// Check whether any required field that does not have a not null constraint in the database is empty
 		if (immunizationDto.getPerson() == null) {
@@ -372,6 +389,32 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	public List<ImmunizationListEntryDto> getEntriesList(ImmunizationListCriteria criteria, Integer first, Integer max) {
 		Long personId = personService.getIdByUuid(criteria.getPerson().getUuid());
 		return immunizationService.getEntriesList(personId, criteria.getDisease(), first, max);
+	}
+
+	@Override
+	public Page<ImmunizationIndexDto> getIndexPage(
+		ImmunizationCriteria immunizationCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+		List<ImmunizationIndexDto> immunizationIndexList = getIndexList(immunizationCriteria, offset, size, sortProperties);
+		long totalElementCount = count(immunizationCriteria);
+		return new Page<>(immunizationIndexList, offset, size, totalElementCount);
+	}
+
+	public List<String> deleteImmunizations(List<String> immunizationUuids) {
+		if (!userService.hasRight(UserRight.IMMUNIZATION_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete immunizations.");
+		}
+		List<String> deletedImmunizationUuids = new ArrayList<>();
+		List<Immunization> immunizationsToBeDeleted = immunizationService.getByUuids(immunizationUuids);
+		if (immunizationsToBeDeleted != null) {
+			immunizationsToBeDeleted.forEach(immunizationToBeDeleted -> {
+				immunizationService.delete(immunizationToBeDeleted);
+				deletedImmunizationUuids.add(immunizationToBeDeleted.getUuid());
+			});
+		}
+		return deletedImmunizationUuids;
 	}
 
 	public static ImmunizationDto toDto(Immunization entity) {
@@ -402,6 +445,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		dto.setStartDate(entity.getStartDate());
 		dto.setEndDate(entity.getEndDate());
 		dto.setNumberOfDoses(entity.getNumberOfDoses());
+		dto.setNumberOfDosesDetails(entity.getNumberOfDosesDetails());
 		dto.setPreviousInfection(entity.getPreviousInfection());
 		dto.setLastInfectionDate(entity.getLastInfectionDate());
 		dto.setAdditionalDetails(entity.getAdditionalDetails());
@@ -448,6 +492,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		target.setStartDate(source.getStartDate());
 		target.setEndDate(source.getEndDate());
 		target.setNumberOfDoses(source.getNumberOfDoses());
+		target.setNumberOfDosesDetails(source.getNumberOfDosesDetails());
 		target.setPreviousInfection(source.getPreviousInfection());
 		target.setLastInfectionDate(source.getLastInfectionDate());
 		target.setAdditionalDetails(source.getAdditionalDetails());
@@ -479,7 +524,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	}
 
 	@Override
-	public Boolean linkRecoveryImmunizationToSearchedCase(String specificCaseSearchValue, ImmunizationDto immunization) {
+	public boolean linkRecoveryImmunizationToSearchedCase(String specificCaseSearchValue, ImmunizationDto immunization) {
 
 		CaseCriteria criteria = new CaseCriteria();
 		criteria.setPerson(immunization.getPerson());

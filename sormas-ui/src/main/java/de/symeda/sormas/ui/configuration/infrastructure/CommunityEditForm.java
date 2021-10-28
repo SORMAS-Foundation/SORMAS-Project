@@ -73,7 +73,7 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 		district.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null && region.getValue() == null) {
 				DistrictDto communityDistrict =
-					FacadeProvider.getDistrictFacade().getDistrictByUuid(((DistrictReferenceDto) e.getProperty().getValue()).getUuid());
+					FacadeProvider.getDistrictFacade().getByUuid(((DistrictReferenceDto) e.getProperty().getValue()).getUuid());
 				region.setValue(communityDistrict.getRegion());
 			}
 		});

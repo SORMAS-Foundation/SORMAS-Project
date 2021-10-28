@@ -24,6 +24,7 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class EtcdCentralClient {
@@ -56,6 +57,7 @@ public class EtcdCentralClient {
 			client = EtcdClient.forEndpoint(hostPort[0], Integer.parseInt(hostPort[1]))
 				.withCredentials(configFacadeEjb.getCentralEtcdClientName(), configFacadeEjb.getCentralEtcdClientPassword())
 				.withCaCert(Resources.asByteSource(truststorePath))
+				.withMaxInboundMessageSize(6291456) // 6 MB, yes we need it
 				.build();
 		} catch (IOException e) {
 			LOGGER.error("Could not load Etcd CA cert: %s", e);
@@ -109,6 +111,7 @@ public class EtcdCentralClient {
 				.getKvsList()
 				.stream()
 				.map(kv -> deserialize(kv, clazz))
+				.filter(Objects::nonNull)
 				.collect(Collectors.toList());
 		}
 	}

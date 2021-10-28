@@ -104,7 +104,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			() -> FacadeProvider.getSormasToSormasShareInfoFacade()
 				.getIndexList(new SormasToSormasShareInfoCriteria().sample(sample.toReference()), null, null)
 				.stream()
-				.map(s -> new SormasToSormasShareTree(null, s, Collections.emptyList()))
+				.map(s -> new SormasToSormasShareTree(null, s, Collections.emptyList(), true))
 				.collect(Collectors.toList()),
 			null);
 	}
@@ -141,7 +141,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			() -> FacadeProvider.getSormasToSormasShareInfoFacade()
 				.getIndexList(new SormasToSormasShareInfoCriteria().immunization(immunzation.toReference()), null, null)
 				.stream()
-				.map(s -> new SormasToSormasShareTree(null, s, Collections.emptyList()))
+				.map(s -> new SormasToSormasShareTree(null, s, Collections.emptyList(), true))
 				.collect(Collectors.toList()),
 			null);
 	}
@@ -195,6 +195,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 				List<SormasToSormasShareInfoDto> shareInfoList = getShareInfoList(shareInfos);
 				SormasToSormasShareInfoDto ownerShare = getOwnerShare(shareInfos);
 				SormasToSormasOriginInfoDto rootOrigin = findRootOriginInfo(shareInfos);
+				List<String> directShareUuids = getDirectShares(shareInfos).stream().map(s -> s.getShare().getUuid()).collect(Collectors.toList());
 
 				String ownerOrganizationId = getOwnerOrganizationId(ownerShare, rootOrigin, currentServerOrgId);
 				boolean isOwnedByCurrentOrg = currentServerOrgId.equals(ownerOrganizationId);
@@ -233,7 +234,9 @@ public class SormasToSormasListComponent extends VerticalLayout {
 								return false;
 							}
 
-							if (originInfo != null && shareOrganizationId.equals(originInfo.getOrganizationId())) {
+							if (originInfo != null && shareOrganizationId.equals(originInfo.getOrganizationId())
+							// show return share
+								&& !(s.getRequestStatus() == ShareRequestStatus.PENDING && directShareUuids.contains(s.getUuid()))) {
 								return false;
 							}
 
@@ -251,6 +254,8 @@ public class SormasToSormasListComponent extends VerticalLayout {
 							entryData.creationDate = s.getCreationDate();
 							entryData.comment = s.getComment();
 							entryData.ownershipHandedOver = s.isOwnershipHandedOver();
+							entryData.responseComment = s.getResponseComment();
+							entryData.isDirectShare = directShareUuids.contains(s.getUuid());
 
 							return entryData;
 						}).collect(Collectors.toList());
@@ -340,6 +345,14 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		return shareInfos.stream()
 			.map((s -> Stream.concat(Stream.of(s.getShare()), getShareInfoList(s.getReShares()).stream())))
 			.reduce(Stream.empty(), Stream::concat)
+			.collect(Collectors.toList());
+	}
+
+	private List<SormasToSormasShareTree> getDirectShares(List<SormasToSormasShareTree> shareInfos) {
+		return shareInfos.stream()
+			.map((s -> Stream.concat(Stream.of(s), getDirectShares(s.getReShares()).stream())))
+			.reduce(Stream.empty(), Stream::concat)
+			.filter(SormasToSormasShareTree::isDirectShare)
 			.collect(Collectors.toList());
 	}
 
@@ -529,17 +542,26 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			Label senderLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + data.sender);
 			infoLayout.addComponent(senderLabel);
 
+			Label shareDateLabel =
+				new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedDate) + ": " + DateFormatHelper.formatDate(data.creationDate));
+			infoLayout.addComponent(shareDateLabel);
+
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)) {
 				Label statusLabel = new Label(I18nProperties.getCaption(Captions.SormasToSormasShareRequest_status) + ": " + data.status);
 				infoLayout.addComponent(statusLabel);
 			}
 
-			Label shareDateLabel =
-				new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedDate) + ": " + DateFormatHelper.formatDate(data.creationDate));
-			infoLayout.addComponent(shareDateLabel);
-
 			if (!DataHelper.isNullOrEmpty(data.comment)) {
-				infoLayout.addComponent(new Label(data.comment));
+				Label comment = new Label(I18nProperties.getCaption(Captions.SormasToSormasShareRequest_comment) + ": " + data.comment);
+				comment.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
+				infoLayout.addComponent(comment);
+			}
+
+			if (!DataHelper.isNullOrEmpty(data.responseComment)) {
+				Label responseComment =
+					new Label(I18nProperties.getCaption(Captions.SormasToSormasShareRequest_responseComment) + ": " + data.responseComment);
+				responseComment.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
+				infoLayout.addComponent(responseComment);
 			}
 
 			addComponent(infoLayout);
@@ -549,7 +571,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 				&& revokeListener != null
 				&& data.shareUuid != null
 				&& data.status == ShareRequestStatus.PENDING
-				&& !data.ownershipHandedOver) {
+				&& data.isDirectShare) {
 				addComponent(ButtonHelper.createIconButton(Captions.sormasToSormasRevokeShare, VaadinIcons.TRASH, (e) -> {
 					revokeListener.accept(data.shareUuid);
 				}));
@@ -568,5 +590,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		private Date creationDate;
 		private String comment;
 		private Boolean ownershipHandedOver;
+		private String responseComment;
+		private boolean isDirectShare;
 	}
 }

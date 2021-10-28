@@ -92,6 +92,7 @@ public class CountryService extends AbstractInfrastructureAdoService<Country, Co
 		return null;
 	}
 
+	@Override
 	public Predicate buildCriteriaFilter(CountryCriteria criteria, CriteriaBuilder cb, Root<Country> from) {
 
 		Predicate filter = null;

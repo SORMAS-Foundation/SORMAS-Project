@@ -1,0 +1,17 @@
+# This workflow checks the integrity of the gradle-wrapper.jar files in the project
+# For more information see: https://github.com/gradle/wrapper-validation-action
+
+name: Validate Gradle Wrapper
+
+on: [push, pull_request]
+
+jobs:
+  validation:
+    name: validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository (without token)
+        uses: actions/checkout@v2
+      
+      - name: Validate gradle wrapper
+        uses: gradle/wrapper-validation-action@v1

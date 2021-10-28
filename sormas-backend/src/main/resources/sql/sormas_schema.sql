@@ -1520,7 +1520,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (49, 'data history f
 ALTER TABLE cases ADD COLUMN healthfacilitydetails varchar(512);
 
 -- 2017-07-20 Database wipe for new infrastructure data #237
-BEGIN;
 DELETE FROM task;
 DELETE FROM sampletest;
 DELETE FROM samples;
@@ -1544,7 +1543,6 @@ DELETE FROM facility;
 DELETE FROM community;
 DELETE FROM district;
 DELETE FROM region;
-COMMIT;
 
 INSERT INTO schema_version (version_number, comment) VALUES (50, 'other health facility description for cases #238');
 
@@ -8692,5 +8690,63 @@ DO $$
 $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (416, 'rerun 409 from 1.65.0-SNAPSHOT - Add PathogenTest.externalId and transfer it from lab messages #5713');
+
+-- 2021-10-14 [DEMIS2SORMAS] Handle New Profile: DiagnosticReport.basedOn #5139
+ALTER TABLE pathogentest ADD COLUMN externalOrderId varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN externalOrderId varchar(512);
+
+ALTER TABLE testreport ADD COLUMN externalOrderId varchar(512);
+ALTER TABLE testreport_history ADD COLUMN externalOrderId varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (417, '[DEMIS2SORMAS] Handle New Profile: DiagnosticReport.basedOn #5139');
+
+-- 2021-10-19 [SORMAS2SORMAS] Shares > Share Requests > Response Comment (reject/accept) #6122
+ALTER TABLE sharerequestinfo ADD COLUMN responseComment text;
+ALTER TABLE sharerequestinfo_history ADD COLUMN responseComment text;
+
+ALTER TABLE sormastosormassharerequest ADD COLUMN responseComment text;
+ALTER TABLE sormastosormassharerequest_history ADD COLUMN responseComment text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (418, '[SORMAS2SORMAS] Shares > Share Requests > Response Comment (reject/accept) #6122');
+
+-- 2021-09-23 - Change of quarantine end should be documented #6782
+ALTER TABLE cases ADD COLUMN previousquarantineto timestamp;
+ALTER TABLE cases ADD COLUMN quarantinechangecomment varchar(4096);
+ALTER TABLE cases_history ADD COLUMN previousquarantineto timestamp;
+ALTER TABLE cases_history ADD COLUMN quarantinechangecomment varchar(4096);
+ALTER TABLE contact ADD COLUMN previousquarantineto timestamp;
+ALTER TABLE contact ADD COLUMN quarantinechangecomment varchar(4096);
+ALTER TABLE contact_history ADD COLUMN previousquarantineto timestamp;
+ALTER TABLE contact_history ADD COLUMN quarantinechangecomment varchar(4096);
+
+INSERT INTO schema_version (version_number, comment) VALUES (419, 'Change of quarantine end should be documented #6782');
+
+-- 2021-10-20 Create missing history tables for S2S tables #6949
+ALTER TABLE sormastosormasorigininfo ADD COLUMN sys_period tstzrange;
+UPDATE sormastosormasorigininfo SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE sormastosormasorigininfo ALTER COLUMN sys_period set NOT NULL;
+
+CREATE TABLE sormastosormasorigininfo_history (LIKE sormastosormasorigininfo);
+ALTER TABLE sormastosormasorigininfo_history OWNER TO sormas_user;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON sormastosormasorigininfo
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sormastosormasorigininfo_history', true);
+
+ALTER TABLE sormastosormasshareinfo ADD COLUMN sys_period tstzrange;
+UPDATE sormastosormasshareinfo SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE sormastosormasshareinfo ALTER COLUMN sys_period set NOT NULL;
+CREATE TABLE sormastosormasshareinfo_history (LIKE sormastosormasshareinfo);
+ALTER TABLE sormastosormasshareinfo_history OWNER TO sormas_user;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON sormastosormasshareinfo
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sormastosormasshareinfo_history', true);
+
+ALTER TABLE sharerequestinfo_shareinfo ADD COLUMN sys_period tstzrange;
+UPDATE sharerequestinfo_shareinfo SET sys_period=tstzrange((SELECT sharerequestinfo.creationdate FROM sharerequestinfo WHERE sharerequestinfo.id = sharerequestinfo_shareinfo.sharerequestinfo_id), null);
+ALTER TABLE sharerequestinfo_shareinfo ALTER COLUMN sys_period set NOT NULL;
+CREATE TABLE sharerequestinfo_shareinfo_history (LIKE sharerequestinfo_shareinfo);
+ALTER TABLE sharerequestinfo_shareinfo_history OWNER TO sormas_user;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON sharerequestinfo_shareinfo
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sharerequestinfo_shareinfo_history', true);
+
+INSERT INTO schema_version (version_number, comment) VALUES (420, 'Create missing history tables for S2S tables #6949');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
