@@ -63,6 +63,8 @@ public interface Validations {
 	String externalMessageDisplayError = "externalMessageDisplayError";
 	String externalMessageFetchError = "externalMessageFetchError";
 	String externalMessageInitError = "externalMessageInitError";
+	String feverTemperatureAboveThreshold = "feverTemperatureAboveThreshold";
+	String feverTemperatureBelowThreshold = "feverTemperatureBelowThreshold";
 	String fileTooBig = "fileTooBig";
 	String futureDate = "futureDate";
 	String futureDateStrict = "futureDateStrict";
