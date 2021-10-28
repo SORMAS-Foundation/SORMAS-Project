@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.backend.caze;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -32,6 +30,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
@@ -51,8 +50,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
-import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -63,9 +60,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
+import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
+import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -106,6 +106,7 @@ import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
@@ -138,6 +139,7 @@ import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -332,14 +334,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(LocalDate.now().plusDays(21), DateHelper8.toLocalDate(contact.getFollowUpUntil()));
 
 		caze.setDisease(Disease.MEASLES);
-		caze = getCaseFacade().saveCase(caze);
+		getCaseFacade().saveCase(caze);
 
 		// Follow-up status and duration should be set to no follow-up and null
 		// respectively because
 		// Measles does not require a follow-up
 		contact = getContactFacade().getContactByUuid(contact.getUuid());
 		assertEquals(FollowUpStatus.NO_FOLLOW_UP, contact.getFollowUpStatus());
-		assertEquals(null, contact.getFollowUpUntil());
+		assertNull(contact.getFollowUpUntil());
 	}
 
 	@Test
@@ -434,7 +436,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// A previous hospitalization with the former facility should have been created
 		List<PreviousHospitalizationDto> previousHospitalizations = caze.getHospitalization().getPreviousHospitalizations();
-		assertEquals(previousHospitalizations.size(), 1);
+		assertEquals(1, previousHospitalizations.size());
 	}
 
 	@Test
@@ -767,7 +769,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// List should have one entry
 		assertEquals(1, results.size());
 
-		assertEquals(true, results.get(0).getSampleDateTime2().after(results.get(0).getSampleDateTime3()));
+		assertTrue(results.get(0).getSampleDateTime2().after(results.get(0).getSampleDateTime3()));
 		// Make sure that everything that is added retrospectively (symptoms, sample
 		// dates, lab results, address, travel history) is present
 		CaseExportDto exportDto = results.get(0);
@@ -1001,8 +1003,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		firstCase.getSymptoms().setOnsetDate(firstCase.getReportDate());
 		thirdCase.setReportDate(DateHelper.subtractDays(today, 100));
 		thirdCase.getSymptoms().setOnsetDate(thirdCase.getReportDate());
-		firstCase = getCaseFacade().saveCase(firstCase);
-		thirdCase = getCaseFacade().saveCase(thirdCase);
+		getCaseFacade().saveCase(firstCase);
+		getCaseFacade().saveCase(thirdCase);
 
 		// Set 2nd Case to deceased again
 		secondCase.setOutcome(CaseOutcome.DECEASED);
@@ -1018,17 +1020,17 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		secondCase = getCaseFacade().saveCase(secondCase);
 		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
 
-		assertEquals(cazePerson.getPresentCondition(), PresentCondition.DEAD);
+		assertEquals(PresentCondition.DEAD, cazePerson.getPresentCondition());
 
 		// update the present condition to dead -> case should still not be affected because of the date threshold
 		cazePerson.setPresentCondition(PresentCondition.DEAD);
 		cazePerson.setDeathDate(today);
 		cazePerson.setCauseOfDeath(CauseOfDeath.EPIDEMIC_DISEASE);
 		cazePerson.setCauseOfDeathDisease(secondCase.getDisease());
-		cazePerson = getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().savePerson(cazePerson);
 		secondCase = getCaseFacade().getCaseDataByUuid(secondCase.getUuid());
 
-		assertEquals(secondCase.getOutcome(), CaseOutcome.RECOVERED);
+		assertEquals(CaseOutcome.RECOVERED, secondCase.getOutcome());
 	}
 
 	@Test
@@ -1055,11 +1057,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		cazePerson.setDeathDate(new Date());
 		cazePerson.setCauseOfDeath(CauseOfDeath.EPIDEMIC_DISEASE);
 		cazePerson.setCauseOfDeathDisease(firstCase.getDisease());
-		cazePerson = getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().savePerson(cazePerson);
 
 		// this should throw an exception
 		exception.expect(OutdatedEntityException.class);
-		firstCase = getCaseFacade().saveCase(firstCase);
+		getCaseFacade().saveCase(firstCase);
 	}
 
 	@Test
@@ -1413,37 +1415,37 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(otherPerson.getBirthWeight(), mergedPerson.getBirthWeight());
 
 		// Check merge comments
-		assertEquals(mergedCase.getAdditionalDetails(), "Test additional details Test other additional details");
-		assertEquals(mergedCase.getFollowUpComment(), "Test followup comment Test other followup comment");
+		assertEquals("Test additional details Test other additional details", mergedCase.getAdditionalDetails());
+		assertEquals("Test followup comment Test other followup comment", mergedCase.getFollowUpComment());
 
 		// 4. Test Reference Changes
 		// 4.1 Contacts
-		List<String> contactUuids = new ArrayList<String>();
+		List<String> contactUuids = new ArrayList<>();
 		contactUuids.add(contact.getUuid());
 		assertEquals(leadCase.getUuid(), getContactFacade().getByUuids(contactUuids).get(0).getCaze().getUuid());
 
 		// 4.2 Samples
-		List<String> sampleUuids = new ArrayList<String>();
+		List<String> sampleUuids = new ArrayList<>();
 		sampleUuids.add(sample.getUuid());
 		assertEquals(leadCase.getUuid(), getSampleFacade().getByUuids(sampleUuids).get(0).getAssociatedCase().getUuid());
 
 		// 4.3 Tasks
-		List<String> taskUuids = new ArrayList<String>();
+		List<String> taskUuids = new ArrayList<>();
 		taskUuids.add(task.getUuid());
 		assertEquals(leadCase.getUuid(), getTaskFacade().getByUuids(taskUuids).get(0).getCaze().getUuid());
 
 		// 4.4 Treatments
-		List<String> treatmentUuids = new ArrayList<String>();
+		List<String> treatmentUuids = new ArrayList<>();
 		treatmentUuids.add(treatment.getUuid());
 		assertEquals(leadCase.getTherapy().getUuid(), getTreatmentFacade().getByUuids(treatmentUuids).get(0).getTherapy().getUuid());
 
 		// 4.5 Prescriptions
-		List<String> prescriptionUuids = new ArrayList<String>();
+		List<String> prescriptionUuids = new ArrayList<>();
 		prescriptionUuids.add(prescription.getUuid());
 		assertEquals(leadCase.getTherapy().getUuid(), getPrescriptionFacade().getByUuids(prescriptionUuids).get(0).getTherapy().getUuid());
 
 		// 4.6 Clinical Visits
-		List<String> visitUuids = new ArrayList<String>();
+		List<String> visitUuids = new ArrayList<>();
 		visitUuids.add(visit.getUuid());
 		assertEquals(leadCase.getClinicalCourse().getUuid(), getClinicalVisitFacade().getByUuids(visitUuids).get(0).getClinicalCourse().getUuid());
 
@@ -1471,7 +1473,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// 5 Documents
 		List<DocumentDto> mergedDocuments = getDocumentFacade().getDocumentsRelatedToEntity(DocumentRelatedEntityType.CASE, leadCase.getUuid());
 
-		assertEquals(mergedDocuments.size(), 2);
+		assertEquals(2, mergedDocuments.size());
 		List<String> documentUuids = mergedDocuments.stream().map(DocumentDto::getUuid).collect(Collectors.toList());
 		assertTrue(documentUuids.contains(document.getUuid()));
 		assertTrue(documentUuids.contains(otherDocument.getUuid()));
@@ -1480,12 +1482,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		final EpiDataDto epiData = mergedCase.getEpiData();
 		assertEquals(YesNoUnknown.YES, epiData.getActivityAsCaseDetailsKnown());
 		final List<ActivityAsCaseDto> activitiesAsCase = epiData.getActivitiesAsCase();
-		assertEquals(activitiesAsCase.size(), 1);
+		assertEquals(1, activitiesAsCase.size());
 		assertEquals(ActivityAsCaseType.GATHERING, activitiesAsCase.get(0).getActivityAsCaseType());
 	}
 
 	@Test
-	public void testCloneCaseActivityAsCaseIsCloned() throws IOException {
+	public void testCloneCaseActivityAsCaseIsCloned() {
 
 		useNationalUserLogin();
 		// 1. Create
@@ -1499,17 +1501,17 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonReferenceDto personReferenceDto = new PersonReferenceDto(person.getUuid());
 		RDCF rdcf = creator.createRDCF();
 		CaseDataDto aCase = creator.createCase(
-				userReferenceDto,
-				personReferenceDto,
-				Disease.CHOLERA,
-				CaseClassification.SUSPECT,
-				InvestigationStatus.PENDING,
-				new Date(),
-				rdcf,
-				(c) -> {
-					c.setAdditionalDetails("Test other additional details");
-					c.setFollowUpComment("Test other followup comment");
-				});
+			userReferenceDto,
+			personReferenceDto,
+			Disease.CHOLERA,
+			CaseClassification.SUSPECT,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf,
+			(c) -> {
+				c.setAdditionalDetails("Test other additional details");
+				c.setFollowUpComment("Test other followup comment");
+			});
 		aCase.setClinicianName("name");
 
 		aCase.getEpiData().setActivityAsCaseDetailsKnown(YesNoUnknown.YES);
@@ -1527,11 +1529,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		final EpiDataDto epiData = clonedCase.getEpiData();
 		assertEquals(YesNoUnknown.YES, epiData.getActivityAsCaseDetailsKnown());
 		final List<ActivityAsCaseDto> activitiesAsCase = epiData.getActivitiesAsCase();
-		assertEquals(activitiesAsCase.size(), 1);
+		assertEquals(1, activitiesAsCase.size());
 		assertEquals(ActivityAsCaseType.GATHERING, activitiesAsCase.get(0).getActivityAsCaseType());
 	}
 
-		@Test
+	@Test
 	public void testDoesEpidNumberExist() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities();
@@ -2204,6 +2206,51 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Validator validator = factory.getValidator();
 
 		MatcherAssert.assertThat(validator.validate(caze), hasSize(1));
+	}
+
+	@Test
+	public void testGetCaseMeasurePerDistrict() {
+		List<DataHelper.Pair<DistrictDto, BigDecimal>> caseMeasurePerDistrict =
+			getCaseFacade().getCaseMeasurePerDistrict(null, null, Disease.EVD, CaseMeasure.CASE_COUNT);
+		assertTrue(caseMeasurePerDistrict.isEmpty());
+
+		RDCF rdcf1 = creator.createRDCF("Region", "District1", "Community", "Facility");
+		RDCF rdcf2 = creator.createRDCF("Region", "District2", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf1, UserRole.NATIONAL_USER);
+
+		CaseDataDto caze = creator.createCase(user.toReference(), creator.createPerson("Person", "One").toReference(), rdcf1);
+
+		caseMeasurePerDistrict = getCaseFacade().getCaseMeasurePerDistrict(null, null, Disease.EVD, CaseMeasure.CASE_COUNT);
+
+		assertEquals(1, caseMeasurePerDistrict.size());
+		DataHelper.Pair<DistrictDto, BigDecimal> districtCaseCount = caseMeasurePerDistrict.get(0);
+		assertEquals(rdcf1.district.getUuid(), districtCaseCount.getElement0().getUuid());
+		assertEquals(1, districtCaseCount.getElement1().intValue());
+
+		creator.createCase(user.toReference(), creator.createPerson("Person", "Two").toReference(), rdcf1);
+
+		caseMeasurePerDistrict = getCaseFacade().getCaseMeasurePerDistrict(null, null, Disease.EVD, CaseMeasure.CASE_COUNT);
+
+		assertEquals(1, caseMeasurePerDistrict.size());
+		districtCaseCount = caseMeasurePerDistrict.get(0);
+		assertEquals(rdcf1.district.getUuid(), districtCaseCount.getElement0().getUuid());
+		assertEquals(2, districtCaseCount.getElement1().intValue());
+
+		caze.setDistrict(rdcf2.district);
+		getCaseFacade().saveCase(caze);
+		creator.createCase(user.toReference(), creator.createPerson("Person", "Three").toReference(), rdcf2);
+
+		caseMeasurePerDistrict = getCaseFacade().getCaseMeasurePerDistrict(null, null, Disease.EVD, CaseMeasure.CASE_COUNT);
+
+		assertEquals(2, caseMeasurePerDistrict.size());
+
+		districtCaseCount = caseMeasurePerDistrict.get(0);
+		assertEquals(rdcf1.district.getUuid(), districtCaseCount.getElement0().getUuid());
+		assertEquals(1, districtCaseCount.getElement1().intValue());
+
+		districtCaseCount = caseMeasurePerDistrict.get(1);
+		assertEquals(rdcf2.district.getUuid(), districtCaseCount.getElement0().getUuid());
+		assertEquals(2, districtCaseCount.getElement1().intValue());
 	}
 
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";
