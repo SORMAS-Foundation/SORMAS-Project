@@ -10,9 +10,12 @@ public abstract class TableDataManager {
   private static List<TableRowObject> tableRowsDataList = new ArrayList<>();
 
   public static void addRowEntity(String testName, String elapsedTime) {
+    log.info("Creating TableRowObject with name:" + testName + "and time: " + elapsedTime);
     TableRowObject rowObject =
         TableRowObject.builder().testName(testName).currentTime(elapsedTime).build();
+    log.info("Adding TableRowObject into data list");
     tableRowsDataList.add(rowObject);
+    log.warn("TableRowDataList contains: " + tableRowsDataList);
   }
 
   public static List<TableRowObject> getTableRowsDataList() {

@@ -78,12 +78,15 @@ public class BaseSteps implements StepLifecycleListener {
   @After(value = "@PagesMeasurements")
   public void afterPageLoadTests(Scenario scenario) {
     String testName = scenario.getName().replace("Check", "").replace("loading time", "");
+    log.info(scenario.getName() + " done, adding page meassurement result into TableDataManager");
     TableDataManager.addRowEntity(testName, NavBarSteps.elapsedTime);
   }
 
   @After(value = "@PublishCustomReport")
   public void generateMeasurementsReport() {
+    log.info("Creating Chart for UI Meassurements report");
     ReportChartBuilder.buildChartForData(TableDataManager.getTableRowsDataList());
+    log.info("Generating Sormas Custom report");
     CustomReportBuilder.generateReport(TableDataManager.getTableRowsAsHtml());
     log.info("Custom report was created!");
   }
