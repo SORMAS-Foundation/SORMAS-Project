@@ -136,4 +136,9 @@ public class EventResource extends EntityDtoResource {
 		return FacadeProvider.getEventFacade().deleteEvents(uuids);
 	}
 
+	@POST
+	@Path("/children")
+	public List<String> getChildrenUuids(List<String> uuids) {
+		return FacadeProvider.getEventFacade().getSubordinateEventUuids(uuids);
+	}
 }
