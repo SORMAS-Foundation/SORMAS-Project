@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -32,9 +33,15 @@ public final class IterableHelper {
 	 */
 	public static <E> void executeBatched(List<E> entries, int batchSize, Consumer<List<E>> batchFunction) {
 
-		for (List<E> batch : ListUtils.partition(new ArrayList<>(entries), batchSize)) {
-			if (CollectionUtils.isNotEmpty(batch)) {
-				batchFunction.accept(batch);
+		if (CollectionUtils.isEmpty(entries)) {
+			batchFunction.accept(Collections.emptyList());
+		} else if (entries.size() <= batchSize) {
+			batchFunction.accept(entries);
+		} else {
+			for (List<E> batch : ListUtils.partition(new ArrayList<>(entries), batchSize)) {
+				if (CollectionUtils.isNotEmpty(batch)) {
+					batchFunction.accept(batch);
+				}
 			}
 		}
 	}

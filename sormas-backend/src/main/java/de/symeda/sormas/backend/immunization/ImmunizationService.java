@@ -375,25 +375,22 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		if (CollectionUtils.isEmpty(personUuids)) {
 			// Avoid empty IN clause
 			return Collections.emptyList();
-		} else if (personUuids.size() > ModelConstants.PARAMETER_LIMIT) {
-			List<Immunization> immunizations = new LinkedList<>();
-			IterableHelper
-					.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> immunizations.addAll(getImmunizationsByPersonUuids(personUuids)));
-			return immunizations;
 		} else {
-			return getImmunizationsByPersonUuids(personUuids);
+			List<Immunization> immunizations = new LinkedList<>();
+			IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> {
+
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Immunization> cq = cb.createQuery(Immunization.class);
+				Root<Immunization> immunizationRoot = cq.from(Immunization.class);
+				Join<Immunization, Person> personJoin = immunizationRoot.join(Immunization.PERSON, JoinType.INNER);
+
+				cq.where(personJoin.get(AbstractDomainObject.UUID).in(batchedPersonUuids));
+
+				immunizations.addAll(em.createQuery(cq).getResultList());
+
+			});
+			return immunizations;
 		}
-	}
-
-	private List<Immunization> getImmunizationsByPersonUuids(List<String> personUuids) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Immunization> cq = cb.createQuery(Immunization.class);
-		Root<Immunization> immunizationRoot = cq.from(Immunization.class);
-		Join<Immunization, Person> personJoin = immunizationRoot.join(Immunization.PERSON, JoinType.INNER);
-
-		cq.where(personJoin.get(AbstractDomainObject.UUID).in(personUuids));
-
-		return em.createQuery(cq).getResultList();
 	}
 
 	private Predicate createUserFilter(ImmunizationQueryContext<Immunization> qc) {
