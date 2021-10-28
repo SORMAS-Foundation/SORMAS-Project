@@ -24,7 +24,9 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.Diseases;
 
 public enum TaskType {
 
@@ -32,6 +34,8 @@ public enum TaskType {
 	CASE_ISOLATION(TaskContext.CASE),
 	CASE_INVESTIGATION(TaskContext.CASE),
 	CASE_MANAGEMENT(TaskContext.CASE),
+	@Diseases(value = {
+		Disease.CORONAVIRUS }, hide = true)
 	CASE_BURIAL(TaskContext.CASE),
 	CONTACT_TRACING(TaskContext.CASE),
 	CONTACT_MANAGEMENT(TaskContext.CONTACT),
@@ -39,17 +43,23 @@ public enum TaskType {
 	SAMPLE_COLLECTION(TaskContext.CASE, TaskContext.CONTACT),
 	CONTACT_INVESTIGATION(TaskContext.CONTACT),
 	CONTACT_FOLLOW_UP(TaskContext.CONTACT),
+	@Diseases(value = {
+		Disease.CORONAVIRUS }, hide = true)
 	ANIMAL_TESTING(TaskContext.EVENT),
 	EVENT_INVESTIGATION(TaskContext.EVENT),
 	EVENT_CONTINUE_INVESTIGATION(TaskContext.EVENT),
 	EVENT_REQUEST_ADDITIONAL_INFORMATION(TaskContext.EVENT),
 	TREATMENT_CENTER_ESTABLISHMENT(TaskContext.CASE, TaskContext.EVENT),
+	@Diseases(value = {
+		Disease.CORONAVIRUS }, hide = true)
 	ENVIRONMENTAL_HEALTH_ACTIVITIES(TaskContext.CASE, TaskContext.EVENT),
 	DECONTAMINATION_DISINFECTION_ACTIVITIES(TaskContext.CASE, TaskContext.EVENT),
 	QUARANTINE_PLACE(TaskContext.EVENT, TaskContext.CASE),
 	QUARANTINE_MANAGEMENT(TaskContext.CASE, TaskContext.CONTACT),
 	QUARANTINE_ORDER_SEND(TaskContext.CASE, TaskContext.CONTACT),
 	VACCINATION_ACTIVITIES(TaskContext.EVENT, TaskContext.CASE),
+	@Diseases(value = {
+		Disease.CORONAVIRUS }, hide = true)
 	ANIMAL_DEPOPULATION(TaskContext.EVENT, TaskContext.CASE),
 	OTHER(true, TaskContext.CASE, TaskContext.CONTACT, TaskContext.EVENT, TaskContext.GENERAL, TaskContext.TRAVEL_ENTRY),
 	DAILY_REPORT_GENERATION(TaskContext.GENERAL),

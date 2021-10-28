@@ -71,7 +71,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 			PathogenTestEditFragment.class,
 			null,
 			activityRootData,
-			FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode()),
+			FieldVisibilityCheckers.withDisease(activityRootData.getTestedDisease()).andWithCountry(ConfigProvider.getServerCountryCode()),
 			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
@@ -91,7 +91,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 	protected void prepareFragmentData() {
 		record = getActivityRootData();
 		sample = record.getSample();
-		testTypeList = DataUtils.getEnumItems(PathogenTestType.class, true);
+		testTypeList = DataUtils.getEnumItems(PathogenTestType.class, true, getFieldVisibilityCheckers());
 		pcrTestSpecificationList = DataUtils.getEnumItems(PCRTestSpecification.class, true);
 
 		List<Disease> diseases = DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true);
@@ -164,6 +164,13 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 				if (this.currentDisease == null || contentBinding.pathogenTestTestedDisease.getValue() != currentDisease) {
 					updateDiseaseVariantsField(contentBinding);
 				}
+
+				testTypeList = DataUtils.toItems(
+					Arrays.asList(PathogenTestType.values()),
+					true,
+					FieldVisibilityCheckers.withDisease((Disease) field.getValue()),
+					PathogenTestType.class);
+				contentBinding.pathogenTestTestType.setSpinnerData(testTypeList);
 			}
 		});
 

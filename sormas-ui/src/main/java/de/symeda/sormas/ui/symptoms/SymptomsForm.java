@@ -57,7 +57,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.util.converter.Converter.ConversionException;
 import com.vaadin.v7.ui.AbstractField;
@@ -278,6 +277,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 
 		ComboBox temperature = addField(TEMPERATURE, ComboBox.class);
+		temperature.setImmediate(true);
 		for (Float temperatureValue : SymptomsHelper.getTemperatureValues()) {
 			temperature.addItem(temperatureValue);
 			temperature.setItemCaption(temperatureValue, SymptomsHelper.getTemperatureString(temperatureValue));
@@ -311,7 +311,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		glasgowComaScale.addItems(SymptomsHelper.getGlasgowComaScaleValues());
 
 		addFields(
-			FEVER,
 			VOMITING,
 			DIARRHEA,
 			BLOOD_IN_STOOL,
@@ -460,7 +459,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			PALPITATIONS,
 			DIZZINESS_STANDING_UP,
 			HIGH_OR_LOW_BLOOD_PRESSURE,
-			URINARY_RETENTION);
+			URINARY_RETENTION,
+			FEVER);
 
 		addField(SYMPTOMS_COMMENTS, TextField.class).setDescription(
 			I18nProperties.getPrefixDescription(I18N_PREFIX, SYMPTOMS_COMMENTS, "") + "\n" + I18nProperties.getDescription(Descriptions.descGdpr));
@@ -671,6 +671,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		// Set visibilities
 
+		NullableOptionGroup feverField = (NullableOptionGroup) getFieldGroup().getField(FEVER);
+		feverField.setImmediate(true);
+
 		FieldHelper.setVisibleWhen(getFieldGroup(), conditionalBleedingSymptomFieldIds, UNEXPLAINED_BLEEDING, Arrays.asList(SymptomState.YES), true);
 
 		FieldHelper
@@ -813,6 +816,50 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		buttonsLayout.setMargin(new MarginInfo(true, false, true, true));
 
 		getContent().addComponent(buttonsLayout, BUTTONS_LOC);
+
+		if (feverField.isVisible()) {
+			temperature.addValueChangeListener(e -> {
+				if (e.getProperty().getValue() != null) {
+					FieldHelper.addSoftRequiredStyle(feverField);
+				} else {
+					FieldHelper.removeSoftRequiredStyle(feverField);
+				}
+				toggleFeverComponentError(feverField, temperature);
+			});
+			feverField.addValueChangeListener(e -> {
+				toggleFeverComponentError(feverField, temperature);
+			});
+		}
+	}
+
+	private void toggleFeverComponentError(NullableOptionGroup feverField, ComboBox temperatureField) {
+		Float temperatureValue = (Float) temperatureField.getValue();
+		SymptomState feverValue = (SymptomState) feverField.getNullableValue();
+
+		if (temperatureValue != null && temperatureValue >= 38.0f && feverValue != SymptomState.YES) {
+			setFeverComponentError(feverField, true);
+		} else if (temperatureValue != null && temperatureValue < 38.0f && feverValue != SymptomState.NO) {
+			setFeverComponentError(feverField, false);
+		} else {
+			feverField.setComponentError(null);
+		}
+	}
+
+	private void setFeverComponentError(NullableOptionGroup feverField, boolean feverSuggested) {
+		feverField.setComponentError(new ErrorMessage() {
+
+			@Override
+			public ErrorLevel getErrorLevel() {
+				return ErrorLevel.INFO;
+			}
+
+			@Override
+			public String getFormattedHtmlMessage() {
+				return I18nProperties.getValidationError(
+					feverSuggested ? Validations.feverTemperatureAboveThreshold : Validations.feverTemperatureBelowThreshold,
+					I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, FEVER));
+			}
+		});
 	}
 
 	private Label createLabel(String text, String h4, String location) {
@@ -847,19 +894,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			unconditionalSymptomFieldIds,
 			Arrays.asList(SymptomState.YES),
 			visitStatus);
-		getFieldGroup().getField(FEVER).addValidator(new Validator() {
-
-			@Override
-			public void validate(Object value) throws InvalidValueException {
-				if (getFieldGroup().getField(TEMPERATURE).getValue() != null) {
-					if ((Float) (getFieldGroup().getField(TEMPERATURE).getValue()) >= 38.0f) {
-						if (value != SymptomState.YES) {
-							throw new InvalidValueException(I18nProperties.getString(Strings.errorSetFeverRequired));
-						}
-					}
-				}
-			}
-		});
 	}
 
 	@Override
@@ -867,10 +901,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		super.setValue(newFieldValue);
 
 		initializeSymptomRequirementsForCase();
-
-		if (symptomsContext == SymptomsContext.CLINICAL_VISIT) {
-			initializeSymptomRequirementsForClinicalVisit();
-		}
 	}
 
 	private void initializeSymptomRequirementsForCase() {
@@ -892,22 +922,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			unconditionalSymptomFieldIds,
 			Arrays.asList(SymptomState.YES),
 			null);
-	}
-
-	private void initializeSymptomRequirementsForClinicalVisit() {
-		getFieldGroup().getField(FEVER).addValidator(new Validator() {
-
-			@Override
-			public void validate(Object value) throws InvalidValueException {
-				if (getFieldGroup().getField(TEMPERATURE).getValue() != null) {
-					if ((Float) (getFieldGroup().getField(TEMPERATURE).getValue()) >= 38.0f) {
-						if (value != SymptomState.YES) {
-							throw new InvalidValueException(I18nProperties.getString(Strings.errorSetFeverRequired));
-						}
-					}
-				}
-			}
-		});
 	}
 
 	/**
