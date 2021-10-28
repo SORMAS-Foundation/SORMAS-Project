@@ -8702,4 +8702,42 @@ ALTER TABLE testreport_history ADD COLUMN externalOrderId varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (417, '[DEMIS2SORMAS] Handle New Profile: DiagnosticReport.basedOn #5139');
 
+
+/*
+change reference from
+  test report references pathogen test
+  to
+  lab message references sample
+ */
+
+ALTER TABLE labmessage
+    ADD COLUMN sample_id bigint;
+ALTER TABLE labmessage_history
+    ADD COLUMN sample_id bigint;
+
+ALTER TABLE labmessage
+    ADD CONSTRAINT fk_labmessage_sample_id FOREIGN KEY (sample_id) REFERENCES samples (id);
+
+UPDATE labmessage
+SET sample_id = p.sample_id FROM
+testreport AS t
+INNER JOIN pathogentest AS p
+ON t.pathogentest_id = p.id
+WHERE labmessage.id = t.labmessage_id;
+
+/*
+ Make lab message a CoreAdo
+ */
+
+ALTER TABLE labmessage ADD COLUMN deleted boolean DEFAULT false;
+ALTER TABLE labmessage_history ADD COLUMN deleted boolean;
+
+
+ALTER TABLE testreport DROP COLUMN pathogentest_id;
+ALTER TABLE testreport_history DROP COLUMN pathogentest_id;
+
+
+INSERT INTO schema_version (version_number, comment)
+VALUES (418, '[DEMIS2SORMAS] Handle New Profile: Process multiple test reports #5899');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

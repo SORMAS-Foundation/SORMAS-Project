@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.backend.labmessage.LabMessageService;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -564,6 +565,10 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(LabMessageFacadeEjbLocal.class);
 	}
 
+	public LabMessageService getLabMessageService() {
+		return getBean(LabMessageService.class);
+	}
+
 	public SormasToSormasLabMessageFacade getSormasToSormasLabMessageFacade() {
 		return getBean(SormasToSormasLabMessageFacadeEjbLocal.class);
 	}
@@ -592,7 +597,9 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(CustomizableEnumValueService.class);
 	}
 
-	public CustomizableEnumFacade getCustomizableEnumFacade() { return getBean(CustomizableEnumFacadeEjb.class); }
+	public CustomizableEnumFacade getCustomizableEnumFacade() {
+		return getBean(CustomizableEnumFacadeEjb.class);
+	}
 
 	public ShareDataBuilderHelper getShareDataBuilderHelper() {
 		return getBean(ShareDataBuilderHelper.class);

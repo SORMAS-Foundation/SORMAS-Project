@@ -17,6 +17,7 @@ import javax.naming.CannotProceedException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -27,6 +28,8 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,15 +80,13 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@EJB
 	private LabMessageService labMessageService;
 	@EJB
-	private PathogenTestService pathogenTestService;
-	@EJB
-	private TestReportService testReportService;
-	@EJB
 	private TestReportFacadeEjb.TestReportFacadeEjbLocal testReportFacade;
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private SyncFacadeEjb.SyncFacadeEjbLocal syncFacadeEjb;
+	@EJB
+	private SampleService sampleService;
 
 	LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target, boolean checkChangeDate) {
 
@@ -126,7 +127,9 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			target.setTestReports(testReports);
 		}
 		target.setReportId(source.getReportId());
-
+		if (source.getSample() != null) {
+			target.setSample(sampleService.getByReferenceDto(source.getSample()));
+		}
 		return target;
 	}
 
@@ -179,13 +182,31 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			target.setTestReports(source.getTestReports().stream().map(t -> TestReportFacadeEjb.toDto(t)).collect(toList()));
 		}
 		target.setReportId(source.getReportId());
+		if (source.getSample() != null) {
+			target.setSample(source.getSample().toReference());
+		}
 
 		return target;
 	}
 
 	@Override
-	public LabMessageDto getByUuid(String uuid) {
-		return toDto(labMessageService.getByUuid(uuid));
+	public LabMessageDto getByUuid(String uuid, boolean getIfDeleted) {
+		if (getIfDeleted) {
+			return toDto(labMessageService.getByUuid(uuid));
+		} else {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<LabMessage> cq = cb.createQuery(LabMessage.class);
+			Root<LabMessage> labMessage = cq.from(LabMessage.class);
+			LabMessageCriteria criteria = new LabMessageCriteria();
+			criteria.setUuid(uuid);
+			Predicate filter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
+			cq.where(filter);
+			try {
+				return toDto(em.createQuery(cq).getSingleResult());
+			} catch (NoResultException e) {
+				return null;
+			}
+		}
 	}
 
 	@Override
@@ -204,29 +225,11 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
-	public List<LabMessageDto> getForSample(String sampleUuid) {
+	public List<LabMessageDto> getForSample(SampleReferenceDto sample) {
 
-		List<String> pathogenTestUuids = new ArrayList<>();
-		for (PathogenTest pathogenTest : pathogenTestService.getBySampleUuid(sampleUuid, false)) {
-			pathogenTestUuids.add(pathogenTest.getUuid());
-		}
-
-		List<TestReport> testReports = testReportService.getByPathogenTestUuidsBatched(pathogenTestUuids, false);
-
-		List<LabMessage> labMessages = testReports.stream().map(TestReport::getLabMessage).distinct().collect(Collectors.toList());
+		List<LabMessage> labMessages = labMessageService.getForSample(sample, true);
 
 		return labMessages.stream().map(this::toDto).collect(Collectors.toList());
-
-	}
-
-	@Override
-	public List<LabMessageDto> getByPathogenTestUuid(String pathogenTestUuid) {
-
-		List<TestReport> testReports = testReportService.getByPathogenTestUuid(pathogenTestUuid, false);
-
-		List<LabMessage> labMessages = testReports.stream().map(TestReport::getLabMessage).distinct().collect(Collectors.toList());
-
-		return labMessages.stream().map(labMessage -> toDto(labMessage)).collect(Collectors.toList());
 
 	}
 

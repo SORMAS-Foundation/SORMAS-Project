@@ -73,7 +73,7 @@ public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeT
 
 		Mockito.verify(MockProducer.getSormasToSormasClient(), Mockito.times(1))
 			.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any());
-		assertThat(getLabMessageFacade().getByUuid(labMessage.getUuid()).getStatus(), is(LabMessageStatus.FORWARDED));
+		assertThat(getLabMessageFacade().getByUuid(labMessage.getUuid(), false).getStatus(), is(LabMessageStatus.FORWARDED));
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeT
 		SormasToSormasEncryptedDataDto encryptedData = encryptShareDataAsArray(labMessage);
 		getSormasToSormasLabMessageFacade().saveLabMessages(encryptedData);
 
-		LabMessageDto savedLabMessage = getLabMessageFacade().getByUuid(labMessage.getUuid());
+		LabMessageDto savedLabMessage = getLabMessageFacade().getByUuid(labMessage.getUuid(), false);
 		assertThat(savedLabMessage, is(notNullValue()));
 		assertLabMessageFields(savedLabMessage, dateNow);
 	}

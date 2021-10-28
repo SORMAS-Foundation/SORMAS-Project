@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -13,15 +14,13 @@ public interface LabMessageFacade {
 
 	LabMessageDto save(@Valid LabMessageDto dto);
 
-	LabMessageDto getByUuid(String uuid);
+	LabMessageDto getByUuid(String uuid, boolean getIfDeleted);
 
 	void deleteLabMessage(String uuid);
 
 	void deleteLabMessages(List<String> uuids);
 
-	List<LabMessageDto> getForSample(String sampleUuid);
-
-	List<LabMessageDto> getByPathogenTestUuid(String pathogenTestUuid);
+	List<LabMessageDto> getForSample(SampleReferenceDto sample);
 
 	/**
 	 * This method is used to check whether a labMessage is marked processed in the database.

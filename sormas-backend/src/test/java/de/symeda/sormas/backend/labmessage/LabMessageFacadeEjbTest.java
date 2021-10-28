@@ -38,7 +38,7 @@ public class LabMessageFacadeEjbTest extends AbstractBeanTest {
 		LabMessageDto labMessage = creator.createLabMessage(null);
 		getLabMessageFacade().deleteLabMessage(labMessage.getUuid());
 
-		assertThat(getLabMessageFacade().getByUuid(labMessage.getUuid()), is(nullValue()));
+		assertThat(getLabMessageFacade().getByUuid(labMessage.getUuid(), false), is(nullValue()));
 	}
 
 	@Test

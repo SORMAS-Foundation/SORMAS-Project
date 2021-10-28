@@ -136,43 +136,51 @@ public class SampleController {
 	 *            if true, a button is shown to remove the pathogen test create component again from the sample create component.
 	 * @return the pathogen test create component added.
 	 */
-	public CommitDiscardWrapperComponent<PathogenTestForm> addPathogenTestCreateComponent(
+	public PathogenTestForm addPathogenTestCreateComponent(
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent,
 		PathogenTestDto pathogenTest,
 		boolean removable) {
-		PathogenTestController pathogenTestController = ControllerProvider.getPathogenTestController();
-		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
-			pathogenTestController.getPathogenTestCreateComponent(sampleCreateComponent.getWrappedComponent().getValue(), 0, () -> {
-			}, (pathogenTestDto, callback) -> {
-			});
-		// prefill fields
-		if (pathogenTest != null) {
-			pathogenTestCreateComponent.getWrappedComponent().setValue(pathogenTest);
-
-			// show typingId field when it has a preset value
-			if (pathogenTest.getTypingId() != null && !"".equals(pathogenTest.getTypingId())) {
-				pathogenTestCreateComponent.getWrappedComponent().getField(PathogenTestDto.TYPING_ID).setVisible(true);
-			}
-		}
-
-		// Discard button configuration
-		if (removable) {
-			pathogenTestCreateComponent.addDiscardListener(() -> {
-				sampleCreateComponent.removeComponent(pathogenTestCreateComponent);
-			});
-			pathogenTestCreateComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.pathogenTestRemove));
-		} else {
-			pathogenTestCreateComponent.getDiscardButton().setVisible(false);
-		}
-		// hide save button
-		pathogenTestCreateComponent.getCommitButton().setVisible(false);
 		// add horizontal rule to clearly distinguish the component
 		Label horizontalRule = new Label("<br><hr /><br>", ContentMode.HTML);
 		horizontalRule.setWidth(100f, Unit.PERCENTAGE);
-		pathogenTestCreateComponent.addComponent(horizontalRule, 0);
-		// add the pathogenTestCreateComponent above the discard and commit buttons
-		sampleCreateComponent.addComponent(pathogenTestCreateComponent, sampleCreateComponent.getComponentCount() - 1);
-		return pathogenTestCreateComponent;
+		sampleCreateComponent.addComponent(horizontalRule, sampleCreateComponent.getComponentCount() - 1);
+
+		PathogenTestForm pathogenTestForm = new PathogenTestForm(sampleCreateComponent.getWrappedComponent().getValue(), true, 0, false);
+		// prefill fields
+		if (pathogenTest != null) {
+			pathogenTestForm.setValue(pathogenTest);
+			// show typingId field when it has a preset value
+			if (pathogenTest.getTypingId() != null && !"".equals(pathogenTest.getTypingId())) {
+				pathogenTestForm.getField(PathogenTestDto.TYPING_ID).setVisible(true);
+			}
+		} else {
+			pathogenTestForm
+				.setValue(PathogenTestDto.build(sampleCreateComponent.getWrappedComponent().getValue(), UserProvider.getCurrent().getUser()));
+		}
+		// validate pathogen test create component before saving the sample
+		sampleCreateComponent.addFieldGroups(pathogenTestForm.getFieldGroup());
+		CommitDiscardWrapperComponent.CommitListener savePathogenTest =
+			() -> FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTestForm.getValue());
+		sampleCreateComponent.addCommitListener(savePathogenTest);
+		// Discard button configuration
+		if (removable) {
+			Button discardButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.pathogenTestRemove));
+			VerticalLayout buttonLayout = new VerticalLayout(discardButton);
+			buttonLayout.setComponentAlignment(discardButton, Alignment.TOP_RIGHT);
+			// add the discard button above the overall discard and commit buttons
+			sampleCreateComponent.addComponent(buttonLayout, sampleCreateComponent.getComponentCount() - 1);
+			discardButton.addClickListener(o -> {
+				sampleCreateComponent.removeComponent(horizontalRule);
+				sampleCreateComponent.removeComponent(buttonLayout);
+				sampleCreateComponent.removeComponent(pathogenTestForm);
+				sampleCreateComponent.removeFieldGroups(pathogenTestForm.getFieldGroup());
+				sampleCreateComponent.removeCommitListener(savePathogenTest);
+				pathogenTestForm.discard();
+			});
+		}
+		// add the pathogenTestForm above the overall discard and commit buttons
+		sampleCreateComponent.addComponent(pathogenTestForm, sampleCreateComponent.getComponentCount() - 1);
+		return pathogenTestForm;
 	}
 
 	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, Runnable callback) {

@@ -45,7 +45,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -116,7 +115,7 @@ public class LabMessageController {
 
 	public void showLabMessage(String labMessageUuid, Runnable onFormActionPerformed) {
 
-		LabMessageDto newDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
+		LabMessageDto newDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid, false);
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
 
@@ -144,7 +143,7 @@ public class LabMessageController {
 	}
 
 	public void processLabMessage(String labMessageUuid) {
-		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
+		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid, false);
 		final PersonDto personDto = buildPerson(labMessageDto);
 
 		if (FacadeProvider.getLabMessageFacade().isProcessed(labMessageUuid)) {
@@ -521,7 +520,7 @@ public class LabMessageController {
 			} else {
 				callback.run();
 			}
-			finishProcessingLabMessage(labMessageDto, pathogenTestDto);
+			finishProcessingLabMessage(labMessageDto, sampleDto);
 		};
 
 		Window window = VaadinUiUtil.createPopupWindow();
@@ -669,7 +668,7 @@ public class LabMessageController {
 		SampleController sampleController = ControllerProvider.getSampleController();
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
 			sampleController.getSampleCreateComponent(sampleDto, (savedSampleDto, pathogenTestDto) -> {
-				finishProcessingLabMessage(labMessageDto, pathogenTestDto);
+				finishProcessingLabMessage(labMessageDto, sampleDto);
 			});
 
 		// including a pathogen test is not an option here, it is mandatory.
@@ -680,7 +679,7 @@ public class LabMessageController {
 		//********************
 		List<PathogenTestDto> pathogenTests = buildPathogenTests(sampleDto, labMessageDto);
 		// the first pathogenTestCreateComponent must not be removable. It is expected to exist because the buildPathogenTests shall always return at least one.
-		CommitDiscardWrapperComponent pathogenTestCreateComponent =
+		PathogenTestForm pathogenTestCreateComponent =
 			sampleController.addPathogenTestCreateComponent(sampleCreateComponent, pathogenTests.get(0), false);
 		setViaLimsFieldCheckedAndDisabled(pathogenTestCreateComponent);
 		// all other pathogen test create components may be removed.
@@ -694,8 +693,8 @@ public class LabMessageController {
 		return sampleCreateComponent;
 	}
 
-	private void setViaLimsFieldCheckedAndDisabled(CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent) {
-		CheckBox viaLimsCheckbox = pathogenTestCreateComponent.getWrappedComponent().getField(PathogenTestDto.VIA_LIMS);
+	private void setViaLimsFieldCheckedAndDisabled(PathogenTestForm pathogenTestForm) {
+		CheckBox viaLimsCheckbox = pathogenTestForm.getField(PathogenTestDto.VIA_LIMS);
 		viaLimsCheckbox.setValue(Boolean.TRUE);
 		viaLimsCheckbox.setEnabled(false);
 	}
@@ -795,7 +794,7 @@ public class LabMessageController {
 				window.close();
 			}, (savedPathogenTestDto, runnable) -> {
 				runnable.run();
-				finishProcessingLabMessage(labMessageDto, savedPathogenTestDto);
+				finishProcessingLabMessage(labMessageDto, sampleDto);
 			});
 		pathogenTestCreateComponent.addDiscardListener(window::close);
 		pathogenTestCreateComponent.getWrappedComponent().setValue(pathogenTestDto);
@@ -835,20 +834,10 @@ public class LabMessageController {
 		form.setValue(labMessageDto);
 	}
 
-	private void finishProcessingLabMessage(LabMessageDto labMessageDto, PathogenTestDto pathogenTestDto) {
-		// TODO currently just the first testReport is picked here. That must be temporary.
-		//  #5899 should fix this and also provide better support for handling creation of a new test report
-		List<TestReportDto> testReportDtos = labMessageDto.getTestReports();
-		if (testReportDtos.isEmpty()) {
-			TestReportDto testReportDto = TestReportDto.build();
-			testReportDto.setLabMessage(labMessageDto.toReference());
-			testReportDto.setPathogenTest(pathogenTestDto.toReference());
-			labMessageDto.addTestReport(testReportDto);
-		} else {
-			labMessageDto.getTestReports().get(0).setPathogenTest(pathogenTestDto.toReference());
-		}
-		labMessageDto.setStatus(LabMessageStatus.PROCESSED);
-		FacadeProvider.getLabMessageFacade().save(labMessageDto);
+	private void finishProcessingLabMessage(LabMessageDto labMessage, SampleDto sample) {
+		labMessage.setSample(sample.toReference());
+		labMessage.setStatus(LabMessageStatus.PROCESSED);
+		FacadeProvider.getLabMessageFacade().save(labMessage);
 		SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);
 	}
 
@@ -1003,7 +992,7 @@ public class LabMessageController {
 
 	public Optional<byte[]> convertToPDF(String labMessageUuid) {
 
-		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
+		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid, false);
 
 		try {
 			ExternalMessageResult<byte[]> result = FacadeProvider.getExternalLabResultsFacade().convertToPDF(labMessageDto);
