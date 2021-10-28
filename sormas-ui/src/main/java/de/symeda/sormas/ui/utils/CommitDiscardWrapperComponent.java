@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 
 import javax.naming.CannotProceedException;
 
+import com.sun.org.apache.bcel.internal.generic.FieldGen;
 import com.vaadin.event.Action.Notifier;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Page;
@@ -96,7 +97,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	private Panel contentPanel;
 
 	private C wrappedComponent;
-	private FieldGroup[] fieldGroups;
+	private ArrayList<FieldGroup> fieldGroups;
 
 	private HorizontalLayout buttonsPanel;
 	private Button commitButton;
@@ -128,7 +129,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	protected void setWrappedComponent(C component, FieldGroup... fieldGroups) {
 
 		this.wrappedComponent = component;
-		this.fieldGroups = fieldGroups;
+		this.fieldGroups = new ArrayList(Arrays.asList(fieldGroups));
 
 		if (contentPanel != null) {
 			contentPanel.setContent(wrappedComponent);
@@ -185,6 +186,27 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 		dirty = false;
 		addDirtyHandler(fieldGroups);
+	}
+
+	public void addFieldGroups(FieldGroup... fieldGroups) {
+		if (fieldGroups == null) {
+			return;
+		}
+
+		if (this.fieldGroups == null) {
+			this.fieldGroups = new ArrayList(Arrays.asList(fieldGroups));
+		} else {
+			this.fieldGroups.addAll(Arrays.asList(fieldGroups));
+		}
+		addDirtyHandler(fieldGroups);
+	}
+
+	public void removeFieldGroups(FieldGroup... fieldGroups) {
+		if (fieldGroups == null || this.fieldGroups == null) {
+			return;
+		}
+		this.fieldGroups.removeAll(Arrays.asList(fieldGroups));
+
 	}
 
 	@SuppressWarnings("deprecation")
@@ -274,7 +296,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	protected Stream<Field<?>> getFieldsStream() {
 
 		if (fieldGroups != null) {
-			return Arrays.stream(fieldGroups).map(FieldGroup::getFields).flatMap(Collection::stream);
+			return fieldGroups.stream().map(FieldGroup::getFields).flatMap(Collection::stream);
 		} else {
 			return Stream.empty();
 		}
@@ -416,7 +438,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	public void commit() throws InvalidValueException, SourceException, CommitRuntimeException {
 
 		if (fieldGroups != null) {
-			if (fieldGroups.length > 1) {
+			if (fieldGroups.size() > 1) {
 				// validate all fields first, so commit will likely work for all fieldGroups
 				// this is basically only needed when we have multiple field groups
 				// FIXME this leads to problem #537 for AbstractEditForm with hideValidationUntilNextCommit 
