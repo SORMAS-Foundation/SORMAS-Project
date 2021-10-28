@@ -483,7 +483,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 		sample.setReportDateTime(new Date());
 		sample.setSampleMaterial(SampleMaterial.BLOOD);
 		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
-		sample.setLab(getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+		sample.setLab(getFacilityFacade().getReferenceByUuid(lab.getUuid()));
 
 		return sample;
 	}

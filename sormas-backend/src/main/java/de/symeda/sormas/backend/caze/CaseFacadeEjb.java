@@ -1591,7 +1591,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDisease));
 		}
 		// Check whether there are any infrastructure errors
-		if (!districtFacade.getDistrictByUuid(caze.getResponsibleDistrict().getUuid()).getRegion().equals(caze.getResponsibleRegion())) {
+		if (!districtFacade.getByUuid(caze.getResponsibleDistrict().getUuid()).getRegion().equals(caze.getResponsibleRegion())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noResponsibleDistrictInResponsibleRegion));
 		}
 		if (caze.getResponsibleCommunity() != null
@@ -1600,7 +1600,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 		if (caze.getRegion() != null
 			&& caze.getDistrict() != null
-			&& !districtFacade.getDistrictByUuid(caze.getDistrict().getUuid()).getRegion().equals(caze.getRegion())) {
+			&& !districtFacade.getByUuid(caze.getDistrict().getUuid()).getRegion().equals(caze.getRegion())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noDistrictInRegion));
 		}
 		if (caze.getDistrict() != null

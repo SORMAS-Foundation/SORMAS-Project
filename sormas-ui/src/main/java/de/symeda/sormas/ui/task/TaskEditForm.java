@@ -38,6 +38,7 @@ import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -59,6 +60,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -91,13 +93,15 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 	private UserRight editOrCreateUserRight;
 	private boolean editedFromTaskGrid;
+	private Disease disease;
 
-	public TaskEditForm(boolean create, boolean editedFromTaskGrid) {
+	public TaskEditForm(boolean create, boolean editedFromTaskGrid, Disease disease) {
 
-		super(TaskDto.class, TaskDto.I18N_PREFIX);
+		super(TaskDto.class, TaskDto.I18N_PREFIX, false, FieldVisibilityCheckers.withDisease(disease));
 
 		this.editedFromTaskGrid = editedFromTaskGrid;
 		this.editOrCreateUserRight = editOrCreateUserRight;
+		this.disease = disease;
 
 		addValueChangeListener(e -> {
 			updateByTaskContext();
@@ -109,6 +113,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
+
+		addFields();
 	}
 
 	@Override
@@ -352,7 +358,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 		// Task types depending on task context
 		ComboBox taskType = (ComboBox) getFieldGroup().getField(TaskDto.TASK_TYPE);
-		FieldHelper.updateItems(taskType, TaskType.getTaskTypes(taskContext));
+		FieldHelper.updateItems(taskType, TaskType.getTaskTypes(taskContext), FieldVisibilityCheckers.withDisease(disease), TaskType.class);
 
 		// context reference depending on task context
 		ComboBox caseField = (ComboBox) getFieldGroup().getField(TaskDto.CAZE);
