@@ -36,6 +36,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
+import de.symeda.sormas.api.db.TransactionWrapperFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
@@ -472,6 +473,10 @@ public class FacadeProvider {
 
 	public static SyncFacade getSyncFacade() {
 		return get().lookupEjbRemote(SyncFacade.class);
+	}
+
+	public static TransactionWrapperFacade getTransactionWrapperFacade() {
+		return get().lookupEjbRemote(TransactionWrapperFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

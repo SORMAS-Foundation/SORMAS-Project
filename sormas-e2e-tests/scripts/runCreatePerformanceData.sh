@@ -17,7 +17,9 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 #
 
-echo "I was called with $# parameters"
+#This shell script is the execution entry point for the jenkins job used to populate the system with Persons and Immunization
+
+
 echo "I will run $1 times the tests"
 echo "Script started at:"
 date +"%T"
@@ -37,4 +39,3 @@ done
 echo "Script finished at:"
 date +"%T"
 
-#NOTE: tag should be changed when populating task is done!

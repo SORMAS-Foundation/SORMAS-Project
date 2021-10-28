@@ -1,12 +1,9 @@
-package de.symeda.sormas.rest;
+package de.symeda.sormas.api.db;
 
-import java.util.function.Function;
-
-import javax.annotation.security.PermitAll;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
+import javax.ejb.Remote;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import java.util.function.Function;
 
 /**
  * <p>
@@ -14,18 +11,17 @@ import javax.ejb.TransactionAttributeType;
  * </p>
  * Usage in the calling class:
  * <ol>
- * <li>Inject {@link TransactionWrapper} with {@code @EJB}.</li>
+ * <li>Inject {@link TransactionWrapperEjb} with {@code @EJB}.</li>
  * <li>Inject the {@code function} to be called using {@code @Inject}.</li>
  * </ol>
  */
-@LocalBean
-@Stateless
-@PermitAll
-public class TransactionWrapper {
+
+@Remote
+public interface TransactionWrapperFacade {
 
 	/**
 	 * Calls the passed function in a new JTA transaction.
-	 * 
+	 *
 	 * @param function
 	 *            The business logic to be executed.
 	 * @param data
@@ -33,8 +29,5 @@ public class TransactionWrapper {
 	 * @return The return value of the processing defined by {@code function} (typically a result/report).
 	 */
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public <T, R> R execute(Function<T, R> function, T data) {
-
-		return function.apply(data);
-	}
+	<T, R> R execute(Function<T, R> function, T data);
 }
