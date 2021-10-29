@@ -94,7 +94,8 @@ dependencies {
     implementation 'com.j256.ormlite:ormlite-android:5.1'
     implementation 'javax.persistence:persistence-api:1.0.2'
     implementation 'com.google.firebase:firebase-crashlytics:17.3.0'
-    implementation 'com.google.firebase:firebase-analytics:18.0.0'
+    implementation "androidx.constraintlayout:constraintlayout:2.1.1"
+
 
     implementation 'com.google.firebase:firebase-core:18.0.0'
     implementation 'com.google.firebase:firebase-perf:19.0.10'
@@ -158,10 +159,10 @@ task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) 
         dir: "$buildDir/intermediates/javac/debug/classes/de/symeda/sormas/app",
         excludes: fileFilter
     )
-    classDirectories = files([ javaClasses ])
-    additionalSourceDirs = files(coverageSourceDirs)
-    sourceDirectories = files(coverageSourceDirs)
-    executionData = fileTree(dir: "$buildDir", includes: [
+    classDirectories.from = files([ javaClasses ])
+    additionalSourceDirs.from = files(coverageSourceDirs)
+    sourceDirectories.from = files(coverageSourceDirs)
+    executionData.from = fileTree(dir: "$buildDir", includes: [
             "jacoco/testDebugUnitTest.exec"
     ])
     reports {

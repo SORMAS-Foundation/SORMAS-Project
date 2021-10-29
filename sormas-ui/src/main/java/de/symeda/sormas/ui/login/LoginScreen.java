@@ -319,6 +319,10 @@ public class LoginScreen extends CssLayout {
 		imgSymeda.setWidth(isCustomBranding ? CUSTOM_BRANDING_LOGO_WIDTH : LOGO_WIDTH, Unit.PIXELS);
 		poweredByLayout.addComponent(imgSymeda);
 
+		Image imgOceac = new Image(null, new ThemeResource("img/OCEAC.jpg"));
+		imgOceac.setWidth(isCustomBranding ? CUSTOM_BRANDING_LOGO_WIDTH : LOGO_WIDTH, Unit.PIXELS);
+		poweredByLayout.addComponent(imgOceac);
+
 		if (!isCustomBranding) {
 			Image imgGiz = new Image(null, new ThemeResource("img/giz-logo.png"));
 			imgGiz.setWidth(isCustomBranding ? CUSTOM_BRANDING_LOGO_WIDTH : LOGO_WIDTH, Unit.PIXELS);
