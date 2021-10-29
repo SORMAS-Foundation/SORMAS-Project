@@ -12,6 +12,9 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<developmentBranch>development</developmentBranch>
+		<productionBranch>master</productionBranch>
+		<pushHotfixes>true</pushHotfixes>
 
 		<!-- *** Payara module versions *** -->
 		<jackson.version>2.10.2</jackson.version>
@@ -1066,8 +1069,9 @@
 					<version>1.0-m5.1</version>
 					<configuration>
 						<flowInitContext>
-							<masterBranchName>master</masterBranchName>
-							<developBranchName>development</developBranchName>
+							<masterBranchName>${productionBranch}</masterBranchName>
+							<!-- Option to overwrite developBranchName to not automatically merge hotfix branches into development -->
+							<developBranchName>${developmentBranch}</developBranchName>
 							<featureBranchPrefix>feature-</featureBranchPrefix>
 							<releaseBranchPrefix>release-</releaseBranchPrefix>
 							<hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
@@ -1079,7 +1083,7 @@
 						<password>${github.sormas.password}</password>
 						<scmCommentPrefix>[GITFLOW]</scmCommentPrefix>
 						<pushReleases>true</pushReleases>
-						<pushHotfixes>true</pushHotfixes>
+						<pushHotfixes>${pushHotfixes}</pushHotfixes>
 						<useReleaseProfile>false</useReleaseProfile>
 						<noDeploy>true</noDeploy>
 						<noHotfixBuild>true</noHotfixBuild>

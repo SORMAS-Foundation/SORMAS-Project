@@ -92,12 +92,15 @@ public class PlaceOfStayEditForm extends AbstractEditForm<CaseDataDto> {
 
 		responsibleRegion = addInfrastructureField(CaseDataDto.RESPONSIBLE_REGION);
 		responsibleRegion.setRequired(true);
+		responsibleRegion.setReadOnly(true);
 
 		responsibleDistrict = addInfrastructureField(CaseDataDto.RESPONSIBLE_DISTRICT);
 		responsibleDistrict.setRequired(true);
+		responsibleDistrict.setReadOnly(true);
 		responsibleCommunity = addInfrastructureField(CaseDataDto.RESPONSIBLE_COMMUNITY);
 		responsibleCommunity.setNullSelectionAllowed(true);
 		responsibleCommunity.addStyleName(SOFT_REQUIRED);
+		responsibleCommunity.setReadOnly(true);
 		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrict, responsibleCommunity);
 
 		regionCombo = addInfrastructureField(CaseDataDto.REGION);
@@ -111,6 +114,7 @@ public class PlaceOfStayEditForm extends AbstractEditForm<CaseDataDto> {
 
 		facilityCombo = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		facilityCombo.setImmediate(true);
+		facilityCombo.setRequired(true);
 		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		facilityDetails.setVisible(false);
 		facilityCombo.addValueChangeListener(e -> updateFacilityDetails(facilityCombo, facilityDetails));
@@ -130,6 +134,11 @@ public class PlaceOfStayEditForm extends AbstractEditForm<CaseDataDto> {
 			Arrays.asList(regionCombo, districtCombo, communityCombo),
 			Collections.singletonList(Boolean.TRUE),
 			true);
+		FieldHelper.setRequiredWhen(
+			differentPlaceOfStayJurisdiction,
+			Arrays.asList(regionCombo, districtCombo),
+			Collections.singletonList(Boolean.TRUE),
+			false, null);
 
 		regionCombo.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		regionCombo.addValueChangeListener(e -> {
@@ -148,6 +157,10 @@ public class PlaceOfStayEditForm extends AbstractEditForm<CaseDataDto> {
 		communityCombo.addValueChangeListener(e -> updateFacility());
 
 		differentPlaceOfStayJurisdiction.addValueChangeListener(e -> {
+			updateFacility();
+		});
+
+		addValueChangeListener(e -> {
 			updateFacility();
 		});
 	}

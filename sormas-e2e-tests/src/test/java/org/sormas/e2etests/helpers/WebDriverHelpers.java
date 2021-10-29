@@ -49,6 +49,7 @@ public class WebDriverHelpers {
   private final AssertHelpers assertHelpers;
   private static final String SCROLL_TO_WEB_ELEMENT_SCRIPT =
       "arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"center\"});";
+  public static final String CLICK_ELEMENT_SCRIPT = "arguments[0].click();";
 
   @Inject
   public WebDriverHelpers(BaseSteps baseSteps, AssertHelpers assertHelpers) {
@@ -272,6 +273,7 @@ public class WebDriverHelpers {
   }
 
   public void accessWebSite(String url) {
+    log.info("Navigating to: " + url);
     baseSteps.getDriver().navigate().to(url);
   }
 
@@ -303,6 +305,22 @@ public class WebDriverHelpers {
         waitUntilIdentifiedElementIsPresent(selector);
         javascriptExecutor.executeScript(
             SCROLL_TO_WEB_ELEMENT_SCRIPT, baseSteps.getDriver().findElement((By) selector));
+      }
+    } catch (Exception ignored) {
+    }
+    waitForPageLoaded();
+  }
+
+  public void javaScriptClickElement(final Object selector) {
+    JavascriptExecutor javascriptExecutor = baseSteps.getDriver();
+    waitUntilIdentifiedElementIsPresent(selector);
+    try {
+      if (selector instanceof WebElement) {
+        javascriptExecutor.executeScript(CLICK_ELEMENT_SCRIPT, selector);
+      } else {
+        waitUntilIdentifiedElementIsPresent(selector);
+        javascriptExecutor.executeScript(
+            CLICK_ELEMENT_SCRIPT, baseSteps.getDriver().findElement((By) selector));
       }
     } catch (Exception ignored) {
     }
@@ -359,19 +377,6 @@ public class WebDriverHelpers {
             assertThat(webElements.size()).isAtLeast(2);
             assertThat(
                 webElements.stream().allMatch(webElement -> webElement.getText().equals(text)));
-          },
-          3);
-    } catch (Throwable ignored) {
-    }
-  }
-
-  public void waitUntilElementsHasText(By selector, String text) {
-    waitForPageLoaded();
-    try {
-      assertHelpers.assertWithPoll(
-          () -> {
-            WebElement webElement = baseSteps.getDriver().findElement(selector);
-            assertThat(webElement.getText()).isEqualTo(text);
           },
           3);
     } catch (Throwable ignored) {
@@ -461,6 +466,14 @@ public class WebDriverHelpers {
       return baseSteps.getDriver().findElements(byObject).size();
     } catch (Exception e) {
       return 0;
+    }
+  }
+
+  public WebElement getWebElement(By byObject) {
+    try {
+      return baseSteps.getDriver().findElement(byObject);
+    } catch (Exception e) {
+      return null;
     }
   }
 
@@ -562,5 +575,18 @@ public class WebDriverHelpers {
     String style = getAttributeFromWebElement(header, "style");
     By selector = By.cssSelector("[style*='" + style.substring(style.length() - 17) + "']");
     return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
+  }
+
+  public void wait20SecondsOrThrowException(By selector) {
+    try {
+      await()
+          .pollInterval(ONE_HUNDRED_MILLISECONDS)
+          .ignoreExceptions()
+          .catchUncaughtExceptions()
+          .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
+          .until(() -> baseSteps.getDriver().findElement(selector).isDisplayed());
+    } catch (Exception e) {
+      throw new NoSuchElementException("Element: " + selector + " is not visible");
+    }
   }
 }

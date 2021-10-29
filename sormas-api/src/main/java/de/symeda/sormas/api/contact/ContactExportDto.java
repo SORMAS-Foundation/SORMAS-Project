@@ -168,6 +168,9 @@ public class ContactExportDto implements Serializable {
 	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
+	private Date previousQuarantineTo;
+	@SensitiveData
+	private String quarantineChangeComment;
 	@SensitiveData
 	private String quarantineHelpNeeded;
 	private long epiDataId;
@@ -257,6 +260,7 @@ public class ContactExportDto implements Serializable {
 							SymptomJournalStatus symptomJournalStatus,
 							// users
 							Long reportingUserId, Long followUpStatusChangeUserId,
+							Date previousQuarantineTo, String quarantineChangeComment,
 							boolean isInJurisdiction
 	) {
 	//@formatter:on
@@ -349,6 +353,9 @@ public class ContactExportDto implements Serializable {
 
 		this.reportingUserId = reportingUserId;
 		this.followUpStatusChangeUserId = followUpStatusChangeUserId;
+
+		this.previousQuarantineTo = previousQuarantineTo;
+		this.quarantineChangeComment = quarantineChangeComment;
 
 		this.isInJurisdiction = isInJurisdiction;
 	}
@@ -639,11 +646,25 @@ public class ContactExportDto implements Serializable {
 	@Order(36)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public Date getPreviousQuarantineTo() {
+		return previousQuarantineTo;
+	}
+
+	@Order(36)
+	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public String getQuarantineChangeComment() {
+		return quarantineChangeComment;
+	}
+
+	@Order(37)
+	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public String getQuarantineHelpNeeded() {
 		return quarantineHelpNeeded;
 	}
 
-	@Order(37)
+	@Order(38)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept(countries = {
@@ -653,7 +674,7 @@ public class ContactExportDto implements Serializable {
 		return quarantineOrderedVerbally;
 	}
 
-	@Order(38)
+	@Order(39)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept(countries = {
@@ -663,7 +684,7 @@ public class ContactExportDto implements Serializable {
 		return quarantineOrderedOfficialDocument;
 	}
 
-	@Order(39)
+	@Order(40)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept(countries = {
@@ -673,7 +694,7 @@ public class ContactExportDto implements Serializable {
 		return quarantineOrderedVerballyDate;
 	}
 
-	@Order(40)
+	@Order(41)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept(countries = {
@@ -683,7 +704,7 @@ public class ContactExportDto implements Serializable {
 		return quarantineOrderedOfficialDocumentDate;
 	}
 
-	@Order(41)
+	@Order(42)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept(countries = {
@@ -693,7 +714,7 @@ public class ContactExportDto implements Serializable {
 		return quarantineOfficialOrderSent;
 	}
 
-	@Order(42)
+	@Order(43)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	@HideForCountriesExcept(countries = {
@@ -703,42 +724,42 @@ public class ContactExportDto implements Serializable {
 		return quarantineOfficialOrderSentDate;
 	}
 
-	@Order(43)
+	@Order(44)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public boolean isQuarantineExtended() {
 		return quarantineExtended;
 	}
 
-	@Order(44)
+	@Order(45)
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public boolean isQuarantineReduced() {
 		return quarantineReduced;
 	}
 
-	@Order(45)
+	@Order(46)
 	@ExportProperty(value = ContactDto.PROHIBITION_TO_WORK, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public YesNoUnknown getProhibitionToWork() {
 		return prohibitionToWork;
 	}
 
-	@Order(46)
+	@Order(47)
 	@ExportProperty(value = ContactDto.PROHIBITION_TO_WORK, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public Date getProhibitionToWorkFrom() {
 		return prohibitionToWorkFrom;
 	}
 
-	@Order(47)
+	@Order(48)
 	@ExportProperty(value = ContactDto.PROHIBITION_TO_WORK, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public Date getProhibitionToWorkUntil() {
 		return prohibitionToWorkUntil;
 	}
 
-	@Order(48)
+	@Order(49)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.PRESENT_CONDITION })
@@ -747,7 +768,7 @@ public class ContactExportDto implements Serializable {
 		return presentCondition;
 	}
 
-	@Order(49)
+	@Order(50)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.DEATH_DATE })
@@ -1447,5 +1468,13 @@ public class ContactExportDto implements Serializable {
 
 	public void setVaccineAtcCode(String vaccineAtcCode) {
 		this.vaccineAtcCode = vaccineAtcCode;
+	}
+
+	public void setPreviousQuarantineTo(Date previousQuarantineTo) {
+		this.previousQuarantineTo = previousQuarantineTo;
+	}
+
+	public void setQuarantineChangeComment(String quarantineChangeComment) {
+		this.quarantineChangeComment = quarantineChangeComment;
 	}
 }

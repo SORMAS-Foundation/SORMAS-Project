@@ -184,7 +184,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 
 		for (OutbreakDto outbreak : activeOutbreaks) {
 			DistrictReferenceDto outbreakDistrict = outbreak.getDistrict();
-			RegionReferenceDto outbreakRegion = FacadeProvider.getDistrictFacade().getDistrictByUuid(outbreakDistrict.getUuid()).getRegion();
+			RegionReferenceDto outbreakRegion = FacadeProvider.getDistrictFacade().getByUuid(outbreakDistrict.getUuid()).getRegion();
 			Disease outbreakDisease = outbreak.getDisease();
 
 			// Only show the Outbreak if its Disease is active on the system

@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+*/
 package de.symeda.sormas.backend.common;
 
 import java.io.IOException;
@@ -53,6 +53,8 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import de.symeda.sormas.backend.db.TransactionWrapperEjb;
+import de.symeda.sormas.backend.infrastructure.central.CentralInfraSyncFacade;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,6 +157,11 @@ public class StartupShutdownService {
 	private CountryService countryService;
 	@EJB
 	private SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb;
+	@EJB
+	private CentralInfraSyncFacade centralInfraSync;
+	@EJB
+	private TransactionWrapperEjb.TransactionWrapperEjbLocal transactionWrapper;
+
 
 	@Inject
 	private Event<UserUpdateEvent> userUpdateEvent;
@@ -216,6 +223,8 @@ public class StartupShutdownService {
 
 		configFacade.validateAppUrls();
 		configFacade.validateExternalUrls();
+
+		centralInfraSync.syncAll();
 	}
 
 	private void createDefaultInfrastructureData() {
@@ -232,7 +241,7 @@ public class StartupShutdownService {
 			region.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.REGION.ordinal()));
 			region.setName(I18nProperties.getCaption(Captions.defaultRegion, "Default Region"));
 			region.setEpidCode("DEF-REG");
-			region.setDistricts(new ArrayList<District>());
+			region.setDistricts(new ArrayList<>());
 			regionService.ensurePersisted(region);
 		}
 
@@ -247,7 +256,7 @@ public class StartupShutdownService {
 			}
 			district.setRegion(region);
 			district.setEpidCode("DIS");
-			district.setCommunities(new ArrayList<Community>());
+			district.setCommunities(new ArrayList<>());
 			districtService.ensurePersisted(district);
 			region.getDistricts().add(district);
 		}
@@ -356,9 +365,9 @@ public class StartupShutdownService {
 			District district = region.getDistricts().get(0);
 			Community community = district.getCommunities().get(0);
 			List<Facility> healthFacilities = facilityService.getActiveFacilitiesByCommunityAndType(community, FacilityType.HOSPITAL, false, false);
-			Facility facility = healthFacilities.size() > 0 ? healthFacilities.get(0) : null;
+			Facility facility = !healthFacilities.isEmpty() ? healthFacilities.get(0) : null;
 			List<Facility> laboratories = facilityService.getAllActiveLaboratories(false);
-			Facility laboratory = laboratories.size() > 0 ? laboratories.get(0) : null;
+			Facility laboratory = !laboratories.isEmpty() ? laboratories.get(0) : null;
 			PointOfEntry pointOfEntry = pointOfEntryService.getAllActive().get(0);
 
 			logger.info("Create default users");
@@ -717,7 +726,7 @@ public class StartupShutdownService {
 				// Perform the current update when the INSERT INTO schema_version statement is reached
 				if (schemaLineVersion != null) {
 					logger.info("Updating database to version {}...", schemaLineVersion);
-					entityManager.createNativeQuery(nextUpdateBuilder.toString()).executeUpdate();
+					transactionWrapper.execute(f -> entityManager.createNativeQuery(f).executeUpdate(), nextUpdateBuilder.toString());
 					nextUpdateBuilder.setLength(0);
 				}
 			}

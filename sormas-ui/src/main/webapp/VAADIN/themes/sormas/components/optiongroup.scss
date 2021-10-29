@@ -49,7 +49,7 @@
 		
 	  &.soft-required,
 	  &.v-required {
-	  	.v-radiobutton {
+	  	.v-radiobutton, .v-checkbox {
 		  border-color: $v-selection-color;
         }
       }

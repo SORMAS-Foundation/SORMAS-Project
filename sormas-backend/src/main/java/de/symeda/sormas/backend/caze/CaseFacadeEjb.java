@@ -773,6 +773,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.CLINICIAN_EMAIL),
 				joins.getReportingUser().get(User.ID),
 				joins.getFollowUpStatusChangeUser().get(User.ID),
+				caseRoot.get(Case.PREVIOUS_QUARANTINE_TO),
+				caseRoot.get(Case.QUARANTINE_CHANGE_COMMENT),
 				JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(caseQueryContext)));
 		//@formatter:on
 
@@ -1589,7 +1591,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDisease));
 		}
 		// Check whether there are any infrastructure errors
-		if (!districtFacade.getDistrictByUuid(caze.getResponsibleDistrict().getUuid()).getRegion().equals(caze.getResponsibleRegion())) {
+		if (!districtFacade.getByUuid(caze.getResponsibleDistrict().getUuid()).getRegion().equals(caze.getResponsibleRegion())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noResponsibleDistrictInResponsibleRegion));
 		}
 		if (caze.getResponsibleCommunity() != null
@@ -1598,7 +1600,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 		if (caze.getRegion() != null
 			&& caze.getDistrict() != null
-			&& !districtFacade.getDistrictByUuid(caze.getDistrict().getUuid()).getRegion().equals(caze.getRegion())) {
+			&& !districtFacade.getByUuid(caze.getDistrict().getUuid()).getRegion().equals(caze.getRegion())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noDistrictInRegion));
 		}
 		if (caze.getDistrict() != null
@@ -1933,6 +1935,10 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		if (existingCase != null && syncShares && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(new ShareTreeCriteria(existingCase.getUuid()));
+		}
+
+		if (existingCase != null && existingCase.getQuarantineTo() != null && !existingCase.getQuarantineTo().equals(newCase.getQuarantineTo())) {
+			newCase.setPreviousQuarantineTo(existingCase.getQuarantineTo());
 		}
 	}
 
@@ -2550,6 +2556,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 		target.setDontShareWithReportingTool(source.isDontShareWithReportingTool());
 		target.setCaseReferenceDefinition(source.getCaseReferenceDefinition());
+		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
+		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
 
 		return target;
 	}
@@ -2717,6 +2725,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
 		target.setDontShareWithReportingTool(source.isDontShareWithReportingTool());
 		target.setCaseReferenceDefinition(source.getCaseReferenceDefinition());
+		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
+		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
 
 		return target;
 	}
