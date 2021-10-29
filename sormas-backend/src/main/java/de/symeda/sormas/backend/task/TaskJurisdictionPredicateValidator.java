@@ -34,43 +34,41 @@ import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 public class TaskJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
     private final TaskJoins joins;
-    private final User currentUser;
 
-    private TaskJurisdictionPredicateValidator(CriteriaBuilder cb, TaskJoins joins, User currentUser, List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
-        super(cb, associatedJurisdictionValidators);
+    private TaskJurisdictionPredicateValidator(CriteriaBuilder cb, TaskJoins joins, User user, List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
+        super(cb, user, null, associatedJurisdictionValidators);
         this.joins = joins;
-        this.currentUser = currentUser;
     }
 
-	public static TaskJurisdictionPredicateValidator of(TaskQueryContext qc, User currentUser) {
+	public static TaskJurisdictionPredicateValidator of(TaskQueryContext qc, User user) {
 		final List<PredicateJurisdictionValidator> associatedJurisdictionValidators = new ArrayList<>();
 
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 		final TaskJoins joins = (TaskJoins) qc.getJoins();
 
 		associatedJurisdictionValidators
-			.add(CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, qc.getQuery(), joins.getCaze()), currentUser));
+			.add(CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, qc.getQuery(), joins.getCaze()), user));
 		associatedJurisdictionValidators
-			.add(ContactJurisdictionPredicateValidator.of(new ContactQueryContext(cb, qc.getQuery(), joins.getContact()), currentUser));
+			.add(ContactJurisdictionPredicateValidator.of(new ContactQueryContext(cb, qc.getQuery(), joins.getContact()), user));
 		associatedJurisdictionValidators
-			.add(EventJurisdictionPredicateValidator.of(new EventQueryContext(cb, qc.getQuery(), joins.getEvent()), currentUser));
+			.add(EventJurisdictionPredicateValidator.of(new EventQueryContext(cb, qc.getQuery(), joins.getEvent()), user));
 
-		return new TaskJurisdictionPredicateValidator(cb, joins, currentUser, associatedJurisdictionValidators);
+		return new TaskJurisdictionPredicateValidator(cb, joins, user, associatedJurisdictionValidators);
 	}
 
 	@Override
 	protected Predicate isInJurisdictionOrOwned() {
         final Predicate createdByCurrentUser =
-            cb.and(cb.isNotNull(joins.getCreator()), cb.equal(joins.getCreator().get(User.UUID), currentUser.getUuid()));
+            cb.and(cb.isNotNull(joins.getCreator()), cb.equal(joins.getCreator().get(User.UUID), user.getUuid()));
 
         final Predicate assignedToCurrentUser =
-                cb.and(cb.isNotNull(joins.getAssignee()), cb.equal(joins.getAssignee().get(User.UUID), currentUser.getUuid()));
+                cb.and(cb.isNotNull(joins.getAssignee()), cb.equal(joins.getAssignee().get(User.UUID), user.getUuid()));
 		return cb.or(createdByCurrentUser, assignedToCurrentUser, isInJurisdiction());
 	}
 
     @Override
     protected Predicate isInJurisdiction() {
-        return isInJurisdictionByJurisdictionLevel(currentUser.getJurisdictionLevel());
+        return isInJurisdictionByJurisdictionLevel(user.getCalculatedJurisdictionLevel());
     }
 
     @Override

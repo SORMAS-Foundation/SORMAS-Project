@@ -273,7 +273,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		em.flush();
 	}
 
-	public Boolean exists(ExistsPredicateBuilder<ADO> filterBuilder) {
+	public boolean exists(ExistsPredicateBuilder<ADO> filterBuilder) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 
