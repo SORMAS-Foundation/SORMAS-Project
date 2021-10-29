@@ -36,6 +36,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
+import de.symeda.sormas.api.db.TransactionWrapperFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
@@ -48,7 +49,7 @@ import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.eventimport.EventImportFacade;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
-import de.symeda.sormas.api.infrastructure.InfrastructureSyncFacade;
+import de.symeda.sormas.api.infrastructure.ClientInfraSyncFacade;
 import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.geocoding.GeocodingFacade;
@@ -89,6 +90,7 @@ import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoFaca
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
+import de.symeda.sormas.api.systemevents.sync.SyncFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
 import de.symeda.sormas.api.therapy.TherapyFacade;
@@ -318,8 +320,8 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(PopulationDataFacade.class);
 	}
 
-	public static InfrastructureSyncFacade getInfrastructureSyncFacade() {
-		return get().lookupEjbRemote(InfrastructureSyncFacade.class);
+	public static ClientInfraSyncFacade getInfrastructureSyncFacade() {
+		return get().lookupEjbRemote(ClientInfraSyncFacade.class);
 	}
 
 	public static FeatureConfigurationFacade getFeatureConfigurationFacade() {
@@ -467,6 +469,14 @@ public class FacadeProvider {
 
 	public static TestReportFacade getTestReportFacade() {
 		return get().lookupEjbRemote(TestReportFacade.class);
+	}
+
+	public static SyncFacade getSyncFacade() {
+		return get().lookupEjbRemote(SyncFacade.class);
+	}
+
+	public static TransactionWrapperFacade getTransactionWrapperFacade() {
+		return get().lookupEjbRemote(TransactionWrapperFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

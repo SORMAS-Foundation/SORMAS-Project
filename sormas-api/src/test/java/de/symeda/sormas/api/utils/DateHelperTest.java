@@ -29,6 +29,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import de.symeda.sormas.api.Language;
+
 public class DateHelperTest {
 
 	@Test
@@ -136,5 +138,29 @@ public class DateHelperTest {
 		assertEquals(date.getTime(), timestamp.getTime());
 		assertTrue(timestamp.after(new Timestamp(date.getTime())));
 		assertEquals(999999, timestamp.getNanos() % 1000000);
+	}
+
+	@Test
+	public void testFormatBirthdateEN() throws Exception {
+		assertEquals("", DateHelper.formatLocalDate(null, null, null, Language.EN));
+		assertEquals("1990", DateHelper.formatLocalDate(null, null, 1990, Language.EN));
+		assertEquals("7//1990", DateHelper.formatLocalDate(null, 7, 1990, Language.EN));
+		assertEquals("7", DateHelper.formatLocalDate(null, 7, null, Language.EN));
+		assertEquals("7/5", DateHelper.formatLocalDate(5, 7, null, Language.EN));
+		assertEquals("5", DateHelper.formatLocalDate(5, null, null, Language.EN));
+		assertEquals("5/1990", DateHelper.formatLocalDate(5, null, 1990, Language.EN));
+		assertEquals("7/5/1990", DateHelper.formatLocalDate(5, 7, 1990, Language.EN));
+	}
+
+	@Test
+	public void testFormatBirthdateDE() throws Exception {
+		assertEquals("", DateHelper.formatLocalDate(null, null, null, Language.DE));
+		assertEquals("1990", DateHelper.formatLocalDate(null, null, 1990, Language.DE));
+		assertEquals("7.1990", DateHelper.formatLocalDate(null, 7, 1990, Language.DE));
+		assertEquals("7", DateHelper.formatLocalDate(null, 7, null, Language.DE));
+		assertEquals("5.7", DateHelper.formatLocalDate(5, 7, null, Language.DE));
+		assertEquals("5", DateHelper.formatLocalDate(5, null, null, Language.DE));
+		assertEquals("5..1990", DateHelper.formatLocalDate(5, null, 1990, Language.DE));
+		assertEquals("5.7.1990", DateHelper.formatLocalDate(5, 7, 1990, Language.DE));
 	}
 }

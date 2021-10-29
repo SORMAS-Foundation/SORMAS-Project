@@ -357,7 +357,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 	}
 
-	public String getEmailAddress(PersonDto person, boolean onlyPrimary) {
+	private String getEmailAddress(PersonDto person, boolean onlyPrimary) {
 		try {
 			return person.getEmailAddress(onlyPrimary);
 		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
@@ -365,7 +365,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 	}
 
-	public String getPhone(PersonDto person, boolean onlyPrimary) {
+	private String getPhone(PersonDto person, boolean onlyPrimary) {
 		try {
 			return person.getPhone(onlyPrimary);
 		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
@@ -547,7 +547,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (source.getAddress() != null) {
 			if (source.getAddress().getRegion() != null
 				&& source.getAddress().getDistrict() != null
-				&& !districtFacade.getDistrictByUuid(source.getAddress().getDistrict().getUuid())
+				&& !districtFacade.getByUuid(source.getAddress().getDistrict().getUuid())
 					.getRegion()
 					.equals(source.getAddress().getRegion())) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressDistrictInAddressRegion));
@@ -860,8 +860,7 @@ public class PersonFacadeEjb implements PersonFacade {
 				approximateAgeType,
 				entity.getBirthdateDD(),
 				entity.getBirthdateMM(),
-				entity.getBirthdateYYYY(),
-				I18nProperties.getUserLanguage()));
+				entity.getBirthdateYYYY()));
 		similarPersonDto.setSex(entity.getSex());
 		similarPersonDto.setPresentCondition(entity.getPresentCondition());
 		similarPersonDto.setPhone(entity.getPhone());

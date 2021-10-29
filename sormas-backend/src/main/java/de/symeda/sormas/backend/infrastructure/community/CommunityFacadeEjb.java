@@ -16,8 +16,6 @@ package de.symeda.sormas.backend.infrastructure.community;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +25,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -59,19 +55,14 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "CommunityFacade")
 public class CommunityFacadeEjb
 	extends AbstractInfrastructureEjb<Community, CommunityDto, CommunityDto, CommunityReferenceDto, CommunityService, CommunityCriteria>
 	implements CommunityFacade {
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
-
-	@EJB
-	private UserService userService;
 	@EJB
 	private DistrictService districtService;
 
@@ -79,8 +70,8 @@ public class CommunityFacadeEjb
 	}
 
 	@Inject
-	protected CommunityFacadeEjb(CommunityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(service, featureConfiguration);
+	protected CommunityFacadeEjb(CommunityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
+		super(Community.class, CommunityDto.class, service, featureConfiguration, userService);
 	}
 
 	@Override
@@ -91,29 +82,11 @@ public class CommunityFacadeEjb
 	}
 
 	@Override
-	public List<CommunityDto> getAllAfter(Date date) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<CommunityDto> cq = cb.createQuery(CommunityDto.class);
-		Root<Community> community = cq.from(Community.class);
-
-		selectDtoFields(cq, community);
-
-		Predicate filter = service.createChangeDateFilter(cb, community, date);
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	// Need to be in the same order as in the constructor
-	private void selectDtoFields(CriteriaQuery<CommunityDto> cq, Root<Community> root) {
+	protected void selectDtoFields(CriteriaQuery<CommunityDto> cq, Root<Community> root) {
 
 		Join<Community, District> district = root.join(Community.DISTRICT, JoinType.LEFT);
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
-
+		// Need to be in the same order as in the constructor
 		cq.multiselect(
 			root.get(Community.CREATION_DATE),
 			root.get(Community.CHANGE_DATE),
@@ -148,8 +121,8 @@ public class CommunityFacadeEjb
 			cq.where(filter);
 		}
 
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
+		if (CollectionUtils.isNotEmpty(sortProperties)) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
@@ -188,47 +161,6 @@ public class CommunityFacadeEjb
 		List<CommunityDto> communityList = getIndexList(communityCriteria, offset, size, sortProperties);
 		long totalElementCount = count(communityCriteria);
 		return new Page<>(communityList, offset, size, totalElementCount);
-	}
-
-	@Override
-	public long count(CommunityCriteria criteria) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Community> root = cq.from(Community.class);
-
-		Predicate filter = null;
-
-		if (criteria != null) {
-			filter = service.buildCriteriaFilter(criteria, cb, root);
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.select(cb.count(root));
-		return em.createQuery(cq).getSingleResult();
-	}
-
-	@Override
-	public List<String> getAllUuids() {
-
-		if (userService.getCurrentUser() == null) {
-			return Collections.emptyList();
-		}
-
-		return service.getAllUuids();
-	}
-
-	@Override
-	public List<CommunityDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
-	}
-
-	@Override
-	public CommunityReferenceDto getCommunityReferenceByUuid(String uuid) {
-		return toReferenceDto(service.getByUuid(uuid));
 	}
 
 	@Override
@@ -317,8 +249,7 @@ public class CommunityFacadeEjb
 		if (entity == null) {
 			return null;
 		}
-		CommunityReferenceDto dto = new CommunityReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
-		return dto;
+		return new CommunityReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
 	}
 
 	@Override
@@ -341,6 +272,11 @@ public class CommunityFacadeEjb
 	}
 
 	@Override
+	public CommunityReferenceDto toRefDto(Community community) {
+		return toReferenceDto(community);
+	}
+
+	@Override
 	protected Community fillOrBuildEntity(@NotNull CommunityDto source, Community target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Community::new, checkChangeDate);
 
@@ -360,8 +296,11 @@ public class CommunityFacadeEjb
 		}
 
 		@Inject
-		protected CommunityFacadeEjbLocal(CommunityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-			super(service, featureConfiguration);
+		protected CommunityFacadeEjbLocal(
+			CommunityService service,
+			FeatureConfigurationFacadeEjbLocal featureConfiguration,
+			UserService userService) {
+			super(service, featureConfiguration, userService);
 		}
 	}
 }

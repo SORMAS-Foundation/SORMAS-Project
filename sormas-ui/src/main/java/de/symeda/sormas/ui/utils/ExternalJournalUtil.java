@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 
 import com.vaadin.ui.HorizontalLayout;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
-import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -62,7 +62,7 @@ public class ExternalJournalUtil {
 	 *            the associated case or contact
 	 * @return Optional containing appropriate Button
 	 */
-	public static Optional<Button> getExternalJournalUiButton(PersonDto person, SormasToSormasEntityDto sormasToSormasEntity) {
+	public static Optional<Button> getExternalJournalUiButton(PersonDto person, SormasToSormasShareableDto sormasToSormasEntity) {
 		Optional<Button> externalJournalUiButton = getExternalJournalUiButton(person);
 		return externalJournalUiButton.map(button -> {
 			boolean buttonEnabled = !sormasToSormasEntity.isOwnershipHandedOver()

@@ -62,11 +62,9 @@ public class EditCasePage {
       By.cssSelector("#caseIdentificationSource div");
   public static final By PLACE_OF_STAY_OPTIONS =
       By.cssSelector("[location='facilityOrHomeLoc'] label");
-  public static final By REGION_COMBOBOX = By.cssSelector("#region div");
-  public static final By DISTRICT_COMBOBOX = By.cssSelector("#district div");
-  public static final By COMMUNITY_COMBOBOX = By.cssSelector("#community div");
-  public static final By RESPONSIBLE_JURISDICTION_OPTIONS =
-      By.cssSelector("#differentJurisdiction label");
+  public static final By REGION_COMBOBOX = By.cssSelector("#responsibleRegion div");
+  public static final By DISTRICT_COMBOBOX = By.cssSelector("#responsibleDistrict div");
+  public static final By COMMUNITY_COMBOBOX = By.cssSelector("#responsibleCommunity div");
   public static final By RESPONSIBLE_REGION_COMBOBOX = By.cssSelector("#responsibleRegion div");
   public static final By RESPONSIBLE_DISTRICT_COMBOBOX = By.cssSelector("#responsibleDistrict div");
   public static final By RESPONSIBLE_COMMUNITY_COMBOBOX =
@@ -82,7 +80,7 @@ public class EditCasePage {
   public static final By BLOOD_ORGAN_TISSUE_DONATION_IN_THE_LAST_6_MONTHS_OPTIONS =
       By.cssSelector("#bloodOrganOrTissueDonated label");
   public static final By VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX =
-      By.cssSelector("#vaccination div");
+      By.cssSelector("#vaccinationStatus div");
   public static final By RESPONSIBLE_SURVEILLANCE_OFFICER_COMBOBOX =
       By.cssSelector("#surveillanceOfficer div");
   public static final By DATE_RECEIVED_AT_DISTRICT_LEVEL_INPUT =

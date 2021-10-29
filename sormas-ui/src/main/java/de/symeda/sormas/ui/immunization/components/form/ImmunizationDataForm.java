@@ -108,7 +108,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		+ fluidRowLocs(ImmunizationDto.START_DATE, ImmunizationDto.END_DATE)
 		+ fluidRowLocs(ImmunizationDto.VALID_FROM, ImmunizationDto.VALID_UNTIL)
 		+ fluidRowLocs(VACCINATION_HEADING_LOC)
-		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.NUMBER_OF_DOSES))
+		+ fluidRowLocs(ImmunizationDto.NUMBER_OF_DOSES, ImmunizationDto.NUMBER_OF_DOSES_DETAILS)
 		+ fluidRowLocs(ImmunizationDto.VACCINATIONS)
 		+ fluidRowLocs(RECOVERY_HEADING_LOC)
 		+ fluidRowLocs(ImmunizationDto.POSITIVE_TEST_RESULT_DATE, ImmunizationDto.RECOVERY_DATE, LINK_IMMUNIZATION_TO_CASE_BTN_LOC)
@@ -212,14 +212,20 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 		MeansOfImmunization meansOfImmunizationValue = (MeansOfImmunization) meansOfImmunizationField.getValue();
 
+		boolean isVaccinationVisibleInitial = shouldShowVaccinationFields(meansOfImmunizationValue);
+
 		Label vaccinationHeadingLabel = new Label(I18nProperties.getString(Strings.headingVaccination));
 		vaccinationHeadingLabel.addStyleName(H3);
 		getContent().addComponent(vaccinationHeadingLabel, VACCINATION_HEADING_LOC);
-		vaccinationHeadingLabel.setVisible(shouldShowVaccinationFields(meansOfImmunizationValue));
+		vaccinationHeadingLabel.setVisible(isVaccinationVisibleInitial);
 
 		Field numberOfDosesField = addField(ImmunizationDto.NUMBER_OF_DOSES);
 		numberOfDosesField.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10, false));
-		numberOfDosesField.setVisible(shouldShowVaccinationFields(meansOfImmunizationValue));
+		numberOfDosesField.setVisible(isVaccinationVisibleInitial);
+
+		Field numberOfDosesDetailsField = addField(ImmunizationDto.NUMBER_OF_DOSES_DETAILS);
+		numberOfDosesDetailsField.setReadOnly(true);
+		numberOfDosesDetailsField.setVisible(isVaccinationVisibleInitial && getValue().getNumberOfDosesDetails() != null);
 
 		VaccinationsField vaccinationsField = addField(ImmunizationDto.VACCINATIONS, VaccinationsField.class);
 		FieldHelper.setVisibleWhen(
@@ -338,6 +344,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			}
 			vaccinationHeadingLabel.setVisible(isVaccinationVisible);
 			numberOfDosesField.setVisible(isVaccinationVisible);
+			numberOfDosesDetailsField.setVisible(isVaccinationVisible && getValue().getNumberOfDosesDetails() != null);
 
 			recoveryHeadingLabel.setVisible(isRecoveryVisible);
 			positiveTestResultDate.setVisible(isRecoveryVisible);
