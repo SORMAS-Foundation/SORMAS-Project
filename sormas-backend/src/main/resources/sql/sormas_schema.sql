@@ -8749,4 +8749,13 @@ CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON sharerequ
 
 INSERT INTO schema_version (version_number, comment) VALUES (420, 'Create missing history tables for S2S tables #6949');
 
+ALTER TABLE hospitalization ADD COLUMN description varchar(512);
+ALTER TABLE hospitalization_history ADD COLUMN description varchar(512);
+ALTER TABLE previoushospitalization ADD COLUMN admittedtohealthfacility varchar(255);
+ALTER TABLE previoushospitalization_history ADD COLUMN admittedtohealthfacility varchar(255);
+ALTER TABLE previoushospitalization ADD COLUMN isolationdate timestamp;
+ALTER TABLE previoushospitalization_history ADD COLUMN isolationdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (421, 'Add additional fields to hospitalization #4593');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
