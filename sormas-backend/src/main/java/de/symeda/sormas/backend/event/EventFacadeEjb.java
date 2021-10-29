@@ -1271,6 +1271,35 @@ public class EventFacadeEjb implements EventFacade {
 		eventService.updateExternalData(externalData);
 	}
 
+	@Override
+	public List<String> getSubordinateEventUuids(List<String> uuids) {
+		if (uuids.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<String> subordinateEventUuids = new ArrayList<>();
+		IterableHelper.executeBatched(uuids, ModelConstants.PARAMETER_LIMIT, (batchedUuids) -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<String> cq = cb.createQuery(String.class);
+			Root<Event> from = cq.from(Event.class);
+
+			EventJoins<Event> eventJoins = new EventJoins<>(from);
+
+			Predicate filters = CriteriaBuilderHelper.and(
+				cb,
+				eventService.createUserFilter(cb, cq, from),
+				eventService.createActiveEventsFilter(cb, from),
+				eventJoins.getSuperordinateEvent().get(Event.UUID).in(batchedUuids));
+
+			cq.where(filters);
+			cq.select(from.get(Event.UUID));
+
+			subordinateEventUuids.addAll(em.createQuery(cq).getResultList());
+		});
+
+		return subordinateEventUuids;
+	}
+
 	@LocalBean
 	@Stateless
 	public static class EventFacadeEjbLocal extends EventFacadeEjb {
