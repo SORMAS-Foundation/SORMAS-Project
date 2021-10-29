@@ -8749,4 +8749,12 @@ CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON sharerequ
 
 INSERT INTO schema_version (version_number, comment) VALUES (420, 'Create missing history tables for S2S tables #6949');
 
+-- 2021-10-29 Allow to store external data for a case #7068
+ALTER TABLE cases ADD COLUMN externalData json;
+ALTER TABLE cases ALTER COLUMN externalData TYPE json USING externalData::json;
+ALTER TABLE cases_history ADD COLUMN externalData json;
+ALTER TABLE cases_history ALTER COLUMN externalData TYPE json USING externalData::json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (421, 'Allow to store external data for a case #7068');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

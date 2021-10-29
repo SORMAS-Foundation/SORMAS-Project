@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.db.TransactionWrapperFacade;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.db.TransactionWrapperFacade;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 
 public abstract class EntityDtoResource {
@@ -34,6 +34,7 @@ public abstract class EntityDtoResource {
 				dto = transactionWrapper.execute(saveEntityDto, dto);
 				result = PushResult.OK;
 			} catch (Exception e) {
+				e.printStackTrace();
 				String errorMessage = createErrorMessage(dto);
 				errorMessage += e.getMessage();
 				if (e instanceof OutdatedEntityException || ExceptionUtils.getRootCause(e) instanceof OutdatedEntityException) {

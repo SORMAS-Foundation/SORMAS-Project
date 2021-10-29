@@ -2559,6 +2559,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
 		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
 
+		target.setExternalData(source.getExternalData());
+
 		return target;
 	}
 
@@ -2727,6 +2729,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setCaseReferenceDefinition(source.getCaseReferenceDefinition());
 		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
 		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
+
+		if (source.getExternalData() != null) {
+			target.setExternalData(source.getExternalData());
+		}
 
 		return target;
 	}
