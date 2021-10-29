@@ -68,6 +68,11 @@ public class RemoteDriverFactory implements DriverFactory {
     options.addArguments("--disable-new-content-rendering-timeout");
     options.addArguments("--disable-browser-side-navigation");
     options.addArguments("--disable-dev-shm-usage");
+    options.addArguments("--allow-running-insecure-content");
+    options.addArguments("enable-automation");
+    options.addArguments("--ignore-certificate-errors");
+    options.addArguments("--ignore-ssl-errors");
+    options.addArguments("--start-maximized");
     options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
     options.setCapability(SUPPORTS_ALERTS, false);
     log.info("Returning ChromeDriver instance with provided arguments");

@@ -984,7 +984,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Predicate filterResponsible = null;
 		Predicate filter = null;
 
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
 		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)) {
 			// whoever created the case or is assigned to it is allowed to access it
 			if (userFilterCriteria == null || (userFilterCriteria.getIncludeCasesFromOtherJurisdictions())) {
@@ -1288,25 +1288,33 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<Case> root = cq.from(Case.class);
-		Predicate inJurisdiction = CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, root), user).inJurisdiction();
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdiction));
-		cq.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
-		return em.createQuery(cq).getSingleResult();
+		cq.multiselect(
+			JurisdictionHelper
+				.booleanSelector(cb, CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, root), user).isInJurisdiction()));
+		cq.where(cb.equal(root.get(Event.UUID), caze.getUuid()));
+		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
 	}
-
-	public boolean inJurisdictionOrOwned(Case caze) {
+	
+	public boolean inJurisdictionOrOwned(Case caze, User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<Case> root = cq.from(Case.class);
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new CaseQueryContext(cb, cq, root))));
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new CaseQueryContext(cb, cq, root), user)));
 		cq.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
-		return em.createQuery(cq).getSingleResult();
+		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
+	}
+
+	public boolean inJurisdictionOrOwned(Case caze) {
+		return inJurisdictionOrOwned(caze, userService.getCurrentUser());
 	}
 
 	public Predicate inJurisdictionOrOwned(CaseQueryContext qc) {
-		final User currentUser = userService.getCurrentUser();
-		return CaseJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
+		return inJurisdictionOrOwned(qc, userService.getCurrentUser());
+	}
+	
+	public Predicate inJurisdictionOrOwned(CaseQueryContext qc, User user) {
+		return CaseJurisdictionPredicateValidator.of(qc, user).inJurisdictionOrOwned();
 	}
 
 	public Collection<Case> getByPersonUuids(List<String> personUuids) {

@@ -31,4 +31,4 @@ rm -rf ./customReports/images/BarChart.jpeg
 echo "Executing gradle clean..."
 ./gradlew clean goJF
 echo "Starting all BDD tests under @PagesMeasurements tag..."
-./gradlew startTests -Dcucumber.tags="@PagesMeasurements" -Dheadless=true -Dcourgette.threads=9
+./gradlew startTests -Dcucumber.tags="@PagesMeasurements" -Dheadless=false -Dcourgette.threads=1
