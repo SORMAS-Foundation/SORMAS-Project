@@ -20,8 +20,6 @@ package de.symeda.sormas.ui.person;
 import java.util.Date;
 import java.util.function.Consumer;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -45,7 +43,6 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -55,6 +52,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
 public class PersonController {
 
@@ -74,17 +72,7 @@ public class PersonController {
 		final TitleLayout titleLayout = new TitleLayout();
 
 		final String shortUuid = DataHelper.getShortUuid(personDto.getUuid());
-		final String personFullName = personDto.toReference().getCaption();
-		final StringBuilder mainRowText = new StringBuilder();
-		if (StringUtils.isNotBlank(personFullName)) {
-			mainRowText.append(personFullName);
-
-			if (personDto.getBirthdateDD() != null && personDto.getBirthdateMM() != null && personDto.getBirthdateYYYY() != null) {
-				mainRowText.append(" (* ")
-					.append(DateFormatHelper.formatDate(personDto.getBirthdateDD(), personDto.getBirthdateMM(), personDto.getBirthdateYYYY()))
-					.append(")");
-			}
-		}
+		final StringBuilder mainRowText = TitleLayoutHelper.buildPersonString(personDto);
 		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
 		titleLayout.addMainRow(mainRowText.toString());
 
