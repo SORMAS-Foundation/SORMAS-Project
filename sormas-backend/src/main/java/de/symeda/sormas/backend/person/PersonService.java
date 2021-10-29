@@ -502,6 +502,11 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			.inJurisdictionOrOwned();
 	}
 
+	public List<SimilarPersonDto> getSimilarPersonDtos(PersonSimilarityCriteria criteria) {
+		List<String> similarPersonUuids = getMatchingNameDtos(criteria, null).stream().map(PersonNameDto::getUuid).collect(Collectors.toList());
+		return getSimilarPersonsByUuids(similarPersonUuids);
+	}
+
 	public List<PersonNameDto> getMatchingNameDtos(PersonSimilarityCriteria criteria, Integer limit) {
 
 		setSimilarityThresholdQuery();

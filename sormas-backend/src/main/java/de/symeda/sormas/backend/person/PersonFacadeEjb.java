@@ -97,7 +97,6 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonIndexDto;
-import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -225,10 +224,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			return Collections.emptyList();
 		}
 
-		List<String> similarPersonUuids =
-			personService.getMatchingNameDtos(criteria, null).stream().map(PersonNameDto::getUuid).collect(Collectors.toList());
-
-		return personService.getSimilarPersonsByUuids(similarPersonUuids);
+		return personService.getSimilarPersonDtos(criteria);
 	}
 
 	@Override
