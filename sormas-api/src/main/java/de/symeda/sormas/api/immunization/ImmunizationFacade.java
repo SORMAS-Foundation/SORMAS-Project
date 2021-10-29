@@ -58,4 +58,6 @@ public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, Immuniza
 		List<SortProperty> sortProperties);
 
 	boolean linkRecoveryImmunizationToSearchedCase(String specificCaseSearchValue, ImmunizationDto immunization);
+
+    List<ImmunizationDto> getByPersonUuids(List<String> uuids);
 }
