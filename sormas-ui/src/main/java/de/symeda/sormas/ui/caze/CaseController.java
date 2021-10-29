@@ -96,7 +96,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -130,6 +129,7 @@ import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
 public class CaseController {
 
@@ -1663,18 +1663,8 @@ public class CaseController {
 		titleLayout.addRow(caseData.getCaseClassification().toString());
 
 		String shortUuid = DataHelper.getShortUuid(caseData.getUuid());
-		String casePersonFullName = caseData.getPerson().getCaption();
-		StringBuilder mainRowText = new StringBuilder();
-		if (StringUtils.isNotBlank(casePersonFullName)) {
-			mainRowText.append(casePersonFullName);
-
-			PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
-			if (casePerson.getBirthdateDD() != null && casePerson.getBirthdateMM() != null && casePerson.getBirthdateYYYY() != null) {
-				mainRowText.append(" (* ")
-					.append(DateFormatHelper.formatDate(casePerson.getBirthdateDD(), casePerson.getBirthdateMM(), casePerson.getBirthdateYYYY()))
-					.append(")");
-			}
-		}
+		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(caseData.getPerson().getUuid());
+		StringBuilder mainRowText = TitleLayoutHelper.buildPersonString(person);
 		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
 		titleLayout.addMainRow(mainRowText.toString());
 
