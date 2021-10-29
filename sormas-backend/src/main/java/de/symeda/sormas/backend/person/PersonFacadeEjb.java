@@ -241,12 +241,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public List<SimilarPersonDto> getSimilarPersonsByUuids(List<String> personUuids) {
-		List<Person> persons = personService.getByUuids(personUuids);
-		if (persons == null) {
-			return new ArrayList<>();
-		} else {
-			return persons.stream().map(PersonFacadeEjb::toSimilarPersonDto).collect(Collectors.toList());
-		}
+		return personService.getSimilarPersonsByUuids(personUuids);
 	}
 
 	@Override
@@ -547,9 +542,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (source.getAddress() != null) {
 			if (source.getAddress().getRegion() != null
 				&& source.getAddress().getDistrict() != null
-				&& !districtFacade.getByUuid(source.getAddress().getDistrict().getUuid())
-					.getRegion()
-					.equals(source.getAddress().getRegion())) {
+				&& !districtFacade.getByUuid(source.getAddress().getDistrict().getUuid()).getRegion().equals(source.getAddress().getRegion())) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressDistrictInAddressRegion));
 			}
 			if (source.getAddress().getDistrict() != null
@@ -836,44 +829,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		person.setSymptomJournalStatus(status);
 		savePerson(person);
 		return true;
-	}
-
-	public static SimilarPersonDto toSimilarPersonDto(Person entity) {
-
-		Integer approximateAge = entity.getApproximateAge();
-		ApproximateAgeType approximateAgeType = entity.getApproximateAgeType();
-		if (entity.getBirthdateYYYY() != null) {
-			Pair<Integer, ApproximateAgeType> pair = ApproximateAgeHelper
-				.getApproximateAge(entity.getBirthdateYYYY(), entity.getBirthdateMM(), entity.getBirthdateDD(), entity.getDeathDate());
-			approximateAge = pair.getElement0();
-			approximateAgeType = pair.getElement1();
-		}
-
-		SimilarPersonDto similarPersonDto = new SimilarPersonDto();
-		similarPersonDto.setUuid(entity.getUuid());
-		similarPersonDto.setFirstName(entity.getFirstName());
-		similarPersonDto.setLastName(entity.getLastName());
-		similarPersonDto.setNickname(entity.getNickname());
-		similarPersonDto.setAgeAndBirthDate(
-			PersonHelper.getAgeAndBirthdateString(
-				approximateAge,
-				approximateAgeType,
-				entity.getBirthdateDD(),
-				entity.getBirthdateMM(),
-				entity.getBirthdateYYYY()));
-		similarPersonDto.setSex(entity.getSex());
-		similarPersonDto.setPresentCondition(entity.getPresentCondition());
-		similarPersonDto.setPhone(entity.getPhone());
-		similarPersonDto.setDistrictName(entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null);
-		similarPersonDto.setCommunityName(entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null);
-		similarPersonDto.setPostalCode(entity.getAddress().getPostalCode());
-		similarPersonDto.setCity(entity.getAddress().getCity());
-		similarPersonDto.setStreet(entity.getAddress().getStreet());
-		similarPersonDto.setHouseNumber(entity.getAddress().getHouseNumber());
-		similarPersonDto.setNationalHealthId(entity.getNationalHealthId());
-		similarPersonDto.setPassportNumber(entity.getPassportNumber());
-
-		return similarPersonDto;
 	}
 
 	public static PersonDto toDto(Person source) {

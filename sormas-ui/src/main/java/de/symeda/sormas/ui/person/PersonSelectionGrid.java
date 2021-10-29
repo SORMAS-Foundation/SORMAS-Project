@@ -37,9 +37,6 @@ public class PersonSelectionGrid extends Grid {
 
 	/**
 	 * Create a grid of persons listing all persons similar to the given criteria.
-	 * 
-	 * @param criteria
-	 *            The criteria used to query for similar persons.
 	 */
 	public PersonSelectionGrid() {
 		buildGrid();
