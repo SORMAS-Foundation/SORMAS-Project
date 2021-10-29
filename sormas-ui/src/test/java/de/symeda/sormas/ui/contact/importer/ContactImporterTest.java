@@ -14,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -39,7 +38,6 @@ import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -83,7 +81,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 		assertEquals(5, contactFacade.count(null));
 
 		// Person Similarity: pick
-		List<PersonNameDto> persons = FacadeProvider.getPersonFacade().getMatchingNameDtos(user.toReference(), new PersonSimilarityCriteria());
+		List<SimilarPersonDto> persons = FacadeProvider.getPersonFacade().getSimilarPersonDtos(user.toReference(), new PersonSimilarityCriteria());
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").toURI());
 		contactImporter = new ContactImporterExtension(csvFile, false, user, caze) {
 
@@ -96,10 +94,10 @@ public class ContactImporterTest extends AbstractBeanTest {
 				UI currentUI) {
 
 				List<SimilarPersonDto> entries = new ArrayList<>();
-				for (PersonNameDto person : persons) {
+				for (SimilarPersonDto person : persons) {
 					if (PersonHelper
 						.areNamesSimilar(newPerson.getFirstName(), newPerson.getLastName(), person.getFirstName(), person.getLastName(), null)) {
-						entries.addAll(FacadeProvider.getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(person.getUuid())));
+						entries.add(person);
 					}
 				}
 				resultConsumer.accept((T) new ContactImportSimilarityResult(entries.get(0), null, ImportSimilarityResultOption.PICK));

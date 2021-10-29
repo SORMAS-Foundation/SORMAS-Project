@@ -218,14 +218,17 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public List<PersonNameDto> getMatchingNameDtos(UserReferenceDto userRef, PersonSimilarityCriteria criteria) {
+	public List<SimilarPersonDto> getSimilarPersonDtos(UserReferenceDto userRef, PersonSimilarityCriteria criteria) {
 
 		User user = userService.getByReferenceDto(userRef);
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return new ArrayList<>(personService.getMatchingNameDtos(criteria, null));
+		List<String> similarPersonUuids =
+			personService.getMatchingNameDtos(criteria, null).stream().map(PersonNameDto::getUuid).collect(Collectors.toList());
+
+		return personService.getSimilarPersonsByUuids(similarPersonUuids);
 	}
 
 	@Override
@@ -237,11 +240,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 
 		return personService.getMatchingNameDtos(criteria, 1).size() > 0;
-	}
-
-	@Override
-	public List<SimilarPersonDto> getSimilarPersonsByUuids(List<String> personUuids) {
-		return personService.getSimilarPersonsByUuids(personUuids);
 	}
 
 	@Override

@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.person;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.vaadin.v7.data.util.BeanItemContainer;
 import com.vaadin.v7.data.util.GeneratedPropertyContainer;
@@ -27,7 +26,6 @@ import com.vaadin.v7.ui.Grid;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.ui.UserProvider;
@@ -91,12 +89,8 @@ public class PersonSelectionGrid extends Grid {
 	 *            The person criteria.
 	 */
 	public void loadData(PersonSimilarityCriteria criteria) {
-		List<String> similarPersonUuids = FacadeProvider.getPersonFacade()
-			.getMatchingNameDtos(UserProvider.getCurrent().getUserReference(), criteria)
-			.stream()
-			.map(PersonNameDto::getUuid)
-			.collect(Collectors.toList());
-		List<SimilarPersonDto> similarPersons = FacadeProvider.getPersonFacade().getSimilarPersonsByUuids(similarPersonUuids);
+		List<SimilarPersonDto> similarPersons =
+			FacadeProvider.getPersonFacade().getSimilarPersonDtos(UserProvider.getCurrent().getUserReference(), criteria);
 
 		getContainer().removeAllItems();
 		getContainer().addAll(similarPersons);

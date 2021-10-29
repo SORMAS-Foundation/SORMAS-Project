@@ -584,7 +584,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		}
 	}
 
-	public SimilarPersonDto toSimilarPersonDto(Person entity) {
+	private SimilarPersonDto toSimilarPersonDto(Person entity) {
 
 		Integer approximateAge = entity.getApproximateAge();
 		ApproximateAgeType approximateAgeType = entity.getApproximateAgeType();
