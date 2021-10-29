@@ -1192,6 +1192,18 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	public int caseSampleCountOf(SampleDto sample) {
+		CaseReferenceDto cazeRef = sample.getAssociatedCase();
+		if (cazeRef == null) {
+			return 0;
+		} else {
+			SampleCriteria sampleCriteria = new SampleCriteria();
+			sampleCriteria.caze(cazeRef);
+			return (int) count(sampleCriteria);
+		}
+	}
+
+	@Override
 	public boolean isDeleted(String sampleUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

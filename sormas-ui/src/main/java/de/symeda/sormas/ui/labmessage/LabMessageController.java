@@ -19,13 +19,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import javax.naming.CannotProceedException;
 import javax.naming.NamingException;
 
 import de.symeda.sormas.ui.samples.SampleController;
+import de.symeda.sormas.ui.samples.SampleEditForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +44,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
-import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -97,7 +96,6 @@ import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.events.EventParticipantEditForm;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
 import de.symeda.sormas.ui.samples.PathogenTestForm;
-import de.symeda.sormas.ui.samples.PathogenTestSelectionField;
 import de.symeda.sormas.ui.samples.SampleCreateForm;
 import de.symeda.sormas.ui.samples.SampleSelectionField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -454,12 +452,7 @@ public class LabMessageController {
 		selectionField.addCommitListener(() -> {
 			SampleDto sampleDto = selectField.getValue();
 			if (sampleDto != null) {
-				List<PathogenTestDto> tests = FacadeProvider.getPathogenTestFacade().getAllBySample(sampleDto.toReference());
-				if (tests.isEmpty()) {
-					createPathogenTest(sampleDto, labMessageDto);
-				} else {
-					pickOrCreateTest(sampleDto, labMessageDto, tests, samples.size());
-				}
+				editSample(sampleDto, labMessageDto);
 			} else if (CaseDataDto.class.equals(dto.getClass())) {
 				createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), ((CaseDataDto) dto).toReference()), labMessageDto, false);
 			} else if (ContactDto.class.equals(dto.getClass())) {
@@ -479,71 +472,39 @@ public class LabMessageController {
 		showFormWithLabMessage(labMessageDto, selectionField, window, I18nProperties.getString(Strings.headingPickOrCreateSample), false);
 	}
 
-	private void pickOrCreateTest(SampleDto sampleDto, LabMessageDto labMessageDto, List<PathogenTestDto> tests, int caseSampleCount) {
-		PathogenTestSelectionField selectField =
-			new PathogenTestSelectionField(tests, I18nProperties.getString(Strings.infoPickOrCreatePathogenTest));
+	private void editSample(SampleDto sample, LabMessageDto labMessage) {
+
+		SampleController sampleController = ControllerProvider.getSampleController();
+		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent =
+			sampleController.getSampleEditComponent(sample.getUuid(), sample.isPseudonymized());
+
+		// add existing tests to edit component
+		int caseSampleCount = FacadeProvider.getSampleFacade().caseSampleCountOf(sample);
+
+		List<PathogenTestDto> existingTests = FacadeProvider.getPathogenTestFacade().getAllBySample(sample.toReference());
+		for (PathogenTestDto existingTest : existingTests) {
+			sampleController.addPathogenTestCreateComponent(sampleEditComponent, existingTest, caseSampleCount, true);
+		}
+
+		// add newly submitted tests to sample edit component
+		List<String> existingTestExternalIds = existingTests.stream().map(t -> t.getExternalId()).collect(Collectors.toList());
+		while (existingTestExternalIds.remove(null)); // otherwise tests without external id will seen as match
+
+		List<PathogenTestDto> newTests = buildPathogenTests(sample, labMessage);
+
+		for (PathogenTestDto test : newTests) {
+			if (!existingTestExternalIds.contains(test.getExternalId())) {
+				PathogenTestForm form = sampleController.addPathogenTestCreateComponent(sampleEditComponent, test, caseSampleCount, true);
+				setViaLimsFieldCheckedAndDisabled(form);
+			}
+		}
 
 		Window window = VaadinUiUtil.createPopupWindow();
+		sampleEditComponent.addCommitListener(window::close);
+		sampleEditComponent.addDiscardListener(window::close);
 
-		final CommitDiscardWrapperComponent<PathogenTestSelectionField> selectionField = new CommitDiscardWrapperComponent<>(selectField);
-		selectionField.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
-		selectionField.setWidth(1280, Sizeable.Unit.PIXELS);
-		selectionField.addCommitListener(() -> {
-			PathogenTestDto testDto = selectField.getValue();
-			if (testDto != null) {
-				editPathogenTest(sampleDto, testDto, caseSampleCount, labMessageDto.getTestedDisease(), labMessageDto);
-			} else {
-				createPathogenTest(sampleDto, labMessageDto);
-			}
-			window.close();
-		});
-		selectField.setSelectionChangeCallback((commitAllowed) -> selectionField.getCommitButton().setEnabled(commitAllowed));
-		selectionField.getCommitButton().setEnabled(false);
-		selectionField.addDiscardListener(window::close);
+		showFormWithLabMessage(labMessage, sampleEditComponent, window, I18nProperties.getString(Strings.headingEditSample), false);
 
-		showFormWithLabMessage(labMessageDto, selectionField, window, I18nProperties.getString(Strings.headingPickOrCreatePathogenTest), false);
-	}
-
-	private void editPathogenTest(SampleDto sampleDto, PathogenTestDto testDto, int caseSampleCount, Disease disease, LabMessageDto labMessageDto) {
-		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest = (pathogenTestDto, callback) -> {
-			if (isValidPathogenTest(disease, pathogenTestDto)) {
-				if (pathogenTestDto.getTestResult() != sampleDto.getPathogenTestResult()) {
-					ControllerProvider.getSampleController()
-						.showChangePathogenTestResultWindow(
-							new CommitDiscardWrapperComponent<>(new SampleCreateForm()),
-							sampleDto.getUuid(),
-							pathogenTestDto.getTestResult(),
-							testedResult -> callback.run());
-				} else {
-					callback.run();
-				}
-			} else {
-				callback.run();
-			}
-			finishProcessingLabMessage(labMessageDto, sampleDto);
-		};
-
-		Window window = VaadinUiUtil.createPopupWindow();
-
-		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestEditComponent =
-			ControllerProvider.getPathogenTestController().getPathogenTestEditComponent(testDto, caseSampleCount, window::close, onSavedPathogenTest);
-
-		pathogenTestEditComponent.addDiscardListener(window::close);
-		pathogenTestEditComponent.getWrappedComponent().setValue(testDto);
-
-		showFormWithLabMessage(
-			labMessageDto,
-			pathogenTestEditComponent,
-			window,
-			I18nProperties.getString(Strings.headingEditPathogenTestResult),
-			false);
-	}
-
-	private boolean isValidPathogenTest(Disease disease, PathogenTestDto pathogenTestDto) {
-		return pathogenTestDto != null
-			&& pathogenTestDto.getTestResult() != null
-			&& Boolean.TRUE.equals(pathogenTestDto.getTestResultVerified())
-			&& pathogenTestDto.getTestedDisease() == disease;
 	}
 
 	private void createCase(LabMessageDto labMessageDto, PersonDto person) {
@@ -661,14 +622,11 @@ public class LabMessageController {
 		}
 	}
 
-	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
-		SampleDto sampleDto,
-		LabMessageDto labMessageDto,
-		Window window) {
+	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sample, LabMessageDto labMessageDto, Window window) {
 		SampleController sampleController = ControllerProvider.getSampleController();
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
-			sampleController.getSampleCreateComponent(sampleDto, (savedSampleDto, pathogenTestDto) -> {
-				finishProcessingLabMessage(labMessageDto, sampleDto);
+			sampleController.getSampleCreateComponent(sample, (savedSampleDto, pathogenTestDto) -> {
+				finishProcessingLabMessage(labMessageDto, sample);
 			});
 
 		// including a pathogen test is not an option here, it is mandatory.
@@ -677,14 +635,15 @@ public class LabMessageController {
 
 		// add pathogen test create components
 		//********************
-		List<PathogenTestDto> pathogenTests = buildPathogenTests(sampleDto, labMessageDto);
+		List<PathogenTestDto> pathogenTests = buildPathogenTests(sample, labMessageDto);
+		int caseSampleCount = FacadeProvider.getSampleFacade().caseSampleCountOf(sample);
 		// the first pathogenTestCreateComponent must not be removable. It is expected to exist because the buildPathogenTests shall always return at least one.
 		PathogenTestForm pathogenTestCreateComponent =
-			sampleController.addPathogenTestCreateComponent(sampleCreateComponent, pathogenTests.get(0), false);
+			sampleController.addPathogenTestCreateComponent(sampleCreateComponent, pathogenTests.get(0), caseSampleCount, false);
 		setViaLimsFieldCheckedAndDisabled(pathogenTestCreateComponent);
 		// all other pathogen test create components may be removed.
 		for (PathogenTestDto pathogenTest : pathogenTests.stream().skip(1).collect(Collectors.toList())) {
-			pathogenTestCreateComponent = sampleController.addPathogenTestCreateComponent(sampleCreateComponent, pathogenTest, true);
+			pathogenTestCreateComponent = sampleController.addPathogenTestCreateComponent(sampleCreateComponent, pathogenTest, caseSampleCount, true);
 			setViaLimsFieldCheckedAndDisabled(pathogenTestCreateComponent);
 		}
 
@@ -697,51 +656,6 @@ public class LabMessageController {
 		CheckBox viaLimsCheckbox = pathogenTestForm.getField(PathogenTestDto.VIA_LIMS);
 		viaLimsCheckbox.setValue(Boolean.TRUE);
 		viaLimsCheckbox.setEnabled(false);
-	}
-
-	private void createPathogenTest(SampleDto sampleDto, LabMessageDto labMessageDto) {
-		PathogenTestDto pathogenTestDto = buildPathogenTest(sampleDto, labMessageDto);
-		Window window = VaadinUiUtil.createPopupWindow();
-		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
-			getPathogenTestCreateComponent(sampleDto, labMessageDto, pathogenTestDto, window);
-		// set custom predefined field values and visibilities
-		CheckBox viaLimsCheckbox = pathogenTestCreateComponent.getWrappedComponent().getField(PathogenTestDto.VIA_LIMS);
-		viaLimsCheckbox.setValue(Boolean.TRUE);
-		viaLimsCheckbox.setEnabled(false);
-		if (pathogenTestDto.getTypingId() != null) {
-			Field typingIdField = pathogenTestCreateComponent.getWrappedComponent().getField(PathogenTestDto.TYPING_ID);
-			typingIdField.setValue(pathogenTestDto.getTypingId());
-			typingIdField.setVisible(true);
-		}
-
-		showFormWithLabMessage(
-			labMessageDto,
-			pathogenTestCreateComponent,
-			window,
-			I18nProperties.getString(Strings.headingCreatePathogenTestResult),
-			false);
-	}
-
-	private PathogenTestDto buildPathogenTest(SampleDto sampleDto, LabMessageDto labMessageDto) {
-		PathogenTestDto pathogenTestDto = PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser());
-
-		// TODO this method has to be removed completely!
-		List<TestReportDto> testReportDtos = labMessageDto.getTestReports();
-		if (!testReportDtos.isEmpty()) {
-			TestReportDto testReportDto = testReportDtos.get(0);
-			pathogenTestDto.setTestResult(testReportDto.getTestResult());
-			pathogenTestDto.setTestType(testReportDto.getTestType());
-			pathogenTestDto.setTestResultVerified(testReportDto.isTestResultVerified());
-			pathogenTestDto.setTestDateTime(testReportDto.getTestDateTime());
-			pathogenTestDto.setTestResultText(testReportDto.getTestResultText());
-			pathogenTestDto.setTypingId(testReportDto.getTypingId());
-			pathogenTestDto.setExternalId(testReportDto.getExternalId());
-			pathogenTestDto.setExternalOrderId(testReportDto.getExternalOrderId());
-		}
-
-		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());
-		pathogenTestDto.setReportDate(labMessageDto.getMessageDateTime());
-		return pathogenTestDto;
 	}
 
 	private List<PathogenTestDto> buildPathogenTests(SampleDto sample, LabMessageDto labMessage) {
@@ -782,23 +696,6 @@ public class LabMessageController {
 		target.setTypingId(source.getTypingId());
 		target.setExternalId(source.getExternalId());
 		target.setExternalOrderId(source.getExternalOrderId());
-	}
-
-	private CommitDiscardWrapperComponent<PathogenTestForm> getPathogenTestCreateComponent(
-		SampleDto sampleDto,
-		LabMessageDto labMessageDto,
-		PathogenTestDto pathogenTestDto,
-		Window window) {
-		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
-			ControllerProvider.getPathogenTestController().getPathogenTestCreateComponent(sampleDto, 0, () -> {
-				window.close();
-			}, (savedPathogenTestDto, runnable) -> {
-				runnable.run();
-				finishProcessingLabMessage(labMessageDto, sampleDto);
-			});
-		pathogenTestCreateComponent.addDiscardListener(window::close);
-		pathogenTestCreateComponent.getWrappedComponent().setValue(pathogenTestDto);
-		return pathogenTestCreateComponent;
 	}
 
 	private void showFormWithLabMessage(

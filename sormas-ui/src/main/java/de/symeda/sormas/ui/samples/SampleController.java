@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -122,24 +123,57 @@ public class SampleController {
 
 	/**
 	 * 
-	 * @param sampleCreateComponent
+	 * Works just like the addPathogenTestCreateComponent(..., int caseSampleCount, ...), but additionally determines the caseSampleCount.
+	 * For performance reasons, this method shall just be called when the caseSampleCount is not known already and just one pathogen test
+	 * create component shall be added.
+	 * 
+	 * @param sampleComponent
 	 *            to add the pathogen test create component to.
 	 * @param pathogenTest
-	 *            the insert preset values. May be null.
+	 *            the preset values to insert. May be null.
 	 * @param removable
 	 *            if true, a button is shown to remove the pathogen test create component again from the sample create component.
 	 * @return the pathogen test create component added.
 	 */
 	public PathogenTestForm addPathogenTestCreateComponent(
-		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent,
+		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
 		PathogenTestDto pathogenTest,
+		boolean removable) {
+
+		CaseReferenceDto cazeRef = sampleComponent.getWrappedComponent().getValue().getAssociatedCase();
+		if (cazeRef == null) {
+			return addPathogenTestCreateComponent(sampleComponent, pathogenTest, 0, removable);
+		} else {
+			List<SampleDto> samples = FacadeProvider.getSampleFacade().getByCaseUuids(Arrays.asList(cazeRef.getUuid()));
+			return addPathogenTestCreateComponent(sampleComponent, pathogenTest, samples.size(), removable);
+		}
+
+	}
+
+	/**
+	 * 
+	 * @param sampleComponent
+	 *            to add the pathogen test create component to.
+	 * @param pathogenTest
+	 *            the preset values to insert. May be null.
+	 * @param caseSampleCount
+	 *            describes how many samples already exist for a case related to the pathogen test's sample (if a case exists, otherwise 0
+	 *            is valid).
+	 * @param removable
+	 *            if true, a button is shown to remove the pathogen test create component again from the sample create component.
+	 * @return the pathogen test create component added.
+	 */
+	public PathogenTestForm addPathogenTestCreateComponent(
+		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
+		PathogenTestDto pathogenTest,
+		int caseSampleCount,
 		boolean removable) {
 		// add horizontal rule to clearly distinguish the component
 		Label horizontalRule = new Label("<br><hr /><br>", ContentMode.HTML);
 		horizontalRule.setWidth(100f, Unit.PERCENTAGE);
-		sampleCreateComponent.addComponent(horizontalRule, sampleCreateComponent.getComponentCount() - 1);
+		sampleComponent.addComponent(horizontalRule, sampleComponent.getComponentCount() - 1);
 
-		PathogenTestForm pathogenTestForm = new PathogenTestForm(sampleCreateComponent.getWrappedComponent().getValue(), true, 0, false);
+		PathogenTestForm pathogenTestForm = new PathogenTestForm(sampleComponent.getWrappedComponent().getValue(), true, caseSampleCount, false);
 		// prefill fields
 		if (pathogenTest != null) {
 			pathogenTestForm.setValue(pathogenTest);
@@ -148,8 +182,7 @@ public class SampleController {
 				pathogenTestForm.getField(PathogenTestDto.TYPING_ID).setVisible(true);
 			}
 		} else {
-			pathogenTestForm
-				.setValue(PathogenTestDto.build(sampleCreateComponent.getWrappedComponent().getValue(), UserProvider.getCurrent().getUser()));
+			pathogenTestForm.setValue(PathogenTestDto.build(sampleComponent.getWrappedComponent().getValue(), UserProvider.getCurrent().getUser()));
 			// remove value invalid for newly created pathogen tests
 			ComboBox pathogenTestResultField = pathogenTestForm.getField(PathogenTestDto.TEST_RESULT);
 			pathogenTestResultField.removeItem(PathogenTestResultType.NOT_DONE);
@@ -159,23 +192,23 @@ public class SampleController {
 
 		}
 		// validate pathogen test create component before saving the sample
-		sampleCreateComponent.addFieldGroups(pathogenTestForm.getFieldGroup());
+		sampleComponent.addFieldGroups(pathogenTestForm.getFieldGroup());
 		CommitDiscardWrapperComponent.CommitListener savePathogenTest =
 			() -> FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTestForm.getValue());
-		sampleCreateComponent.addCommitListener(savePathogenTest);
+		sampleComponent.addCommitListener(savePathogenTest);
 		// Discard button configuration
 		if (removable) {
 			Button discardButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.pathogenTestRemove));
 			VerticalLayout buttonLayout = new VerticalLayout(discardButton);
 			buttonLayout.setComponentAlignment(discardButton, Alignment.TOP_RIGHT);
 			// add the discard button above the overall discard and commit buttons
-			sampleCreateComponent.addComponent(buttonLayout, sampleCreateComponent.getComponentCount() - 1);
+			sampleComponent.addComponent(buttonLayout, sampleComponent.getComponentCount() - 1);
 			discardButton.addClickListener(o -> {
-				sampleCreateComponent.removeComponent(horizontalRule);
-				sampleCreateComponent.removeComponent(buttonLayout);
-				sampleCreateComponent.removeComponent(pathogenTestForm);
-				sampleCreateComponent.removeFieldGroups(pathogenTestForm.getFieldGroup());
-				sampleCreateComponent.removeCommitListener(savePathogenTest);
+				sampleComponent.removeComponent(horizontalRule);
+				sampleComponent.removeComponent(buttonLayout);
+				sampleComponent.removeComponent(pathogenTestForm);
+				sampleComponent.removeFieldGroups(pathogenTestForm.getFieldGroup());
+				sampleComponent.removeCommitListener(savePathogenTest);
 				pathogenTestForm.discard();
 			});
 		}
@@ -186,7 +219,7 @@ public class SampleController {
 		pathogenTestForm.getField(PathogenTestDto.EXTERNAL_ORDER_ID).setVisible(germanInstance);
 		pathogenTestForm.getField(PathogenTestDto.VIA_LIMS).setVisible(germanInstance);
 		// Sample creation specific configuration
-		final DateTimeField sampleDateField = sampleCreateComponent.getWrappedComponent().getField(SampleDto.SAMPLE_DATE_TIME);
+		final DateTimeField sampleDateField = sampleComponent.getWrappedComponent().getField(SampleDto.SAMPLE_DATE_TIME);
 		final DateTimeField testDateField = pathogenTestForm.getField(PathogenTestDto.TEST_DATE_TIME);
 		testDateField.addValidator(
 			new DateComparisonValidator(
@@ -197,7 +230,7 @@ public class SampleController {
 				I18nProperties.getValidationError(Validations.afterDate, testDateField.getCaption(), sampleDateField.getCaption())));
 
 		// add the pathogenTestForm above the overall discard and commit buttons
-		sampleCreateComponent.addComponent(pathogenTestForm, sampleCreateComponent.getComponentCount() - 1);
+		sampleComponent.addComponent(pathogenTestForm, sampleComponent.getComponentCount() - 1);
 		return pathogenTestForm;
 	}
 
