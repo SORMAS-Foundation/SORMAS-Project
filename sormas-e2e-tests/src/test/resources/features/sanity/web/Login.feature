@@ -1,4 +1,4 @@
-@UI @Sanity
+@UI @Sanity @Login
 Feature: Login with different type of users
 
   @issue=5402
@@ -14,10 +14,6 @@ Feature: Login with different type of users
       | Laboratory Officer        |
       | Point of Entry Supervisor |
       | Surveillance Officer      |
-
-    @Login
-    Scenario: Open google page for jenkins checks
-      Given I navigate to SORMAS google page
 
 
 
