@@ -55,6 +55,14 @@ public class ReceivedSampleProcessor
 
 	@Override
 	public void handleReceivedData(SormasToSormasSampleDto sharedData, Sample existingData) {
+		Map<String, PathogenTest> existingPathogenTests;
+		if(existingData != null) {
+			existingPathogenTests = existingData.getPathogenTests().stream().collect(Collectors.toMap(PathogenTest::getUuid, Function.identity()));
+		} else {
+			existingPathogenTests = Collections.emptyMap();
+		}
+
+		sharedData.getPathogenTests().forEach(pathogenTest -> dataValidator.handleIgnoredProperties(pathogenTest, existingPathogenTests.get(pathogenTest.getUuid())));
 	}
 
 	@Override
@@ -75,18 +83,7 @@ public class ReceivedSampleProcessor
 	@Override
 	public ValidationErrors validate(SormasToSormasSampleDto sharedData, Sample existingData) {
 		ValidationErrors validationErrors = dataValidator.validateSample(existingData, sharedData.getEntity());
-
-		Map<String, PathogenTest> existingPathogenTests;
-		if(existingData != null) {
-			existingPathogenTests = existingData.getPathogenTests().stream().collect(Collectors.toMap(PathogenTest::getUuid, Function.identity()));
-		} else {
-			existingPathogenTests = Collections.emptyMap();
-		}
-
-		sharedData.getPathogenTests().forEach(pathogenTest -> {
-			dataValidator.validatePathogenTest(validationErrors, pathogenTest);
-			dataValidator.handleIgnoredProperties(pathogenTest, existingPathogenTests.get(pathogenTest.getUuid()));
-		});
+		sharedData.getPathogenTests().forEach(pathogenTest -> dataValidator.validatePathogenTest(validationErrors, pathogenTest));
 
 		return validationErrors;
 	}
