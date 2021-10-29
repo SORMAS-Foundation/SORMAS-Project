@@ -81,6 +81,7 @@ public class User extends AbstractDomainObject {
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
 	public static final String LANGUAGE = "language";
 	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";
+	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
 
 	private String userName;
 	private String password;
@@ -95,6 +96,7 @@ public class User extends AbstractDomainObject {
 	private Location address;
 
 	private Set<UserRole> userRoles;
+	private JurisdictionLevel jurisdictionLevel;
 
 	private Region region;
 	private District district;
@@ -225,6 +227,15 @@ public class User extends AbstractDomainObject {
 		this.userRoles = userRoles;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public JurisdictionLevel getJurisdictionLevel() {
+		return jurisdictionLevel;
+	}
+
+	public void setJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
+		this.jurisdictionLevel = jurisdictionLevel;
+	}
+
 	@ManyToOne(cascade = {})
 	public User getAssociatedOfficer() {
 		return associatedOfficer;
@@ -332,7 +343,7 @@ public class User extends AbstractDomainObject {
 	}
 
 	@Transient
-	public JurisdictionLevel getJurisdictionLevel() {
+	public JurisdictionLevel getCalculatedJurisdictionLevel() {
 		return UserRole.getJurisdictionLevel(this.getUserRoles());
 	}
 
