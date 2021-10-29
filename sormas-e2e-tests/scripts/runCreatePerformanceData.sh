@@ -17,18 +17,25 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 #
 
-#This shell script is the execution entry point for the jenkins job used to meassure the loading time for all main pages
+#This shell script is the execution entry point for the jenkins job used to populate the system with Persons and Immunization
 
+
+echo "I will run $1 times the tests"
 echo "Script started at:"
 date +"%T"
 
-echo "Deleting allure report folder..."
 rm -rf ./allureReports
-echo "Deleting custom report"
-rm -rf ./customReports/customReport.html
-eho "Deleting BarChart image"
-rm -rf ./customReports/images/BarChart.jpeg
-echo "Executing gradle clean..."
 ./gradlew clean goJF
-echo "Starting all BDD tests under @PagesMeasurements tag..."
-./gradlew startTests -Dcucumber.tags="@PagesMeasurements" -Dheadless=false -Dcourgette.threads=1
+for ((i = 1; i <= $1; ++i)); do
+  rm -rf ./allure-results
+  ./gradlew clean
+  echo "Run: $i "
+  echo "Started at:"
+  date +"%T"
+  ./gradlew startTests -Dcucumber.tags="@PersonsAndImmunizations" -Dheadless=true -Dcourgette.threads=9
+  echo "Finished at:"
+  date +"%T"
+done
+echo "Script finished at:"
+date +"%T"
+

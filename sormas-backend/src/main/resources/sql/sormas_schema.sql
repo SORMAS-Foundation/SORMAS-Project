@@ -1520,7 +1520,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (49, 'data history f
 ALTER TABLE cases ADD COLUMN healthfacilitydetails varchar(512);
 
 -- 2017-07-20 Database wipe for new infrastructure data #237
-BEGIN;
 DELETE FROM task;
 DELETE FROM sampletest;
 DELETE FROM samples;
@@ -1544,7 +1543,6 @@ DELETE FROM facility;
 DELETE FROM community;
 DELETE FROM district;
 DELETE FROM region;
-COMMIT;
 
 INSERT INTO schema_version (version_number, comment) VALUES (50, 'other health facility description for cases #238');
 
