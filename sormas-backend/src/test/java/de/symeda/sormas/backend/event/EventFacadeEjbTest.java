@@ -31,6 +31,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -462,5 +463,36 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		indexList = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
 		MatcherAssert.assertThat(indexList, hasSize(0));
 
+	}
+
+	@Test
+	public void testGetSubordinateEventUuids() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto reportingUser = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER);
+
+		EventDto event1 = creator.createEvent(reportingUser.toReference());
+		EventDto event2 = creator.createEvent(reportingUser.toReference());
+		EventDto subordinateEvent_1_1 =
+			creator.createEvent(EventStatus.CLUSTER, EventInvestigationStatus.ONGOING, "Sub event 1.1", null, reportingUser.toReference(), (e) -> {
+				e.setSuperordinateEvent(event1.toReference());
+			});
+		EventDto subordinateEvent_1_2 =
+			creator.createEvent(EventStatus.CLUSTER, EventInvestigationStatus.ONGOING, "Sub event 1.2", null, reportingUser.toReference(), (e) -> {
+				e.setSuperordinateEvent(event1.toReference());
+			});
+		EventDto subordinateEvent_2_1 =
+			creator.createEvent(EventStatus.CLUSTER, EventInvestigationStatus.ONGOING, "Sub event 2.1", null, reportingUser.toReference(), (e) -> {
+				e.setSuperordinateEvent(event2.toReference());
+			});
+
+		List<String> subordinateEventUuids = getEventFacade().getSubordinateEventUuids(Arrays.asList(event1.getUuid()));
+		MatcherAssert.assertThat(
+			subordinateEventUuids.toArray(new String[] {}),
+			Matchers.arrayContainingInAnyOrder(subordinateEvent_1_1.getUuid(), subordinateEvent_1_2.getUuid()));
+
+		subordinateEventUuids = getEventFacade().getSubordinateEventUuids(Arrays.asList(event1.getUuid(), event2.getUuid()));
+		MatcherAssert.assertThat(
+			subordinateEventUuids.toArray(new String[] {}),
+			Matchers.arrayContainingInAnyOrder(subordinateEvent_1_1.getUuid(), subordinateEvent_1_2.getUuid(), subordinateEvent_2_1.getUuid()));
 	}
 }
