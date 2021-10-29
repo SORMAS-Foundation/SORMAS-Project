@@ -68,7 +68,6 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SimilarPersonDto;
@@ -502,27 +501,20 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			.inJurisdictionOrOwned();
 	}
 
-	public List<SimilarPersonDto> getSimilarPersonDtos(PersonSimilarityCriteria criteria) {
-		List<String> similarPersonUuids = getMatchingNameDtos(criteria, null).stream().map(PersonNameDto::getUuid).collect(Collectors.toList());
-		return getSimilarPersonsByUuids(similarPersonUuids);
-	}
-
-	public List<PersonNameDto> getMatchingNameDtos(PersonSimilarityCriteria criteria, Integer limit) {
+	public List<SimilarPersonDto> getSimilarPersonDtos(PersonSimilarityCriteria criteria, Integer limit) {
 
 		setSimilarityThresholdQuery();
 		boolean activeEntriesOnly = configFacade.isDuplicateChecksExcludePersonsOfArchivedEntries();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 
-		CriteriaQuery<PersonNameDto> personQuery = cb.createQuery(PersonNameDto.class);
+		CriteriaQuery<Person> personQuery = cb.createQuery(Person.class);
 		Root<Person> personRoot = personQuery.from(Person.class);
 		Join<Person, Case> personCaseJoin = personRoot.join(Person.CASES, JoinType.LEFT);
 		Join<Person, Contact> personContactJoin = personRoot.join(Person.CONTACTS, JoinType.LEFT);
 		Join<Person, EventParticipant> personEventParticipantJoin = personRoot.join(Person.EVENT_PARTICIPANTS, JoinType.LEFT);
 		Join<Person, Immunization> personImmunizationJoin = personRoot.join(Person.IMMUNIZATIONS, JoinType.LEFT);
 		Join<Person, TravelEntry> personTravelEntryJoin = personRoot.join(Person.TRAVEL_ENTRIES, JoinType.LEFT);
-
-		personQuery.multiselect(personRoot.get(Person.FIRST_NAME), personRoot.get(Person.LAST_NAME), personRoot.get(Person.UUID));
 
 		// Persons of active cases
 		Predicate personSimilarityFilter = buildSimilarityCriteriaFilter(criteria, cb, personRoot);
@@ -573,11 +565,11 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		personQuery.where(and(cb, personSimilarityFilter, finalPredicate));
 		personQuery.distinct(true);
 
-		TypedQuery<PersonNameDto> query = em.createQuery(personQuery);
+		TypedQuery<Person> query = em.createQuery(personQuery);
 		if (limit != null) {
 			query.setMaxResults(limit);
 		}
-		return query.getResultList();
+		return query.getResultList().stream().map(this::toSimilarPersonDto).collect(Collectors.toList());
 	}
 
 	public List<SimilarPersonDto> getSimilarPersonsByUuids(List<String> personUuids) {

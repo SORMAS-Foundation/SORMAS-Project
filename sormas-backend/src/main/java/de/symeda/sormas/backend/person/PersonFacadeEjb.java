@@ -224,7 +224,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			return Collections.emptyList();
 		}
 
-		return personService.getSimilarPersonDtos(criteria);
+		return personService.getSimilarPersonDtos(criteria, null);
 	}
 
 	@Override
@@ -235,7 +235,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			return false;
 		}
 
-		return personService.getMatchingNameDtos(criteria, 1).size() > 0;
+		return personService.getSimilarPersonDtos(criteria, 1).size() > 0;
 	}
 
 	@Override
