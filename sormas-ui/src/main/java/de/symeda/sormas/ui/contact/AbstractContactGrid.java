@@ -95,10 +95,15 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 
 		initColumns();
 
+		addItemClickListener(new ShowDetailsListener<>(ContactIndexDto.PERSON_UUID, e -> {
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_MANAGEMENT)) {
+				ControllerProvider.getPersonController().navigateToPerson(e.getPersonUuid());
+			} else {
+				ControllerProvider.getContactController().navigateToView(ContactPersonView.VIEW_NAME, e.getUuid(), false);
+			}
+		}));
 		addItemClickListener(
 			new ShowDetailsListener<>(ContactIndexDto.UUID, e -> ControllerProvider.getContactController().navigateToData(e.getUuid())));
-		addItemClickListener(new ShowDetailsListener<>(ContactIndexDto.PERSON_UUID, e ->
-				ControllerProvider.getContactController().navigateToView(ContactPersonView.VIEW_NAME, e.getUuid(), false)));
 	}
 
 	@SuppressWarnings("unchecked")
