@@ -23,30 +23,28 @@ public class EventParticipantJurisdictionPredicateValidator extends PredicateJur
 
 	private final CriteriaQuery<?> cq;
 	private EventParticipantJoins<?> joins;
-	private User currentUser;
 
-	private EventParticipantJurisdictionPredicateValidator(EventParticipantQueryContext qc, User currentUser) {
-		super(qc.getCriteriaBuilder(), null);
+	private EventParticipantJurisdictionPredicateValidator(EventParticipantQueryContext qc, User user) {
+		super(qc.getCriteriaBuilder(), user, null, null);
 		this.joins = (EventParticipantJoins<?>) qc.getJoins();
-		this.currentUser = currentUser;
 		this.cq = qc.getQuery();
 	}
 
-	public static EventParticipantJurisdictionPredicateValidator of(EventParticipantQueryContext qc, User currentUser) {
-		return new EventParticipantJurisdictionPredicateValidator(qc, currentUser);
+	public static EventParticipantJurisdictionPredicateValidator of(EventParticipantQueryContext qc, User user) {
+		return new EventParticipantJurisdictionPredicateValidator(qc, user);
 	}
 
 	@Override
 	protected Predicate isInJurisdictionOrOwned() {
 		final Predicate reportedByCurrentUser = cb.and(
 			cb.isNotNull(joins.getRoot().get(EventParticipant.REPORTING_USER)),
-			cb.equal(joins.getRoot().get(EventParticipant.REPORTING_USER).get(User.ID), currentUser.getId()));
+			cb.equal(joins.getRoot().get(EventParticipant.REPORTING_USER).get(User.ID), user.getId()));
 		return cb.or(reportedByCurrentUser, isInJurisdiction());
 	}
 
 	@Override
 	protected Predicate isInJurisdiction() {
-		return isInJurisdictionByJurisdictionLevel(currentUser.getJurisdictionLevel());
+		return isInJurisdictionByJurisdictionLevel(user.getCalculatedJurisdictionLevel());
 	}
 
 	@Override
@@ -63,27 +61,27 @@ public class EventParticipantJurisdictionPredicateValidator extends PredicateJur
 	protected Predicate whenRegionalLevel() {
 		return CriteriaBuilderHelper.or(
 			cb,
-			cb.equal(joins.getRoot().get(EventParticipant.REGION).get(Region.ID), currentUser.getRegion().getId()),
-			cb.equal(joins.getEventAddress().get(Location.REGION).get(Region.ID), currentUser.getRegion().getId()));
+			cb.equal(joins.getRoot().get(EventParticipant.REGION).get(Region.ID), user.getRegion().getId()),
+			cb.equal(joins.getEventAddress().get(Location.REGION).get(Region.ID), user.getRegion().getId()));
 	}
 
 	@Override
 	protected Predicate whenDistrictLevel() {
 		return CriteriaBuilderHelper.or(
 			cb,
-			cb.equal(joins.getRoot().get(EventParticipant.DISTRICT).get(District.ID), currentUser.getDistrict().getId()),
-			cb.equal(joins.getEventAddress().get(Location.DISTRICT).get(District.ID), currentUser.getDistrict().getId()));
+			cb.equal(joins.getRoot().get(EventParticipant.DISTRICT).get(District.ID), user.getDistrict().getId()),
+			cb.equal(joins.getEventAddress().get(Location.DISTRICT).get(District.ID), user.getDistrict().getId()));
 	}
 
 	@Override
 	protected Predicate whenCommunityLevel() {
 		return CriteriaBuilderHelper
-			.or(cb, cb.equal(joins.getEventAddress().get(Location.COMMUNITY).get(Community.ID), currentUser.getCommunity().getId()));
+			.or(cb, cb.equal(joins.getEventAddress().get(Location.COMMUNITY).get(Community.ID), user.getCommunity().getId()));
 	}
 
 	@Override
 	protected Predicate whenFacilityLevel() {
-		return cb.equal(joins.getAddress().get(Location.FACILITY).get(Facility.ID), currentUser.getHealthFacility().getId());
+		return cb.equal(joins.getAddress().get(Location.FACILITY).get(Facility.ID), user.getHealthFacility().getId());
 	}
 
 	@Override
@@ -98,7 +96,7 @@ public class EventParticipantJurisdictionPredicateValidator extends PredicateJur
 		final SampleJoins sampleJoins = new SampleJoins(sampleRoot);
 		final Join eventParticipant = sampleJoins.getEventParticipant();
 		SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator =
-			SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, currentUser);
+			SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, user);
 		sampleSubQuery.where(cb.and(cb.equal(eventParticipant, joins.getRoot()), sampleJurisdictionPredicateValidator.inJurisdictionOrOwned()));
 		sampleSubQuery.select(sampleRoot.get(Sample.ID));
 		return cb.exists(sampleSubQuery);
