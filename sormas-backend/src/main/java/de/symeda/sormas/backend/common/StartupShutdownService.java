@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -44,8 +45,12 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.security.RunAs;
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.enterprise.event.Event;
@@ -53,7 +58,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import de.symeda.sormas.backend.db.TransactionWrapperEjb;
 import de.symeda.sormas.backend.infrastructure.central.CentralInfraSyncFacade;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -160,7 +164,7 @@ public class StartupShutdownService {
 	@EJB
 	private CentralInfraSyncFacade centralInfraSync;
 	@EJB
-	private TransactionWrapperEjb.TransactionWrapperEjbLocal transactionWrapper;
+	private UpdateQueryTransactionWrapper updateQueryTransactionWrapper;
 
 
 	@Inject
@@ -726,7 +730,7 @@ public class StartupShutdownService {
 				// Perform the current update when the INSERT INTO schema_version statement is reached
 				if (schemaLineVersion != null) {
 					logger.info("Updating database to version {}...", schemaLineVersion);
-					transactionWrapper.execute(f -> entityManager.createNativeQuery(f).executeUpdate(), nextUpdateBuilder.toString());
+					updateQueryTransactionWrapper.executeUpdate(nextUpdateBuilder.toString());
 					nextUpdateBuilder.setLength(0);
 				}
 			}
@@ -887,5 +891,21 @@ public class StartupShutdownService {
 	@PreDestroy
 	public void shutdown() {
 
+	}
+
+	@LocalBean
+	@Stateless
+	public static class UpdateQueryTransactionWrapper {
+
+		@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+		private EntityManager em;
+
+		/**
+		 * Executes the passed SQL update in a new JTA transaction.
+		 */
+		@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+		public int executeUpdate(String sqlStatement) {
+			return em.createNativeQuery(sqlStatement).executeUpdate();
+		}
 	}
 }

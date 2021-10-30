@@ -37,6 +37,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
 public class ImmunizationController {
 
@@ -183,16 +184,16 @@ public class ImmunizationController {
 		SormasUI.refreshView();
 	}
 
-	public TitleLayout getImmunizationMainHeaderLayout(String uuid) {
+	public TitleLayout getImmunizationViewTitleLayout(String uuid) {
 		ImmunizationDto immunizationDto = findImmunization(uuid);
 
 		TitleLayout titleLayout = new TitleLayout();
 
 		String shortUuid = DataHelper.getShortUuid(immunizationDto.getUuid());
-		PersonReferenceDto person = immunizationDto.getPerson();
-		String mainRowText = person.getFirstName() + " " + person.getLastName() + " (" + shortUuid + ")";
-
-		titleLayout.addMainRow(mainRowText);
+		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(immunizationDto.getPerson().getUuid());
+		StringBuilder mainRowText = TitleLayoutHelper.buildPersonString(person);
+		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
+		titleLayout.addMainRow(mainRowText.toString());
 
 		return titleLayout;
 	}
