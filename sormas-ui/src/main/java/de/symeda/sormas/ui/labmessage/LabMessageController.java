@@ -608,6 +608,9 @@ public class LabMessageController {
 		sampleDto.setSpecimenCondition(SpecimenCondition.ADEQUATE);
 		sampleDto.setLab(getLabReference(labMessageDto));
 		sampleDto.setLabDetails(labMessageDto.getLabName());
+		if (FacadeProvider.getLabMessageFacade().homogenousTestResultTypesIn(labMessageDto)) {
+			sampleDto.setPathogenTestResult(labMessageDto.getTestReports().get(0).getTestResult());
+		}
 	}
 
 	private FacilityReferenceDto getLabReference(LabMessageDto labMessageDto) {

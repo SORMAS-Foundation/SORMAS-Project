@@ -53,9 +53,6 @@ import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.sample.PathogenTest;
-import de.symeda.sormas.backend.sample.PathogenTestService;
-import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -395,6 +392,11 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		cq.where(cb.equal(from.get(LabMessage.REPORT_ID), reportId));
 
 		return em.createQuery(cq).getResultList().stream().map(this::toDto).collect(toList());
+	}
+
+	@Override
+	public boolean homogenousTestResultTypesIn(LabMessageDto labMessage) {
+		return labMessageService.homogenousTestResultTypesIn(labMessage);
 	}
 
 	public static LabMessageReferenceDto toReferenceDto(LabMessage entity) {

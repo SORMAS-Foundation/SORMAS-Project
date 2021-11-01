@@ -9,12 +9,16 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.labmessage.TestReportDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.sample.Sample;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Stateless
 @LocalBean
@@ -70,4 +74,13 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	public boolean homogenousTestResultTypesIn(LabMessageDto labMessage) {
+		List<TestReportDto> testReports = labMessage.getTestReports();
+		if (testReports != null && !testReports.isEmpty()) {
+			List<PathogenTestResultType> testResultTypes = testReports.stream().map(TestReportDto::getTestResult).collect(Collectors.toList());
+			return testResultTypes.stream().distinct().count() <= 1;
+		} else {
+			return false;
+		}
+	}
 }
