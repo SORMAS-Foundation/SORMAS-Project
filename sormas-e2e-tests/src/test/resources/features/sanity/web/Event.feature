@@ -59,9 +59,7 @@ Feature: Create events
       And I collect the UUID displayed on Edit event page
     Given I add a participant to the event
      Then I check if participant appears in the event participants list
-      And I click on the Persons button from navbar
-      And I search for specific person in person directory
-      And I click on specific person in person directory
+      And I navigate via URL to last Person created from edit Event page
      Then I check if event is available at person information
 
   Scenario: Create and edit a new event

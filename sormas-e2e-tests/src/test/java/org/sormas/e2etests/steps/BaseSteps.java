@@ -55,6 +55,7 @@ public class BaseSteps implements StepLifecycleListener {
   public void beforeScenario(Scenario scenario) {
     if (isNonApiScenario(scenario)) {
       driver = driverManager.borrowRemoteWebDriver(scenario.getName());
+      driver.manage().window().maximize();
       StepsLogger.setRemoteWebDriver(driver);
       WebDriver.Options options = driver.manage();
       options.window().maximize();
@@ -94,5 +95,4 @@ public class BaseSteps implements StepLifecycleListener {
   private static boolean isNonApiScenario(Scenario scenario) {
     return !scenario.getSourceTagNames().contains("@API");
   }
-  
 }
