@@ -20,10 +20,13 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 
+import androidx.annotation.NonNull;
+
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.VisualStateControlType;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 public class FilterSpinnerField extends ControlSpinnerField {
 
@@ -44,7 +47,7 @@ public class FilterSpinnerField extends ControlSpinnerField {
 	// Overrides
 
 	@Override
-	protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+	protected void inflateView(@NonNull Context context, AttributeSet attrs, int defStyle) {
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		if (inflater != null) {
@@ -72,8 +75,8 @@ public class FilterSpinnerField extends ControlSpinnerField {
 
 		visualState = state;
 
-		int labelColor = getResources().getColor(state.getLabelColor());
-		Drawable drawable = getResources().getDrawable(state.getBackground(VisualStateControlType.SPINNER_FILTER));
+		int labelColor = ResourceUtils.getColor(getContext(), state.getLabelColor());
+		Drawable drawable = ResourceUtils.getDrawable(getContext(),state.getBackground(VisualStateControlType.SPINNER_FILTER));
 
 		if (drawable != null) {
 			drawable = drawable.mutate();

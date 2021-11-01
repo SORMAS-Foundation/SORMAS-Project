@@ -24,17 +24,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.core.adapter.databinding.BindingPagedListAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.BindingViewHolder;
 import de.symeda.sormas.app.databinding.RowCaseListItemLayoutBinding;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 public class CaseListAdapter extends BindingPagedListAdapter<Case, RowCaseListItemLayoutBinding> {
 
@@ -106,20 +104,19 @@ public class CaseListAdapter extends BindingPagedListAdapter<Case, RowCaseListIt
 //        }
 //    }
 
-	public void indicateCaseClassification(ImageView imgCaseClassificationIcon, Case item) {
-		Resources resources = imgCaseClassificationIcon.getContext().getResources();
-		Drawable drw = ContextCompat.getDrawable(imgCaseClassificationIcon.getContext(), R.drawable.indicator_status_circle);
-
+	public void indicateCaseClassification(@NonNull ImageView imgCaseClassificationIcon, @NonNull Case item) {
+		Drawable drw = ResourceUtils.getDrawable(imgCaseClassificationIcon.getContext(), R.drawable.indicator_status_circle);
+		assert drw != null;
 		if (item.getCaseClassification() == CaseClassification.NOT_CLASSIFIED) {
-			drw.setColorFilter(resources.getColor(R.color.indicatorCaseNotYetClassified), PorterDuff.Mode.SRC_OVER);
+			drw.setColorFilter(ResourceUtils.getColor(imgCaseClassificationIcon.getContext(), R.color.indicatorCaseNotYetClassified), PorterDuff.Mode.SRC_OVER);
 		} else if (item.getCaseClassification() == CaseClassification.SUSPECT) {
-			drw.setColorFilter(resources.getColor(R.color.indicatorCaseSuspect), PorterDuff.Mode.SRC_OVER);
+			drw.setColorFilter(ResourceUtils.getColor(imgCaseClassificationIcon.getContext(), R.color.indicatorCaseSuspect), PorterDuff.Mode.SRC_OVER);
 		} else if (item.getCaseClassification() == CaseClassification.PROBABLE) {
-			drw.setColorFilter(resources.getColor(R.color.indicatorCaseProbable), PorterDuff.Mode.SRC_OVER);
+			drw.setColorFilter(ResourceUtils.getColor(imgCaseClassificationIcon.getContext(), R.color.indicatorCaseProbable), PorterDuff.Mode.SRC_OVER);
 		} else if (item.getCaseClassification() == CaseClassification.CONFIRMED) {
-			drw.setColorFilter(resources.getColor(R.color.indicatorCaseConfirmed), PorterDuff.Mode.SRC_OVER);
+			drw.setColorFilter(ResourceUtils.getColor(imgCaseClassificationIcon.getContext(), R.color.indicatorCaseConfirmed), PorterDuff.Mode.SRC_OVER);
 		} else if (item.getCaseClassification() == CaseClassification.NO_CASE) {
-			drw.setColorFilter(resources.getColor(R.color.indicatorNotACase), PorterDuff.Mode.SRC_OVER);
+			drw.setColorFilter(ResourceUtils.getColor(imgCaseClassificationIcon.getContext(), R.color.indicatorNotACase), PorterDuff.Mode.SRC_OVER);
 		}
 
 		imgCaseClassificationIcon.setBackground(drw);

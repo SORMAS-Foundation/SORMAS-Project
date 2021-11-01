@@ -32,6 +32,8 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
@@ -45,6 +47,7 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.core.StateDrawableBuilder;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 public class ControlSwitchField extends ControlPropertyEditField<Object> {
 
@@ -98,7 +101,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 		}
 	}
 
-	private void setChildViewEnabledState(RadioButton button) {
+	private void setChildViewEnabledState(@NonNull RadioButton button) {
 		button.setEnabled(input.isEnabled());
 		button.setClickable(input.isEnabled());
 	}
@@ -146,6 +149,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 		radioGroupElements.clear();
 	}
 
+	@NonNull
 	private RadioButton createRadioButton(int index, int lastIndex, Item item) {
 		RadioButton button = new RadioButton(getContext());
 		button.setId(index);
@@ -213,7 +217,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 			.build();
 	}
 
-	private void setUpOnClickListener(RadioButton button, ControlSwitchField field) {
+	private void setUpOnClickListener(@NonNull RadioButton button, ControlSwitchField field) {
 		button.setOnClickListener(v -> {
 			if (!v.isEnabled()) {
 				return;
@@ -249,7 +253,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 	}
 
 	@Override
-	protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+	protected void inflateView(@NonNull Context context, AttributeSet attrs, int defStyle) {
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		if (inflater != null) {
@@ -269,8 +273,8 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 
 		input = (RadioGroup) this.findViewById(R.id.switch_input);
 		input.setOrientation(HORIZONTAL);
-		background = getResources().getDrawable(R.drawable.control_switch_background_border);
-		textColor = getResources().getColorStateList(R.color.control_switch_color_selector);
+		background = ResourceUtils.getDrawable(getContext(), R.drawable.control_switch_background_border);
+		textColor = ContextCompat.getColorStateList(getContext(), R.color.control_switch_color_selector);
 		input.setBackground(background.mutate());
 
 		if (useBoolean) {
@@ -361,11 +365,11 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 
 		visualState = state;
 
-		int labelColor = getResources().getColor(state.getLabelColor());
+		int labelColor = ResourceUtils.getColor(getContext(), state.getLabelColor());
 		label.setTextColor(labelColor);
 
 		if (state == VisualState.DISABLED) {
-			Drawable disabledStateDrawable = getResources().getDrawable(R.drawable.control_switch_background_border_disabled);
+			Drawable disabledStateDrawable = ResourceUtils.getDrawable(getContext(), R.drawable.control_switch_background_border_disabled);
 			disabledStateDrawable = disabledStateDrawable.mutate();
 			input.setBackground(disabledStateDrawable);
 			setEnabled(false);
@@ -380,7 +384,7 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 		}
 
 		if (state == VisualState.ERROR) {
-			Drawable errorStateDrawable = getResources().getDrawable(R.drawable.control_switch_background_border_error);
+			Drawable errorStateDrawable = ResourceUtils.getDrawable(getContext(), R.drawable.control_switch_background_border_error);
 			errorStateDrawable = errorStateDrawable.mutate();
 			input.setBackground(errorStateDrawable);
 			return;
@@ -395,17 +399,17 @@ public class ControlSwitchField extends ControlPropertyEditField<Object> {
 	// Data binding, getters & setters
 
 	@BindingAdapter("value")
-	public static void setValue(ControlSwitchField view, Object value) {
+	public static void setValue(@NonNull ControlSwitchField view, Object value) {
 		view.setFieldValue(value);
 	}
 
 	@InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
-	public static Object getValue(ControlSwitchField view) {
+	public static Object getValue(@NonNull ControlSwitchField view) {
 		return view.getFieldValue();
 	}
 
 	@BindingAdapter("valueAttrChanged")
-	public static void setListener(final ControlSwitchField view, InverseBindingListener listener) {
+	public static void setListener(@NonNull final ControlSwitchField view, InverseBindingListener listener) {
 		view.inverseBindingListener = listener;
 	}
 

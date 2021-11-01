@@ -38,12 +38,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
-import androidx.core.content.ContextCompat;
 import androidx.percentlayout.widget.PercentFrameLayout;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.OnSwipeTouchListener;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 public class PageMenuControl extends LinearLayout {
 
@@ -461,12 +461,12 @@ public class PageMenuControl extends LinearLayout {
 
 	private void updateFabDrawable() {
 		if (isVisible()) {
-			Drawable drw = ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_landing_menu_close_black_24dp);
-			drw.setTint(fab.getContext().getResources().getColor(R.color.fabIcon));
+			Drawable drw = ResourceUtils.getDrawable(fab.getContext(), R.drawable.ic_landing_menu_close_black_24dp);
+			drw.setTint(ResourceUtils.getColor(fab.getContext(), R.color.fabIcon));
 			fab.setImageDrawable(drw);
 		} else {
-			Drawable drw = ContextCompat.getDrawable(fab.getContext(), R.drawable.ic_landing_menu_open_black_24dp);
-			drw.setTint(fab.getContext().getResources().getColor(R.color.fabIcon));
+			Drawable drw = ResourceUtils.getDrawable(fab.getContext(), R.drawable.ic_landing_menu_open_black_24dp);
+			drw.setTint(ResourceUtils.getColor(fab.getContext(), R.color.fabIcon));
 			fab.setImageDrawable(drw);
 		}
 	}

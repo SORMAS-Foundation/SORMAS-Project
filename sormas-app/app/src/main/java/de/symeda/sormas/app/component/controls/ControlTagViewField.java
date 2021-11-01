@@ -33,10 +33,12 @@ import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 public class ControlTagViewField extends ControlPropertyField<String> {
 
@@ -140,17 +142,18 @@ public class ControlTagViewField extends ControlPropertyField<String> {
 		}
 	}
 
+	@NonNull
 	private Drawable getBackgroundDrawable() {
 		StateListDrawable stateListDrawable = new StateListDrawable();
 		GradientDrawable drawableNormal = new GradientDrawable();
-		drawableNormal.setColor(getResources().getColor(LAYOUT_COLOR));
+		drawableNormal.setColor(ResourceUtils.getColor(getContext(),LAYOUT_COLOR));
 		drawableNormal.setCornerRadius(getResources().getDimension(RADIUS));
 		if (getResources().getDimension(LAYOUT_BORDER_SIZE) > 0) {
 			drawableNormal
-				.setStroke(dipToPx(getContext(), getResources().getDimension(LAYOUT_BORDER_SIZE)), getResources().getColor(LAYOUT_BORDER_COLOR));
+				.setStroke(dipToPx(getContext(), getResources().getDimension(LAYOUT_BORDER_SIZE)), ResourceUtils.getColor(getContext(), LAYOUT_BORDER_COLOR));
 		}
 		GradientDrawable drawablePressed = new GradientDrawable();
-		drawablePressed.setColor(getResources().getColor(LAYOUT_COLOR_PRESSED));
+		drawablePressed.setColor(ResourceUtils.getColor(getContext(), LAYOUT_COLOR_PRESSED));
 		drawablePressed.setCornerRadius(getResources().getDimension(RADIUS));
 		stateListDrawable.addState(
 			new int[] {
@@ -168,7 +171,7 @@ public class ControlTagViewField extends ControlPropertyField<String> {
 		}
 	}
 
-	private int dipToPx(Context c, float dipValue) {
+	private int dipToPx(@NonNull Context c, float dipValue) {
 		DisplayMetrics metrics = c.getResources().getDisplayMetrics();
 		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, metrics);
 	}
@@ -191,7 +194,7 @@ public class ControlTagViewField extends ControlPropertyField<String> {
 	}
 
 	@Override
-	protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+	protected void inflateView(@NonNull Context context, AttributeSet attrs, int defStyle) {
 		layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		if (layoutInflater != null) {

@@ -22,7 +22,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.api.task.TaskPriority;
@@ -32,6 +31,7 @@ import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.core.adapter.databinding.BindingPagedListAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.BindingViewHolder;
 import de.symeda.sormas.app.databinding.RowTaskListItemLayoutBinding;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 public class TaskListAdapter extends BindingPagedListAdapter<Task, RowTaskListItemLayoutBinding> {
 
@@ -77,31 +77,31 @@ public class TaskListAdapter extends BindingPagedListAdapter<Task, RowTaskListIt
 //        }
 //    }
 
-	public void indicatePriority(ImageView imgTaskPriorityIcon, Task task) {
-		Resources resources = imgTaskPriorityIcon.getContext().getResources();
-		Drawable drw = (Drawable) ContextCompat.getDrawable(imgTaskPriorityIcon.getContext(), R.drawable.indicator_status_circle);
+	public void indicatePriority(@NonNull ImageView imgTaskPriorityIcon, @NonNull Task task) {
+		Drawable drw = (Drawable) ResourceUtils.getDrawable(imgTaskPriorityIcon.getContext(), R.drawable.indicator_status_circle);
+		assert drw != null;
 		if (task.getPriority() == TaskPriority.HIGH) {
-			drw.setColorFilter(resources.getColor(R.color.indicatorTaskPriorityHigh), PorterDuff.Mode.SRC_OVER);
+			drw.setColorFilter(ResourceUtils.getColor(imgTaskPriorityIcon.getContext(), R.color.indicatorTaskPriorityHigh), PorterDuff.Mode.SRC_OVER);
 		} else if (task.getPriority() == TaskPriority.LOW) {
-			drw.setColorFilter(resources.getColor(R.color.indicatorTaskPriorityLow), PorterDuff.Mode.SRC_OVER);
+			drw.setColorFilter(ResourceUtils.getColor(imgTaskPriorityIcon.getContext(), R.color.indicatorTaskPriorityLow), PorterDuff.Mode.SRC_OVER);
 		} else if (task.getPriority() == TaskPriority.NORMAL) {
-			drw.setColorFilter(resources.getColor(R.color.indicatorTaskPriorityNormal), PorterDuff.Mode.SRC_OVER);
+			drw.setColorFilter(ResourceUtils.getColor(imgTaskPriorityIcon.getContext(), R.color.indicatorTaskPriorityNormal), PorterDuff.Mode.SRC_OVER);
 		}
 
 		imgTaskPriorityIcon.setBackground(drw);
 	}
 
-	public void indicateStatus(ImageView imgTaskStatusIcon, Task task) {
-		Resources resources = imgTaskStatusIcon.getContext().getResources();
-		Drawable drw = (Drawable) ContextCompat.getDrawable(imgTaskStatusIcon.getContext(), R.drawable.indicator_status_circle);
+	public void indicateStatus(@NonNull ImageView imgTaskStatusIcon, @NonNull Task task) {
+		Drawable drw = (Drawable) ResourceUtils.getDrawable(imgTaskStatusIcon.getContext(), R.drawable.indicator_status_circle);
+		assert drw != null;
 		if (task.getTaskStatus() == TaskStatus.PENDING) {
-			drw.setColorFilter(resources.getColor(R.color.indicatorTaskPending), PorterDuff.Mode.SRC_OVER);
+			drw.setColorFilter(ResourceUtils.getColor(imgTaskStatusIcon.getContext(), R.color.indicatorTaskPending), PorterDuff.Mode.SRC_OVER);
 		} else if (task.getTaskStatus() == TaskStatus.DONE) {
-			drw.setColorFilter(resources.getColor(R.color.indicatorTaskDone), PorterDuff.Mode.SRC_OVER);
+			drw.setColorFilter(ResourceUtils.getColor(imgTaskStatusIcon.getContext(), R.color.indicatorTaskDone), PorterDuff.Mode.SRC_OVER);
 		} else if (task.getTaskStatus() == TaskStatus.REMOVED) {
-			drw.setColorFilter(resources.getColor(R.color.indicatorTaskRemoved), PorterDuff.Mode.SRC_OVER);
+			drw.setColorFilter(ResourceUtils.getColor(imgTaskStatusIcon.getContext(), R.color.indicatorTaskRemoved), PorterDuff.Mode.SRC_OVER);
 		} else if (task.getTaskStatus() == TaskStatus.NOT_EXECUTABLE) {
-			drw.setColorFilter(resources.getColor(R.color.indicatorTaskNotExecutable), PorterDuff.Mode.SRC_OVER);
+			drw.setColorFilter(ResourceUtils.getColor(imgTaskStatusIcon.getContext(), R.color.indicatorTaskNotExecutable), PorterDuff.Mode.SRC_OVER);
 		}
 
 		imgTaskStatusIcon.setBackground(drw);

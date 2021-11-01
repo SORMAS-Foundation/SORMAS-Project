@@ -26,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
+import androidx.annotation.NonNull;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
@@ -39,6 +40,7 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.VisualStateControlType;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 
@@ -209,7 +211,7 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 	}
 
 	@Override
-	protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+	protected void inflateView(@NonNull Context context, AttributeSet attrs, int defStyle) {
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		if (inflater != null) {
@@ -309,8 +311,8 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 
 		visualState = state;
 
-		int labelColor = getResources().getColor(state.getLabelColor());
-		Drawable drawable = getResources().getDrawable(state.getBackground(VisualStateControlType.SPINNER));
+		int labelColor = ResourceUtils.getColor(getContext(), state.getLabelColor());
+		Drawable drawable = ResourceUtils.getDrawable(getContext(), state.getBackground(VisualStateControlType.SPINNER));
 
 		if (drawable != null) {
 			drawable = drawable.mutate();
@@ -340,17 +342,17 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 	// Data binding, getters & setters
 
 	@BindingAdapter("value")
-	public static void setValue(ControlSpinnerField view, Object value) {
+	public static void setValue(@NonNull ControlSpinnerField view, Object value) {
 		view.setFieldValue(value);
 	}
 
 	@InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
-	public static Object getValue(ControlSpinnerField view) {
+	public static Object getValue(@NonNull ControlSpinnerField view) {
 		return view.getFieldValue();
 	}
 
 	@BindingAdapter("valueAttrChanged")
-	public static void setListener(ControlSpinnerField view, InverseBindingListener listener) {
+	public static void setListener(@NonNull ControlSpinnerField view, InverseBindingListener listener) {
 		view.inverseBindingListener = listener;
 	}
 }

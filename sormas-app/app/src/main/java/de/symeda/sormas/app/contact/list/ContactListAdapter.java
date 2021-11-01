@@ -22,7 +22,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.api.contact.FollowUpStatus;
@@ -36,6 +35,7 @@ import de.symeda.sormas.app.core.enumeration.StatusElaborator;
 import de.symeda.sormas.app.core.enumeration.StatusElaboratorFactory;
 import de.symeda.sormas.app.databinding.RowReadContactListItemLayoutBinding;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 public class ContactListAdapter extends BindingPagedListAdapter<Contact, RowReadContactListItemLayoutBinding> {
 
@@ -102,11 +102,11 @@ public class ContactListAdapter extends BindingPagedListAdapter<Contact, RowRead
 //        }
 //    }
 
-	public void indicateContactClassification(ImageView img, Contact record) {
-		Resources resources = img.getContext().getResources();
-		Drawable drw = ContextCompat.getDrawable(img.getContext(), R.drawable.indicator_status_circle);
+	public void indicateContactClassification(@NonNull ImageView img, @NonNull Contact record) {
+		Drawable drw = ResourceUtils.getDrawable(img.getContext(), R.drawable.indicator_status_circle);
+		assert drw != null;
 		StatusElaborator elaborator = StatusElaboratorFactory.getElaborator(record.getContactClassification());
-		drw.setColorFilter(resources.getColor(elaborator.getColorIndicatorResource()), PorterDuff.Mode.SRC_OVER);
+		drw.setColorFilter(ResourceUtils.getColor(img.getContext(), elaborator.getColorIndicatorResource()), PorterDuff.Mode.SRC_OVER);
 		img.setBackground(drw);
 	}
 

@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 
+import androidx.annotation.NonNull;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
@@ -31,6 +32,7 @@ import androidx.databinding.InverseBindingListener;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.VisualState;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
 
@@ -198,7 +200,7 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
 
 		visualState = state;
 
-		int labelColor = getResources().getColor(state.getLabelColor());
+		int labelColor = ResourceUtils.getColor(getContext(), state.getLabelColor());
 		label.setTextColor(labelColor);
 
 		if (state == VisualState.DISABLED) {
@@ -222,17 +224,17 @@ public class ControlCheckBoxField extends ControlPropertyEditField<Boolean> {
 	// Data binding, getters & setters
 
 	@BindingAdapter("value")
-	public static void setValue(ControlCheckBoxField view, Boolean value) {
+	public static void setValue(@NonNull ControlCheckBoxField view, Boolean value) {
 		view.setFieldValue(value);
 	}
 
 	@InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
-	public static Boolean getValue(ControlCheckBoxField view) {
+	public static Boolean getValue(@NonNull ControlCheckBoxField view) {
 		return view.getFieldValue();
 	}
 
 	@BindingAdapter("valueAttrChanged")
-	public static void setListener(ControlCheckBoxField view, InverseBindingListener listener) {
+	public static void setListener(@NonNull ControlCheckBoxField view, InverseBindingListener listener) {
 		view.inverseBindingListener = listener;
 	}
 }

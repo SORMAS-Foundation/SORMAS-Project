@@ -22,7 +22,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.app.R;
@@ -30,6 +29,7 @@ import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.core.adapter.databinding.BindingPagedListAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.BindingViewHolder;
 import de.symeda.sormas.app.databinding.RowEventListItemLayoutBinding;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 public class EventListAdapter extends BindingPagedListAdapter<Event, RowEventListItemLayoutBinding> {
 
@@ -74,20 +74,20 @@ public class EventListAdapter extends BindingPagedListAdapter<Event, RowEventLis
 //        }
 //    }
 
-	public void indicateEventStatus(ImageView imgEventStatusIcon, Event eventRecord) {
-		Resources resources = imgEventStatusIcon.getContext().getResources();
-		Drawable drw = ContextCompat.getDrawable(imgEventStatusIcon.getContext(), R.drawable.indicator_status_circle);
+	public void indicateEventStatus(@NonNull ImageView imgEventStatusIcon, @NonNull Event eventRecord) {
+		Drawable drw = ResourceUtils.getDrawable(imgEventStatusIcon.getContext(), R.drawable.indicator_status_circle);
+		assert drw != null;
 		switch (eventRecord.getEventStatus()) {
 		case SIGNAL:
-			drw.setColorFilter(resources.getColor(R.color.indicatorSignal), PorterDuff.Mode.SRC_OVER);
+			drw.setColorFilter(ResourceUtils.getColor(imgEventStatusIcon.getContext(), R.color.indicatorSignal), PorterDuff.Mode.SRC_OVER);
 			break;
 		case EVENT:
 		case CLUSTER:
 		case SCREENING:
-			drw.setColorFilter(resources.getColor(R.color.indicatorEvent), PorterDuff.Mode.SRC_OVER);
+			drw.setColorFilter(ResourceUtils.getColor(imgEventStatusIcon.getContext(), R.color.indicatorEvent), PorterDuff.Mode.SRC_OVER);
 			break;
 		case DROPPED:
-			drw.setColorFilter(resources.getColor(R.color.indicatorDroppedEvent), PorterDuff.Mode.SRC_OVER);
+			drw.setColorFilter(ResourceUtils.getColor(imgEventStatusIcon.getContext(), R.color.indicatorDroppedEvent), PorterDuff.Mode.SRC_OVER);
 			break;
 		}
 

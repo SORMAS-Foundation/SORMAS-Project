@@ -22,6 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.app.R;
@@ -32,7 +34,8 @@ import de.symeda.sormas.app.R;
 
 public class ViewHelper {
 
-	public static ArrayList<View> getViewsByTag(ViewGroup root, String tag) {
+	@NonNull
+	public static ArrayList<View> getViewsByTag(@NonNull ViewGroup root, String tag) {
 		ArrayList<View> views = new ArrayList<View>();
 		final int childCount = root.getChildCount();
 		for (int i = 0; i < childCount; i++) {
@@ -55,14 +58,14 @@ public class ViewHelper {
 		return views;
 	}
 
-	public static void formatInaccessibleTextView(TextView textField) {
+	public static void formatInaccessibleTextView(@NonNull TextView textField) {
 		textField.setText(I18nProperties.getCaption(Captions.inaccessibleValue));
-		textField.setTextColor(textField.getContext().getResources().getColor(R.color.disabled));
+		textField.setTextColor(ResourceUtils.getColor(textField.getContext(),R.color.disabled));
 		textField.setTypeface(null, Typeface.ITALIC);
 	}
 
-	public static void removeInaccessibleTextViewFormat(TextView textField) {
-		textField.setTextColor(textField.getContext().getResources().getColor(R.color.listActivityRowPrimaryText));
+	public static void removeInaccessibleTextViewFormat(@NonNull TextView textField) {
+		textField.setTextColor(ResourceUtils.getColor(textField.getContext(), R.color.listActivityRowPrimaryText));
 		textField.setTypeface(null, Typeface.NORMAL);
 	}
 }

@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
@@ -36,6 +37,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.VisualStateControlType;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 public class ControlTextPopupField extends ControlPropertyEditField<String> {
 
@@ -166,7 +168,7 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
 	}
 
 	@Override
-	protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+	protected void inflateView(@NonNull Context context, AttributeSet attrs, int defStyle) {
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		if (inflater != null) {
@@ -193,10 +195,10 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
 
 		input.setCompoundDrawablesWithIntrinsicBounds(iconStart, null, iconEnd, null);
 		if (iconStart != null) {
-			iconStart.setTint(getResources().getColor(R.color.control_link_edittextview_color_selector));
+			iconStart.setTint(ResourceUtils.getColor(getContext(), R.color.control_link_edittextview_color_selector));
 		}
 		if (iconEnd != null) {
-			iconEnd.setTint(getResources().getColor(R.color.control_link_edittextview_color_selector));
+			iconEnd.setTint(ResourceUtils.getColor(getContext(), R.color.control_link_edittextview_color_selector));
 		}
 
 		input.addTextChangedListener(new TextWatcher() {
@@ -243,8 +245,8 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
 
 		visualState = state;
 
-		int labelColor = getResources().getColor(state.getLabelColor());
-		Drawable drawable = getResources().getDrawable(state.getBackground(VisualStateControlType.TEXT_FIELD));
+		int labelColor = ResourceUtils.getColor(getContext(), state.getLabelColor());
+		Drawable drawable = ResourceUtils.getDrawable(getContext(), state.getBackground(VisualStateControlType.TEXT_FIELD));
 
 		if (drawable != null) {
 			drawable = drawable.mutate();
@@ -275,27 +277,27 @@ public class ControlTextPopupField extends ControlPropertyEditField<String> {
 	// Data binding, getters & setters
 
 	@BindingAdapter("value")
-	public static void setValue(ControlTextPopupField view, String text) {
+	public static void setValue(@NonNull ControlTextPopupField view, String text) {
 		view.setValue(text);
 	}
 
 	@InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
-	public static String getValue(ControlTextPopupField view) {
+	public static String getValue(@NonNull ControlTextPopupField view) {
 		return view.getFieldValue();
 	}
 
 	@BindingAdapter("valueAttrChanged")
-	public static void setListener(ControlTextPopupField view, InverseBindingListener listener) {
+	public static void setListener(@NonNull ControlTextPopupField view, InverseBindingListener listener) {
 		view.inverseBindingListener = listener;
 	}
 
 	@BindingAdapter("locationValue")
-	public static void setLocationValue(ControlTextPopupField textPopupField, Location location) {
+	public static void setLocationValue(@NonNull ControlTextPopupField textPopupField, Location location) {
 		textPopupField.setValue(location);
 	}
 
 	@InverseBindingAdapter(attribute = "locationValue", event = "valueAttrChanged")
-	public static Location getLocationValue(ControlTextPopupField textPopupField) {
+	public static Location getLocationValue(@NonNull ControlTextPopupField textPopupField) {
 		return (Location) textPopupField.getValue();
 	}
 }

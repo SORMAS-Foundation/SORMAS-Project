@@ -25,12 +25,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.visualization.data.SummaryCircularData;
 import de.symeda.sormas.app.core.adapter.multiview.DataBinder;
 import de.symeda.sormas.app.core.adapter.multiview.RecyclerViewDataBinderAdapter;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 /**
  * Created by Orson on 27/11/2017.
@@ -53,7 +55,7 @@ public class SummaryCircularProgressBinder extends DataBinder<SummaryCircularPro
 	}
 
 	@Override
-	public SummaryCircularProgressBinder.ViewHolder createViewHolder(ViewGroup parent) {
+	public SummaryCircularProgressBinder.ViewHolder createViewHolder(@NonNull ViewGroup parent) {
 		View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.summary_circular_progress_layout, parent, false);
 		return new SummaryCircularProgressBinder.ViewHolder(view);
 	}
@@ -61,14 +63,14 @@ public class SummaryCircularProgressBinder extends DataBinder<SummaryCircularPro
 	@Override
 	public void bindToViewHolder(SummaryCircularProgressBinder.ViewHolder holder, int position) {
 		if (position == PositionHelper.REMOVED_TASKS)
-			holder.layout.setBackground(this.getContext().getResources().getDrawable(R.drawable.background_summary_cell_last));
+			holder.layout.setBackground(ResourceUtils.getDrawable(getContext(), R.drawable.background_summary_cell_last));
 
 		double percentage = data.get(position).getPercentage();
 
 		holder.circularProgress.setDonut_progress(String.valueOf(Math.round(percentage)));
 		holder.circularProgress.setShowText(false);
-		holder.circularProgress.setUnfinishedStrokeColor(getContext().getResources().getColor(data.get(position).getUnfinishedColor()));
-		holder.circularProgress.setFinishedStrokeColor(getContext().getResources().getColor(data.get(position).getFinishedColor()));
+		holder.circularProgress.setUnfinishedStrokeColor(ResourceUtils.getColor(getContext(), data.get(position).getUnfinishedColor()));
+		holder.circularProgress.setFinishedStrokeColor(ResourceUtils.getColor(getContext(), data.get(position).getFinishedColor()));
 		holder.txtTitle.setText(data.get(position).getTitle());
 		holder.txtValue.setText(String.valueOf((int) Math.round(data.get(position).getValue())));
 		holder.txtPercentage.setText(String.valueOf(percentage) + "%");

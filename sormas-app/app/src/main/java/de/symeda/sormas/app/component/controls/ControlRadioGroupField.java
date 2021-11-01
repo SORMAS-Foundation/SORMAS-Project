@@ -32,6 +32,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
@@ -42,6 +43,7 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DisplayMetricsHelper;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
 
@@ -84,13 +86,13 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
 
 	// Instance methods
 
-	public void setItems(List<Item> items) {
+	public void setItems(@NonNull List<Item> items) {
 		for (int i = 0; i < items.size(); i++) {
 			this.addItem(i, items.get(i));
 		}
 	}
 
-	public void addItem(int index, Item item) {
+	public void addItem(int index, @NonNull Item item) {
 		if (item.getValue() == null) {
 			return;
 		}
@@ -111,6 +113,7 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
 		radioGroupElements.clear();
 	}
 
+	@NonNull
 	private RadioButton createRadioButton(int index) {
 		RadioButton button = new RadioButton(getContext());
 		button.setId(index);
@@ -149,6 +152,7 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
 		return button;
 	}
 
+	@NonNull
 	private LinearLayout createRadioButtonFrame() {
 		LinearLayout frame = new LinearLayout(getContext());
 		frame.setOrientation(HORIZONTAL);
@@ -160,13 +164,14 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
 		return frame;
 	}
 
+	@NonNull
 	private View createRadioButtonLabel(String caption) {
 		TextView buttonLabel = new TextView(new ContextThemeWrapper(getContext(), R.style.CheckBoxLabelStyle), null, 0);
 
 		ViewGroup.LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
 		buttonLabel.setText(caption);
-		buttonLabel.setTextColor(getResources().getColor(R.color.controlTextColor));
+		buttonLabel.setTextColor(ResourceUtils.getColor(getContext(), R.color.controlTextColor));
 		buttonLabel.setLayoutParams(params);
 
 		return buttonLabel;
@@ -228,7 +233,7 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
 		}
 	}
 
-	private void setChildViewEnabledState(RadioButton button) {
+	private void setChildViewEnabledState(@NonNull RadioButton button) {
 		button.setEnabled(input.isEnabled());
 		button.setClickable(input.isEnabled());
 	}
@@ -266,7 +271,7 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
 	}
 
 	@Override
-	protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+	protected void inflateView(@NonNull Context context, AttributeSet attrs, int defStyle) {
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		if (inflater != null) {
@@ -324,7 +329,7 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
 
 		visualState = state;
 
-		int labelColor = getResources().getColor(state.getLabelColor());
+		int labelColor = ResourceUtils.getColor(getContext(), state.getLabelColor());
 		label.setTextColor(labelColor);
 
 		if (state == VisualState.DISABLED) {
@@ -340,8 +345,8 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
 			return;
 		}
 
-		int uncheckedStateColor = getResources().getColor(R.color.colorControlNormal);
-		int checkedStateColor = getResources().getColor(R.color.colorControlActivated);
+		int uncheckedStateColor = ResourceUtils.getColor(getContext(), R.color.colorControlNormal);
+		int checkedStateColor = ResourceUtils.getColor(getContext(), R.color.colorControlActivated);
 
 		if (state == VisualState.FOCUSED || state == VisualState.NORMAL) {
 			setStateColor(checkedStateColor, uncheckedStateColor);
@@ -356,17 +361,17 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
 	// Data binding, getters & setters
 
 	@BindingAdapter("value")
-	public static void setValue(ControlRadioGroupField view, RadioButton value) {
+	public static void setValue(@NonNull ControlRadioGroupField view, RadioButton value) {
 		view.setFieldValue(value);
 	}
 
 	@InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
-	public static Object getValue(ControlRadioGroupField view) {
+	public static Object getValue(@NonNull ControlRadioGroupField view) {
 		return view.getFieldValue();
 	}
 
 	@BindingAdapter("valueAttrChanged")
-	public static void setListener(final ControlRadioGroupField view, InverseBindingListener listener) {
+	public static void setListener(@NonNull final ControlRadioGroupField view, InverseBindingListener listener) {
 		view.inverseBindingListener = listener;
 	}
 
@@ -381,7 +386,7 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
 	@BindingAdapter(value = {
 		"value",
 		"enumClass" })
-	public static void setValue(ControlRadioGroupField view, Object value, Class c) {
+	public static void setValue(@NonNull ControlRadioGroupField view, Object value, Class c) {
 		view.setEnumClass(c);
 		view.setFieldValue(value);
 	}

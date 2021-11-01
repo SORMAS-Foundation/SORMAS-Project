@@ -27,6 +27,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 import static android.view.View.GONE;
 
@@ -111,12 +112,12 @@ public class PageMenuAdapter extends BaseAdapter {
 			}
 
 			if (pageMenuItem.getIconResourceId() > 0) {
-				Drawable icon = context.getDrawable(pageMenuItem.getIconResourceId());
+				Drawable icon = ResourceUtils.getDrawable(context, pageMenuItem.getIconResourceId());
 				if (pageMenuItem.isActive()) {
-					icon.setTint(context.getResources().getColor(this.iconActiveColor));
+					icon.setTint(ResourceUtils.getColor(context, this.iconActiveColor));
 					icon.setAlpha(255);
 				} else {
-					icon.setTint(context.getResources().getColor(this.iconColor));
+					icon.setTint(ResourceUtils.getColor(context, this.iconColor));
 					icon.setAlpha(128);
 				}
 				iconView.setImageDrawable(icon);
@@ -124,9 +125,9 @@ public class PageMenuAdapter extends BaseAdapter {
 
 			titleView.setText(pageMenuItem.getTitle());
 			if (pageMenuItem.isActive()) {
-				titleView.setTextColor(context.getResources().getColor(this.titleActiveColor));
+				titleView.setTextColor(ResourceUtils.getColor(context, this.titleActiveColor));
 			} else {
-				titleView.setTextColor(context.getResources().getColor(this.titleColor));
+				titleView.setTextColor(ResourceUtils.getColor(context, this.titleColor));
 			}
 		}
 

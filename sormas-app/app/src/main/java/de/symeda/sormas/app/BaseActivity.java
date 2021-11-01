@@ -36,7 +36,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -75,6 +74,7 @@ import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.NavigationHelper;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
@@ -173,7 +173,7 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 			pageMenu.setPageMenuItemClickCallback(this::setActivePage);
 		}
 
-		Drawable drawable = ContextCompat.getDrawable(this, R.drawable.selector_actionbar_back_button);
+		Drawable drawable = ResourceUtils.getDrawable(this, R.drawable.selector_actionbar_back_button);
 
 		final Toolbar toolbar = findViewById(R.id.applicationToolbar);
 		if (toolbar != null) {
@@ -227,8 +227,8 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 			if (getPageStatus() != null) {
 				Context statusFrameContext = statusFrame.getContext();
 
-				Drawable drw = (Drawable) ContextCompat.getDrawable(statusFrameContext, R.drawable.indicator_status_circle);
-				drw.setColorFilter(statusFrameContext.getResources().getColor(getStatusColorResource()), PorterDuff.Mode.SRC);
+				Drawable drw = (Drawable) ResourceUtils.getDrawable(statusFrameContext, R.drawable.indicator_status_circle);
+				drw.setColorFilter(ResourceUtils.getColor(statusFrameContext, getStatusColorResource()), PorterDuff.Mode.SRC);
 
 				TextView txtStatusName = (TextView) statusFrame.findViewById(R.id.txtStatusName);
 				ImageView imgStatus = (ImageView) statusFrame.findViewById(R.id.statusIcon);
