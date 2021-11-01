@@ -15,15 +15,14 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.db.TransactionWrapperFacade;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 
+import javax.ejb.EJB;
+
 public abstract class EntityDtoResource {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private final TransactionWrapperFacade transactionWrapper;
-
-	protected EntityDtoResource() {
-		this.transactionWrapper = FacadeProvider.getTransactionWrapperFacade();
-	}
+	@EJB
+	private TransactionWrapper transactionWrapper;
 
 	protected <T> List<PushResult> savePushedDto(List<T> dtos, Function<T, T> saveEntityDto) {
 

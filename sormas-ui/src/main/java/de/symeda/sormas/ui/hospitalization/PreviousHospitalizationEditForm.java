@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.hospitalization;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,8 +33,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -41,6 +41,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -53,11 +55,15 @@ import de.symeda.sormas.ui.utils.NullableOptionGroup;
 public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHospitalizationDto> {
 
 	private static final long serialVersionUID = 1L;
+	private static final String PREVIOUS_HOSPITALIZATIONS_HEADING_LOC = "previousHospitalizationsHeadingLoc";
 
-	private static final String HTML_LAYOUT = fluidRowLocs(PreviousHospitalizationDto.ADMISSION_DATE, PreviousHospitalizationDto.DISCHARGE_DATE)
+	private static final String HTML_LAYOUT = loc(PREVIOUS_HOSPITALIZATIONS_HEADING_LOC)
+		+ fluidRowLocs(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY)
+		+ fluidRowLocs(PreviousHospitalizationDto.ADMISSION_DATE, PreviousHospitalizationDto.DISCHARGE_DATE)
 		+ fluidRowLocs(PreviousHospitalizationDto.REGION, PreviousHospitalizationDto.DISTRICT)
 		+ fluidRowLocs(PreviousHospitalizationDto.COMMUNITY, PreviousHospitalizationDto.HEALTH_FACILITY)
-		+ fluidRowLocs(PreviousHospitalizationDto.ISOLATED, PreviousHospitalizationDto.HEALTH_FACILITY_DETAILS)
+		+ fluidRowLocs("", PreviousHospitalizationDto.HEALTH_FACILITY_DETAILS)
+		+ fluidRowLocs(PreviousHospitalizationDto.ISOLATED, PreviousHospitalizationDto.ISOLATION_DATE)
 		+ fluidRowLocs(PreviousHospitalizationDto.HOSPITALIZATION_REASON, PreviousHospitalizationDto.OTHER_HOSPITALIZATION_REASON)
 		+ fluidRowLocs(
 			PreviousHospitalizationDto.INTENSIVE_CARE_UNIT,
@@ -100,9 +106,12 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 
 	@Override
 	protected void addFields() {
+		addField(PreviousHospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, NullableOptionGroup.class);
+
 		DateField admissionDate = addField(PreviousHospitalizationDto.ADMISSION_DATE, DateField.class);
 		DateField dischargeDate = addField(PreviousHospitalizationDto.DISCHARGE_DATE, DateField.class);
 		addField(PreviousHospitalizationDto.ISOLATED, NullableOptionGroup.class);
+		addField(PreviousHospitalizationDto.ISOLATION_DATE);
 		addField(PreviousHospitalizationDto.DESCRIPTION, TextArea.class).setRows(4);
 
 		regionCombo = addInfrastructureField(PreviousHospitalizationDto.REGION);
@@ -128,6 +137,14 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 
 		initializeAccessAndAllowedAccesses();
 
+		if (isVisibleAllowed(PreviousHospitalizationDto.ISOLATION_DATE)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				PreviousHospitalizationDto.ISOLATION_DATE,
+				PreviousHospitalizationDto.ISOLATED,
+				Arrays.asList(YesNoUnknown.YES),
+				true);
+		}
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			PreviousHospitalizationDto.OTHER_HOSPITALIZATION_REASON,
