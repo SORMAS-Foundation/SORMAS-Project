@@ -30,12 +30,12 @@ import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -90,6 +90,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setIntensiveCareUnit(source.getIntensiveCareUnit());
 		target.setIntensiveCareUnitStart(source.getIntensiveCareUnitStart());
 		target.setIntensiveCareUnitEnd(source.getIntensiveCareUnitEnd());
+		target.setDescription(source.getDescription());
 
 		return target;
 	}
@@ -103,6 +104,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		PreviousHospitalization target =
 			DtoHelper.fillOrBuildEntity(source, prevHospService.getByUuid(source.getUuid()), PreviousHospitalization::new, checkChangeDate);
 
+		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
 		target.setAdmissionDate(source.getAdmissionDate());
 		target.setDischargeDate(source.getDischargeDate());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
@@ -111,6 +113,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setHealthFacility(facilityService.getByReferenceDto(source.getHealthFacility()));
 		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
 		target.setIsolated(source.getIsolated());
+		target.setIsolationDate(source.getIsolationDate());
 		target.setDescription(source.getDescription());
 		target.setHospitalizationReason(source.getHospitalizationReason());
 		target.setOtherHospitalizationReason(source.getOtherHospitalizationReason());
@@ -151,6 +154,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setIntensiveCareUnit(source.getIntensiveCareUnit());
 		target.setIntensiveCareUnitStart(source.getIntensiveCareUnitStart());
 		target.setIntensiveCareUnitEnd(source.getIntensiveCareUnitEnd());
+		target.setDescription(source.getDescription());
 
 		return target;
 	}
@@ -165,6 +169,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 
 		DtoHelper.fillDto(target, source);
 
+		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
 		target.setAdmissionDate(source.getAdmissionDate());
 		target.setDischargeDate(source.getDischargeDate());
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
@@ -173,6 +178,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
 		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
 		target.setIsolated(source.getIsolated());
+		target.setIsolationDate(source.getIsolationDate());
 		target.setDescription(source.getDescription());
 		target.setHospitalizationReason(source.getHospitalizationReason());
 		target.setOtherHospitalizationReason(source.getOtherHospitalizationReason());
