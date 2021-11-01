@@ -123,7 +123,7 @@ public class SampleController {
 
 	/**
 	 * 
-	 * Works just like the addPathogenTestCreateComponent(..., int caseSampleCount, ...), but additionally determines the caseSampleCount.
+	 * Works just like the addPathogenTestComponent(..., int caseSampleCount, ...), but additionally determines the caseSampleCount.
 	 * For performance reasons, this method shall just be called when the caseSampleCount is not known already and just one pathogen test
 	 * create component shall be added.
 	 * 
@@ -135,17 +135,17 @@ public class SampleController {
 	 *            if true, a button is shown to remove the pathogen test create component again from the sample create component.
 	 * @return the pathogen test create component added.
 	 */
-	public PathogenTestForm addPathogenTestCreateComponent(
+	public PathogenTestForm addPathogenTestComponent(
 		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
 		PathogenTestDto pathogenTest,
 		boolean removable) {
 
 		CaseReferenceDto cazeRef = sampleComponent.getWrappedComponent().getValue().getAssociatedCase();
 		if (cazeRef == null) {
-			return addPathogenTestCreateComponent(sampleComponent, pathogenTest, 0, removable);
+			return addPathogenTestComponent(sampleComponent, pathogenTest, 0, removable);
 		} else {
 			List<SampleDto> samples = FacadeProvider.getSampleFacade().getByCaseUuids(Arrays.asList(cazeRef.getUuid()));
-			return addPathogenTestCreateComponent(sampleComponent, pathogenTest, samples.size(), removable);
+			return addPathogenTestComponent(sampleComponent, pathogenTest, samples.size(), removable);
 		}
 
 	}
@@ -163,7 +163,7 @@ public class SampleController {
 	 *            if true, a button is shown to remove the pathogen test create component again from the sample create component.
 	 * @return the pathogen test create component added.
 	 */
-	public PathogenTestForm addPathogenTestCreateComponent(
+	public PathogenTestForm addPathogenTestComponent(
 		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
 		PathogenTestDto pathogenTest,
 		int caseSampleCount,
@@ -257,7 +257,7 @@ public class SampleController {
 			}
 		});
 		Button addPathogenTestButton = new Button(I18nProperties.getCaption(Captions.pathogenTestAdd));
-		addPathogenTestButton.addClickListener((e) -> addPathogenTestCreateComponent(editView, null, true));
+		addPathogenTestButton.addClickListener((e) -> addPathogenTestComponent(editView, null, true));
 		editView.getButtonsPanel().addComponent(addPathogenTestButton, 0);
 
 		return editView;

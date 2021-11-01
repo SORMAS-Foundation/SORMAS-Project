@@ -483,7 +483,7 @@ public class LabMessageController {
 
 		List<PathogenTestDto> existingTests = FacadeProvider.getPathogenTestFacade().getAllBySample(sample.toReference());
 		for (PathogenTestDto existingTest : existingTests) {
-			sampleController.addPathogenTestCreateComponent(sampleEditComponent, existingTest, caseSampleCount, true);
+			sampleController.addPathogenTestComponent(sampleEditComponent, existingTest, caseSampleCount, true);
 		}
 
 		// add newly submitted tests to sample edit component
@@ -494,7 +494,7 @@ public class LabMessageController {
 
 		for (PathogenTestDto test : newTests) {
 			if (!existingTestExternalIds.contains(test.getExternalId())) {
-				PathogenTestForm form = sampleController.addPathogenTestCreateComponent(sampleEditComponent, test, caseSampleCount, true);
+				PathogenTestForm form = sampleController.addPathogenTestComponent(sampleEditComponent, test, caseSampleCount, true);
 				setViaLimsFieldCheckedAndDisabled(form);
 			}
 		}
@@ -639,11 +639,11 @@ public class LabMessageController {
 		int caseSampleCount = FacadeProvider.getSampleFacade().caseSampleCountOf(sample);
 		// the first pathogenTestCreateComponent must not be removable. It is expected to exist because the buildPathogenTests shall always return at least one.
 		PathogenTestForm pathogenTestCreateComponent =
-			sampleController.addPathogenTestCreateComponent(sampleCreateComponent, pathogenTests.get(0), caseSampleCount, false);
+			sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTests.get(0), caseSampleCount, false);
 		setViaLimsFieldCheckedAndDisabled(pathogenTestCreateComponent);
 		// all other pathogen test create components may be removed.
 		for (PathogenTestDto pathogenTest : pathogenTests.stream().skip(1).collect(Collectors.toList())) {
-			pathogenTestCreateComponent = sampleController.addPathogenTestCreateComponent(sampleCreateComponent, pathogenTest, caseSampleCount, true);
+			pathogenTestCreateComponent = sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTest, caseSampleCount, true);
 			setViaLimsFieldCheckedAndDisabled(pathogenTestCreateComponent);
 		}
 
