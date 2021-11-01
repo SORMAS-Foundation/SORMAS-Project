@@ -210,6 +210,8 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasSha
 	public static final String PREVIOUS_QUARANTINE_TO = "previousQuarantineTo";
 	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
 
+	public static final String EXTERNAL_DATA = "externalData";
+
 	// Fields are declared in the order they should appear in the import template
 
 	@Outbreaks

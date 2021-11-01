@@ -126,6 +126,7 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DateHelper8;
+import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -165,6 +166,8 @@ public class CaseController {
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP)) {
 			navigator.addView(CaseVisitsView.VIEW_NAME, CaseVisitsView.class);
 		}
+
+		navigator.addView(CaseExternalDataView.VIEW_NAME, CaseExternalDataView.class);
 	}
 
 	public void create() {
@@ -1246,6 +1249,19 @@ public class CaseController {
 		});
 
 		return view;
+	}
+
+	public DetailSubComponentWrapper getExternalDataComponent(final String caseUuid, ViewMode viewMode) {
+
+		CaseDataDto caseDataDto = findCase(caseUuid);
+
+		CaseExternalDataForm caseExternalDataForm = new CaseExternalDataForm(UiFieldAccessCheckers.forSensitiveData(caseDataDto.isPseudonymized()));
+		caseExternalDataForm.setValue(caseDataDto);
+
+		DetailSubComponentWrapper wrapper = new DetailSubComponentWrapper(() -> null);
+		wrapper.addComponent(caseExternalDataForm);
+
+		return wrapper;
 	}
 
 	public void saveCaseWithFacilityChangedPrompt(CaseDataDto caze, CaseDataDto oldCase) {
