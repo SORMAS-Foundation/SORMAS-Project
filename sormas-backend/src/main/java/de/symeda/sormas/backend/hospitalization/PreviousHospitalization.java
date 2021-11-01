@@ -48,6 +48,7 @@ public class PreviousHospitalization extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "previoushospitalization";
 
+	public static final String ADMITTED_TO_HEALTH_FACILITY = "admittedToHealthFacility";
 	public static final String ADMISSION_DATE = "admissionDate";
 	public static final String DISCHARGE_DATE = "dischargeDate";
 	public static final String REGION = "region";
@@ -56,12 +57,14 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	public static final String HEALTH_FACILIY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 	public static final String ISOLATED = "isolated";
+	public static final String ISOLATION_DATE = "isolationDate";
 	public static final String DESCRIPTION = "description";
 	public static final String HOSPITALIZATION = "hospitalization";
 	public static final String INTENSIVE_CARE_UNIT = "intensiveCareUnit";
 	public static final String INTENSIVE_CARE_UNIT_START = "intensiveCareUnitStart";
 	public static final String INTENSIVE_CARE_UNIT_END = "intensiveCareUnitEnd";
 
+	private YesNoUnknown admittedToHealthFacility;
 	private Date admissionDate;
 	private Date dischargeDate;
 	private Region region;
@@ -70,6 +73,7 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	private Facility healthFacility;
 	private String healthFacilityDetails;
 	private YesNoUnknown isolated;
+	private Date isolationDate;
 	private String description;
 	private Hospitalization hospitalization;
 	private HospitalizationReasonType hospitalizationReason;
@@ -77,6 +81,15 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	private YesNoUnknown intensiveCareUnit;
 	private Date intensiveCareUnitStart;
 	private Date intensiveCareUnitEnd;
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getAdmittedToHealthFacility() {
+		return admittedToHealthFacility;
+	}
+
+	public void setAdmittedToHealthFacility(YesNoUnknown admittedToHealthFacility) {
+		this.admittedToHealthFacility = admittedToHealthFacility;
+	}
 
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getAdmissionDate() {
@@ -139,6 +152,15 @@ public class PreviousHospitalization extends AbstractDomainObject {
 
 	public void setIsolated(YesNoUnknown isolated) {
 		this.isolated = isolated;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getIsolationDate() {
+		return isolationDate;
+	}
+
+	public void setIsolationDate(Date isolationDate) {
+		this.isolationDate = isolationDate;
 	}
 
 	@Column(length = CHARACTER_LIMIT_BIG)

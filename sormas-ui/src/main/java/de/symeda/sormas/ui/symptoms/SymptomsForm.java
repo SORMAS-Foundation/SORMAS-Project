@@ -819,11 +819,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		if (feverField.isVisible()) {
 			temperature.addValueChangeListener(e -> {
-				if (e.getProperty().getValue() != null) {
-					FieldHelper.addSoftRequiredStyle(feverField);
-				} else {
-					FieldHelper.removeSoftRequiredStyle(feverField);
-				}
 				toggleFeverComponentError(feverField, temperature);
 			});
 			feverField.addValueChangeListener(e -> {

@@ -8788,4 +8788,13 @@ UPDATE users u set jurisdictionLevel = 'NATION' where 'SORMAS_TO_SORMAS_CLIENT' 
 
 INSERT INTO schema_version (version_number, comment) VALUES (421, 'Assigned to user list of task should consider related entities jurisdiction #6867');
 
+ALTER TABLE hospitalization ADD COLUMN description varchar(512);
+ALTER TABLE hospitalization_history ADD COLUMN description varchar(512);
+ALTER TABLE previoushospitalization ADD COLUMN admittedtohealthfacility varchar(255);
+ALTER TABLE previoushospitalization_history ADD COLUMN admittedtohealthfacility varchar(255);
+ALTER TABLE previoushospitalization ADD COLUMN isolationdate timestamp;
+ALTER TABLE previoushospitalization_history ADD COLUMN isolationdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (422, 'Add additional fields to hospitalization #4593');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
