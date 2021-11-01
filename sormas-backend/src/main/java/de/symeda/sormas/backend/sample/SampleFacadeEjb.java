@@ -50,6 +50,9 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.backend.event.EventService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,6 +163,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	private CaseService caseService;
 	@EJB
 	private ContactService contactService;
+	@EJB
+	private EventService eventService;
 	@EJB
 	private EventParticipantService eventParticipantService;
 	@EJB
@@ -1227,4 +1232,25 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return sampleService.isSampleEditAllowed(sample);
 	}
+
+	@Override
+	public Disease getDiseaseOf(SampleDto sample) {
+		CaseReferenceDto cazeRef = sample.getAssociatedCase();
+		if (cazeRef != null) {
+			return caseFacade.getByUuid(cazeRef.getUuid()).getDisease();
+		}
+		ContactReferenceDto contactRef = sample.getAssociatedContact();
+		if (contactRef != null) {
+			return contactService.getByUuid(contactRef.getUuid()).getDisease();
+		}
+		EventParticipantReferenceDto eventPartRef = sample.getAssociatedEventParticipant();
+		if (eventPartRef != null) {
+			EventReferenceDto eventRef = eventParticipantFacade.getByUuid(eventPartRef.getUuid()).getEvent();
+			if (eventRef != null) {
+				return eventService.getByUuid(eventRef.getUuid()).getDisease();
+			}
+		}
+		return null;
+	}
+
 }

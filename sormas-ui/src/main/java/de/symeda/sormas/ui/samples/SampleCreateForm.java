@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.samples;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;

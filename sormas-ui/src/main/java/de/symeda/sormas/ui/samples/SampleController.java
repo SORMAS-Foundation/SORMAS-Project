@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.v7.ui.ComboBox;
 import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 
@@ -228,23 +229,9 @@ public class SampleController {
 		// add the pathogenTestForm above the overall discard and commit buttons
 		sampleComponent.addComponent(pathogenTestForm, sampleComponent.getComponentCount() - 1);
 		return pathogenTestForm;
-	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
-		SampleDto sampleDto,
-		Disease disease,
-		BiConsumer<SampleDto, PathogenTestDto> consumer) {
-		return getSampleCreateComponent(sampleDto, disease, consumer, () -> {
-		});
 	}
 
 	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, Disease disease, Runnable callback) {
-		return getSampleCreateComponent(sampleDto, disease, (savedSampleDto, savedPathogenTestDto) -> {
-		}, callback);
-	}
-
-	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
-		SampleDto sampleDto,
-		Disease disease,
-		Runnable callback) {
 		final SampleCreateForm createForm = new SampleCreateForm(disease);
 		createForm.setValue(sampleDto);
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<>(
@@ -299,7 +286,7 @@ public class SampleController {
 		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingReferSample));
 	}
 
-	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid, boolean isPseudonymized) {
+	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid, boolean isPseudonymized, Disease disease) {
 
 		SampleEditForm form = new SampleEditForm(isPseudonymized, disease);
 		form.setWidth(form.getWidth() * 10 / 12, Unit.PIXELS);
@@ -372,6 +359,7 @@ public class SampleController {
 				public void buttonClick(ClickEvent event) {
 					navigateToData(dto.getReferredTo().getUuid());
 				}
+
 			});
 
 		}

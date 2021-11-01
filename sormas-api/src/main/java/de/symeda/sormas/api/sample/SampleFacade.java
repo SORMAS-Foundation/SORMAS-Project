@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -84,4 +85,6 @@ public interface SampleFacade {
 	List<SampleDto> getByEventParticipantUuids(List<String> asList);
 
 	int caseSampleCountOf(SampleDto sample);
+
+	Disease getDiseaseOf(SampleDto sample);
 }

@@ -502,8 +502,8 @@ public class LabMessageController {
 	private void editSample(SampleDto sample, LabMessageDto labMessage) {
 
 		SampleController sampleController = ControllerProvider.getSampleController();
-		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent =
-			sampleController.getSampleEditComponent(sample.getUuid(), sample.isPseudonymized());
+		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent = sampleController
+			.getSampleEditComponent(sample.getUuid(), sample.isPseudonymized(), FacadeProvider.getSampleFacade().getDiseaseOf(sample));
 
 		// add existing tests to edit component
 		int caseSampleCount = FacadeProvider.getSampleFacade().caseSampleCountOf(sample);
@@ -655,13 +655,13 @@ public class LabMessageController {
 	}
 
 	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
-		SampleDto sampleDto,
+		SampleDto sample,
 		LabMessageDto labMessageDto,
 		Disease disease,
 		Window window) {
 		SampleController sampleController = ControllerProvider.getSampleController();
-		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
-		sampleController.getSampleCreateComponent(sampleDto, disease);
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = sampleController.getSampleCreateComponent(sample, disease, () -> {
+		});
 
 		sampleCreateComponent.addDoneListener(() -> finishProcessingLabMessage(labMessageDto, sample));
 
