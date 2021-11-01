@@ -139,8 +139,7 @@ public class ContactImporter extends DataImporter {
 
 		// try to assign the contact to an existing case
 		if (caze == null && newContactTemp.getCaseIdExternalSystem() != null) {
-			CaseDataDto existingCase =
-				FacadeProvider.getCaseFacade().getCaseDataByUuid(newContactTemp.getCaseIdExternalSystem().trim().toUpperCase());
+			CaseDataDto existingCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(newContactTemp.getCaseIdExternalSystem().trim());
 			if (existingCase != null) {
 				newContactTemp.assignCase(existingCase);
 				newContactTemp.setCaseIdExternalSystem(null);
