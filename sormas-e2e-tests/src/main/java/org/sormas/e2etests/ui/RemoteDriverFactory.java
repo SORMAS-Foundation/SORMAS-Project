@@ -72,6 +72,7 @@ public class RemoteDriverFactory implements DriverFactory {
     options.addArguments("enable-automation");
     options.addArguments("--ignore-certificate-errors");
     options.addArguments("--ignore-ssl-errors");
+    options.addArguments("--window-size=1920,1080");
     options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
     options.setCapability(SUPPORTS_ALERTS, false);
     log.info("Returning ChromeDriver instance with provided arguments");
