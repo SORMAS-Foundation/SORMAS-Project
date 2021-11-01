@@ -624,14 +624,10 @@ public class LabMessageController {
 
 	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sample, LabMessageDto labMessageDto, Window window) {
 		SampleController sampleController = ControllerProvider.getSampleController();
-		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
-			sampleController.getSampleCreateComponent(sample, (savedSampleDto, pathogenTestDto) -> {
-				finishProcessingLabMessage(labMessageDto, sample);
-			});
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = sampleController.getSampleCreateComponent(sample, () -> {
+		});
 
-		// including a pathogen test is not an option here, it is mandatory.
-		CheckBox includeTestCheckbox = sampleCreateComponent.getWrappedComponent().getField(Captions.sampleIncludeTestOnCreation);
-		includeTestCheckbox.setVisible(false);
+		sampleCreateComponent.addDoneListener(() -> finishProcessingLabMessage(labMessageDto, sample));
 
 		// add pathogen test create components
 		//********************

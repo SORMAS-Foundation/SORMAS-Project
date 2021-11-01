@@ -20,7 +20,6 @@ package de.symeda.sormas.ui.samples;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -112,13 +111,6 @@ public class SampleController {
 	private void createSample(Runnable callback, SampleDto sampleDto) {
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, callback);
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
-	}
-
-	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
-		SampleDto sampleDto,
-		BiConsumer<SampleDto, PathogenTestDto> consumer) {
-		return getSampleCreateComponent(sampleDto, consumer, () -> {
-		});
 	}
 
 	/**
@@ -235,14 +227,6 @@ public class SampleController {
 	}
 
 	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, Runnable callback) {
-		return getSampleCreateComponent(sampleDto, (savedSampleDto, savedPathogenTestDto) -> {
-		}, callback);
-	}
-
-	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
-		SampleDto sampleDto,
-		BiConsumer<SampleDto, PathogenTestDto> consumer,
-		Runnable callback) {
 		final SampleCreateForm createForm = new SampleCreateForm();
 		createForm.setValue(sampleDto);
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<>(
@@ -252,7 +236,7 @@ public class SampleController {
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
-				saveSample(createForm, consumer, editView);
+				FacadeProvider.getSampleFacade().saveSample(sampleDto);
 				callback.run();
 			}
 		});
@@ -275,7 +259,7 @@ public class SampleController {
 
 		createView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
-				saveSample(createForm, createView);
+				FacadeProvider.getSampleFacade().saveSample(referralSample);
 
 				SampleDto updatedSample = FacadeProvider.getSampleFacade().getSampleByUuid(sample.getUuid());
 				updatedSample.setReferredTo(referralSample.toReference());
@@ -295,18 +279,6 @@ public class SampleController {
 		});
 
 		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingReferSample));
-	}
-
-	private void saveSample(SampleCreateForm createForm, CommitDiscardWrapperComponent createView) {
-		saveSample(createForm, ((sampleDto, pathogenTestDto) -> {
-		}), createView);
-	}
-
-	private void saveSample(SampleCreateForm createForm, BiConsumer<SampleDto, PathogenTestDto> consumer, CommitDiscardWrapperComponent createView) {
-
-		final SampleDto newSample = createForm.getValue();
-		SampleDto savedSample = FacadeProvider.getSampleFacade().saveSample(newSample);
-		consumer.accept(savedSample, null);
 	}
 
 	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid, boolean isPseudonymized) {
