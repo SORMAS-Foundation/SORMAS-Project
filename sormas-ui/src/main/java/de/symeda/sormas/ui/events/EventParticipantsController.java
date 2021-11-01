@@ -29,7 +29,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.data.Validator;
 
@@ -43,11 +42,10 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonFacade;
-import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -55,9 +53,10 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
 public class EventParticipantsController {
 
@@ -310,52 +309,27 @@ public class EventParticipantsController {
 		SormasUI.refreshView();
 	}
 
-	public VerticalLayout getEventParticipantViewTitleLayout(EventParticipantDto eventParticipant) {
+	public TitleLayout getEventParticipantViewTitleLayout(EventParticipantDto eventParticipant) {
 		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
 
-		VerticalLayout titleLayout = new VerticalLayout();
-		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
-		titleLayout.setSpacing(false);
+		TitleLayout titleLayout = new TitleLayout();
 
 		String eventShortUuid = DataHelper.getShortUuid(event.getUuid());
 		String eventTitle = event.getEventTitle();
-		Label eventLabel = new Label(StringUtils.isNotBlank(eventTitle) ? eventTitle + " (" + eventShortUuid + ")" : eventShortUuid);
-		eventLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-		titleLayout.addComponent(eventLabel);
+		String eventLabel = StringUtils.isNotBlank(eventTitle) ? eventTitle + " (" + eventShortUuid + ")" : eventShortUuid;
+		titleLayout.addRow(eventLabel);
 
 		if (event.getStartDate() != null) {
-			Label eventStartDateLabel = new Label(
-				event.getEndDate() != null
-					? DateFormatHelper.buildPeriodString(event.getStartDate(), event.getEndDate())
-					: DateFormatHelper.formatDate(event.getStartDate()));
-			eventStartDateLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-			titleLayout.addComponent(eventStartDateLabel);
+			String eventStartDateLabel = event.getEndDate() != null
+				? DateFormatHelper.buildPeriodString(event.getStartDate(), event.getEndDate())
+				: DateFormatHelper.formatDate(event.getStartDate());
+			titleLayout.addRow(eventStartDateLabel);
 		}
 
 		String shortUuid = DataHelper.getShortUuid(eventParticipant.getUuid());
-		String personFullName = eventParticipant.getPerson().toReference().getCaption();
-		StringBuilder eventLabelSb = new StringBuilder();
-		if (StringUtils.isNotBlank(personFullName)) {
-			eventLabelSb.append(personFullName);
-
-			if (eventParticipant.getPerson().getBirthdateDD() != null
-				&& eventParticipant.getPerson().getBirthdateMM() != null
-				&& eventParticipant.getPerson().getBirthdateYYYY() != null) {
-
-				eventLabelSb.append(" (* ")
-					.append(
-						PersonHelper.formatBirthdate(
-							eventParticipant.getPerson().getBirthdateDD(),
-							eventParticipant.getPerson().getBirthdateMM(),
-							eventParticipant.getPerson().getBirthdateYYYY(),
-							I18nProperties.getUserLanguage()))
-					.append(")");
-			}
-		}
-		eventLabelSb.append(eventLabelSb.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
-		Label eventParticipantLabel = new Label(eventLabelSb.toString());
-		eventParticipantLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		titleLayout.addComponents(eventParticipantLabel);
+		StringBuilder mainRowText = TitleLayoutHelper.buildPersonString(eventParticipant.getPerson());
+		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
+		titleLayout.addMainRow(mainRowText.toString());
 
 		return titleLayout;
 	}

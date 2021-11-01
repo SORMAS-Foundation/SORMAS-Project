@@ -18,15 +18,13 @@ package de.symeda.sormas.backend.sormastosormas.entities.caze;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
@@ -36,54 +34,45 @@ import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcess
 
 @Stateless
 @LocalBean
-public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto, SormasToSormasCaseDto, SormasToSormasCasePreview, Case> {
+public class ReceivedCaseProcessor
+	extends ReceivedDataProcessor<Case, CaseDataDto, SormasToSormasCaseDto, SormasToSormasCasePreview, Case, CaseService> {
 
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;
-	@EJB
-	private CaseService caseService;
 
-	@Override
-	public ValidationErrors processReceivedData(SormasToSormasCaseDto receivedCase, Case existingCase) {
-		PersonDto person = receivedCase.getPerson();
-		CaseDataDto caze = receivedCase.getEntity();
+	protected ReceivedCaseProcessor() {
+	}
 
-		ValidationErrors uuidError = validateSharedUuid(caze.getUuid());
-		if (uuidError.hasError()) {
-			return uuidError;
-		}
-
-		dataValidator.handleIgnoredProperties(caze, CaseFacadeEjb.CaseFacadeEjbLocal.toDto(existingCase));
-		dataValidator.handleIgnoredProperties(person, dataValidator.getExitingPerson(existingCase));
-
-
-		return dataValidator.validateCaseData(caze, person, existingCase);
+	@Inject
+	protected ReceivedCaseProcessor(CaseService service) {
+		super(service);
 	}
 
 	@Override
-	public ValidationErrors processReceivedPreview(SormasToSormasCasePreview preview) {
-		ValidationErrors uuidError = validateSharedUuid(preview.getUuid());
-		if (uuidError.hasError()) {
-			return uuidError;
-		}
-
-		ValidationErrors caseValidationErrors = dataValidator.validateCasePreview(preview);
-		ValidationErrors personValidationErrors = dataValidator.validatePersonPreview(preview.getPerson());
-		caseValidationErrors.addAll(personValidationErrors);
-
-		return caseValidationErrors;
+	public void handleReceivedData(SormasToSormasCaseDto sharedData, Case existingCase) {
+		dataValidator.handleIgnoredProperties(sharedData.getEntity(), CaseFacadeEjb.toDto(existingCase));
+		dataValidator.handleIgnoredProperties(sharedData.getPerson(), dataValidator.getExitingPerson(existingCase));
 	}
 
-	private ValidationErrors validateSharedUuid(String uuid) {
-		ValidationErrors errors = new ValidationErrors();
-		if (caseService.exists(
-			(cb, caseRoot, cq) -> cb.and(
-				cb.equal(caseRoot.get(Case.UUID), uuid),
-				cb.isNull(caseRoot.get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO)),
-				cb.isEmpty(caseRoot.get(Case.SORMAS_TO_SORMAS_SHARES))))) {
-			errors.add(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasCaseExists));
-		}
+	@Override
+	public ValidationErrors existsNotShared(String uuid) {
+		return existsNotShared(
+			uuid,
+			Case.SORMAS_TO_SORMAS_ORIGIN_INFO,
+			Case.SORMAS_TO_SORMAS_SHARES,
+			Captions.CaseData,
+			Validations.sormasToSormasCaseExists);
+	}
 
-		return errors;
+	@Override
+	public ValidationErrors validate(SormasToSormasCaseDto sharedData, Case existingData) {
+		return dataValidator.validateCaseData(sharedData.getEntity(), sharedData.getPerson(), existingData);
+	}
+
+	@Override
+	public ValidationErrors validatePreview(SormasToSormasCasePreview preview) {
+		ValidationErrors validationErrors = dataValidator.validateCasePreview(preview);
+		validationErrors.addAll(dataValidator.validatePersonPreview(preview.getPerson()));
+		return validationErrors;
 	}
 }

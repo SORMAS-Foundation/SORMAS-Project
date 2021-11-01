@@ -283,7 +283,6 @@ public interface Strings {
 	String errorReadingDocument = "errorReadingDocument";
 	String errorReadingTemplate = "errorReadingTemplate";
 	String errorSampleNotEditable = "errorSampleNotEditable";
-	String errorSetFeverRequired = "errorSetFeverRequired";
 	String errorSormasToSormasAccept = "errorSormasToSormasAccept";
 	String errorSormasToSormasAcceptNotPending = "errorSormasToSormasAcceptNotPending";
 	String errorSormasToSormasCertNotGenerated = "errorSormasToSormasCertNotGenerated";

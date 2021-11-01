@@ -5,15 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import javax.ejb.EJB;
-
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
+
+import javax.ejb.EJB;
 
 public abstract class EntityDtoResource {
 
@@ -22,7 +23,7 @@ public abstract class EntityDtoResource {
 	@EJB
 	private TransactionWrapper transactionWrapper;
 
-	protected <T extends Object> List<PushResult> savePushedDto(List<T> dtos, Function<T, T> saveEntityDto) {
+	protected <T> List<PushResult> savePushedDto(List<T> dtos, Function<T, T> saveEntityDto) {
 
 		List<PushResult> results = new ArrayList<>(dtos.size());
 		for (T dto : dtos) {
@@ -46,7 +47,7 @@ public abstract class EntityDtoResource {
 		return results;
 	}
 
-	protected <T extends Object> String createErrorMessage(T dto) {
+	protected <T> String createErrorMessage(T dto) {
 
 		final EntityDto entityDto = (EntityDto) dto;
 		if (entityDto.getChangeDate() == null) {

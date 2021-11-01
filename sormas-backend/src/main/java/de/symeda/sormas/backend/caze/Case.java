@@ -86,7 +86,7 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
-import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
@@ -97,7 +97,7 @@ import de.symeda.sormas.backend.visit.Visit;
 
 @Entity(name = "cases")
 @Audited
-public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalData {
+public class Case extends CoreAdo implements SormasToSormasShareable, HasExternalData {
 
 	private static final long serialVersionUID = -2697795184663562129L;
 
@@ -224,6 +224,8 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
 	public static final String DONT_SHARE_WITH_REPORTING_TOOL = "dontShareWithReportingTool";
 	public static final String CASE_REFERENCE_DEFINITION = "caseReferenceDefinition";
+	public static final String PREVIOUS_QUARANTINE_TO = "previousQuarantineTo";
+	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
 
 	private Person person;
 	private String description;
@@ -391,6 +393,8 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	private List<ExternalShareInfo> externalShares = new ArrayList<>(0);
 
 	private CaseReferenceDefinition caseReferenceDefinition;
+	private Date previousQuarantineTo;
+	private String quarantineChangeComment;
 
 	private Long personId;
 
@@ -1660,5 +1664,23 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 
 	public void setCaseReferenceDefinition(CaseReferenceDefinition caseReferenceDefinition) {
 		this.caseReferenceDefinition = caseReferenceDefinition;
+	}
+
+	@Temporal(TemporalType.DATE)
+	public Date getPreviousQuarantineTo() {
+		return previousQuarantineTo;
+	}
+
+	public void setPreviousQuarantineTo(Date previousQuarantineTo) {
+		this.previousQuarantineTo = previousQuarantineTo;
+	}
+
+	@Column(length = CHARACTER_LIMIT_BIG)
+	public String getQuarantineChangeComment() {
+		return quarantineChangeComment;
+	}
+
+	public void setQuarantineChangeComment(String quarantineChangeComment) {
+		this.quarantineChangeComment = quarantineChangeComment;
 	}
 }

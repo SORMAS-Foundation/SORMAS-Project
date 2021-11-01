@@ -35,6 +35,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -81,7 +82,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 							3,
 							HospitalizationDto.INTENSIVE_CARE_UNIT_END)
 					+ fluidRowLocs(HospitalizationDto.ISOLATED, HospitalizationDto.ISOLATION_DATE, "")
-					+
+					+ fluidRowLocs(HospitalizationDto.DESCRIPTION) +
 			loc(PREVIOUS_HOSPITALIZATIONS_HEADING_LOC) +
 			fluidRowLocs(HospitalizationDto.HOSPITALIZED_PREVIOUSLY) +
 			fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS);
@@ -138,6 +139,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		FieldHelper
 			.setVisibleWhen(intensiveCareUnit, Arrays.asList(intensiveCareUnitStart, intensiveCareUnitEnd), Arrays.asList(YesNoUnknown.YES), true);
 		final Field isolationDateField = addField(HospitalizationDto.ISOLATION_DATE);
+		addField(HospitalizationDto.DESCRIPTION, TextArea.class).setRows(4);
 		final NullableOptionGroup isolatedField = addField(HospitalizationDto.ISOLATED, NullableOptionGroup.class);
 		final NullableOptionGroup leftAgainstAdviceField = addField(HospitalizationDto.LEFT_AGAINST_ADVICE, NullableOptionGroup.class);
 
@@ -150,7 +152,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 		FieldHelper.setEnabledWhen(
 			admittedToHealthFacilityField,
-			Arrays.asList(YesNoUnknown.YES),
+			Arrays.asList(YesNoUnknown.YES, YesNoUnknown.NO, YesNoUnknown.UNKNOWN),
 			Arrays.asList(
 				facilityField,
 				admissionDateField,

@@ -55,8 +55,6 @@ import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.importexport.ValueSeparator;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
@@ -269,8 +267,20 @@ public abstract class DataImporter {
 			}
 			errorReportCsvWriter.writeNext(columnNames);
 
+			// validate headers
+			if (entityClasses != null && entityClasses.length <= 1 || entityProperties.length <= 1) {
+				writeImportError(new String[0], I18nProperties.getValidationError(Validations.importProbablyInvalidSeparator));
+				return ImportResultStatus.CANCELED_WITH_ERRORS;
+			}
+
 			// Read and import all lines from the import file
 			String[] nextLine = readNextValidLine(csvReader);
+
+			if (nextLine == null) {
+				writeImportError(new String[0], I18nProperties.getValidationError(Validations.importIncompleteContent));
+				return ImportResultStatus.CANCELED_WITH_ERRORS;
+			}
+
 			int lineCounter = 0;
 			while (nextLine != null) {
 				ImportLineResult lineResult = importDataFromCsvLine(nextLine, entityClasses, entityProperties, entityPropertyPaths, lineCounter == 0);

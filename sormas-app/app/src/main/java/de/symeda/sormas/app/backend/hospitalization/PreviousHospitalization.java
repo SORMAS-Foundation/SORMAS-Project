@@ -54,6 +54,9 @@ public class PreviousHospitalization extends PseudonymizableAdo {
 	public static final String I18N_PREFIX = "CasePreviousHospitalization";
 	public static final String HOSPITALIZATION = "hospitalization";
 
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown admittedToHealthFacility;
+
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date admissionDate;
 
@@ -78,6 +81,9 @@ public class PreviousHospitalization extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown isolated;
 
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date isolationDate;
+
 	@Column(length = CHARACTER_LIMIT_BIG)
 	private String description;
 
@@ -98,6 +104,14 @@ public class PreviousHospitalization extends PseudonymizableAdo {
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date intensiveCareUnitEnd;
+
+	public YesNoUnknown getAdmittedToHealthFacility() {
+		return admittedToHealthFacility;
+	}
+
+	public void setAdmittedToHealthFacility(YesNoUnknown admittedToHealthFacility) {
+		this.admittedToHealthFacility = admittedToHealthFacility;
+	}
 
 	public Date getAdmissionDate() {
 		return admissionDate;
@@ -161,6 +175,14 @@ public class PreviousHospitalization extends PseudonymizableAdo {
 
 	public void setIsolated(YesNoUnknown isolated) {
 		this.isolated = isolated;
+	}
+
+	public Date getIsolationDate() {
+		return isolationDate;
+	}
+
+	public void setIsolationDate(Date isolationDate) {
+		this.isolationDate = isolationDate;
 	}
 
 	public String getDescription() {

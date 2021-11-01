@@ -8,8 +8,8 @@ public class SampleCreateForm extends AbstractSampleForm {
 
 	private static final long serialVersionUID = 1L;
 
-	public SampleCreateForm() {
-		super(SampleDto.class, SampleDto.I18N_PREFIX);
+	public SampleCreateForm(Disease disease) {
+		super(SampleDto.class, SampleDto.I18N_PREFIX, disease, null);
 	}
 
 	@SuppressWarnings("deprecation")

@@ -1,25 +1,21 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend.infrastructure.facility;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -30,8 +26,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -45,6 +39,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
+import de.symeda.sormas.backend.user.UserService;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -72,9 +67,7 @@ import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "FacilityFacade")
@@ -82,11 +75,6 @@ public class FacilityFacadeEjb
 	extends AbstractInfrastructureEjb<Facility, FacilityDto, FacilityIndexDto, FacilityReferenceDto, FacilityService, FacilityCriteria>
 	implements FacilityFacade {
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
-
-	@EJB
-	private UserService userService;
 	@EJB
 	private CommunityService communityService;
 	@EJB
@@ -98,8 +86,8 @@ public class FacilityFacadeEjb
 	}
 
 	@Inject
-	protected FacilityFacadeEjb(FacilityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-		super(service, featureConfiguration);
+	protected FacilityFacadeEjb(FacilityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
+		super(Facility.class, FacilityDto.class, service, featureConfiguration, userService);
 	}
 
 	@Override
@@ -145,34 +133,6 @@ public class FacilityFacadeEjb
 
 		List<Facility> laboratories = service.getAllActiveLaboratories(includeOtherFacility);
 		return laboratories.stream().map(FacilityFacadeEjb::toReferenceDto).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<String> getAllUuids() {
-
-		if (userService.getCurrentUser() == null) {
-			return Collections.emptyList();
-		}
-
-		return service.getAllUuids();
-	}
-
-	@Override
-	public List<FacilityDto> getAllAfter(Date date) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<FacilityDto> cq = cb.createQuery(FacilityDto.class);
-		Root<Facility> facility = cq.from(Facility.class);
-
-		selectDtoFields(cq, facility);
-
-		Predicate filter = service.createChangeDateFilter(cb, facility, date);
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		return em.createQuery(cq).getResultList();
 	}
 
 	@Override
@@ -228,13 +188,13 @@ public class FacilityFacadeEjb
 			.collect(Collectors.toList());
 	}
 
-	// Need to be in the same order as in the constructor
-	private void selectDtoFields(CriteriaQuery<FacilityDto> cq, Root<Facility> root) {
+	@Override
+	protected void selectDtoFields(CriteriaQuery<FacilityDto> cq, Root<Facility> root) {
 
 		Join<Facility, Community> community = root.join(Facility.COMMUNITY, JoinType.LEFT);
 		Join<Facility, District> district = root.join(Facility.DISTRICT, JoinType.LEFT);
 		Join<Facility, Region> region = root.join(Facility.REGION, JoinType.LEFT);
-
+		// Need to be in the same order as in the constructor
 		cq.multiselect(
 			root.get(Facility.CREATION_DATE),
 			root.get(Facility.CHANGE_DATE),
@@ -265,16 +225,6 @@ public class FacilityFacadeEjb
 			root.get(Facility.TYPE),
 			root.get(Facility.PUBLIC_OWNERSHIP),
 			root.get(Facility.EXTERNAL_ID));
-	}
-
-	@Override
-	public List<FacilityDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
-	}
-
-	@Override
-	public FacilityReferenceDto getFacilityReferenceByUuid(String uuid) {
-		return toReferenceDto(service.getByUuid(uuid));
 	}
 
 	@Override
@@ -434,6 +384,11 @@ public class FacilityFacadeEjb
 		dto.setExternalID(entity.getExternalID());
 
 		return dto;
+	}
+
+	@Override
+	public FacilityReferenceDto toRefDto(Facility facility) {
+		return toReferenceDto(facility);
 	}
 
 	@Override
@@ -664,8 +619,8 @@ public class FacilityFacadeEjb
 		}
 
 		@Inject
-		protected FacilityFacadeEjbLocal(FacilityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration) {
-			super(service, featureConfiguration);
+		protected FacilityFacadeEjbLocal(FacilityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
+			super(service, featureConfiguration, userService);
 		}
 	}
 }

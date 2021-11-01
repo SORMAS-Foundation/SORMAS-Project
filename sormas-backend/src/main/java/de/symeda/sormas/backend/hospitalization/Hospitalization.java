@@ -17,11 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.hospitalization;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -53,6 +56,7 @@ public class Hospitalization extends AbstractDomainObject {
 	public static final String INTENSIVE_CARE_UNIT = "intensiveCareUnit";
 	public static final String INTENSIVE_CARE_UNIT_START = "intensiveCareUnitStart";
 	public static final String INTENSIVE_CARE_UNIT_END = "intensiveCareUnitEnd";
+	public static final String DESCRIPTION = "description";
 
 	private YesNoUnknown admittedToHealthFacility;
 	private Date admissionDate;
@@ -69,6 +73,7 @@ public class Hospitalization extends AbstractDomainObject {
 	private Date intensiveCareUnitEnd;
 	private HospitalizationReasonType hospitalizationReason;
 	private String otherHospitalizationReason;
+	private String description;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getAdmissionDate() {
@@ -197,5 +202,14 @@ public class Hospitalization extends AbstractDomainObject {
 
 	public void setOtherHospitalizationReason(String otherReasonForHospitalization) {
 		this.otherHospitalizationReason = otherReasonForHospitalization;
+	}
+
+	@Column(length = CHARACTER_LIMIT_BIG)
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

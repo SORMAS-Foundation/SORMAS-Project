@@ -17,7 +17,9 @@ package de.symeda.sormas.backend.immunization;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -54,10 +56,13 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.LastVaccinationDate;
 import de.symeda.sormas.backend.vaccination.Vaccination;
+import org.apache.commons.collections.CollectionUtils;
 
 @Stateless
 @LocalBean
@@ -313,9 +318,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	}
 
 	public void updateImmunizationStatusBasedOnVaccinations(Immunization immunization) {
-		ImmunizationManagementStatus immunizationManagementStatus = immunization.getImmunizationManagementStatus();
-		if (immunizationManagementStatus == ImmunizationManagementStatus.SCHEDULED
-			|| immunizationManagementStatus == ImmunizationManagementStatus.ONGOING) {
+		ImmunizationStatus immunizationStatus = immunization.getImmunizationStatus();
+		if (immunizationStatus != ImmunizationStatus.NOT_ACQUIRED && immunizationStatus != ImmunizationStatus.EXPIRED) {
 			final Integer numberOfDoses = immunization.getNumberOfDoses();
 			final int vaccinationCount = immunization.getVaccinations().size();
 
@@ -364,6 +368,28 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		cq.where(filter);
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public List<Immunization> getByPersonUuids(List<String> personUuids) {
+		if (CollectionUtils.isEmpty(personUuids)) {
+			// Avoid empty IN clause
+			return Collections.emptyList();
+		} else {
+			List<Immunization> immunizations = new LinkedList<>();
+			IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> {
+
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Immunization> cq = cb.createQuery(Immunization.class);
+				Root<Immunization> immunizationRoot = cq.from(Immunization.class);
+				Join<Immunization, Person> personJoin = immunizationRoot.join(Immunization.PERSON, JoinType.INNER);
+
+				cq.where(personJoin.get(AbstractDomainObject.UUID).in(batchedPersonUuids));
+
+				immunizations.addAll(em.createQuery(cq).getResultList());
+
+			});
+			return immunizations;
+		}
 	}
 
 	private Predicate createUserFilter(ImmunizationQueryContext<Immunization> qc) {

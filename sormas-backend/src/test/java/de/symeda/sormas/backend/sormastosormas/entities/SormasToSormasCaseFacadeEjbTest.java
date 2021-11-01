@@ -1053,7 +1053,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 				shareInfo.setOwnershipHandedOver(true);
 				shareInfo.setComment("re-shared");
 
-				return encryptShareDataAsArray(new SormasToSormasShareTree(null, shareInfo, Collections.emptyList()));
+				return encryptShareDataAsArray(new SormasToSormasShareTree(null, shareInfo, Collections.emptyList(), false));
 			});
 
 		List<SormasToSormasShareTree> shares = getSormasToSormasCaseFacade().getAllShares(caze.getUuid());
@@ -1120,8 +1120,8 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 			.thenAnswer(invocation -> {
 
 				List<SormasToSormasShareTree> shareTrees = new ArrayList<>();
-				shareTrees.add(new SormasToSormasShareTree(null, shareToSecond, Collections.emptyList()));
-				shareTrees.add(new SormasToSormasShareTree(null, anotherShareFromDefault, Collections.emptyList()));
+				shareTrees.add(new SormasToSormasShareTree(null, shareToSecond, Collections.emptyList(), false));
+				shareTrees.add(new SormasToSormasShareTree(null, anotherShareFromDefault, Collections.emptyList(), false));
 
 				return encryptShareData(shareTrees);
 			});
@@ -1192,7 +1192,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 				shareInfo.setOwnershipHandedOver(false);
 				shareInfo.setComment("re-shared");
 
-				return encryptShareDataAsArray(new SormasToSormasShareTree(null, shareInfo, Collections.emptyList()));
+				return encryptShareDataAsArray(new SormasToSormasShareTree(null, shareInfo, Collections.emptyList(), false));
 			});
 
 		Mockito
@@ -1252,7 +1252,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		sample.setReportDateTime(new Date());
 		sample.setSampleMaterial(SampleMaterial.BLOOD);
 		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
-		sample.setLab(getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+		sample.setLab(getFacilityFacade().getReferenceByUuid(lab.getUuid()));
 
 		return sample;
 	}

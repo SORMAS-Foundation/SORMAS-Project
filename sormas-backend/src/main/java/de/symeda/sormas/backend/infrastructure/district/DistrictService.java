@@ -136,6 +136,7 @@ public class DistrictService extends AbstractInfrastructureAdoService<District, 
 		return null;
 	}
 
+	@Override
 	public Predicate buildCriteriaFilter(DistrictCriteria criteria, CriteriaBuilder cb, Root<District> from) {
 
 		Predicate filter = null;

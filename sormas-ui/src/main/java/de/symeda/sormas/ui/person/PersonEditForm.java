@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.ui.person;
 
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
@@ -274,7 +272,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		DateField deathDate = addField(PersonDto.DEATH_DATE, DateField.class);
 		TextField approximateAgeField = addField(PersonDto.APPROXIMATE_AGE, TextField.class);
-		approximateAgeField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, approximateAgeField.getCaption()));
+		approximateAgeField
+			.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, approximateAgeField.getCaption()));
 		ComboBox approximateAgeTypeField = addField(PersonDto.APPROXIMATE_AGE_TYPE, ComboBox.class);
 		addField(PersonDto.APPROXIMATE_AGE_REFERENCE_DATE, DateField.class);
 
@@ -286,9 +285,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		TextField tfGestationAgeAtBirth = addField(PersonDto.GESTATION_AGE_AT_BIRTH, TextField.class);
 		tfGestationAgeAtBirth
-			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfGestationAgeAtBirth.getCaption()));
+			.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, tfGestationAgeAtBirth.getCaption()));
 		TextField tfBirthWeight = addField(PersonDto.BIRTH_WEIGHT, TextField.class);
-		tfBirthWeight.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfBirthWeight.getCaption()));
+		tfBirthWeight.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, tfBirthWeight.getCaption()));
 
 		AbstractSelect deathPlaceType = addField(PersonDto.DEATH_PLACE_TYPE, ComboBox.class);
 		deathPlaceType.setNullSelectionAllowed(true);
@@ -539,7 +538,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		typeField.addValueChangeListener(e -> updateFacilities(facilityField, typeField, communityField, districtField, allowNoneFacility));
 		FieldHelper.updateItems(
 			facilityField,
-			Collections.singletonList(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
+			Collections.singletonList(FacadeProvider.getFacilityFacade().getReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
 
 		facilityField.addValueChangeListener(e -> {
 			updateFacilityDetailsVisibility(detailsField, (FacilityReferenceDto) e.getProperty().getValue());
@@ -580,7 +579,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				// "home or other place" as fallback
 				FieldHelper.updateItems(
 					facilityField,
-					Collections.singletonList(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
+					Collections.singletonList(FacadeProvider.getFacilityFacade().getReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
 			} else {
 				FieldHelper.removeItems(facilityField);
 			}

@@ -16,11 +16,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.pages.application;
+package org.sormas.e2etests.pages.application.immunizations;
 
 import org.openqa.selenium.By;
 
-public class MainPage {
-  public static final By LOGOUT_BUTTON =
-      By.cssSelector("#actionLogout span.v-menubar-menuitem-caption");
+public class ImmunizationsDirectoryPage {
+
+  public static final By ADD_NEW_IMMUNIZATION_BUTTON =
+      By.cssSelector("#immunizationNewImmunization");
 }

@@ -69,7 +69,7 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.task.Task;
@@ -78,7 +78,7 @@ import de.symeda.sormas.backend.visit.Visit;
 
 @Entity
 @Audited
-public class Contact extends CoreAdo implements SormasToSormasEntity, HasExternalData {
+public class Contact extends CoreAdo implements SormasToSormasShareable, HasExternalData {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
@@ -125,10 +125,12 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	public static final String PERSON = "person";
 	public static final String PERSON_ID = "personId";
+	public static final String PREVIOUS_QUARANTINE_TO = "previousQuarantineTo";
 	public static final String PROHIBITION_TO_WORK = "prohibitionToWork";
 	public static final String PROHIBITION_TO_WORK_FROM = "prohibitionToWorkFrom";
 	public static final String PROHIBITION_TO_WORK_UNTIL = "prohibitionToWorkUntil";
 	public static final String QUARANTINE = "quarantine";
+	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
 	public static final String QUARANTINE_EXTENDED = "quarantineExtended";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
@@ -259,6 +261,9 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 
 	private Contact duplicateOf;
+
+	private Date previousQuarantineTo;
+	private String quarantineChangeComment;
 
 	@Diseases({
 		Disease.AFP,
@@ -612,7 +617,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 
 	/**
 	 * Extra setter for externalID needed to comply with the HasExternalData interface
-	 * 
+	 *
 	 * @param externalId
 	 *            the value to be set for externalID
 	 */
@@ -1063,5 +1068,23 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 
 	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
 		this.vaccinationStatus = vaccinationStatus;
+	}
+
+	@Temporal(TemporalType.DATE)
+	public Date getPreviousQuarantineTo() {
+		return previousQuarantineTo;
+	}
+
+	public void setPreviousQuarantineTo(Date previousQuarantineTo) {
+		this.previousQuarantineTo = previousQuarantineTo;
+	}
+
+	@Column(length = CHARACTER_LIMIT_BIG)
+	public String getQuarantineChangeComment() {
+		return quarantineChangeComment;
+	}
+
+	public void setQuarantineChangeComment(String quarantineChangeComment) {
+		this.quarantineChangeComment = quarantineChangeComment;
 	}
 }

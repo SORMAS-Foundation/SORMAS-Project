@@ -101,10 +101,7 @@ public class CaseImporter extends DataImporter {
 		throws IOException, InvalidColumnException, InterruptedException {
 
 		// regenerate the UUID to prevent overwrite in case of export and import of the same entities
-		int uuidIndex = ArrayUtils.indexOf(entityProperties, CaseDataDto.UUID);
-		if (uuidIndex >= 0) {
-			values[uuidIndex] = DataHelper.createUuid();
-		}
+		setValueUuid(values, entityProperties, DataHelper.createUuid());
 
 		ImportLineResultDto<CaseImportEntities> importResult =
 			caseImportFacade.importCaseData(values, entityClasses, entityProperties, entityPropertyPaths, !firstLine);
@@ -196,6 +193,7 @@ public class CaseImporter extends DataImporter {
 							&& consumer.result != null
 							&& consumer.result.getMatchingCase() != null) {
 							selectedCaseUuid = consumer.result.getMatchingCase().getUuid();
+							setValueUuid(values, entityProperties, selectedCaseUuid);
 						}
 					}
 				}
@@ -227,6 +225,13 @@ public class CaseImporter extends DataImporter {
 		}
 
 		return ImportLineResult.SUCCESS;
+	}
+
+	private void setValueUuid(String[] values, String[] entityProperties, String uuid) {
+		int uuidIndex = ArrayUtils.indexOf(entityProperties, CaseDataDto.UUID);
+		if (uuidIndex >= 0) {
+			values[uuidIndex] = uuid;
+		}
 	}
 
 	/**

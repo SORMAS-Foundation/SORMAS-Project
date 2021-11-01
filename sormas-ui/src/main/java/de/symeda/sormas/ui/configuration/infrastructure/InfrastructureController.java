@@ -142,7 +142,7 @@ public class InfrastructureController {
 	}
 
 	public void editDistrict(String uuid) {
-		DistrictDto district = FacadeProvider.getDistrictFacade().getDistrictByUuid(uuid);
+		DistrictDto district = FacadeProvider.getDistrictFacade().getByUuid(uuid);
 		CommitDiscardWrapperComponent<DistrictEditForm> editComponent = getDistrictEditComponent(district);
 		String caption = I18nProperties.getString(Strings.edit) + " " + district.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);

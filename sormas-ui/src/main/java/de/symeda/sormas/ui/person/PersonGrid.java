@@ -4,8 +4,8 @@ import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
-
 import com.vaadin.ui.renderers.TextRenderer;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -51,17 +51,15 @@ public class PersonGrid extends FilteredGrid<PersonIndexDto, PersonCriteria> {
 
 		((Column<PersonIndexDto, String>) getColumn(PersonIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<PersonIndexDto, AgeAndBirthDateDto>) getColumn(PersonIndexDto.AGE_AND_BIRTH_DATE)).setRenderer(
-				value -> value == null
-						? ""
-						: PersonHelper.getAgeAndBirthdateString(
-						value.getAge(),
-						value.getAgeType(),
-						value.getDateOfBirthDD(),
-						value.getDateOfBirthMM(),
-						value.getDateOfBirthYYYY(),
-						I18nProperties.getUserLanguage()),
-				new TextRenderer());
-
+			value -> value == null
+				? ""
+				: PersonHelper.getAgeAndBirthdateString(
+					value.getAge(),
+					value.getAgeType(),
+					value.getDateOfBirthDD(),
+					value.getDateOfBirthMM(),
+					value.getDateOfBirthYYYY()),
+			new TextRenderer());
 
 		for (Column<PersonIndexDto, ?> column : getColumns()) {
 			column.setCaption(

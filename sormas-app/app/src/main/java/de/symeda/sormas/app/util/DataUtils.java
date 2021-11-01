@@ -18,6 +18,7 @@ package de.symeda.sormas.app.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -112,6 +113,33 @@ public class DataUtils {
 				listOut.add(new Item<E>(String.valueOf(listInEntry), listInEntry));
 			}
 		}
+
+		return listOut;
+	}
+
+	public static <E> List<Item> toItems(
+		List<E> listIn,
+		boolean withNull,
+		FieldVisibilityCheckers fieldVisibilityCheckers,
+		Class<? extends Enum> enumClass) {
+
+		List<Item> listOut = new ArrayList<>();
+		if (withNull) {
+			listOut.add(new Item<E>("", null));
+		}
+
+		if (listIn != null) {
+			if (fieldVisibilityCheckers != null) {
+				listOut.addAll(
+					listIn.stream()
+						.filter(i -> fieldVisibilityCheckers.isVisible(enumClass, ((Enum<?>) i).name()))
+						.map(i -> new Item<>(String.valueOf(i), i))
+						.collect(Collectors.toList()));
+			} else {
+				listOut.addAll(listOut.stream().map(i -> new Item<>(String.valueOf(i), i)).collect(Collectors.toList()));
+			}
+		}
+
 		return listOut;
 	}
 
@@ -126,13 +154,6 @@ public class DataUtils {
 
 		if (!hasEmptyItem)
 			items.add(0, new Item<E>("", null));
-		return items;
-	}
-
-	public static <E> List<Item> addItems(List<Item> items, List<E> listIn) {
-		for (E listInEntry : listIn) {
-			items.add(new Item<E>(listInEntry.toString(), listInEntry));
-		}
 		return items;
 	}
 
