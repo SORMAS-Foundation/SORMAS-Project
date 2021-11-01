@@ -805,11 +805,10 @@ public class ContactController {
 			mainRowText.append(contactPersonFullName);
 
 			PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-			if (contactPerson.getBirthdateDD() != null && contactPerson.getBirthdateMM() != null && contactPerson.getBirthdateYYYY() != null) {
-				mainRowText.append(" (* ")
-					.append(
-						DateFormatHelper.formatDate(contactPerson.getBirthdateDD(), contactPerson.getBirthdateMM(), contactPerson.getBirthdateYYYY()))
-					.append(")");
+			String dateOfBirth =
+				DateFormatHelper.formatDate(contactPerson.getBirthdateDD(), contactPerson.getBirthdateMM(), contactPerson.getBirthdateYYYY());
+			if (StringUtils.isNotBlank(dateOfBirth)) {
+				mainRowText.append(" (* ").append(dateOfBirth).append(")");
 			}
 
 			if (contact.getCaze() != null && (contact.getCaze().getFirstName() != null || contact.getCaze().getLastName() != null)) {
