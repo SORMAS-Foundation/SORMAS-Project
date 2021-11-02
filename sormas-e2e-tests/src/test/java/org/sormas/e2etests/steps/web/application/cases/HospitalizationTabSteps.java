@@ -6,8 +6,10 @@ import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
+import lombok.SneakyThrows;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pojo.web.Hospitalization;
@@ -42,11 +44,15 @@ public class HospitalizationTabSteps implements En {
         "I change all hospitalization fields and save",
         () -> {
           hospitalization = hospitalizationService.generateHospitalization();
+          selectPatientAdmittedAtTheFacility(
+              hospitalization.getWasPatientAdmittedAtTheFacilityAsAnInpatient());
           fillDateOfVisitOrAdmission(hospitalization.getDateOfVisitOrAdmission());
           selectReasonForHospitalization(hospitalization.getReasonForHospitalization());
           fillDateOfDischargeOrTransfer(hospitalization.getDateOfDischargeOrTransfer());
           selectStayInTheIntensiveCareUnit(hospitalization.getStayInTheIntensiveCareUnit());
           fillStartOfStayDate(hospitalization.getStartOfStayDate());
+          fillEndOfStayDate(hospitalization.getEndOfStayDate());
+          fillSpecifyReason(hospitalization.getSpecifyReason());
           selectIsolation(hospitalization.getIsolation());
           fillDateOfIsolation(hospitalization.getDateOfIsolation());
           selectWasThePatientHospitalizedPreviously(
@@ -54,8 +60,7 @@ public class HospitalizationTabSteps implements En {
           selectWasPatientAdmittedAtTheFacilityAsAnInpatient(
               hospitalization.getWasPatientAdmittedAtTheFacilityAsAnInpatient());
           selectLeftAgainstMedicalAdvice(hospitalization.getLeftAgainstMedicalAdvice());
-          fillEndOfStayDate(hospitalization.getEndOfStayDate());
-          fillSpecifyReason(hospitalization.getSpecifyReason());
+
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SUCCESSFUL_SAVE_POPUP);
         });
@@ -66,6 +71,12 @@ public class HospitalizationTabSteps implements En {
           Hospitalization actualHospitalization = collectHospitalizationData();
           Truth.assertThat(actualHospitalization).isEqualTo(hospitalization);
         });
+  }
+
+  @SneakyThrows
+  public void selectPatientAdmittedAtTheFacility(String yesNoUnknown) {
+    webDriverHelpers.clickWebElementByText(PATIENT_ADMITTED_AT_FACILITY_OPTIONS, yesNoUnknown);
+    TimeUnit.SECONDS.sleep(1);
   }
 
   public void fillDateOfVisitOrAdmission(LocalDate date) {
