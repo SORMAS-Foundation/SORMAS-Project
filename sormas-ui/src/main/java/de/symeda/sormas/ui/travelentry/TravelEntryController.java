@@ -21,7 +21,6 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -30,6 +29,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
 public class TravelEntryController {
 
@@ -167,18 +167,8 @@ public class TravelEntryController {
 		titleLayout.addRow(travelEntryPointOfEntry);
 
 		String shortUuid = DataHelper.getShortUuid(travelEntry.getUuid());
-		String personFullName = travelEntry.getPerson().getCaption();
-		StringBuilder mainRowText = new StringBuilder();
-		if (StringUtils.isNotBlank(personFullName)) {
-			mainRowText.append(personFullName);
-
-			PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(travelEntry.getPerson().getUuid());
-			if (person.getBirthdateDD() != null && person.getBirthdateMM() != null && person.getBirthdateYYYY() != null) {
-				mainRowText.append(" (* ")
-					.append(DateFormatHelper.formatDate(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY()))
-					.append(")");
-			}
-		}
+		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(travelEntry.getPerson().getUuid());
+		StringBuilder mainRowText = TitleLayoutHelper.buildPersonString(person);
 		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
 		titleLayout.addMainRow(mainRowText.toString());
 

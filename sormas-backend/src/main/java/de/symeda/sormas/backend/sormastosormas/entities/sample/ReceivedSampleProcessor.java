@@ -26,10 +26,16 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Stateless
 @LocalBean
@@ -49,6 +55,14 @@ public class ReceivedSampleProcessor
 
 	@Override
 	public void handleReceivedData(SormasToSormasSampleDto sharedData, Sample existingData) {
+		Map<String, PathogenTest> existingPathogenTests;
+		if(existingData != null) {
+			existingPathogenTests = existingData.getPathogenTests().stream().collect(Collectors.toMap(PathogenTest::getUuid, Function.identity()));
+		} else {
+			existingPathogenTests = Collections.emptyMap();
+		}
+
+		sharedData.getPathogenTests().forEach(pathogenTest -> dataValidator.handleIgnoredProperties(pathogenTest, existingPathogenTests.get(pathogenTest.getUuid())));
 	}
 
 	@Override

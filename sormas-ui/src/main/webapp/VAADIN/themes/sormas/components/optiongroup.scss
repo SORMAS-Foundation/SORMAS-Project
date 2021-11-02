@@ -67,6 +67,12 @@
 	  	  border-color: $v-error-indicator-color;
 	  	}
 	  }
+
+	  &.v-select-optiongroup-error-info {
+		  .v-radiobutton, .v-checkbox {
+			  border-color: #00a7f5 !important;
+		  }
+	  }
 		
 	  &.v-select-optiongroup-caption-inline {
 	  	text-align: right;

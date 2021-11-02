@@ -62,16 +62,17 @@ public class AggregateReportEditForm extends AbstractEditForm<AggregateReportDto
 		getContent().addComponent(diseaseLabel, DISEASE_LOC);
 		caseField = addField(AggregateReportDto.NEW_CASES);
 		caseField.setInputPrompt(I18nProperties.getCaption(Captions.aggregateReportNewCasesShort));
-		caseField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, caseField.getCaption()));
+		caseField.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, caseField.getCaption()));
 		labField = addField(AggregateReportDto.LAB_CONFIRMATIONS);
 		labField.setInputPrompt(I18nProperties.getCaption(Captions.aggregateReportLabConfirmationsShort));
-		labField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, labField.getCaption()));
+		labField.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, labField.getCaption()));
 		deathField = addField(AggregateReportDto.DEATHS);
 		deathField.setInputPrompt(I18nProperties.getCaption(Captions.aggregateReportDeathsShort));
-		deathField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, deathField.getCaption()));
+		deathField.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, deathField.getCaption()));
 		CssStyles.style(CssStyles.CAPTION_HIDDEN, diseaseLabel, caseField, labField, deathField);
 	}
 
+	@Override
 	public boolean isValid() {
 		return (caseField.getValue().isEmpty() || DataHelper.isParseableInt(caseField.getValue()))
 			&& (labField.getValue().isEmpty() || DataHelper.isParseableInt(labField.getValue()))
