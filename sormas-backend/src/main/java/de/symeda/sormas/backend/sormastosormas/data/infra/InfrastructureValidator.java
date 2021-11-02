@@ -156,7 +156,6 @@ public class InfrastructureValidator {
 		ValidationErrors validationErrors,
 		InfrastructureBaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> facade,
 		String i18property,
-		String caption,
 		Consumer<REF_DTO> onNoErrors) {
 		if (dto != null) {
 			REF_DTO match = facade.getReferenceByUuid(dto.getUuid());
@@ -173,14 +172,7 @@ public class InfrastructureValidator {
 		String groupNameTag,
 		ValidationErrors validationErrors,
 		Consumer<ContinentReferenceDto> onNoErrors) {
-		validateInfra(
-			continent,
-			groupNameTag,
-			validationErrors,
-			continentFacade,
-			Validations.sormasToSormasContinent,
-			Captions.continent,
-			onNoErrors);
+		validateInfra(continent, groupNameTag, validationErrors, continentFacade, Validations.sormasToSormasContinent, onNoErrors);
 	}
 
 	public void validateSubcontinent(
@@ -189,14 +181,7 @@ public class InfrastructureValidator {
 		ValidationErrors validationErrors,
 		Consumer<SubcontinentReferenceDto> onNoErrors) {
 
-		validateInfra(
-			subcontinent,
-			groupNameTag,
-			validationErrors,
-			subcontinentFacade,
-			Validations.sormasToSormasSubcontinent,
-			Captions.subcontinent,
-			onNoErrors);
+		validateInfra(subcontinent, groupNameTag, validationErrors, subcontinentFacade, Validations.sormasToSormasSubcontinent, onNoErrors);
 	}
 
 	public void validateCountry(
@@ -204,7 +189,7 @@ public class InfrastructureValidator {
 		String groupNameTag,
 		ValidationErrors validationErrors,
 		Consumer<CountryReferenceDto> onNoErrors) {
-		validateInfra(country, groupNameTag, validationErrors, countryFacade, Validations.sormasToSormasCountry, Captions.country, onNoErrors);
+		validateInfra(country, groupNameTag, validationErrors, countryFacade, Validations.sormasToSormasCountry, onNoErrors);
 	}
 
 	public void validateRegion(
@@ -212,7 +197,7 @@ public class InfrastructureValidator {
 		String groupNameTag,
 		ValidationErrors validationErrors,
 		Consumer<RegionReferenceDto> onNoErrors) {
-		validateInfra(region, groupNameTag, validationErrors, regionFacade, Validations.sormasToSormasRegion, Captions.region, onNoErrors);
+		validateInfra(region, groupNameTag, validationErrors, regionFacade, Validations.sormasToSormasRegion, onNoErrors);
 	}
 
 	public void validateDistrit(
@@ -220,7 +205,7 @@ public class InfrastructureValidator {
 		String groupNameTag,
 		ValidationErrors validationErrors,
 		Consumer<DistrictReferenceDto> onNoErrors) {
-		validateInfra(district, groupNameTag, validationErrors, districtFacade, Validations.sormasToSormasDistrict, Captions.district, onNoErrors);
+		validateInfra(district, groupNameTag, validationErrors, districtFacade, Validations.sormasToSormasDistrict, onNoErrors);
 	}
 
 	public void validateCommunity(
@@ -234,7 +219,7 @@ public class InfrastructureValidator {
 			validationErrors,
 			communityFacade,
 			Validations.sormasToSormasCommunity,
-			Captions.community,
+
 			onNoErrors);
 	}
 
@@ -243,7 +228,7 @@ public class InfrastructureValidator {
 		String groupNameTag,
 		ValidationErrors validationErrors,
 		Consumer<RegionReferenceDto> onNoErrors) {
-		validateInfra(region, groupNameTag, validationErrors, regionFacade, Validations.sormasToSormasResponsibleRegion, Captions.region, onNoErrors);
+		validateInfra(region, groupNameTag, validationErrors, regionFacade, Validations.sormasToSormasResponsibleRegion, onNoErrors);
 	}
 
 	public void validateResponsibleDistrict(
@@ -251,14 +236,7 @@ public class InfrastructureValidator {
 		String groupNameTag,
 		ValidationErrors validationErrors,
 		Consumer<DistrictReferenceDto> onNoErrors) {
-		validateInfra(
-			district,
-			groupNameTag,
-			validationErrors,
-			districtFacade,
-			Validations.sormasToSormasResponsibleDistrict,
-			Captions.district,
-			onNoErrors);
+		validateInfra(district, groupNameTag, validationErrors, districtFacade, Validations.sormasToSormasResponsibleDistrict, onNoErrors);
 	}
 
 	public void validateResponsibleCommunity(
@@ -266,14 +244,7 @@ public class InfrastructureValidator {
 		String groupNameTag,
 		ValidationErrors validationErrors,
 		Consumer<CommunityReferenceDto> onNoErrors) {
-		validateInfra(
-			community,
-			groupNameTag,
-			validationErrors,
-			communityFacade,
-			Validations.sormasToSormasResponsibleCommunity,
-			Captions.community,
-			onNoErrors);
+		validateInfra(community, groupNameTag, validationErrors, communityFacade, Validations.sormasToSormasResponsibleCommunity, onNoErrors);
 	}
 
 	public void validateFacility(
