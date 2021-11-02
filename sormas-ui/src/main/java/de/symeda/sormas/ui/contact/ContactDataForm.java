@@ -81,6 +81,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
+import de.symeda.sormas.api.utils.ExtendedReduced;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -170,11 +171,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private NullableOptionGroup contactProximity;
 	private Field<?> quarantine;
 	private DateField quarantineFrom;
-	private DateField quarantineTo;
+	private DateField dfQuarantineTo;
 	private TextField quarantineChangeComment;
-	private DateField previousQuarantineTo;
-	private CheckBox quarantineExtended;
-	private CheckBox quarantineReduced;
+	private DateField dfPreviousQuarantineTo;
+	private CheckBox cbQuarantineExtended;
+	private CheckBox cbQuarantineReduced;
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
 	private ComboBox cbDisease;
@@ -305,25 +306,25 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		quarantine = addField(ContactDto.QUARANTINE);
 		quarantine.addValueChangeListener(e -> onQuarantineValueChange());
 		quarantineFrom = addField(ContactDto.QUARANTINE_FROM, DateField.class);
-		quarantineTo = addDateField(ContactDto.QUARANTINE_TO, DateField.class, -1);
+		dfQuarantineTo = addDateField(ContactDto.QUARANTINE_TO, DateField.class, -1);
 
 		quarantineFrom.addValidator(
 			new DateComparisonValidator(
 				quarantineFrom,
-				quarantineTo,
+				dfQuarantineTo,
 				true,
 				false,
-				I18nProperties.getValidationError(Validations.beforeDate, quarantineFrom.getCaption(), quarantineTo.getCaption())));
-		quarantineTo.addValidator(
+				I18nProperties.getValidationError(Validations.beforeDate, quarantineFrom.getCaption(), dfQuarantineTo.getCaption())));
+		dfQuarantineTo.addValidator(
 			new DateComparisonValidator(
-				quarantineTo,
+				dfQuarantineTo,
 				quarantineFrom,
 				false,
 				false,
-				I18nProperties.getValidationError(Validations.afterDate, quarantineTo.getCaption(), quarantineFrom.getCaption())));
+				I18nProperties.getValidationError(Validations.afterDate, dfQuarantineTo.getCaption(), quarantineFrom.getCaption())));
 
 		quarantineChangeComment = addField(ContactDto.QUARANTINE_CHANGE_COMMENT);
-		previousQuarantineTo = addDateField(ContactDto.PREVIOUS_QUARANTINE_TO, DateField.class, -1);
+		dfPreviousQuarantineTo = addDateField(ContactDto.PREVIOUS_QUARANTINE_TO, DateField.class, -1);
 		setReadOnly(true, ContactDto.PREVIOUS_QUARANTINE_TO);
 		setVisible(false, ContactDto.QUARANTINE_CHANGE_COMMENT, ContactDto.PREVIOUS_QUARANTINE_TO);
 
@@ -344,15 +345,15 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			Collections.singletonList(Boolean.TRUE),
 			true);
 
-		quarantineExtended = addField(ContactDto.QUARANTINE_EXTENDED, CheckBox.class);
-		quarantineExtended.setEnabled(false);
-		quarantineExtended.setVisible(false);
-		CssStyles.style(quarantineExtended, CssStyles.FORCE_CAPTION);
+		cbQuarantineExtended = addField(ContactDto.QUARANTINE_EXTENDED, CheckBox.class);
+		cbQuarantineExtended.setEnabled(false);
+		cbQuarantineExtended.setVisible(false);
+		CssStyles.style(cbQuarantineExtended, CssStyles.FORCE_CAPTION);
 
-		quarantineReduced = addField(ContactDto.QUARANTINE_REDUCED, CheckBox.class);
-		quarantineReduced.setEnabled(false);
-		quarantineReduced.setVisible(false);
-		CssStyles.style(quarantineReduced, CssStyles.FORCE_CAPTION);
+		cbQuarantineReduced = addField(ContactDto.QUARANTINE_REDUCED, CheckBox.class);
+		cbQuarantineReduced.setEnabled(false);
+		cbQuarantineReduced.setVisible(false);
+		CssStyles.style(cbQuarantineReduced, CssStyles.FORCE_CAPTION);
 
 		TextField quarantineHelpNeeded = addField(ContactDto.QUARANTINE_HELP_NEEDED, TextField.class);
 		quarantineHelpNeeded.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
@@ -428,15 +429,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.FOLLOW_UP_STATUS_CHANGE_USER);
 		addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(3);
 		dfFollowUpUntil = addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
-		dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, quarantineTo, quarantineExtended, quarantineReduced));
+		dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, dfQuarantineTo, cbQuarantineExtended, cbQuarantineReduced));
 		cbOverwriteFollowUpUntil = addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);
 		cbOverwriteFollowUpUntil.addValueChangeListener(e -> {
 			if (!(Boolean) e.getProperty().getValue()) {
 				dfFollowUpUntil.discard();
 			}
 		});
-		quarantineTo
-			.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended, quarantineReduced, dfFollowUpUntil, cbOverwriteFollowUpUntil));
+		dfQuarantineTo.addValueChangeListener(e -> onQuarantineEndChange());
 		addValueChangeListener(e -> {
 			ValidationUtils.initComponentErrorValidator(
 				externalTokenField,
@@ -849,77 +849,87 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			&& newFollowUpUntil.compareTo(quarantineTo.getValue()) != 0;
 	}
 
-	private void onQuarantineEndChange(
-		Property.ValueChangeEvent valueChangeEvent,
-		CheckBox quarantineExtendedCheckBox,
-		CheckBox quarantineReducedCheckBox,
-		DateField followUpUntilField,
-		CheckBox overwriteFollowUpUntilCheckbox) {
+	// This logic should be consistent with ContactFacadeEjb.onQuarantineEndChange
+	private void onQuarantineEndChange() {
 		if (quarantineChangedByFollowUpUntilChange) {
 			quarantineChangedByFollowUpUntilChange = false;
 		} else {
-			Property<Date> quarantineEndField = valueChangeEvent.getProperty();
-			Date newQuarantineEnd = quarantineEndField.getValue();
+			Date newQuarantineEnd = dfQuarantineTo.getValue();
 			ContactDto originalContact = getInternalValue();
 			Date oldQuarantineEnd = originalContact.getQuarantineTo();
-			if (newQuarantineEnd != null) {
-				if (oldQuarantineEnd != null) {
-					if (newQuarantineEnd.after(oldQuarantineEnd)) {
-						confirmQuarantineEndExtended(
-							quarantineExtendedCheckBox,
-							quarantineReducedCheckBox,
-							quarantineEndField,
-							originalContact,
-							oldQuarantineEnd,
-							followUpUntilField,
-							overwriteFollowUpUntilCheckbox);
-					} else if (newQuarantineEnd.before(oldQuarantineEnd)) {
-						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, oldQuarantineEnd);
-					}
-				}
-			} else if (!originalContact.isQuarantineExtended() && !originalContact.isQuarantineReduced()) {
-				setVisible(false, quarantineExtendedCheckBox.getId(), quarantineReducedCheckBox.getId());
-				quarantineExtendedCheckBox.setValue(false);
-				quarantineReducedCheckBox.setValue(false);
+			Date oldPreviousQuarantineTo = originalContact.getPreviousQuarantineTo();
+
+			ExtendedReduced changeType = null;
+			if (oldQuarantineEnd != null && newQuarantineEnd != null) {
+				changeType = newQuarantineEnd.after(oldQuarantineEnd)
+					? ExtendedReduced.EXTENDED
+					: (newQuarantineEnd.before(oldQuarantineEnd) ? ExtendedReduced.REDUCED : null);
+			}
+			if (changeType != null) {
+				confirmQuarantineEndChanged(changeType, originalContact);
+			} else {
+				resetPreviousQuarantineTo(originalContact);
 			}
 		}
 	}
 
-	private void confirmQuarantineEndExtended(
-		CheckBox quarantineExtendedCheckbox,
-		CheckBox quarantineReducedCheckbox,
-		Property<Date> quarantineEndField,
-		ContactDto originalContact,
-		Date oldQuarantineEnd,
-		DateField followUpUntil,
-		CheckBox overwriteFollowUpUntil) {
+	private void confirmQuarantineEndChanged(ExtendedReduced changeType, ContactDto originalContact) {
+		String headingString = null;
+		String confirmationString = null;
+		boolean isExtended = changeType == ExtendedReduced.EXTENDED;
+		boolean isReduced = changeType == ExtendedReduced.REDUCED;
+		if (isExtended) {
+			headingString = Strings.headingExtendQuarantine;
+			confirmationString = Strings.confirmationExtendQuarantine;
+		}
+		if (isReduced) {
+			headingString = Strings.headingReduceQuarantine;
+			confirmationString = Strings.confirmationReduceQuarantine;
+		}
 		VaadinUiUtil.showConfirmationPopup(
-			I18nProperties.getString(Strings.headingExtendQuarantine),
-			new Label(I18nProperties.getString(Strings.confirmationExtendQuarantine)),
+			I18nProperties.getString(headingString),
+			new Label(I18nProperties.getString(confirmationString)),
 			I18nProperties.getString(Strings.yes),
 			I18nProperties.getString(Strings.no),
 			640,
 			confirmed -> {
+				Date quarantineTo = originalContact.getQuarantineTo();
 				if (confirmed) {
-					setVisible(true, ContactDto.QUARANTINE_CHANGE_COMMENT);
-					quarantineExtendedCheckbox.setValue(true);
-					quarantineReducedCheckbox.setValue(false);
-					setVisible(true, ContactDto.QUARANTINE_EXTENDED);
-					setVisible(false, ContactDto.QUARANTINE_REDUCED);
-					if (originalContact.getFollowUpUntil() != null) {
-						confirmExtendFollowUpPeriod(originalContact, quarantineEndField.getValue(), followUpUntil, overwriteFollowUpUntil);
+					dfPreviousQuarantineTo.setReadOnly(false);
+					dfPreviousQuarantineTo.setValue(quarantineTo);
+					dfPreviousQuarantineTo.setReadOnly(true);
+					setVisible(true, CaseDataDto.QUARANTINE_CHANGE_COMMENT, ContactDto.PREVIOUS_QUARANTINE_TO);
+					cbQuarantineExtended.setValue(isExtended);
+					cbQuarantineReduced.setValue(isReduced);
+					setVisible(isExtended, CaseDataDto.QUARANTINE_EXTENDED);
+					setVisible(isReduced, CaseDataDto.QUARANTINE_REDUCED);
+					if (isExtended && originalContact.getFollowUpUntil() != null) {
+						confirmExtendFollowUpPeriod(originalContact);
 					}
 				} else {
-					quarantineEndField.setValue(oldQuarantineEnd);
+					dfQuarantineTo.setValue(quarantineTo);
+					resetPreviousQuarantineTo(originalContact);
 				}
 			});
 	}
 
-	private void confirmExtendFollowUpPeriod(
-		ContactDto originalContact,
-		Date quarantineEnd,
-		DateField followUpUntil,
-		CheckBox overwriteFollowUpUntil) {
+	private void resetPreviousQuarantineTo(ContactDto originalContact) {
+		Date previousQuarantineTo = originalContact.getPreviousQuarantineTo();
+		dfPreviousQuarantineTo.setReadOnly(false);
+		dfPreviousQuarantineTo.setValue(previousQuarantineTo);
+		dfPreviousQuarantineTo.setReadOnly(true);
+		if (previousQuarantineTo == null) {
+			quarantineChangeComment.setValue(null);
+			setVisible(false, ContactDto.QUARANTINE_CHANGE_COMMENT, ContactDto.PREVIOUS_QUARANTINE_TO);
+		}
+		cbQuarantineExtended.setValue(originalContact.isQuarantineExtended());
+		cbQuarantineExtended.setVisible(originalContact.isQuarantineExtended());
+		cbQuarantineReduced.setValue(originalContact.isQuarantineReduced());
+		cbQuarantineReduced.setVisible(originalContact.isQuarantineReduced());
+	}
+
+	private void confirmExtendFollowUpPeriod(ContactDto originalContact) {
+		Date quarantineEnd = dfQuarantineTo.getValue();
 		if (quarantineEnd.after(originalContact.getFollowUpUntil())) {
 			VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.headingExtendFollowUp),
@@ -929,55 +939,31 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				640,
 				confirmed -> {
 					if (confirmed) {
-						overwriteFollowUpUntil.setValue(true);
-						followUpUntil.setValue(quarantineEnd);
+						cbOverwriteFollowUpUntil.setValue(true);
+						dfFollowUpUntil.setValue(quarantineEnd);
 					}
 				});
 		}
 	}
 
-	private void confirmQuarantineEndReduced(
-		CheckBox quarantineExtendedCheckbox,
-		CheckBox quarantineReducedCheckbox,
-		Property<Date> quarantineEndField,
-		Date oldQuarantineEnd) {
-		VaadinUiUtil.showConfirmationPopup(
-			I18nProperties.getString(Strings.headingReduceQuarantine),
-			new Label(I18nProperties.getString(Strings.confirmationReduceQuarantine)),
-			I18nProperties.getString(Strings.yes),
-			I18nProperties.getString(Strings.no),
-			640,
-			confirmed -> {
-				if (confirmed) {
-					setVisible(true, ContactDto.QUARANTINE_CHANGE_COMMENT);
-					quarantineExtendedCheckbox.setValue(false);
-					quarantineReducedCheckbox.setValue(true);
-					setVisible(false, ContactDto.QUARANTINE_EXTENDED);
-					setVisible(true, ContactDto.QUARANTINE_REDUCED);
-				} else {
-					quarantineEndField.setValue(oldQuarantineEnd);
-				}
-			});
-	}
-
 	private void onQuarantineValueChange() {
 		QuarantineType quarantineType = (QuarantineType) quarantine.getValue();
 		if (QuarantineType.isQuarantineInEffect(quarantineType)) {
-			setVisible(previousQuarantineTo.getValue() != null, ContactDto.PREVIOUS_QUARANTINE_TO, ContactDto.QUARANTINE_CHANGE_COMMENT);
+			setVisible(dfPreviousQuarantineTo.getValue() != null, ContactDto.PREVIOUS_QUARANTINE_TO, ContactDto.QUARANTINE_CHANGE_COMMENT);
 			ContactDto contact = this.getInternalValue();
 			if (contact != null) {
 				quarantineFrom.setValue(contact.getQuarantineFrom());
 				if (contact.getQuarantineTo() == null) {
-					quarantineTo.setValue(contact.getFollowUpUntil());
+					dfQuarantineTo.setValue(contact.getFollowUpUntil());
 				} else {
-					quarantineTo.setValue(contact.getQuarantineTo());
+					dfQuarantineTo.setValue(contact.getQuarantineTo());
 				}
 				if (contact.isQuarantineExtended()) {
-					quarantineExtended.setValue(true);
+					cbQuarantineExtended.setValue(true);
 					setVisible(true, ContactDto.QUARANTINE_EXTENDED);
 				}
 				if (contact.isQuarantineReduced()) {
-					quarantineReduced.setValue(true);
+					cbQuarantineReduced.setValue(true);
 					setVisible(true, ContactDto.QUARANTINE_REDUCED);
 				}
 			} else {
@@ -986,10 +972,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			}
 		} else {
 			quarantineFrom.clear();
-			quarantineTo.clear();
+			dfQuarantineTo.clear();
 			quarantineChangeComment.clear();
-			quarantineExtended.setValue(false);
-			quarantineReduced.setValue(false);
+			cbQuarantineExtended.setValue(false);
+			cbQuarantineReduced.setValue(false);
 			setVisible(
 				false,
 				ContactDto.QUARANTINE_REDUCED,
