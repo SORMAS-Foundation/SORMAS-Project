@@ -18,62 +18,78 @@ package de.symeda.sormas.backend.sormastosormas.entities.sample;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
+import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 @Stateless
 @LocalBean
-public class ReceivedSampleProcessor implements ReceivedDataProcessor<SampleDto, SormasToSormasSampleDto, Void, Sample> {
+public class ReceivedSampleProcessor
+	extends ReceivedDataProcessor<Sample, SampleDto, SormasToSormasSampleDto, PreviewNotImplementedDto, Sample, SampleService> {
 
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;
-	@EJB
-	private SampleService sampleService;
+
+	protected ReceivedSampleProcessor() {
+	}
+
+	@Inject
+	protected ReceivedSampleProcessor(SampleService service) {
+		super(service);
+	}
 
 	@Override
-	public ValidationErrors processReceivedData(SormasToSormasSampleDto sharedData, Sample existingData) {
-		SampleDto sample = sharedData.getEntity();
-
-		ValidationErrors uuidError = validateSharedUuid(sample.getUuid());
-		if (uuidError.hasError()) {
-			return uuidError;
+	public void handleReceivedData(SormasToSormasSampleDto sharedData, Sample existingData) {
+		Map<String, PathogenTest> existingPathogenTests;
+		if(existingData != null) {
+			existingPathogenTests = existingData.getPathogenTests().stream().collect(Collectors.toMap(PathogenTest::getUuid, Function.identity()));
+		} else {
+			existingPathogenTests = Collections.emptyMap();
 		}
 
-		ValidationErrors validationErrors = dataValidator.validateSample(existingData, sample);
+		sharedData.getPathogenTests().forEach(pathogenTest -> dataValidator.handleIgnoredProperties(pathogenTest, existingPathogenTests.get(pathogenTest.getUuid())));
+	}
 
-		sharedData.getPathogenTests().forEach(pathogenTest -> {
-			dataValidator.validatePathogenTest(validationErrors, pathogenTest);
-		});
+	@Override
+	public ValidationErrors processReceivedPreview(PreviewNotImplementedDto sharedPreview) {
+		throw new RuntimeException("Samples preview not yet implemented");
+	}
+
+	@Override
+	public ValidationErrors existsNotShared(String uuid) {
+		return existsNotShared(
+			uuid,
+			Sample.SORMAS_TO_SORMAS_ORIGIN_INFO,
+			Sample.SORMAS_TO_SORMAS_SHARES,
+			Captions.Sample,
+			Validations.sormasToSormasSampleExists);
+	}
+
+	@Override
+	public ValidationErrors validate(SormasToSormasSampleDto sharedData, Sample existingData) {
+		ValidationErrors validationErrors = dataValidator.validateSample(existingData, sharedData.getEntity());
+		sharedData.getPathogenTests().forEach(pathogenTest -> dataValidator.validatePathogenTest(validationErrors, pathogenTest));
 
 		return validationErrors;
 	}
 
 	@Override
-	public ValidationErrors processReceivedPreview(Void sharedPreview) {
+	public ValidationErrors validatePreview(PreviewNotImplementedDto previewNotImplementedDto) {
 		throw new RuntimeException("Samples preview not yet implemented");
-	}
-
-	private ValidationErrors validateSharedUuid(String uuid) {
-		ValidationErrors errors = new ValidationErrors();
-
-		if (sampleService.exists(
-			(cb, sampleRoot, cq) -> cb.and(
-				cb.equal(sampleRoot.get(Sample.UUID), uuid),
-				cb.isNull(sampleRoot.get(Sample.SORMAS_TO_SORMAS_ORIGIN_INFO)),
-				cb.isEmpty(sampleRoot.get(Sample.SORMAS_TO_SORMAS_SHARES))))) {
-			errors.add(new ValidationErrorGroup(Captions.Sample), new ValidationErrorMessage(Validations.sormasToSormasSampleExists));
-		}
-
-		return errors;
 	}
 }

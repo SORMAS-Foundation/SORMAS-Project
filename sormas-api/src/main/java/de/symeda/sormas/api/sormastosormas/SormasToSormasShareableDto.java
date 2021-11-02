@@ -15,9 +15,10 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
+import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public interface SormasToSormasShareableDto {
+public interface SormasToSormasShareableDto extends HasUuid {
 
 	SormasToSormasOriginInfoDto getSormasToSormasOriginInfo();
 
