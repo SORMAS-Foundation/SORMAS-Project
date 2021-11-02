@@ -163,7 +163,7 @@ public class InfrastructureValidator {
 			if (match != null) {
 				onNoErrors.accept(match);
 			} else {
-				validationErrors.add(new ValidationErrorGroup(groupNameTag), new ValidationErrorMessage(i18property, caption, dto.getCaption()));
+				validationErrors.add(new ValidationErrorGroup(groupNameTag), new ValidationErrorMessage(i18property, dto.getCaption()));
 			}
 		}
 	}
