@@ -30,6 +30,7 @@ public class UserTestHelper {
 			u.setSeed(PasswordHelper.createPass(16));
 			u.setPassword(PasswordHelper.encodePassword(PasswordHelper.createPass(12), u.getSeed()));
 			u.setUserRoles(Collections.singleton(UserRole.values()[i % UserRole.values().length]));
+			u.updateJurisdictionLevel();
 			randomUsers.add(u);
 		}
 		return randomUsers;
@@ -67,6 +68,7 @@ public class UserTestHelper {
 		user.setSeed(PasswordHelper.createPass(16));
 		user.setPassword(PasswordHelper.encodePassword(userpass.getElement1(), user.getSeed()));
 		user.setUserRoles(Collections.singleton(role));
+		user.updateJurisdictionLevel();
 		return user;
 	}
 
