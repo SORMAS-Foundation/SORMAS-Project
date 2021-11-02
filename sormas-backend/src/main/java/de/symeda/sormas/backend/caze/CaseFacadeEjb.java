@@ -1105,7 +1105,7 @@ public class CaseFacadeEjb implements CaseFacade {
 							filteredImmunizations.sort(Comparator.comparing(ImmunizationEntityHelper::getDateForComparison));
 							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
-							exportDto.setVaccinationDoses(numberOfDoses != null ? String.valueOf(numberOfDoses) : "");
+							exportDto.setNumberOfDoses(numberOfDoses != null ? String.valueOf(numberOfDoses) : "");
 
 							if (CollectionUtils.isNotEmpty(mostRecentImmunization.getVaccinations())) {
 								List<Vaccination> sortedVaccinations = mostRecentImmunization.getVaccinations()
