@@ -9,7 +9,7 @@
 	<context-param>
 		<description>Vaadin Production Mode</description>
 		<param-name>productionMode</param-name>
-		<param-value>true</param-value>
+		<param-value>false</param-value>
 	</context-param>
 	
 	<security-role>

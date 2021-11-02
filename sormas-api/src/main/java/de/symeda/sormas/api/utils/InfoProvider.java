@@ -35,6 +35,18 @@ public class InfoProvider {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public static String InfoProvider_apmis() {
+		String version_ = "NO Version";
+		try {
+			InputStream stream_ = InfoProvider.class.getResourceAsStream("/version_apmis.txt");
+			version_ = DataHelper.convertStreamToString(stream_);
+			//this.version = version.trim();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return version_;
+	}
 
 	public static synchronized InfoProvider get() {
 		if (instance == null) {

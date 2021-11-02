@@ -74,6 +74,7 @@ public class AboutView extends VerticalLayout implements View {
 			VerticalLayout infoLayout = new VerticalLayout();
 			infoLayout.setMargin(new MarginInfo(true, false, false, false));
 			infoLayout.addComponent(createInfoSection());
+			infoLayout.addStyleName(CssStyles.H1);
 
 			// Documents section
 			if (shouldShowDocumentsSection()) {
@@ -126,9 +127,14 @@ public class AboutView extends VerticalLayout implements View {
 
 		Label versionLabel =
 			new Label(I18nProperties.getCaption(Captions.aboutSormasVersion) + ": " + InfoProvider.get().getVersion(), ContentMode.HTML);
-		CssStyles.style(versionLabel, CssStyles.VSPACE_3);
+		//CssStyles.style(versionLabel, CssStyles.VSPACE_3);
 		infoLayout.addComponent(versionLabel);
-
+		
+		Label versionApmisLabel =
+				new Label(I18nProperties.getCaption(Captions.aboutApmisVersion) + ": " + InfoProvider.InfoProvider_apmis(), ContentMode.HTML);
+			CssStyles.style(versionApmisLabel, CssStyles.VSPACE_3);
+			infoLayout.addComponent(versionApmisLabel);
+/*
 		Link whatsNewLink = new Link(
 			I18nProperties.getCaption(Captions.aboutWhatsNew),
 			new ExternalResource("https://github.com/hzi-braunschweig/SORMAS-Project/releases/tag/v" + InfoProvider.get().getBaseVersion()));
@@ -149,7 +155,7 @@ public class AboutView extends VerticalLayout implements View {
 			new ExternalResource("https://github.com/hzi-braunschweig/SORMAS-Project/releases"));
 		changelogLink.setTargetName("_blank");
 		infoLayout.addComponent(changelogLink);
-
+*/
 		return infoLayout;
 	}
 
