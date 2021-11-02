@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.immunization;
 
-import java.util.List;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -30,7 +28,7 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
+
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -84,32 +82,22 @@ public class ReceivedImmunizationProcessor
 
 	@Override
 	public ValidationErrors validate(SormasToSormasEntityDto<ImmunizationDto> sharedData, Immunization existingData) {
-		ImmunizationDto immunization = sharedData.getEntity();
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-			infraValidator.validateInfrastructure(
-				null,
-				null,
-				immunization.getCountry(),
-				immunization.getResponsibleRegion(),
-				immunization.getResponsibleDistrict(),
-				immunization.getResponsibleCommunity(),
-				immunization.getFacilityType(),
-				immunization.getHealthFacility(),
-				immunization.getHealthFacilityDetails(),
-				null,
-				null);
-
 		ValidationErrors validationErrors = new ValidationErrors();
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Sample_lab, validationErrors, (infrastructureData -> {
-			immunization.setCountry(infrastructureData.getCountry());
-			immunization.setResponsibleRegion(infrastructureData.getRegion());
-			immunization.setResponsibleDistrict(infrastructureData.getDistrict());
-			immunization.setResponsibleCommunity(infrastructureData.getCommunity());
-			immunization.setHealthFacility(infrastructureData.getFacility());
-			immunization.setHealthFacilityDetails(infrastructureData.getFacilityDetails());
-		}));
+		final ImmunizationDto im = sharedData.getEntity();
 
-		immunization.getVaccinations().forEach(vaccination -> {
+		final String groupNameTag = Captions.Sample_lab;
+		infraValidator.validateCountry(im.getCountry(), groupNameTag, validationErrors, im::setCountry);
+		infraValidator.validateResponsibleRegion(im.getResponsibleRegion(), groupNameTag, validationErrors, im::setResponsibleRegion);
+		infraValidator.validateResponsibleDistrict(im.getResponsibleDistrict(), groupNameTag, validationErrors, im::setResponsibleDistrict);
+		infraValidator.validateResponsibleCommunity(im.getResponsibleCommunity(), groupNameTag, validationErrors, im::setResponsibleCommunity);
+
+		infraValidator
+			.validateFacility(im.getHealthFacility(), im.getFacilityType(), im.getHealthFacilityDetails(), groupNameTag, validationErrors, f -> {
+				im.setHealthFacility(f.getEntity());
+				im.setHealthFacilityDetails(f.getDetails());
+			});
+
+		im.getVaccinations().forEach(vaccination -> {
 			Vaccination existingVaccination = existingData == null
 				? null
 				: existingData.getVaccinations().stream().filter(v -> v.getUuid().equals(vaccination.getUuid())).findFirst().orElse(null);
