@@ -1938,6 +1938,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			syncSharesAsync(new ShareTreeCriteria(existingCase.getUuid()));
 		}
 
+		// This logic should be consistent with CaseDataForm.onQuarantineEndChange 
 		if (existingCase != null && existingCase.getQuarantineTo() != null && !existingCase.getQuarantineTo().equals(newCase.getQuarantineTo())) {
 			newCase.setPreviousQuarantineTo(existingCase.getQuarantineTo());
 		}
