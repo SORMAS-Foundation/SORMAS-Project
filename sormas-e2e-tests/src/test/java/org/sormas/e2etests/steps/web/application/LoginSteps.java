@@ -19,6 +19,7 @@
 package org.sormas.e2etests.steps.web.application;
 
 import static org.sormas.e2etests.enums.TestDataUser.*;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.SURVEILLANCE_DASHBOARD_NAME;
 
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
@@ -50,11 +51,17 @@ public class LoginSteps implements En {
         "I log in with National User",
         () -> {
           webDriverHelpers.accessWebSite(environmentUrl);
-          webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, NATIONAL_USER.getUsername());
-          webDriverHelpers.fillInWebElement(
-              LoginPage.USER_PASSWORD_INPUT, NATIONAL_USER.getPassword());
-          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
-          webDriverHelpers.waitForPageLoaded();
+          int attempts = 1;
+          do {
+            webDriverHelpers.fillInWebElement(
+                LoginPage.USER_NAME_INPUT, NATIONAL_USER.getUsername());
+            webDriverHelpers.fillInWebElement(
+                LoginPage.USER_PASSWORD_INPUT, NATIONAL_USER.getPassword());
+            webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
+            webDriverHelpers.waitForPageLoaded();
+            attempts++;
+          } while (attempts <= 3
+              && webDriverHelpers.isElementVisibleWithTimeout(SURVEILLANCE_DASHBOARD_NAME, 2));
         });
 
     Given(
