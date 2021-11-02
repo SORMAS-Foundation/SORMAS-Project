@@ -45,7 +45,7 @@ public class ReceivedSampleProcessor
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;
 
-	protected ReceivedSampleProcessor() {
+	public ReceivedSampleProcessor() {
 	}
 
 	@Inject

@@ -53,7 +53,7 @@ public class ReceivedImmunizationProcessor
 	@EJB
 	private UserService userService;
 
-	protected ReceivedImmunizationProcessor() {
+	public ReceivedImmunizationProcessor() {
 	}
 
 	@Inject
