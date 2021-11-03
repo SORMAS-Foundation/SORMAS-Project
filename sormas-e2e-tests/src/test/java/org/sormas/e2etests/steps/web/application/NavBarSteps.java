@@ -153,31 +153,36 @@ public class NavBarSteps implements En {
           try {
             switch (page) {
               case ("Surveillance Dashboard"):
-                webDriverHelpers.wait20SecondsOrThrowException(SURVEILLANCE_DASHBOARD_NAME);
+                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+                    SURVEILLANCE_DASHBOARD_NAME);
                 break;
               case ("Contacts Dashboard"):
-                webDriverHelpers.wait20SecondsOrThrowException(CONTACTS_DASHBOARD_NAME);
+                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+                    CONTACTS_DASHBOARD_NAME);
                 break;
               case ("Tasks"):
-                webDriverHelpers.wait20SecondsOrThrowException(GENERAL_SEARCH_INPUT);
+                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+                    GENERAL_SEARCH_INPUT);
                 break;
               case ("Persons"):
-                webDriverHelpers.wait20SecondsOrThrowException(SEARCH_PERSON_BY_FREE_TEXT);
+                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+                    SEARCH_PERSON_BY_FREE_TEXT);
                 break;
               case ("Cases"):
-                webDriverHelpers.wait20SecondsOrThrowException(NEW_CASE_BUTTON);
+                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(NEW_CASE_BUTTON);
                 break;
               case ("Contacts"):
-                webDriverHelpers.wait20SecondsOrThrowException(NEW_CONTACT_BUTTON);
+                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(NEW_CONTACT_BUTTON);
                 break;
               case ("Events"):
-                webDriverHelpers.wait20SecondsOrThrowException(NEW_EVENT_BUTTON);
+                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(NEW_EVENT_BUTTON);
                 break;
               case ("Samples"):
-                webDriverHelpers.wait20SecondsOrThrowException(SAMPLE_SEARCH_INPUT);
+                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(SAMPLE_SEARCH_INPUT);
                 break;
               case ("Immunizations"):
-                webDriverHelpers.wait20SecondsOrThrowException(ADD_NEW_IMMUNIZATION_BUTTON);
+                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+                    ADD_NEW_IMMUNIZATION_BUTTON);
                 break;
             }
             endTime = ZonedDateTime.now().toInstant().toEpochMilli();
