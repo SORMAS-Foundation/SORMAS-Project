@@ -40,7 +40,7 @@ public class ReceivedContactProcessor
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;
 
-	protected ReceivedContactProcessor() {
+	public ReceivedContactProcessor() {
 	}
 
 	@Inject

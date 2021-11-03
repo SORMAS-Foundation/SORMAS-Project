@@ -32,6 +32,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Size;
@@ -223,17 +225,28 @@ public class User extends AbstractDomainObject {
 		return userRoles;
 	}
 
+	/**
+	 * Call updateJurisdictionLevel afterwards if you need to access the jurisdiction level.
+	 * This is not done automatically to avoid unnecessary calls when setUserRoles is used by the JPA provider
+	 */
 	public void setUserRoles(Set<UserRole> userRoles) {
 		this.userRoles = userRoles;
 	}
 
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	public JurisdictionLevel getJurisdictionLevel() {
 		return jurisdictionLevel;
 	}
 
 	public void setJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
 		this.jurisdictionLevel = jurisdictionLevel;
+	}
+
+	@PrePersist
+	@PreUpdate
+	public void updateJurisdictionLevel() {
+		jurisdictionLevel = UserRole.getJurisdictionLevel(this.getUserRoles());
 	}
 
 	@ManyToOne(cascade = {})
@@ -342,7 +355,13 @@ public class User extends AbstractDomainObject {
 		return Arrays.stream(userRoles).anyMatch(getUserRoles()::contains);
 	}
 
+	/**
+	 * Deprecated: Use getJurisdictionLevel instead
+	 * 
+	 * @return
+	 */
 	@Transient
+	@Deprecated
 	public JurisdictionLevel getCalculatedJurisdictionLevel() {
 		return UserRole.getJurisdictionLevel(this.getUserRoles());
 	}
