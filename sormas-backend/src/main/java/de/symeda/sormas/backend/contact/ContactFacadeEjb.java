@@ -796,7 +796,8 @@ public class ContactFacadeEjb implements ContactFacade {
 						if (filteredImmunizations.size() > 0) {
 							filteredImmunizations.sort(Comparator.comparing(ImmunizationEntityHelper::getDateForComparison));
 							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
-							exportContact.setVaccinationDoses(String.valueOf(mostRecentImmunization.getNumberOfDoses()));
+							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
+							exportContact.setNumberOfDoses(numberOfDoses != null ? String.valueOf(numberOfDoses) : "");
 
 							if (CollectionUtils.isNotEmpty(mostRecentImmunization.getVaccinations())) {
 								List<Vaccination> sortedVaccinations = mostRecentImmunization.getVaccinations()
