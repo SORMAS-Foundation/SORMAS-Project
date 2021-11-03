@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import javax.naming.CannotProceedException;
 import javax.naming.NamingException;
 
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.ui.samples.SampleController;
 import de.symeda.sormas.ui.samples.SampleEditForm;
 import org.slf4j.Logger;
@@ -637,7 +638,7 @@ public class LabMessageController {
 		sampleDto.setSpecimenCondition(SpecimenCondition.ADEQUATE);
 		sampleDto.setLab(getLabReference(labMessageDto));
 		sampleDto.setLabDetails(labMessageDto.getLabName());
-		if (FacadeProvider.getLabMessageFacade().homogenousTestResultTypesIn(labMessageDto)) {
+		if (homogenousTestResultTypesIn(labMessageDto)) {
 			sampleDto.setPathogenTestResult(labMessageDto.getTestReports().get(0).getTestResult());
 		}
 	}
@@ -945,5 +946,15 @@ public class LabMessageController {
 			logger.error(e.getMessage());
 		}
 		return Optional.empty();
+	}
+
+	public boolean homogenousTestResultTypesIn(LabMessageDto labMessage) {
+		List<TestReportDto> testReports = labMessage.getTestReports();
+		if (testReports != null && !testReports.isEmpty()) {
+			List<PathogenTestResultType> testResultTypes = testReports.stream().map(TestReportDto::getTestResult).collect(Collectors.toList());
+			return testResultTypes.stream().distinct().count() <= 1;
+		} else {
+			return false;
+		}
 	}
 }

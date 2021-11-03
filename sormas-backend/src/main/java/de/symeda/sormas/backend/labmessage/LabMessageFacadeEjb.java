@@ -394,11 +394,6 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		return em.createQuery(cq).getResultList().stream().map(this::toDto).collect(toList());
 	}
 
-	@Override
-	public boolean homogenousTestResultTypesIn(LabMessageDto labMessage) {
-		return labMessageService.homogenousTestResultTypesIn(labMessage);
-	}
-
 	public static LabMessageReferenceDto toReferenceDto(LabMessage entity) {
 
 		if (entity == null) {

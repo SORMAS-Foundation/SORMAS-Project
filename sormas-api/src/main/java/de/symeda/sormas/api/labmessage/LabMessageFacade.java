@@ -22,8 +22,6 @@ public interface LabMessageFacade {
 
 	List<LabMessageDto> getForSample(SampleReferenceDto sample);
 
-	boolean homogenousTestResultTypesIn(LabMessageDto labMessage);
-
 	/**
 	 * This method is used to check whether a labMessage is marked processed in the database.
 	 * It can be used to check for recent changes.

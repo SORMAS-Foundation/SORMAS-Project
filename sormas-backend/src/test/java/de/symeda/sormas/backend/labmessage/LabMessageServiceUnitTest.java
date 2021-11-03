@@ -65,47 +65,4 @@ public class LabMessageServiceUnitTest {
 		assertEquals(predicate, result);
 	}
 
-	@Test
-	public void testHomogenousTestResultTypesInWithNoTestReport() {
-		LabMessageService sut = new LabMessageService();
-		LabMessageDto labMessageDto = LabMessageDto.build();
-
-		assertFalse(sut.homogenousTestResultTypesIn(labMessageDto));
-	}
-
-	@Test
-	public void testHomogenousTestResultTypesInWithHomogenousTestReports() {
-		LabMessageService sut = new LabMessageService();
-		LabMessageDto labMessage = LabMessageDto.build();
-
-		TestReportDto testReport1 = TestReportDto.build();
-		testReport1.setTestResult(PathogenTestResultType.POSITIVE);
-		labMessage.addTestReport(testReport1);
-
-		TestReportDto testReport2 = TestReportDto.build();
-		testReport2.setTestResult(PathogenTestResultType.POSITIVE);
-		labMessage.addTestReport(testReport2);
-
-		assertTrue(sut.homogenousTestResultTypesIn(labMessage));
-	}
-
-	@Test
-	public void testHomogenousTestResultTypesInWithInhomogeneousTestReports() {
-		LabMessageService sut = new LabMessageService();
-		LabMessageDto labMessage = LabMessageDto.build();
-
-		TestReportDto testReport1 = TestReportDto.build();
-		testReport1.setTestResult(PathogenTestResultType.POSITIVE);
-		labMessage.addTestReport(testReport1);
-
-		TestReportDto testReport2 = TestReportDto.build();
-		testReport2.setTestResult(PathogenTestResultType.POSITIVE);
-		labMessage.addTestReport(testReport2);
-
-		TestReportDto testReport3 = TestReportDto.build();
-		testReport3.setTestResult(PathogenTestResultType.NEGATIVE);
-		labMessage.addTestReport(testReport3);
-
-		assertFalse(sut.homogenousTestResultTypesIn(labMessage));
-	}
 }

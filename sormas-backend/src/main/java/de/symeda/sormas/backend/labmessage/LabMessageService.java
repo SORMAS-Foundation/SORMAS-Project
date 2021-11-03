@@ -71,14 +71,4 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 
 		return em.createQuery(cq).getResultList();
 	}
-
-	public boolean homogenousTestResultTypesIn(LabMessageDto labMessage) {
-		List<TestReportDto> testReports = labMessage.getTestReports();
-		if (testReports != null && !testReports.isEmpty()) {
-			List<PathogenTestResultType> testResultTypes = testReports.stream().map(TestReportDto::getTestResult).collect(Collectors.toList());
-			return testResultTypes.stream().distinct().count() <= 1;
-		} else {
-			return false;
-		}
-	}
 }
