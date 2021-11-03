@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.sormastosormas.entities;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -23,6 +24,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.i18n.Captions;
@@ -68,6 +70,10 @@ public class ReceivedDataProcessor {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 
 		SormasToSormasOriginInfoDto originInfo = receivedData.getOriginInfo();
+
+		originInfo.setUuid(DataHelper.createUuid());
+		originInfo.setChangeDate(new Date());
+
 		ValidationErrors originInfoErrors = dataValidator.validateOriginInfo(originInfo, Captions.sormasToSormasOriginInfo);
 		if (originInfoErrors.hasError()) {
 			validationErrors.add(originInfoErrors);
@@ -150,6 +156,10 @@ public class ReceivedDataProcessor {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 
 		SormasToSormasOriginInfoDto originInfo = shareData.getOriginInfo();
+
+		originInfo.setUuid(DataHelper.createUuid());
+		originInfo.setChangeDate(new Date());
+
 		ValidationErrors originInfoErrors = dataValidator.validateOriginInfo(originInfo, Captions.sormasToSormasOriginInfo);
 		if (originInfoErrors.hasError()) {
 			validationErrors.add(new ValidationErrors(new ValidationErrorGroup(Captions.sormasToSormasOriginInfo), originInfoErrors));

@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
@@ -52,6 +53,11 @@ public class ReceivedCaseProcessor
 	public void handleReceivedData(SormasToSormasCaseDto sharedData, Case existingCase) {
 		dataValidator.handleIgnoredProperties(sharedData.getEntity(), CaseFacadeEjb.toDto(existingCase));
 		dataValidator.handleIgnoredProperties(sharedData.getPerson(), dataValidator.getExitingPerson(existingCase));
+
+		CaseDataDto caze = sharedData.getEntity();
+		PersonDto person = sharedData.getPerson();
+		caze.setPerson(person.toReference());
+		dataValidator.updateReportingUser(caze, existingCase);
 	}
 
 	@Override
@@ -66,7 +72,7 @@ public class ReceivedCaseProcessor
 
 	@Override
 	public ValidationErrors validate(SormasToSormasCaseDto sharedData, Case existingData) {
-		return dataValidator.validateCaseData(sharedData.getEntity(), sharedData.getPerson(), existingData);
+		return dataValidator.validateCaseData(sharedData.getEntity(), sharedData.getPerson());
 	}
 
 	@Override

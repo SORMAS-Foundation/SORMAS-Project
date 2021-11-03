@@ -31,12 +31,15 @@ import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
+import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
 public class ReceivedEventProcessor
 	extends ReceivedDataProcessor<Event, EventDto, SormasToSormasEventDto, SormasToSormasEventPreview, Event, EventService> {
 
+	@EJB
+	private UserService userService;
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;
 
@@ -51,6 +54,14 @@ public class ReceivedEventProcessor
 	@Override
 	public void handleReceivedData(SormasToSormasEventDto sharedData, Event existingData) {
 		dataValidator.handleIgnoredProperties(sharedData.getEntity(), EventFacadeEjb.toDto(existingData));
+
+		EventDto event = sharedData.getEntity();
+		dataValidator.updateReportingUser(event, existingData);
+		if (existingData == null || existingData.getResponsibleUser() == null) {
+			event.setResponsibleUser(userService.getCurrentUser().toReference());
+		} else {
+			event.setResponsibleUser(existingData.getResponsibleUser().toReference());
+		}
 	}
 
 	@Override
@@ -65,7 +76,7 @@ public class ReceivedEventProcessor
 
 	@Override
 	public ValidationErrors validate(SormasToSormasEventDto sharedData, Event existingData) {
-		return dataValidator.validateEventData(sharedData.getEntity(), existingData);
+		return dataValidator.validateEventData(sharedData.getEntity());
 	}
 
 	@Override

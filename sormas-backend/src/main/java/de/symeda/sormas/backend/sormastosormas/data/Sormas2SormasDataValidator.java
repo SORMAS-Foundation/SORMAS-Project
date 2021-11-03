@@ -18,8 +18,6 @@ package de.symeda.sormas.backend.sormastosormas.data;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildPathogenTestValidationGroupName;
 
 import java.lang.reflect.Field;
-import java.util.Date;
-
 import javax.annotation.Nullable;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -60,7 +58,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -107,9 +104,6 @@ public class Sormas2SormasDataValidator {
 				new ValidationErrorMessage(Validations.sormasToSormasSenderNameMissing));
 		}
 
-		originInfo.setUuid(DataHelper.createUuid());
-		originInfo.setChangeDate(new Date());
-
 		return validationErrors;
 	}
 
@@ -121,11 +115,8 @@ public class Sormas2SormasDataValidator {
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		validateLocation(person.getAddress(), Captions.Person, validationErrors);
-
 		person.getAddresses().forEach(address -> validateLocation(address, Captions.Person, validationErrors));
-
 		infraValidator.validateCountry(person.getBirthCountry(), Captions.Person_birthCountry, validationErrors, person::setBirthCountry);
-
 		infraValidator.validateCountry(person.getCitizenship(), Captions.Person_citizenship, validationErrors, person::setCitizenship);
 
 		return validationErrors;
@@ -133,24 +124,19 @@ public class Sormas2SormasDataValidator {
 
 	public ValidationErrors validatePersonPreview(SormasToSormasPersonPreview person) {
 		ValidationErrors validationErrors = new ValidationErrors();
-
 		validateLocation(person.getAddress(), Captions.Person, validationErrors);
-
 		return validationErrors;
 	}
 
 	/*****************
 	 * CASES
 	 *****************/
-	public ValidationErrors validateCaseData(CaseDataDto caze, PersonDto person, Case existingCaseData) {
+	public ValidationErrors validateCaseData(CaseDataDto caze, PersonDto person) {
 
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		ValidationErrors personValidationErrors = validatePerson(person);
 		validationErrors.addAll(personValidationErrors);
-
-		caze.setPerson(person.toReference());
-		updateReportingUser(caze, existingCaseData);
 
 		final String groupNameTag = Captions.CaseData;
 		infraValidator.validateResponsibleRegion(caze.getResponsibleRegion(), groupNameTag, validationErrors, caze::setResponsibleRegion);
@@ -216,14 +202,11 @@ public class Sormas2SormasDataValidator {
 	/*****************
 	 * CONTACTS
 	 *****************/
-	public ValidationErrors validateContactData(ContactDto contact, PersonDto person, Contact existingContact) {
+	public ValidationErrors validateContactData(ContactDto contact, PersonDto person) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		ValidationErrors personValidationErrors = validatePerson(person);
 		validationErrors.addAll(personValidationErrors);
-
-		contact.setPerson(person.toReference());
-		updateReportingUser(contact, existingContact);
 
 		String groupNameTag = Captions.Contact;
 		infraValidator.validateRegion(contact.getRegion(), groupNameTag, validationErrors, contact::setRegion);
@@ -249,16 +232,8 @@ public class Sormas2SormasDataValidator {
 	/*****************
 	 * EVENTS
 	 *****************/
-	public ValidationErrors validateEventData(EventDto event, Event existingEvent) {
+	public ValidationErrors validateEventData(EventDto event) {
 		ValidationErrors validationErrors = new ValidationErrors();
-
-		updateReportingUser(event, existingEvent);
-		if (existingEvent == null || existingEvent.getResponsibleUser() == null) {
-			event.setResponsibleUser(userService.getCurrentUser().toReference());
-		} else {
-			event.setResponsibleUser(existingEvent.getResponsibleUser().toReference());
-		}
-
 		validateLocation(event.getEventLocation(), Captions.CaseData, validationErrors);
 
 		return validationErrors;

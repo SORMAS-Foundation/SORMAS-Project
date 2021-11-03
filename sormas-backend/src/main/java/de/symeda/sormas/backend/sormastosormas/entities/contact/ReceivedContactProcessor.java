@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
@@ -52,6 +53,12 @@ public class ReceivedContactProcessor
 	public void handleReceivedData(SormasToSormasContactDto sharedData, Contact existingData) {
 		dataValidator.handleIgnoredProperties(sharedData.getEntity(), ContactFacadeEjb.toDto(existingData));
 		dataValidator.handleIgnoredProperties(sharedData.getPerson(), dataValidator.getExistingPerson(existingData));
+
+		ContactDto contact = sharedData.getEntity();
+		PersonDto person = sharedData.getPerson();
+
+		contact.setPerson(person.toReference());
+		dataValidator.updateReportingUser(contact, existingData);
 	}
 
 	@Override
@@ -66,7 +73,7 @@ public class ReceivedContactProcessor
 
 	@Override
 	public ValidationErrors validate(SormasToSormasContactDto sharedData, Contact existingData) {
-		return dataValidator.validateContactData(sharedData.getEntity(), sharedData.getPerson(), existingData);
+		return dataValidator.validateContactData(sharedData.getEntity(), sharedData.getPerson());
 	}
 
 	@Override

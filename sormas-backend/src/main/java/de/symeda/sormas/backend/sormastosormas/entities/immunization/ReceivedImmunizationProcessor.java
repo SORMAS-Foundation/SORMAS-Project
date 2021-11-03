@@ -64,6 +64,24 @@ public class ReceivedImmunizationProcessor
 	public void handleReceivedData(SormasToSormasImmunizationDto sharedData, Immunization existingData) {
 		dataValidator.updateReportingUser(sharedData.getEntity(), existingData);
 		dataValidator.handleIgnoredProperties(sharedData.getEntity(), ImmunizationFacadeEjb.toDto(existingData));
+
+		ImmunizationDto im = sharedData.getEntity();
+		im.getVaccinations().forEach(vaccination -> {
+			Vaccination existingVaccination;
+			if (existingData == null) {
+				existingVaccination = null;
+			} else {
+				existingVaccination =
+					existingData.getVaccinations().stream().filter(v -> v.getUuid().equals(vaccination.getUuid())).findFirst().orElse(null);
+			}
+			UserReferenceDto reportingUser;
+			if (existingVaccination == null) {
+				reportingUser = userService.getCurrentUser().toReference();
+			} else {
+				reportingUser = existingVaccination.getReportingUser().toReference();
+			}
+			vaccination.setReportingUser(reportingUser);
+		});
 	}
 
 	@Override
@@ -97,16 +115,6 @@ public class ReceivedImmunizationProcessor
 				im.setHealthFacility(f.getEntity());
 				im.setHealthFacilityDetails(f.getDetails());
 			});
-
-		im.getVaccinations().forEach(vaccination -> {
-			Vaccination existingVaccination = existingData == null
-				? null
-				: existingData.getVaccinations().stream().filter(v -> v.getUuid().equals(vaccination.getUuid())).findFirst().orElse(null);
-			UserReferenceDto reportingUser =
-				existingVaccination == null ? userService.getCurrentUser().toReference() : existingVaccination.getReportingUser().toReference();
-
-			vaccination.setReportingUser(reportingUser);
-		});
 
 		return validationErrors;
 	}
