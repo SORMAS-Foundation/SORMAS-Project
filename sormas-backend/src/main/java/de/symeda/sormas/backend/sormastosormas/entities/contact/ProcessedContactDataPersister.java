@@ -67,7 +67,7 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 		if (isCreate) {
 			// save person first during creation
 			handleValidationError(
-				() -> personFacade.savePerson(processedData.getPerson(), false, false),
+				() -> personFacade.savePerson(processedData.getPerson(), false, false, false),
 				Captions.Person,
 				contactValidationGroupName);
 			handleValidationError(
@@ -81,7 +81,7 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 				Captions.Contact,
 				contactValidationGroupName);
 			handleValidationError(
-				() -> personFacade.savePerson(processedData.getPerson(), false, false),
+				() -> personFacade.savePerson(processedData.getPerson(), false, false, false),
 				Captions.Person,
 				contactValidationGroupName);
 		}

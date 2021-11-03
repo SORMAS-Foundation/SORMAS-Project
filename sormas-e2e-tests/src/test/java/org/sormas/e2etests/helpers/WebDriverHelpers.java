@@ -274,7 +274,7 @@ public class WebDriverHelpers {
 
   public void accessWebSite(String url) {
     log.info("Navigating to: " + url);
-    baseSteps.getDriver().navigate().to(url);
+    baseSteps.getDriver().get(url);
   }
 
   public boolean isElementVisibleWithTimeout(By selector, int seconds) {
