@@ -210,11 +210,17 @@ public class CaseImporter extends DataImporter {
 				return ImportLineResult.SKIPPED;
 			} else {
 				ImportLineResultDto<CaseImportEntities> saveResult;
+				boolean skipPersonValidation = selectedPersonUuid != null;
 				if (selectedPersonUuid != null || selectedCaseUuid != null) {
-					saveResult =
-						caseImportFacade.updateCaseWithImportData(selectedPersonUuid, selectedCaseUuid, values, entityClasses, entityPropertyPaths);
+					saveResult = caseImportFacade.updateCaseWithImportData(
+						selectedPersonUuid,
+						selectedCaseUuid,
+						values,
+						entityClasses,
+						entityPropertyPaths,
+						skipPersonValidation);
 				} else {
-					saveResult = caseImportFacade.saveImportedEntities(entities);
+					saveResult = caseImportFacade.saveImportedEntities(entities, skipPersonValidation);
 				}
 
 				if (saveResult.isError()) {

@@ -202,7 +202,8 @@ public class ContactImporter extends DataImporter {
 				if (ImportSimilarityResultOption.SKIP.equals(resultOption)) {
 					return ImportLineResult.SKIPPED;
 				} else {
-					final PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
+					boolean skipPersonValidation = ImportSimilarityResultOption.PICK.equals(resultOption);
+					final PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson, skipPersonValidation);
 					newContactTemp.setPerson(savedPerson.toReference());
 
 					ContactDto newContact = newContactTemp;
