@@ -114,7 +114,7 @@ public class LabMessageController {
 
 	public void showLabMessage(String labMessageUuid, Runnable onFormActionPerformed) {
 
-		LabMessageDto newDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid, false);
+		LabMessageDto newDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
 
@@ -142,7 +142,7 @@ public class LabMessageController {
 	}
 
 	public void processLabMessage(String labMessageUuid) {
-		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid, false);
+		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
 		final PersonDto personDto = buildPerson(labMessageDto);
 
 		if (FacadeProvider.getLabMessageFacade().isProcessed(labMessageUuid)) {
@@ -922,7 +922,7 @@ public class LabMessageController {
 
 	public Optional<byte[]> convertToPDF(String labMessageUuid) {
 
-		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid, false);
+		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
 
 		try {
 			ExternalMessageResult<byte[]> result = FacadeProvider.getExternalLabResultsFacade().convertToPDF(labMessageDto);

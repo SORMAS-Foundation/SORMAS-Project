@@ -126,7 +126,7 @@ public class LabMessageFacadeEjbUnitTest {
 		String testUuid = "test UUID";
 		LabMessage labMessage = new LabMessage();
 		when(labMessageService.getByUuid(testUuid)).thenReturn(labMessage);
-		LabMessageDto result = sut.getByUuid(testUuid, true);
+		LabMessageDto result = sut.getByUuid(testUuid);
 		assertEquals(sut.toDto(labMessage), result);
 	}
 

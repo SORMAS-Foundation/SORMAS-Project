@@ -16,8 +16,7 @@
 package de.symeda.sormas.backend.labmessage;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -31,15 +30,6 @@ import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
 public class LabMessageFacadeEjbTest extends AbstractBeanTest {
-
-	@Test
-	public void testDeleteLabMessage() {
-
-		LabMessageDto labMessage = creator.createLabMessage(null);
-		getLabMessageFacade().deleteLabMessage(labMessage.getUuid());
-
-		assertThat(getLabMessageFacade().getByUuid(labMessage.getUuid(), false), is(nullValue()));
-	}
 
 	@Test
 	public void testGetByReportIdWithCornerCaseInput() {
@@ -73,5 +63,21 @@ public class LabMessageFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(list.isEmpty());
 		assertEquals(1, list.size());
 		assertEquals(reportId, list.get(0).getReportId());
+	}
+
+	@Test
+	public void testGetByUuid() {
+
+		LabMessageDto labMessage = creator.createLabMessage(null);
+
+		LabMessageDto result = getLabMessageFacade().getByUuid(labMessage.getUuid());
+		assertThat(result, equalTo(labMessage));
+
+		getLabMessageFacade().deleteLabMessage(labMessage.getUuid());
+
+		// deleted lab messages shall still be returned
+		result = getLabMessageFacade().getByUuid(labMessage.getUuid());
+		assertThat(result, equalTo(labMessage));
+
 	}
 }

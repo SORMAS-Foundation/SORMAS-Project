@@ -187,23 +187,9 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
-	public LabMessageDto getByUuid(String uuid, boolean getIfDeleted) {
-		if (getIfDeleted) {
-			return toDto(labMessageService.getByUuid(uuid));
-		} else {
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<LabMessage> cq = cb.createQuery(LabMessage.class);
-			Root<LabMessage> labMessage = cq.from(LabMessage.class);
-			LabMessageCriteria criteria = new LabMessageCriteria();
-			criteria.setUuid(uuid);
-			Predicate filter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
-			cq.where(filter);
-			try {
-				return toDto(em.createQuery(cq).getSingleResult());
-			} catch (NoResultException e) {
-				return null;
-			}
-		}
+	// Also returns deleted lab messages
+	public LabMessageDto getByUuid(String uuid) {
+		return toDto(labMessageService.getByUuid(uuid));
 	}
 
 	@Override
@@ -222,6 +208,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
+	// Does not return deleted lab messages
 	public List<LabMessageDto> getForSample(SampleReferenceDto sample) {
 
 		List<LabMessage> labMessages = labMessageService.getForSample(sample);
@@ -290,6 +277,10 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 		// Distinct is necessary here to avoid duplicate results due to the user role join in taskService.createAssigneeFilter
 		cq.distinct(true);
+
+		// remove deleted entities from result
+		Predicate filter = labMessageService.createDefaultFilter(cb, labMessage);
+		cq.where(filter);
 
 		List<Order> order = Optional.ofNullable(sortProperties)
 			.orElseGet(ArrayList::new)

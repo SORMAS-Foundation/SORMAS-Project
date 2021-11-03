@@ -14,12 +14,14 @@ public interface LabMessageFacade {
 
 	LabMessageDto save(@Valid LabMessageDto dto);
 
-	LabMessageDto getByUuid(String uuid, boolean getIfDeleted);
+	// Also returns deleted lab messages
+	LabMessageDto getByUuid(String uuid);
 
 	void deleteLabMessage(String uuid);
 
 	void deleteLabMessages(List<String> uuids);
 
+	// Does not return deleted lab messages
 	List<LabMessageDto> getForSample(SampleReferenceDto sample);
 
 	/**
@@ -46,6 +48,7 @@ public interface LabMessageFacade {
 
 	boolean exists(String uuid);
 
+	// Also returns deleted lab messages
 	List<LabMessageDto> getByReportId(String reportId);
 
 }
