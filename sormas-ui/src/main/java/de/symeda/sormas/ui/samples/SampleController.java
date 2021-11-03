@@ -197,7 +197,7 @@ public class SampleController {
 		if (removable) {
 			Button discardButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.pathogenTestRemove));
 			VerticalLayout buttonLayout = new VerticalLayout(discardButton);
-			buttonLayout.setComponentAlignment(discardButton, Alignment.TOP_RIGHT);
+			buttonLayout.setComponentAlignment(discardButton, Alignment.TOP_LEFT);
 			// add the discard button above the overall discard and commit buttons
 			sampleComponent.addComponent(buttonLayout, sampleComponent.getComponentCount() - 1);
 			discardButton.addClickListener(o -> {
