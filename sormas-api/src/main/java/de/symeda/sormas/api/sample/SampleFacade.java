@@ -84,7 +84,5 @@ public interface SampleFacade {
 
 	List<SampleDto> getByEventParticipantUuids(List<String> asList);
 
-	int caseSampleCountOf(SampleDto sample);
-
 	Disease getDiseaseOf(SampleDto sample);
 }

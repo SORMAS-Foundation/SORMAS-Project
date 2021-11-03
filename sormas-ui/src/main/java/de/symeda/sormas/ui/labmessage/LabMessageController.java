@@ -507,7 +507,7 @@ public class LabMessageController {
 			.getSampleEditComponent(sample.getUuid(), sample.isPseudonymized(), FacadeProvider.getSampleFacade().getDiseaseOf(sample));
 
 		// add existing tests to edit component
-		int caseSampleCount = FacadeProvider.getSampleFacade().caseSampleCountOf(sample);
+		int caseSampleCount = sampleController.caseSampleCountOf(sample);
 
 		List<PathogenTestDto> existingTests = FacadeProvider.getPathogenTestFacade().getAllBySample(sample.toReference());
 		for (PathogenTestDto existingTest : existingTests) {
@@ -669,7 +669,7 @@ public class LabMessageController {
 		// add pathogen test create components
 		//********************
 		List<PathogenTestDto> pathogenTests = buildPathogenTests(sample, labMessageDto);
-		int caseSampleCount = FacadeProvider.getSampleFacade().caseSampleCountOf(sample);
+		int caseSampleCount = sampleController.caseSampleCountOf(sample);
 		// the first pathogenTestCreateComponent must not be removable. It is expected to exist because the buildPathogenTests shall always return at least one.
 		PathogenTestForm pathogenTestCreateComponent =
 			sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTests.get(0), caseSampleCount, false);

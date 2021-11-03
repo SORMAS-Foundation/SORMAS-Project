@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import com.vaadin.v7.ui.ComboBox;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 
@@ -512,5 +513,16 @@ public class SampleController {
 		titleLayout.addMainRow(mainRowText);
 
 		return titleLayout;
+	}
+
+	public int caseSampleCountOf(SampleDto sample) {
+		CaseReferenceDto cazeRef = sample.getAssociatedCase();
+		if (cazeRef == null) {
+			return 0;
+		} else {
+			SampleCriteria sampleCriteria = new SampleCriteria();
+			sampleCriteria.caze(cazeRef);
+			return (int) FacadeProvider.getSampleFacade().count(sampleCriteria);
+		}
 	}
 }
