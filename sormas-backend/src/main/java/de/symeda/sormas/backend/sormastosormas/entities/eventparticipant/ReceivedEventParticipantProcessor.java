@@ -30,7 +30,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
+import de.symeda.sormas.backend.sormastosormas.data.validation.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 import de.symeda.sormas.backend.user.UserService;
 
@@ -40,7 +40,7 @@ import java.util.Optional;
 @LocalBean
 public class ReceivedEventParticipantProcessor
 	extends
-	ReceivedDataProcessor<EventParticipant, EventParticipantDto, SormasToSormasEventParticipantDto, SormasToSormasEventParticipantPreview, EventParticipant, EventParticipantService> {
+	ReceivedDataProcessor<EventParticipant, EventParticipantDto, SormasToSormasEventParticipantDto, SormasToSormasEventParticipantPreview, EventParticipant, EventParticipantService, SormasToSormasEventParticipantDtoValidator> {
 
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;
@@ -52,8 +52,9 @@ public class ReceivedEventParticipantProcessor
 	protected ReceivedEventParticipantProcessor(
 		EventParticipantService service,
 		UserService userService,
-		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade) {
-		super(service, userService, configFacade);
+		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade,
+		SormasToSormasEventParticipantDtoValidator validator) {
+		super(service, userService, configFacade, validator);
 	}
 
 	@Override
@@ -73,13 +74,4 @@ public class ReceivedEventParticipantProcessor
 			Validations.sormasToSormasEventParticipantExists);
 	}
 
-	@Override
-	public ValidationErrors validate(SormasToSormasEventParticipantDto sharedData) {
-		return dataValidator.validateEventParticipant(sharedData.getEntity());
-	}
-
-	@Override
-	public ValidationErrors validatePreview(SormasToSormasEventParticipantPreview preview) {
-		return dataValidator.validatePersonPreview(preview.getPerson());
-	}
 }

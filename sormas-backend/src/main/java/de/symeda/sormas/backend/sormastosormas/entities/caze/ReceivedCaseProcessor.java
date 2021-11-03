@@ -30,9 +30,9 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.sormastosormas.data.validation.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 import de.symeda.sormas.backend.user.UserService;
 
@@ -41,7 +41,8 @@ import java.util.Optional;
 @Stateless
 @LocalBean
 public class ReceivedCaseProcessor
-	extends ReceivedDataProcessor<Case, CaseDataDto, SormasToSormasCaseDto, SormasToSormasCasePreview, Case, CaseService> {
+	extends
+	ReceivedDataProcessor<Case, CaseDataDto, SormasToSormasCaseDto, SormasToSormasCasePreview, Case, CaseService, SormasToSormasCaseDtoValidator> {
 
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;
@@ -50,8 +51,12 @@ public class ReceivedCaseProcessor
 	}
 
 	@Inject
-	protected ReceivedCaseProcessor(CaseService service, UserService userService, ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade) {
-		super(service, userService, configFacade);
+	protected ReceivedCaseProcessor(
+		CaseService service,
+		UserService userService,
+		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade,
+		SormasToSormasCaseDtoValidator validator) {
+		super(service, userService, configFacade, validator);
 	}
 
 	@Override
@@ -76,17 +81,5 @@ public class ReceivedCaseProcessor
 			Case.SORMAS_TO_SORMAS_SHARES,
 			Captions.CaseData,
 			Validations.sormasToSormasCaseExists);
-	}
-
-	@Override
-	public ValidationErrors validate(SormasToSormasCaseDto sharedData) {
-		return dataValidator.validateCaseData(sharedData.getEntity(), sharedData.getPerson());
-	}
-
-	@Override
-	public ValidationErrors validatePreview(SormasToSormasCasePreview preview) {
-		ValidationErrors validationErrors = dataValidator.validateCasePreview(preview);
-		validationErrors.addAll(dataValidator.validatePersonPreview(preview.getPerson()));
-		return validationErrors;
 	}
 }

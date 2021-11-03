@@ -32,7 +32,7 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
+import de.symeda.sormas.backend.sormastosormas.data.validation.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 import de.symeda.sormas.backend.user.UserService;
 
@@ -41,7 +41,8 @@ import java.util.Optional;
 @Stateless
 @LocalBean
 public class ReceivedContactProcessor
-	extends ReceivedDataProcessor<Contact, ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview, Contact, ContactService> {
+	extends
+	ReceivedDataProcessor<Contact, ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview, Contact, ContactService, SormasToSormasContactDtoValidator> {
 
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;
@@ -50,8 +51,12 @@ public class ReceivedContactProcessor
 	}
 
 	@Inject
-	protected ReceivedContactProcessor(ContactService service, UserService userService, ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade) {
-		super(service, userService, configFacade);
+	protected ReceivedContactProcessor(
+		ContactService service,
+		UserService userService,
+		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade,
+		SormasToSormasContactDtoValidator validator) {
+		super(service, userService, configFacade, validator);
 	}
 
 	@Override
@@ -76,15 +81,5 @@ public class ReceivedContactProcessor
 			Contact.SORMAS_TO_SORMAS_SHARES,
 			Captions.Contact,
 			Validations.sormasToSormasContactExists);
-	}
-
-	@Override
-	public ValidationErrors validate(SormasToSormasContactDto sharedData) {
-		return dataValidator.validateContactData(sharedData.getEntity(), sharedData.getPerson());
-	}
-
-	@Override
-	public ValidationErrors validatePreview(SormasToSormasContactPreview preview) {
-		return dataValidator.validateContactPreview(preview);
 	}
 }

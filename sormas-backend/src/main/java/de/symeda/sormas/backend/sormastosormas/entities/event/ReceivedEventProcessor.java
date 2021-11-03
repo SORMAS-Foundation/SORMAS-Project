@@ -30,17 +30,16 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
-import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
+import de.symeda.sormas.backend.sormastosormas.data.validation.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
 public class ReceivedEventProcessor
-	extends ReceivedDataProcessor<Event, EventDto, SormasToSormasEventDto, SormasToSormasEventPreview, Event, EventService> {
+	extends
+	ReceivedDataProcessor<Event, EventDto, SormasToSormasEventDto, SormasToSormasEventPreview, Event, EventService, SormasToSormasEventDtoValidator> {
 
-	@EJB
-	private UserService userService;
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;
 
@@ -48,8 +47,12 @@ public class ReceivedEventProcessor
 	}
 
 	@Inject
-	protected ReceivedEventProcessor(EventService service, UserService userService, ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade) {
-		super(service, userService, configFacade);
+	protected ReceivedEventProcessor(
+		EventService service,
+		UserService userService,
+		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade,
+		SormasToSormasEventDtoValidator validator) {
+		super(service, userService, configFacade, validator);
 	}
 
 	@Override
@@ -73,17 +76,5 @@ public class ReceivedEventProcessor
 			Event.SORMAS_TO_SORMAS_SHARES,
 			Captions.Event,
 			Validations.sormasToSormasEventExists);
-	}
-
-	@Override
-	public ValidationErrors validate(SormasToSormasEventDto sharedData) {
-		return dataValidator.validateEventData(sharedData.getEntity());
-	}
-
-	@Override
-	public ValidationErrors validatePreview(SormasToSormasEventPreview preview) {
-		ValidationErrors eventValidationErrors = new ValidationErrors();
-		dataValidator.validateLocation(preview.getEventLocation(), Captions.Event, eventValidationErrors);
-		return eventValidationErrors;
 	}
 }

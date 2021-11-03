@@ -24,16 +24,16 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
+import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
+import de.symeda.sormas.backend.sormastosormas.data.validation.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.user.UserService;
 
 import java.util.Collections;
@@ -44,7 +44,8 @@ import java.util.stream.Collectors;
 @Stateless
 @LocalBean
 public class ReceivedSampleProcessor
-	extends ReceivedDataProcessor<Sample, SampleDto, SormasToSormasSampleDto, PreviewNotImplementedDto, Sample, SampleService> {
+	extends
+	ReceivedDataProcessor<Sample, SampleDto, SormasToSormasSampleDto, PreviewNotImplementedDto, Sample, SampleService, SormasToSormasSampleDtoValidator> {
 
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;
@@ -53,8 +54,12 @@ public class ReceivedSampleProcessor
 	}
 
 	@Inject
-	protected ReceivedSampleProcessor(SampleService service, UserService userService, ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade) {
-		super(service, userService, configFacade);
+	protected ReceivedSampleProcessor(
+		SampleService service,
+		UserService userService,
+		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade,
+		SormasToSormasSampleDtoValidator validator) {
+		super(service, userService, configFacade, validator);
 	}
 
 	@Override
@@ -68,9 +73,22 @@ public class ReceivedSampleProcessor
 		} else {
 			existingPathogenTests = Collections.emptyMap();
 		}
-		updateReportingUser(sharedData.getEntity(), existingData);
+
+		Map<String, PathogenTestDto> finalExistingPathogenTests = existingPathogenTests;
 		sharedData.getPathogenTests()
-			.forEach(pathogenTest -> handleIgnoredProperties(pathogenTest, existingPathogenTests.get(pathogenTest.getUuid())));
+			.forEach(pathogenTest -> handleIgnoredProperties(pathogenTest, finalExistingPathogenTests.get(pathogenTest.getUuid())));
+		if (existingData != null) {
+			existingPathogenTests = existingData.getPathogenTests()
+				.stream()
+				.filter(Objects::nonNull)
+				.collect(Collectors.toMap(PathogenTest::getUuid, PathogenTestFacadeEjb::toDto));
+			updateReportingUser(sharedData.getEntity(), existingData);
+
+			Map<String, PathogenTestDto> finalExistingPathogenTests1 = existingPathogenTests;
+			sharedData.getPathogenTests()
+				.forEach(pathogenTest -> handleIgnoredProperties(pathogenTest, finalExistingPathogenTests1.get(pathogenTest.getUuid())));
+		}
+
 	}
 
 	@Override
@@ -88,16 +106,4 @@ public class ReceivedSampleProcessor
 			Validations.sormasToSormasSampleExists);
 	}
 
-	@Override
-	public ValidationErrors validate(SormasToSormasSampleDto sharedData) {
-		ValidationErrors validationErrors = dataValidator.validateSample(sharedData.getEntity());
-		sharedData.getPathogenTests().forEach(pathogenTest -> dataValidator.validatePathogenTest(validationErrors, pathogenTest));
-
-		return validationErrors;
-	}
-
-	@Override
-	public ValidationErrors validatePreview(PreviewNotImplementedDto previewNotImplementedDto) {
-		throw new RuntimeException("Samples preview not yet implemented");
-	}
 }
