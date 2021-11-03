@@ -31,7 +31,6 @@ public abstract class EntityDtoResource {
 				dto = transactionWrapper.execute(saveEntityDto, dto);
 				result = PushResult.OK;
 			} catch (Exception e) {
-				e.printStackTrace();
 				String errorMessage = createErrorMessage(dto);
 				errorMessage += e.getMessage();
 				if (e instanceof OutdatedEntityException || ExceptionUtils.getRootCause(e) instanceof OutdatedEntityException) {
