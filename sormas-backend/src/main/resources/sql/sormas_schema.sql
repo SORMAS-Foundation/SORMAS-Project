@@ -8810,4 +8810,9 @@ ALTER TABLE cases_history ALTER COLUMN externalData TYPE json USING externalData
 
 INSERT INTO schema_version (version_number, comment) VALUES (424, 'Allow to store external data for a case #7068');
 
+ALTER TABLE cases ALTER COLUMN externalData set DATA TYPE jsonb using externalData::jsonb;
+ALTER TABLE cases_history ALTER COLUMN externalData set DATA TYPE jsonb using externalData::jsonb;
+
+INSERT INTO schema_version (version_number, comment) VALUES (425, 'Change case externalData from JSON to JSONB #7068');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
