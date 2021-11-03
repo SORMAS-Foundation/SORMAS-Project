@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -515,8 +516,9 @@ public class LabMessageController {
 		}
 
 		// add newly submitted tests to sample edit component
-		List<String> existingTestExternalIds = existingTests.stream().map(t -> t.getExternalId()).collect(Collectors.toList());
-		while (existingTestExternalIds.remove(null)); // otherwise tests without external id will seen as match
+		List<String> existingTestExternalIds =
+			existingTests.stream().filter(Objects::nonNull).map(PathogenTestDto::getExternalId).collect(Collectors.toList());
+		existingTestExternalIds = existingTestExternalIds.stream().filter(Objects::nonNull).collect(Collectors.toList());
 
 		List<PathogenTestDto> newTests = buildPathogenTests(sample, labMessage);
 
