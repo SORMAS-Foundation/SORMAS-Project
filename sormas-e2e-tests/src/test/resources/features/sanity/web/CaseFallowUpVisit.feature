@@ -1,7 +1,7 @@
 @UI @Sanity @Case @Visit
-Feature: Fallow-up new visit functionality
+Feature: Follow-up new visit functionality
 
-  Scenario: Create a new visit from case fallow-up
+  Scenario: Create a new visit from case follow-up
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200

@@ -17,24 +17,15 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 #
 
-echo "I was called with $# parameters"
-echo "I will run $1 times the tests"
-echo "Script started at:"
-date +"%T"
+#This shell script is the execution entry point to trigger a specific UI/API test or a testing suite
+#Note that when running this script, the BDD tag name is mandatory as parameter. Example: Login/Sanity/Smoke etc
 
+echo "Deleting allure report folder..."
 rm -rf ./allureReports
+echo "Executing gradle clean..."
 ./gradlew clean goJF
-for ((i = 1; i <= $1; ++i)); do
-  rm -rf ./allure-results
-  ./gradlew clean
-  echo "Run: $i "
-  echo "Started at:"
-  date +"%T"
-  ./gradlew startTests -Dcucumber.tags="@PersonsAndImmunizations" -Dheadless=true -Dcourgette.threads=9
-  echo "Finished at:"
-  date +"%T"
-done
-echo "Script finished at:"
-date +"%T"
+echo "Starting all BDD tests under @$1 tag..."
+./gradlew startTests -Dcucumber.tags=\"@$1\" -Dheadless=true -Dcourgette.threads=9
 
-#NOTE: tag should be changed when populating task is done!
+
+

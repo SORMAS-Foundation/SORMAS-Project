@@ -158,6 +158,11 @@
                     app:appendValue="@{data.otherHospitalizationReason}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseHospitalization_description"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{data.description}" />
+
             </LinearLayout>
 
             <LinearLayout

@@ -117,7 +117,7 @@ public class CaseDataView extends AbstractCaseView {
 		layout.addComponent(editComponent, CASE_LOC);
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
-			TaskListComponent taskList = new TaskListComponent(TaskContext.CASE, getCaseRef());
+			TaskListComponent taskList = new TaskListComponent(TaskContext.CASE, getCaseRef(), caze.getDisease());
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(taskList, TASKS_LOC);
 		}
@@ -137,7 +137,7 @@ public class CaseDataView extends AbstractCaseView {
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);
 
-			SampleListComponent sampleList = new SampleListComponent(getCaseRef());
+			SampleListComponent sampleList = new SampleListComponent(getCaseRef(), caze.getDisease());
 			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
 			sampleLocLayout.addComponent(sampleList);
 

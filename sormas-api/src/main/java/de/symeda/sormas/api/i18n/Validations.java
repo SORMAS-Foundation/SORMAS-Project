@@ -63,6 +63,8 @@ public interface Validations {
 	String externalMessageDisplayError = "externalMessageDisplayError";
 	String externalMessageFetchError = "externalMessageFetchError";
 	String externalMessageInitError = "externalMessageInitError";
+	String feverTemperatureAboveThreshold = "feverTemperatureAboveThreshold";
+	String feverTemperatureBelowThreshold = "feverTemperatureBelowThreshold";
 	String fileTooBig = "fileTooBig";
 	String futureDate = "futureDate";
 	String futureDateStrict = "futureDateStrict";
@@ -140,6 +142,7 @@ public interface Validations {
 	String numberTooSmall = "numberTooSmall";
 	String onlyDecimalNumbersAllowed = "onlyDecimalNumbersAllowed";
 	String onlyGeoCoordinatesAllowed = "onlyGeoCoordinatesAllowed";
+	String onlyIntegerNumbersAllowed = "onlyIntegerNumbersAllowed";
 	String onlyNumbersAllowed = "onlyNumbersAllowed";
 	String patchNoSuchFieldException = "patchNoSuchFieldException";
 	String patchUnsupportedCollectionFieldType = "patchUnsupportedCollectionFieldType";
