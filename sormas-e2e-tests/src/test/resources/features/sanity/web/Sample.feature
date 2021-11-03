@@ -43,6 +43,9 @@ Feature: Sample Functionalities
     Then I check that the created Pathogen is correctly displayed
 
   Scenario: Delete created sample
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
