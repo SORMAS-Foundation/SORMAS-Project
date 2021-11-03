@@ -59,7 +59,7 @@ public class LabMessageServiceTest extends AbstractBeanTest {
 		labMessage2.setChangeDate(new Date());
 		getLabMessageFacade().save(labMessage2);
 
-		List<LabMessage> result = sut.getForSample(sampleReference1, false);
+		List<LabMessage> result = sut.getForSample(sampleReference1);
 		assertThat(result, Matchers.hasSize(1));
 		assertEquals(labMessage1a.getUuid(), result.get(0).getUuid());
 
@@ -78,7 +78,7 @@ public class LabMessageServiceTest extends AbstractBeanTest {
 		labMessage1c.setChangeDate(new Date());
 		getLabMessageFacade().save(labMessage1c);
 
-		result = sut.getForSample(sampleReference1, true);
+		result = sut.getForSample(sampleReference1);
 		assertThat(result, Matchers.hasSize(3));
 		assertEquals(labMessage1a.getUuid(), result.get(2).getUuid());
 		assertEquals(labMessage1b.getUuid(), result.get(1).getUuid());

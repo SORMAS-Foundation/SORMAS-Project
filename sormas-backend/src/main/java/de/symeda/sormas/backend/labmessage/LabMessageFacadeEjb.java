@@ -224,7 +224,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@Override
 	public List<LabMessageDto> getForSample(SampleReferenceDto sample) {
 
-		List<LabMessage> labMessages = labMessageService.getForSample(sample, true);
+		List<LabMessage> labMessages = labMessageService.getForSample(sample);
 
 		return labMessages.stream().map(this::toDto).collect(Collectors.toList());
 

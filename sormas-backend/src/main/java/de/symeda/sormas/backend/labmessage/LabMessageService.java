@@ -55,7 +55,7 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 		return filter;
 	}
 
-	public List<LabMessage> getForSample(SampleReferenceDto sample, boolean ordered) {
+	public List<LabMessage> getForSample(SampleReferenceDto sample) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<LabMessage> cq = cb.createQuery(LabMessage.class);
 		Root<LabMessage> labMessageRoot = cq.from(LabMessage.class);
@@ -67,9 +67,7 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 		cq.where(filter);
 		cq.distinct(true);
 
-		if (ordered) {
-			cq.orderBy(cb.desc(labMessageRoot.get(LabMessage.CREATION_DATE)));
-		}
+		cq.orderBy(cb.desc(labMessageRoot.get(LabMessage.CREATION_DATE)));
 
 		return em.createQuery(cq).getResultList();
 	}
