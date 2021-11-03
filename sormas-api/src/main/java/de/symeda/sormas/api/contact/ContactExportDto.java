@@ -195,7 +195,7 @@ public class ContactExportDto implements Serializable {
 	private YesNoUnknown returningTraveler;
 
 	private VaccinationStatus vaccinationStatus;
-	private String vaccinationDoses;
+	private String numberOfDoses;
 	private VaccinationInfoSource vaccinationInfoSource;
 	private Date firstVaccinationDate;
 	private Date lastVaccinationDate;
@@ -1031,8 +1031,8 @@ public class ContactExportDto implements Serializable {
 	@Order(94)
 	@ExportProperty(ImmunizationDto.NUMBER_OF_DOSES)
 	@ExportGroup(ExportGroupType.VACCINATION)
-	public String getVaccinationDoses() {
-		return vaccinationDoses;
+	public String getNumberOfDoses() {
+		return numberOfDoses;
 	}
 
 	@Order(95)
@@ -1422,8 +1422,8 @@ public class ContactExportDto implements Serializable {
 		return isInJurisdiction;
 	}
 
-	public void setVaccinationDoses(String vaccinationDoses) {
-		this.vaccinationDoses = vaccinationDoses;
+	public void setNumberOfDoses(String numberOfDoses) {
+		this.numberOfDoses = numberOfDoses;
 	}
 
 	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
