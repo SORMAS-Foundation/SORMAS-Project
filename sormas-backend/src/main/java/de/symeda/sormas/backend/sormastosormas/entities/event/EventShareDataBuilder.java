@@ -32,7 +32,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
 @LocalBean
-public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSormasEventDto, SormasToSormasEventPreview> {
+public class EventShareDataBuilder implements ShareDataBuilder<EventDto, Event, SormasToSormasEventDto, SormasToSormasEventPreview> {
 
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;

@@ -25,6 +25,7 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -34,8 +35,7 @@ import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasSha
 
 @Stateless
 @LocalBean
-public class ProcessedImmunizationDataPersister
-	extends ProcessedDataPersister<ImmunizationDto, SormasToSormasEntityDto<ImmunizationDto>, Immunization> {
+public class ProcessedImmunizationDataPersister extends ProcessedDataPersister<ImmunizationDto, SormasToSormasImmunizationDto, Immunization> {
 
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
@@ -48,7 +48,7 @@ public class ProcessedImmunizationDataPersister
 	}
 
 	@Override
-	protected void persistSharedData(SormasToSormasEntityDto<ImmunizationDto> processedData, Immunization existingEntity)
+	protected void persistSharedData(SormasToSormasImmunizationDto processedData, Immunization existingEntity)
 		throws SormasToSormasValidationException {
 		ImmunizationDto immunuzation = processedData.getEntity();
 
