@@ -37,8 +37,9 @@ public interface CaseImportFacade {
 		String caseUuid,
 		String[] values,
 		String[] entityClasses,
-		String[][] entityPropertyPaths)
+		String[][] entityPropertyPaths,
+		boolean skipPersonValidation)
 		throws InvalidColumnException;
 
-	ImportLineResultDto<CaseImportEntities> saveImportedEntities(@Valid CaseImportEntities entities);
+	ImportLineResultDto<CaseImportEntities> saveImportedEntities(@Valid CaseImportEntities entities, boolean skipPersonValidation);
 }

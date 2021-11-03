@@ -409,6 +409,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	public void onContactChanged(ContactDto existingContact, Contact contact, boolean syncShares) {
 		onContactChanged(toDto(contact), syncShares);
 
+		// This logic should be consistent with ContactDataForm.onContactChanged
 		if (existingContact != null
 			&& existingContact.getQuarantineTo() != null
 			&& !existingContact.getQuarantineTo().equals(contact.getQuarantineTo())) {

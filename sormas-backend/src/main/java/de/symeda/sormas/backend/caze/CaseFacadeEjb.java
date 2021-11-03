@@ -1938,6 +1938,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			syncSharesAsync(new ShareTreeCriteria(existingCase.getUuid()));
 		}
 
+		// This logic should be consistent with CaseDataForm.onQuarantineEndChange 
 		if (existingCase != null && existingCase.getQuarantineTo() != null && !existingCase.getQuarantineTo().equals(newCase.getQuarantineTo())) {
 			newCase.setPreviousQuarantineTo(existingCase.getQuarantineTo());
 		}
@@ -2564,6 +2565,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
 		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
 
+		target.setExternalData(source.getExternalData());
+
 		return target;
 	}
 
@@ -2733,6 +2736,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setCaseReferenceDefinition(source.getCaseReferenceDefinition());
 		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
 		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
+
+		if (source.getExternalData() != null) {
+			target.setExternalData(source.getExternalData());
+		}
 
 		return target;
 	}

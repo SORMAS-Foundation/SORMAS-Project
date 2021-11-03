@@ -47,6 +47,8 @@ public interface PersonFacade {
 
 	PersonDto savePerson(@Valid PersonDto dto);
 
+	PersonDto savePerson(@Valid PersonDto source, boolean skipValidation);
+
 	DataHelper.Pair<CaseClassification, PersonDto> savePersonWithoutNotifyingExternalJournal(@Valid PersonDto source);
 
 	void validate(PersonDto dto);
