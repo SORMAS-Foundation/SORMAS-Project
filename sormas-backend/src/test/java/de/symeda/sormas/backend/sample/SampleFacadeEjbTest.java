@@ -677,40 +677,4 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(eventParticipantSimilarSamples, hasSize(1));
 		MatcherAssert.assertThat(eventParticipantSimilarSamples.get(0).getUuid(), is(eventParticipantSample.getUuid()));
 	}
-
-	@Test
-	public void testGetDiseaseOf() {
-		// basic setup
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto person = creator.createPerson();
-		SampleFacade sut = getSampleFacade();
-
-		// case
-		CaseDataDto caze = creator.createCase(
-			user.toReference(),
-			person.toReference(),
-			Disease.EVD,
-			CaseClassification.PROBABLE,
-			InvestigationStatus.PENDING,
-			new Date(),
-			rdcf);
-		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
-
-		assertThat(sut.getDiseaseOf(sample), equalTo(Disease.EVD));
-
-		// contact
-		ContactDto contact = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
-		sample = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility, null);
-
-		assertThat(sut.getDiseaseOf(sample), equalTo(Disease.CORONAVIRUS));
-
-		// event participant
-		EventDto event = creator.createEvent(user.toReference(), Disease.CHOLERA);
-		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
-		sample =
-			creator.createSample(eventParticipant.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
-
-		assertThat(sut.getDiseaseOf(sample), equalTo(Disease.CHOLERA));
-	}
 }

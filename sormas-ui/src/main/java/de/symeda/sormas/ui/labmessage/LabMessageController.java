@@ -503,8 +503,8 @@ public class LabMessageController {
 	private void editSample(SampleDto sample, LabMessageDto labMessage) {
 
 		SampleController sampleController = ControllerProvider.getSampleController();
-		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent = sampleController
-			.getSampleEditComponent(sample.getUuid(), sample.isPseudonymized(), FacadeProvider.getSampleFacade().getDiseaseOf(sample));
+		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent =
+			sampleController.getSampleEditComponent(sample.getUuid(), sample.isPseudonymized(), sampleController.getDiseaseOf(sample));
 
 		// add existing tests to edit component
 		int caseSampleCount = sampleController.caseSampleCountOf(sample);

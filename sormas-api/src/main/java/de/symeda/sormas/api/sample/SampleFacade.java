@@ -83,6 +83,4 @@ public interface SampleFacade {
 	boolean exists(String uuid);
 
 	List<SampleDto> getByEventParticipantUuids(List<String> asList);
-
-	Disease getDiseaseOf(SampleDto sample);
 }

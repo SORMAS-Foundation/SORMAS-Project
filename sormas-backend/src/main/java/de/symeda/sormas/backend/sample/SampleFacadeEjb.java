@@ -1221,24 +1221,4 @@ public class SampleFacadeEjb implements SampleFacade {
 		return sampleService.isSampleEditAllowed(sample);
 	}
 
-	@Override
-	public Disease getDiseaseOf(SampleDto sample) {
-		CaseReferenceDto cazeRef = sample.getAssociatedCase();
-		if (cazeRef != null) {
-			return caseFacade.getByUuid(cazeRef.getUuid()).getDisease();
-		}
-		ContactReferenceDto contactRef = sample.getAssociatedContact();
-		if (contactRef != null) {
-			return contactService.getByUuid(contactRef.getUuid()).getDisease();
-		}
-		EventParticipantReferenceDto eventPartRef = sample.getAssociatedEventParticipant();
-		if (eventPartRef != null) {
-			EventReferenceDto eventRef = eventParticipantFacade.getByUuid(eventPartRef.getUuid()).getEvent();
-			if (eventRef != null) {
-				return eventService.getByUuid(eventRef.getUuid()).getDisease();
-			}
-		}
-		return null;
-	}
-
 }

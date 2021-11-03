@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import com.vaadin.v7.ui.ComboBox;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -524,5 +525,24 @@ public class SampleController {
 			sampleCriteria.caze(cazeRef);
 			return (int) FacadeProvider.getSampleFacade().count(sampleCriteria);
 		}
+	}
+
+	public Disease getDiseaseOf(SampleDto sample) {
+		CaseReferenceDto cazeRef = sample.getAssociatedCase();
+		if (cazeRef != null) {
+			return FacadeProvider.getCaseFacade().getByUuid(cazeRef.getUuid()).getDisease();
+		}
+		ContactReferenceDto contactRef = sample.getAssociatedContact();
+		if (contactRef != null) {
+			return FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid()).getDisease();
+		}
+		EventParticipantReferenceDto eventPartRef = sample.getAssociatedEventParticipant();
+		if (eventPartRef != null) {
+			EventReferenceDto eventRef = FacadeProvider.getEventParticipantFacade().getByUuid(eventPartRef.getUuid()).getEvent();
+			if (eventRef != null) {
+				return FacadeProvider.getEventFacade().getEventByUuid(eventRef.getUuid(), false).getDisease();
+			}
+		}
+		return null;
 	}
 }
