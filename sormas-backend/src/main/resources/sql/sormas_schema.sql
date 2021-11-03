@@ -8797,12 +8797,17 @@ ALTER TABLE previoushospitalization_history ADD COLUMN isolationdate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (422, 'Add additional fields to hospitalization #4593');
 
+
+ALTER TABLE users ALTER COLUMN jurisdictionLevel set NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (423, 'Add not null constraint to user jurisdiction level #6867');
+
 -- 2021-10-29 Allow to store external data for a case #7068
 ALTER TABLE cases ADD COLUMN externalData json;
 ALTER TABLE cases ALTER COLUMN externalData TYPE json USING externalData::json;
 ALTER TABLE cases_history ADD COLUMN externalData json;
 ALTER TABLE cases_history ALTER COLUMN externalData TYPE json USING externalData::json;
 
-INSERT INTO schema_version (version_number, comment) VALUES (423, 'Allow to store external data for a case #7068');
+INSERT INTO schema_version (version_number, comment) VALUES (424, 'Allow to store external data for a case #7068');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

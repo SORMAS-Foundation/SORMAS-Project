@@ -55,12 +55,11 @@ public class BaseSteps implements StepLifecycleListener {
   public void beforeScenario(Scenario scenario) {
     if (isNonApiScenario(scenario)) {
       driver = driverManager.borrowRemoteWebDriver(scenario.getName());
-      driver.manage().window().maximize();
       StepsLogger.setRemoteWebDriver(driver);
       WebDriver.Options options = driver.manage();
-      options.window().maximize();
       options.timeouts().setScriptTimeout(Duration.ofMinutes(2));
       options.timeouts().pageLoadTimeout(Duration.ofMinutes(2));
+      log.info("Browser's resolution: " + driver.manage().window().getSize().toString());
     }
   }
 

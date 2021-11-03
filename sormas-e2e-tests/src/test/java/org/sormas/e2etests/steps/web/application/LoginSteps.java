@@ -50,11 +50,18 @@ public class LoginSteps implements En {
         "I log in with National User",
         () -> {
           webDriverHelpers.accessWebSite(environmentUrl);
-          webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, NATIONAL_USER.getUsername());
-          webDriverHelpers.fillInWebElement(
-              LoginPage.USER_PASSWORD_INPUT, NATIONAL_USER.getPassword());
-          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
           webDriverHelpers.waitForPageLoaded();
+          LOOP:
+          for (int i = 1; i <= 3; i++) {
+            webDriverHelpers.fillInWebElement(
+                LoginPage.USER_NAME_INPUT, NATIONAL_USER.getUsername());
+            webDriverHelpers.fillInWebElement(
+                LoginPage.USER_PASSWORD_INPUT, NATIONAL_USER.getPassword());
+            webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
+            webDriverHelpers.waitForPageLoaded();
+            if (webDriverHelpers.isElementVisibleWithTimeout(
+                SurveillanceDashboardPage.SURVEILLANCE_DASHBOARD_NAME, 3)) break LOOP;
+          }
         });
 
     Given(

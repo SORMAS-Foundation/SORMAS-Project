@@ -232,7 +232,8 @@ public class EventParticipantImporter extends DataImporter {
 				} else {
 					// Workaround: Reset the change date to avoid OutdatedEntityExceptions
 					newPerson.setChangeDate(new Date());
-					PersonDto savedPerson = personFacade.savePerson(newPerson);
+					boolean skipPersonValidation = ImportSimilarityResultOption.PICK.equals(resultOption);
+					final PersonDto savedPerson = personFacade.savePerson(newPerson, skipPersonValidation);
 					newEventParticipant.setPerson(savedPerson);
 					newEventParticipant.setChangeDate(new Date());
 					eventParticipantFacade.saveEventParticipant(newEventParticipant);
