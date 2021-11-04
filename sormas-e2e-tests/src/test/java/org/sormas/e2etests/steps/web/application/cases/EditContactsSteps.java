@@ -28,6 +28,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CATEGORY_OPTIONS;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.LAST_CONTACT_DATE;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.TYPE_OF_CONTACT_OPTIONS;
 
 import cucumber.api.java8.En;
@@ -283,8 +284,7 @@ public class EditContactsSteps implements En {
   public Contact collectContactData() {
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
     LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
-    String collectedLastDateOfContact =
-        webDriverHelpers.getValueFromWebElement(DATE_OF_LAST_CONTACT_INPUT);
+    String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
     LocalDate parsedLastDateOfContact = LocalDate.parse(collectedLastDateOfContact, formatter);
     Contact contactInfo = getContactInformation();
 

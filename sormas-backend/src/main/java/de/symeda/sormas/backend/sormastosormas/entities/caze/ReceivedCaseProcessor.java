@@ -40,7 +40,7 @@ public class ReceivedCaseProcessor
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;
 
-	protected ReceivedCaseProcessor() {
+	public ReceivedCaseProcessor() {
 	}
 
 	@Inject

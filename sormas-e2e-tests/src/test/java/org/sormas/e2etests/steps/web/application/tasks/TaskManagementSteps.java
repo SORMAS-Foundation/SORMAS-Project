@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -101,11 +102,7 @@ public class TaskManagementSteps implements En {
         "^I am checking if all the fields are correctly displayed in the Task Management table$",
         () -> {
           org.sormas.e2etests.pojo.api.Task expectedTask = apiState.getCreatedTask();
-          Task actualTask =
-              taskTableRows.stream()
-                  .filter(not(task -> task.getCommentsOnExecution().isEmpty()))
-                  .findFirst()
-                  .orElseThrow();
+          Task actualTask = taskTableRows.get(1);
           softly
               .assertThat(apiState.getCreatedContact().getUuid())
               .containsIgnoringCase(
@@ -152,6 +149,7 @@ public class TaskManagementSteps implements En {
     When(
         "^I collect the task column objects$",
         () -> {
+          TimeUnit.SECONDS.sleep(5); // time needed for table to load data
           List<Map<String, String>> tableRowsData = getTableRowsData();
           taskTableRows = new ArrayList<>();
           tableRowsData.forEach(

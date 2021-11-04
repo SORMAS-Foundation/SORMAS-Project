@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -40,6 +41,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.Type;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
@@ -93,6 +96,7 @@ import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Therapy;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.visit.Visit;
 
 @Entity(name = "cases")
@@ -397,6 +401,8 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	private String quarantineChangeComment;
 
 	private Long personId;
+
+	private Map<String, String> externalData;
 
 	@Column(name = "person_id", updatable = false, insertable = false)
 	public Long getPersonId() {
@@ -1682,5 +1688,15 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	public void setQuarantineChangeComment(String quarantineChangeComment) {
 		this.quarantineChangeComment = quarantineChangeComment;
+	}
+
+	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
+	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
+	public Map<String, String> getExternalData() {
+		return externalData;
+	}
+
+	public void setExternalData(Map<String, String> externalData) {
+		this.externalData = externalData;
 	}
 }

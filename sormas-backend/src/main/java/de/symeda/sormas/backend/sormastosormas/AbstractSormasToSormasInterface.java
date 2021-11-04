@@ -397,7 +397,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		ShareDataExistingEntities existingEntities = loadExistingEntities(receivedData);
 		List<ValidationErrors> validationErrors = receivedDataProcessor.processReceivedData(receivedData, existingEntities);
 
-		if (validationErrors.size() > 0) {
+		if (!validationErrors.isEmpty()) {
 			throw new SormasToSormasValidationException(validationErrors);
 		}
 
@@ -551,7 +551,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	protected void validateOwnership(List<ADO> entities) throws SormasToSormasException {
 		List<String> notOwnedUuids = getUuidsWithPendingOwnershipHandedOver(entities);
-		if (notOwnedUuids.size() > 0) {
+		if (!notOwnedUuids.isEmpty()) {
 
 			List<ValidationErrors> errors = notOwnedUuids.stream()
 				.map(
@@ -669,7 +669,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		for (SormasToSormasShareTree shareTree : shares) {
 			if (shareTree.getShare().getTargetDescriptor().getId().equals(ownOrganizationId)) {
 				return shareTree;
-			} else if (shareTree.getReShares().size() > 0) {
+			} else if (!shareTree.getReShares().isEmpty()) {
 				SormasToSormasShareTree subTree = findParentShare(shareTree.getReShares(), ownOrganizationId);
 
 				if (subTree != null) {
@@ -687,7 +687,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		List<ValidationErrors> validationErrors = receivedDataProcessor.processReceivedRequest(shareData);
 
-		if (validationErrors.size() > 0) {
+		if (!validationErrors.isEmpty()) {
 			throw new SormasToSormasValidationException(validationErrors);
 		}
 
@@ -724,9 +724,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		requestInfo.setRequestStatus(requestStatus);
 
 		addOptionsToShareRequestInfo(requestInfo, options, currentUser);
-		shares.forEach(s -> {
-			s.setOwnershipHandedOver(options.isHandOverOwnership());
-		});
+		shares.forEach(s -> s.setOwnershipHandedOver(options.isHandOverOwnership()));
 
 		requestInfo.setShares(shares);
 

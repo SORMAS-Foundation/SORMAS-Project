@@ -1,9 +1,22 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 package de.symeda.sormas.backend.sormastosormas.data.infra;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.infrastructure.GeoLocationFacade;
+import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
@@ -11,7 +24,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
@@ -21,7 +33,6 @@ import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
@@ -38,8 +49,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -68,59 +77,7 @@ public class InfrastructureValidator {
 	@EJB
 	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
 
-	private <DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, CRITERIA extends BaseCriteria> REF_DTO lookupLocal(
-		REF_DTO refDto,
-		GeoLocationFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> facade) {
-		if (refDto == null) {
-			return null;
-		}
-		Optional<REF_DTO> localReference =
-			refDto.getExternalId() != null ? facade.getByExternalId(refDto.getExternalId(), false).stream().findFirst() : Optional.empty();
-		if (!localReference.isPresent()) {
-			localReference = facade.getReferencesByName(refDto.getCaption(), false).stream().findFirst();
-		}
-
-		return localReference.orElse(null);
-	}
-
-	private ContinentReferenceDto lookupLocalContinent(ContinentReferenceDto continent) {
-		return lookupLocal(continent, continentFacade);
-	}
-
-	private SubcontinentReferenceDto lookupLocalSubcontinent(SubcontinentReferenceDto subcontinent) {
-		return lookupLocal(subcontinent, subcontinentFacade);
-	}
-
-	public CountryReferenceDto lookupLocalCountry(CountryReferenceDto country) {
-		if (country == null) {
-			return null;
-		}
-
-		Optional<CountryReferenceDto> localCountry = Optional.ofNullable(lookupLocal(country, countryFacade));
-
-		if (!localCountry.isPresent()) {
-			localCountry = Optional.ofNullable(countryFacade.getByIsoCode(country.getIsoCode(), false)).map(CountryFacadeEjb::toReferenceDto);
-		}
-
-		return localCountry.orElse(null);
-	}
-
-	private RegionReferenceDto lookupLocalRegion(RegionReferenceDto region) {
-		return lookupLocal(region, regionFacade);
-	}
-
-	private DistrictReferenceDto lookupLocalDistrict(DistrictReferenceDto district) {
-		return lookupLocal(district, districtFacade);
-	}
-
-	private CommunityReferenceDto lookupLocalCommunity(CommunityReferenceDto community) {
-		return lookupLocal(community, communityFacade);
-	}
-
-	private InfrastructureValidator.WithDetails<FacilityReferenceDto> lookupLocalFacility(
-		FacilityReferenceDto facility,
-		FacilityType facilityType,
-		String facilityDetails) {
+	private WithDetails<FacilityReferenceDto> lookupLocalFacility(FacilityReferenceDto facility, FacilityType facilityType, String facilityDetails) {
 		String facilityUuid = facility.getUuid();
 
 		if (FacilityDto.CONSTANT_FACILITY_UUIDS.contains(facilityUuid)) {
@@ -134,7 +91,7 @@ public class InfrastructureValidator {
 				facilityDetails = null;
 			}
 
-			return WithDetails.of(localFacility, facilityDetails);
+			return new WithDetails<>(localFacility, facilityDetails);
 		} else {
 			Optional<FacilityReferenceDto> localFacility = facility.getExternalId() != null
 				? facilityFacade.getByExternalIdAndType(facility.getExternalId(), facilityType, false).stream().findFirst()
@@ -152,7 +109,7 @@ public class InfrastructureValidator {
 				details = facilityDetails;
 			}
 
-			return localFacility.map((f) -> WithDetails.of(f, details)).orElse(null);
+			return localFacility.map(f -> new WithDetails<>(f, details)).orElse(null);
 		}
 	}
 
@@ -169,7 +126,7 @@ public class InfrastructureValidator {
 				pointOfEntryDetails = null;
 			}
 
-			return WithDetails.of(localPointOfEntry, pointOfEntryDetails);
+			return new WithDetails<>(localPointOfEntry, pointOfEntryDetails);
 		} else {
 
 			Optional<PointOfEntryReferenceDto> localPointOfEntry = pointOfEntry.getExternalId() != null
@@ -189,224 +146,164 @@ public class InfrastructureValidator {
 				details = pointOfEntryDetails;
 			}
 
-			return localPointOfEntry.map(p -> WithDetails.of(p, details)).orElse(null);
+			return localPointOfEntry.map(p -> new WithDetails<>(p, details)).orElse(null);
 		}
 	}
 
-	public DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> validateInfrastructure(
-		RegionReferenceDto region,
-		DistrictReferenceDto district,
-		CommunityReferenceDto community) {
-		return validateInfrastructure(null, null, null, region, district, community, null, null, null, null, null);
+	private <DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, CRITERIA extends BaseCriteria> void validateInfra(
+		InfrastructureDataReferenceDto dto,
+		String groupNameTag,
+		ValidationErrors validationErrors,
+		InfrastructureBaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> facade,
+		String i18property,
+		Consumer<REF_DTO> onNoErrors) {
+		if (dto != null) {
+			REF_DTO match = facade.getReferenceByUuid(dto.getUuid());
+			if (match != null) {
+				onNoErrors.accept(match);
+			} else {
+				validationErrors.add(new ValidationErrorGroup(groupNameTag), new ValidationErrorMessage(i18property, dto.getCaption()));
+			}
+		}
 	}
 
-	public DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> validateInfrastructure(CaseDataDto caze) {
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors = validateInfrastructure(
-			null,
-			null,
-			null,
-			caze.getRegion(),
-			caze.getDistrict(),
-			caze.getCommunity(),
-			caze.getFacilityType(),
-			caze.getHealthFacility(),
-			caze.getHealthFacilityDetails(),
-			caze.getPointOfEntry(),
-			caze.getPointOfEntryDetails());
-
-		InfrastructureValidator.InfrastructureData infrastructureData = infrastructureAndErrors.getElement0();
-		List<ValidationErrorMessage> unmatchedFields = infrastructureAndErrors.getElement1();
-
-		RegionReferenceDto responsibleRegion = caze.getResponsibleRegion();
-		infrastructureData.responsibleRegion = lookupLocalRegion(responsibleRegion);
-		if (responsibleRegion != null && infrastructureData.responsibleRegion == null) {
-			unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasResponsibleRegion, responsibleRegion.getCaption()));
-		}
-
-		DistrictReferenceDto responsibleDistrict = caze.getResponsibleDistrict();
-		infrastructureData.responsibleDistrict = lookupLocalDistrict(responsibleDistrict);
-		if (responsibleDistrict != null && infrastructureData.responsibleDistrict == null) {
-			unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasResponsibleDistrict, responsibleDistrict.getCaption()));
-		}
-
-		CommunityReferenceDto responsibleCommunity = caze.getResponsibleCommunity();
-		infrastructureData.responsibleCommunity = lookupLocalCommunity(responsibleCommunity);
-		if (responsibleCommunity != null && infrastructureData.responsibleCommunity == null) {
-			unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasResponsibleCommunity, responsibleCommunity.getCaption()));
-		}
-
-		return infrastructureAndErrors;
-	}
-
-	public DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> validateInfrastructure(
+	public void validateContinent(
 		ContinentReferenceDto continent,
+		String groupNameTag,
+		ValidationErrors validationErrors,
+		Consumer<ContinentReferenceDto> onNoErrors) {
+		validateInfra(continent, groupNameTag, validationErrors, continentFacade, Validations.sormasToSormasContinent, onNoErrors);
+	}
+
+	public void validateSubcontinent(
 		SubcontinentReferenceDto subcontinent,
+		String groupNameTag,
+		ValidationErrors validationErrors,
+		Consumer<SubcontinentReferenceDto> onNoErrors) {
+
+		validateInfra(subcontinent, groupNameTag, validationErrors, subcontinentFacade, Validations.sormasToSormasSubcontinent, onNoErrors);
+	}
+
+	public void validateCountry(
 		CountryReferenceDto country,
+		String groupNameTag,
+		ValidationErrors validationErrors,
+		Consumer<CountryReferenceDto> onNoErrors) {
+		validateInfra(country, groupNameTag, validationErrors, countryFacade, Validations.sormasToSormasCountry, onNoErrors);
+	}
+
+	public void validateRegion(
 		RegionReferenceDto region,
+		String groupNameTag,
+		ValidationErrors validationErrors,
+		Consumer<RegionReferenceDto> onNoErrors) {
+		validateInfra(region, groupNameTag, validationErrors, regionFacade, Validations.sormasToSormasRegion, onNoErrors);
+	}
+
+	public void validateDistrit(
 		DistrictReferenceDto district,
+		String groupNameTag,
+		ValidationErrors validationErrors,
+		Consumer<DistrictReferenceDto> onNoErrors) {
+		validateInfra(district, groupNameTag, validationErrors, districtFacade, Validations.sormasToSormasDistrict, onNoErrors);
+	}
+
+	public void validateCommunity(
 		CommunityReferenceDto community,
-		FacilityType facilityType,
+		String groupNameTag,
+		ValidationErrors validationErrors,
+		Consumer<CommunityReferenceDto> onNoErrors) {
+		validateInfra(
+			community,
+			groupNameTag,
+			validationErrors,
+			communityFacade,
+			Validations.sormasToSormasCommunity,
+
+			onNoErrors);
+	}
+
+	public void validateResponsibleRegion(
+		RegionReferenceDto region,
+		String groupNameTag,
+		ValidationErrors validationErrors,
+		Consumer<RegionReferenceDto> onNoErrors) {
+		validateInfra(region, groupNameTag, validationErrors, regionFacade, Validations.sormasToSormasResponsibleRegion, onNoErrors);
+	}
+
+	public void validateResponsibleDistrict(
+		DistrictReferenceDto district,
+		String groupNameTag,
+		ValidationErrors validationErrors,
+		Consumer<DistrictReferenceDto> onNoErrors) {
+		validateInfra(district, groupNameTag, validationErrors, districtFacade, Validations.sormasToSormasResponsibleDistrict, onNoErrors);
+	}
+
+	public void validateResponsibleCommunity(
+		CommunityReferenceDto community,
+		String groupNameTag,
+		ValidationErrors validationErrors,
+		Consumer<CommunityReferenceDto> onNoErrors) {
+		validateInfra(community, groupNameTag, validationErrors, communityFacade, Validations.sormasToSormasResponsibleCommunity, onNoErrors);
+	}
+
+	public void validateFacility(
 		FacilityReferenceDto facility,
+		FacilityType facilityType,
 		String facilityDetails,
-		PointOfEntryReferenceDto pointOfEntry,
-		String pointOfEntryDetails) {
-
-		InfrastructureValidator.InfrastructureData infrastructureData = new InfrastructureValidator.InfrastructureData();
-		List<ValidationErrorMessage> unmatchedFields = new ArrayList<>();
-
-		infrastructureData.continent = lookupLocalContinent(continent);
-		if (continent != null && infrastructureData.continent == null) {
-			unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasContinent, Captions.continent, continent.getCaption()));
-		}
-
-		infrastructureData.subcontinent = lookupLocalSubcontinent(subcontinent);
-		if (subcontinent != null && infrastructureData.subcontinent == null) {
-			unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasSubcontinent, subcontinent.getCaption()));
-		}
-
-		infrastructureData.country = lookupLocalCountry(country);
-		if (country != null && infrastructureData.country == null) {
-			unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasCountry, country.getCaption()));
-		}
-
-		infrastructureData.region = lookupLocalRegion(region);
-		if (region != null && infrastructureData.region == null) {
-			unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasRegion, region.getCaption()));
-		}
-
-		infrastructureData.district = lookupLocalDistrict(district);
-		if (district != null && infrastructureData.district == null) {
-			unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasDistrict, district.getCaption()));
-		}
-
-		infrastructureData.community = lookupLocalCommunity(community);
-		if (community != null && infrastructureData.community == null) {
-			unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasCommunity, community.getCaption()));
-		}
+		String groupNameTag,
+		ValidationErrors validationErrors,
+		Consumer<InfrastructureValidator.WithDetails<FacilityReferenceDto>> onNoErrors) {
 
 		if (facility != null) {
 			InfrastructureValidator.WithDetails<FacilityReferenceDto> localFacility = lookupLocalFacility(facility, facilityType, facilityDetails);
 
-			if (localFacility.entity == null) {
-				unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasFacility, facility.getCaption()));
+			if (localFacility == null || localFacility.entity == null) {
+				validationErrors.add(
+					new ValidationErrorGroup(groupNameTag),
+					new ValidationErrorMessage(Validations.sormasToSormasFacility, facility.getCaption()));
 			} else {
-				infrastructureData.facility = localFacility.entity;
-				infrastructureData.facilityDetails = localFacility.details;
+				onNoErrors.accept(localFacility);
 			}
 		}
+	}
+
+	public void validatePointOfEntry(
+		PointOfEntryReferenceDto pointOfEntry,
+		String pointOfEntryDetails,
+		String groupNameTag,
+		ValidationErrors validationErrors,
+		Consumer<InfrastructureValidator.WithDetails<PointOfEntryReferenceDto>> onNoErrors) {
 
 		if (pointOfEntry != null) {
 			InfrastructureValidator.WithDetails<PointOfEntryReferenceDto> localPointOfEntry = lookupPointOfEntry(pointOfEntry, pointOfEntryDetails);
 
-			if (localPointOfEntry.entity == null) {
-				unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasPointOfEntry, pointOfEntry.getCaption()));
+			if (localPointOfEntry == null || localPointOfEntry.entity == null) {
+				validationErrors.add(
+					new ValidationErrorGroup(groupNameTag),
+					new ValidationErrorMessage(Validations.sormasToSormasPointOfEntry, pointOfEntry.getCaption()));
 			} else {
-				infrastructureData.pointOfEntry = localPointOfEntry.entity;
-				infrastructureData.pointOfEntryDetails = localPointOfEntry.details;
+				onNoErrors.accept(localPointOfEntry);
 			}
 		}
-
-		return new DataHelper.Pair<>(infrastructureData, unmatchedFields);
 	}
 
-	public void handleInfraStructure(
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors,
-		String groupNameTag,
-		ValidationErrors validationErrors,
-		Consumer<InfrastructureValidator.InfrastructureData> onNoErrors) {
+	public static class WithDetails<T> {
 
-		List<ValidationErrorMessage> errors = infrastructureAndErrors.getElement1();
-		if (errors.size() > 0) {
-			for (ValidationErrorMessage error : errors) {
-				validationErrors.add(new ValidationErrorGroup(groupNameTag), error);
-			}
-		} else {
-			onNoErrors.accept(infrastructureAndErrors.getElement0());
+		public WithDetails(T entity, String details) {
+			this.entity = entity;
+			this.details = details;
 		}
 
-	}
-
-	public static class InfrastructureData {
-
-		private ContinentReferenceDto continent;
-		private SubcontinentReferenceDto subcontinent;
-		private CountryReferenceDto country;
-		private RegionReferenceDto responsibleRegion;
-		private DistrictReferenceDto responsibleDistrict;
-		private CommunityReferenceDto responsibleCommunity;
-		private RegionReferenceDto region;
-		private DistrictReferenceDto district;
-		private CommunityReferenceDto community;
-		private FacilityReferenceDto facility;
-		private String facilityDetails;
-		private PointOfEntryReferenceDto pointOfEntry;
-		private String pointOfEntryDetails;
-
-		public ContinentReferenceDto getContinent() {
-			return continent;
-		}
-
-		public SubcontinentReferenceDto getSubcontinent() {
-			return subcontinent;
-		}
-
-		public CountryReferenceDto getCountry() {
-			return country;
-		}
-
-		public RegionReferenceDto getResponsibleRegion() {
-			return responsibleRegion;
-		}
-
-		public DistrictReferenceDto getResponsibleDistrict() {
-			return responsibleDistrict;
-		}
-
-		public CommunityReferenceDto getResponsibleCommunity() {
-			return responsibleCommunity;
-		}
-
-		public RegionReferenceDto getRegion() {
-			return region;
-		}
-
-		public DistrictReferenceDto getDistrict() {
-			return district;
-		}
-
-		public CommunityReferenceDto getCommunity() {
-			return community;
-		}
-
-		public FacilityReferenceDto getFacility() {
-			return facility;
-		}
-
-		public String getFacilityDetails() {
-			return facilityDetails;
-		}
-
-		public PointOfEntryReferenceDto getPointOfEntry() {
-			return pointOfEntry;
-		}
-
-		public String getPointOfEntryDetails() {
-			return pointOfEntryDetails;
-		}
-	}
-
-	private static final class WithDetails<T> {
-
-		private T entity;
+		private final T entity;
 		private String details;
 
-		public static <T> WithDetails<T> of(T facility, String facilityDetails) {
-			WithDetails<T> localFacility = new WithDetails<>();
+		public T getEntity() {
+			return entity;
+		}
 
-			localFacility.entity = facility;
-			localFacility.details = facilityDetails;
-
-			return localFacility;
+		public String getDetails() {
+			return details;
 		}
 	}
 }
