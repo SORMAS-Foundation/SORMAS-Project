@@ -35,6 +35,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -52,6 +53,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 		+ fluidRowLocs(PathogenTestDto.REPORT_DATE, PathogenTestDto.VIA_LIMS)
 		+ fluidRowLocs(PathogenTestDto.EXTERNAL_ID, PathogenTestDto.EXTERNAL_ORDER_ID)
 		+ fluidRowLocs(PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED)
+		+ fluidRowLocs(PathogenTestDto.PRELIMINARY, "")
 		+ fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.PCR_TEST_SPECIFICATION)
 		+ fluidRowLocs(PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TESTED_DISEASE_VARIANT)
 		+ fluidRowLocs(PathogenTestDto.CQ_VALUE, PathogenTestDto.TYPING_ID)
@@ -87,10 +89,12 @@ public class SampleCreateForm extends AbstractSampleForm {
 			TextField externalIdField = addCustomField(PathogenTestDto.EXTERNAL_ID, String.class, TextField.class);
 			TextField externalOrderIdField = addCustomField(PathogenTestDto.EXTERNAL_ORDER_ID, String.class, TextField.class);
 			CheckBox viaLimsField = addCustomField(PathogenTestDto.VIA_LIMS, Boolean.class, CheckBox.class);
+			CheckBox preliminaryField = addCustomField(PathogenTestDto.PRELIMINARY, Boolean.class, CheckBox.class);
+			preliminaryField.addStyleName(CssStyles.VSPACE_3);
 
 			FieldHelper.setVisibleWhen(
 				includeTestField,
-				Arrays.asList(reportDateField, externalIdField, externalOrderIdField, viaLimsField),
+				Arrays.asList(reportDateField, externalIdField, externalOrderIdField, viaLimsField, preliminaryField),
 				Collections.singletonList(true),
 				true);
 		}
@@ -255,6 +259,10 @@ public class SampleCreateForm extends AbstractSampleForm {
 
 			final CheckBox viaLimsField = getField(PathogenTestDto.VIA_LIMS);
 			viaLimsField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.VIA_LIMS));
+
+			final CheckBox preliminaryField = getField(PathogenTestDto.PRELIMINARY);
+			preliminaryField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.PRELIMINARY));
+
 		}
 		testResult.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT));
 		testResultVerified.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT_VERIFIED));

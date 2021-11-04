@@ -8815,4 +8815,12 @@ ALTER TABLE cases_history ALTER COLUMN externalData set DATA TYPE jsonb using ex
 
 INSERT INTO schema_version (version_number, comment) VALUES (425, 'Change case externalData from JSON to JSONB #7068');
 
+-- 2021-11-04 [DEMIS2SORMAS] Handle New Profile: Preliminary Test Results #5551
+ALTER TABLE pathogentest ADD COLUMN preliminary boolean default false;
+ALTER TABLE pathogentest_history ADD COLUMN preliminary boolean default false;
+ALTER TABLE testreport ADD COLUMN preliminary boolean default false;
+ALTER TABLE testreport_history ADD COLUMN preliminary boolean default false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (426, '[DEMIS2SORMAS] Handle New Profile: Preliminary Test Results #5551');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

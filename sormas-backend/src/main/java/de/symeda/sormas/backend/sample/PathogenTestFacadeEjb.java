@@ -391,6 +391,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setViaLims(source.isViaLims());
 		target.setExternalId(source.getExternalId());
 		target.setExternalOrderId(source.getExternalOrderId());
+		target.setPreliminary(source.isPreliminary());
 
 		return target;
 	}
@@ -446,6 +447,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setViaLims(source.isViaLims());
 		target.setExternalId(source.getExternalId());
 		target.setExternalOrderId(source.getExternalOrderId());
+		target.setPreliminary(source.isPreliminary());
 
 		return target;
 	}

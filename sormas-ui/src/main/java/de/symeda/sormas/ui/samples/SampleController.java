@@ -247,6 +247,11 @@ public class SampleController {
 			}
 			pathogenTest.setTypingId((String) createForm.getField(PathogenTestDto.TYPING_ID).getValue());
 
+			CheckBox preliminaryField = createForm.getField(PathogenTestDto.PRELIMINARY);
+			if (preliminaryField != null) {
+				pathogenTest.setPreliminary(preliminaryField.getValue());
+			}
+
 			SampleDto savedSample = FacadeProvider.getSampleFacade().saveSample(newSample);
 
 			// save the pathogenTest. The pathogenTestController will handle any further stuff like creating new cases, updating sample result...

@@ -57,6 +57,7 @@ public class TestReport extends CoreAdo {
 	private String typingId;
 	private String externalId;
 	private String externalOrderId;
+	private boolean preliminary;
 
 	private PathogenTest pathogenTest;
 
@@ -180,6 +181,15 @@ public class TestReport extends CoreAdo {
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalOrderId() {
 		return externalOrderId;
+	}
+
+	@Column
+	public boolean isPreliminary() {
+		return preliminary;
+	}
+
+	public void setPreliminary(boolean preliminary) {
+		this.preliminary = preliminary;
 	}
 
 	public void setExternalOrderId(String externalOrderId) {
