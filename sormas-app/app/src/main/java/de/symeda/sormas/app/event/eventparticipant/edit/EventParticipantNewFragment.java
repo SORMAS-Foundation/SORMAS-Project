@@ -15,10 +15,15 @@
 
 package de.symeda.sormas.app.event.eventparticipant.edit;
 
+import java.util.List;
+
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentEventParticipantNewLayoutBinding;
+import de.symeda.sormas.app.util.DataUtils;
 
 public class EventParticipantNewFragment extends BaseEditFragment<FragmentEventParticipantNewLayoutBinding, EventParticipant, EventParticipant> {
 
@@ -50,6 +55,12 @@ public class EventParticipantNewFragment extends BaseEditFragment<FragmentEventP
 	@Override
 	public void onLayoutBinding(FragmentEventParticipantNewLayoutBinding contentBinding) {
 		contentBinding.setData(record);
+	}
+
+	@Override
+	public void onAfterLayoutBinding(FragmentEventParticipantNewLayoutBinding contentBinding) {
+		List<Item> sexList = DataUtils.getEnumItems(Sex.class, true);
+		contentBinding.eventParticipantSex.initializeSpinner(sexList);
 	}
 
 	@Override
