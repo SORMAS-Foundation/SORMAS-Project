@@ -465,6 +465,16 @@ public class TestDataCreator {
 
 	public ImmunizationDto createImmunization(Disease disease, PersonReferenceDto person, UserReferenceDto reportingUser, RDCF rdcf) {
 
+		return createImmunization(disease, person, reportingUser, rdcf, null);
+	}
+
+	public ImmunizationDto createImmunization(
+		Disease disease,
+		PersonReferenceDto person,
+		UserReferenceDto reportingUser,
+		RDCF rdcf,
+		Consumer<ImmunizationDto> extraConfig) {
+
 		ImmunizationDto immunization = createImmunizationDto(
 			disease,
 			person,
@@ -473,6 +483,11 @@ public class TestDataCreator {
 			MeansOfImmunization.VACCINATION,
 			ImmunizationManagementStatus.ONGOING,
 			rdcf);
+
+		if (extraConfig != null) {
+			extraConfig.accept(immunization);
+		}
+
 		return beanTest.getImmunizationFacade().save(immunization);
 	}
 

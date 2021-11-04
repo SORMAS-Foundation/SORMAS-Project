@@ -129,6 +129,11 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			return false;
 		}
 
+		if (immunizations.size() == 1) {
+			vaccination.setImmunization(immunizations.get(0));
+			return true;
+		}
+
 		// If the vaccination date is empty, add the vaccination to the latest immunization
 		if (vaccination.getVaccinationDate() == null) {
 			immunizations.sort(Comparator.comparing(i -> ImmunizationEntityHelper.getDateForComparison(i, true)));
@@ -137,8 +142,12 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 
 		// Search for an immunization with start date < vaccination date < end date
-		Optional<Immunization> immunization =
-			immunizations.stream().filter(i -> DateHelper.isBetween(vaccination.getVaccinationDate(), i.getStartDate(), i.getEndDate())).findFirst();
+		Optional<Immunization> immunization = immunizations.stream()
+			.filter(
+				i -> i.getStartDate() != null
+					&& i.getEndDate() != null
+					&& DateHelper.isBetween(vaccination.getVaccinationDate(), i.getStartDate(), i.getEndDate()))
+			.findFirst();
 		if (immunization.isPresent()) {
 			vaccination.setImmunization(immunization.get());
 			return true;
@@ -147,9 +156,9 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		// Search for the immunization with the nearest end or start date to the vaccination date
 		immunization = immunizations.stream().filter(i -> i.getEndDate() != null || i.getStartDate() != null).min((i1, i2) -> {
 			Integer i1Interval =
-				DateHelper.getDaysBetween(i1.getEndDate() != null ? i1.getEndDate() : i1.getStartDate(), vaccination.getVaccinationDate());
+				Math.abs(DateHelper.getDaysBetween(i1.getEndDate() != null ? i1.getEndDate() : i1.getStartDate(), vaccination.getVaccinationDate()));
 			Integer i2Interval =
-				DateHelper.getDaysBetween(i2.getEndDate() != null ? i2.getEndDate() : i2.getStartDate(), vaccination.getVaccinationDate());
+				Math.abs(DateHelper.getDaysBetween(i2.getEndDate() != null ? i2.getEndDate() : i2.getStartDate(), vaccination.getVaccinationDate()));
 			return i1Interval.compareTo(i2Interval);
 		});
 		if (immunization.isPresent()) {
@@ -159,8 +168,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 		// Use the immunization with the nearest report date to the vaccination date
 		immunization = immunizations.stream().min((i1, i2) -> {
-			Integer i1Interval = DateHelper.getDaysBetween(i1.getReportDate(), vaccination.getVaccinationDate());
-			Integer i2Interval = DateHelper.getDaysBetween(i2.getReportDate(), vaccination.getVaccinationDate());
+			Integer i1Interval = Math.abs(DateHelper.getDaysBetween(i1.getReportDate(), vaccination.getVaccinationDate()));
+			Integer i2Interval = Math.abs(DateHelper.getDaysBetween(i2.getReportDate(), vaccination.getVaccinationDate()));
 			return i1Interval.compareTo(i2Interval);
 		});
 		if (immunization.isPresent()) {

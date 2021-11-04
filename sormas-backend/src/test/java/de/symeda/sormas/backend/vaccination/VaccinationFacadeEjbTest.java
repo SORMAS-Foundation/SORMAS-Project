@@ -2,12 +2,15 @@ package de.symeda.sormas.backend.vaccination;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
@@ -22,6 +25,7 @@ import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -110,6 +114,46 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		vaccination22 = getVaccinationFacade().create(vaccination22, rdcf1.region, rdcf1.district, person2.toReference(), disease2);
 		ImmunizationReferenceDto immunization22 = vaccination22.getImmunization();
 		assertNotEquals(immunization21, immunization22);
+
+		// Test correct association based on dates
+		PersonDto person3 = creator.createPerson("James", "Doe");
+		Date referenceDate = new Date();
+		ImmunizationDto immunizationStartEnd = creator.createImmunization(disease1, person3.toReference(), nationalUser.toReference(), rdcf1, i -> {
+			i.setStartDate(DateHelper.subtractDays(referenceDate, 400));
+			i.setEndDate(DateHelper.subtractDays(referenceDate, 380));
+		});
+		ImmunizationDto immunizationStart = creator.createImmunization(disease1, person3.toReference(), nationalUser.toReference(), rdcf1, i -> {
+			i.setStartDate(DateHelper.subtractDays(referenceDate, 420));
+		});
+		creator.createImmunization(disease1, person3.toReference(), nationalUser.toReference(), rdcf1, i -> {
+			i.setEndDate(DateHelper.subtractDays(referenceDate, 390));
+		});
+		ImmunizationDto immunizationReport = creator.createImmunization(disease1, person3.toReference(), nationalUser.toReference(), rdcf1);
+		ImmunizationDto immunizationReport2 = creator.createImmunization(disease2, person3.toReference(), nationalUser.toReference(), rdcf1);
+
+		VaccinationDto vaccination31 = VaccinationDto.build(nationalUser.toReference());
+		vaccination31.setVaccinationDate(DateHelper.subtractDays(referenceDate, 390));
+		vaccination31 = getVaccinationFacade().create(vaccination31, rdcf1.region, rdcf1.district, person3.toReference(), disease1);
+		assertEquals(vaccination31.getImmunization(), immunizationStartEnd.toReference());
+
+		VaccinationDto vaccination32 = VaccinationDto.build(nationalUser.toReference());
+		vaccination32.setVaccinationDate(DateHelper.subtractDays(referenceDate, 415));
+		vaccination32 = getVaccinationFacade().create(vaccination32, rdcf1.region, rdcf1.district, person3.toReference(), disease1);
+		assertEquals(vaccination32.getImmunization(), immunizationStart.toReference());
+
+		VaccinationDto vaccination33 = VaccinationDto.build(nationalUser.toReference());
+		vaccination33.setVaccinationDate(DateHelper.subtractDays(referenceDate, 0));
+		vaccination33 = getVaccinationFacade().create(vaccination33, rdcf1.region, rdcf1.district, person3.toReference(), disease1);
+		assertEquals(vaccination33.getImmunization(), immunizationStartEnd.toReference());
+
+		VaccinationDto vaccination34 = VaccinationDto.build(nationalUser.toReference());
+		vaccination34.setVaccinationDate(DateHelper.subtractDays(referenceDate, 100));
+		vaccination34 = getVaccinationFacade().create(vaccination34, rdcf1.region, rdcf1.district, person3.toReference(), disease2);
+		assertEquals(vaccination34.getImmunization(), immunizationReport2.toReference());
+
+		VaccinationDto vaccination35 = VaccinationDto.build(nationalUser.toReference());
+		vaccination35 = getVaccinationFacade().create(vaccination35, rdcf1.region, rdcf1.district, person3.toReference(), disease1);
+		assertThat(vaccination35.getImmunization(), anyOf(is(immunizationReport.toReference()), is(immunizationReport2.toReference())));
 	}
 
 	@Test
