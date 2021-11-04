@@ -136,17 +136,10 @@ public class SampleController {
 	 */
 	public PathogenTestForm addPathogenTestComponent(
 		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
-		PathogenTestDto pathogenTest,
-		boolean removable) {
+		PathogenTestDto pathogenTest) {
 
-		CaseReferenceDto cazeRef = sampleComponent.getWrappedComponent().getValue().getAssociatedCase();
-		if (cazeRef == null) {
-			return addPathogenTestComponent(sampleComponent, pathogenTest, 0, removable);
-		} else {
-			List<SampleDto> samples = FacadeProvider.getSampleFacade().getByCaseUuids(Arrays.asList(cazeRef.getUuid()));
-			return addPathogenTestComponent(sampleComponent, pathogenTest, samples.size(), removable);
-		}
-
+		int caseSampleCount = caseSampleCountOf(sampleComponent.getWrappedComponent().getValue());
+		return addPathogenTestComponent(sampleComponent, pathogenTest, caseSampleCount);
 	}
 
 	/**
@@ -165,8 +158,7 @@ public class SampleController {
 	public PathogenTestForm addPathogenTestComponent(
 		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
 		PathogenTestDto pathogenTest,
-		int caseSampleCount,
-		boolean removable) {
+		int caseSampleCount) {
 		// add horizontal rule to clearly distinguish the component
 		Label horizontalRule = new Label("<br><hr /><br>", ContentMode.HTML);
 		horizontalRule.setWidth(100f, Unit.PERCENTAGE);
@@ -196,21 +188,19 @@ public class SampleController {
 			() -> FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTestForm.getValue());
 		sampleComponent.addCommitListener(savePathogenTest);
 		// Discard button configuration
-		if (removable) {
-			Button discardButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.pathogenTestRemove));
-			VerticalLayout buttonLayout = new VerticalLayout(discardButton);
-			buttonLayout.setComponentAlignment(discardButton, Alignment.TOP_LEFT);
-			// add the discard button above the overall discard and commit buttons
-			sampleComponent.addComponent(buttonLayout, sampleComponent.getComponentCount() - 1);
-			discardButton.addClickListener(o -> {
-				sampleComponent.removeComponent(horizontalRule);
-				sampleComponent.removeComponent(buttonLayout);
-				sampleComponent.removeComponent(pathogenTestForm);
-				sampleComponent.removeFieldGroups(pathogenTestForm.getFieldGroup());
-				sampleComponent.removeCommitListener(savePathogenTest);
-				pathogenTestForm.discard();
-			});
-		}
+		Button discardButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.pathogenTestRemove));
+		VerticalLayout buttonLayout = new VerticalLayout(discardButton);
+		buttonLayout.setComponentAlignment(discardButton, Alignment.TOP_LEFT);
+		// add the discard button above the overall discard and commit buttons
+		sampleComponent.addComponent(buttonLayout, sampleComponent.getComponentCount() - 1);
+		discardButton.addClickListener(o -> {
+			sampleComponent.removeComponent(horizontalRule);
+			sampleComponent.removeComponent(buttonLayout);
+			sampleComponent.removeComponent(pathogenTestForm);
+			sampleComponent.removeFieldGroups(pathogenTestForm.getFieldGroup());
+			sampleComponent.removeCommitListener(savePathogenTest);
+			pathogenTestForm.discard();
+		});
 		// Country specific configuration
 		boolean germanInstance = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY);
 		pathogenTestForm.getField(PathogenTestDto.REPORT_DATE).setVisible(germanInstance);
@@ -248,7 +238,7 @@ public class SampleController {
 			}
 		});
 		Button addPathogenTestButton = new Button(I18nProperties.getCaption(Captions.pathogenTestAdd));
-		addPathogenTestButton.addClickListener((e) -> addPathogenTestComponent(editView, null, true));
+		addPathogenTestButton.addClickListener((e) -> addPathogenTestComponent(editView, null));
 		editView.getButtonsPanel().addComponent(addPathogenTestButton, 0);
 
 		return editView;
