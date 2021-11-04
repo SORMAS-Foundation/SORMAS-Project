@@ -23,15 +23,19 @@ import static org.sormas.e2etests.enums.TestDataUser.*;
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
 import javax.inject.Named;
+import org.openqa.selenium.NoSuchElementException;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.LoginPage;
 import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
+import org.sormas.e2etests.steps.BaseSteps;
 
 public class LoginSteps implements En {
 
   @Inject
   public LoginSteps(
-      WebDriverHelpers webDriverHelpers, @Named("ENVIRONMENT_URL") String environmentUrl) {
+      WebDriverHelpers webDriverHelpers,
+      BaseSteps baseSteps,
+      @Named("ENVIRONMENT_URL") String environmentUrl) {
 
     Given(
         "^I am logged in with name ([^\"]*)$",
@@ -51,16 +55,29 @@ public class LoginSteps implements En {
         () -> {
           webDriverHelpers.accessWebSite(environmentUrl);
           webDriverHelpers.waitForPageLoaded();
+          int attempts = 1;
+
           LOOP:
-          for (int i = 1; i <= 3; i++) {
+          while (attempts <= 3) {
             webDriverHelpers.fillInWebElement(
                 LoginPage.USER_NAME_INPUT, NATIONAL_USER.getUsername());
             webDriverHelpers.fillInWebElement(
                 LoginPage.USER_PASSWORD_INPUT, NATIONAL_USER.getPassword());
             webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
             webDriverHelpers.waitForPageLoaded();
-            if (webDriverHelpers.isElementVisibleWithTimeout(
-                SurveillanceDashboardPage.SURVEILLANCE_DASHBOARD_NAME, 3)) break LOOP;
+            boolean wasUserLoggedIn;
+            try {
+              wasUserLoggedIn =
+                  webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+                      SurveillanceDashboardPage.LOGOUT_BUTTON);
+            } catch (NoSuchElementException e) {
+              wasUserLoggedIn = false;
+            }
+            if (wasUserLoggedIn) {
+              break LOOP;
+            } else {
+              attempts++;
+            }
           }
         });
 

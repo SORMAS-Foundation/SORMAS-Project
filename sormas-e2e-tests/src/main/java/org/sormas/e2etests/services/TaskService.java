@@ -32,7 +32,8 @@ public class TaskService {
   public Task buildGeneratedTask() {
     long currentTimeMillis = System.currentTimeMillis();
     return Task.builder()
-        .taskType("case isolation")
+        .taskContext("GENERAL")
+        .taskType("other task as described in comments")
         .suggestedStartDate(LocalDate.now())
         .suggestedStartTime(LocalTime.of(11, 30))
         .dueDateDate(LocalDate.now().plusDays(1))
@@ -44,7 +45,7 @@ public class TaskService {
         .build();
   }
 
-  public Task buildEditTask(String currentTaskContext) {
+  public Task buildEditTask(String currentTaskContext, String currentStatus) {
     long currentTimeMillis = System.currentTimeMillis();
     return Task.builder()
         .taskContext(currentTaskContext)
@@ -56,7 +57,7 @@ public class TaskService {
         .assignedTo("Surveillance OFFICER - Surveillance Officer")
         .priority("High")
         .commentsOnTask("Comment on task" + currentTimeMillis)
-        .taskStatus(StatusValues.DONE.getValue())
+        .taskStatus(currentStatus)
         .build();
   }
 
