@@ -2,7 +2,13 @@ package de.symeda.sormas.backend.vaccination;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.List;
 
 import org.junit.Test;
 
@@ -70,5 +76,73 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		ImmunizationDto actualImmunization = getImmunizationFacade().getByUuid(immunizationDto.getUuid());
 		assertThat(actualImmunization.getVaccinations(), hasSize(1));
 		assertThat(actualImmunization.getVaccinations().get(0).getUuid(), equalTo(vaccinationDto.getUuid()));
+	}
+
+	@Test
+	public void testCreate() {
+
+		PersonDto person1 = creator.createPerson("John", "Doe");
+		PersonDto person2 = creator.createPerson("Jane", "Doe");
+		Disease disease1 = Disease.CORONAVIRUS;
+		Disease disease2 = Disease.CHOLERA;
+
+		VaccinationDto vaccination11 = VaccinationDto.build(nationalUser.toReference());
+		vaccination11 = getVaccinationFacade().create(vaccination11, rdcf1.region, rdcf1.district, person1.toReference(), disease1);
+		ImmunizationReferenceDto immunization11 = vaccination11.getImmunization();
+		assertNotNull(immunization11);
+
+		VaccinationDto vaccination12 = VaccinationDto.build(nationalUser.toReference());
+		vaccination12 = getVaccinationFacade().create(vaccination12, rdcf1.region, rdcf1.district, person1.toReference(), disease1);
+		ImmunizationReferenceDto immunization12 = vaccination12.getImmunization();
+		assertEquals(immunization11, immunization12);
+
+		VaccinationDto vaccination13 = VaccinationDto.build(nationalUser.toReference());
+		vaccination13 = getVaccinationFacade().create(vaccination13, rdcf1.region, rdcf1.district, person1.toReference(), disease2);
+		ImmunizationReferenceDto immunization13 = vaccination13.getImmunization();
+		assertNotEquals(immunization11, immunization13);
+
+		VaccinationDto vaccination21 = VaccinationDto.build(nationalUser.toReference());
+		vaccination21 = getVaccinationFacade().create(vaccination21, rdcf1.region, rdcf1.district, person2.toReference(), disease1);
+		ImmunizationReferenceDto immunization21 = vaccination21.getImmunization();
+		assertNotEquals(immunization11, immunization21);
+
+		VaccinationDto vaccination22 = VaccinationDto.build(nationalUser.toReference());
+		vaccination22 = getVaccinationFacade().create(vaccination22, rdcf1.region, rdcf1.district, person2.toReference(), disease2);
+		ImmunizationReferenceDto immunization22 = vaccination22.getImmunization();
+		assertNotEquals(immunization21, immunization22);
+	}
+
+	@Test
+	public void testGetAllVaccinations() {
+
+		PersonDto person1 = creator.createPerson("John", "Doe");
+		PersonDto person2 = creator.createPerson("Jane", "Doe");
+		Disease disease1 = Disease.CORONAVIRUS;
+		Disease disease2 = Disease.CHOLERA;
+
+		ImmunizationDto immunization11 = creator.createImmunization(disease1, person1.toReference(), nationalUser.toReference(), rdcf1);
+		ImmunizationDto immunization12 = creator.createImmunization(disease1, person1.toReference(), nationalUser.toReference(), rdcf1);
+		ImmunizationDto immunization13 = creator.createImmunization(disease2, person1.toReference(), nationalUser.toReference(), rdcf1);
+		ImmunizationDto immunization21 = creator.createImmunization(disease1, person2.toReference(), nationalUser.toReference(), rdcf1);
+		creator.createImmunization(disease2, person2.toReference(), nationalUser.toReference(), rdcf1);
+
+		VaccinationDto vaccination111 = creator.createVaccination(nationalUser.toReference(), immunization11.toReference());
+		VaccinationDto vaccination112 = creator.createVaccination(nationalUser.toReference(), immunization11.toReference());
+		VaccinationDto vaccination121 = creator.createVaccination(nationalUser.toReference(), immunization12.toReference());
+		VaccinationDto vaccination131 = creator.createVaccination(nationalUser.toReference(), immunization13.toReference());
+		VaccinationDto vaccination211 = creator.createVaccination(nationalUser.toReference(), immunization21.toReference());
+		VaccinationDto vaccination212 = creator.createVaccination(nationalUser.toReference(), immunization21.toReference());
+
+		List<VaccinationDto> vaccinations = getVaccinationFacade().getAllVaccinations(person1.getUuid(), disease1);
+		assertThat(vaccinations, hasSize(3));
+		assertThat(vaccinations, contains(vaccination111, vaccination112, vaccination121));
+		vaccinations = getVaccinationFacade().getAllVaccinations(person1.getUuid(), disease2);
+		assertThat(vaccinations, hasSize(1));
+		assertThat(vaccinations, contains(vaccination131));
+		vaccinations = getVaccinationFacade().getAllVaccinations(person2.getUuid(), disease1);
+		assertThat(vaccinations, hasSize(2));
+		assertThat(vaccinations, contains(vaccination211, vaccination212));
+		vaccinations = getVaccinationFacade().getAllVaccinations(person2.getUuid(), disease2);
+		assertThat(vaccinations, hasSize(0));
 	}
 }

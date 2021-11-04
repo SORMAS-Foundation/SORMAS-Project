@@ -372,6 +372,18 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	public List<Immunization> getByPersonAndDisease(String personUuid, Disease disease) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Immunization> cq = cb.createQuery(Immunization.class);
+		Root<Immunization> immunizationRoot = cq.from(Immunization.class);
+		Join<Immunization, Person> personJoin = immunizationRoot.join(Immunization.PERSON, JoinType.INNER);
+
+		cq.where(
+			cb.and(cb.equal(personJoin.get(AbstractDomainObject.UUID), personUuid), cb.equal(immunizationRoot.get(Immunization.DISEASE), disease)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
 	public void unlinkRelatedCase(Case caze) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Immunization> cu = cb.createCriteriaUpdate(Immunization.class);

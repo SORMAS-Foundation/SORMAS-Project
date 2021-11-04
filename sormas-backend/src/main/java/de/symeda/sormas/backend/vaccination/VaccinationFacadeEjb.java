@@ -15,7 +15,11 @@
 
 package de.symeda.sormas.backend.vaccination;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -23,14 +27,24 @@ import javax.ejb.Stateless;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.vaccination.VaccinationFacade;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
+import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
+import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -42,6 +56,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 	@EJB
 	private UserService userService;
+	@EJB
+	private ImmunizationFacadeEjbLocal immunizationFacade;
 	@EJB
 	private ImmunizationService immunizationService;
 	@EJB
@@ -57,12 +73,109 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		restorePseudonymizedDto(dto, existingDto, existingVaccination, pseudonymizer);
 
-		validate(dto);
+		validate(dto, false);
 
 		existingVaccination = fillOrBuildEntity(dto, existingVaccination, true);
 		vaccinationService.ensurePersisted(existingVaccination);
 
 		return convertToDto(existingVaccination, pseudonymizer);
+	}
+
+	@Override
+	public VaccinationDto create(
+		VaccinationDto dto,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		PersonReferenceDto person,
+		Disease disease) {
+
+		if (dto.getUuid() != null && vaccinationService.getByUuid(dto.getUuid()) != null) {
+			throw new IllegalArgumentException("DTO already has a UUID");
+		}
+
+		validate(dto, true);
+
+		Vaccination vaccination = null;
+		vaccination = fillOrBuildEntity(dto, vaccination, true);
+		boolean immunizationFound = addImmunizationToVaccination(vaccination, person.getUuid(), disease);
+
+		if (!immunizationFound) {
+			ImmunizationDto immunizationDto = ImmunizationDto.build(person);
+			immunizationDto.setDisease(disease);
+			immunizationDto.setResponsibleRegion(region);
+			immunizationDto.setResponsibleDistrict(district);
+			immunizationDto.setReportingUser(userService.getCurrentUser().toReference());
+			immunizationDto.setMeansOfImmunization(MeansOfImmunization.VACCINATION);
+			immunizationFacade.save(immunizationDto);
+
+			Immunization immunization = immunizationService.getByUuid(immunizationDto.getUuid());
+			vaccination.setImmunization(immunization);
+		}
+
+		if (vaccination.getImmunization() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validImmunization));
+		}
+
+		vaccinationService.ensurePersisted(vaccination);
+
+		return convertToDto(vaccination, Pseudonymizer.getDefault(userService::hasRight));
+	}
+
+	private boolean addImmunizationToVaccination(Vaccination vaccination, String personUuid, Disease disease) {
+
+		List<Immunization> immunizations = immunizationService.getByPersonAndDisease(personUuid, disease);
+
+		if (immunizations.isEmpty()) {
+			return false;
+		}
+
+		// If the vaccination date is empty, add the vaccination to the latest immunization
+		if (vaccination.getVaccinationDate() == null) {
+			immunizations.sort(Comparator.comparing(i -> ImmunizationEntityHelper.getDateForComparison(i, true)));
+			vaccination.setImmunization(immunizations.get(immunizations.size() - 1));
+			return true;
+		}
+
+		// Search for an immunization with start date < vaccination date < end date
+		Optional<Immunization> immunization =
+			immunizations.stream().filter(i -> DateHelper.isBetween(vaccination.getVaccinationDate(), i.getStartDate(), i.getEndDate())).findFirst();
+		if (immunization.isPresent()) {
+			vaccination.setImmunization(immunization.get());
+			return true;
+		}
+
+		// Search for the immunization with the nearest end or start date to the vaccination date
+		immunization = immunizations.stream().filter(i -> i.getEndDate() != null || i.getStartDate() != null).min((i1, i2) -> {
+			Integer i1Interval =
+				DateHelper.getDaysBetween(i1.getEndDate() != null ? i1.getEndDate() : i1.getStartDate(), vaccination.getVaccinationDate());
+			Integer i2Interval =
+				DateHelper.getDaysBetween(i2.getEndDate() != null ? i2.getEndDate() : i2.getStartDate(), vaccination.getVaccinationDate());
+			return i1Interval.compareTo(i2Interval);
+		});
+		if (immunization.isPresent()) {
+			vaccination.setImmunization(immunization.get());
+			return true;
+		}
+
+		// Use the immunization with the nearest report date to the vaccination date
+		immunization = immunizations.stream().min((i1, i2) -> {
+			Integer i1Interval = DateHelper.getDaysBetween(i1.getReportDate(), vaccination.getVaccinationDate());
+			Integer i2Interval = DateHelper.getDaysBetween(i2.getReportDate(), vaccination.getVaccinationDate());
+			return i1Interval.compareTo(i2Interval);
+		});
+		if (immunization.isPresent()) {
+			vaccination.setImmunization(immunization.get());
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public List<VaccinationDto> getAllVaccinations(String personUuid, Disease disease) {
+
+		List<Immunization> immunizations = immunizationService.getByPersonAndDisease(personUuid, disease);
+		return immunizations.stream().flatMap(i -> i.getVaccinations().stream()).map(VaccinationFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	public VaccinationDto convertToDto(Vaccination source, Pseudonymizer pseudonymizer) {
@@ -96,9 +209,9 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 	}
 
-	public void validate(VaccinationDto vaccinationDto) {
+	public void validate(VaccinationDto vaccinationDto, boolean allowEmptyImmunization) {
 
-		if (vaccinationDto.getImmunization() == null) {
+		if (!allowEmptyImmunization && vaccinationDto.getImmunization() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validImmunization));
 		}
 		if (vaccinationDto.getHealthConditions() == null) {

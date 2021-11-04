@@ -463,6 +463,19 @@ public class TestDataCreator {
 		return beanTest.getImmunizationFacade().save(immunization);
 	}
 
+	public ImmunizationDto createImmunization(Disease disease, PersonReferenceDto person, UserReferenceDto reportingUser, RDCF rdcf) {
+
+		ImmunizationDto immunization = createImmunizationDto(
+			disease,
+			person,
+			reportingUser,
+			ImmunizationStatus.PENDING,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.ONGOING,
+			rdcf);
+		return beanTest.getImmunizationFacade().save(immunization);
+	}
+
 	@NotNull
 	public ImmunizationDto createImmunizationDto(
 		Disease disease,
@@ -494,6 +507,10 @@ public class TestDataCreator {
 		HealthConditionsDto healthConditions) {
 
 		return createVaccination(reportingUser, immunization, healthConditions, new Date(), null, null);
+	}
+
+	public VaccinationDto createVaccination(UserReferenceDto reportingUser, ImmunizationReferenceDto immunization) {
+		return createVaccination(reportingUser, immunization, new HealthConditionsDto());
 	}
 
 	@NotNull
