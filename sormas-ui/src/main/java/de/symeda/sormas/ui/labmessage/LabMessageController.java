@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 import javax.naming.CannotProceedException;
 import javax.naming.NamingException;
 
+import com.vaadin.server.ClientConnector;
+import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.ui.samples.SampleController;
 import de.symeda.sormas.ui.samples.SampleEditForm;
@@ -512,7 +514,19 @@ public class LabMessageController {
 
 		List<PathogenTestDto> existingTests = FacadeProvider.getPathogenTestFacade().getAllBySample(sample.toReference());
 		for (PathogenTestDto existingTest : existingTests) {
-			sampleController.addPathogenTestComponent(sampleEditComponent, existingTest, caseSampleCount);
+			PathogenTestForm pathogenTestForm = sampleController.addPathogenTestComponent(sampleEditComponent, existingTest, caseSampleCount);
+			// when the user removes the pathogen test from the sampleEditComponent, mark the pathogen test as to be removed on commit
+			pathogenTestForm.addDetachListener((ClientConnector.DetachEvent detachEvent) -> {
+				sampleEditComponent.getWrappedComponent().getTestsToBeRemovedOnCommit().add(pathogenTestForm.getValue().toReference());
+			});
+		}
+		if (!existingTests.isEmpty()) {
+			// delete all pathogen test marked as removed on commit
+			sampleEditComponent.addCommitListener(() -> {
+				for (PathogenTestReferenceDto pathogenTest : sampleEditComponent.getWrappedComponent().getTestsToBeRemovedOnCommit()) {
+					FacadeProvider.getPathogenTestFacade().deletePathogenTest(pathogenTest.getUuid());
+				}
+			});
 		}
 
 		// add newly submitted tests to sample edit component
