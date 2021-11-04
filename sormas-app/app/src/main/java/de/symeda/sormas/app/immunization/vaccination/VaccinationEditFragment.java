@@ -22,6 +22,7 @@ import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -49,7 +50,7 @@ public class VaccinationEditFragment extends BaseEditFragment<FragmentVaccinatio
 			VaccinationEditFragment.class,
 			null,
 			activityRootData,
-			null,
+			FieldVisibilityCheckers.withDisease(activityRootData.getImmunization().getDisease()),
 			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
@@ -62,8 +63,8 @@ public class VaccinationEditFragment extends BaseEditFragment<FragmentVaccinatio
 	protected void prepareFragmentData() {
 		record = getActivityRootData();
 
-		vaccineManufacturerList = DataUtils.getEnumItems(VaccineManufacturer.class, true);
-		vaccineList = DataUtils.getEnumItems(Vaccine.class, true);
+		vaccineManufacturerList = DataUtils.getEnumItems(VaccineManufacturer.class, true, getFieldVisibilityCheckers());
+		vaccineList = DataUtils.getEnumItems(Vaccine.class, true, getFieldVisibilityCheckers());
 		vaccineInfoSourceList = DataUtils.getEnumItems(VaccinationInfoSource.class, true);
 	}
 
