@@ -62,6 +62,7 @@ public class ChromeDriverFactory implements DriverFactory {
     options.setHeadless(headless);
     options.addArguments("--no-default-browser-check");
     options.addArguments("--window-size=1920,1080");
+    options.setCapability("javascript.enabled", true);
     options.setExperimentalOption("prefs", chromePreferences);
     options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
     options.setCapability(SUPPORTS_ALERTS, false);

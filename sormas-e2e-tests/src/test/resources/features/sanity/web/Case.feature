@@ -15,7 +15,7 @@ Feature: Case end to end tests
     And I click on the NEW CASE button
     When I create a new case with specific data
     And I change all Case fields and save
-    And I click on the Dashboard button from navbar
+    And I click on the Dashboard button from navbar and access Surveillance Dashboard
     And I open last edited case by link
     And I check the edited data is correctly displayed on Edit case page
 
@@ -26,6 +26,7 @@ Feature: Case end to end tests
     Then API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
+    Given I log in with National User
     And I click on the Cases button from navbar
     And I open the last created Case via API
     And I delete the case
@@ -38,6 +39,7 @@ Feature: Case end to end tests
     Then API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
+    Given I log in with National User
     When I open the Case Contacts tab of the created case via api
     Then I click on new contact button from Case Contacts tab
     Then I create a new contact from Cases Contacts tab

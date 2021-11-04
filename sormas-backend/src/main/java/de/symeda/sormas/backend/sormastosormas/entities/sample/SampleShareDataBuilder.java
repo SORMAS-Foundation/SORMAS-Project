@@ -21,6 +21,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
@@ -54,9 +55,13 @@ public class SampleShareDataBuilder implements ShareDataBuilder<Sample, SormasTo
 		sampleDto.setSormasToSormasOriginInfo(null);
 
 		return new SormasToSormasSampleDto(
-			sampleDto,
-			data.getPathogenTests().stream().map(t -> pathogenTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList()),
-			data.getAdditionalTests().stream().map(t -> additionalTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList()));
+				sampleDto,
+				data.getPathogenTests().stream().map(t -> {
+					PathogenTestDto pathogenTestDto = pathogenTestFacade.convertToDto(t, pseudonymizer);
+					dataBuilderHelper.clearIgnoredProperties(pathogenTestDto);
+					return pathogenTestDto;
+				}).collect(Collectors.toList()),
+				data.getAdditionalTests().stream().map(t -> additionalTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList()));
 	}
 
 	@Override

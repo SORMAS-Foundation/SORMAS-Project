@@ -288,6 +288,7 @@ public interface Captions {
 	String CaseData_epidNumber = "CaseData.epidNumber";
 	String CaseData_eventCount = "CaseData.eventCount";
 	String CaseData_expectedFollowUpUntil = "CaseData.expectedFollowUpUntil";
+	String CaseData_externalData = "CaseData.externalData";
 	String CaseData_externalID = "CaseData.externalID";
 	String CaseData_externalToken = "CaseData.externalToken";
 	String CaseData_facilityType = "CaseData.facilityType";
