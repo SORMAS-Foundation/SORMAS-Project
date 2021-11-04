@@ -218,7 +218,6 @@
                 android:id="@+id/person_sex"
                 app:required="true"
                 app:value="@={data.sex}"
-                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
