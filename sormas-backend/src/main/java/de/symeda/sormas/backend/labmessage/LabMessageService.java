@@ -42,13 +42,14 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 	public Predicate buildCriteriaFilter(CriteriaBuilder cb, Root<LabMessage> labMessage, LabMessageCriteria criteria) {
 		Predicate filter = null;
 		if (criteria.getUuid() != null) {
-			filter = cb.and(filter, cb.equal(labMessage.get(LabMessage.UUID), criteria.getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(LabMessage.UUID), criteria.getUuid()));
 		}
 		if (criteria.getLabMessageStatus() != null) {
-			filter = cb.and(filter, cb.equal(labMessage.get(LabMessage.STATUS), criteria.getLabMessageStatus()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(LabMessage.STATUS), criteria.getLabMessageStatus()));
 		}
 		if (criteria.getSample() != null) {
-			filter = cb.and(filter, cb.equal(labMessage.get(LabMessage.SAMPLE).get(Sample.UUID), criteria.getSample().getUuid()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(LabMessage.SAMPLE).get(Sample.UUID), criteria.getSample().getUuid()));
 		}
 		return filter;
 	}
