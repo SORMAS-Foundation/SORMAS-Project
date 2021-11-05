@@ -49,6 +49,8 @@ public interface FeatureConfigurationFacade {
 
 	boolean isFeatureEnabled(FeatureType featureType);
 
+	boolean isPropertyValue(FeatureType featureType, FeatureTypeProperty property, boolean expectedPropertyValue);
+
 	boolean isAnySurveillanceEnabled();
 
 	boolean isCountryEnabled();

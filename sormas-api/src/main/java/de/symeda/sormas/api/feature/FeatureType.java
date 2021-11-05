@@ -45,7 +45,7 @@ public enum FeatureType {
 			SAMPLES_LAB }),
 	TASK_MANAGEMENT(true, true, null),
 	WEEKLY_REPORTING(true, true, null),
-	IMMUNIZATION_MANAGEMENT(true, true, null),
+	IMMUNIZATION_MANAGEMENT(true, true, null, FeatureTypeProperty.REDUCED),
 	TRAVEL_ENTRIES(true, false, null),
 
 	// FEATURE EXTENSIONS
@@ -215,13 +215,16 @@ public enum FeatureType {
 	private final boolean enabledDefault;
 
 	private final FeatureType[] dependentFeatures;
+	private final FeatureTypeProperty[] supportedProperties;
 
-	FeatureType(boolean serverFeature, boolean enabledDefault, FeatureType[] dependentFeatures) {
+	FeatureType(boolean serverFeature, boolean enabledDefault, FeatureType[] dependentFeatures, FeatureTypeProperty... supportedProperties) {
 		this.serverFeature = serverFeature;
 		this.enabledDefault = enabledDefault;
 		this.dependentFeatures = dependentFeatures;
+		this.supportedProperties = supportedProperties;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
@@ -253,4 +256,7 @@ public enum FeatureType {
 		return dependentFeatures;
 	}
 
+	public FeatureTypeProperty[] getSupportedProperties() {
+		return supportedProperties;
+	}
 }
