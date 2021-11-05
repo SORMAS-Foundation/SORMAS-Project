@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.YesNoUnknownOptions;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.ActivityAsCaseType;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
@@ -46,14 +47,21 @@ public class EpidemiologicalDataSteps implements En {
     Then(
         "I create a new Exposure fro Epidemiological data tab and fill all the data",
         () -> {
-          epidemiologicalData = epidemiologicalDataService.buildGeneratedEpidemiologicalData();
+          epidemiologicalData =
+              epidemiologicalDataService.buildGeneratedEpidemiologicalData(
+                  apiState
+                      .getCreatedCase()
+                      .getDisease()
+                      .equalsIgnoreCase(DiseasesValues.CORONAVIRUS.getDiseaseName()));
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickWebElementByText(
               EXPOSURE_DETAILS_KNOWN_OPTIONS,
               epidemiologicalData.getExposureDetailsKnown().toString());
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPOSURE_DETAILS_NEW_ENTRY_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_DETAILS_NEW_ENTRY_BUTTON);
-          Exposure exposureData = epidemiologicalDataService.buildGeneratedExposureData();
+          Exposure exposureData =
+              epidemiologicalDataService.buildGeneratedExposureData(
+                  apiState.getCreatedCase().getDisease().contains("CORONA"));
           fillExposure(exposureData);
         });
 
@@ -61,7 +69,8 @@ public class EpidemiologicalDataSteps implements En {
         "I create a new Activity from Epidemiological data tab and fill all the data",
         () -> {
           EpidemiologicalData epidemiologicalData =
-              epidemiologicalDataService.buildGeneratedEpidemiologicalData();
+              epidemiologicalDataService.buildGeneratedEpidemiologicalData(
+                  apiState.getCreatedCase().getDisease().contains("CORONA"));
 
           Activity activityData = epidemiologicalDataService.buildGeneratedActivityData();
           webDriverHelpers.clickWebElementByText(
@@ -141,8 +150,6 @@ public class EpidemiologicalDataSteps implements En {
     webDriverHelpers.clickWebElementByText(
         LONG_FACE_TO_FACE_CONTACT_OPTIONS, exposureData.getLongFaceToFaceContact().toString());
     webDriverHelpers.clickWebElementByText(
-        ANIMAL_MARKET_OPTIONS, exposureData.getAnimalMarket().toString());
-    webDriverHelpers.clickWebElementByText(
         PERCUTANEOUS_OPTIONS, exposureData.getPercutaneous().toString());
     webDriverHelpers.clickWebElementByText(
         CONTACT_TO_BODY_FLUIDS_OPTONS, exposureData.getContactToBodyFluids().toString());
@@ -214,9 +221,6 @@ public class EpidemiologicalDataSteps implements En {
             YesNoUnknownOptions.valueOf(
                 webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                     LONG_FACE_TO_FACE_CONTACT_OPTIONS)))
-        .animalMarket(
-            YesNoUnknownOptions.valueOf(
-                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(ANIMAL_MARKET_OPTIONS)))
         .percutaneous(
             YesNoUnknownOptions.valueOf(
                 webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PERCUTANEOUS_OPTIONS)))
