@@ -824,6 +824,16 @@ public class TestDataCreator {
 			null);
 	}
 
+	public EventDto createEvent(UserReferenceDto reportingUser, Disease disease, Consumer<EventDto> customConfig) {
+
+		return createEvent(EventStatus.SIGNAL, EventInvestigationStatus.PENDING, "title", "description", reportingUser, (event) -> {
+			event.setReportDateTime(new Date());
+			event.setReportingUser(reportingUser);
+			event.setDisease(disease);
+			customConfig.accept(event);
+		});
+	}
+
 	public EventDto createEvent(UserReferenceDto reportingUser, Date eventDate) {
 
 		return createEvent(

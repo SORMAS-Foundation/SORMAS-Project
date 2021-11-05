@@ -305,8 +305,6 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		immunizationService.updateImmunizationStatusBasedOnVaccinations(immunization);
 		immunizationService.ensurePersisted(immunization);
 
-		updateVaccinationStatuses(immunization, existingDto);
-
 		if (existingImmunization != null && internal && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(existingImmunization);
 		}
@@ -575,32 +573,6 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	@Override
 	public List<ImmunizationDto> getByPersonUuids(List<String> uuids) {
 		return immunizationService.getByPersonUuids(uuids).stream().map(ImmunizationFacadeEjb::toDto).collect(Collectors.toList());
-	}
-
-	protected void updateVaccinationStatuses(Immunization updatedImmunization, ImmunizationDto currentImmunization) {
-		if ((updatedImmunization.getMeansOfImmunization() == MeansOfImmunization.VACCINATION
-			|| updatedImmunization.getMeansOfImmunization() == MeansOfImmunization.VACCINATION_RECOVERY)
-			&& (currentImmunization == null && updatedImmunization.getImmunizationStatus() == ImmunizationStatus.ACQUIRED)
-			|| (currentImmunization != null
-				&& updatedImmunization.getImmunizationStatus() == ImmunizationStatus.ACQUIRED
-				&& currentImmunization.getImmunizationStatus() != ImmunizationStatus.ACQUIRED
-				&& updatedImmunization.getValidFrom() != null)) {
-			caseService.updateVaccinationStatuses(
-				updatedImmunization.getPerson().getId(),
-				updatedImmunization.getDisease(),
-				updatedImmunization.getValidFrom(),
-				updatedImmunization.getValidUntil());
-			contactService.updateVaccinationStatuses(
-				updatedImmunization.getPerson().getId(),
-				updatedImmunization.getDisease(),
-				updatedImmunization.getValidFrom(),
-				updatedImmunization.getValidUntil());
-			eventParticipantService.updateVaccinationStatuses(
-				updatedImmunization.getPerson().getId(),
-				updatedImmunization.getDisease(),
-				updatedImmunization.getValidFrom(),
-				updatedImmunization.getValidUntil());
-		}
 	}
 
 	public void syncSharesAsync(Immunization immunization) {

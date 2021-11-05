@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Date;
 import java.util.List;
@@ -16,7 +17,12 @@ import java.util.List;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
@@ -84,6 +90,8 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testCreate() {
+
+		loginWith(nationalUser);
 
 		PersonDto person1 = creator.createPerson("John", "Doe");
 		PersonDto person2 = creator.createPerson("Jane", "Doe");
@@ -159,6 +167,8 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetAllVaccinations() {
 
+		loginWith(nationalUser);
+
 		PersonDto person1 = creator.createPerson("John", "Doe");
 		PersonDto person2 = creator.createPerson("Jane", "Doe");
 		Disease disease1 = Disease.CORONAVIRUS;
@@ -189,4 +199,85 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		vaccinations = getVaccinationFacade().getAllVaccinations(person2.getUuid(), disease2);
 		assertThat(vaccinations, hasSize(0));
 	}
+
+	// This is currently not executed because modifying immunizations leads to the entity not being attached to the persistence context anymore.
+	// This problem does not seem to occur on an actual server. See #6694
+	@Test
+	public void testUpdateVaccinationStatuses() {
+
+		loginWith(nationalUser);
+
+		Date today = new Date();
+		PersonDto person1 = creator.createPerson("John", "Doe");
+		PersonDto person2 = creator.createPerson("Jane", "Doe");
+
+		CaseDataDto case11 = creator.createCase(
+			nationalUser.toReference(),
+			person1.toReference(),
+			rdcf1,
+			c -> c.getSymptoms().setOnsetDate(DateHelper.subtractDays(today, 10)));
+		CaseDataDto case12 = creator.createCase(nationalUser.toReference(), person1.toReference(), rdcf1);
+		CaseDataDto case2 = creator.createCase(nationalUser.toReference(), person1.toReference(), rdcf1, c -> c.setDisease(Disease.CORONAVIRUS));
+		CaseDataDto case3 = creator.createCase(nationalUser.toReference(), person2.toReference(), rdcf1);
+		ContactDto contact11 = creator.createContact(
+			nationalUser.toReference(),
+			person1.toReference(),
+			Disease.EVD,
+			c -> c.setLastContactDate(DateHelper.subtractDays(today, 10)));
+		ContactDto contact12 = creator.createContact(nationalUser.toReference(), person1.toReference(), Disease.EVD);
+		ContactDto contact2 = creator.createContact(nationalUser.toReference(), person1.toReference(), Disease.CORONAVIRUS);
+		ContactDto contact3 = creator.createContact(nationalUser.toReference(), person2.toReference(), Disease.EVD);
+		EventDto event11 = creator.createEvent(nationalUser.toReference(), Disease.EVD, e -> {
+			e.setEndDate(DateHelper.subtractDays(today, 8));
+			e.setStartDate(DateHelper.subtractDays(today, 12));
+		});
+		EventDto event12 = creator.createEvent(nationalUser.toReference(), Disease.EVD, e -> e.setEndDate(DateHelper.subtractDays(today, 8)));
+		EventDto event13 = creator.createEvent(nationalUser.toReference(), Disease.EVD, e -> e.setStartDate(DateHelper.subtractDays(today, 8)));
+		EventDto event14 = creator.createEvent(nationalUser.toReference(), Disease.EVD);
+		EventDto event2 = creator.createEvent(nationalUser.toReference(), Disease.CORONAVIRUS);
+		EventParticipantDto ep111 = creator.createEventParticipant(event11.toReference(), person1, nationalUser.toReference());
+		EventParticipantDto ep112 = creator.createEventParticipant(event11.toReference(), person2, nationalUser.toReference());
+		EventParticipantDto ep121 = creator.createEventParticipant(event12.toReference(), person1, nationalUser.toReference());
+		EventParticipantDto ep131 = creator.createEventParticipant(event13.toReference(), person1, nationalUser.toReference());
+		EventParticipantDto ep141 = creator.createEventParticipant(event14.toReference(), person1, nationalUser.toReference());
+		EventParticipantDto ep21 = creator.createEventParticipant(event2.toReference(), person1, nationalUser.toReference());
+
+		// Create a vaccination with vaccination date = today
+		VaccinationDto vaccination1 = VaccinationDto.build(nationalUser.toReference());
+		vaccination1.setVaccinationDate(today);
+		getVaccinationFacade().create(vaccination1, rdcf1.region, rdcf1.district, person1.toReference(), Disease.EVD);
+
+		assertNull(getCaseFacade().getByUuid(case11.getUuid()).getVaccinationStatus());
+		assertThat(getCaseFacade().getByUuid(case12.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
+		assertNull(getCaseFacade().getByUuid(case2.getUuid()).getVaccinationStatus());
+		assertNull(getCaseFacade().getByUuid(case3.getUuid()).getVaccinationStatus());
+		assertNull(getContactFacade().getContactByUuid(contact11.getUuid()).getVaccinationStatus());
+		assertThat(getContactFacade().getContactByUuid(contact12.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
+		assertNull(getContactFacade().getContactByUuid(contact2.getUuid()).getVaccinationStatus());
+		assertNull(getContactFacade().getContactByUuid(contact3.getUuid()).getVaccinationStatus());
+		assertNull(getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus());
+		assertNull(getEventParticipantFacade().getByUuid(ep112.getUuid()).getVaccinationStatus());
+		assertNull(getEventParticipantFacade().getByUuid(ep121.getUuid()).getVaccinationStatus());
+		assertNull(getEventParticipantFacade().getByUuid(ep131.getUuid()).getVaccinationStatus());
+		assertThat(getEventParticipantFacade().getByUuid(ep141.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
+		assertNull(getEventParticipantFacade().getByUuid(ep21.getUuid()).getVaccinationStatus());
+
+		// Create a vaccination with vaccination date = today - 11 days
+		VaccinationDto vaccination2 = VaccinationDto.build(nationalUser.toReference());
+		vaccination2.setVaccinationDate(DateHelper.subtractDays(today, 11));
+		getVaccinationFacade().create(vaccination2, rdcf1.region, rdcf1.district, person1.toReference(), Disease.EVD);
+
+		assertThat(getCaseFacade().getByUuid(case11.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
+		assertThat(getContactFacade().getContactByUuid(contact11.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
+		assertNull(getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus());
+		assertThat(getEventParticipantFacade().getByUuid(ep121.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
+		assertThat(getEventParticipantFacade().getByUuid(ep131.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
+
+		// Create a vaccination with no vaccination date
+		VaccinationDto vaccination3 = VaccinationDto.build(nationalUser.toReference());
+		getVaccinationFacade().create(vaccination3, rdcf1.region, rdcf1.district, person1.toReference(), Disease.EVD);
+
+		assertThat(getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
+	}
+
 }

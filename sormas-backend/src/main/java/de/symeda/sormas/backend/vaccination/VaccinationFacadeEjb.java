@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.vaccination;
 
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,7 +40,10 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.vaccination.VaccinationFacade;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
+import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal;
@@ -64,11 +68,18 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	private ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
 	@EJB
 	private VaccinationService vaccinationService;
+	@EJB
+	private CaseService caseService;
+	@EJB
+	private ContactService contactService;
+	@EJB
+	private EventParticipantService eventParticipantService;
 
 	public VaccinationDto save(@Valid VaccinationDto dto) {
 
 		Vaccination existingVaccination = dto.getUuid() != null ? vaccinationService.getByUuid(dto.getUuid()) : null;
 		VaccinationDto existingDto = toDto(existingVaccination);
+		Date currentVaccinationDate = existingVaccination.getVaccinationDate();
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		restorePseudonymizedDto(dto, existingDto, existingVaccination, pseudonymizer);
@@ -77,6 +88,12 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 		existingVaccination = fillOrBuildEntity(dto, existingVaccination, true);
 		vaccinationService.ensurePersisted(existingVaccination);
+
+		updateVaccinationStatuses(
+			existingVaccination.getVaccinationDate(),
+			currentVaccinationDate,
+			existingVaccination.getImmunization().getPerson().getId(),
+			existingVaccination.getImmunization().getDisease());
 
 		return convertToDto(existingVaccination, pseudonymizer);
 	}
@@ -117,6 +134,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 
 		vaccinationService.ensurePersisted(vaccination);
+
+		updateVaccinationStatuses(vaccination.getVaccinationDate(), null, vaccination.getImmunization().getPerson().getId(), disease);
 
 		return convertToDto(vaccination, Pseudonymizer.getDefault(userService::hasRight));
 	}
@@ -228,6 +247,15 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 		if (vaccinationDto.getReportDate() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportDateTime));
+		}
+	}
+
+	protected void updateVaccinationStatuses(Date newVaccinationDate, Date currentVaccinationDate, Long personId, Disease disease) {
+
+		if (currentVaccinationDate == null || newVaccinationDate != currentVaccinationDate) {
+			caseService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
+			contactService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
+			eventParticipantService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
 		}
 	}
 

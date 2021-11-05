@@ -29,6 +29,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
@@ -36,6 +37,10 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Path("/immunizations")
@@ -108,6 +113,23 @@ public class ImmunizationResource extends EntityDtoResource {
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
 		return FacadeProvider.getImmunizationFacade().deleteImmunizations(uuids);
+	}
+
+	@POST
+	@Path("/createVaccination")
+	public VaccinationDto createVaccination(
+		@Valid VaccinationDto vaccination,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		PersonReferenceDto person,
+		Disease disease) {
+		return FacadeProvider.getVaccinationFacade().create(vaccination, region, district, person, disease);
+	}
+
+	@POST
+	@Path("/vaccinations")
+	public List<VaccinationDto> getAllVaccinations(String personUuid, Disease disease) {
+		return FacadeProvider.getVaccinationFacade().getAllVaccinations(personUuid, disease);
 	}
 
 }
