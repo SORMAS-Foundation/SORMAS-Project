@@ -27,7 +27,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +51,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.PathogenTestService;
-import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
+import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -66,7 +65,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		LabMessageIndexDto.PERSON_LAST_NAME,
 		LabMessageIndexDto.MESSAGE_DATE_TIME,
 		LabMessageIndexDto.STATUS,
-//		LabMessageIndexDto.TEST_RESULT,
+		LabMessageIndexDto.SAMPLE_OVERALL_TEST_RESULT,
 		LabMessageIndexDto.TESTED_DISEASE);
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -126,6 +125,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			target.setTestReports(testReports);
 		}
 		target.setReportId(source.getReportId());
+		target.setSampleOverallTestResult(source.getSampleOverallTestResult());
 
 		return target;
 	}
@@ -179,6 +179,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			target.setTestReports(source.getTestReports().stream().map(t -> TestReportFacadeEjb.toDto(t)).collect(toList()));
 		}
 		target.setReportId(source.getReportId());
+		target.setSampleOverallTestResult(source.getSampleOverallTestResult());
 
 		return target;
 	}
@@ -280,7 +281,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			labMessage.get(LabMessage.TEST_LAB_NAME),
 			labMessage.get(LabMessage.TEST_LAB_POSTAL_CODE),
 			labMessage.get(LabMessage.TESTED_DISEASE),
-//			labMessage.get(LabMessage.TEST_RESULT), TODO: this has to be reenabled in https://github.com/hzi-braunschweig/SORMAS-Project/issues/5159
+			labMessage.get(LabMessage.SAMPLE_OVERALL_TEST_RESULT),
 			labMessage.get(LabMessage.PERSON_FIRST_NAME),
 			labMessage.get(LabMessage.PERSON_LAST_NAME),
 			labMessage.get(LabMessage.PERSON_POSTAL_CODE),

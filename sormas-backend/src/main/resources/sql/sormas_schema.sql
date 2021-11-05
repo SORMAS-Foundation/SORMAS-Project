@@ -8815,4 +8815,10 @@ ALTER TABLE cases_history ALTER COLUMN externalData set DATA TYPE jsonb using ex
 
 INSERT INTO schema_version (version_number, comment) VALUES (425, 'Change case externalData from JSON to JSONB #7068');
 
+-- 2021-11-04 [DEMIS2SORMAS] Handle New Profile: DiagnosticReport.conclusionCode #5159
+ALTER TABLE labmessage ADD COLUMN sampleoveralltestresult varchar(255);
+ALTER TABLE labmessage_history ADD COLUMN sampleoveralltestresult varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (426, '[DEMIS2SORMAS] Handle New Profile: DiagnosticReport.conclusionCode #5159');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

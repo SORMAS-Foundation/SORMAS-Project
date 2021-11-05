@@ -11,6 +11,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -95,6 +96,7 @@ public class LabMessageDto extends EntityDto {
 	private String labMessageDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String reportId;
+	private PathogenTestResultType sampleOverallTestResult;
 
 	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
 
@@ -331,6 +333,14 @@ public class LabMessageDto extends EntityDto {
 
 	public void setReportId(String reportId) {
 		this.reportId = reportId;
+	}
+
+	public PathogenTestResultType getSampleOverallTestResult() {
+		return sampleOverallTestResult;
+	}
+
+	public void setSampleOverallTestResult(PathogenTestResultType sampleOverallTestResult) {
+		this.sampleOverallTestResult = sampleOverallTestResult;
 	}
 
 	public static LabMessageDto build() {

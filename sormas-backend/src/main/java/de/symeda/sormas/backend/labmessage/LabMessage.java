@@ -19,6 +19,7 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -56,6 +57,7 @@ public class LabMessage extends AbstractDomainObject {
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String STATUS = "status";
 	public static final String REPORT_ID = "reportId";
+	public static final String SAMPLE_OVERALL_TEST_RESULT = "sampleOverallTestResult";
 
 	private Disease testedDisease;
 	private Date messageDateTime;
@@ -87,6 +89,7 @@ public class LabMessage extends AbstractDomainObject {
 	private String labMessageDetails;
 	//Lab messages related to each other should have the same reportId
 	private String reportId;
+	private PathogenTestResultType sampleOverallTestResult;
 
 	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
 
@@ -341,5 +344,14 @@ public class LabMessage extends AbstractDomainObject {
 
 	public void setReportId(String reportId) {
 		this.reportId = reportId;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public PathogenTestResultType getSampleOverallTestResult() {
+		return sampleOverallTestResult;
+	}
+
+	public void setSampleOverallTestResult(PathogenTestResultType sampleOverallTestResult) {
+		this.sampleOverallTestResult = sampleOverallTestResult;
 	}
 }

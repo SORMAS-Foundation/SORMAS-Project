@@ -678,6 +678,7 @@ public class LabMessageController {
 		sampleDto.setSpecimenCondition(SpecimenCondition.ADEQUATE);
 		sampleDto.setLab(getLabReference(labMessageDto));
 		sampleDto.setLabDetails(labMessageDto.getLabName());
+		sampleDto.setPathogenTestResult(labMessageDto.getSampleOverallTestResult());
 	}
 
 	private FacilityReferenceDto getLabReference(LabMessageDto labMessageDto) {

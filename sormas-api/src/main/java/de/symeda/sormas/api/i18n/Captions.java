@@ -1376,6 +1376,7 @@ public interface Captions {
 	String labMessage_reportId = "labMessage.reportId";
 	String LabMessage_sampleDateTime = "LabMessage.sampleDateTime";
 	String LabMessage_sampleMaterial = "LabMessage.sampleMaterial";
+	String labMessage_sampleOverallTestResult = "labMessage.sampleOverallTestResult";
 	String LabMessage_sampleReceivedDate = "LabMessage.sampleReceivedDate";
 	String LabMessage_specimenCondition = "LabMessage.specimenCondition";
 	String LabMessage_status = "LabMessage.status";
