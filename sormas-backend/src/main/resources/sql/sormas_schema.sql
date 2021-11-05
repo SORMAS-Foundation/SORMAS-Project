@@ -8850,7 +8850,6 @@ ALTER TABLE testreport DROP COLUMN pathogentest_id;
 ALTER TABLE testreport_history DROP COLUMN pathogentest_id;
 
 
-INSERT INTO schema_version (version_number, comment)
-VALUES (426, '[DEMIS2SORMAS] Handle New Profile: Process multiple test reports #5899');
+INSERT INTO schema_version (version_number, comment) VALUES (426, '[DEMIS2SORMAS] Handle New Profile: Process multiple test reports #5899');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
