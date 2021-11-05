@@ -26,7 +26,9 @@ import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import lombok.SneakyThrows;
 import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.FollowUpVisit;
@@ -146,7 +148,9 @@ public class CreateNewVisitSteps implements En {
         });
   }
 
+  @SneakyThrows
   public FollowUpVisit collectFollowUpData() {
+    TimeUnit.SECONDS.sleep(2); // time needed to refresh the page
     String dateOfVisit = webDriverHelpers.getValueFromWebElement(DATE_AND_TIME_OF_VISIT_INPUT);
     LocalDate parsedDateOfVisit = LocalDate.parse(dateOfVisit, DATE_FORMATTER);
     String dateOfSymptomOnset =

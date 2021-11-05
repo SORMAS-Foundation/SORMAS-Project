@@ -148,7 +148,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		addField(ImmunizationDto.REPORT_DATE, DateField.class);
 		addField(ImmunizationDto.REPORTING_USER, ComboBox.class);
 
-		addDiseaseField(ImmunizationDto.DISEASE, false);
+		ComboBox cbDisease = addDiseaseField(ImmunizationDto.DISEASE, false);
 		addField(ImmunizationDto.DISEASE_DETAILS, TextField.class);
 
 		ComboBox meansOfImmunizationField = addField(ImmunizationDto.MEANS_OF_IMMUNIZATION, ComboBox.class);
@@ -234,6 +234,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			ImmunizationDto.MEANS_OF_IMMUNIZATION,
 			Arrays.asList(MeansOfImmunization.VACCINATION, MeansOfImmunization.VACCINATION_RECOVERY),
 			false);
+		cbDisease.addValueChangeListener(e -> vaccinationsField.setDisease((Disease) cbDisease.getValue()));
 
 		Label recoveryHeadingLabel = new Label(I18nProperties.getString(Strings.headingRecovery));
 		recoveryHeadingLabel.addStyleName(H3);
