@@ -2151,6 +2151,7 @@ public interface Captions {
 	String Task_creatorUser = "Task.creatorUser";
 	String Task_dueDate = "Task.dueDate";
 	String Task_event = "Task.event";
+	String Task_observerUsers = "Task.observerUsers";
 	String Task_perceivedStart = "Task.perceivedStart";
 	String Task_priority = "Task.priority";
 	String Task_statusChangeDate = "Task.statusChangeDate";
