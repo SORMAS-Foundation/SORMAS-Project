@@ -1373,10 +1373,10 @@ public interface Captions {
 	String LabMessage_personPostalCode = "LabMessage.personPostalCode";
 	String LabMessage_personSex = "LabMessage.personSex";
 	String LabMessage_personStreet = "LabMessage.personStreet";
-	String labMessage_reportId = "labMessage.reportId";
+	String LabMessage_reportId = "LabMessage.reportId";
 	String LabMessage_sampleDateTime = "LabMessage.sampleDateTime";
 	String LabMessage_sampleMaterial = "LabMessage.sampleMaterial";
-	String labMessage_sampleOverallTestResult = "labMessage.sampleOverallTestResult";
+	String LabMessage_sampleOverallTestResult = "LabMessage.sampleOverallTestResult";
 	String LabMessage_sampleReceivedDate = "LabMessage.sampleReceivedDate";
 	String LabMessage_specimenCondition = "LabMessage.specimenCondition";
 	String LabMessage_status = "LabMessage.status";
