@@ -53,7 +53,6 @@ public class LabMessageServiceUnitTest {
 		LabMessageService sut = new LabMessageService();
 		LabMessageStatus status = LabMessageStatus.PROCESSED;
 
-		when(sut.createDefaultFilter(cb, labMessage)).thenReturn(predicate);
 		when(criteria.getLabMessageStatus()).thenReturn(status);
 		when(labMessage.get(LabMessage.STATUS)).thenReturn(objectPath);
 
