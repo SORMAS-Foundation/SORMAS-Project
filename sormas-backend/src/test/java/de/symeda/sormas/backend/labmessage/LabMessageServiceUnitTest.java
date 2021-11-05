@@ -57,7 +57,6 @@ public class LabMessageServiceUnitTest {
 		when(labMessage.get(LabMessage.STATUS)).thenReturn(objectPath);
 
 		when(cb.equal(objectPath, status)).thenReturn(predicate);
-		when(cb.and(predicate, predicate)).thenReturn(predicate);
 
 		Predicate result = sut.buildCriteriaFilter(cb, labMessage, criteria);
 
