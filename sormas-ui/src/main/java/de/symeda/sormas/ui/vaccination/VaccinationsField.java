@@ -21,6 +21,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.ui.Table;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.Vaccine;
@@ -43,6 +44,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class VaccinationsField extends AbstractTableField<VaccinationDto> {
 
 	private final FieldVisibilityCheckers fieldVisibilityCheckers;
+	private Disease disease;
 
 	public VaccinationsField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(fieldAccessCheckers);
@@ -66,7 +68,8 @@ public class VaccinationsField extends AbstractTableField<VaccinationDto> {
 			}
 		}
 
-		VaccinationEditForm vaccinationEditForm = new VaccinationEditForm(create, fieldVisibilityCheckers, fieldAccessCheckers);
+		VaccinationEditForm vaccinationEditForm =
+			new VaccinationEditForm(create, fieldVisibilityCheckers.andWithDisease(disease), fieldAccessCheckers);
 		vaccinationEditForm.setValue(entry);
 
 		final CommitDiscardWrapperComponent<VaccinationEditForm> editView = new CommitDiscardWrapperComponent<>(
@@ -150,6 +153,10 @@ public class VaccinationsField extends AbstractTableField<VaccinationDto> {
 				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(VaccinationDto.I18N_PREFIX, (String) columnId));
 			}
 		}
+	}
+
+	public void setDisease(Disease disease) {
+		this.disease = disease;
 	}
 
 	@Override
