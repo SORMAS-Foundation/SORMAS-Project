@@ -157,6 +157,9 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setAssigneeReply(source.getAssigneeReply());
 		target.setCreatorUser(userService.getByReferenceDto(source.getCreatorUser()));
 		target.setCreatorComment(source.getCreatorComment());
+		if (source.getObserverUsers() != null) {
+			target.setObserverUsers(source.getObserverUsers().stream().map(userService::getByReferenceDto).collect(Collectors.toList()));
+		}
 		target.setPriority(source.getPriority());
 		target.setDueDate(source.getDueDate());
 		target.setSuggestedStart(source.getSuggestedStart());
@@ -233,6 +236,9 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setAssigneeReply(source.getAssigneeReply());
 		target.setCreatorUser(UserFacadeEjb.toReferenceDto(source.getCreatorUser()));
 		target.setCreatorComment(source.getCreatorComment());
+		if (source.getObserverUsers() != null) {
+			target.setObserverUsers(source.getObserverUsers().stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toSet()));
+		}
 		target.setPriority(source.getPriority());
 		target.setDueDate(source.getDueDate());
 		target.setSuggestedStart(source.getSuggestedStart());
