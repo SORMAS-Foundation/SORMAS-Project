@@ -147,7 +147,6 @@ public class ExposureDto extends PseudonymizableDto {
 	private YesNoUnknown shortDistance;
 	private YesNoUnknown longFaceToFaceContact;
 	@Diseases({
-		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private YesNoUnknown animalMarket;

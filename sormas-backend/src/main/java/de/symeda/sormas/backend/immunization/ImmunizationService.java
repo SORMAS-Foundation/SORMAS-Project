@@ -17,7 +17,9 @@ package de.symeda.sormas.backend.immunization;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -35,6 +37,8 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
@@ -42,6 +46,7 @@ import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
@@ -54,7 +59,9 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.LastVaccinationDate;
 import de.symeda.sormas.backend.vaccination.Vaccination;
@@ -363,6 +370,40 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		cq.where(filter);
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public void unlinkRelatedCase(Case caze) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Immunization> cu = cb.createCriteriaUpdate(Immunization.class);
+		Root<Immunization> root = cu.from(Immunization.class);
+
+		cu.set(Immunization.RELATED_CASE, null);
+
+		cu.where(cb.equal(root.get(Immunization.RELATED_CASE), caze));
+
+		em.createQuery(cu).executeUpdate();
+	}
+
+	public List<Immunization> getByPersonUuids(List<String> personUuids) {
+		if (CollectionUtils.isEmpty(personUuids)) {
+			// Avoid empty IN clause
+			return Collections.emptyList();
+		} else {
+			List<Immunization> immunizations = new LinkedList<>();
+			IterableHelper.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> {
+
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaQuery<Immunization> cq = cb.createQuery(Immunization.class);
+				Root<Immunization> immunizationRoot = cq.from(Immunization.class);
+				Join<Immunization, Person> personJoin = immunizationRoot.join(Immunization.PERSON, JoinType.INNER);
+
+				cq.where(personJoin.get(AbstractDomainObject.UUID).in(batchedPersonUuids));
+
+				immunizations.addAll(em.createQuery(cq).getResultList());
+
+			});
+			return immunizations;
+		}
 	}
 
 	private Predicate createUserFilter(ImmunizationQueryContext<Immunization> qc) {

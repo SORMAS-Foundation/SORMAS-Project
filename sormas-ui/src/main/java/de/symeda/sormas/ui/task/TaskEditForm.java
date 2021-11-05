@@ -38,27 +38,23 @@ import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskType;
-import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -67,6 +63,7 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.TaskStatusValidator;
 
+@SuppressWarnings("deprecation")
 public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 	private static final long serialVersionUID = 1L;
@@ -91,13 +88,15 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 	private UserRight editOrCreateUserRight;
 	private boolean editedFromTaskGrid;
+	private Disease disease;
 
-	public TaskEditForm(boolean create, boolean editedFromTaskGrid) {
+	public TaskEditForm(boolean create, boolean editedFromTaskGrid, Disease disease) {
 
-		super(TaskDto.class, TaskDto.I18N_PREFIX);
+		super(TaskDto.class, TaskDto.I18N_PREFIX, false, FieldVisibilityCheckers.withDisease(disease));
 
 		this.editedFromTaskGrid = editedFromTaskGrid;
 		this.editOrCreateUserRight = editOrCreateUserRight;
+		this.disease = disease;
 
 		addValueChangeListener(e -> {
 			updateByTaskContext();
@@ -109,6 +108,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
+
+		addFields();
 	}
 
 	@Override
@@ -169,46 +170,17 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				}
 			}
 
-			UserDto userDto = UserProvider.getCurrent().getUser();
-			List<DistrictReferenceDto> districts;
-			List<RegionReferenceDto> regions;
-			if (taskDto.getCaze() != null) {
-				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(taskDto.getCaze().getUuid());
-
-				districts = getCaseDistricts(caseDto);
-				regions = getCaseRegions(caseDto);
-			} else if (taskDto.getContact() != null) {
-				ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(taskDto.getContact().getUuid());
-				if (contactDto.getRegion() != null && contactDto.getDistrict() != null) {
-					districts = DataHelper.asListNullable(contactDto.getDistrict());
-					regions = DataHelper.asListNullable(contactDto.getRegion());
-				} else {
-					CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
-					districts = getCaseDistricts(caseDto);
-					regions = getCaseRegions(caseDto);
-				}
-			} else if (taskDto.getEvent() != null) {
-				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(taskDto.getEvent().getUuid(), false);
-
-				districts = DataHelper.asListNullable(eventDto.getEventLocation().getDistrict());
-				regions = DataHelper.asListNullable(eventDto.getEventLocation().getRegion());
-			} else if (taskDto.getTravelEntry() != null) {
-				TravelEntryDto travelEntryDto = FacadeProvider.getTravelEntryFacade().getByUuid(taskDto.getTravelEntry().getUuid());
-
-				districts = DataHelper.asListNullable(travelEntryDto.getResponsibleDistrict());
-				regions = DataHelper.asListNullable(travelEntryDto.getResponsibleRegion());
-			} else {
-				districts = DataHelper.asListNullable(userDto.getDistrict());
-				regions = DataHelper.asListNullable(userDto.getRegion());
-			}
-
+			final UserDto userDto = UserProvider.getCurrent().getUser();
 			final List<UserReferenceDto> users = new ArrayList<>();
-			if (districts != null) {
-				users.addAll(FacadeProvider.getUserFacade().getUserRefsByDistricts(districts, true));
-			} else if (regions != null) {
-				users.addAll(FacadeProvider.getUserFacade().getUsersByRegionsAndRoles(regions));
+			if (taskDto.getCaze() != null) {
+				users.addAll(FacadeProvider.getUserFacade().getUsersHavingCaseInJurisdiction(taskDto.getCaze()));
+			} else if (taskDto.getContact() != null) {
+				users.addAll(FacadeProvider.getUserFacade().getUsersHavingContactInJurisdiction(taskDto.getContact()));
+			} else if (taskDto.getEvent() != null) {
+				users.addAll(FacadeProvider.getUserFacade().getUsersHavingEventInJurisdiction(taskDto.getEvent()));
+			} else if (taskDto.getTravelEntry() != null) {
+				users.addAll(FacadeProvider.getUserFacade().getUsersHavingTravelEntryInJurisdiction(taskDto.getTravelEntry()));
 			} else {
-				// fallback - just show all users
 				users.addAll(FacadeProvider.getUserFacade().getAllUserRefs(false));
 			}
 
@@ -250,29 +222,9 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
 	}
 
-	private List<DistrictReferenceDto> getCaseDistricts(CaseDataDto caseDto) {
-		List<DistrictReferenceDto> districts = new ArrayList<>(2);
 
-		if (caseDto.getDistrict() != null) {
-			districts.add(caseDto.getDistrict());
-		}
 
-		districts.add(caseDto.getResponsibleDistrict());
 
-		return districts;
-	}
-
-	private List<RegionReferenceDto> getCaseRegions(CaseDataDto caseDto) {
-		List<RegionReferenceDto> regions = new ArrayList<>(2);
-
-		if (caseDto.getRegion() != null) {
-			regions.add(caseDto.getRegion());
-		}
-
-		regions.add(caseDto.getResponsibleRegion());
-
-		return regions;
-	}
 
 	private void checkIfAssigneeEmailOrPhoneIsProvided(UserReferenceDto assigneeRef) {
 
@@ -352,7 +304,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 		// Task types depending on task context
 		ComboBox taskType = (ComboBox) getFieldGroup().getField(TaskDto.TASK_TYPE);
-		FieldHelper.updateItems(taskType, TaskType.getTaskTypes(taskContext));
+		FieldHelper.updateItems(taskType, TaskType.getTaskTypes(taskContext), FieldVisibilityCheckers.withDisease(disease), TaskType.class);
 
 		// context reference depending on task context
 		ComboBox caseField = (ComboBox) getFieldGroup().getField(TaskDto.CAZE);

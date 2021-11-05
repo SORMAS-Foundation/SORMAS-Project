@@ -66,6 +66,7 @@ public class HospitalizationDtoHelper extends AdoDtoHelper<Hospitalization, Hosp
 		a.setDischargeDate(b.getDischargeDate());
 		a.setIsolated(b.getIsolated());
 		a.setIsolationDate(b.getIsolationDate());
+		a.setDescription(b.getDescription());
 		a.setLeftAgainstAdvice(b.getLeftAgainstAdvice());
 		a.setIntensiveCareUnit(b.getIntensiveCareUnit());
 		a.setIntensiveCareUnitStart(b.getIntensiveCareUnitStart());
@@ -94,6 +95,7 @@ public class HospitalizationDtoHelper extends AdoDtoHelper<Hospitalization, Hosp
 		a.setDischargeDate(b.getDischargeDate());
 		a.setIsolated(b.getIsolated());
 		a.setIsolationDate(b.getIsolationDate());
+		a.setDescription(b.getDescription());
 		a.setLeftAgainstAdvice(b.getLeftAgainstAdvice());
 		a.setIntensiveCareUnit(b.getIntensiveCareUnit());
 		a.setIntensiveCareUnitStart(b.getIntensiveCareUnitStart());

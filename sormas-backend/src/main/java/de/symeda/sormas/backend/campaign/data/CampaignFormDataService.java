@@ -99,7 +99,7 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 
 		Predicate filter = null;
 
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
 		if (jurisdictionLevel != JurisdictionLevel.NATION) {
 			switch (jurisdictionLevel) {
 			case REGION:

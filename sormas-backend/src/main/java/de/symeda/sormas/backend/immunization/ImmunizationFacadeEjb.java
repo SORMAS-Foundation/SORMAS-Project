@@ -572,6 +572,11 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		return false;
 	}
 
+	@Override
+	public List<ImmunizationDto> getByPersonUuids(List<String> uuids) {
+		return immunizationService.getByPersonUuids(uuids).stream().map(ImmunizationFacadeEjb::toDto).collect(Collectors.toList());
+	}
+
 	protected void updateVaccinationStatuses(Immunization updatedImmunization, ImmunizationDto currentImmunization) {
 		if ((updatedImmunization.getMeansOfImmunization() == MeansOfImmunization.VACCINATION
 			|| updatedImmunization.getMeansOfImmunization() == MeansOfImmunization.VACCINATION_RECOVERY)

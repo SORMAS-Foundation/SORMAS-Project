@@ -21,6 +21,8 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
+
         <variable name="data" type="de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization" />
         <variable name="callback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
@@ -36,23 +38,35 @@
         android:orientation="vertical"
         android:padding="@dimen/rowListItemPadding">
 
+        <de.symeda.sormas.app.component.controls.ControlTextReadField
+            android:id="@+id/casePreviousHospitalization_admittedToHealthFacility"
+            style="@style/ControlSingleColumnStyle"
+            app:value="@{data.admittedToHealthFacility}" />
+
+        <de.symeda.sormas.app.component.controls.ControlTextReadField
+            android:id="@+id/casePreviousHospitalization_admissionAndDischargeDate"
+            style="@style/ControlSingleColumnStyle"
+            app:appendValue="@{data.dischargeDate}"
+            app:value="@{data.admissionDate}"
+            app:valueFormat='@{@string/date_range_format}' />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/casePreviousHospitalization_admissionAndDischargeDate"
-                app:appendValue="@{data.dischargeDate}"
-                app:value="@{data.admissionDate}"
-                app:valueFormat='@{@string/date_range_format}'
-                style="@style/ControlFirstOfTwoColumnsStyle" />
-
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/casePreviousHospitalization_isolated"
                 android:textAlignment="viewEnd"
                 app:value="@{data.isolated}"
-                style="@style/ControlSecondOfTwoColumnsStyle" />
+                style="@style/ControlFirstOfTwoColumnsStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/casePreviousHospitalization_isolationDate"
+                style="@style/ControlSecondOfTwoColumnsStyle"
+                app:dependencyParentField="@{casePreviousHospitalizationIsolated}"
+                app:dependencyParentValue="@{YesNoUnknown.YES}"
+                app:value="@{data.isolationDate}" />
 
         </LinearLayout>
 

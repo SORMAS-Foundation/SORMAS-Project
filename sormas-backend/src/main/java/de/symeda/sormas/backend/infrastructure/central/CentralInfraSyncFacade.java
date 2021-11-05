@@ -131,7 +131,6 @@ public class CentralInfraSyncFacade {
 			// broad clause is necessary here: Cron schedule stability has been influenced by uncatched exceptions
 			logger.error("Could not sync with central: %s", e);
 		}
-
 	}
 
 	private Date loadAndStoreContinents(Date lastUpdate) {

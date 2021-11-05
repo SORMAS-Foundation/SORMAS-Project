@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.ui.symptoms;
 
 import static de.symeda.sormas.api.symptoms.SymptomsDto.*;
@@ -57,7 +55,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.util.converter.Converter.ConversionException;
 import com.vaadin.v7.ui.AbstractField;
@@ -86,8 +83,6 @@ import de.symeda.sormas.api.utils.SymptomGroup;
 import de.symeda.sormas.api.utils.SymptomGrouping;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
-import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -201,9 +196,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			SymptomsDto.class,
 			I18N_PREFIX,
 			false,
-			new FieldVisibilityCheckers().add(new DiseaseFieldVisibilityChecker(disease))
-				.add(new OutbreakFieldVisibilityChecker(viewMode))
-				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
+			FieldVisibilityCheckers.withDisease(disease)
+				.andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale())
+				.add(new OutbreakFieldVisibilityChecker(viewMode)),
 			fieldAccessCheckers);
 
 		this.caze = caze;
@@ -278,6 +273,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 
 		ComboBox temperature = addField(TEMPERATURE, ComboBox.class);
+		temperature.setImmediate(true);
 		for (Float temperatureValue : SymptomsHelper.getTemperatureValues()) {
 			temperature.addItem(temperatureValue);
 			temperature.setItemCaption(temperatureValue, SymptomsHelper.getTemperatureString(temperatureValue));
@@ -311,7 +307,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		glasgowComaScale.addItems(SymptomsHelper.getGlasgowComaScaleValues());
 
 		addFields(
-			FEVER,
 			VOMITING,
 			DIARRHEA,
 			BLOOD_IN_STOOL,
@@ -460,7 +455,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			PALPITATIONS,
 			DIZZINESS_STANDING_UP,
 			HIGH_OR_LOW_BLOOD_PRESSURE,
-			URINARY_RETENTION);
+			URINARY_RETENTION,
+			FEVER);
 
 		addField(SYMPTOMS_COMMENTS, TextField.class).setDescription(
 			I18nProperties.getPrefixDescription(I18N_PREFIX, SYMPTOMS_COMMENTS, "") + "\n" + I18nProperties.getDescription(Descriptions.descGdpr));
@@ -671,6 +667,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		// Set visibilities
 
+		NullableOptionGroup feverField = (NullableOptionGroup) getFieldGroup().getField(FEVER);
+		feverField.setImmediate(true);
+
 		FieldHelper.setVisibleWhen(getFieldGroup(), conditionalBleedingSymptomFieldIds, UNEXPLAINED_BLEEDING, Arrays.asList(SymptomState.YES), true);
 
 		FieldHelper
@@ -813,6 +812,45 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		buttonsLayout.setMargin(new MarginInfo(true, false, true, true));
 
 		getContent().addComponent(buttonsLayout, BUTTONS_LOC);
+
+		if (feverField.isVisible()) {
+			temperature.addValueChangeListener(e -> {
+				toggleFeverComponentError(feverField, temperature);
+			});
+			feverField.addValueChangeListener(e -> {
+				toggleFeverComponentError(feverField, temperature);
+			});
+		}
+	}
+
+	private void toggleFeverComponentError(NullableOptionGroup feverField, ComboBox temperatureField) {
+		Float temperatureValue = (Float) temperatureField.getValue();
+		SymptomState feverValue = (SymptomState) feverField.getNullableValue();
+
+		if (temperatureValue != null && temperatureValue >= 38.0f && feverValue != SymptomState.YES) {
+			setFeverComponentError(feverField, true);
+		} else if (temperatureValue != null && temperatureValue < 38.0f && feverValue != SymptomState.NO) {
+			setFeverComponentError(feverField, false);
+		} else {
+			feverField.setComponentError(null);
+		}
+	}
+
+	private void setFeverComponentError(NullableOptionGroup feverField, boolean feverSuggested) {
+		feverField.setComponentError(new ErrorMessage() {
+
+			@Override
+			public ErrorLevel getErrorLevel() {
+				return ErrorLevel.INFO;
+			}
+
+			@Override
+			public String getFormattedHtmlMessage() {
+				return I18nProperties.getValidationError(
+					feverSuggested ? Validations.feverTemperatureAboveThreshold : Validations.feverTemperatureBelowThreshold,
+					I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, FEVER));
+			}
+		});
 	}
 
 	private Label createLabel(String text, String h4, String location) {
@@ -847,19 +885,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			unconditionalSymptomFieldIds,
 			Arrays.asList(SymptomState.YES),
 			visitStatus);
-		getFieldGroup().getField(FEVER).addValidator(new Validator() {
-
-			@Override
-			public void validate(Object value) throws InvalidValueException {
-				if (getFieldGroup().getField(TEMPERATURE).getValue() != null) {
-					if ((Float) (getFieldGroup().getField(TEMPERATURE).getValue()) >= 38.0f) {
-						if (value != SymptomState.YES) {
-							throw new InvalidValueException(I18nProperties.getString(Strings.errorSetFeverRequired));
-						}
-					}
-				}
-			}
-		});
 	}
 
 	@Override
@@ -867,10 +892,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		super.setValue(newFieldValue);
 
 		initializeSymptomRequirementsForCase();
-
-		if (symptomsContext == SymptomsContext.CLINICAL_VISIT) {
-			initializeSymptomRequirementsForClinicalVisit();
-		}
 	}
 
 	private void initializeSymptomRequirementsForCase() {
@@ -892,22 +913,6 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			unconditionalSymptomFieldIds,
 			Arrays.asList(SymptomState.YES),
 			null);
-	}
-
-	private void initializeSymptomRequirementsForClinicalVisit() {
-		getFieldGroup().getField(FEVER).addValidator(new Validator() {
-
-			@Override
-			public void validate(Object value) throws InvalidValueException {
-				if (getFieldGroup().getField(TEMPERATURE).getValue() != null) {
-					if ((Float) (getFieldGroup().getField(TEMPERATURE).getValue()) >= 38.0f) {
-						if (value != SymptomState.YES) {
-							throw new InvalidValueException(I18nProperties.getString(Strings.errorSetFeverRequired));
-						}
-					}
-				}
-			}
-		});
 	}
 
 	/**

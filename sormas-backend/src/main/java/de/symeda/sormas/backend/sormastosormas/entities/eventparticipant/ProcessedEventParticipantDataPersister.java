@@ -58,7 +58,7 @@ public class ProcessedEventParticipantDataPersister
 		EventParticipantDto eventParticipant = processedData.getEntity();
 
 		handleValidationError(
-			() -> personFacade.savePerson(eventParticipant.getPerson(), false, false),
+			() -> personFacade.savePerson(eventParticipant.getPerson(), false, false, false),
 			Captions.EventParticipant,
 			buildEventParticipantValidationGroupName(eventParticipant));
 
