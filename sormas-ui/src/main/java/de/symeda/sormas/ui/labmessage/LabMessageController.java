@@ -528,6 +528,7 @@ public class LabMessageController {
 				}
 			});
 		}
+		sampleEditComponent.addCommitListener(() -> finishProcessingLabMessage(labMessage, sample));
 
 		// add newly submitted tests to sample edit component
 		List<String> existingTestExternalIds =
@@ -680,7 +681,7 @@ public class LabMessageController {
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = sampleController.getSampleCreateComponent(sample, disease, () -> {
 		});
 
-		sampleCreateComponent.addDoneListener(() -> finishProcessingLabMessage(labMessageDto, sample));
+		sampleCreateComponent.addCommitListener(() -> finishProcessingLabMessage(labMessageDto, sample));
 
 		// add pathogen test create components
 		//********************
