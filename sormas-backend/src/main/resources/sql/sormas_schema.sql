@@ -8845,10 +8845,14 @@ WHERE labmessage.id = t.labmessage_id;
 ALTER TABLE labmessage ADD COLUMN deleted boolean DEFAULT false;
 ALTER TABLE labmessage_history ADD COLUMN deleted boolean;
 
-
+/*
+ Delete obsolete columns
+ */
 ALTER TABLE testreport DROP COLUMN pathogentest_id;
 ALTER TABLE testreport_history DROP COLUMN pathogentest_id;
 
+ALTER TABLE labmessage DROP COLUMN pathogentest_id;
+ALTER TABLE labmessage_history DROP COLUMN pathogentest_id;
 
 INSERT INTO schema_version (version_number, comment) VALUES (426, '[DEMIS2SORMAS] Handle New Profile: Process multiple test reports #5899');
 
