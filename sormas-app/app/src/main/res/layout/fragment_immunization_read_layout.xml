@@ -195,6 +195,11 @@
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/immunization_recoveryDate"
+                app:value="@{data.recoveryDate}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/immunization_additionalDetails"
                 style="@style/ControlSingleColumnStyle"
                 app:maxLines="3"

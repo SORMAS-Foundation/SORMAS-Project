@@ -23,7 +23,6 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 
 import android.view.View;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -185,6 +184,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		// Initialize ControlDateFields
 		contentBinding.immunizationReportDate.initializeDateField(getFragmentManager());
 		contentBinding.immunizationRecoveryDate.initializeDateField(getFragmentManager());
+		contentBinding.immunizationPositiveTestResultDate.initializeDateField(getFragmentManager());
 		contentBinding.immunizationStartDate.initializeDateField(getFragmentManager());
 		contentBinding.immunizationEndDate.initializeDateField(getFragmentManager());
 		ValidationHelper.initDateIntervalValidator(contentBinding.immunizationStartDate, contentBinding.immunizationEndDate);
@@ -240,9 +240,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 						I18nProperties.getString(Strings.messageDeleteImmunizationVaccinations),
 						R.string.action_confirm,
 						R.string.action_cancel);
-					dialog.setPositiveCallback(() -> {
-						record.setVaccinations(new ArrayList<>());
-					});
+					dialog.setPositiveCallback(() -> record.setVaccinations(new ArrayList<>()));
 					dialog.setNegativeCallback(() -> {
 						contentBinding.immunizationMeansOfImmunization.setValue(currentMeansOfImm);
 						dialog.dismiss();
@@ -252,13 +250,8 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 			}
 		});
 
-		contentBinding.overwriteImmunizationManagementStatusCheckBox.addValueChangedListener(e -> {
-			if (Boolean.TRUE.equals(e.getValue())) {
-				contentBinding.immunizationImmunizationManagementStatus.setEnabled(true);
-			} else {
-				contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
-			}
-		});
+		contentBinding.overwriteImmunizationManagementStatusCheckBox
+			.addValueChangedListener(e -> contentBinding.immunizationImmunizationManagementStatus.setEnabled(Boolean.TRUE.equals(e.getValue())));
 
 		contentBinding.immunizationImmunizationManagementStatus.addValueChangedListener(e -> {
 			if (e.getValue() == ImmunizationManagementStatus.SCHEDULED || e.getValue() == ImmunizationManagementStatus.ONGOING) {
@@ -312,9 +305,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 
 	private void setUpControlListeners(FragmentImmunizationEditLayoutBinding contentBinding) {
 
-		contentBinding.linkCase.setOnClickListener((v) -> {
-			linkRecoveryImmunizationToCaseSearchCaseIncluded(record);
-		});
+		contentBinding.linkCase.setOnClickListener(v -> linkRecoveryImmunizationToCaseSearchCaseIncluded(record));
 
 		contentBinding.openLinkedCase.setOnClickListener(v -> CaseReadActivity.startActivity(getActivity(), record.getRelatedCase().getUuid(), true));
 	}
@@ -341,12 +332,9 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 
 					for (PathogenTest pathogenTest : pathogenTests) {
 						if (pathogenTest.getTestedDisease().equals(foundCase.getDisease())
-							&& PathogenTestResultType.POSITIVE.equals(pathogenTest.getTestResult())) {
-							if (relevantPathogenTest == null) {
-								relevantPathogenTest = pathogenTest;
-							} else if (relevantPathogenTest.getTestDateTime().before(pathogenTest.getTestDateTime())) {
-								relevantPathogenTest = pathogenTest;
-							}
+							&& PathogenTestResultType.POSITIVE.equals(pathogenTest.getTestResult())
+							&& (relevantPathogenTest == null || relevantPathogenTest.getTestDateTime().before(pathogenTest.getTestDateTime()))) {
+							relevantPathogenTest = pathogenTest;
 						}
 					}
 				}
