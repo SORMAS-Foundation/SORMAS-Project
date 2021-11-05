@@ -1275,7 +1275,7 @@ public class CaseController {
 				I18nProperties.getCaption(Captions.actionSaveAndOpenHospitalization),
 				I18nProperties.getCaption(Captions.actionSave),
 				I18nProperties.getCaption(Captions.actionDiscard),
-				500,
+				700,
 				option -> {
 					final NullableOptionGroup admittedToHealthFacilityField =
 						currentHospitalizationForm.getField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY);
