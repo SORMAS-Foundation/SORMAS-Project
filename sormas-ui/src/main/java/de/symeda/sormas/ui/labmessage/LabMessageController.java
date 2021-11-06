@@ -528,6 +528,9 @@ public class LabMessageController {
 				}
 			});
 		}
+		// add option to create additional pathogen tests
+		sampleController.addPathogenTestButton(sampleEditComponent, true);
+
 		sampleEditComponent.addCommitListener(() -> finishProcessingLabMessage(labMessage, sample));
 
 		// add newly submitted tests to sample edit component
@@ -540,7 +543,7 @@ public class LabMessageController {
 		for (PathogenTestDto test : newTests) {
 			if (!existingTestExternalIds.contains(test.getExternalId())) {
 				PathogenTestForm form = sampleController.addPathogenTestComponent(sampleEditComponent, test, caseSampleCount);
-				setViaLimsFieldCheckedAndDisabled(form);
+				sampleController.setViaLimsFieldChecked(form);
 			}
 		}
 
@@ -691,18 +694,14 @@ public class LabMessageController {
 		for (PathogenTestDto pathogenTest : pathogenTests) {
 			PathogenTestForm pathogenTestCreateComponent =
 				sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTest, caseSampleCount);
-			setViaLimsFieldCheckedAndDisabled(pathogenTestCreateComponent);
+			sampleController.setViaLimsFieldChecked(pathogenTestCreateComponent);
 		}
+		// add option to create additional pathogen tests
+		sampleController.addPathogenTestButton(sampleCreateComponent, true);
 
 		sampleCreateComponent.addCommitListener(window::close);
 		sampleCreateComponent.addDiscardListener(window::close);
 		return sampleCreateComponent;
-	}
-
-	private void setViaLimsFieldCheckedAndDisabled(PathogenTestForm pathogenTestForm) {
-		CheckBox viaLimsCheckbox = pathogenTestForm.getField(PathogenTestDto.VIA_LIMS);
-		viaLimsCheckbox.setValue(Boolean.TRUE);
-		viaLimsCheckbox.setEnabled(false);
 	}
 
 	private List<PathogenTestDto> buildPathogenTests(SampleDto sample, LabMessageDto labMessage) {

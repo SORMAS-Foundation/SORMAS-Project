@@ -17,12 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -54,7 +54,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -117,6 +116,8 @@ public class SampleController {
 
 	private void createSample(Runnable callback, SampleDto sampleDto, Disease disease) {
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, disease, callback);
+		// add option to create additional pathogen tests
+		addPathogenTestButton(editView, false);
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
 	}
 
@@ -130,8 +131,6 @@ public class SampleController {
 	 *            to add the pathogen test create component to.
 	 * @param pathogenTest
 	 *            the preset values to insert. May be null.
-	 * @param removable
-	 *            if true, a button is shown to remove the pathogen test create component again from the sample create component.
 	 * @return the pathogen test create component added.
 	 */
 	public PathogenTestForm addPathogenTestComponent(
@@ -151,8 +150,6 @@ public class SampleController {
 	 * @param caseSampleCount
 	 *            describes how many samples already exist for a case related to the pathogen test's sample (if a case exists, otherwise 0
 	 *            is valid).
-	 * @param removable
-	 *            if true, a button is shown to remove the pathogen test create component again from the sample create component.
 	 * @return the pathogen test create component added.
 	 */
 	public PathogenTestForm addPathogenTestComponent(
@@ -237,11 +234,24 @@ public class SampleController {
 				callback.run();
 			}
 		});
-		Button addPathogenTestButton = new Button(I18nProperties.getCaption(Captions.pathogenTestAdd));
-		addPathogenTestButton.addClickListener((e) -> addPathogenTestComponent(editView, null));
-		editView.getButtonsPanel().addComponent(addPathogenTestButton, 0);
 
 		return editView;
+	}
+
+	public void addPathogenTestButton(CommitDiscardWrapperComponent<? extends AbstractSampleForm> editView, boolean viaLims) {
+		Button addPathogenTestButton = new Button(I18nProperties.getCaption(Captions.pathogenTestAdd));
+		addPathogenTestButton.addClickListener((e) -> {
+			PathogenTestForm pathogenTestForm = addPathogenTestComponent(editView, null);
+			if (viaLims) {
+				setViaLimsFieldChecked(pathogenTestForm);
+			}
+		});
+		editView.getButtonsPanel().addComponent(addPathogenTestButton, 0);
+	}
+
+	public void setViaLimsFieldChecked(PathogenTestForm pathogenTestForm) {
+		CheckBox viaLimsCheckbox = pathogenTestForm.getField(PathogenTestDto.VIA_LIMS);
+		viaLimsCheckbox.setValue(Boolean.TRUE);
 	}
 
 	public void createReferral(SampleDto sample, Disease disease) {
