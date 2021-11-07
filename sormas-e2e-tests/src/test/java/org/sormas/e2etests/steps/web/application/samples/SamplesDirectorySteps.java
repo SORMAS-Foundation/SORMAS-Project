@@ -82,7 +82,10 @@ public class SamplesDirectorySteps implements En {
               SEARCH_RESULT_SAMPLE, maximumNumberOfRows);
           Thread.sleep(2000); // reset filter acts chaotic, to be modified in the future
           webDriverHelpers.fillAndSubmitInWebElement(
-              SAMPLE_SEARCH_INPUT, apiState.getLastCreatedPerson().getFirstName());
+              SAMPLE_SEARCH_INPUT,
+              apiState.getLastCreatedPerson().getFirstName()
+                  + " "
+                  + apiState.getLastCreatedPerson().getLastName());
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
           webDriverHelpers.waitUntilNumberOfElementsIsExactlyOrLess(
               SEARCH_RESULT_SAMPLE, apiState.getCreatedSamples().size());
