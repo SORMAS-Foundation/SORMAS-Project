@@ -23,13 +23,11 @@ import javax.inject.Inject;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.user.UserReferenceDto;
-
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -56,14 +54,32 @@ public class ReceivedImmunizationProcessor
 	}
 
 	@Inject
-	protected ReceivedImmunizationProcessor(ImmunizationService service) {
-		super(service);
+	protected ReceivedImmunizationProcessor(ImmunizationService service, UserService userService, ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade) {
+		super(service, userService, configFacade);
 	}
 
 	@Override
 	public void handleReceivedData(SormasToSormasImmunizationDto sharedData, Immunization existingData) {
-		dataValidator.updateReportingUser(sharedData.getEntity(), existingData);
-		dataValidator.handleIgnoredProperties(sharedData.getEntity(), ImmunizationFacadeEjb.toDto(existingData));
+		updateReportingUser(sharedData.getEntity(), existingData);
+		handleIgnoredProperties(sharedData.getEntity(), ImmunizationFacadeEjb.toDto(existingData));
+
+		ImmunizationDto im = sharedData.getEntity();
+		im.getVaccinations().forEach(vaccination -> {
+			Vaccination existingVaccination;
+			if (existingData == null) {
+				existingVaccination = null;
+			} else {
+				existingVaccination =
+					existingData.getVaccinations().stream().filter(v -> v.getUuid().equals(vaccination.getUuid())).findFirst().orElse(null);
+			}
+			UserReferenceDto reportingUser;
+			if (existingVaccination == null) {
+				reportingUser = userService.getCurrentUser().toReference();
+			} else {
+				reportingUser = existingVaccination.getReportingUser().toReference();
+			}
+			vaccination.setReportingUser(reportingUser);
+		});
 	}
 
 	@Override
@@ -82,7 +98,7 @@ public class ReceivedImmunizationProcessor
 	}
 
 	@Override
-	public ValidationErrors validate(SormasToSormasImmunizationDto sharedData, Immunization existingData) {
+	public ValidationErrors validate(SormasToSormasImmunizationDto sharedData) {
 		ValidationErrors validationErrors = new ValidationErrors();
 		final ImmunizationDto im = sharedData.getEntity();
 
@@ -97,16 +113,6 @@ public class ReceivedImmunizationProcessor
 				im.setHealthFacility(f.getEntity());
 				im.setHealthFacilityDetails(f.getDetails());
 			});
-
-		im.getVaccinations().forEach(vaccination -> {
-			Vaccination existingVaccination = existingData == null
-				? null
-				: existingData.getVaccinations().stream().filter(v -> v.getUuid().equals(vaccination.getUuid())).findFirst().orElse(null);
-			UserReferenceDto reportingUser =
-				existingVaccination == null ? userService.getCurrentUser().toReference() : existingVaccination.getReportingUser().toReference();
-
-			vaccination.setReportingUser(reportingUser);
-		});
 
 		return validationErrors;
 	}
