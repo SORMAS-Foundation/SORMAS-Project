@@ -24,7 +24,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.sample.PathogenTest;

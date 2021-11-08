@@ -21,14 +21,13 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
 import org.apache.commons.collections.CollectionUtils;
 
-import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
@@ -107,9 +106,9 @@ public class ProcessedDataPersister {
 			}
 		}
 
-		List<SormasToSormasEntityDto<ImmunizationDto>> immunizations = processedData.getImmunizations();
+		List<SormasToSormasImmunizationDto> immunizations = processedData.getImmunizations();
 		if (CollectionUtils.isNotEmpty(immunizations)) {
-			for (SormasToSormasEntityDto<ImmunizationDto> s : immunizations) {
+			for (SormasToSormasImmunizationDto s : immunizations) {
 				immunizationDataPersister.persistSharedData(s, originInfo, existingEntities.getImmunizations().get(s.getEntity().getUuid()));
 			}
 		}
@@ -157,9 +156,9 @@ public class ProcessedDataPersister {
 			}
 		}
 
-		List<SormasToSormasEntityDto<ImmunizationDto>> immunizations = processedData.getImmunizations();
+		List<SormasToSormasImmunizationDto> immunizations = processedData.getImmunizations();
 		if (CollectionUtils.isNotEmpty(immunizations)) {
-			for (SormasToSormasEntityDto<ImmunizationDto> i : immunizations) {
+			for (SormasToSormasImmunizationDto i : immunizations) {
 				immunizationDataPersister.persistSyncData(i, originInfoDto, existingEntities.getImmunizations().get(i.getEntity().getUuid()));
 			}
 		}

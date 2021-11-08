@@ -24,6 +24,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
@@ -42,7 +43,7 @@ import de.symeda.sormas.backend.vaccination.Vaccination;
 @LocalBean
 public class ReceivedImmunizationProcessor
 	extends
-	ReceivedDataProcessor<Immunization, ImmunizationDto, SormasToSormasEntityDto<ImmunizationDto>, PreviewNotImplementedDto, Immunization, ImmunizationService> {
+	ReceivedDataProcessor<Immunization, ImmunizationDto, SormasToSormasImmunizationDto, PreviewNotImplementedDto, Immunization, ImmunizationService> {
 
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;
@@ -60,7 +61,7 @@ public class ReceivedImmunizationProcessor
 	}
 
 	@Override
-	public void handleReceivedData(SormasToSormasEntityDto<ImmunizationDto> sharedData, Immunization existingData) {
+	public void handleReceivedData(SormasToSormasImmunizationDto sharedData, Immunization existingData) {
 		dataValidator.updateReportingUser(sharedData.getEntity(), existingData);
 		dataValidator.handleIgnoredProperties(sharedData.getEntity(), ImmunizationFacadeEjb.toDto(existingData));
 	}
@@ -81,7 +82,7 @@ public class ReceivedImmunizationProcessor
 	}
 
 	@Override
-	public ValidationErrors validate(SormasToSormasEntityDto<ImmunizationDto> sharedData, Immunization existingData) {
+	public ValidationErrors validate(SormasToSormasImmunizationDto sharedData, Immunization existingData) {
 		ValidationErrors validationErrors = new ValidationErrors();
 		final ImmunizationDto im = sharedData.getEntity();
 
