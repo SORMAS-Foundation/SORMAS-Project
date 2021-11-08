@@ -22,14 +22,13 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
@@ -131,7 +130,7 @@ public class ReceivedDataProcessor {
 			});
 		}
 
-		List<SormasToSormasEntityDto<ImmunizationDto>> immunizations = receivedData.getImmunizations();
+		List<SormasToSormasImmunizationDto> immunizations = receivedData.getImmunizations();
 		if (CollectionUtils.isNotEmpty(immunizations)) {
 			immunizations.forEach(s -> {
 				ValidationErrors immunizationErrors =

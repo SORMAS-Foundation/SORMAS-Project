@@ -31,7 +31,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
 @LocalBean
-public class ContactShareDataBuilder implements ShareDataBuilder<Contact, SormasToSormasContactDto, SormasToSormasContactPreview> {
+public class ContactShareDataBuilder implements ShareDataBuilder<ContactDto, Contact, SormasToSormasContactDto, SormasToSormasContactPreview> {
 
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
