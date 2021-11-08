@@ -110,9 +110,10 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 			true,
 			Arrays.asList(SormasToSormasOptionsDto.WITH_SAMPLES, SormasToSormasOptionsDto.WITH_IMMUNIZATIONS),
 			(f, s) -> {
-			((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_SAMPLES)).setValue(s.isWithSamples());
-			((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS)).setValue(s.isWithImmunizations());
-		}, null);
+				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_SAMPLES)).setValue(s.isWithSamples());
+				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS)).setValue(s.isWithImmunizations());
+			},
+			null);
 	}
 
 	public static SormasToSormasOptionsForm forEvent(List<SormasToSormasShareInfoDto> currentShares) {

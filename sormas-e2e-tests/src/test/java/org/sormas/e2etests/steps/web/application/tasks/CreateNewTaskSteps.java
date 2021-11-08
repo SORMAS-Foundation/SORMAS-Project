@@ -64,9 +64,9 @@ public class CreateNewTaskSteps implements En {
         });
 
     When(
-        "^I change all fields and save$",
+        "^I change all Task's fields and save$",
         () -> {
-          task = taskService.buildEditTask();
+          task = taskService.buildEditTask("CASE", getStatus());
           fillAllFields(task);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });

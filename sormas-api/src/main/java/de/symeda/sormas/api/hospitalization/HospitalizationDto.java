@@ -28,6 +28,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -50,6 +51,7 @@ public class HospitalizationDto extends EntityDto {
 	public static final String INTENSIVE_CARE_UNIT_END = "intensiveCareUnitEnd";
 	public static final String HOSPITALIZATION_REASON = "hospitalizationReason";
 	public static final String OTHER_HOSPITALIZATION_REASON = "otherHospitalizationReason";
+	public static final String DESCRIPTION = "description";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -68,8 +70,10 @@ public class HospitalizationDto extends EntityDto {
 	private Date intensiveCareUnitStart;
 	private Date intensiveCareUnitEnd;
 	private HospitalizationReasonType hospitalizationReason;
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherHospitalizationReason;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	private String description;
 
 	public static HospitalizationDto build() {
 		HospitalizationDto hospitalization = new HospitalizationDto();
@@ -181,5 +185,13 @@ public class HospitalizationDto extends EntityDto {
 
 	public void setOtherHospitalizationReason(String otherHospitalizationReason) {
 		this.otherHospitalizationReason = otherHospitalizationReason;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

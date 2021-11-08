@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,7 +69,7 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.task.Task;
@@ -78,7 +78,7 @@ import de.symeda.sormas.backend.visit.Visit;
 
 @Entity
 @Audited
-public class Contact extends CoreAdo implements SormasToSormasEntity, HasExternalData {
+public class Contact extends CoreAdo implements SormasToSormasShareable, HasExternalData {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
@@ -124,10 +124,13 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 	public static final String MULTI_DAY_CONTACT = "multiDayContact";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	public static final String PERSON = "person";
+	public static final String PERSON_ID = "personId";
+	public static final String PREVIOUS_QUARANTINE_TO = "previousQuarantineTo";
 	public static final String PROHIBITION_TO_WORK = "prohibitionToWork";
 	public static final String PROHIBITION_TO_WORK_FROM = "prohibitionToWorkFrom";
 	public static final String PROHIBITION_TO_WORK_UNTIL = "prohibitionToWorkUntil";
 	public static final String QUARANTINE = "quarantine";
+	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
 	public static final String QUARANTINE_EXTENDED = "quarantineExtended";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
@@ -259,6 +262,9 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 
 	private Contact duplicateOf;
 
+	private Date previousQuarantineTo;
+	private String quarantineChangeComment;
+
 	@Diseases({
 		Disease.AFP,
 		Disease.GUINEA_WORM,
@@ -273,6 +279,17 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		Disease.OTHER })
 	@Outbreaks
 	private VaccinationStatus vaccinationStatus;
+
+	private Long personId;
+
+	@Column(name = "person_id", updatable = false, insertable = false)
+	public Long getPersonId() {
+		return personId;
+	}
+
+	public void setPersonId(Long personId) {
+		this.personId = personId;
+	}
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -303,7 +320,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.disease = disease;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
@@ -368,7 +385,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.contactIdentificationSource = contactIdentificationSource;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getContactIdentificationSourceDetails() {
 		return contactIdentificationSourceDetails;
 	}
@@ -386,7 +403,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.tracingApp = tracingApp;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTracingAppDetails() {
 		return tracingAppDetails;
 	}
@@ -404,7 +421,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.contactProximity = contactProximity;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getDescription() {
 		return description;
 	}
@@ -468,7 +485,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.relationToCase = relationToCase;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getRelationDescription() {
 		return relationDescription;
 	}
@@ -552,7 +569,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.reportLon = reportLon;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getFollowUpComment() {
 		return followUpComment;
 	}
@@ -579,7 +596,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.resultingCaseUser = resultingCaseUser;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalID() {
 		return externalID;
 	}
@@ -600,7 +617,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 
 	/**
 	 * Extra setter for externalID needed to comply with the HasExternalData interface
-	 * 
+	 *
 	 * @param externalId
 	 *            the value to be set for externalID
 	 */
@@ -608,7 +625,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.externalID = externalId;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalToken() {
 		return externalToken;
 	}
@@ -671,7 +688,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.immunosuppressiveTherapyBasicDisease = immunosuppressiveTherapyBasicDisease;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getImmunosuppressiveTherapyBasicDiseaseDetails() {
 		return immunosuppressiveTherapyBasicDiseaseDetails;
 	}
@@ -698,7 +715,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.quarantine = quarantine;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getquarantineTypeDetails() {
 		return quarantineTypeDetails;
 	}
@@ -725,7 +742,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.quarantineTo = quarantineTo;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getCaseIdExternalSystem() {
 		return caseIdExternalSystem;
 	}
@@ -734,7 +751,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.caseIdExternalSystem = caseIdExternalSystem;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getCaseOrEventInformation() {
 		return caseOrEventInformation;
 	}
@@ -752,7 +769,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getContactProximityDetails() {
 		return contactProximityDetails;
 	}
@@ -770,7 +787,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.contactCategory = contactCategory;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getQuarantineHelpNeeded() {
 		return quarantineHelpNeeded;
 	}
@@ -824,7 +841,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.quarantineHomePossible = quarantineHomePossible;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getQuarantineHomePossibleComment() {
 		return quarantineHomePossibleComment;
 	}
@@ -842,7 +859,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.quarantineHomeSupplyEnsured = quarantineHomeSupplyEnsured;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getQuarantineHomeSupplyEnsuredComment() {
 		return quarantineHomeSupplyEnsuredComment;
 	}
@@ -895,7 +912,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.completeness = completeness;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getAdditionalDetails() {
 		return additionalDetails;
 	}
@@ -962,7 +979,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.endOfQuarantineReason = endOfQuarantineReason;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getEndOfQuarantineReasonDetails() {
 		return endOfQuarantineReasonDetails;
 	}
@@ -1051,5 +1068,23 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 
 	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
 		this.vaccinationStatus = vaccinationStatus;
+	}
+
+	@Temporal(TemporalType.DATE)
+	public Date getPreviousQuarantineTo() {
+		return previousQuarantineTo;
+	}
+
+	public void setPreviousQuarantineTo(Date previousQuarantineTo) {
+		this.previousQuarantineTo = previousQuarantineTo;
+	}
+
+	@Column(length = CHARACTER_LIMIT_BIG)
+	public String getQuarantineChangeComment() {
+		return quarantineChangeComment;
+	}
+
+	public void setQuarantineChangeComment(String quarantineChangeComment) {
+		this.quarantineChangeComment = quarantineChangeComment;
 	}
 }

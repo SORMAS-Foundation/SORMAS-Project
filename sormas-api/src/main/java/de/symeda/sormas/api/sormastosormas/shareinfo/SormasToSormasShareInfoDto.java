@@ -22,6 +22,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class SormasToSormasShareInfoDto extends EntityDto {
 
@@ -36,9 +37,11 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 	private boolean withImmunizations;
 	private boolean pseudonymizedPersonalData;
 	private boolean pseudonymizedSensitiveData;
-	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String comment;
 	private ShareRequestStatus requestStatus;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	private String responseComment;
 
 	/**
 	 * @return Get the target server of the share operation.
@@ -133,5 +136,13 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 
 	public void setRequestStatus(ShareRequestStatus requestStatus) {
 		this.requestStatus = requestStatus;
+	}
+
+	public String getResponseComment() {
+		return responseComment;
+	}
+
+	public void setResponseComment(String responseComment) {
+		this.responseComment = responseComment;
 	}
 }

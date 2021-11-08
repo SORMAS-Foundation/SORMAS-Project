@@ -17,7 +17,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
 @Stateless
 @LocalBean
-public class ContinentService extends AbstractInfrastructureAdoService<Continent> {
+public class ContinentService extends AbstractInfrastructureAdoService<Continent, ContinentCriteria> {
 
 	public ContinentService() {
 		super(Continent.class);
@@ -47,6 +47,7 @@ public class ContinentService extends AbstractInfrastructureAdoService<Continent
 		return null;
 	}
 
+	@Override
 	public Predicate buildCriteriaFilter(ContinentCriteria criteria, CriteriaBuilder cb, Root<Continent> from) {
 
 		Predicate filter = null;

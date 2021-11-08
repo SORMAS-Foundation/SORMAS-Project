@@ -19,6 +19,7 @@ import java.util.Collections;
 
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -38,36 +39,55 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 
 	private final ContactJoins<?> joins;
 	private final CriteriaQuery<?> cq;
-	private final User currentUser;
 
-	private ContactJurisdictionPredicateValidator(ContactQueryContext qc, User currentUser) {
+	private ContactJurisdictionPredicateValidator(ContactQueryContext qc, User user) {
 		super(
 			qc.getCriteriaBuilder(),
+			user,
+			null,
 			Collections.singletonList(
 				CaseJurisdictionPredicateValidator
-					.of(new CaseQueryContext<>(qc.getCriteriaBuilder(), qc.getQuery(), ((ContactJoins) qc.getJoins()).getCaze()), currentUser)));
+					.of(new CaseQueryContext<>(qc.getCriteriaBuilder(), qc.getQuery(), ((ContactJoins) qc.getJoins()).getCaze()), user)));
 
 		this.joins = (ContactJoins<?>) qc.getJoins();
-		this.currentUser = currentUser;
 		this.cq = qc.getQuery();
 	}
 
-	public static ContactJurisdictionPredicateValidator of(ContactQueryContext qc, User currentUser) {
-		return new ContactJurisdictionPredicateValidator(qc, currentUser);
+	private ContactJurisdictionPredicateValidator(ContactQueryContext qc, Path userPath) {
+		super(
+			qc.getCriteriaBuilder(),
+			null,
+			userPath,
+			Collections.singletonList(
+				CaseJurisdictionPredicateValidator
+					.of(new CaseQueryContext<>(qc.getCriteriaBuilder(), qc.getQuery(), ((ContactJoins) qc.getJoins()).getCaze()), userPath)));
+
+		this.joins = (ContactJoins<?>) qc.getJoins();
+		this.cq = qc.getQuery();
+	}
+
+	public static ContactJurisdictionPredicateValidator of(ContactQueryContext qc, User user) {
+		return new ContactJurisdictionPredicateValidator(qc, user);
+	}
+
+	public static ContactJurisdictionPredicateValidator of(ContactQueryContext qc, Path userPath) {
+		return new ContactJurisdictionPredicateValidator(qc, userPath);
 	}
 
 	@Override
 	protected Predicate isInJurisdictionOrOwned() {
 		final Predicate reportedByCurrentUser = cb.and(
 			cb.isNotNull(joins.getRoot().get(Contact.REPORTING_USER)),
-			cb.equal(joins.getRoot().get(Contact.REPORTING_USER).get(User.ID), currentUser.getId()));
+			user != null
+				? cb.equal(joins.getRoot().get(Contact.REPORTING_USER).get(User.ID), user.getId())
+				: cb.equal(joins.getRoot().get(Contact.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
 
 		return cb.or(reportedByCurrentUser, inJurisdiction());
 	}
 
 	@Override
 	protected Predicate isInJurisdiction() {
-		return isInJurisdictionByJurisdictionLevel(currentUser.getJurisdictionLevel());
+		return super.isInJurisdiction();
 	}
 
 	@Override
@@ -82,17 +102,23 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 
 	@Override
 	protected Predicate whenRegionalLevel() {
-		return cb.equal(joins.getRoot().get(Contact.REGION).get(Region.ID), currentUser.getRegion().getId());
+		return user != null
+			? cb.equal(joins.getRoot().get(Contact.REGION).get(Region.ID), user.getRegion().getId())
+			: cb.equal(joins.getRoot().get(Contact.REGION).get(Region.ID), userPath.get(User.REGION).get(Region.ID));
 	}
 
 	@Override
 	protected Predicate whenDistrictLevel() {
-		return cb.equal(joins.getRoot().get(Contact.DISTRICT).get(District.ID), currentUser.getDistrict().getId());
+		return user != null
+			? cb.equal(joins.getRoot().get(Contact.DISTRICT).get(District.ID), user.getDistrict().getId())
+			: cb.equal(joins.getRoot().get(Contact.DISTRICT).get(District.ID), userPath.get(User.DISTRICT).get(District.ID));
 	}
 
 	@Override
 	protected Predicate whenCommunityLevel() {
-		return cb.equal(joins.getRoot().get(Contact.COMMUNITY).get(Community.ID), currentUser.getCommunity().getId());
+		return user != null
+			? cb.equal(joins.getRoot().get(Contact.COMMUNITY).get(Community.ID), user.getCommunity().getId())
+			: cb.equal(joins.getRoot().get(Contact.COMMUNITY).get(Community.ID), userPath.get(User.COMMUNITY).get(Community.ID));
 	}
 
 	@Override
@@ -112,8 +138,11 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 		final Root<Sample> sampleRoot = sampleContactSubquery.from(Sample.class);
 		final SampleJoins sampleJoins = new SampleJoins(sampleRoot);
 		final Join contactJoin = sampleJoins.getContact();
-		SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator =
-			SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, currentUser);
+
+		SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator = user != null
+				? SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, user)
+				: SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, userPath);
+
 		sampleContactSubquery.where(cb.and(cb.equal(contactJoin, joins.getRoot()), sampleJurisdictionPredicateValidator.inJurisdictionOrOwned()));
 		sampleContactSubquery.select(sampleRoot.get(Sample.ID));
 		return cb.exists(sampleContactSubquery);

@@ -50,6 +50,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 		+ fluidRowLocs(Captions.sampleIncludeTestOnCreation)
 		+ fluidRowLocs(HORIZONTAL_RULE)
 		+ fluidRowLocs(PathogenTestDto.REPORT_DATE, PathogenTestDto.VIA_LIMS)
+		+ fluidRowLocs(PathogenTestDto.EXTERNAL_ID, PathogenTestDto.EXTERNAL_ORDER_ID)
 		+ fluidRowLocs(PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED)
 		+ fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.PCR_TEST_SPECIFICATION)
 		+ fluidRowLocs(PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TESTED_DISEASE_VARIANT)
@@ -58,8 +59,8 @@ public class SampleCreateForm extends AbstractSampleForm {
 
 	CheckBox includeTestField;
 
-	public SampleCreateForm() {
-		super(SampleDto.class, SampleDto.I18N_PREFIX);
+	public SampleCreateForm(Disease disease) {
+		super(SampleDto.class, SampleDto.I18N_PREFIX, disease, null);
 		setPathogenTestFieldCaptions();
 	}
 
@@ -83,9 +84,15 @@ public class SampleCreateForm extends AbstractSampleForm {
 				Date.class,
 				DateField.class);
 
+			TextField externalIdField = addCustomField(PathogenTestDto.EXTERNAL_ID, String.class, TextField.class);
+			TextField externalOrderIdField = addCustomField(PathogenTestDto.EXTERNAL_ORDER_ID, String.class, TextField.class);
 			CheckBox viaLimsField = addCustomField(PathogenTestDto.VIA_LIMS, Boolean.class, CheckBox.class);
 
-			FieldHelper.setVisibleWhen(includeTestField, Arrays.asList(reportDateField, viaLimsField), Collections.singletonList(true), true);
+			FieldHelper.setVisibleWhen(
+				includeTestField,
+				Arrays.asList(reportDateField, externalIdField, externalOrderIdField, viaLimsField),
+				Collections.singletonList(true),
+				true);
 		}
 		ComboBox testTypeField = addCustomField(PathogenTestDto.TEST_TYPE, PathogenTestType.class, ComboBox.class);
 		ComboBox pcrTestSpecification = addCustomField(PathogenTestDto.PCR_TEST_SPECIFICATION, PCRTestSpecification.class, ComboBox.class);
@@ -239,6 +246,12 @@ public class SampleCreateForm extends AbstractSampleForm {
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			final DateField reportDateField = getField(PathogenTestDto.REPORT_DATE);
 			reportDateField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.REPORT_DATE));
+
+			final TextField externalIdField = getField(PathogenTestDto.EXTERNAL_ID);
+			externalIdField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.EXTERNAL_ID));
+
+			final TextField externalOrderIdField = getField(PathogenTestDto.EXTERNAL_ORDER_ID);
+			externalOrderIdField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.EXTERNAL_ORDER_ID));
 
 			final CheckBox viaLimsField = getField(PathogenTestDto.VIA_LIMS);
 			viaLimsField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.VIA_LIMS));

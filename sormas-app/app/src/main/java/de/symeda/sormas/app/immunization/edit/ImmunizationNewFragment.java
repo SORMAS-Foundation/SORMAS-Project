@@ -15,12 +15,12 @@
 
 package de.symeda.sormas.app.immunization.edit;
 
-import android.view.View;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+
+import android.view.View;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -185,8 +185,10 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		contentBinding.immunizationReportDate.initializeDateField(getFragmentManager());
 		contentBinding.immunizationStartDate.initializeDateField(getFragmentManager());
 		contentBinding.immunizationEndDate.initializeDateField(getFragmentManager());
+		ValidationHelper.initDateIntervalValidator(contentBinding.immunizationStartDate, contentBinding.immunizationEndDate);
 		contentBinding.immunizationValidFrom.initializeDateField(getFragmentManager());
 		contentBinding.immunizationValidUntil.initializeDateField(getFragmentManager());
+		ValidationHelper.initDateIntervalValidator(contentBinding.immunizationValidFrom, contentBinding.immunizationValidUntil);
 
 		ValidationHelper
 			.initIntegerValidator(contentBinding.immunizationNumberOfDoses, I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10);

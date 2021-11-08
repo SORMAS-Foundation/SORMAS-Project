@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -201,6 +202,43 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testGetIndexListByName() {
+		final RDCFEntities rdcf = creator.createRDCFEntities();
+		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		user.setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
+		user.setLimitedDisease(Disease.EVD);
+		getUserFacade().saveUser(user);
+		loginWith(user);
+
+		final PersonDto person1 = creator.createPerson("James", "Smith", Sex.MALE, 1920, 1, 1);
+		creator.createCase(
+				user.toReference(),
+				person1.toReference(),
+				Disease.EVD,
+				CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING,
+				new Date(),
+				rdcf);
+		person1.setPresentCondition(PresentCondition.DEAD);
+		final PersonDto person2 = creator.createPerson("Maria", "Garcia", Sex.FEMALE, 1920, 1, 1);
+		creator.createCase(
+				user.toReference(),
+				person2.toReference(),
+				Disease.EVD,
+				CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING,
+				new Date(),
+				rdcf);
+
+		getPersonFacade().savePerson(person1);
+
+		PersonCriteria criteria = new PersonCriteria();
+		criteria.setNameAddressPhoneEmailLike("James");
+		assertEquals(1, getPersonFacade().getIndexList(criteria, null, null, null).size());
+		assertEquals(2, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
+	}
+
+	@Test
 	public void testGetIndexListPersonNotConsideredIfAssociatedEntitiesDeleted() throws ExternalSurveillanceToolException {
 		final RDCFEntities rdcf = creator.createRDCFEntities();
 		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
@@ -256,7 +294,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person2 = creator.createPerson("James", "Smith", Sex.MALE, 1979, 5, 12);
 		PersonDto person3 = creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 5);
 		PersonDto person4 = creator.createPerson("Maria", "Garcia", Sex.FEMALE, 1984, 12, 2);
-		PersonDto person5 = creator.createPerson("Maria", "Garcia", null, 1984, 7, 12);
+		PersonDto person5 = creator.createPerson("Maria", "Garcia", Sex.UNKNOWN, 1984, 7, 12);
 		PersonDto person6 = creator.createPerson("Maria", "Garcia", Sex.FEMALE, 1984, null, null);
 		PersonDto person7 = creator.createPerson("James", "Smith", Sex.MALE, null, null, null);
 
@@ -610,6 +648,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person = new PersonDto();
 		person.setFirstName("Fname");
 		person.setLastName("Lname");
+		person.setSex(Sex.UNKNOWN);
 		person.setAddress(new LocationDto());
 		person.setAddresses(Collections.singletonList(new LocationDto()));
 

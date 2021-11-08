@@ -82,7 +82,10 @@ public class SamplesDirectorySteps implements En {
               SEARCH_RESULT_SAMPLE, maximumNumberOfRows);
           Thread.sleep(2000); // reset filter acts chaotic, to be modified in the future
           webDriverHelpers.fillAndSubmitInWebElement(
-              SAMPLE_SEARCH_INPUT, apiState.getLastCreatedPerson().getFirstName());
+              SAMPLE_SEARCH_INPUT,
+              apiState.getLastCreatedPerson().getFirstName()
+                  + " "
+                  + apiState.getLastCreatedPerson().getLastName());
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
           webDriverHelpers.waitUntilNumberOfElementsIsExactlyOrLess(
               SEARCH_RESULT_SAMPLE, apiState.getCreatedSamples().size());
@@ -125,7 +128,7 @@ public class SamplesDirectorySteps implements En {
                       webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
                       webDriverHelpers.waitUntilAListOfElementsHasText(
                           FINAL_LABORATORY_RESULT, aSpecimen.getCondition());
-                      assertHelpers.assertWithPoll15Second(
+                      assertHelpers.assertWithPoll20Second(
                           () ->
                               Truth.assertThat(
                                       apiState.getCreatedSamples().stream()
@@ -151,7 +154,7 @@ public class SamplesDirectorySteps implements En {
                       webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
                       webDriverHelpers.waitUntilAListOfElementsHasText(
                           FINAL_LABORATORY_RESULT, caption.getCaptionEnglish());
-                      assertHelpers.assertWithPoll15Second(
+                      assertHelpers.assertWithPoll20Second(
                           () ->
                               Truth.assertThat(
                                       apiState.getCreatedSamples().stream()
@@ -178,7 +181,7 @@ public class SamplesDirectorySteps implements En {
     Then(
         "I check that number of displayed sample results is {int}",
         (Integer number) ->
-            assertHelpers.assertWithPoll15Second(
+            assertHelpers.assertWithPoll20Second(
                 () ->
                     Truth.assertThat(webDriverHelpers.getNumberOfElements(SAMPLE_GRID_RESULTS_ROWS))
                         .isEqualTo(number)));

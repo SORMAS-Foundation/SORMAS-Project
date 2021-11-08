@@ -21,7 +21,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
 @Stateless
 @LocalBean
-public class AreaService extends AbstractInfrastructureAdoService<Area> {
+public class AreaService extends AbstractInfrastructureAdoService<Area, AreaCriteria> {
 
 	public AreaService() {
 		super(Area.class);
@@ -46,6 +46,7 @@ public class AreaService extends AbstractInfrastructureAdoService<Area> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	@Override
 	public Predicate buildCriteriaFilter(AreaCriteria criteria, CriteriaBuilder cb, Root<Area> areaRoot) {
 		Predicate filter = null;
 		if (StringUtils.isNotBlank(criteria.getTextFilter())) {

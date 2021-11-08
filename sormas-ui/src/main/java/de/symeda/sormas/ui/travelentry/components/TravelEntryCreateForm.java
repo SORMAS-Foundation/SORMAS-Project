@@ -14,7 +14,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -44,7 +43,6 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -72,9 +70,9 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 	private static final String HTML_LAYOUT = fluidRowLocs(TravelEntryDto.REPORT_DATE, TravelEntryDto.EXTERNAL_ID)
 		+ fluidRow(
 		fluidColumnLoc(6, 0, TravelEntryDto.DISEASE),
-		fluidColumnLoc(6, 0, TravelEntryDto.DISEASE_DETAILS),
-		fluidColumnLoc(6, 0, TravelEntryDto.DISEASE_VARIANT)) +
-		fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
+		fluidColumnLoc(6, 0, TravelEntryDto.DISEASE_DETAILS)) 
+		+ fluidRowLocs(TravelEntryDto.DISEASE_VARIANT, TravelEntryDto.DISEASE_VARIANT_DETAILS)
+		+ fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
 		+ fluidRowLocs(TravelEntryDto.RESPONSIBLE_REGION, TravelEntryDto.RESPONSIBLE_DISTRICT, TravelEntryDto.RESPONSIBLE_COMMUNITY)
 		+ fluidRowLocs(DIFFERENT_POINT_OF_ENTRY_JURISDICTION)
 		+ fluidRowLocs(POINT_OF_ENTRY_HEADING_LOC)
@@ -85,7 +83,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 		fluidRowLocs(PersonDto.SEX))
 		+ fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
-		+ fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE)
+		+ fluidRowLocs(PersonDto.PRESENT_CONDITION, "")
 		+ fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS);
 	//@formatter:on
 
@@ -120,6 +118,8 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		diseaseVariantField.setNullSelectionAllowed(true);
 		diseaseVariantField.setVisible(false);
 		addField(TravelEntryDto.DISEASE_DETAILS, TextField.class);
+		TextField diseaseVariantDetailsField = addField(TravelEntryDto.DISEASE_VARIANT_DETAILS, TextField.class);
+		diseaseVariantDetailsField.setVisible(false);
 
 		Label jurisdictionHeadingLabel = new Label(I18nProperties.getString(Strings.headingResponsibleJurisdiction));
 		jurisdictionHeadingLabel.addStyleName(H3);
@@ -205,12 +205,6 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		sex.setCaption(I18nProperties.getCaption(Captions.Person_sex));
 		ComboBox presentCondition = addCustomField(PersonDto.PRESENT_CONDITION, PresentCondition.class, ComboBox.class);
 		presentCondition.setCaption(I18nProperties.getCaption(Captions.Person_presentCondition));
-
-		addCustomField(
-			SymptomsDto.ONSET_DATE,
-			Date.class,
-			DateField.class,
-			I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
 
 		TextField phone = addCustomField(PersonDto.PHONE, String.class, TextField.class);
 		phone.setCaption(I18nProperties.getCaption(Captions.Person_phone));
@@ -301,6 +295,9 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 			diseaseVariantField
 				.setVisible(disease != null && isVisibleAllowed(TravelEntryDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
 		});
+		diseaseVariantField.addValueChangeListener(
+			e -> diseaseVariantDetailsField
+				.setVisible(((DiseaseVariant) e.getProperty().getValue()).matchPropertyValue(DiseaseVariant.HAS_DETAILS, true)));
 	}
 
 	public PersonDto getPerson() {

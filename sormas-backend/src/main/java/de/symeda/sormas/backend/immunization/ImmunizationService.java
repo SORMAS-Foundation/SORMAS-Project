@@ -37,6 +37,8 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
@@ -44,6 +46,7 @@ import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
@@ -51,7 +54,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.immunization.joins.ImmunizationJoins;
-import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryDtoTransformer;
+import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
@@ -62,7 +65,6 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.LastVaccinationDate;
 import de.symeda.sormas.backend.vaccination.Vaccination;
-import org.apache.commons.collections.CollectionUtils;
 
 @Stateless
 @LocalBean
@@ -105,7 +107,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		cq.distinct(true);
 
 		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
-			.setResultTransformer(new ImmunizationListEntryDtoTransformer())
+			.setResultTransformer(new ImmunizationListEntryDtoResultTransformer())
 			.getResultList();
 	}
 
@@ -318,9 +320,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	}
 
 	public void updateImmunizationStatusBasedOnVaccinations(Immunization immunization) {
-		ImmunizationManagementStatus immunizationManagementStatus = immunization.getImmunizationManagementStatus();
-		if (immunizationManagementStatus == ImmunizationManagementStatus.SCHEDULED
-			|| immunizationManagementStatus == ImmunizationManagementStatus.ONGOING) {
+		ImmunizationStatus immunizationStatus = immunization.getImmunizationStatus();
+		if (immunizationStatus != ImmunizationStatus.NOT_ACQUIRED && immunizationStatus != ImmunizationStatus.EXPIRED) {
 			final Integer numberOfDoses = immunization.getNumberOfDoses();
 			final int vaccinationCount = immunization.getVaccinations().size();
 
@@ -369,6 +370,18 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		cq.where(filter);
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public void unlinkRelatedCase(Case caze) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Immunization> cu = cb.createCriteriaUpdate(Immunization.class);
+		Root<Immunization> root = cu.from(Immunization.class);
+
+		cu.set(Immunization.RELATED_CASE, null);
+
+		cu.where(cb.equal(root.get(Immunization.RELATED_CASE), caze));
+
+		em.createQuery(cu).executeUpdate();
 	}
 
 	public List<Immunization> getByPersonUuids(List<String> personUuids) {

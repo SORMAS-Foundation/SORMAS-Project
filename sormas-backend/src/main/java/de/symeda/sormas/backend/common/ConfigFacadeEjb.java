@@ -131,6 +131,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String CENTRAL_ETCD_CLIENT_NAME = "central.etcd.clientName";
 	private static final String CENTRAL_ETCD_CLIENT_PASSWORD = "central.etcd.clientPassword";
 	private static final String CENTRAL_ETCD_CA_PATH = "central.etcd.caPath";
+	private static final String CENTRAL_LOCATION_SYNC= "central.location.sync";
 
 	public static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
 	public static final String SORMAS2SORMAS_ID = "sormas2sormas.id";
@@ -529,9 +530,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	private Map<String, Boolean> getS2SIgnoreProperties() {
-		return props.stringPropertyNames().stream()
-				.filter(property -> property.startsWith(SORMAS2SORMAS_IGNORE_PROPERTY_PREFIX))
-				.collect(Collectors.toMap(property -> property, property -> getBoolean(property, true)));
+		return props.stringPropertyNames()
+			.stream()
+			.filter(property -> property.startsWith(SORMAS2SORMAS_IGNORE_PROPERTY_PREFIX))
+			.collect(Collectors.toMap(property -> property, property -> getBoolean(property, true)));
 
 	}
 
@@ -662,6 +664,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	public String getCentralEtcdCaPath() {
 		return getProperty(CENTRAL_ETCD_CA_PATH, null);
+	}
+
+	public boolean isCentralLocationSync(){
+		return getBoolean(CENTRAL_LOCATION_SYNC, false);
 	}
 
 	@Override

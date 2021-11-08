@@ -26,6 +26,7 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -110,16 +111,22 @@ public class SormasToSormasController {
 	}
 
 	public void rejectShareRequest(SormasToSormasShareRequestIndexDto request, Runnable callback) {
+
+		TextArea commentField = new TextArea(I18nProperties.getCaption(Captions.SormasToSormasOptions_comment));
+		commentField.setWidthFull();
+		VerticalLayout popupContent =
+			new VerticalLayout(new Label(I18nProperties.getString(Strings.confirmationRejectSormasToSormasShareRequest)), commentField);
+
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingRejectSormasToSormasShareRequest),
-			new Label(I18nProperties.getString(Strings.confirmationRejectSormasToSormasShareRequest)),
+			popupContent,
 			I18nProperties.getString(Strings.yes),
 			I18nProperties.getString(Strings.no),
 			640,
 			confirmed -> {
 				if (confirmed) {
 					handleSormasToSormasRequest(() -> {
-						FacadeProvider.getSormasToSormasFacade().rejectShareRequest(request.getDataType(), request.getUuid());
+						FacadeProvider.getSormasToSormasFacade().rejectRequest(request.getDataType(), request.getUuid(), commentField.getValue());
 					}, callback);
 				}
 			});

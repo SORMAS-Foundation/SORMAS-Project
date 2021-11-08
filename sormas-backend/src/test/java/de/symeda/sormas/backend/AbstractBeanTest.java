@@ -23,12 +23,6 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
-import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
-import de.symeda.sormas.backend.customizableenum.CustomizableEnumValueService;
-import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessorHelper;
-import de.symeda.sormas.backend.sormastosormas.entities.caze.ReceivedCaseProcessor;
-import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -180,10 +174,12 @@ import de.symeda.sormas.backend.share.ExternalShareInfoFacadeEjb.ExternalShareIn
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.entities.labmessage.SormasToSormasLabMessageFacadeEjb.SormasToSormasLabMessageFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
@@ -602,8 +598,8 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(ShareDataBuilderHelper.class);
 	}
 
-	public ReceivedDataProcessorHelper getReceivedDataProcessorHelper() {
-		return getBean(ReceivedDataProcessorHelper.class);
+	public Sormas2SormasDataValidator getSormas2SormasDataValidator() {
+		return getBean(Sormas2SormasDataValidator.class);
 	}
 
 	protected UserDto useSurveillanceOfficerLogin(TestDataCreator.RDCF rdcf) {

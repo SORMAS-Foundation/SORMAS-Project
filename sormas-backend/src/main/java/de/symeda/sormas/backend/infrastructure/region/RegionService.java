@@ -41,7 +41,7 @@ import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryF
 
 @Stateless
 @LocalBean
-public class RegionService extends AbstractInfrastructureAdoService<Region> {
+public class RegionService extends AbstractInfrastructureAdoService<Region, RegionCriteria> {
 
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
@@ -77,6 +77,7 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 		return null;
 	}
 
+	@Override
 	public Predicate buildCriteriaFilter(RegionCriteria criteria, CriteriaBuilder cb, Root<Region> from) {
 
 		Predicate filter = null;

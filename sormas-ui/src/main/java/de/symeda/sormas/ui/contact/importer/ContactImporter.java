@@ -139,8 +139,7 @@ public class ContactImporter extends DataImporter {
 
 		// try to assign the contact to an existing case
 		if (caze == null && newContactTemp.getCaseIdExternalSystem() != null) {
-			CaseDataDto existingCase =
-				FacadeProvider.getCaseFacade().getCaseDataByUuid(newContactTemp.getCaseIdExternalSystem().trim().toUpperCase());
+			CaseDataDto existingCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(newContactTemp.getCaseIdExternalSystem().trim());
 			if (existingCase != null) {
 				newContactTemp.assignCase(existingCase);
 				newContactTemp.setCaseIdExternalSystem(null);
@@ -203,7 +202,8 @@ public class ContactImporter extends DataImporter {
 				if (ImportSimilarityResultOption.SKIP.equals(resultOption)) {
 					return ImportLineResult.SKIPPED;
 				} else {
-					final PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
+					boolean skipPersonValidation = ImportSimilarityResultOption.PICK.equals(resultOption);
+					final PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson, skipPersonValidation);
 					newContactTemp.setPerson(savedPerson.toReference());
 
 					ContactDto newContact = newContactTemp;

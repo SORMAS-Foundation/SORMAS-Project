@@ -29,6 +29,8 @@ public enum TestDataUser {
       "SurvOff", "SurvOff38118", "Surveillance Officer", "Q2IYCN-TNYTOY-4OAYCA-DW662MTA"),
   LABORATORY_OFFICER(
       "LabOff", "LabOff38118", "Laboratory Officer", "UAAXB6-G6KRR2-YD7IDA-GJV2SM3A"),
+  POINT_OF_ENTRY_SUPERVISOR(
+      "PoeSup", "PoeSup38118", "Point of Entry Supervisor", "SJDRMA-6MGKJ4-I2GYDU-U3HCSE3M"),
   ADMIN_USER("automation_admin", "DbXC5Yimro9m", "Admin User", "W5QCZW-XLFVFT-E5MK66-O3SUKE7E"),
   REST_AUTOMATION("RestAuto", "umpQyGMSq4zy", "Rest AUTOMATION", "QLW4AN-TGWLRA-3UQVEM-WCDFCIVM");
 

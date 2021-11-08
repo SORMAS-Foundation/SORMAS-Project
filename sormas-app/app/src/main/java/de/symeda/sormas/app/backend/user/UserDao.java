@@ -76,6 +76,32 @@ public class UserDao extends AbstractAdoDao<User> {
 		}
 	}
 
+	public List<User> getByDistrictAndRole(District district, UserRole role) {
+		try {
+			QueryBuilder builder = queryBuilder();
+			Where where = builder.where();
+			where.and(where.eq(User.DISTRICT + "_id", district.getId()), createRoleFilter(role, where));
+
+			return (List<User>) builder.query();
+		} catch (SQLException e) {
+			Log.e(getTableName(), "Could not perform getByDistrictAndRole");
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<User> getByDistrictAndRole(District district, UserRole role, String orderBy) {
+		try {
+			QueryBuilder builder = queryBuilder();
+			Where where = builder.where();
+			where.and(where.eq(User.DISTRICT + "_id", district.getId()), createRoleFilter(role, where));
+
+			return (List<User>) builder.orderBy(orderBy, true).query();
+		} catch (SQLException e) {
+			Log.e(getTableName(), "Could not perform getByDistrictAndRole");
+			throw new RuntimeException(e);
+		}
+	}
+
 	public List<User> getAllInJurisdiction() {
 		try {
 			QueryBuilder builder = queryBuilder();
@@ -103,7 +129,7 @@ public class UserDao extends AbstractAdoDao<User> {
 				where.and(jurisdictionFilter, where.eq(User.COMMUNITY + "_id", currentUser.getCommunity()));
 			} else if (currentUser.getDistrict() != null) {
 				where.and(jurisdictionFilter, where.eq(User.DISTRICT + "_id", currentUser.getDistrict()));
-			}else if (currentUser.getRegion() != null) {
+			} else if (currentUser.getRegion() != null) {
 				where.and(jurisdictionFilter, where.eq(User.REGION + "_id", currentUser.getRegion()));
 			}
 
@@ -116,19 +142,6 @@ public class UserDao extends AbstractAdoDao<User> {
 			return builder.query();
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform getAllInJurisdiction");
-			throw new RuntimeException(e);
-		}
-	}
-
-	public List<User> getByDistrictAndRole(District district, UserRole role, String orderBy) {
-		try {
-			QueryBuilder builder = queryBuilder();
-			Where where = builder.where();
-			where.and(where.eq(User.DISTRICT + "_id", district.getId()), createRoleFilter(role, where));
-
-			return (List<User>) builder.orderBy(orderBy, true).query();
-		} catch (SQLException e) {
-			Log.e(getTableName(), "Could not perform getByDistrictAndRole");
 			throw new RuntimeException(e);
 		}
 	}

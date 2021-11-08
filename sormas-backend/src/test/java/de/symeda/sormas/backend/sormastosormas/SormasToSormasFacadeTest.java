@@ -43,6 +43,7 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -109,14 +110,15 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		return source;
 	}
 
-	protected PersonDto createPersonDto(MappableRdcf rdcf) {
+	protected PersonDto createPersonDto(TestDataCreator.RDCF rdcf) {
 		PersonDto person = PersonDto.build();
 		person.setFirstName("John");
 		person.setLastName("Smith");
+		person.setSex(Sex.MALE);
 
-		person.getAddress().setDistrict(rdcf.remoteRdcf.district);
-		person.getAddress().setRegion(rdcf.remoteRdcf.region);
-		person.getAddress().setCommunity(rdcf.remoteRdcf.community);
+		person.getAddress().setDistrict(rdcf.district);
+		person.getAddress().setRegion(rdcf.region);
+		person.getAddress().setCommunity(rdcf.community);
 
 		return person;
 	}
@@ -151,10 +153,7 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		return new SormasToSormasSampleDto(sample, Collections.singletonList(pathogenTest), Collections.singletonList(additionalTest));
 	}
 
-	protected SormasToSormasShareInfo createShareInfo(
-		String serverId,
-		boolean ownershipHandedOver,
-		Consumer<SormasToSormasShareInfo> setTarget) {
+	protected SormasToSormasShareInfo createShareInfo(String serverId, boolean ownershipHandedOver, Consumer<SormasToSormasShareInfo> setTarget) {
 
 		SormasToSormasShareInfo shareInfo = new SormasToSormasShareInfo();
 
@@ -298,7 +297,7 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		}
 
 		MappableRdcf rdcf = new MappableRdcf();
-		rdcf.remoteRdcf = new TestDataCreator.RDCF(
+		rdcf.invalidRemoteRdcf = new TestDataCreator.RDCF(
 			new RegionReferenceDto(DataHelper.createUuid(), withExternalId ? null : regionName, regionExternalId),
 			new DistrictReferenceDto(DataHelper.createUuid(), withExternalId ? null : districtName, districtExternalId),
 			new CommunityReferenceDto(DataHelper.createUuid(), withExternalId ? null : communityName, communityExternalId),
@@ -315,19 +314,23 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		Facility facility = creator.createFacility(facilityName, FacilityType.HOSPITAL, region, district, community, facilityExternalId);
 		PointOfEntry pointOfEntry = creator.createPointOfEntry(pointOfEntryName, region, district, pointOfEntryExternalId);
 
-		rdcf.localRdcf = new TestDataCreator.RDCF(
+		rdcf.invalidLocalRdcf = new TestDataCreator.RDCF(
 			new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalID()),
 			new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalID()),
 			new CommunityReferenceDto(community.getUuid(), community.getName(), community.getExternalID()),
 			new FacilityReferenceDto(facility.getUuid(), facility.getName(), facility.getExternalID()),
 			new PointOfEntryReferenceDto(pointOfEntry.getUuid(), pointOfEntry.getName(), PointOfEntryType.AIRPORT, pointOfEntry.getExternalID()));
-
+		rdcf.centralRdcf = rdcf.invalidLocalRdcf;
 		return rdcf;
 	}
 
 	public static class MappableRdcf {
+		// IMPORTANT: This is used to simulate a setup where central infra sync is enabled and all instances are
+		// guaranteed to have the same infra with the same global uuids.
+		public TestDataCreator.RDCF centralRdcf;
 
-		public TestDataCreator.RDCF remoteRdcf;
-		public TestDataCreator.RDCF localRdcf;
+		// These two will only be used in the future to simulate and test for sync errors and recovery.
+		public TestDataCreator.RDCF invalidRemoteRdcf;
+		public TestDataCreator.RDCF invalidLocalRdcf;
 	}
 }

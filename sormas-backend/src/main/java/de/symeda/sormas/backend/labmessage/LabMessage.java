@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.labmessage;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 import java.util.List;
@@ -11,19 +11,17 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import de.symeda.sormas.api.Disease;
+
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.sample.PathogenTest;
 
 @Entity(name = "labmessage")
 @Audited
@@ -128,7 +126,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.sampleReceivedDate = sampleReceivedDate;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getLabSampleId() {
 		return labSampleId;
 	}
@@ -146,7 +144,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.sampleMaterial = sampleMaterial;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSampleMaterialText() {
 		return sampleMaterialText;
 	}
@@ -164,7 +162,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.specimenCondition = specimenCondition;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getLabName() {
 		return labName;
 	}
@@ -173,7 +171,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.labName = labName;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getLabExternalId() {
 		return labExternalId;
 	}
@@ -182,7 +180,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.labExternalId = labExternalId;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getLabPostalCode() {
 		return labPostalCode;
 	}
@@ -191,7 +189,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.labPostalCode = testLabPostalCode;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getLabCity() {
 		return labCity;
 	}
@@ -200,7 +198,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.labCity = labCity;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getPersonFirstName() {
 		return personFirstName;
 	}
@@ -209,7 +207,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.personFirstName = personFirstName;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getPersonLastName() {
 		return personLastName;
 	}
@@ -254,7 +252,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.personBirthDateYYYY = personBirthDateYYYY;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getPersonPostalCode() {
 		return personPostalCode;
 	}
@@ -263,7 +261,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.personPostalCode = personPostalCode;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getPersonCity() {
 		return personCity;
 	}
@@ -272,7 +270,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.personCity = personCity;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getPersonStreet() {
 		return personStreet;
 	}
@@ -281,7 +279,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.personStreet = personStreet;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getPersonHouseNumber() {
 		return personHouseNumber;
 	}
@@ -290,7 +288,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.personHouseNumber = personHouseNumber;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getPersonPhone() {
 		return personPhone;
 	}
@@ -299,7 +297,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.personPhone = personPhone;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getPersonEmail() {
 		return personEmail;
 	}
@@ -336,7 +334,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.testReports = testReports;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getReportId() {
 		return reportId;
 	}

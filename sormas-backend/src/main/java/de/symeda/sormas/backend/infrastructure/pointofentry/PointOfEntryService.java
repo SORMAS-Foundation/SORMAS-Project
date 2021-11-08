@@ -30,7 +30,7 @@ import de.symeda.sormas.backend.infrastructure.region.RegionService;
 
 @Stateless
 @LocalBean
-public class PointOfEntryService extends AbstractInfrastructureAdoService<PointOfEntry> {
+public class PointOfEntryService extends AbstractInfrastructureAdoService<PointOfEntry, PointOfEntryCriteria> {
 
 	@EJB
 	private RegionService regionService;
@@ -89,6 +89,7 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 		return getByExternalId(externalId, PointOfEntry.EXTERNAL_ID, includeArchivedEntities);
 	}
 
+	@Override
 	public Predicate buildCriteriaFilter(PointOfEntryCriteria criteria, CriteriaBuilder cb, Root<PointOfEntry> pointOfEntry) {
 
 		Predicate filter = null;

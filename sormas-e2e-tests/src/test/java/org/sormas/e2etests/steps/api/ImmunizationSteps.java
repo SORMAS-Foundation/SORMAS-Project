@@ -64,7 +64,6 @@ public class ImmunizationSteps implements En {
             Person personToImmunize = Person.builder().uuid(person.getUuid()).build();
             int numberOfImmunizations = random.nextInt(6);
             List<Immunization> immunizationList = new ArrayList<>();
-            log.info("Creating " + numberOfImmunizations + " immunizations...");
             for (int i = 0; i < numberOfImmunizations; i++) {
               immunizationList.add(
                   immunizationApiService.buildGeneratedImmunizationForPerson(personToImmunize));

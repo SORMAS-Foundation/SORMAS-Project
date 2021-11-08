@@ -18,15 +18,13 @@ package de.symeda.sormas.backend.infrastructure.continent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -37,7 +35,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.continent.ContinentCriteria;
@@ -48,30 +45,34 @@ import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "ContinentFacade")
-public class ContinentFacadeEjb implements ContinentFacade {
+public class ContinentFacadeEjb
+	extends AbstractInfrastructureEjb<Continent, ContinentDto, ContinentIndexDto, ContinentReferenceDto, ContinentService, ContinentCriteria>
+	implements ContinentFacade {
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
-
-	@EJB
-	private ContinentService continentService;
 	@EJB
 	private CountryService countryService;
 	@EJB
 	private SubcontinentService subcontinentService;
-	@EJB
-	private FeatureConfigurationFacadeEjbLocal featureConfiguration;
+
+	public ContinentFacadeEjb() {
+	}
+
+	@Inject
+	protected ContinentFacadeEjb(ContinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
+		super(Continent.class, ContinentDto.class, service, featureConfiguration, userService);
+	}
 
 	public static ContinentReferenceDto toReferenceDto(Continent entity) {
 		if (entity == null) {
@@ -89,15 +90,12 @@ public class ContinentFacadeEjb implements ContinentFacade {
 
 	@Override
 	public List<ContinentReferenceDto> getByDefaultName(String name, boolean includeArchivedEntities) {
-		return continentService.getByDefaultName(name, includeArchivedEntities)
-			.stream()
-			.map(ContinentFacadeEjb::toReferenceDto)
-			.collect(Collectors.toList());
+		return service.getByDefaultName(name, includeArchivedEntities).stream().map(ContinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public boolean isUsedInOtherInfrastructureData(Collection<String> continentUuids) {
-		return continentService.isUsedInInfrastructureData(continentUuids, Subcontinent.CONTINENT, Subcontinent.class);
+		return service.isUsedInInfrastructureData(continentUuids, Subcontinent.CONTINENT, Subcontinent.class);
 	}
 
 	@Override
@@ -120,23 +118,18 @@ public class ContinentFacadeEjb implements ContinentFacade {
 	}
 
 	@Override
-	public ContinentDto getByUuid(String uuid) {
-		return toDto(continentService.getByUuid(uuid));
-	}
-
-	@Override
 	public List<ContinentIndexDto> getIndexList(ContinentCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Continent> cq = cb.createQuery(Continent.class);
 		Root<Continent> continent = cq.from(Continent.class);
 
-		Predicate filter = continentService.buildCriteriaFilter(criteria, cb, continent);
+		Predicate filter = service.buildCriteriaFilter(criteria, cb, continent);
 
 		if (filter != null) {
 			cq.where(filter).distinct(true);
 		}
 
-		if (sortProperties != null && sortProperties.size() > 0) {
+		if (CollectionUtils.isNotEmpty(sortProperties)) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
@@ -163,49 +156,8 @@ public class ContinentFacadeEjb implements ContinentFacade {
 	}
 
 	@Override
-	public void archive(String uuid) {
-		Continent continent = continentService.getByUuid(uuid);
-		if (continent != null) {
-			continent.setArchived(true);
-			continentService.ensurePersisted(continent);
-		}
-	}
-
-	@Override
-	public void dearchive(String uuid) {
-
-		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
-		}
-
-		Continent continent = continentService.getByUuid(uuid);
-		if (continent != null) {
-			continent.setArchived(false);
-			continentService.ensurePersisted(continent);
-		}
-	}
-
-	@Override
-	public List<ContinentDto> getAllAfter(Date date) {
-		return continentService.getAll((cb, root) -> continentService.createChangeDateFilter(cb, root, date))
-			.stream()
-			.map(this::toDto)
-			.collect(Collectors.toList());
-	}
-
-	@Override
-	public List<ContinentDto> getByUuids(List<String> uuids) {
-		return continentService.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<String> getAllUuids() {
-		return continentService.getAllUuids();
-	}
-
-	@Override
 	public List<ContinentReferenceDto> getAllActiveAsReference() {
-		return continentService.getAllActive(Continent.DEFAULT_NAME, true)
+		return service.getAllActive(Continent.DEFAULT_NAME, true)
 			.stream()
 			.map(ContinentFacadeEjb::toReferenceDto)
 			.sorted(Comparator.comparing(ContinentReferenceDto::getCaption))
@@ -213,43 +165,21 @@ public class ContinentFacadeEjb implements ContinentFacade {
 	}
 
 	@Override
-	public ContinentDto save(@Valid ContinentDto dto) {
-		return save(dto, false);
+	public ContinentDto save(ContinentDto dtoToSave, boolean allowMerge) {
+		return save(dtoToSave, allowMerge, Validations.importContinentAlreadyExists);
 	}
 
 	@Override
-	public ContinentDto save(@Valid ContinentDto dto, boolean allowMerge) {
-
-		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
-		}
-
-		Continent continent = continentService.getByUuid(dto.getUuid());
-
-		if (continent == null) {
-			List<Continent> duplicates = continentService.getByDefaultName(dto.getDefaultName(), true);
-			if (!duplicates.isEmpty()) {
-				if (allowMerge) {
-					continent = duplicates.get(0);
-					ContinentDto dtoToMerge = getByUuid(continent.getUuid());
-					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
-				} else {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importContinentAlreadyExists));
-				}
-			}
-		}
-
-		continent = fillOrBuildEntity(dto, continent, true);
-		continentService.ensurePersisted(continent);
-
-		return toDto(continent);
+	protected void selectDtoFields(CriteriaQuery<ContinentDto> cq, Root<Continent> root) {
+		// we do not select DTO fields in getAllAfter query
 	}
 
 	@Override
-	public long count(ContinentCriteria criteria) {
-		return continentService.count((cb, root) -> continentService.buildCriteriaFilter(criteria, cb, root));
+	protected List<Continent> findDuplicates(ContinentDto dto) {
+		return service.getByDefaultName(dto.getDefaultName(), true);
 	}
 
+	@Override
 	public ContinentDto toDto(Continent entity) {
 		if (entity == null) {
 			return null;
@@ -263,6 +193,11 @@ public class ContinentFacadeEjb implements ContinentFacade {
 		dto.setUuid(entity.getUuid());
 
 		return dto;
+	}
+
+	@Override
+	public ContinentReferenceDto toRefDto(Continent continent) {
+		return toReferenceDto(continent);
 	}
 
 	public ContinentIndexDto toIndexDto(Continent entity) {
@@ -281,24 +216,23 @@ public class ContinentFacadeEjb implements ContinentFacade {
 		return dto;
 	}
 
+	@Override
 	public List<ContinentReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
-		return continentService.getByExternalId(externalId, includeArchived)
-			.stream()
-			.map(ContinentFacadeEjb::toReferenceDto)
-			.collect(Collectors.toList());
+		return service.getByExternalId(externalId, includeArchived).stream().map(ContinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
+	@Override
 	public List<ContinentReferenceDto> getReferencesByName(String name, boolean includeArchived) {
-		return continentService.getByDefaultName(name, includeArchived).stream().map(ContinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
+		return service.getByDefaultName(name, includeArchived).stream().map(ContinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
-	private Continent fillOrBuildEntity(@NotNull ContinentDto source, Continent target, boolean checkChangeDate) {
+	@Override
+	protected Continent fillOrBuildEntity(@NotNull ContinentDto source, Continent target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Continent::new, checkChangeDate);
 
 		target.setDefaultName(source.getDefaultName());
 		target.setArchived(source.isArchived());
 		target.setExternalId(source.getExternalId());
-
 		return target;
 	}
 
@@ -306,5 +240,15 @@ public class ContinentFacadeEjb implements ContinentFacade {
 	@Stateless
 	public static class ContinentFacadeEjbLocal extends ContinentFacadeEjb {
 
+		public ContinentFacadeEjbLocal() {
+		}
+
+		@Inject
+		protected ContinentFacadeEjbLocal(
+			ContinentService service,
+			FeatureConfigurationFacadeEjbLocal featureConfiguration,
+			UserService userService) {
+			super(service, featureConfiguration, userService);
+		}
 	}
 }

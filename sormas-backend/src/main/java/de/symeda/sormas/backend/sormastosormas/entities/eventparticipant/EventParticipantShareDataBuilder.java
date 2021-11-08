@@ -51,7 +51,10 @@ public class EventParticipantShareDataBuilder
 		eventParticipantDto.setSormasToSormasOriginInfo(null);
 		dataBuilderHelper.clearIgnoredProperties(eventParticipantDto.getPerson());
 
-		dataBuilderHelper.pseudonymiePerson(eventParticipantDto.getPerson(), requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+		dataBuilderHelper.pseudonymiePerson(
+			eventParticipantDto.getPerson(),
+			requestInfo.isPseudonymizedPersonalData(),
+			requestInfo.isPseudonymizedSensitiveData());
 
 		return new SormasToSormasEventParticipantDto(eventParticipantDto);
 	}

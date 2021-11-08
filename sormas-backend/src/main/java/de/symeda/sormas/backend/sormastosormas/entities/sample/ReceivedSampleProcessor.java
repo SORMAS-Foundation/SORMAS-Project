@@ -15,99 +15,85 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.sample;
 
-import java.util.List;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
+import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
-import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.sample.PathogenTest;
+import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
+import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
-import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessorHelper;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Stateless
 @LocalBean
-public class ReceivedSampleProcessor implements ReceivedDataProcessor<SampleDto, SormasToSormasSampleDto, Void, Sample> {
+public class ReceivedSampleProcessor
+	extends ReceivedDataProcessor<Sample, SampleDto, SormasToSormasSampleDto, PreviewNotImplementedDto, Sample, SampleService> {
 
 	@EJB
-	private ReceivedDataProcessorHelper dataProcessorHelper;
-	@EJB
-	private InfrastructureValidator infraValidator;
-	@EJB
-	private SampleService sampleService;
+	private Sormas2SormasDataValidator dataValidator;
+
+	public ReceivedSampleProcessor() {
+	}
+
+	@Inject
+	protected ReceivedSampleProcessor(SampleService service) {
+		super(service);
+	}
 
 	@Override
-	public ValidationErrors processReceivedData(SormasToSormasSampleDto sharedData, Sample existingData) {
-		SampleDto sample = sharedData.getEntity();
-
-		ValidationErrors uuidError = validateSharedUuid(sample.getUuid());
-		if (uuidError.hasError()) {
-			return uuidError;
+	public void handleReceivedData(SormasToSormasSampleDto sharedData, Sample existingData) {
+		Map<String, PathogenTestDto> existingPathogenTests;
+		if(existingData != null) {
+			existingPathogenTests = existingData.getPathogenTests().stream()
+					.filter(Objects::nonNull)
+					.collect(Collectors.toMap(PathogenTest::getUuid, PathogenTestFacadeEjb::toDto));
+		} else {
+			existingPathogenTests = Collections.emptyMap();
 		}
 
-		ValidationErrors validationErrors = new ValidationErrors();
+		sharedData.getPathogenTests().forEach(pathogenTest -> dataValidator.handleIgnoredProperties(pathogenTest, existingPathogenTests.get(pathogenTest.getUuid())));
+	}
 
-		dataProcessorHelper.updateReportingUser(sample, existingData);
+	@Override
+	public ValidationErrors processReceivedPreview(PreviewNotImplementedDto sharedPreview) {
+		throw new RuntimeException("Samples preview not yet implemented");
+	}
 
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-			infraValidator.validateInfrastructure(null, null, null, null, null, null, null, sample.getLab(), sample.getLabDetails(), null, null);
+	@Override
+	public ValidationErrors existsNotShared(String uuid) {
+		return existsNotShared(
+			uuid,
+			Sample.SORMAS_TO_SORMAS_ORIGIN_INFO,
+			Sample.SORMAS_TO_SORMAS_SHARES,
+			Captions.Sample,
+			Validations.sormasToSormasSampleExists);
+	}
 
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Sample_lab, validationErrors, (infrastructureData -> {
-			sample.setLab(infrastructureData.getFacility());
-			sample.setLabDetails(infrastructureData.getFacilityDetails());
-		}));
-
-		sharedData.getPathogenTests().forEach(pathogenTest -> {
-			DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> ptInfrastructureAndErrors =
-				infraValidator.validateInfrastructure(
-					null,
-					null,
-					null,
-					null,
-					null,
-					null,
-					FacilityType.LABORATORY,
-					pathogenTest.getLab(),
-					pathogenTest.getLabDetails(),
-					null,
-					null);
-
-			infraValidator.handleInfraStructure(ptInfrastructureAndErrors, Captions.PathogenTest_lab, validationErrors, (infrastructureData -> {
-				pathogenTest.setLab(infrastructureData.getFacility());
-				pathogenTest.setLabDetails(infrastructureData.getFacilityDetails());
-			}));
-		});
+	@Override
+	public ValidationErrors validate(SormasToSormasSampleDto sharedData, Sample existingData) {
+		ValidationErrors validationErrors = dataValidator.validateSample(existingData, sharedData.getEntity());
+		sharedData.getPathogenTests().forEach(pathogenTest -> dataValidator.validatePathogenTest(validationErrors, pathogenTest));
 
 		return validationErrors;
 	}
 
 	@Override
-	public ValidationErrors processReceivedPreview(Void sharedPreview) {
+	public ValidationErrors validatePreview(PreviewNotImplementedDto previewNotImplementedDto) {
 		throw new RuntimeException("Samples preview not yet implemented");
-	}
-
-	private ValidationErrors validateSharedUuid(String uuid) {
-		ValidationErrors errors = new ValidationErrors();
-
-		if (sampleService.exists(
-			(cb, sampleRoot, cq) -> cb.and(
-				cb.equal(sampleRoot.get(Sample.UUID), uuid),
-				cb.isNull(sampleRoot.get(Sample.SORMAS_TO_SORMAS_ORIGIN_INFO)),
-				cb.isEmpty(sampleRoot.get(Sample.SORMAS_TO_SORMAS_SHARES))))) {
-			errors.add(new ValidationErrorGroup(Captions.Sample), new ValidationErrorMessage(Validations.sormasToSormasSampleExists));
-		}
-
-		return errors;
 	}
 }

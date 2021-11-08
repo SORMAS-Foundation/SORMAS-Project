@@ -92,6 +92,7 @@ public class SormasToSormasShareInfoFacadeEjb implements SormasToSormasShareInfo
 		target.setPseudonymizedPersonalData(latestRequest.isPseudonymizedPersonalData());
 		target.setPseudonymizedSensitiveData(latestRequest.isPseudonymizedSensitiveData());
 		target.setComment(latestRequest.getComment());
+		target.setResponseComment(latestRequest.getResponseComment());
 
 		return target;
 	}

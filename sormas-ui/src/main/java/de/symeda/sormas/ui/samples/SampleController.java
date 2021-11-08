@@ -45,12 +45,16 @@ import com.vaadin.v7.data.Buffered.SourceException;
 import com.vaadin.v7.data.Validator.InvalidValueException;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -79,9 +83,9 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class SampleController {
 
@@ -101,40 +105,42 @@ public class SampleController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
-	public void create(CaseReferenceDto caseRef, Runnable callback) {
-		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef));
+	public void create(CaseReferenceDto caseRef, Disease disease, Runnable callback) {
+		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef), disease);
 	}
 
-	public void create(ContactReferenceDto contactRef, Runnable callback) {
-		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef));
+	public void create(ContactReferenceDto contactRef, Disease disease, Runnable callback) {
+		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef), disease);
 	}
 
-	public void create(EventParticipantReferenceDto eventParticipantRef, Runnable callback) {
-		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef));
+	public void create(EventParticipantReferenceDto eventParticipantRef, Disease disease, Runnable callback) {
+		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef), disease);
 	}
 
-	private void createSample(Runnable callback, SampleDto sampleDto) {
-		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, callback);
+	private void createSample(Runnable callback, SampleDto sampleDto, Disease disease) {
+		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, disease, callback);
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
 	}
 
 	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
 		SampleDto sampleDto,
+		Disease disease,
 		BiConsumer<SampleDto, PathogenTestDto> consumer) {
-		return getSampleCreateComponent(sampleDto, consumer, () -> {
+		return getSampleCreateComponent(sampleDto, disease, consumer, () -> {
 		});
 	}
 
-	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, Runnable callback) {
-		return getSampleCreateComponent(sampleDto, (savedSampleDto, savedPathogenTestDto) -> {
+	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, Disease disease, Runnable callback) {
+		return getSampleCreateComponent(sampleDto, disease, (savedSampleDto, savedPathogenTestDto) -> {
 		}, callback);
 	}
 
 	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
 		SampleDto sampleDto,
+		Disease disease,
 		BiConsumer<SampleDto, PathogenTestDto> consumer,
 		Runnable callback) {
-		final SampleCreateForm createForm = new SampleCreateForm();
+		final SampleCreateForm createForm = new SampleCreateForm(disease);
 		createForm.setValue(sampleDto);
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<>(
 			createForm,
@@ -151,9 +157,9 @@ public class SampleController {
 		return editView;
 	}
 
-	public void createReferral(SampleDto sample) {
+	public void createReferral(SampleDto sample, Disease disease) {
 
-		final SampleCreateForm createForm = new SampleCreateForm();
+		final SampleCreateForm createForm = new SampleCreateForm(disease);
 		final SampleDto referralSample = SampleDto.buildReferral(UserProvider.getCurrent().getUserReference(), sample);
 		createForm.setValue(referralSample);
 		final CommitDiscardWrapperComponent<SampleCreateForm> createView = new CommitDiscardWrapperComponent<>(
@@ -217,6 +223,16 @@ public class SampleController {
 				pathogenTest.setViaLims(viaLimsField.getValue());
 			}
 
+			TextField externalIdField = createForm.getField(PathogenTestDto.EXTERNAL_ID);
+			if (externalIdField != null) {
+				pathogenTest.setExternalId(externalIdField.getValue());
+			}
+
+			TextField externalOrderIdField = createForm.getField(PathogenTestDto.EXTERNAL_ORDER_ID);
+			if (externalOrderIdField != null) {
+				pathogenTest.setExternalOrderId(externalOrderIdField.getValue());
+			}
+
 			String cqValue = (String) createForm.getField(PathogenTestDto.CQ_VALUE).getValue();
 			if (cqValue != null && !StringUtils.isBlank(cqValue)) {
 				cqValue = cqValue.replaceAll(",", "."); // Replace , with . to make sure that the value can be parsed
@@ -245,9 +261,9 @@ public class SampleController {
 		}
 	}
 
-	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid, boolean isPseudonymized) {
+	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid, boolean isPseudonymized, Disease disease) {
 
-		SampleEditForm form = new SampleEditForm(isPseudonymized);
+		SampleEditForm form = new SampleEditForm(isPseudonymized, disease);
 		form.setWidth(form.getWidth() * 10 / 12, Unit.PIXELS);
 		SampleDto dto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleUuid);
 		form.setValue(dto);
@@ -295,7 +311,7 @@ public class SampleController {
 								form.commit();
 								SampleDto sampleDto = form.getValue();
 								sampleDto = FacadeProvider.getSampleFacade().saveSample(sampleDto);
-								createReferral(sampleDto);
+								createReferral(sampleDto, disease);
 							} catch (SourceException | InvalidValueException e) {
 								Notification.show(I18nProperties.getString(Strings.messageSampleErrors), Type.ERROR_MESSAGE);
 							}
@@ -363,13 +379,18 @@ public class SampleController {
 				final ContactReferenceDto associatedContact = dto.getAssociatedContact();
 				final EventParticipantReferenceDto associatedEventParticipant = dto.getAssociatedEventParticipant();
 				if (associatedCase != null) {
-					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CASE, associatedCase, dto);
+					final CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
+					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CASE, associatedCase, dto, caseDto.getDisease());
 				} else if (associatedContact != null) {
-					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CONTACT, associatedContact, dto);
+					final ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(associatedContact.getUuid());
+					ControllerProvider.getTaskController()
+						.createSampleCollectionTask(TaskContext.CONTACT, associatedContact, dto, contactDto.getDisease());
 				} else if (associatedEventParticipant != null) {
 					final EventParticipantDto eventParticipantDto =
 						FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(associatedEventParticipant.getUuid());
-					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.EVENT, eventParticipantDto.getEvent(), dto);
+					final EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventParticipantDto.getEvent().getUuid(), false);
+					ControllerProvider.getTaskController()
+						.createSampleCollectionTask(TaskContext.EVENT, eventParticipantDto.getEvent(), dto, eventDto.getDisease());
 				}
 			}
 		});
@@ -450,28 +471,19 @@ public class SampleController {
 		}
 	}
 
-	public VerticalLayout getSampleViewTitleLayout(SampleDto sample) {
+	public TitleLayout getSampleViewTitleLayout(SampleDto sample) {
 
-		VerticalLayout titleLayout = new VerticalLayout();
-		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
-		titleLayout.setSpacing(false);
+		TitleLayout titleLayout = new TitleLayout();
 
-		Label uuidLabel = new Label(DataHelper.getShortUuid(sample.getUuid()));
-		uuidLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-		titleLayout.addComponent(uuidLabel);
+		titleLayout.addRow(DataHelper.getShortUuid(sample.getUuid()));
+		titleLayout.addRow(DateFormatHelper.formatDate(sample.getSampleDateTime()));
 
-		Label sampleDateLabel = new Label(DateFormatHelper.formatDate(sample.getSampleDateTime()));
-		sampleDateLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-		titleLayout.addComponent(sampleDateLabel);
-
-		Label sampleCaptionLabel = new Label(
-			SampleReferenceDto.buildCaption(
-				sample.getSampleMaterial(),
-				sample.getAssociatedCase() != null ? sample.getAssociatedCase().getUuid() : null,
-				sample.getAssociatedContact() != null ? sample.getAssociatedContact().getUuid() : null,
-				sample.getAssociatedEventParticipant() != null ? sample.getAssociatedEventParticipant().getUuid() : null));
-		sampleCaptionLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		titleLayout.addComponents(sampleCaptionLabel);
+		String mainRowText = SampleReferenceDto.buildCaption(
+			sample.getSampleMaterial(),
+			sample.getAssociatedCase() != null ? sample.getAssociatedCase().getUuid() : null,
+			sample.getAssociatedContact() != null ? sample.getAssociatedContact().getUuid() : null,
+			sample.getAssociatedEventParticipant() != null ? sample.getAssociatedEventParticipant().getUuid() : null);
+		titleLayout.addMainRow(mainRowText);
 
 		return titleLayout;
 	}

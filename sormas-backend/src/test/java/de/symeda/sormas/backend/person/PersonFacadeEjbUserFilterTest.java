@@ -21,18 +21,18 @@ import static org.junit.Assert.assertTrue;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.person.PersonAssociation;
-import de.symeda.sormas.api.person.PersonCriteria;
-import de.symeda.sormas.api.person.PersonIndexDto;
-import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.person.PersonAssociation;
+import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -127,26 +127,28 @@ public class PersonFacadeEjbUserFilterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetPersonIndexListPersonNotIncludedIfContactOutsideJurisdiction(){
+	public void testGetPersonIndexListPersonNotIncludedIfContactOutsideJurisdiction() {
 		loginWith(nationalUser);
 
 		PersonDto person1 = creator.createPerson("John", "Doe");
 		PersonDto person2 = creator.createPerson("John2", "Doe2");
 
 		CaseDataDto caze = creator.createCase(
-				nationalUser.toReference(),
-				person1.toReference(),
-				Disease.EVD,
-				CaseClassification.PROBABLE,
-				InvestigationStatus.PENDING,
-				new Date(),
-				rdcf1);
+			nationalUser.toReference(),
+			person1.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf1);
 
-		ContactDto contactInJurisdiction1 = creator.createContact(nationalUser.toReference(), null, person1.toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf1);
+		ContactDto contactInJurisdiction1 =
+			creator.createContact(nationalUser.toReference(), null, person1.toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf1);
 		contactInJurisdiction1.setRegion(rdcf1.region);
 		contactInJurisdiction1.setDistrict(rdcf1.district);
 		getContactFacade().saveContact(contactInJurisdiction1);
-		ContactDto contactInJurisdiction2 = creator.createContact(nationalUser.toReference(), null, person2.toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contactInJurisdiction2 =
+			creator.createContact(nationalUser.toReference(), null, person2.toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
 		contactInJurisdiction2.setRegion(rdcf2.region);
 		contactInJurisdiction2.setDistrict(rdcf2.district);
 		getContactFacade().saveContact(contactInJurisdiction2);

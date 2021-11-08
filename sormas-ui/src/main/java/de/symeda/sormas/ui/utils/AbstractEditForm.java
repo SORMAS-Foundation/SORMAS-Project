@@ -72,6 +72,10 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 		this(type, propertyI18nPrefix, true, fieldVisibilityCheckers, null);
 	}
 
+	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, boolean addFields, FieldVisibilityCheckers fieldVisibilityCheckers) {
+		this(type, propertyI18nPrefix, addFields, fieldVisibilityCheckers, null);
+	}
+
 	protected AbstractEditForm(
 		Class<DTO> type,
 		String propertyI18nPrefix,

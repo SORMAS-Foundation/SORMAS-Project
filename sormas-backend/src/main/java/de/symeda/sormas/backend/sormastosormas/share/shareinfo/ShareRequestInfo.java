@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.backend.sormastosormas.share.shareinfo;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -30,6 +28,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.user.User;
 
@@ -64,6 +63,8 @@ public class ShareRequestInfo extends AbstractDomainObject {
 	private boolean pseudonymizedSensitiveData;
 
 	private String comment;
+
+	private String responseComment;
 
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = SHARE_REQUEST_INFO_SHARE_INFO_TABLE,
@@ -150,12 +151,21 @@ public class ShareRequestInfo extends AbstractDomainObject {
 		this.pseudonymizedSensitiveData = pseudonymizedSensitiveData;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = FieldConstraints.CHARACTER_LIMIT_BIG)
 	public String getComment() {
 		return comment;
 	}
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	@Column(length = FieldConstraints.CHARACTER_LIMIT_BIG)
+	public String getResponseComment() {
+		return responseComment;
+	}
+
+	public void setResponseComment(String responseComment) {
+		this.responseComment = responseComment;
 	}
 }

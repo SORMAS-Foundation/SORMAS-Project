@@ -15,87 +15,61 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.eventparticipant;
 
-import java.util.List;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
-import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
+import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
-import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessorHelper;
 
 @Stateless
 @LocalBean
 public class ReceivedEventParticipantProcessor
-	implements
-	ReceivedDataProcessor<EventParticipantDto, SormasToSormasEventParticipantDto, SormasToSormasEventParticipantPreview, EventParticipant> {
+	extends
+	ReceivedDataProcessor<EventParticipant, EventParticipantDto, SormasToSormasEventParticipantDto, SormasToSormasEventParticipantPreview, EventParticipant, EventParticipantService> {
 
 	@EJB
-	private ReceivedDataProcessorHelper dataProcessorHelper;
-	@EJB
-	private InfrastructureValidator infraValidator;
-	@EJB
-	private EventParticipantService eventParticipantService;
+	private Sormas2SormasDataValidator dataValidator;
 
-	@Override
-	public ValidationErrors processReceivedData(SormasToSormasEventParticipantDto receivedData, EventParticipant existingData) {
-		EventParticipantDto eventParticipant = receivedData.getEntity();
+	public ReceivedEventParticipantProcessor() {
+	}
 
-		ValidationErrors uuidError = validateSharedUuid(eventParticipant.getUuid());
-		if (uuidError.hasError()) {
-			return uuidError;
-		}
-
-		ValidationErrors validationErrors = new ValidationErrors();
-
-		ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(eventParticipant.getPerson(), dataProcessorHelper.getExistingPerson(existingData));
-		validationErrors.addAll(personValidationErrors);
-
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-			infraValidator.validateInfrastructure(eventParticipant.getRegion(), eventParticipant.getDistrict(), null);
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.EventParticipant, validationErrors, (infrastructureData -> {
-			eventParticipant.setRegion(infrastructureData.getRegion());
-			eventParticipant.setDistrict(infrastructureData.getDistrict());
-		}));
-
-		return validationErrors;
+	@Inject
+	protected ReceivedEventParticipantProcessor(EventParticipantService service) {
+		super(service);
 	}
 
 	@Override
-	public ValidationErrors processReceivedPreview(SormasToSormasEventParticipantPreview eventParticipant) {
-		ValidationErrors uuidError = validateSharedUuid(eventParticipant.getUuid());
-		if (uuidError.hasError()) {
-			return uuidError;
-		}
-
-		return dataProcessorHelper.processPersonPreview(eventParticipant.getPerson());
+	public void handleReceivedData(SormasToSormasEventParticipantDto sharedData, EventParticipant existingData) {
+		dataValidator.handleIgnoredProperties(sharedData.getEntity().getPerson(), dataValidator.getExistingPerson(existingData));
 	}
 
-	private ValidationErrors validateSharedUuid(String uuid) {
-		ValidationErrors errors = new ValidationErrors();
+	@Override
+	public ValidationErrors existsNotShared(String uuid) {
+		return existsNotShared(
+			uuid,
+			EventParticipant.SORMAS_TO_SORMAS_ORIGIN_INFO,
+			EventParticipant.SORMAS_TO_SORMAS_SHARES,
+			Captions.EventParticipant,
+			Validations.sormasToSormasEventParticipantExists);
+	}
 
-		if (eventParticipantService.exists(
-			(cb, epRoot, cq) -> cb.and(
-				cb.equal(epRoot.get(EventParticipant.UUID), uuid),
-				cb.isNull(epRoot.get(EventParticipant.SORMAS_TO_SORMAS_ORIGIN_INFO)),
-				cb.isEmpty(epRoot.get(EventParticipant.SORMAS_TO_SORMAS_SHARES))))) {
-			errors.add(
-				new ValidationErrorGroup(Captions.EventParticipant),
-				new ValidationErrorMessage(Validations.sormasToSormasEventParticipantExists));
-		}
+	@Override
+	public ValidationErrors validate(SormasToSormasEventParticipantDto sharedData, EventParticipant existingData) {
+		return dataValidator.validateEventParticipant(sharedData.getEntity());
+	}
 
-		return errors;
+	@Override
+	public ValidationErrors validatePreview(SormasToSormasEventParticipantPreview preview) {
+		return dataValidator.validatePersonPreview(preview.getPerson());
 	}
 }

@@ -80,6 +80,7 @@ import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactFollowUpDto;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactListEntryDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
@@ -393,7 +394,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(entity.getCaze()), entity.getCaze(), internal);
 			}
 
-			onContactChanged(toDto(entity), internal);
+			onContactChanged(existingContactDto, entity, internal);
 		}
 
 		return toDto(entity);
@@ -402,6 +403,17 @@ public class ContactFacadeEjb implements ContactFacade {
 	public void onContactChanged(ContactDto contact, boolean syncShares) {
 		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(new ShareTreeCriteria(contact.getUuid()));
+		}
+	}
+
+	public void onContactChanged(ContactDto existingContact, Contact contact, boolean syncShares) {
+		onContactChanged(toDto(contact), syncShares);
+
+		// This logic should be consistent with ContactDataForm.onContactChanged
+		if (existingContact != null
+			&& existingContact.getQuarantineTo() != null
+			&& !existingContact.getQuarantineTo().equals(contact.getQuarantineTo())) {
+			contact.setPreviousQuarantineTo(existingContact.getQuarantineTo());
 		}
 	}
 
@@ -549,6 +561,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			contact.get(Contact.FIRST_CONTACT_DATE),
 			contact.get(Contact.LAST_CONTACT_DATE),
 			contact.get(Contact.CREATION_DATE),
+			joins.getPerson().get(Person.UUID),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			joins.getPerson().get(Person.SALUTATION),
@@ -624,6 +637,8 @@ public class ContactFacadeEjb implements ContactFacade {
 			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
 			joins.getReportingUser().get(User.ID),
 			joins.getFollowUpStatusChangeUser().get(User.ID),
+			contact.get(Contact.PREVIOUS_QUARANTINE_TO),
+			contact.get(Contact.QUARANTINE_CHANGE_COMMENT),
 			jurisdictionSelector(contactQueryContext));
 
 		cq.distinct(true);
@@ -781,7 +796,8 @@ public class ContactFacadeEjb implements ContactFacade {
 						if (filteredImmunizations.size() > 0) {
 							filteredImmunizations.sort(Comparator.comparing(ImmunizationEntityHelper::getDateForComparison));
 							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
-							exportContact.setVaccinationDoses(String.valueOf(mostRecentImmunization.getNumberOfDoses()));
+							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
+							exportContact.setNumberOfDoses(numberOfDoses != null ? String.valueOf(numberOfDoses) : "");
 
 							if (CollectionUtils.isNotEmpty(mostRecentImmunization.getVaccinations())) {
 								List<Vaccination> sortedVaccinations = mostRecentImmunization.getVaccinations()
@@ -1132,13 +1148,25 @@ public class ContactFacadeEjb implements ContactFacade {
 		List<ContactIndexDto> dtos = QueryHelper.getResultList(em, query, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(ContactIndexDto.class, dtos, c -> c.getInJurisdiction(), (c, isInJurisdiction) -> {
+		pseudonymizer.pseudonymizeDtoCollection(ContactIndexDto.class, dtos, ContactIndexDto::getInJurisdiction, (c, isInJurisdiction) -> {
 			if (c.getCaze() != null) {
 				pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), c.getCaseInJurisdiction(), null);
 			}
 		});
 
 		return dtos;
+	}
+
+	@Override
+	public List<ContactListEntryDto> getEntriesList(String personUuid, Integer first, Integer max) {
+
+		Long personId = personFacade.getPersonIdByUuid(personUuid);
+		List<ContactListEntryDto> entries = contactService.getEntriesList(personId, first, max);
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(ContactListEntryDto.class, entries, ContactListEntryDto::isInJurisdiction, null);
+
+		return entries;
 	}
 
 	@Override
@@ -1349,6 +1377,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(originInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
+		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
+		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
 
 		return target;
 	}
@@ -1611,6 +1641,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		if (source.getFollowUpStatusChangeUser() != null) {
 			target.setFollowUpStatusChangeUser(source.getFollowUpStatusChangeUser().toReference());
 		}
+		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
+		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
 
 		return target;
 	}

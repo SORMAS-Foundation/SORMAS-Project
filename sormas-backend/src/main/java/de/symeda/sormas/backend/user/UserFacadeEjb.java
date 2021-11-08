@@ -41,15 +41,20 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 
 import org.apache.commons.beanutils.BeanUtils;
 
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
@@ -65,9 +70,16 @@ import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.EventJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.event.EventQueryContext;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
@@ -85,6 +97,10 @@ import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
+import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
@@ -119,6 +135,8 @@ public class UserFacadeEjb implements UserFacade {
 	private ContactService contactService;
 	@EJB
 	private EventService eventService;
+	@EJB
+	private TravelEntryService travelEntryService;
 	@EJB
 	private PointOfEntryService pointOfEntryService;
 	@Inject
@@ -317,6 +335,102 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	public List<UserReferenceDto> getUsersHavingCaseInJurisdiction(CaseReferenceDto caseReferenceDto) {
+
+		return getUsersHavingEntityInJurisdiction((cb, cq, userRoot) -> {
+
+			final Subquery<Case> caseJurisdictionSubquery = cq.subquery(Case.class);
+			final Root<Case> caseRoot = caseJurisdictionSubquery.from(Case.class);
+			final CaseJurisdictionPredicateValidator caseJurisdictionPredicateValidator =
+				CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, caseRoot), userRoot);
+
+			caseJurisdictionSubquery.select(caseRoot)
+				.where(
+					cb.and(
+						cb.equal(caseRoot.get(Case.UUID), caseReferenceDto.getUuid()),
+						cb.isTrue(caseJurisdictionPredicateValidator.inJurisdictionOrOwned())));
+			return caseJurisdictionSubquery;
+		});
+	}
+
+	@Override
+	public List<UserReferenceDto> getUsersHavingContactInJurisdiction(ContactReferenceDto contactReferenceDto) {
+		return getUsersHavingEntityInJurisdiction((cb, cq, userRoot) -> {
+
+			final Subquery<Contact> contactJurisdictionSubquery = cq.subquery(Contact.class);
+			final Root<Contact> contactRoot = contactJurisdictionSubquery.from(Contact.class);
+			final ContactJurisdictionPredicateValidator contactJurisdictionPredicateValidator =
+				ContactJurisdictionPredicateValidator.of(new ContactQueryContext<>(cb, cq, contactRoot), userRoot);
+
+			contactJurisdictionSubquery.select(contactRoot)
+				.where(
+					cb.and(
+						cb.equal(contactRoot.get(Contact.UUID), contactReferenceDto.getUuid()),
+						cb.isTrue(contactJurisdictionPredicateValidator.inJurisdictionOrOwned())));
+			return contactJurisdictionSubquery;
+		});
+	}
+
+	@Override
+	public List<UserReferenceDto> getUsersHavingEventInJurisdiction(EventReferenceDto eventReferenceDto) {
+
+		return getUsersHavingEntityInJurisdiction((cb, cq, userRoot) -> {
+
+			final Subquery<de.symeda.sormas.backend.event.Event> eventJurisdictionSubquery = cq.subquery(de.symeda.sormas.backend.event.Event.class);
+			final Root<de.symeda.sormas.backend.event.Event> eventRoot = eventJurisdictionSubquery.from(de.symeda.sormas.backend.event.Event.class);
+			final EventJurisdictionPredicateValidator eventJurisdictionPredicateValidator =
+				EventJurisdictionPredicateValidator.of(new EventQueryContext<>(cb, cq, eventRoot), userRoot);
+
+			eventJurisdictionSubquery.select(eventRoot)
+				.where(
+					cb.and(
+						cb.equal(eventRoot.get(de.symeda.sormas.backend.event.Event.UUID), eventReferenceDto.getUuid()),
+						cb.isTrue(eventJurisdictionPredicateValidator.inJurisdictionOrOwned())));
+			return eventJurisdictionSubquery;
+		});
+	}
+
+	@Override
+	public List<UserReferenceDto> getUsersHavingTravelEntryInJurisdiction(TravelEntryReferenceDto travelEntryReferenceDto) {
+
+		return getUsersHavingEntityInJurisdiction((cb, cq, userRoot) -> {
+
+			final Subquery<TravelEntry> travelEntrySubquery = cq.subquery(TravelEntry.class);
+			final Root<TravelEntry> travelEntryRoot = travelEntrySubquery.from(TravelEntry.class);
+			final TravelEntryJurisdictionPredicateValidator travelEntryJurisdictionPredicateValidator =
+				TravelEntryJurisdictionPredicateValidator.of(new TravelEntryQueryContext<>(cb, cq, travelEntryRoot), userRoot);
+
+			travelEntrySubquery.select(travelEntryRoot)
+				.where(
+					cb.and(
+						cb.equal(travelEntryRoot.get(TravelEntry.UUID), travelEntryReferenceDto.getUuid()),
+						cb.isTrue(travelEntryJurisdictionPredicateValidator.inJurisdictionOrOwned())));
+			return travelEntrySubquery;
+		});
+	}
+
+	public <ADO extends AbstractDomainObject> List<UserReferenceDto> getUsersHavingEntityInJurisdiction(
+		JurisdictionOverEntitySubqueryBuilder<ADO> subqueryBuilder) {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<User> cq = cb.createQuery(User.class);
+		final Root<User> root = cq.from(User.class);
+		cq.select(root);
+
+		cq.where(cb.exists(subqueryBuilder.buildSubquery(cb, cq, root)));
+
+		cq.distinct(true);
+		cq.orderBy(cb.asc(root.get(User.ID)));
+		List<User> resultList = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+		return resultList.stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
+	}
+
+	public interface JurisdictionOverEntitySubqueryBuilder<ADO extends AbstractDomainObject> {
+
+		Subquery<ADO> buildSubquery(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<User> userRoot);
+	}
+
+	@Override
 	public Page<UserDto> getIndexPage(UserCriteria userCriteria, int offset, int size, List<SortProperty> sortProperties) {
 		List<UserDto> userIndexList = getIndexList(userCriteria, offset, size, sortProperties);
 		long totalElementCount = count(userCriteria);
@@ -496,7 +610,9 @@ public class UserFacadeEjb implements UserFacade {
 		target.setLanguage(source.getLanguage());
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 
-		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
+		final Set<UserRole> userRoles = source.getUserRoles();
+		target.setUserRoles(new HashSet<UserRole>(userRoles));
+		target.updateJurisdictionLevel();
 
 		return target;
 	}

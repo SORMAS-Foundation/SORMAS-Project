@@ -39,7 +39,6 @@ public interface RegionFacade extends GeoLocationFacade<RegionDto, RegionIndexDt
 
 	Page<RegionIndexDto> getIndexPage(RegionCriteria regionCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
-	RegionReferenceDto getRegionReferenceByUuid(String uuid);
 
 	RegionReferenceDto getRegionReferenceById(int id);
 

@@ -22,7 +22,7 @@ import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
 
 @Stateless
 @LocalBean
-public class CountryService extends AbstractInfrastructureAdoService<Country> {
+public class CountryService extends AbstractInfrastructureAdoService<Country, CountryCriteria> {
 
 	public CountryService() {
 		super(Country.class);
@@ -92,6 +92,7 @@ public class CountryService extends AbstractInfrastructureAdoService<Country> {
 		return null;
 	}
 
+	@Override
 	public Predicate buildCriteriaFilter(CountryCriteria criteria, CriteriaBuilder cb, Root<Country> from) {
 
 		Predicate filter = null;

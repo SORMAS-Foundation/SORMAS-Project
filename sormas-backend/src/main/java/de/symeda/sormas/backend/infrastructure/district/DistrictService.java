@@ -43,7 +43,7 @@ import de.symeda.sormas.backend.infrastructure.area.Area;
 
 @Stateless
 @LocalBean
-public class DistrictService extends AbstractInfrastructureAdoService<District> {
+public class DistrictService extends AbstractInfrastructureAdoService<District, DistrictCriteria> {
 
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
@@ -136,6 +136,7 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 		return null;
 	}
 
+	@Override
 	public Predicate buildCriteriaFilter(DistrictCriteria criteria, CriteriaBuilder cb, Root<District> from) {
 
 		Predicate filter = null;

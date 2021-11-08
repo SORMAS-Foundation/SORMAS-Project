@@ -110,6 +110,21 @@ public final class DateHelper {
 		}
 	}
 
+	public static String formatLocalDate(Integer dateDD, Integer dateMM, Integer dateYYYY, Language language) {
+
+		if (dateDD == null && dateMM == null && dateYYYY == null) {
+			return "";
+		} else {
+			String birthDate = DateHelper.getLocalDateFormat(language).toPattern();
+			birthDate = birthDate.replaceAll("d+", dateDD != null ? dateDD.toString() : "");
+			birthDate = birthDate.replaceAll("M+", dateMM != null ? dateMM.toString() : "");
+			birthDate = birthDate.replaceAll("y+", dateYYYY != null ? dateYYYY.toString() : "");
+			birthDate = birthDate.replaceAll("^[^\\d]*", "").replaceAll("[^\\d]*$", "");
+
+			return birthDate;
+		}
+	}
+
 	public static String formatLocalDateTime(Date date, Language language) {
 
 		if (date != null) {
@@ -1139,8 +1154,11 @@ public final class DateHelper {
 
 	/**
 	 * Find the latest date between 2 dates
-	 * @param date1 the first date
-	 * @param date2 the second date
+	 * 
+	 * @param date1
+	 *            the first date
+	 * @param date2
+	 *            the second date
 	 * @return the latest date between 2 dates. If any is null, the other is returned. If both are null, null is returned.
 	 */
 	public static Date getLatestDate(Date date1, Date date2) {
@@ -1153,6 +1171,10 @@ public final class DateHelper {
 		} else {
 			return ObjectUtils.firstNonNull(date1, date2);
 		}
+	}
+
+	public static boolean isStartDateBeforeEndDate(Date startDate, Date endDate) {
+		return startDate != null && endDate != null && endDate.before(startDate);
 	}
 
 	public static class ParsedDateFormat {

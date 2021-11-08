@@ -15,7 +15,9 @@
 
 package de.symeda.sormas.api.exposure;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.Diseases;
 
 public enum ExposureType {
 
@@ -26,7 +28,11 @@ public enum ExposureType {
 	GATHERING,
 	HABITATION,
 	PERSONAL_SERVICES,
+	@Diseases(value = {
+		Disease.CORONAVIRUS }, hide = true)
 	BURIAL,
+	@Diseases(value = {
+		Disease.CORONAVIRUS }, hide = true)
 	ANIMAL_CONTACT,
 	OTHER,
 	UNKNOWN;

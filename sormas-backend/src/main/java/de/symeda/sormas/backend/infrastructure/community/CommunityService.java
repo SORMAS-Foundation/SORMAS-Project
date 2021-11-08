@@ -47,7 +47,7 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 
 @Stateless
 @LocalBean
-public class CommunityService extends AbstractInfrastructureAdoService<Community> {
+public class CommunityService extends AbstractInfrastructureAdoService<Community, CommunityCriteria> {
 
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
@@ -85,7 +85,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		// no filter by user needed
 		return null;
 	}
-
+	@Override
 	public Predicate buildCriteriaFilter(CommunityCriteria criteria, CriteriaBuilder cb, Root<Community> from) {
 		Join<Community, District> district = from.join(Community.DISTRICT, JoinType.LEFT);
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);

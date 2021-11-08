@@ -11,11 +11,13 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.backend.util.QueryHelper;
 
-public abstract class AbstractInfrastructureAdoService<ADO extends InfrastructureAdo> extends AdoServiceWithUserFilter<ADO> {
+public abstract class AbstractInfrastructureAdoService<ADO extends InfrastructureAdo, CRITERIA extends BaseCriteria>
+	extends AdoServiceWithUserFilter<ADO> {
 
-	public AbstractInfrastructureAdoService(Class<ADO> elementClass) {
+	protected AbstractInfrastructureAdoService(Class<ADO> elementClass) {
 		super(elementClass);
 	}
 
@@ -109,4 +111,7 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 	}
 
 	public abstract List<ADO> getByExternalId(String externalId, boolean includeArchived);
+
+	// todo move this up later
+	public abstract Predicate buildCriteriaFilter(CRITERIA criteria, CriteriaBuilder cb, Root<ADO> from);
 }
