@@ -26,6 +26,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
@@ -47,16 +48,16 @@ public class ReceivedEventProcessor
 	}
 
 	@Inject
-	protected ReceivedEventProcessor(EventService service) {
-		super(service);
+	protected ReceivedEventProcessor(EventService service, UserService userService, ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade) {
+		super(service, userService, configFacade);
 	}
 
 	@Override
 	public void handleReceivedData(SormasToSormasEventDto sharedData, Event existingData) {
-		dataValidator.handleIgnoredProperties(sharedData.getEntity(), EventFacadeEjb.toDto(existingData));
+		handleIgnoredProperties(sharedData.getEntity(), EventFacadeEjb.toDto(existingData));
 
 		EventDto event = sharedData.getEntity();
-		dataValidator.updateReportingUser(event, existingData);
+		updateReportingUser(event, existingData);
 		if (existingData == null || existingData.getResponsibleUser() == null) {
 			event.setResponsibleUser(userService.getCurrentUser().toReference());
 		} else {
@@ -75,7 +76,7 @@ public class ReceivedEventProcessor
 	}
 
 	@Override
-	public ValidationErrors validate(SormasToSormasEventDto sharedData, Event existingData) {
+	public ValidationErrors validate(SormasToSormasEventDto sharedData) {
 		return dataValidator.validateEventData(sharedData.getEntity());
 	}
 

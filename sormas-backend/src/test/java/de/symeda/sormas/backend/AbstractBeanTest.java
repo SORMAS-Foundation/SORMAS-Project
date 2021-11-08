@@ -23,6 +23,11 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.backend.sormastosormas.entities.caze.ReceivedCaseProcessor;
+import de.symeda.sormas.backend.sormastosormas.entities.contact.ReceivedContactProcessor;
+import de.symeda.sormas.backend.sormastosormas.entities.event.ReceivedEventProcessor;
+import de.symeda.sormas.backend.sormastosormas.entities.immunization.ReceivedImmunizationProcessor;
+import de.symeda.sormas.backend.sormastosormas.entities.sample.ReceivedSampleProcessor;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -592,7 +597,9 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(CustomizableEnumValueService.class);
 	}
 
-	public CustomizableEnumFacade getCustomizableEnumFacade() { return getBean(CustomizableEnumFacadeEjb.class); }
+	public CustomizableEnumFacade getCustomizableEnumFacade() {
+		return getBean(CustomizableEnumFacadeEjb.class);
+	}
 
 	public ShareDataBuilderHelper getShareDataBuilderHelper() {
 		return getBean(ShareDataBuilderHelper.class);
@@ -600,6 +607,26 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public Sormas2SormasDataValidator getSormas2SormasDataValidator() {
 		return getBean(Sormas2SormasDataValidator.class);
+	}
+
+	public ReceivedCaseProcessor getReceivedCaseProcessor() {
+		return getBean(ReceivedCaseProcessor.class);
+	}
+
+	public ReceivedContactProcessor getReceivedContactProcessor() {
+		return getBean(ReceivedContactProcessor.class);
+	}
+
+	public ReceivedEventProcessor getReceivedEventProcessor() {
+		return getBean(ReceivedEventProcessor.class);
+	}
+
+	public ReceivedImmunizationProcessor getReceivedImmunizationProcessor() {
+		return getBean(ReceivedImmunizationProcessor.class);
+	}
+
+	public ReceivedSampleProcessor getReceivedSampleProcessor() {
+		return getBean(ReceivedSampleProcessor.class);
 	}
 
 	protected UserDto useSurveillanceOfficerLogin(TestDataCreator.RDCF rdcf) {

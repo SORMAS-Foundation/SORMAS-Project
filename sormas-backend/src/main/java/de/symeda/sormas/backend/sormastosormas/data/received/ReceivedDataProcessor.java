@@ -15,26 +15,41 @@
 
 package de.symeda.sormas.backend.sormastosormas.data.received;
 
+import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
+import de.symeda.sormas.backend.user.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Field;
 
 public abstract class ReceivedDataProcessor<ADO extends AbstractDomainObject, DTO extends SormasToSormasShareableDto, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW extends PseudonymizableDto, ENTITY extends SormasToSormasShareable, SRV extends AdoServiceWithUserFilter<ADO>> {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	protected SRV service;
+	protected UserService userService;
+	protected ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	protected ReceivedDataProcessor() {
 
 	}
 
-	protected ReceivedDataProcessor(SRV service) {
+	protected ReceivedDataProcessor(SRV service, UserService userService, ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade) {
 		this.service = service;
+		this.userService = userService;
+		this.configFacade = configFacade;
 	}
 
 	public ValidationErrors processReceivedData(SHARED sharedData, ENTITY existingData) {
@@ -44,7 +59,7 @@ public abstract class ReceivedDataProcessor<ADO extends AbstractDomainObject, DT
 		}
 
 		handleReceivedData(sharedData, existingData);
-		return validate(sharedData, existingData);
+		return validate(sharedData);
 	}
 
 	public abstract void handleReceivedData(SHARED sharedData, ENTITY existingData);
@@ -76,7 +91,33 @@ public abstract class ReceivedDataProcessor<ADO extends AbstractDomainObject, DT
 
 	public abstract ValidationErrors existsNotShared(String uuid);
 
-	public abstract ValidationErrors validate(SHARED sharedData, ENTITY existingData);
+	public abstract ValidationErrors validate(SHARED sharedData);
 
 	public abstract ValidationErrors validatePreview(PREVIEW preview);
+
+	public void updateReportingUser(SormasToSormasShareableDto entity, SormasToSormasShareable originalEntiy) {
+		UserReferenceDto reportingUser =
+			originalEntiy == null ? userService.getCurrentUser().toReference() : originalEntiy.getReportingUser().toReference();
+		entity.setReportingUser(reportingUser);
+	}
+
+	public <T> void handleIgnoredProperties(T receivedEntity, T originalEntity) {
+		Class<?> dtoType = receivedEntity.getClass();
+		SormasToSormasConfig s2SConfig = configFacade.getS2SConfig();
+		for (Field field : dtoType.getDeclaredFields()) {
+			if (field.isAnnotationPresent(S2SIgnoreProperty.class)) {
+				String s2sConfigProperty = field.getAnnotation(S2SIgnoreProperty.class).configProperty();
+				if (s2SConfig.getIgnoreProperties().get(s2sConfigProperty)) {
+					field.setAccessible(true);
+					try {
+						Object originalValue = originalEntity != null ? field.get(originalEntity) : null;
+						field.set(receivedEntity, originalValue);
+					} catch (IllegalAccessException e) {
+						logger.error("Could not set field {} for {}", field.getName(), dtoType.getSimpleName());
+					}
+					field.setAccessible(false);
+				}
+			}
+		}
+	}
 }
