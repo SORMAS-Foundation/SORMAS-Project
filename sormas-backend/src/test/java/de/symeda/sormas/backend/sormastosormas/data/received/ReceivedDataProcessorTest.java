@@ -56,7 +56,7 @@ import de.symeda.sormas.backend.TestDataCreator;
  * @since 11-Oct-21
  */
 @RunWith(MockitoJUnitRunner.class)
-public class Sormas2SormasDataValidatorTest extends AbstractBeanTest {
+public class ReceivedDataProcessorTest extends AbstractBeanTest {
 
 	@Test
 	public void testIgnoredPropertiesAreNotOverwrittenWithNewValuesForCase() throws CloneNotSupportedException {

@@ -95,13 +95,13 @@ public abstract class ReceivedDataProcessor<ADO extends AbstractDomainObject, DT
 
 	public abstract ValidationErrors validatePreview(PREVIEW preview);
 
-	public void updateReportingUser(SormasToSormasShareableDto entity, SormasToSormasShareable originalEntiy) {
+	protected void updateReportingUser(SormasToSormasShareableDto entity, SormasToSormasShareable originalEntiy) {
 		UserReferenceDto reportingUser =
 			originalEntiy == null ? userService.getCurrentUser().toReference() : originalEntiy.getReportingUser().toReference();
 		entity.setReportingUser(reportingUser);
 	}
 
-	public <T> void handleIgnoredProperties(T receivedEntity, T originalEntity) {
+	protected  <T> void handleIgnoredProperties(T receivedEntity, T originalEntity) {
 		Class<?> dtoType = receivedEntity.getClass();
 		SormasToSormasConfig s2SConfig = configFacade.getS2SConfig();
 		for (Field field : dtoType.getDeclaredFields()) {
