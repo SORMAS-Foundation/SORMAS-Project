@@ -1,28 +1,28 @@
 package de.symeda.sormas.backend.labmessage;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.api.labmessage.LabMessageStatus;
-import de.symeda.sormas.api.labmessage.TestReportDto;
-import de.symeda.sormas.api.person.Sex;
-
-import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sample.SpecimenCondition;
-
-import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.labmessage.LabMessageStatus;
+import de.symeda.sormas.api.labmessage.TestReportDto;
+import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SpecimenCondition;
+import junit.framework.TestCase;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LabMessageFacadeEjbMappingTest extends TestCase {
@@ -71,6 +71,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setPersonPhone("0123456789");
 		source.setPersonEmail("mail@domain.com");
 		source.setLabMessageDetails("Lab Message Details");
+		source.setSampleOverallTestResult(PathogenTestResultType.POSITIVE);
 
 		LabMessage result = sut.fromDto(source, null, true);
 
@@ -101,6 +102,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getPersonStreet(), result.getPersonStreet());
 		assertEquals(source.getPersonHouseNumber(), result.getPersonHouseNumber());
 		assertEquals(source.getLabMessageDetails(), result.getLabMessageDetails());
+		assertEquals(source.getSampleOverallTestResult(), result.getSampleOverallTestResult());
 	}
 
 	@Test
@@ -145,6 +147,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setPersonEmail("mail@domain.com");
 		source.setLabMessageDetails("Lab Message Details");
 		source.setStatus(LabMessageStatus.PROCESSED);
+		source.setSampleOverallTestResult(PathogenTestResultType.NEGATIVE);
 
 		LabMessageDto result = sut.toDto(source);
 
@@ -175,5 +178,6 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getPersonStreet(), result.getPersonStreet());
 		assertEquals(source.getPersonHouseNumber(), result.getPersonHouseNumber());
 		assertEquals(source.getLabMessageDetails(), result.getLabMessageDetails());
+		assertEquals(source.getSampleOverallTestResult(), result.getSampleOverallTestResult());
 	}
 }
