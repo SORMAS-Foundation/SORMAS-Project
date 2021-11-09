@@ -258,7 +258,6 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public boolean isPropertyValue(FeatureType featureType, FeatureTypeProperty property, boolean expectedPropertyValue) {
 
 		if (!Arrays.asList(featureType.getSupportedProperties()).contains(property)) {
@@ -277,6 +276,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		cq.where(cb.and(cb.equal(root.get(FeatureConfiguration.FEATURE_TYPE), featureType)));
 		cq.select(root.get(FeatureConfiguration.PROPERTIES));
 
+		@SuppressWarnings("unchecked")
 		Map<FeatureTypeProperty, Object> properties = (Map<FeatureTypeProperty, Object>) em.createQuery(cq).getSingleResult();
 
 		if (properties != null && properties.containsKey(property)) {
