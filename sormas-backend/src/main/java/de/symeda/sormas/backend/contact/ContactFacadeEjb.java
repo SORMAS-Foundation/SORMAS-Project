@@ -409,6 +409,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	public void onContactChanged(ContactDto existingContact, Contact contact, boolean syncShares) {
 		onContactChanged(toDto(contact), syncShares);
 
+		// This logic should be consistent with ContactDataForm.onContactChanged
 		if (existingContact != null
 			&& existingContact.getQuarantineTo() != null
 			&& !existingContact.getQuarantineTo().equals(contact.getQuarantineTo())) {
@@ -795,7 +796,8 @@ public class ContactFacadeEjb implements ContactFacade {
 						if (filteredImmunizations.size() > 0) {
 							filteredImmunizations.sort(Comparator.comparing(ImmunizationEntityHelper::getDateForComparison));
 							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
-							exportContact.setVaccinationDoses(String.valueOf(mostRecentImmunization.getNumberOfDoses()));
+							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
+							exportContact.setNumberOfDoses(numberOfDoses != null ? String.valueOf(numberOfDoses) : "");
 
 							if (CollectionUtils.isNotEmpty(mostRecentImmunization.getVaccinations())) {
 								List<Vaccination> sortedVaccinations = mostRecentImmunization.getVaccinations()

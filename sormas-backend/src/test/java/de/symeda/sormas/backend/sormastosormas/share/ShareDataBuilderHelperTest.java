@@ -22,6 +22,12 @@ import static org.hamcrest.Matchers.nullValue;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -308,4 +314,64 @@ public class ShareDataBuilderHelperTest extends AbstractBeanTest {
 		assertThat(immunizationDto.getPerson(), not(nullValue()));
 	}
 
+	@Test
+	public void testClearIgnoredPropertiesForPathogenTest() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+
+		PersonDto personDto = creator.createPerson();
+		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		CaseDataDto caseDataDto = creator.createCase(officerReferenceDto, rdcf, dto -> {
+			dto.setPerson(personDto.toReference());
+			dto.setSurveillanceOfficer(officerReferenceDto);
+			dto.setClassificationUser(officerReferenceDto);
+		});
+
+		Region region = creator.createRegion("region");
+		District district = creator.createDistrict("district", region);
+		Facility laboratoryFacility = creator.createFacility("lab", region, district, null);
+
+		SampleDto sample = creator.createSample(caseDataDto.toReference(), officerReferenceDto, laboratoryFacility);
+
+		PathogenTestDto pathogenTestDto = creator.createPathogenTest(sample.toReference(), caseDataDto);
+		pathogenTestDto.setExternalId("externalId");
+
+		getShareDataBuilderHelper().clearIgnoredProperties(pathogenTestDto);
+
+		assertThat(pathogenTestDto.getExternalId(), is(nullValue()));
+		assertThat(pathogenTestDto.getLab(), not(nullValue()));
+	}
+
+	@Test
+	public void testDoNotClearIgnoredPropertiesForPathogenTest() {
+
+		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
+		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+
+		PersonDto personDto = creator.createPerson();
+		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		CaseDataDto caseDataDto = creator.createCase(officerReferenceDto, rdcf, dto -> {
+			dto.setPerson(personDto.toReference());
+			dto.setSurveillanceOfficer(officerReferenceDto);
+			dto.setClassificationUser(officerReferenceDto);
+		});
+
+		Region region = creator.createRegion("region");
+		District district = creator.createDistrict("district", region);
+		Facility laboratoryFacility = creator.createFacility("lab", region, district, null);
+
+		SampleDto sample = creator.createSample(caseDataDto.toReference(), officerReferenceDto, laboratoryFacility);
+
+		PathogenTestDto pathogenTestDto = creator.createPathogenTest(sample.toReference(), caseDataDto);
+		pathogenTestDto.setExternalId("externalId");
+
+		getShareDataBuilderHelper().clearIgnoredProperties(pathogenTestDto);
+
+		assertThat(pathogenTestDto.getExternalId(), is("externalId"));
+		assertThat(pathogenTestDto.getLab(), not(nullValue()));
+	}
 }
