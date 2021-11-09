@@ -92,7 +92,6 @@ import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
-import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.location.Location;
@@ -410,7 +409,8 @@ public class UserFacadeEjb implements UserFacade {
 		});
 	}
 
-	public <ADO extends AbstractDomainObject> List<UserReferenceDto> getUsersHavingEntityInJurisdiction(JurisdictionOverEntitySubqueryBuilder<ADO> subqueryBuilder) {
+	public <ADO extends AbstractDomainObject> List<UserReferenceDto> getUsersHavingEntityInJurisdiction(
+		JurisdictionOverEntitySubqueryBuilder<ADO> subqueryBuilder) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<User> cq = cb.createQuery(User.class);
@@ -612,7 +612,7 @@ public class UserFacadeEjb implements UserFacade {
 
 		final Set<UserRole> userRoles = source.getUserRoles();
 		target.setUserRoles(new HashSet<UserRole>(userRoles));
-		target.setJurisdictionLevel(UserRole.getJurisdictionLevel(userRoles));
+		target.updateJurisdictionLevel();
 
 		return target;
 	}

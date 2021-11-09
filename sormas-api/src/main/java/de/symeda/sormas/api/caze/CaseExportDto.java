@@ -243,7 +243,7 @@ public class CaseExportDto implements Serializable {
 	//	private Date onsetDate;
 //	private String symptoms;
 	private VaccinationStatus vaccinationStatus;
-	private String vaccinationDoses;
+	private String numberOfDoses;
 	private VaccinationInfoSource vaccinationInfoSource;
 	private Date firstVaccinationDate;
 	private Date lastVaccinationDate;
@@ -1735,8 +1735,8 @@ public class CaseExportDto implements Serializable {
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(ImmunizationDto.NUMBER_OF_DOSES)
 	@ExportGroup(ExportGroupType.VACCINATION)
-	public String getVaccinationDoses() {
-		return vaccinationDoses;
+	public String getNumberOfDoses() {
+		return numberOfDoses;
 	}
 
 	@Order(107)
@@ -2522,8 +2522,8 @@ public class CaseExportDto implements Serializable {
 		this.vaccinationStatus = vaccinationStatus;
 	}
 
-	public void setVaccinationDoses(String vaccinationDoses) {
-		this.vaccinationDoses = vaccinationDoses;
+	public void setNumberOfDoses(String numberOfDoses) {
+		this.numberOfDoses = numberOfDoses;
 	}
 
 	public void setLastVaccinationDate(Date lastVaccinationDate) {

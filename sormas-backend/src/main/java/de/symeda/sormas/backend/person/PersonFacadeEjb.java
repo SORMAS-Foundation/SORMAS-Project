@@ -374,7 +374,12 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public PersonDto savePerson(@Valid PersonDto source) throws ValidationRuntimeException {
-		return savePerson(source, true);
+		return savePerson(source, true, true, false);
+	}
+
+	@Override
+	public PersonDto savePerson(@Valid PersonDto source, boolean skipValidation) throws ValidationRuntimeException {
+		return savePerson(source, true, true, skipValidation);
 	}
 
 	/**
@@ -393,18 +398,17 @@ public class PersonFacadeEjb implements PersonFacade {
 	 * @throws ValidationRuntimeException
 	 *             if the passed source person to be saved contains invalid data
 	 */
-	public PersonDto savePerson(@Valid PersonDto source, boolean checkChangeDate) throws ValidationRuntimeException {
-		return savePerson(source, checkChangeDate, true);
-	}
-
-	public PersonDto savePerson(@Valid PersonDto source, boolean checkChangeDate, boolean syncShares) throws ValidationRuntimeException {
+	public PersonDto savePerson(@Valid PersonDto source, boolean checkChangeDate, boolean syncShares, boolean skipValidation)
+		throws ValidationRuntimeException {
 		Person person = personService.getByUuid(source.getUuid());
 
 		PersonDto existingPerson = toDto(person);
 
 		restorePseudonymizedDto(source, person, existingPerson);
 
-		validate(source);
+		if (!skipValidation) {
+			validate(source);
+		}
 
 		if (existingPerson != null && existingPerson.isEnrolledInExternalJournal()) {
 			if (source.isEnrolledInExternalJournal()) {

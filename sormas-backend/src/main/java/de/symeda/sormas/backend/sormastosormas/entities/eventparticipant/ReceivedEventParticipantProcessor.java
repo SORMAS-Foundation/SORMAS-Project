@@ -26,10 +26,15 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
+import de.symeda.sormas.backend.user.UserService;
+
+import java.util.Optional;
 
 @Stateless
 @LocalBean
@@ -40,17 +45,22 @@ public class ReceivedEventParticipantProcessor
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;
 
-	protected ReceivedEventParticipantProcessor() {
+	public ReceivedEventParticipantProcessor() {
 	}
 
 	@Inject
-	protected ReceivedEventParticipantProcessor(EventParticipantService service) {
-		super(service);
+	protected ReceivedEventParticipantProcessor(
+		EventParticipantService service,
+		UserService userService,
+		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade) {
+		super(service, userService, configFacade);
 	}
 
 	@Override
 	public void handleReceivedData(SormasToSormasEventParticipantDto sharedData, EventParticipant existingData) {
-		dataValidator.handleIgnoredProperties(sharedData.getEntity().getPerson(), dataValidator.getExistingPerson(existingData));
+		handleIgnoredProperties(
+			sharedData.getEntity().getPerson(),
+			Optional.ofNullable(existingData).map(c -> PersonFacadeEjb.toDto(c.getPerson())).orElse(null));
 	}
 
 	@Override
@@ -64,7 +74,7 @@ public class ReceivedEventParticipantProcessor
 	}
 
 	@Override
-	public ValidationErrors validate(SormasToSormasEventParticipantDto sharedData, EventParticipant existingData) {
+	public ValidationErrors validate(SormasToSormasEventParticipantDto sharedData) {
 		return dataValidator.validateEventParticipant(sharedData.getEntity());
 	}
 

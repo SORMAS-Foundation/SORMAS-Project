@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas;
+package de.symeda.sormas.api.sormastosormas.sample;
 
 import java.util.List;
 
@@ -22,6 +22,7 @@ import javax.validation.Valid;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 
 public class SormasToSormasSampleDto extends SormasToSormasEntityDto<SampleDto> {
 
