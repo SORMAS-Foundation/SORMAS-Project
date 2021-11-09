@@ -63,11 +63,13 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.geo.GeoLatLon;
+import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
-import de.symeda.sormas.api.person.PersonNameDto;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -286,10 +288,9 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
 		final From<?, Person> personFrom = personQueryContext.getRoot();
 
-
 		final PersonJoins personJoins = (PersonJoins) personQueryContext.getJoins();
-		final Join<Person, Location> location = personJoins.getAddress();;
-		final Join<Location, Region> region =  personJoins.getAddressJoins().getRegion();
+		final Join<Person, Location> location = personJoins.getAddress();
+		final Join<Location, Region> region = personJoins.getAddressJoins().getRegion();
 		final Join<Location, District> district = personJoins.getAddressJoins().getDistrict();
 		final Join<Location, Community> community = personJoins.getAddressJoins().getCommunity();
 
@@ -499,22 +500,20 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			.inJurisdictionOrOwned();
 	}
 
-	public List<PersonNameDto> getMatchingNameDtos(PersonSimilarityCriteria criteria, Integer limit) {
+	public List<SimilarPersonDto> getSimilarPersonDtos(PersonSimilarityCriteria criteria, Integer limit) {
 
 		setSimilarityThresholdQuery();
 		boolean activeEntriesOnly = configFacade.isDuplicateChecksExcludePersonsOfArchivedEntries();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 
-		CriteriaQuery<PersonNameDto> personQuery = cb.createQuery(PersonNameDto.class);
+		CriteriaQuery<Person> personQuery = cb.createQuery(Person.class);
 		Root<Person> personRoot = personQuery.from(Person.class);
 		Join<Person, Case> personCaseJoin = personRoot.join(Person.CASES, JoinType.LEFT);
 		Join<Person, Contact> personContactJoin = personRoot.join(Person.CONTACTS, JoinType.LEFT);
 		Join<Person, EventParticipant> personEventParticipantJoin = personRoot.join(Person.EVENT_PARTICIPANTS, JoinType.LEFT);
 		Join<Person, Immunization> personImmunizationJoin = personRoot.join(Person.IMMUNIZATIONS, JoinType.LEFT);
 		Join<Person, TravelEntry> personTravelEntryJoin = personRoot.join(Person.TRAVEL_ENTRIES, JoinType.LEFT);
-
-		personQuery.multiselect(personRoot.get(Person.FIRST_NAME), personRoot.get(Person.LAST_NAME), personRoot.get(Person.UUID));
 
 		// Persons of active cases
 		Predicate personSimilarityFilter = buildSimilarityCriteriaFilter(criteria, cb, personRoot);
@@ -565,14 +564,52 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		personQuery.where(and(cb, personSimilarityFilter, finalPredicate));
 		personQuery.distinct(true);
 
-		TypedQuery<PersonNameDto> query = em.createQuery(personQuery);
+		TypedQuery<Person> query = em.createQuery(personQuery);
 		if (limit != null) {
 			query.setMaxResults(limit);
 		}
-		return query.getResultList();
+		return query.getResultList().stream().map(this::toSimilarPersonDto).collect(Collectors.toList());
 	}
 
-	public void setSimilarityThresholdQuery() {
+	private SimilarPersonDto toSimilarPersonDto(Person entity) {
+
+		Integer approximateAge = entity.getApproximateAge();
+		ApproximateAgeType approximateAgeType = entity.getApproximateAgeType();
+		if (entity.getBirthdateYYYY() != null) {
+			DataHelper.Pair<Integer, ApproximateAgeType> pair = ApproximateAgeType.ApproximateAgeHelper
+				.getApproximateAge(entity.getBirthdateYYYY(), entity.getBirthdateMM(), entity.getBirthdateDD(), entity.getDeathDate());
+			approximateAge = pair.getElement0();
+			approximateAgeType = pair.getElement1();
+		}
+
+		SimilarPersonDto similarPersonDto = new SimilarPersonDto();
+		similarPersonDto.setUuid(entity.getUuid());
+		similarPersonDto.setFirstName(entity.getFirstName());
+		similarPersonDto.setLastName(entity.getLastName());
+		similarPersonDto.setNickname(entity.getNickname());
+		similarPersonDto.setAgeAndBirthDate(
+			PersonHelper.getAgeAndBirthdateString(
+				approximateAge,
+				approximateAgeType,
+				entity.getBirthdateDD(),
+				entity.getBirthdateMM(),
+				entity.getBirthdateYYYY()));
+		similarPersonDto.setSex(entity.getSex());
+		similarPersonDto.setPresentCondition(entity.getPresentCondition());
+		similarPersonDto.setPhone(entity.getPhone());
+		similarPersonDto.setDistrictName(entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null);
+		similarPersonDto.setCommunityName(entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null);
+		similarPersonDto.setPostalCode(entity.getAddress().getPostalCode());
+		similarPersonDto.setCity(entity.getAddress().getCity());
+		similarPersonDto.setStreet(entity.getAddress().getStreet());
+		similarPersonDto.setHouseNumber(entity.getAddress().getHouseNumber());
+		similarPersonDto.setNationalHealthId(entity.getNationalHealthId());
+		similarPersonDto.setPassportNumber(entity.getPassportNumber());
+
+		return similarPersonDto;
+	}
+
+	private void setSimilarityThresholdQuery() {
 		double nameSimilarityThreshold = configFacade.getNameSimilarityThreshold();
 		Query q = em.createNativeQuery("select set_limit(" + nameSimilarityThreshold + ")");
 		q.getSingleResult();
