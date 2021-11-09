@@ -62,6 +62,11 @@
             </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/immunization_uuid"
+                style="@style/ControlSingleColumnStyle"
+                app:shortUuidValue="@{data.uuid}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/immunization_disease"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@{data.disease}"
