@@ -21,11 +21,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.naming.CannotProceedException;
 
-import com.sun.org.apache.bcel.internal.generic.FieldGen;
 import com.vaadin.event.Action.Notifier;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Page;
@@ -189,9 +189,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	}
 
 	public void addFieldGroups(FieldGroup... fieldGroups) {
-		if (fieldGroups == null) {
-			return;
-		}
 
 		if (this.fieldGroups == null) {
 			this.fieldGroups = new ArrayList(Arrays.asList(fieldGroups));
@@ -436,18 +433,42 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	@Override
 	public void commit() throws InvalidValueException, SourceException, CommitRuntimeException {
-
 		if (fieldGroups != null) {
 			if (fieldGroups.size() > 1) {
-				// validate all fields first, so commit will likely work for all fieldGroups
-				// this is basically only needed when we have multiple field groups
-				// FIXME this leads to problem #537 for AbstractEditForm with hideValidationUntilNextCommit 
-				// can hopefully be fixed easier with Vaadin 8 architecture change
-				getFieldsStream().forEach(field -> {
-					if (!field.isInvalidCommitted()) {
-						field.validate();
-					}
-				});
+				List<InvalidValueException> invalidValueExceptions =
+					fieldGroups.stream().filter(fieldGroup -> !fieldGroup.isValid()).map(fieldGroup -> {
+						try {
+							// all invalid fieldGroups are committed to fetch the CommitExceptions
+							fieldGroup.commit();
+						} catch (CommitException e) {
+							return e;
+						}
+						// when the fieldGroup did not throw a CommitException, it is invalid and committed
+						throw new IllegalStateException();
+					}).map(e -> {
+						// keep invalid value exceptions, throw the rest
+						Throwable c = e.getCause();
+						if (c instanceof InvalidValueException) {
+							return (InvalidValueException) c;
+						} else if (c instanceof SourceException) {
+							throw (SourceException) c;
+						} else {
+							throw new CommitRuntimeException(e);
+						}
+					}).collect(Collectors.toList());
+
+				if (invalidValueExceptions.isEmpty()) {
+					//NOOP
+				} else if (invalidValueExceptions.size() == 1) {
+					throw invalidValueExceptions.get(0);
+				} else {
+					throw new InvalidValueException(
+						null,
+						invalidValueExceptions.stream()
+							.map(InvalidValueException::getCauses)
+							.flatMap(Arrays::stream)
+							.toArray(InvalidValueException[]::new));
+				}
 			}
 
 			try {
@@ -455,12 +476,14 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 					fieldGroup.commit();
 				}
 			} catch (CommitException e) {
-				if (e.getCause() instanceof InvalidValueException)
-					throw (InvalidValueException) e.getCause();
-				else if (e.getCause() instanceof SourceException)
-					throw (SourceException) e.getCause();
-				else
+				Throwable c = e.getCause();
+				if (c instanceof InvalidValueException) {
+					throw (InvalidValueException) c;
+				} else if (c instanceof SourceException) {
+					throw (SourceException) c;
+				} else {
 					throw new CommitRuntimeException(e);
+				}
 			}
 		} else if (wrappedComponent instanceof Buffered) {
 			((Buffered) wrappedComponent).commit();
