@@ -292,7 +292,7 @@ public class SampleController {
 		final String sampleUuid,
 		boolean isPseudonymized,
 		Disease disease,
-		boolean hideReferAndDeleteButton) {
+		boolean showReferAndDeleteButton) {
 
 		SampleEditForm form = new SampleEditForm(isPseudonymized, disease);
 		form.setWidth(form.getWidth() * 10 / 12, Unit.PIXELS);
@@ -320,7 +320,7 @@ public class SampleController {
 			}
 		});
 
-		if (!hideReferAndDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
+		if (showReferAndDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
 			editView.addDeleteListener(() -> {
 				FacadeProvider.getSampleFacade().deleteSample(dto.toReference());
 				UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
@@ -329,7 +329,7 @@ public class SampleController {
 
 		// Initialize 'Refer to another laboratory' button or link to referred sample
 		Button referOrLinkToOtherLabButton = null;
-		if (!hideReferAndDeleteButton && dto.getReferredTo() == null) {
+		if (showReferAndDeleteButton && dto.getReferredTo() == null) {
 			if (dto.getSamplePurpose() == SamplePurpose.EXTERNAL && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_TRANSFER)) {
 				referOrLinkToOtherLabButton =
 					ButtonHelper.createButton("referOrLinkToOtherLab", I18nProperties.getCaption(Captions.sampleRefer), new ClickListener() {
@@ -349,7 +349,7 @@ public class SampleController {
 						}
 					}, ValoTheme.BUTTON_LINK);
 			}
-		} else if (!hideReferAndDeleteButton) {
+		} else if (showReferAndDeleteButton) {
 			SampleDto referredDto = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getReferredTo().getUuid());
 			FacilityReferenceDto referredDtoLab = referredDto.getLab();
 			String referOrLinkToOtherLabButtonCaption = referredDtoLab == null

@@ -507,7 +507,7 @@ public class LabMessageController {
 
 		SampleController sampleController = ControllerProvider.getSampleController();
 		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent =
-			sampleController.getSampleEditComponent(sample.getUuid(), sample.isPseudonymized(), sampleController.getDiseaseOf(sample), true);
+			sampleController.getSampleEditComponent(sample.getUuid(), sample.isPseudonymized(), sampleController.getDiseaseOf(sample), false);
 
 		// add existing tests to edit component
 		int caseSampleCount = sampleController.caseSampleCountOf(sample);
