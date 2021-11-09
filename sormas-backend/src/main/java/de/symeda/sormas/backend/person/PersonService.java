@@ -23,7 +23,6 @@ import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEqualsReferenceDto;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -570,15 +569,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			query.setMaxResults(limit);
 		}
 		return query.getResultList().stream().map(this::toSimilarPersonDto).collect(Collectors.toList());
-	}
-
-	public List<SimilarPersonDto> getSimilarPersonsByUuids(List<String> personUuids) {
-		List<Person> persons = getByUuids(personUuids);
-		if (persons == null) {
-			return new ArrayList<>();
-		} else {
-			return persons.stream().map(this::toSimilarPersonDto).collect(Collectors.toList());
-		}
 	}
 
 	private SimilarPersonDto toSimilarPersonDto(Person entity) {
