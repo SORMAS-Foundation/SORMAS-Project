@@ -21,7 +21,7 @@ package org.sormas.e2etests.services.api;
 import com.google.inject.Inject;
 import java.util.Date;
 import java.util.UUID;
-import org.sormas.e2etests.enums.CommunityUUIDs;
+import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
@@ -49,7 +49,7 @@ public class CaseApiService {
         .responsibleRegion(
             Region.builder().uuid(RegionsValues.VoreingestellteBundeslander.getUuid()).build())
         .community(
-            Community.builder().uuid(CommunityUUIDs.VoreingestellteGemeinde.getUuid()).build())
+            Community.builder().uuid(CommunityValues.VoreingestellteGemeinde.getUuid()).build())
         .followUpStatus("FOLLOW_UP")
         .person(
             Person.builder()

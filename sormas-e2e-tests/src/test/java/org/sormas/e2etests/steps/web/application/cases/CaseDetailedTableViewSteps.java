@@ -105,7 +105,9 @@ public class CaseDetailedTableViewSteps implements En {
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.DATE_OF_REPORT.toString()))
               .containsIgnoringCase(
                   getDateOfReportDateTime(apiState.getCreatedCase().getReportDate().toString())
-                      .replace("/0", "/")); //fix for dates between 1-10 where 0 is missing in front of them
+                      .replace(
+                          "/0",
+                          "/")); // fix for dates between 1-10 where 0 is missing in front of them
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
