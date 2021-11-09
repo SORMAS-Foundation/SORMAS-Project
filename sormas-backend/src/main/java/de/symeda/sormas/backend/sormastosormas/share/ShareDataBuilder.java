@@ -16,10 +16,11 @@
 package de.symeda.sormas.backend.sormastosormas.share;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 
-public interface ShareDataBuilder<T extends AbstractDomainObject, S extends SormasToSormasEntityDto, P> {
+public interface ShareDataBuilder<D extends SormasToSormasShareableDto, T extends AbstractDomainObject, S extends SormasToSormasEntityDto<D>, P> {
 
 	S buildShareData(T data, ShareRequestInfo requestInfo);
 

@@ -19,7 +19,7 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.*;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_MESSAGE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -67,7 +67,7 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
 
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
-          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_MESSAGE);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
 
     When(
@@ -91,7 +91,7 @@ public class CreateNewCaseSteps implements En {
           fillPlaceDescription(caze.getPlaceDescription());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
-          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_MESSAGE);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
   }
 

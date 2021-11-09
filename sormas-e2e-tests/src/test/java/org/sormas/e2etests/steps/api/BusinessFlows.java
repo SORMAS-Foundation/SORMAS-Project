@@ -38,7 +38,6 @@ import org.sormas.e2etests.services.api.SampleApiService;
 import org.sormas.e2etests.state.ApiState;
 
 public class BusinessFlows implements En {
-  private final int number;
 
   @Inject
   public BusinessFlows(
@@ -50,16 +49,15 @@ public class BusinessFlows implements En {
       ApiState apiState,
       PersonsHelper personsHelper,
       Faker faker) {
-    number = 10;
 
     When(
-        "API: I create several new cases",
-        () -> {
+        "API: I create {int} new cases",
+        (Integer numberOfCases) -> {
           List<Case> caseList = new ArrayList<>();
           Person person = personApiService.buildGeneratedPerson();
           personsHelper.createNewPerson(person);
           apiState.setLastCreatedPerson(person);
-          for (int i = 0; i < number; i++) {
+          for (int i = 0; i < numberOfCases; i++) {
             Case caze = caseApiService.buildGeneratedCase(apiState.getLastCreatedPerson());
             caseHelper.createCase(caze);
             caseList.add(caze);
@@ -68,20 +66,13 @@ public class BusinessFlows implements En {
         });
 
     When(
-        "API: I create several new cases with a new sample foreach of them",
-        () -> {
+        "API: I create {int} new cases with a new sample foreach of them",
+        (Integer numberOfCasesAndSamples) -> {
           List<Sample> sampleList = new ArrayList<>();
-          String uuid = UUID.randomUUID().toString();
-          Person person = personApiService.buildSimpleGeneratedPerson();
-          person = person.toBuilder().firstName(person.getFirstName() + uuid).build();
-          for (int i = 0; i < number; i++) {
-            person =
-                person.toBuilder()
-                    .uuid(UUID.randomUUID().toString())
-                    .lastName(faker.name().lastName())
-                    .build();
-            apiState.setLastCreatedPerson(person);
-            personsHelper.createNewPerson(person);
+          Person person = personApiService.buildGeneratedPerson();
+          apiState.setLastCreatedPerson(person);
+          personsHelper.createNewPerson(person);
+          for (int i = 0; i < numberOfCasesAndSamples; i++) {
 
             Case caze = caseApiService.buildGeneratedCase(apiState.getLastCreatedPerson());
             caseHelper.createCase(caze);
