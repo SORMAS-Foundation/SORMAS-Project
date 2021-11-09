@@ -13,5 +13,3 @@ Feature: Case filter functionality
     When I search for cases created with the API using Person's name
     Then I apply Disease filter "COVID-19"
     And I check that all displayed cases have "COVID-19" in grid Disease column
-    When I search for cases created with the API using Person's name
-    Then I check the displayed Case Classification filter dropdown

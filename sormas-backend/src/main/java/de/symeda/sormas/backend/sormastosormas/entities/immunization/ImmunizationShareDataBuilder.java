@@ -21,6 +21,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
@@ -30,7 +31,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
 @LocalBean
-public class ImmunizationShareDataBuilder implements ShareDataBuilder<Immunization, SormasToSormasEntityDto<ImmunizationDto>, Void> {
+public class ImmunizationShareDataBuilder implements ShareDataBuilder<ImmunizationDto, Immunization, SormasToSormasImmunizationDto, Void> {
 
 	@EJB
 	private ImmunizationFacadeEjbLocal immunizationFacade;
@@ -38,7 +39,7 @@ public class ImmunizationShareDataBuilder implements ShareDataBuilder<Immunizati
 	private ShareDataBuilderHelper dataBuilderHelper;
 
 	@Override
-	public SormasToSormasEntityDto<ImmunizationDto> buildShareData(Immunization immunization, ShareRequestInfo requestInfo) {
+	public SormasToSormasImmunizationDto buildShareData(Immunization immunization, ShareRequestInfo requestInfo) {
 		Pseudonymizer pseudonymizer =
 			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 
@@ -47,7 +48,7 @@ public class ImmunizationShareDataBuilder implements ShareDataBuilder<Immunizati
 		immunizationDto.setSormasToSormasOriginInfo(null);
 		dataBuilderHelper.clearIgnoredProperties(immunizationDto);
 
-		return new SormasToSormasEntityDto<>(immunizationDto);
+		return new SormasToSormasImmunizationDto(immunizationDto);
 	}
 
 	@Override
