@@ -24,15 +24,17 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
+import de.symeda.sormas.backend.user.UserService;
 
 import java.util.Collections;
 import java.util.Map;
@@ -51,22 +53,24 @@ public class ReceivedSampleProcessor
 	}
 
 	@Inject
-	protected ReceivedSampleProcessor(SampleService service) {
-		super(service);
+	protected ReceivedSampleProcessor(SampleService service, UserService userService, ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade) {
+		super(service, userService, configFacade);
 	}
 
 	@Override
 	public void handleReceivedData(SormasToSormasSampleDto sharedData, Sample existingData) {
 		Map<String, PathogenTestDto> existingPathogenTests;
-		if(existingData != null) {
-			existingPathogenTests = existingData.getPathogenTests().stream()
-					.filter(Objects::nonNull)
-					.collect(Collectors.toMap(PathogenTest::getUuid, PathogenTestFacadeEjb::toDto));
+		if (existingData != null) {
+			existingPathogenTests = existingData.getPathogenTests()
+				.stream()
+				.filter(Objects::nonNull)
+				.collect(Collectors.toMap(PathogenTest::getUuid, PathogenTestFacadeEjb::toDto));
 		} else {
 			existingPathogenTests = Collections.emptyMap();
 		}
-
-		sharedData.getPathogenTests().forEach(pathogenTest -> dataValidator.handleIgnoredProperties(pathogenTest, existingPathogenTests.get(pathogenTest.getUuid())));
+		updateReportingUser(sharedData.getEntity(), existingData);
+		sharedData.getPathogenTests()
+			.forEach(pathogenTest -> handleIgnoredProperties(pathogenTest, existingPathogenTests.get(pathogenTest.getUuid())));
 	}
 
 	@Override
@@ -85,8 +89,8 @@ public class ReceivedSampleProcessor
 	}
 
 	@Override
-	public ValidationErrors validate(SormasToSormasSampleDto sharedData, Sample existingData) {
-		ValidationErrors validationErrors = dataValidator.validateSample(existingData, sharedData.getEntity());
+	public ValidationErrors validate(SormasToSormasSampleDto sharedData) {
+		ValidationErrors validationErrors = dataValidator.validateSample(sharedData.getEntity());
 		sharedData.getPathogenTests().forEach(pathogenTest -> dataValidator.validatePathogenTest(validationErrors, pathogenTest));
 
 		return validationErrors;

@@ -104,7 +104,8 @@ public class CaseDetailedTableViewSteps implements En {
               .assertThat(
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.DATE_OF_REPORT.toString()))
               .containsIgnoringCase(
-                  getDateOfReportDateTime(apiState.getCreatedCase().getReportDate().toString()));
+                  getDateOfReportDateTime(apiState.getCreatedCase().getReportDate().toString())
+                      .replace("/0", "/")); //fix for dates between 1-10 where 0 is missing in front of them
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
@@ -190,7 +191,7 @@ public class CaseDetailedTableViewSteps implements En {
   public String getDateOfReportDateTime(String dateTimeString) {
     SimpleDateFormat outputFormat = new SimpleDateFormat("M/dd/yyyy h:mm a");
     // because API request is sending local GMT and UI displays GMT+2 (server GMT)
-    outputFormat.setTimeZone(TimeZone.getTimeZone("GMT+2"));
+    outputFormat.setTimeZone(TimeZone.getTimeZone("GMT+1"));
 
     // inputFormat is the format of teh dateTime as read from API created case
     DateFormat inputFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
