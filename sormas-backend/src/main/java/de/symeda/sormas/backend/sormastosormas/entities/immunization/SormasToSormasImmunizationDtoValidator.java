@@ -1,8 +1,8 @@
 package de.symeda.sormas.backend.sormastosormas.entities.immunization;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
@@ -11,17 +11,19 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
-import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
 public class SormasToSormasImmunizationDtoValidator
 	extends SormasToSormasDtoValidator<ImmunizationDto, SormasToSormasImmunizationDto, PreviewNotImplementedDto> {
 
-	@EJB
-	private InfrastructureValidator infraValidator;
-	@EJB
-	private UserService userService;
+	public SormasToSormasImmunizationDtoValidator() {
+	}
+
+	@Inject
+	public SormasToSormasImmunizationDtoValidator(InfrastructureValidator infraValidator) {
+		super(infraValidator);
+	}
 
 	@Override
 	public ValidationErrors validateIncoming(SormasToSormasImmunizationDto sharedData) {

@@ -15,7 +15,8 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.contact;
 
-import javax.ejb.EJB;
+import java.util.Optional;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -32,20 +33,14 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.data.validation.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 import de.symeda.sormas.backend.user.UserService;
-
-import java.util.Optional;
 
 @Stateless
 @LocalBean
 public class ReceivedContactProcessor
 	extends
 	ReceivedDataProcessor<Contact, ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview, Contact, ContactService, SormasToSormasContactDtoValidator> {
-
-	@EJB
-	private Sormas2SormasDataValidator dataValidator;
 
 	public ReceivedContactProcessor() {
 	}

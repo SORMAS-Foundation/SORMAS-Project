@@ -15,7 +15,8 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.eventparticipant;
 
-import javax.ejb.EJB;
+import java.util.Optional;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -30,20 +31,14 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.data.validation.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 import de.symeda.sormas.backend.user.UserService;
-
-import java.util.Optional;
 
 @Stateless
 @LocalBean
 public class ReceivedEventParticipantProcessor
 	extends
 	ReceivedDataProcessor<EventParticipant, EventParticipantDto, SormasToSormasEventParticipantDto, SormasToSormasEventParticipantPreview, EventParticipant, EventParticipantService, SormasToSormasEventParticipantDtoValidator> {
-
-	@EJB
-	private Sormas2SormasDataValidator dataValidator;
 
 	public ReceivedEventParticipantProcessor() {
 	}

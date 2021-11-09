@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.sample;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -33,7 +32,6 @@ import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
-import de.symeda.sormas.backend.sormastosormas.data.validation.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.user.UserService;
 
 import java.util.Collections;
@@ -47,8 +45,6 @@ public class ReceivedSampleProcessor
 	extends
 	ReceivedDataProcessor<Sample, SampleDto, SormasToSormasSampleDto, PreviewNotImplementedDto, Sample, SampleService, SormasToSormasSampleDtoValidator> {
 
-	@EJB
-	private Sormas2SormasDataValidator dataValidator;
 
 	public ReceivedSampleProcessor() {
 	}

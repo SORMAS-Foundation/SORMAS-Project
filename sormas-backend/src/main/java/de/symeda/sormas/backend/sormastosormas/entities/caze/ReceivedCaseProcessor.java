@@ -15,7 +15,8 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.caze;
 
-import javax.ejb.EJB;
+import java.util.Optional;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -30,22 +31,16 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.sormastosormas.data.validation.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 import de.symeda.sormas.backend.user.UserService;
-
-import java.util.Optional;
 
 @Stateless
 @LocalBean
 public class ReceivedCaseProcessor
 	extends
 	ReceivedDataProcessor<Case, CaseDataDto, SormasToSormasCaseDto, SormasToSormasCasePreview, Case, CaseService, SormasToSormasCaseDtoValidator> {
-
-	@EJB
-	private Sormas2SormasDataValidator dataValidator;
 
 	public ReceivedCaseProcessor() {
 	}
