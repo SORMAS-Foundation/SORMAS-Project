@@ -121,7 +121,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalOrderId;
-	private boolean preliminary;
+	private Boolean preliminary;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
@@ -342,11 +342,11 @@ public class PathogenTestDto extends PseudonymizableDto {
 		this.externalOrderId = externalOrderId;
 	}
 
-	public boolean isPreliminary() {
+	public Boolean getPreliminary() {
 		return preliminary;
 	}
 
-	public void setPreliminary(boolean preliminary) {
+	public void setPreliminary(Boolean preliminary) {
 		this.preliminary = preliminary;
 	}
 }

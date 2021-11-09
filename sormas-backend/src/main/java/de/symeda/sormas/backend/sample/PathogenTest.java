@@ -97,7 +97,7 @@ public class PathogenTest extends CoreAdo {
 	private boolean viaLims;
 	private String externalId;
 	private String externalOrderId;
-	private boolean preliminary;
+	private Boolean preliminary;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
@@ -314,11 +314,11 @@ public class PathogenTest extends CoreAdo {
 	}
 
 	@Column
-	public boolean isPreliminary() {
+	public Boolean getPreliminary() {
 		return preliminary;
 	}
 
-	public void setPreliminary(boolean preliminary) {
+	public void setPreliminary(Boolean preliminary) {
 		this.preliminary = preliminary;
 	}
 

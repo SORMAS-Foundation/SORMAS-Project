@@ -57,7 +57,7 @@ public class TestReport extends CoreAdo {
 	private String typingId;
 	private String externalId;
 	private String externalOrderId;
-	private boolean preliminary;
+	private Boolean preliminary;
 
 	private PathogenTest pathogenTest;
 
@@ -183,16 +183,16 @@ public class TestReport extends CoreAdo {
 		return externalOrderId;
 	}
 
+	public void setExternalOrderId(String externalOrderId) {
+		this.externalOrderId = externalOrderId;
+	}
+
 	@Column
-	public boolean isPreliminary() {
+	public Boolean getPreliminary() {
 		return preliminary;
 	}
 
-	public void setPreliminary(boolean preliminary) {
+	public void setPreliminary(Boolean preliminary) {
 		this.preliminary = preliminary;
-	}
-
-	public void setExternalOrderId(String externalOrderId) {
-		this.externalOrderId = externalOrderId;
 	}
 }

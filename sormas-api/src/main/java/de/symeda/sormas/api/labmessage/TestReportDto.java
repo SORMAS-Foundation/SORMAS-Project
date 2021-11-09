@@ -49,7 +49,7 @@ public class TestReportDto extends EntityDto {
 	private String externalId;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalOrderId;
-	private boolean preliminary;
+	private Boolean preliminary;
 
 	private PathogenTestReferenceDto pathogenTest;
 
@@ -171,11 +171,11 @@ public class TestReportDto extends EntityDto {
 		this.externalOrderId = externalOrderId;
 	}
 
-	public boolean isPreliminary() {
+	public Boolean getPreliminary() {
 		return preliminary;
 	}
 
-	public void setPreliminary(boolean preliminary) {
+	public void setPreliminary(Boolean preliminary) {
 		this.preliminary = preliminary;
 	}
 }

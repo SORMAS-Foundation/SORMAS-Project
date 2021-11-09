@@ -733,7 +733,7 @@ public class LabMessageController {
 				typingIdField.setVisible(true);
 			}
 
-			((CheckBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.PRELIMINARY)).setValue(testReportDto.isPreliminary());
+			((CheckBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.PRELIMINARY)).setValue(testReportDto.getPreliminary());
 		}
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			((DateField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.REPORT_DATE))
@@ -785,7 +785,7 @@ public class LabMessageController {
 			pathogenTestDto.setTypingId(testReportDto.getTypingId());
 			pathogenTestDto.setExternalId(testReportDto.getExternalId());
 			pathogenTestDto.setExternalOrderId(testReportDto.getExternalOrderId());
-			pathogenTestDto.setPreliminary(testReportDto.isPreliminary());
+			pathogenTestDto.setPreliminary(testReportDto.getPreliminary());
 		}
 
 		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());
