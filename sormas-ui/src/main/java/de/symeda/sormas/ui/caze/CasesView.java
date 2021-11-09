@@ -228,7 +228,12 @@ public class CasesView extends AbstractView {
 		ExportConfigurationDto config = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference(), ExportType.CASE);
 
 		config.setProperties(
-			ImportExportUtils.getCaseExportProperties(CaseDownloadUtil::getPropertyCaption, caseFollowUpEnabled, hasCaseManagementRight)
+			ImportExportUtils
+				.getCaseExportProperties(
+					CaseDownloadUtil::getPropertyCaption,
+					caseFollowUpEnabled,
+					hasCaseManagementRight,
+					FacadeProvider.getConfigFacade().getCountryLocale())
 				.stream()
 				.map(ExportPropertyMetaInfo::getPropertyId)
 				.collect(Collectors.toSet()));
@@ -371,7 +376,11 @@ public class CasesView extends AbstractView {
 
 					ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
 						ExportType.CASE,
-						ImportExportUtils.getCaseExportProperties(CaseDownloadUtil::getPropertyCaption, caseFollowUpEnabled, hasCaseManagementRight),
+						ImportExportUtils.getCaseExportProperties(
+							CaseDownloadUtil::getPropertyCaption,
+							caseFollowUpEnabled,
+							hasCaseManagementRight,
+							FacadeProvider.getConfigFacade().getCountryLocale()),
 						customExportWindow::close);
 					customExportsLayout.setExportCallback(
 						(exportConfig) -> Page.getCurrent()
