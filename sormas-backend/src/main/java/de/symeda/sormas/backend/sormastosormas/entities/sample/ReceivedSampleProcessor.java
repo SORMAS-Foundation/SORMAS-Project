@@ -73,22 +73,9 @@ public class ReceivedSampleProcessor
 		} else {
 			existingPathogenTests = Collections.emptyMap();
 		}
-
-		Map<String, PathogenTestDto> finalExistingPathogenTests = existingPathogenTests;
+		updateReportingUser(sharedData.getEntity(), existingData);
 		sharedData.getPathogenTests()
-			.forEach(pathogenTest -> handleIgnoredProperties(pathogenTest, finalExistingPathogenTests.get(pathogenTest.getUuid())));
-		if (existingData != null) {
-			existingPathogenTests = existingData.getPathogenTests()
-				.stream()
-				.filter(Objects::nonNull)
-				.collect(Collectors.toMap(PathogenTest::getUuid, PathogenTestFacadeEjb::toDto));
-			updateReportingUser(sharedData.getEntity(), existingData);
-
-			Map<String, PathogenTestDto> finalExistingPathogenTests1 = existingPathogenTests;
-			sharedData.getPathogenTests()
-				.forEach(pathogenTest -> handleIgnoredProperties(pathogenTest, finalExistingPathogenTests1.get(pathogenTest.getUuid())));
-		}
-
+			.forEach(pathogenTest -> handleIgnoredProperties(pathogenTest, existingPathogenTests.get(pathogenTest.getUuid())));
 	}
 
 	@Override
