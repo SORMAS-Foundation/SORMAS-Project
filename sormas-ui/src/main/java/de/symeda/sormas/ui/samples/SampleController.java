@@ -288,7 +288,11 @@ public class SampleController {
 		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingReferSample));
 	}
 
-	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid, boolean isPseudonymized, Disease disease) {
+	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(
+		final String sampleUuid,
+		boolean isPseudonymized,
+		Disease disease,
+		boolean hideReferAndDeleteButton) {
 
 		SampleEditForm form = new SampleEditForm(isPseudonymized, disease);
 		form.setWidth(form.getWidth() * 10 / 12, Unit.PIXELS);
@@ -316,7 +320,7 @@ public class SampleController {
 			}
 		});
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
+		if (!hideReferAndDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
 			editView.addDeleteListener(() -> {
 				FacadeProvider.getSampleFacade().deleteSample(dto.toReference());
 				UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
@@ -325,7 +329,7 @@ public class SampleController {
 
 		// Initialize 'Refer to another laboratory' button or link to referred sample
 		Button referOrLinkToOtherLabButton = null;
-		if (dto.getReferredTo() == null) {
+		if (!hideReferAndDeleteButton && dto.getReferredTo() == null) {
 			if (dto.getSamplePurpose() == SamplePurpose.EXTERNAL && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_TRANSFER)) {
 				referOrLinkToOtherLabButton =
 					ButtonHelper.createButton("referOrLinkToOtherLab", I18nProperties.getCaption(Captions.sampleRefer), new ClickListener() {
@@ -345,7 +349,7 @@ public class SampleController {
 						}
 					}, ValoTheme.BUTTON_LINK);
 			}
-		} else {
+		} else if (!hideReferAndDeleteButton) {
 			SampleDto referredDto = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getReferredTo().getUuid());
 			FacilityReferenceDto referredDtoLab = referredDto.getLab();
 			String referOrLinkToOtherLabButtonCaption = referredDtoLab == null
