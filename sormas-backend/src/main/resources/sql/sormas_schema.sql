@@ -1520,7 +1520,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (49, 'data history f
 ALTER TABLE cases ADD COLUMN healthfacilitydetails varchar(512);
 
 -- 2017-07-20 Database wipe for new infrastructure data #237
-BEGIN;
 DELETE FROM task;
 DELETE FROM sampletest;
 DELETE FROM samples;
@@ -1544,7 +1543,6 @@ DELETE FROM facility;
 DELETE FROM community;
 DELETE FROM district;
 DELETE FROM region;
-COMMIT;
 
 INSERT INTO schema_version (version_number, comment) VALUES (50, 'other health facility description for cases #238');
 
@@ -8750,5 +8748,44 @@ CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON sharerequ
     FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sharerequestinfo_shareinfo_history', true);
 
 INSERT INTO schema_version (version_number, comment) VALUES (420, 'Create missing history tables for S2S tables #6949');
+
+-- 2021-10-19 Assigned to user list of task should consider related entities jurisdiction #6867
+ALTER TABLE users ADD COLUMN jurisdictionLevel varchar(255);
+ALTER TABLE users_history ADD COLUMN jurisdictionLevel varchar(255);
+
+UPDATE users u set jurisdictionLevel = 'NONE' where 'ADMIN' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'NONE' where 'IMPORT_USER' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'NONE' where 'REST_USER' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'NONE' where 'BAG_USER' in (select userrole from users_userroles uu where uu.user_id = u.id);
+
+UPDATE users u set jurisdictionLevel = 'POINT_OF_ENTRY' where 'POE_INFORMANT' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'EXTERNAL_LABORATORY' where 'EXTERNAL_LAB_USER' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'LABORATORY' where 'LAB_USER' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'HEALTH_FACILITY' where 'HOSPITAL_INFORMANT' in (select userrole from users_userroles uu where uu.user_id = u.id);
+
+UPDATE users u set jurisdictionLevel = 'COMMUNITY' where 'COMMUNITY_OFFICER' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'COMMUNITY' where 'COMMUNITY_INFORMANT' in (select userrole from users_userroles uu where uu.user_id = u.id);
+
+UPDATE users u set jurisdictionLevel = 'DISTRICT' where 'SURVEILLANCE_OFFICER' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'DISTRICT' where 'CASE_OFFICER' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'DISTRICT' where 'CONTACT_OFFICER' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'DISTRICT' where 'DISTRICT_OBSERVER' in (select userrole from users_userroles uu where uu.user_id = u.id);
+
+UPDATE users u set jurisdictionLevel = 'REGION' where 'SURVEILLANCE_SUPERVISOR' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'REGION' where 'ADMIN_SUPERVISOR' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'REGION' where 'CASE_SUPERVISOR' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'REGION' where 'CONTACT_SUPERVISOR' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'REGION' where 'EVENT_OFFICER' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'REGION' where 'STATE_OBSERVER' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'REGION' where 'POE_SUPERVISOR' in (select userrole from users_userroles uu where uu.user_id = u.id);
+
+UPDATE users u set jurisdictionLevel = 'NATION' where 'NATIONAL_USER' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'NATION' where 'NATIONAL_OBSERVER' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'NATION' where 'NATIONAL_CLINICIAN' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'NATION' where 'POE_NATIONAL_USER' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'NATION' where 'REST_EXTERNAL_VISITS_USER' in (select userrole from users_userroles uu where uu.user_id = u.id);
+UPDATE users u set jurisdictionLevel = 'NATION' where 'SORMAS_TO_SORMAS_CLIENT' in (select userrole from users_userroles uu where uu.user_id = u.id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (421, 'Assigned to user list of task should consider related entities jurisdiction #6867');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

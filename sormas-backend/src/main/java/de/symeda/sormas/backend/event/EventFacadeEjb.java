@@ -951,7 +951,7 @@ public class EventFacadeEjb implements EventFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
 		// Check whether there are any infrastructure errors
-		if (!districtFacade.getDistrictByUuid(location.getDistrict().getUuid()).getRegion().equals(location.getRegion())) {
+		if (!districtFacade.getByUuid(location.getDistrict().getUuid()).getRegion().equals(location.getRegion())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noDistrictInRegion));
 		}
 		if (location.getCommunity() != null
@@ -1274,6 +1274,35 @@ public class EventFacadeEjb implements EventFacade {
 	@Override
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		eventService.updateExternalData(externalData);
+	}
+
+	@Override
+	public List<String> getSubordinateEventUuids(List<String> uuids) {
+		if (uuids.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<String> subordinateEventUuids = new ArrayList<>();
+		IterableHelper.executeBatched(uuids, ModelConstants.PARAMETER_LIMIT, (batchedUuids) -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<String> cq = cb.createQuery(String.class);
+			Root<Event> from = cq.from(Event.class);
+
+			EventJoins<Event> eventJoins = new EventJoins<>(from);
+
+			Predicate filters = CriteriaBuilderHelper.and(
+				cb,
+				eventService.createUserFilter(cb, cq, from),
+				eventService.createActiveEventsFilter(cb, from),
+				eventJoins.getSuperordinateEvent().get(Event.UUID).in(batchedUuids));
+
+			cq.where(filters);
+			cq.select(from.get(Event.UUID));
+
+			subordinateEventUuids.addAll(em.createQuery(cq).getResultList());
+		});
+
+		return subordinateEventUuids;
 	}
 
 	@LocalBean

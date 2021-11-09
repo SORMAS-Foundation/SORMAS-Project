@@ -3,8 +3,6 @@ package de.symeda.sormas.backend.infrastructure;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.ejb.EJB;
-
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -17,15 +15,13 @@ import de.symeda.sormas.backend.common.AbstractBaseEjb;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
 public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AbstractInfrastructureAdoService<ADO, CRITERIA>, CRITERIA extends BaseCriteria>
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA> {
 
 	protected FeatureConfigurationFacadeEjb featureConfiguration;
-
-	@EJB
-	protected UserService userService;
 
 	protected AbstractInfrastructureEjb() {
 		super();
@@ -48,13 +44,20 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 		}
 		ADO existingEntity = service.getByUuid(dtoToSave.getUuid());
 
-		if (existingEntity == null && !userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			throw new UnsupportedOperationException(
-				"User " + userService.getCurrentUser().getUuid() + " is not allowed to create infrastructure data.");
-		}
-		if (existingEntity != null && !userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			throw new UnsupportedOperationException(
-				"User " + userService.getCurrentUser().getUuid() + " is not allowed to edit infrastructure data.");
+		final User currentUser = userService.getCurrentUser();
+
+		// currentUser is the currently logged-in user. However, in the most cases, there is no user session active as
+		// the call to AbstractInfrastructureEjb::save is the result of a cron service invocation or server start.
+		// In this case it is safe to grant access.
+		// In case the invocation is the result of a user action (e.g., via the REST API) we do an access check.
+
+		if (currentUser != null) {
+			if (existingEntity == null && !userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
+				throw new UnsupportedOperationException("User " + currentUser.getUuid() + " is not allowed to create infrastructure data.");
+			}
+			if (existingEntity != null && !userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
+				throw new UnsupportedOperationException("User " + currentUser.getUuid() + " is not allowed to edit infrastructure data.");
+			}
 		}
 
 		if (existingEntity == null) {

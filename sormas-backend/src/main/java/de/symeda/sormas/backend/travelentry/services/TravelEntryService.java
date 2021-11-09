@@ -18,6 +18,9 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventQueryContext;
+import de.symeda.sormas.backend.user.User;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -154,12 +157,17 @@ public class TravelEntryService extends BaseTravelEntryService {
 	}
 
 	public boolean inJurisdictionOrOwned(TravelEntry travelEntry) {
+		return inJurisdictionOrOwned(travelEntry, getCurrentUser());
+	}
+
+	public boolean inJurisdictionOrOwned(TravelEntry travelEntry, User user) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<TravelEntry> root = cq.from(TravelEntry.class);
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new TravelEntryQueryContext(cb, cq, root))));
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new TravelEntryQueryContext(cb, cq, root), user)));
 		cq.where(cb.equal(root.get(TravelEntry.UUID), travelEntry.getUuid()));
-		return em.createQuery(cq).getSingleResult();
+		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
 	}
 
 	public Predicate createActiveTravelEntriesFilter(CriteriaBuilder cb, From<?, TravelEntry> root) {

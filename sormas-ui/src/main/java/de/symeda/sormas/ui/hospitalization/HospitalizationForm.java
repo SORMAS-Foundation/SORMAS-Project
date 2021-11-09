@@ -150,7 +150,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 		FieldHelper.setEnabledWhen(
 			admittedToHealthFacilityField,
-			Arrays.asList(YesNoUnknown.YES),
+			Arrays.asList(YesNoUnknown.YES, YesNoUnknown.NO, YesNoUnknown.UNKNOWN),
 			Arrays.asList(
 				facilityField,
 				admissionDateField,

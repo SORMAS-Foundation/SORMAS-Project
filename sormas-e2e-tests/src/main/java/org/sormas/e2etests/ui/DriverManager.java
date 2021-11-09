@@ -21,8 +21,10 @@ package org.sormas.e2etests.ui;
 import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
+@Slf4j
 public class DriverManager {
   private final Map<String, RemoteWebDriver> webDriverByScenarioName;
   private final DriverFactory driverFactory;
@@ -40,10 +42,12 @@ public class DriverManager {
   }
 
   public void releaseRemoteWebDriver(String scenarioName) {
+    log.info("Removing scenario from WebDriver instance");
     RemoteWebDriver webDriver = webDriverByScenarioName.remove(scenarioName);
     if (webDriver == null) {
       throw new IllegalArgumentException(scenarioName + " There is no driver!");
     }
+    log.info("Closing WebDriver instance");
     webDriver.close();
     webDriver.quit();
   }

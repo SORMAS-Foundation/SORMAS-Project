@@ -35,8 +35,6 @@ public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, Immuniza
 
 	boolean exists(String uuid);
 
-	ImmunizationReferenceDto getReferenceByUuid(String uuid);
-
 	void deleteImmunization(String uuid);
 
 	List<String> deleteImmunizations(List<String> immunizationUuids);
@@ -60,4 +58,6 @@ public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, Immuniza
 		List<SortProperty> sortProperties);
 
 	boolean linkRecoveryImmunizationToSearchedCase(String specificCaseSearchValue, ImmunizationDto immunization);
+
+    List<ImmunizationDto> getByPersonUuids(List<String> uuids);
 }

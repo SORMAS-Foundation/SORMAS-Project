@@ -11,3 +11,7 @@ Use the scripts by editing the csv path and running it as super user on the SORM
 ## Delete scripts
 
 The delete scripts remove entries for good, it is no 'soft delete'. To be executed with caution by sys-admins only!
+
+## Check scripts
+
+Check scripts examine the database, but do not alter the state of the database. They are used to find, e.g., missing history tables or columns.
