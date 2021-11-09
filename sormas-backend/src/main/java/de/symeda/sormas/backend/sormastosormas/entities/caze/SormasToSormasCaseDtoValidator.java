@@ -4,7 +4,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
-import de.symeda.sormas.backend.caze.Case;
 
 import de.symeda.sormas.backend.sormastosormas.data.validation.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
@@ -15,7 +14,7 @@ import javax.ejb.Stateless;
 
 @Stateless
 @LocalBean
-public class SormasToSormasCaseDtoValidator extends SormasToSormasDtoValidator<CaseDataDto, SormasToSormasCaseDto, SormasToSormasCasePreview, Case> {
+public class SormasToSormasCaseDtoValidator extends SormasToSormasDtoValidator<CaseDataDto, SormasToSormasCaseDto, SormasToSormasCasePreview> {
 
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;

@@ -5,7 +5,6 @@ import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 
-import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.data.validation.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
 
@@ -16,7 +15,7 @@ import javax.ejb.Stateless;
 @Stateless
 @LocalBean
 public class SormasToSormasSampleDtoValidator
-	extends SormasToSormasDtoValidator<SampleDto, SormasToSormasSampleDto, PreviewNotImplementedDto, Sample> {
+	extends SormasToSormasDtoValidator<SampleDto, SormasToSormasSampleDto, PreviewNotImplementedDto> {
 
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;

@@ -4,7 +4,6 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
-import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.sormastosormas.data.validation.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
 
@@ -16,7 +15,7 @@ import javax.ejb.Stateless;
 @LocalBean
 public class SormasToSormasEventParticipantDtoValidator
 	extends
-	SormasToSormasDtoValidator<EventParticipantDto, SormasToSormasEventParticipantDto, SormasToSormasEventParticipantPreview, EventParticipant> {
+	SormasToSormasDtoValidator<EventParticipantDto, SormasToSormasEventParticipantDto, SormasToSormasEventParticipantPreview> {
 
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;

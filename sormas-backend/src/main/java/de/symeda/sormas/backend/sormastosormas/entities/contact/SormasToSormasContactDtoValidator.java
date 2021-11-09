@@ -15,7 +15,7 @@ import javax.ejb.Stateless;
 
 @Stateless
 @LocalBean
-public class SormasToSormasContactDtoValidator extends SormasToSormasDtoValidator<ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview, Contact> {
+public class SormasToSormasContactDtoValidator extends SormasToSormasDtoValidator<ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview> {
 
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;

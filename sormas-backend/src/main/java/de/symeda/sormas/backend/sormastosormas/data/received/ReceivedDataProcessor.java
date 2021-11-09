@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 
-public abstract class ReceivedDataProcessor<ADO extends AbstractDomainObject, DTO extends SormasToSormasShareableDto, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW extends PseudonymizableDto, ENTITY extends SormasToSormasShareable, SRV extends AdoServiceWithUserFilter<ADO>, VALIDATOR extends SormasToSormasDtoValidator<DTO, SHARED, PREVIEW, ENTITY>> {
+public abstract class ReceivedDataProcessor<ADO extends AbstractDomainObject, DTO extends SormasToSormasShareableDto, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW extends PseudonymizableDto, ENTITY extends SormasToSormasShareable, SRV extends AdoServiceWithUserFilter<ADO>, VALIDATOR extends SormasToSormasDtoValidator<DTO, SHARED, PREVIEW>> {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
