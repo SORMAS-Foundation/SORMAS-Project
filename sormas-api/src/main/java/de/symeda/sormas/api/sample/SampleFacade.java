@@ -25,7 +25,6 @@ import java.util.Map;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.utils.SortProperty;
