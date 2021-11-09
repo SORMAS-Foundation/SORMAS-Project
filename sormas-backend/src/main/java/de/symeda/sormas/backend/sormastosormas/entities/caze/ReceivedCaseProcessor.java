@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.sormastosormas.entities.caze;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -25,65 +26,67 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
+import de.symeda.sormas.backend.user.UserService;
+
+import java.util.Optional;
 
 @Stateless
 @LocalBean
-public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto, SormasToSormasCaseDto, SormasToSormasCasePreview, Case> {
+public class ReceivedCaseProcessor
+	extends ReceivedDataProcessor<Case, CaseDataDto, SormasToSormasCaseDto, SormasToSormasCasePreview, Case, CaseService> {
 
 	@EJB
 	private Sormas2SormasDataValidator dataValidator;
-	@EJB
-	private CaseService caseService;
 
-	@Override
-	public ValidationErrors processReceivedData(SormasToSormasCaseDto receivedCase, Case existingCase) {
-		PersonDto person = receivedCase.getPerson();
-		CaseDataDto caze = receivedCase.getEntity();
+	public ReceivedCaseProcessor() {
+	}
 
-		ValidationErrors uuidError = validateSharedUuid(caze.getUuid());
-		if (uuidError.hasError()) {
-			return uuidError;
-		}
-
-		dataValidator.handleIgnoredProperties(caze, CaseFacadeEjb.CaseFacadeEjbLocal.toDto(existingCase));
-		dataValidator.handleIgnoredProperties(person, dataValidator.getExitingPerson(existingCase));
-
-
-		return dataValidator.validateCaseData(caze, person, existingCase);
+	@Inject
+	protected ReceivedCaseProcessor(CaseService service, UserService userService, ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade) {
+		super(service, userService, configFacade);
 	}
 
 	@Override
-	public ValidationErrors processReceivedPreview(SormasToSormasCasePreview preview) {
-		ValidationErrors uuidError = validateSharedUuid(preview.getUuid());
-		if (uuidError.hasError()) {
-			return uuidError;
-		}
+	public void handleReceivedData(SormasToSormasCaseDto sharedData, Case existingCase) {
+		handleIgnoredProperties(sharedData.getEntity(), CaseFacadeEjb.toDto(existingCase));
 
-		ValidationErrors caseValidationErrors = dataValidator.validateCasePreview(preview);
-		ValidationErrors personValidationErrors = dataValidator.validatePersonPreview(preview.getPerson());
-		caseValidationErrors.addAll(personValidationErrors);
+		handleIgnoredProperties(
+			sharedData.getPerson(),
+			Optional.ofNullable(existingCase).map(c -> PersonFacadeEjb.toDto(c.getPerson())).orElse(null));
 
-		return caseValidationErrors;
+		CaseDataDto caze = sharedData.getEntity();
+		PersonDto person = sharedData.getPerson();
+		caze.setPerson(person.toReference());
+		updateReportingUser(caze, existingCase);
 	}
 
-	private ValidationErrors validateSharedUuid(String uuid) {
-		ValidationErrors errors = new ValidationErrors();
-		if (caseService.exists(
-			(cb, caseRoot, cq) -> cb.and(
-				cb.equal(caseRoot.get(Case.UUID), uuid),
-				cb.isNull(caseRoot.get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO)),
-				cb.isEmpty(caseRoot.get(Case.SORMAS_TO_SORMAS_SHARES))))) {
-			errors.add(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasCaseExists));
-		}
+	@Override
+	public ValidationErrors existsNotShared(String uuid) {
+		return existsNotShared(
+			uuid,
+			Case.SORMAS_TO_SORMAS_ORIGIN_INFO,
+			Case.SORMAS_TO_SORMAS_SHARES,
+			Captions.CaseData,
+			Validations.sormasToSormasCaseExists);
+	}
 
-		return errors;
+	@Override
+	public ValidationErrors validate(SormasToSormasCaseDto sharedData) {
+		return dataValidator.validateCaseData(sharedData.getEntity(), sharedData.getPerson());
+	}
+
+	@Override
+	public ValidationErrors validatePreview(SormasToSormasCasePreview preview) {
+		ValidationErrors validationErrors = dataValidator.validateCasePreview(preview);
+		validationErrors.addAll(dataValidator.validatePersonPreview(preview.getPerson()));
+		return validationErrors;
 	}
 }

@@ -131,7 +131,8 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);
 
-			SampleListComponent sampleList = new SampleListComponent(eventParticipantRef);
+			EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
+			SampleListComponent sampleList = new SampleListComponent(eventParticipantRef, event.getDisease());
 			sampleList.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.VSPACE_NONE);
 			sampleLocLayout.addComponent(sampleList);
 

@@ -66,25 +66,27 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 		getContent().addComponent(maternalHistoryHeadingLabel, MATERNAL_HISTORY_HEADING_LOC);
 
 		TextField tfChildrenNumber = addField(MaternalHistoryDto.CHILDREN_NUMBER, TextField.class);
-		tfChildrenNumber.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfChildrenNumber.getCaption()));
+		tfChildrenNumber.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, tfChildrenNumber.getCaption()));
 		TextField tfAgeAtBirth = addField(MaternalHistoryDto.AGE_AT_BIRTH, TextField.class);
-		tfAgeAtBirth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfAgeAtBirth.getCaption()));
+		tfAgeAtBirth.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, tfAgeAtBirth.getCaption()));
 		TextField tfConjunctivitisMonth = addField(MaternalHistoryDto.CONJUNCTIVITIS_MONTH, TextField.class);
 		tfConjunctivitisMonth
-			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfConjunctivitisMonth.getCaption()));
+			.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, tfConjunctivitisMonth.getCaption()));
 		TextField tfMaculopapularRashMonth = addField(MaternalHistoryDto.MACULOPAPULAR_RASH_MONTH, TextField.class);
 		tfMaculopapularRashMonth
-			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfMaculopapularRashMonth.getCaption()));
+			.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, tfMaculopapularRashMonth.getCaption()));
 		TextField tfSwollenLymphsMonth = addField(MaternalHistoryDto.SWOLLEN_LYMPHS_MONTH, TextField.class);
-		tfSwollenLymphsMonth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfSwollenLymphsMonth.getCaption()));
+		tfSwollenLymphsMonth
+			.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, tfSwollenLymphsMonth.getCaption()));
 		TextField tfArthralgiaArthritisMonth = addField(MaternalHistoryDto.ARTHRALGIA_ARTHRITIS_MONTH, TextField.class);
 		tfArthralgiaArthritisMonth
-			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfArthralgiaArthritisMonth.getCaption()));
+			.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, tfArthralgiaArthritisMonth.getCaption()));
 		TextField otherComplicationsMonth = addField(MaternalHistoryDto.OTHER_COMPLICATIONS_MONTH, TextField.class);
 		otherComplicationsMonth
-			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, otherComplicationsMonth.getCaption()));
+			.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, otherComplicationsMonth.getCaption()));
 		TextField rashExposureMonth = addField(MaternalHistoryDto.RASH_EXPOSURE_MONTH, TextField.class);
-		rashExposureMonth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, rashExposureMonth.getCaption()));
+		rashExposureMonth
+			.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, rashExposureMonth.getCaption()));
 
 		addFields(
 			MaternalHistoryDto.CONJUNCTIVITIS_ONSET,

@@ -35,6 +35,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -43,12 +44,11 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
-public class ImmunizationDto extends PseudonymizableDto implements SormasToSormasEntityDto {
+public class ImmunizationDto extends PseudonymizableDto implements SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -6538566879882613529L;
 
@@ -172,7 +172,7 @@ public class ImmunizationDto extends PseudonymizableDto implements SormasToSorma
 	}
 
 	public ImmunizationReferenceDto toReference() {
-		return new ImmunizationReferenceDto(getUuid(), toString(), getExternalId());
+		return new ImmunizationReferenceDto(getUuid(), getPerson().getCaption(), getExternalId());
 	}
 
 	public Disease getDisease() {

@@ -34,14 +34,14 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 
 @MappedSuperclass
-public class BaseImmunization extends CoreAdo implements SormasToSormasEntity {
+public class BaseImmunization extends CoreAdo implements SormasToSormasShareable {
 
 	private Disease disease;
 	private String diseaseDetails;

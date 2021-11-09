@@ -164,11 +164,6 @@ public class CommunityFacadeEjb
 	}
 
 	@Override
-	public CommunityReferenceDto getCommunityReferenceByUuid(String uuid) {
-		return toReferenceDto(service.getByUuid(uuid));
-	}
-
-	@Override
 	public CommunityReferenceDto getCommunityReferenceById(long id) {
 		return toReferenceDto(service.getById(id));
 	}
@@ -274,6 +269,11 @@ public class CommunityFacadeEjb
 		dto.setExternalID(entity.getExternalID());
 
 		return dto;
+	}
+
+	@Override
+	public CommunityReferenceDto toRefDto(Community community) {
+		return toReferenceDto(community);
 	}
 
 	@Override

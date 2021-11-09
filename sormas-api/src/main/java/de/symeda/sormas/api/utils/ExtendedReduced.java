@@ -13,21 +13,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.entities;
+package de.symeda.sormas.api.utils;
 
-import java.util.List;
+public enum ExtendedReduced {
 
-import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.user.User;
-
-public interface SormasToSormasEntity {
-
-	SormasToSormasOriginInfo getSormasToSormasOriginInfo();
-
-	void setSormasToSormasOriginInfo(SormasToSormasOriginInfo originInfo);
-
-	List<SormasToSormasShareInfo> getSormasToSormasShares();
-
-	User getReportingUser();
+	EXTENDED,
+	REDUCED
 }

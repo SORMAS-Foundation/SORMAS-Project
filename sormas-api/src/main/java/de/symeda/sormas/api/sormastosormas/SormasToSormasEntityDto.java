@@ -19,17 +19,17 @@ import java.io.Serializable;
 
 import javax.validation.Valid;
 
-public class SormasToSormasEntityDto<T> implements Serializable {
+public abstract class SormasToSormasEntityDto<T extends SormasToSormasShareableDto> implements Serializable {
 
 	private static final long serialVersionUID = -1142043326721172412L;
 
 	@Valid
 	private T entity;
 
-	public SormasToSormasEntityDto() {
+	protected SormasToSormasEntityDto() {
 	}
 
-	public SormasToSormasEntityDto(T entity) {
+	protected SormasToSormasEntityDto(T entity) {
 		this.entity = entity;
 	}
 

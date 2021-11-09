@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +58,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareTree;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
@@ -92,7 +93,7 @@ import de.symeda.sormas.backend.sormastosormas.entities.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.entities.ReceivedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.entities.ShareDataExistingEntities;
-import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.entities.SyncDataDto;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
@@ -112,7 +113,7 @@ import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormas
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
-public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomainObject & SormasToSormasEntity, DTO extends EntityDto & de.symeda.sormas.api.utils.SormasToSormasEntityDto, S extends SormasToSormasEntityDto<DTO>>
+public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomainObject & SormasToSormasShareable, DTO extends EntityDto & SormasToSormasShareableDto, S extends SormasToSormasEntityDto<DTO>>
 	implements SormasToSormasEntityInterface {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSormasToSormasInterface.class);
@@ -396,7 +397,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		ShareDataExistingEntities existingEntities = loadExistingEntities(receivedData);
 		List<ValidationErrors> validationErrors = receivedDataProcessor.processReceivedData(receivedData, existingEntities);
 
-		if (validationErrors.size() > 0) {
+		if (!validationErrors.isEmpty()) {
 			throw new SormasToSormasValidationException(validationErrors);
 		}
 
@@ -550,7 +551,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	protected void validateOwnership(List<ADO> entities) throws SormasToSormasException {
 		List<String> notOwnedUuids = getUuidsWithPendingOwnershipHandedOver(entities);
-		if (notOwnedUuids.size() > 0) {
+		if (!notOwnedUuids.isEmpty()) {
 
 			List<ValidationErrors> errors = notOwnedUuids.stream()
 				.map(
@@ -668,7 +669,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		for (SormasToSormasShareTree shareTree : shares) {
 			if (shareTree.getShare().getTargetDescriptor().getId().equals(ownOrganizationId)) {
 				return shareTree;
-			} else if (shareTree.getReShares().size() > 0) {
+			} else if (!shareTree.getReShares().isEmpty()) {
 				SormasToSormasShareTree subTree = findParentShare(shareTree.getReShares(), ownOrganizationId);
 
 				if (subTree != null) {
@@ -686,7 +687,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		List<ValidationErrors> validationErrors = receivedDataProcessor.processReceivedRequest(shareData);
 
-		if (validationErrors.size() > 0) {
+		if (!validationErrors.isEmpty()) {
 			throw new SormasToSormasValidationException(validationErrors);
 		}
 
@@ -723,9 +724,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		requestInfo.setRequestStatus(requestStatus);
 
 		addOptionsToShareRequestInfo(requestInfo, options, currentUser);
-		shares.forEach(s -> {
-			s.setOwnershipHandedOver(options.isHandOverOwnership());
-		});
+		shares.forEach(s -> s.setOwnershipHandedOver(options.isHandOverOwnership()));
 
 		requestInfo.setShares(shares);
 

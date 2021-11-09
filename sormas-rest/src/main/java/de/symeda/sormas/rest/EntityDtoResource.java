@@ -22,7 +22,7 @@ public abstract class EntityDtoResource {
 	@EJB
 	private TransactionWrapper transactionWrapper;
 
-	protected <T extends Object> List<PushResult> savePushedDto(List<T> dtos, Function<T, T> saveEntityDto) {
+	protected <T> List<PushResult> savePushedDto(List<T> dtos, Function<T, T> saveEntityDto) {
 
 		List<PushResult> results = new ArrayList<>(dtos.size());
 		for (T dto : dtos) {
@@ -46,7 +46,7 @@ public abstract class EntityDtoResource {
 		return results;
 	}
 
-	protected <T extends Object> String createErrorMessage(T dto) {
+	protected <T> String createErrorMessage(T dto) {
 
 		final EntityDto entityDto = (EntityDto) dto;
 		if (entityDto.getChangeDate() == null) {

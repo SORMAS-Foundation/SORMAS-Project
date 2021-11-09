@@ -273,7 +273,8 @@ public class WebDriverHelpers {
   }
 
   public void accessWebSite(String url) {
-    baseSteps.getDriver().navigate().to(url);
+    log.info("Navigating to: " + url);
+    baseSteps.getDriver().get(url);
   }
 
   public boolean isElementVisibleWithTimeout(By selector, int seconds) {
@@ -576,7 +577,7 @@ public class WebDriverHelpers {
     return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
   }
 
-  public void wait20SecondsOrThrowException(By selector) {
+  public boolean isElementDisplayedIn20SecondsOrThrowException(By selector) {
     try {
       await()
           .pollInterval(ONE_HUNDRED_MILLISECONDS)
@@ -584,6 +585,7 @@ public class WebDriverHelpers {
           .catchUncaughtExceptions()
           .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
           .until(() -> baseSteps.getDriver().findElement(selector).isDisplayed());
+      return true;
     } catch (Exception e) {
       throw new NoSuchElementException("Element: " + selector + " is not visible");
     }

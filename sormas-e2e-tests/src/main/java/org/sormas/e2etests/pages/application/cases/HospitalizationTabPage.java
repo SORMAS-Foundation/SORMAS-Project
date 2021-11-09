@@ -21,6 +21,8 @@ package org.sormas.e2etests.pages.application.cases;
 import org.openqa.selenium.By;
 
 public class HospitalizationTabPage {
+  public static final By PATIENT_ADMITTED_AT_FACILITY_OPTIONS =
+      By.cssSelector("#admittedToHealthFacility .v-select-option");
   public static final By DATE_OF_VISIT_OR_ADMISSION_INPUT = By.cssSelector("#admissionDate input");
   public static final By DATE_OF_DISCHARGE_OR_TRANSFER_INPUT =
       By.cssSelector("#dischargeDate input");
@@ -43,5 +45,5 @@ public class HospitalizationTabPage {
   public static final By SAVE_BUTTON = By.id("commit");
   public static final By FIRST_PREVIOUS_HOSPITALIZATION_ENTRY =
       By.xpath("//div[contains(@id, 'de.symeda.sormas.api.hospitalization')]");
-  public static final By SUCCESSFUL_SAVE_POPUP = By.xpath("//h1[text()='Case saved']");
+  public static final By SUCCESSFUL_SAVE_POPUP = By.cssSelector(".v-Notification-caption");
 }

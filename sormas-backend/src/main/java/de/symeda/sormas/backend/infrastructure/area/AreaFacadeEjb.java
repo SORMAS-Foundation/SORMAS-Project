@@ -139,6 +139,11 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, Area
 		return target;
 	}
 
+	@Override
+	public AreaReferenceDto toRefDto(Area area) {
+		return toReferenceDto(area);
+	}
+
 	public static AreaReferenceDto toReferenceDto(Area entity) {
 		if (entity == null) {
 			return null;

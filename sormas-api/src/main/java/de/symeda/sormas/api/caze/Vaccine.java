@@ -17,15 +17,29 @@ package de.symeda.sormas.api.caze;
 
 import javax.annotation.Nullable;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.Diseases;
 
 public enum Vaccine {
 
+	@Diseases(value = {
+		Disease.CORONAVIRUS })
 	COMIRNATY(VaccineManufacturer.BIONTECH_PFIZER),
+	@Diseases(value = {
+		Disease.CORONAVIRUS })
 	MRNA_1273(VaccineManufacturer.MODERNA),
+	@Diseases(value = {
+		Disease.CORONAVIRUS })
 	OXFORD_ASTRA_ZENECA(VaccineManufacturer.ASTRA_ZENECA),
+	@Diseases(value = {
+		Disease.CORONAVIRUS })
 	AD26_COV2_S(VaccineManufacturer.JOHNSON_JOHNSON),
+	@Diseases(value = {
+		Disease.CORONAVIRUS })
 	NVX_COV_2373(VaccineManufacturer.NOVAVAX),
+	@Diseases(value = {
+		Disease.CORONAVIRUS })
 	SANOFI_GSK(VaccineManufacturer.SANOFI_GSK),
 	UNKNOWN,
 	OTHER;
@@ -44,6 +58,7 @@ public enum Vaccine {
 		return manufacturer;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

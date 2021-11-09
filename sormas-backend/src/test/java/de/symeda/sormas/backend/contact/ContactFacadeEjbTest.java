@@ -1511,7 +1511,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		District district = creator.createDistrict("", region);
 		Facility facility = creator.createFacility("", region, district, creator.createCommunity("", district));
 		SampleDto sample =
-			creator.createSample(otherContactReference, otherUserReference, getFacilityFacade().getFacilityReferenceByUuid(facility.getUuid()), null);
+			creator.createSample(otherContactReference, otherUserReference, getFacilityFacade().getReferenceByUuid(facility.getUuid()), null);
 		TaskDto task = creator.createTask(
 			TaskContext.CONTACT,
 			TaskType.CONTACT_INVESTIGATION,

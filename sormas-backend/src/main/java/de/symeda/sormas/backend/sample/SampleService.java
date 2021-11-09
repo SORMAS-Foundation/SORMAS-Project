@@ -326,7 +326,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		Predicate filter = createUserFilterWithoutAssociations(cb, joins);
 
 		User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
 		if (jurisdictionLevel == JurisdictionLevel.LABORATORY || jurisdictionLevel == JurisdictionLevel.EXTERNAL_LABORATORY) {
 			return filter;
 		}
@@ -370,7 +370,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		Predicate filter = null;
 
 		User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
 		// Lab users can see samples assigned to their laboratory
 		if (jurisdictionLevel == JurisdictionLevel.LABORATORY || jurisdictionLevel == JurisdictionLevel.EXTERNAL_LABORATORY) {
 			if (currentUser.getLaboratory() != null) {

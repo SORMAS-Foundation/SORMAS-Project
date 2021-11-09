@@ -32,6 +32,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Size;
@@ -81,6 +83,7 @@ public class User extends AbstractDomainObject {
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
 	public static final String LANGUAGE = "language";
 	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";
+	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
 
 	private String userName;
 	private String password;
@@ -95,6 +98,7 @@ public class User extends AbstractDomainObject {
 	private Location address;
 
 	private Set<UserRole> userRoles;
+	private JurisdictionLevel jurisdictionLevel;
 
 	private Region region;
 	private District district;
@@ -221,8 +225,28 @@ public class User extends AbstractDomainObject {
 		return userRoles;
 	}
 
+	/**
+	 * Call updateJurisdictionLevel afterwards if you need to access the jurisdiction level.
+	 * This is not done automatically to avoid unnecessary calls when setUserRoles is used by the JPA provider
+	 */
 	public void setUserRoles(Set<UserRole> userRoles) {
 		this.userRoles = userRoles;
+	}
+
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	public JurisdictionLevel getJurisdictionLevel() {
+		return jurisdictionLevel;
+	}
+
+	public void setJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
+		this.jurisdictionLevel = jurisdictionLevel;
+	}
+
+	@PrePersist
+	@PreUpdate
+	public void updateJurisdictionLevel() {
+		jurisdictionLevel = UserRole.getJurisdictionLevel(this.getUserRoles());
 	}
 
 	@ManyToOne(cascade = {})
@@ -331,8 +355,14 @@ public class User extends AbstractDomainObject {
 		return Arrays.stream(userRoles).anyMatch(getUserRoles()::contains);
 	}
 
+	/**
+	 * Deprecated: Use getJurisdictionLevel instead
+	 * 
+	 * @return
+	 */
 	@Transient
-	public JurisdictionLevel getJurisdictionLevel() {
+	@Deprecated
+	public JurisdictionLevel getCalculatedJurisdictionLevel() {
 		return UserRole.getJurisdictionLevel(this.getUserRoles());
 	}
 

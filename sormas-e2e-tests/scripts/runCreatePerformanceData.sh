@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # SORMAS® - Surveillance Outbreak Response Management & Analysis System
 # Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
@@ -17,6 +17,25 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 #
 
-set -ex
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-sudo apt install ./google-chrome-stable_current_amd64.deb
+#This shell script is the execution entry point for the jenkins job used to populate the system with Persons and Immunization
+
+
+echo "I will run $1 times the tests"
+echo "Script started at:"
+date +"%T"
+
+rm -rf ./allureReports
+./gradlew clean goJF
+for ((i = 1; i <= $1; ++i)); do
+  rm -rf ./allure-results
+  ./gradlew clean
+  echo "Run: $i "
+  echo "Started at:"
+  date +"%T"
+  ./gradlew startTests -Dcucumber.tags="@PersonsAndImmunizations" -Dheadless=true -Dcourgette.threads=9
+  echo "Finished at:"
+  date +"%T"
+done
+echo "Script finished at:"
+date +"%T"
+
