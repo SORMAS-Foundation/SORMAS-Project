@@ -22,9 +22,13 @@ import java.util.Date;
 
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -52,7 +56,7 @@ import de.symeda.sormas.backend.TestDataCreator;
  * @since 11-Oct-21
  */
 @RunWith(MockitoJUnitRunner.class)
-public class Sormas2SormasDataValidatorTest extends AbstractBeanTest {
+public class ReceivedDataProcessorTest extends AbstractBeanTest {
 
 	@Test
 	public void testIgnoredPropertiesAreNotOverwrittenWithNewValuesForCase() throws CloneNotSupportedException {
@@ -77,7 +81,7 @@ public class Sormas2SormasDataValidatorTest extends AbstractBeanTest {
 		receivedCaseDto.setExternalToken("newExternalToken");
 		receivedCaseDto.setInternalToken("newInternalToken");
 
-		getSormas2SormasDataValidator().handleIgnoredProperties(receivedCaseDto, existingCaseDto);
+		getReceivedCaseProcessor().handleIgnoredProperties(receivedCaseDto, existingCaseDto);
 
 		assertThat(receivedCaseDto.getAdditionalDetails(), is("oldAdditionalDetails"));
 		assertThat(receivedCaseDto.getExternalID(), is("oldExternalId"));
@@ -114,7 +118,7 @@ public class Sormas2SormasDataValidatorTest extends AbstractBeanTest {
 		receivedCaseDto.setExternalToken("newExternalToken");
 		receivedCaseDto.setInternalToken("newInternalToken");
 
-		getSormas2SormasDataValidator().handleIgnoredProperties(receivedCaseDto, existingCaseDto);
+		getReceivedCaseProcessor().handleIgnoredProperties(receivedCaseDto, existingCaseDto);
 
 		assertThat(receivedCaseDto.getAdditionalDetails(), is("newAdditionalDetails"));
 		assertThat(receivedCaseDto.getExternalID(), is("newExternalId"));
@@ -142,7 +146,7 @@ public class Sormas2SormasDataValidatorTest extends AbstractBeanTest {
 		receivedContactDto.setExternalToken("newExternalToken");
 		receivedContactDto.setInternalToken("newInternalToken");
 
-		getSormas2SormasDataValidator().handleIgnoredProperties(receivedContactDto, existingContactDto);
+		getReceivedContactProcessor().handleIgnoredProperties(receivedContactDto, existingContactDto);
 
 		assertThat(receivedContactDto.getAdditionalDetails(), is("oldAdditionalDetails"));
 		assertThat(receivedContactDto.getExternalID(), is("oldExternalId"));
@@ -174,7 +178,7 @@ public class Sormas2SormasDataValidatorTest extends AbstractBeanTest {
 		receivedContactDto.setExternalToken("newExternalToken");
 		receivedContactDto.setInternalToken("newInternalToken");
 
-		getSormas2SormasDataValidator().handleIgnoredProperties(receivedContactDto, existingContactDto);
+		getReceivedContactProcessor().handleIgnoredProperties(receivedContactDto, existingContactDto);
 
 		assertThat(receivedContactDto.getAdditionalDetails(), is("newAdditionalDetails"));
 		assertThat(receivedContactDto.getExternalID(), is("newExternalId"));
@@ -199,7 +203,7 @@ public class Sormas2SormasDataValidatorTest extends AbstractBeanTest {
 		receivedEventDto.setExternalToken("newExternalToken");
 		receivedEventDto.setInternalToken("newInternalToken");
 
-		getSormas2SormasDataValidator().handleIgnoredProperties(receivedEventDto, existingEventDto);
+		getReceivedEventProcessor().handleIgnoredProperties(receivedEventDto, existingEventDto);
 
 		assertThat(receivedEventDto.getExternalId(), is("oldExternalId"));
 		assertThat(receivedEventDto.getExternalToken(), is("oldExternalToken"));
@@ -228,7 +232,7 @@ public class Sormas2SormasDataValidatorTest extends AbstractBeanTest {
 		receivedEventDto.setExternalToken("newExternalToken");
 		receivedEventDto.setInternalToken("newInternalToken");
 
-		getSormas2SormasDataValidator().handleIgnoredProperties(receivedEventDto, existingEventDto);
+		getReceivedEventProcessor().handleIgnoredProperties(receivedEventDto, existingEventDto);
 
 		assertThat(receivedEventDto.getExternalId(), is("newExternalId"));
 		assertThat(receivedEventDto.getExternalToken(), is("newExternalToken"));
@@ -250,7 +254,8 @@ public class Sormas2SormasDataValidatorTest extends AbstractBeanTest {
 		existingPersonDto.setExternalToken("newExternalToken");
 		existingPersonDto.setInternalToken("newInternalToken");
 
-		getSormas2SormasDataValidator().handleIgnoredProperties(receivedPersonDto, existingPersonDto);
+		// persons are handled e.g., in case processing
+		getReceivedCaseProcessor().handleIgnoredProperties(receivedPersonDto, existingPersonDto);
 
 		assertThat(receivedPersonDto.getAdditionalDetails(), is("newAdditionalDetails"));
 		assertThat(receivedPersonDto.getExternalId(), is("newExternalId"));
@@ -278,7 +283,8 @@ public class Sormas2SormasDataValidatorTest extends AbstractBeanTest {
 		receivedPersonDto.setExternalToken("newExternalToken");
 		receivedPersonDto.setInternalToken("newInternalToken");
 
-		getSormas2SormasDataValidator().handleIgnoredProperties(receivedPersonDto, existingPersonDto);
+		// persons are handled e.g., in case processing
+		getReceivedCaseProcessor().handleIgnoredProperties(receivedPersonDto, existingPersonDto);
 
 		assertThat(receivedPersonDto.getAdditionalDetails(), is("newAdditionalDetails"));
 		assertThat(receivedPersonDto.getExternalId(), is("newExternalId"));
@@ -312,7 +318,7 @@ public class Sormas2SormasDataValidatorTest extends AbstractBeanTest {
 		receivedImmunizationDto.setAdditionalDetails("newAdditionalDetails");
 		receivedImmunizationDto.setExternalId("newExternalId");
 
-		getSormas2SormasDataValidator().handleIgnoredProperties(receivedImmunizationDto, existingImmunizationDto);
+		getReceivedImmunizationProcessor().handleIgnoredProperties(receivedImmunizationDto, existingImmunizationDto);
 
 		assertThat(receivedImmunizationDto.getAdditionalDetails(), is("oldAdditionalDetails"));
 		assertThat(receivedImmunizationDto.getExternalId(), is("oldExternalId"));
@@ -350,7 +356,7 @@ public class Sormas2SormasDataValidatorTest extends AbstractBeanTest {
 		receivedImmunizationDto.setAdditionalDetails("newAdditionalDetails");
 		receivedImmunizationDto.setExternalId("newExternalId");
 
-		getSormas2SormasDataValidator().handleIgnoredProperties(receivedImmunizationDto, existingImmunizationDto);
+		getReceivedImmunizationProcessor().handleIgnoredProperties(receivedImmunizationDto, existingImmunizationDto);
 
 		assertThat(receivedImmunizationDto.getAdditionalDetails(), is("newAdditionalDetails"));
 		assertThat(receivedImmunizationDto.getExternalId(), is("newExternalId"));
@@ -382,7 +388,8 @@ public class Sormas2SormasDataValidatorTest extends AbstractBeanTest {
 		PathogenTestDto receivedPathogenTestDto = (PathogenTestDto) existingPathogenTestDto.clone();
 		receivedPathogenTestDto.setExternalId("newExternalId");
 
-		getSormas2SormasDataValidator().handleIgnoredProperties(receivedPathogenTestDto, existingPathogenTestDto);
+		// pathogen tests are handled through samples
+		getReceivedSampleProcessor().handleIgnoredProperties(receivedPathogenTestDto, existingPathogenTestDto);
 
 		assertThat(receivedPathogenTestDto.getExternalId(), is("oldExternalId"));
 
@@ -418,10 +425,10 @@ public class Sormas2SormasDataValidatorTest extends AbstractBeanTest {
 		PathogenTestDto receivedPathogenTestDto = (PathogenTestDto) existingPathogenTestDto.clone();
 		receivedPathogenTestDto.setExternalId("newExternalId");
 
-		getSormas2SormasDataValidator().handleIgnoredProperties(receivedPathogenTestDto, existingPathogenTestDto);
+		// pathogen tests are handled through samples
+		getReceivedSampleProcessor().handleIgnoredProperties(receivedPathogenTestDto, existingPathogenTestDto);
 
 		assertThat(receivedPathogenTestDto.getExternalId(), is("newExternalId"));
 
 	}
-
 }

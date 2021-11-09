@@ -24,6 +24,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import de.symeda.sormas.backend.labmessage.LabMessageService;
+import de.symeda.sormas.backend.sormastosormas.entities.caze.ReceivedCaseProcessor;
+import de.symeda.sormas.backend.sormastosormas.entities.contact.ReceivedContactProcessor;
+import de.symeda.sormas.backend.sormastosormas.entities.event.ReceivedEventProcessor;
+import de.symeda.sormas.backend.sormastosormas.entities.immunization.ReceivedImmunizationProcessor;
+import de.symeda.sormas.backend.sormastosormas.entities.sample.ReceivedSampleProcessor;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -78,7 +83,7 @@ import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.share.ExternalShareInfoFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptionFacade;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
+import de.symeda.sormas.api.sormastosormas.labmessage.SormasToSormasLabMessageFacade;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
@@ -607,6 +612,26 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public Sormas2SormasDataValidator getSormas2SormasDataValidator() {
 		return getBean(Sormas2SormasDataValidator.class);
+	}
+
+	public ReceivedCaseProcessor getReceivedCaseProcessor() {
+		return getBean(ReceivedCaseProcessor.class);
+	}
+
+	public ReceivedContactProcessor getReceivedContactProcessor() {
+		return getBean(ReceivedContactProcessor.class);
+	}
+
+	public ReceivedEventProcessor getReceivedEventProcessor() {
+		return getBean(ReceivedEventProcessor.class);
+	}
+
+	public ReceivedImmunizationProcessor getReceivedImmunizationProcessor() {
+		return getBean(ReceivedImmunizationProcessor.class);
+	}
+
+	public ReceivedSampleProcessor getReceivedSampleProcessor() {
+		return getBean(ReceivedSampleProcessor.class);
 	}
 
 	protected UserDto useSurveillanceOfficerLogin(TestDataCreator.RDCF rdcf) {
