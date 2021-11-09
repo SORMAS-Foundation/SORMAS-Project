@@ -50,6 +50,9 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.backend.event.EventService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,6 +163,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	private CaseService caseService;
 	@EJB
 	private ContactService contactService;
+	@EJB
+	private EventService eventService;
 	@EJB
 	private EventParticipantService eventParticipantService;
 	@EJB
@@ -1215,4 +1220,5 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return sampleService.isSampleEditAllowed(sample);
 	}
+
 }

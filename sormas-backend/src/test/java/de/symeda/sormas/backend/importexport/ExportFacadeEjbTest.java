@@ -35,12 +35,13 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 public class ExportFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
-	public void testGetExportConfigurationsWithoutCriteria() {
+	public void testGetExportConfigurationsWithoutCriteria() throws InterruptedException {
 		creator.createExportConfiguration(
 			"Case export",
 			ExportType.CASE,
 			new HashSet<>(Arrays.asList(CaseDataDto.UUID, CaseDataDto.CASE_CLASSIFICATION)),
 			getUserFacade().getCurrentUserAsReference());
+		Thread.sleep(1); // delay to ignore rounding issue with sorting
 		creator.createExportConfiguration(
 			"Contact export",
 			ExportType.CONTACT,
@@ -51,6 +52,7 @@ public class ExportFacadeEjbTest extends AbstractBeanTest {
 
 		assertThat(exportConfigurations, hasSize(2));
 
+		// The list is expected to be sorted by change date
 		assertThat(exportConfigurations.get(1).getName(), is("Case export"));
 		assertThat(exportConfigurations.get(1).getExportType(), is(ExportType.CASE));
 		assertThat(exportConfigurations.get(1).getProperties(), hasSize(2));
