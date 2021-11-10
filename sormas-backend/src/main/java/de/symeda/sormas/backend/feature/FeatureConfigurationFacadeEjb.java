@@ -122,6 +122,11 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 
 	public Map<Disease, List<FeatureConfigurationIndexDto>> getEnabledFeatureConfigurations(FeatureConfigurationCriteria criteria) {
+		if (criteria == null) {
+			criteria = new FeatureConfigurationCriteria();
+		}
+		criteria.setFeatureTypes(FeatureType.LINE_LISTING);
+
 		List<FeatureConfigurationIndexDto> featureConfigurations = getFeatureConfigurations(criteria, false);
 		Map<Disease, List<FeatureConfigurationIndexDto>> diseaseListMap = new TreeMap<>();
 		featureConfigurations.forEach(featureConfigurationIndexDto -> {
@@ -140,7 +145,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		List<SortProperty> sortProperties) {
 		List<FeatureConfigurationIndexDto> featureConfigurationIndexList = getIndexList(criteria, offset, size, sortProperties);
 		CountryReferenceDto serverCountry = countryFacadeEjb.getServerCountry();
-		long totalElementCount = count(new DistrictCriteria().country(serverCountry).region(criteria.getRegion()));
+		long totalElementCount = districtFacadeEjb.count(new DistrictCriteria().country(serverCountry).region(criteria.getRegion()));
 		return new Page<>(featureConfigurationIndexList, offset, size, totalElementCount);
 	}
 
@@ -219,18 +224,14 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 
 	}
 
-	public Long count(DistrictCriteria criteria) {
-		return districtFacadeEjb.count(criteria);
-	}
-
 	@Override
 	public List<FeatureConfigurationIndexDto> getFeatureConfigurations(FeatureConfigurationCriteria criteria, boolean includeInactive) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<FeatureConfigurationIndexDto> cq = cb.createQuery(FeatureConfigurationIndexDto.class);
 		Root<FeatureConfiguration> root = cq.from(FeatureConfiguration.class);
-		Join<FeatureConfiguration, Region> regionJoin = root.join(FeatureConfiguration.REGION, JoinType.INNER);
-		Join<FeatureConfiguration, District> districtJoin = root.join(FeatureConfiguration.DISTRICT, JoinType.INNER);
+		Join<FeatureConfiguration, Region> regionJoin = root.join(FeatureConfiguration.REGION, JoinType.LEFT);
+		Join<FeatureConfiguration, District> districtJoin = root.join(FeatureConfiguration.DISTRICT, JoinType.LEFT);
 
 		cq.multiselect(
 			root.get(FeatureConfiguration.UUID),
