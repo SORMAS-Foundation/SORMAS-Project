@@ -1,7 +1,7 @@
 package de.symeda.sormas.backend.feature;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.List;
 
@@ -46,11 +46,7 @@ public class FeatureConfigurationFacadeEjbTest extends AbstractBeanTest {
 		getFeatureConfigurationFacade().saveFeatureConfiguration(indexFeatureConfiguration, FeatureType.IMMUNIZATION_MANAGEMENT);
 
 		// Check against the default value when the property column is empty
-		assertTrue(
-			getFeatureConfigurationFacade().isPropertyValue(
-				FeatureType.IMMUNIZATION_MANAGEMENT,
-				FeatureTypeProperty.REDUCED,
-				(boolean) FeatureType.IMMUNIZATION_MANAGEMENT.getSupportedPropertyDefaults().get(FeatureTypeProperty.REDUCED)));
+		assertFalse(getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED));
 
 		// TODO: Test for an explicitely added property; currently problematic because H2 has issues with the JSON converting
 	}

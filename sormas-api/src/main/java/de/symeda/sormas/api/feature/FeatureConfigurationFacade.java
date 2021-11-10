@@ -50,18 +50,16 @@ public interface FeatureConfigurationFacade {
 	boolean isFeatureEnabled(FeatureType featureType);
 
 	/**
-	 * Checks whether the expectedPropertyValue matches the property of the specified feature type in the database.
-	 * If the property is not defined in the database, matches the expectedPropertyValue against the property's default instead.
+	 * Checks whether the property of the specified feature type in the database equals to true.
+	 * If the property is not defined in the database, does the check against the property's default instead.
 	 * 
 	 * @param featureType
 	 *            The feature type for which the property needs to be checked
 	 * @param property
 	 *            The property that needs to be checked
-	 * @param expectedPropertyValue
-	 *            The value that the property is expected to have
-	 * @return true if the value of the property or its default value matches the expectedPropertyValue, false otherwise
+	 * @return true if the value of the property or its default value equals to true, false otherwise
 	 */
-	boolean isPropertyValue(FeatureType featureType, FeatureTypeProperty property, boolean expectedPropertyValue);
+	boolean isPropertyValueTrue(FeatureType featureType, FeatureTypeProperty property);
 
 	boolean isAnySurveillanceEnabled();
 

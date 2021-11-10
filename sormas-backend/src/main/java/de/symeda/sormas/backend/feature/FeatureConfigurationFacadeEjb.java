@@ -257,7 +257,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 
 	@Override
-	public boolean isPropertyValue(FeatureType featureType, FeatureTypeProperty property, boolean expectedPropertyValue) {
+	public boolean isPropertyValueTrue(FeatureType featureType, FeatureTypeProperty property) {
 
 		if (!featureType.getSupportedProperties().contains(property)) {
 			throw new IllegalArgumentException("Feature type " + featureType + " does not support property " + property + ".");
@@ -280,10 +280,10 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 
 		boolean result;
 		if (properties != null && properties.containsKey(property)) {
-			result = (boolean) properties.get(property) == expectedPropertyValue;
+			result = (boolean) properties.get(property);
 		} else {
 			// Compare the expected property value with the default value
-			result = (boolean) featureType.getSupportedPropertyDefaults().get(property) == expectedPropertyValue;
+			result = (boolean) featureType.getSupportedPropertyDefaults().get(property);
 		}
 
 		return result;
