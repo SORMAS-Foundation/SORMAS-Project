@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.backend.labmessage.LabMessageService;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.ReceivedCaseProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.contact.ReceivedContactProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.event.ReceivedEventProcessor;
@@ -567,6 +568,10 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public LabMessageFacade getLabMessageFacade() {
 		return getBean(LabMessageFacadeEjbLocal.class);
+	}
+
+	public LabMessageService getLabMessageService() {
+		return getBean(LabMessageService.class);
 	}
 
 	public SormasToSormasLabMessageFacade getSormasToSormasLabMessageFacade() {

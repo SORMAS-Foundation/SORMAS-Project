@@ -76,7 +76,6 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 		for (PathogenTestDto pathogenTest : displayedEntries) {
 			PathogenTestListEntry listEntry = new PathogenTestListEntry(pathogenTest);
 			addEditButton(pathogenTest, listEntry);
-			addViewLabMessageButton(listEntry);
 			listLayout.addComponent(listEntry);
 		}
 	}
@@ -93,10 +92,4 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 		}
 	}
 
-	private void addViewLabMessageButton(PathogenTestListEntry listEntry) {
-		List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getByPathogenTestUuid(listEntry.getPathogenTest().getUuid());
-		if (!labMessages.isEmpty()) {
-			listEntry.addAssociatedLabMessagesListener(clickEvent -> ControllerProvider.getLabMessageController().showLabMessagesSlider(labMessages));
-		}
-	}
 }
