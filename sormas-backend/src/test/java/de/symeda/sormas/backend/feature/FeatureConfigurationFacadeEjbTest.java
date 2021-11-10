@@ -50,7 +50,7 @@ public class FeatureConfigurationFacadeEjbTest extends AbstractBeanTest {
 			getFeatureConfigurationFacade().isPropertyValue(
 				FeatureType.IMMUNIZATION_MANAGEMENT,
 				FeatureTypeProperty.REDUCED,
-				(boolean) FeatureTypeProperty.REDUCED.getDefaultValue()));
+				(boolean) FeatureType.IMMUNIZATION_MANAGEMENT.getSupportedPropertyDefaults().get(FeatureTypeProperty.REDUCED)));
 
 		// TODO: Test for an explicitely added property; currently problematic because H2 has issues with the JSON converting
 	}

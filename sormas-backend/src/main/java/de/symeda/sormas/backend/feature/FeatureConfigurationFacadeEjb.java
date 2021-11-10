@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.feature;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -260,7 +259,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	@Override
 	public boolean isPropertyValue(FeatureType featureType, FeatureTypeProperty property, boolean expectedPropertyValue) {
 
-		if (!Arrays.asList(featureType.getSupportedProperties()).contains(property)) {
+		if (!featureType.getSupportedProperties().contains(property)) {
 			throw new IllegalArgumentException("Feature type " + featureType + " does not support property " + property + ".");
 		}
 
@@ -279,11 +278,15 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		@SuppressWarnings("unchecked")
 		Map<FeatureTypeProperty, Object> properties = (Map<FeatureTypeProperty, Object>) em.createQuery(cq).getSingleResult();
 
+		boolean result;
 		if (properties != null && properties.containsKey(property)) {
-			return (boolean) properties.get(property) == expectedPropertyValue;
+			result = (boolean) properties.get(property) == expectedPropertyValue;
 		} else {
-			return (boolean) property.getDefaultValue() == expectedPropertyValue;
+			// Compare the expected property value with the default value
+			result = (boolean) featureType.getSupportedPropertyDefaults().get(property) == expectedPropertyValue;
 		}
+
+		return result;
 	}
 
 	@Override

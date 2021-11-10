@@ -17,21 +17,16 @@ package de.symeda.sormas.api.feature;
 
 public enum FeatureTypeProperty {
 
-	REDUCED(Boolean.class, false);
+	REDUCED(Boolean.class);
 
 	private final Class<?> returnType;
-	private final Object defaultValue;
 
-	FeatureTypeProperty(Class<?> returnType, Object defaultValue) {
+	FeatureTypeProperty(Class<?> returnType) {
 		this.returnType = returnType;
-		this.defaultValue = defaultValue;
 	}
 
 	public Class<?> getReturnType() {
 		return returnType;
 	}
 
-	public Object getDefaultValue() {
-		return defaultValue;
-	}
 }
