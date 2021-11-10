@@ -8810,13 +8810,13 @@ ALTER TABLE cases_history ALTER COLUMN externalData TYPE json USING externalData
 
 INSERT INTO schema_version (version_number, comment) VALUES (424, 'Allow to store external data for a case #7068');
 
--- 2021-10-?? Change case external data from json to jsonb #7068
+-- 2021-11-03 Change case external data from json to jsonb #7068
 ALTER TABLE cases ALTER COLUMN externalData set DATA TYPE jsonb using externalData::jsonb;
 ALTER TABLE cases_history ALTER COLUMN externalData set DATA TYPE jsonb using externalData::jsonb;
 
 INSERT INTO schema_version (version_number, comment) VALUES (425, 'Change case externalData from JSON to JSONB #7068');
 
--- 2021-11-?? [DEMIS2SORMAS] Handle New Profile: Process multiple test reports #5899
+-- 2021-11-09 [DEMIS2SORMAS] Handle New Profile: Process multiple test reports #5899
 /*
 change reference from
   test report references pathogen test

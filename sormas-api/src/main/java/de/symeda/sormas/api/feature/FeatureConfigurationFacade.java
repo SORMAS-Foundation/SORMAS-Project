@@ -52,12 +52,6 @@ public interface FeatureConfigurationFacade {
 	/**
 	 * Checks whether the property of the specified feature type in the database equals to true.
 	 * If the property is not defined in the database, does the check against the property's default instead.
-	 * 
-	 * @param featureType
-	 *            The feature type for which the property needs to be checked
-	 * @param property
-	 *            The property that needs to be checked
-	 * @return true if the value of the property or its default value equals to true, false otherwise
 	 */
 	boolean isPropertyValueTrue(FeatureType featureType, FeatureTypeProperty property);
 
