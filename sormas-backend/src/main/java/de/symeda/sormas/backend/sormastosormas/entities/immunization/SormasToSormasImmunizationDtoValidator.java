@@ -30,7 +30,7 @@ public class SormasToSormasImmunizationDtoValidator
 		ValidationErrors validationErrors = new ValidationErrors();
 		final ImmunizationDto im = sharedData.getEntity();
 
-		final String groupNameTag = Captions.Sample_lab;
+		final String groupNameTag = Captions.Immunization;
 		infraValidator.validateCountry(im.getCountry(), groupNameTag, validationErrors, im::setCountry);
 		infraValidator.validateResponsibleRegion(im.getResponsibleRegion(), groupNameTag, validationErrors, im::setResponsibleRegion);
 		infraValidator.validateResponsibleDistrict(im.getResponsibleDistrict(), groupNameTag, validationErrors, im::setResponsibleDistrict);

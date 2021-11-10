@@ -28,7 +28,7 @@ public class SormasToSormasEventDtoValidator extends SormasToSormasDtoValidator<
 	public ValidationErrors validateIncoming(SormasToSormasEventDto sharedData) {
 		EventDto event = sharedData.getEntity();
 		ValidationErrors validationErrors = new ValidationErrors();
-		validateLocation(event.getEventLocation(), Captions.CaseData, validationErrors);
+		validateLocation(event.getEventLocation(), Captions.Event, validationErrors);
 
 		return validationErrors;
 	}
