@@ -37,10 +37,10 @@ public class EpidemiologicalDataService {
     this.faker = faker;
   }
 
-  public EpidemiologicalData buildGeneratedEpidemiologicalData() {
+  public EpidemiologicalData buildGeneratedEpidemiologicalData(boolean isCovid) {
 
     List<Exposure> exposures = new ArrayList<Exposure>();
-    exposures.add(this.buildGeneratedExposureData());
+    exposures.add(this.buildGeneratedExposureData(isCovid));
     List<Activity> activities = new ArrayList<Activity>();
     activities.add(this.buildGeneratedActivityData());
 
@@ -55,7 +55,9 @@ public class EpidemiologicalDataService {
         .build();
   }
 
-  public Exposure buildGeneratedExposureData() {
+  public Exposure buildGeneratedExposureData(boolean isCovid) {
+    YesNoUnknownOptions animalMarketValue = (isCovid) ? null : YesNoUnknownOptions.NO;
+
     return Exposure.builder()
         .startOfExposure(LocalDate.now().minusDays(3))
         .endOfExposure(LocalDate.now().minusDays(1))
@@ -70,7 +72,7 @@ public class EpidemiologicalDataService {
         .otherProtectiveMeasures(YesNoUnknownOptions.NO)
         .shortDistance(YesNoUnknownOptions.YES)
         .longFaceToFaceContact(YesNoUnknownOptions.YES)
-        .animalMarket(YesNoUnknownOptions.NO)
+        .animalMarket(animalMarketValue)
         .percutaneous(YesNoUnknownOptions.NO)
         .contactToBodyFluids(YesNoUnknownOptions.NO)
         .handlingSamples(YesNoUnknownOptions.NO)

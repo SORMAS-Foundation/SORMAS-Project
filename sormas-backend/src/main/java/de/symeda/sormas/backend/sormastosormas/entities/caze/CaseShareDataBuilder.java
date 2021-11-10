@@ -37,7 +37,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
 @LocalBean
-public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSormasCaseDto, SormasToSormasCasePreview> {
+public class CaseShareDataBuilder implements ShareDataBuilder<CaseDataDto, Case, SormasToSormasCaseDto, SormasToSormasCasePreview> {
 
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
