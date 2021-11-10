@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.services;
 
+import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -25,9 +26,12 @@ import org.sormas.e2etests.enums.immunizations.StatusValues;
 import org.sormas.e2etests.pojo.web.Task;
 
 public class TaskService {
+  private final Faker faker;
 
   @Inject
-  public TaskService() {}
+  public TaskService(Faker faker) {
+    this.faker = faker;
+  }
 
   public Task buildGeneratedTask() {
     long currentTimeMillis = System.currentTimeMillis();
@@ -40,7 +44,7 @@ public class TaskService {
         .dueDateTime(LocalTime.of(11, 30))
         .assignedTo("Surveillance OFFICER - Surveillance Officer")
         .priority("Normal")
-        .commentsOnTask("Comment on task" + currentTimeMillis)
+        .commentsOnTask(faker.beer().name() + LocalDate.now().getDayOfWeek())
         .taskStatus(StatusValues.PENDING.getValue())
         .build();
   }

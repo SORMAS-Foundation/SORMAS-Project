@@ -18,7 +18,6 @@
 
 package org.sormas.e2etests.steps.web.application.tasks;
 
-import static java.util.function.Predicate.*;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_POPUP;
 import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_TYPE_COMBOBOX;
@@ -66,10 +65,15 @@ public class TaskManagementSteps implements En {
     When(
         "^I open last created task$",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(
+          By lastTaskEditButton =
               By.xpath(
                   String.format(
-                      EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnTask())));
+                      EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnTask()));
+          do {
+            webDriverHelpers.scrollInTable(10);
+          }
+          while (!webDriverHelpers.isElementVisibleWithTimeout(lastTaskEditButton, 2));
+          webDriverHelpers.clickOnWebElementBySelector(lastTaskEditButton);
           webDriverHelpers.isElementVisibleWithTimeout(TASK_POPUP, 5);
         });
 
