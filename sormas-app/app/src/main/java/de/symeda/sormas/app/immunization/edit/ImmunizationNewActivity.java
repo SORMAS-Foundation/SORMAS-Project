@@ -15,12 +15,13 @@
 
 package de.symeda.sormas.app.immunization.edit;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
+
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
-
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
@@ -44,9 +45,6 @@ import de.symeda.sormas.app.immunization.list.ImmunizationListActivity;
 import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.util.Bundler;
 
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
-
 public class ImmunizationNewActivity extends BaseEditActivity<Immunization> {
 
 	private AsyncTask saveTask;
@@ -67,8 +65,8 @@ public class ImmunizationNewActivity extends BaseEditActivity<Immunization> {
 		BaseEditActivity.startActivity(fromActivity, ImmunizationNewActivity.class, buildBundleWithContact(contactUuid));
 	}
 
-	public static void startActivityFromEventParticipant(Context fromActivity, String eventUuid) {
-		BaseEditActivity.startActivity(fromActivity, ImmunizationNewActivity.class, buildBundleWithEvent(eventUuid));
+	public static void startActivityFromEventParticipant(Context fromActivity, String eventParticipantUuid) {
+		BaseEditActivity.startActivity(fromActivity, ImmunizationNewActivity.class, buildBundleWithEventParticipant(eventParticipantUuid));
 	}
 
 	public static Bundler buildBundle() {
@@ -83,8 +81,8 @@ public class ImmunizationNewActivity extends BaseEditActivity<Immunization> {
 		return BaseEditActivity.buildBundle(null).setContactUuid(contactUuid);
 	}
 
-	public static Bundler buildBundleWithEvent(String eventUuid) {
-		return BaseEditActivity.buildBundle(null).setEventUuid(eventUuid);
+	public static Bundler buildBundleWithEventParticipant(String eventParticipantUuid) {
+		return BaseEditActivity.buildBundle(null).setEventParticipantUuid(eventParticipantUuid);
 	}
 
 	@Override
@@ -93,7 +91,7 @@ public class ImmunizationNewActivity extends BaseEditActivity<Immunization> {
 		Bundler bundler = new Bundler(savedInstanceState);
 		caseUuid = bundler.getCaseUuid();
 		contactUuid = bundler.getContactUuid();
-		eventParticipantUuid = bundler.getEventUuid();
+		eventParticipantUuid = bundler.getEventParticipantUuid();
 	}
 
 	@Override
@@ -123,6 +121,7 @@ public class ImmunizationNewActivity extends BaseEditActivity<Immunization> {
 		} else if (!DataHelper.isNullOrEmpty(eventParticipantUuid)) {
 			EventParticipant _eventP = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipantUuid);
 			immunization = DatabaseHelper.getImmunizationDao().build(_eventP.getPerson());
+			immunization.setDisease(_eventP.getEvent().getDisease());
 		} else {
 			final Person person = DatabaseHelper.getPersonDao().build();
 			immunization = DatabaseHelper.getImmunizationDao().build(person);
@@ -163,8 +162,9 @@ public class ImmunizationNewActivity extends BaseEditActivity<Immunization> {
 	@Override
 	public void saveData() {
 		if (saveTask != null) {
+			// don't save multiple times
 			NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
-			return; // don't save multiple times
+			return;
 		}
 
 		final Immunization immunization = getStoredRootEntity();
@@ -190,8 +190,9 @@ public class ImmunizationNewActivity extends BaseEditActivity<Immunization> {
 		ImmunizationPickOrCreateDialog.pickOrCreateImmunization(immunization, pickedImmunization -> {
 			if (pickedImmunization != null) {
 				if (saveTask != null) {
+					// don't save multiple times
 					NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
-					return; // don't save multiple times
+					return;
 				}
 				if (pickedImmunization.getUuid().equals(immunization.getUuid())) {
 					saveTask = new SavingAsyncTask(getRootView(), immunization) {
@@ -267,7 +268,8 @@ public class ImmunizationNewActivity extends BaseEditActivity<Immunization> {
 	public void onDestroy() {
 		super.onDestroy();
 
-		if (saveTask != null && !saveTask.isCancelled())
+		if (saveTask != null && !saveTask.isCancelled()) {
 			saveTask.cancel(true);
+		}
 	}
 }
