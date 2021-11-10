@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.feature;
 
 import java.util.Date;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,12 +11,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Type;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Entity(name = FeatureConfiguration.TABLE_NAME)
 @Audited
@@ -31,6 +36,7 @@ public class FeatureConfiguration extends AbstractDomainObject {
 	public static final String DISEASE = "disease";
 	public static final String END_DATE = "endDate";
 	public static final String ENABLED = "enabled";
+	public static final String PROPERTIES = "properties";
 
 	private FeatureType featureType;
 	private Region region;
@@ -38,6 +44,7 @@ public class FeatureConfiguration extends AbstractDomainObject {
 	private Disease disease;
 	private Date endDate;
 	private boolean enabled;
+	private Map<FeatureTypeProperty, Object> properties;
 
 	public static FeatureConfiguration build(FeatureType featureType, boolean enabled) {
 
@@ -100,5 +107,15 @@ public class FeatureConfiguration extends AbstractDomainObject {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
+	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
+	public Map<FeatureTypeProperty, Object> getProperties() {
+		return properties;
+	}
+
+	public void setProperties(Map<FeatureTypeProperty, Object> properties) {
+		this.properties = properties;
 	}
 }

@@ -381,6 +381,39 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 
 	@Override
+	public boolean isPropertyValueTrue(FeatureType featureType, FeatureTypeProperty property) {
+
+		if (!featureType.getSupportedProperties().contains(property)) {
+			throw new IllegalArgumentException("Feature type " + featureType + " does not support property " + property + ".");
+		}
+
+		if (!Boolean.class.isAssignableFrom(property.getReturnType())) {
+			throw new IllegalArgumentException(
+				"Feature type property " + property + " does not have specified return type " + Boolean.class.getSimpleName() + ".");
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object> cq = cb.createQuery(Object.class);
+		Root<FeatureConfiguration> root = cq.from(FeatureConfiguration.class);
+
+		cq.where(cb.and(cb.equal(root.get(FeatureConfiguration.FEATURE_TYPE), featureType)));
+		cq.select(root.get(FeatureConfiguration.PROPERTIES));
+
+		@SuppressWarnings("unchecked")
+		Map<FeatureTypeProperty, Object> properties = (Map<FeatureTypeProperty, Object>) em.createQuery(cq).getSingleResult();
+
+		boolean result;
+		if (properties != null && properties.containsKey(property)) {
+			result = (boolean) properties.get(property);
+		} else {
+			// Compare the expected property value with the default value
+			result = (boolean) featureType.getSupportedPropertyDefaults().get(property);
+		}
+
+		return result;
+	}
+
+	@Override
 	public boolean isFeatureEnabled(FeatureType featureType) {
 		return !isFeatureDisabled(featureType);
 	}
@@ -442,6 +475,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		target.setDisease(source.getDisease());
 		target.setEndDate(source.getEndDate());
 		target.setEnabled(source.isEnabled());
+		target.setProperties(source.getProperties());
 
 		return target;
 	}
@@ -457,6 +491,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		target.setDisease(source.getDisease());
 		target.setEndDate(source.getEndDate());
 		target.setEnabled(source.isEnabled());
+		target.setProperties(source.getProperties());
 
 		return target;
 	}

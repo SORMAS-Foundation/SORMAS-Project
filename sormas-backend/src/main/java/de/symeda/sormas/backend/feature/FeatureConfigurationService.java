@@ -129,6 +129,7 @@ public class FeatureConfigurationService extends AdoServiceWithUserFilter<Featur
 			FeatureConfiguration savedConfiguration = configs.get(featureType);
 			if (savedConfiguration == null) {
 				FeatureConfiguration configuration = FeatureConfiguration.build(featureType, featureType.isEnabledDefault());
+				configuration.setProperties(featureType.getSupportedPropertyDefaults());
 				ensurePersisted(configuration);
 			}
 		});
