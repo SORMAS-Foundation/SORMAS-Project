@@ -34,7 +34,6 @@ public class EditCasePage {
   public static final By DISEASE_INPUT = By.cssSelector("#disease input");
   public static final By USER_INFORMATION =
       By.cssSelector(".v-slot-view-header .v-slot-primary div");
-  public static final By CASE_SAVED_MESSAGE = By.xpath("//*[contains(text(),'Case saved')]");
   public static final By CASE_PERSON_TAB = By.cssSelector("div#tab-cases-person");
   public static final By NEW_TASK_BUTTON = By.cssSelector("div#taskNewTask");
   public static final By EDIT_TASK_BUTTON = By.cssSelector("div[id*='edit-task']");
@@ -93,5 +92,5 @@ public class EditCasePage {
   public static final By SAVE_BUTTON = By.id("commit");
   public static final By DELETE_BUTTON = By.id("delete");
   public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
-  public static final By CASE_SAVED_POPUP = By.xpath("//*[contains(text(), 'Case saved')]");
+  public static final By CASE_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
 }

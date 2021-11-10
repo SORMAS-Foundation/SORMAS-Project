@@ -312,7 +312,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		getEventFacade().archiveOrDearchiveEvent(inactiveEvent.getUuid(), true);
 
 		// Only persons that have active case, contact or event participant associations should be retrieved
-		List<String> relevantNameUuids = getPersonFacade().getMatchingNameDtos(user.toReference(), new PersonSimilarityCriteria())
+		List<String> relevantNameUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), new PersonSimilarityCriteria())
 			.stream()
 			.map(dto -> dto.getUuid())
 			.collect(Collectors.toList());
@@ -327,25 +327,25 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().sex(Sex.MALE).birthdateYYYY(1980).birthdateMM(1).birthdateDD(1);
 		List<String> matchingUuids =
-			getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+			getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(2));
 		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person7.getUuid()));
 
 		criteria.birthdateMM(null).birthdateDD(null);
 		matchingUuids =
-			getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+			getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(3));
 		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid()));
 
 		criteria.sex(Sex.FEMALE).birthdateYYYY(1984);
 		matchingUuids =
-			getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+			getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(3));
 		assertThat(matchingUuids, containsInAnyOrder(person4.getUuid(), person5.getUuid(), person6.getUuid()));
 
 		criteria.sex(null);
 		matchingUuids =
-			getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+			getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(4));
 		assertThat(matchingUuids, containsInAnyOrder(person4.getUuid(), person5.getUuid(), person6.getUuid(), person7.getUuid()));
 
@@ -365,7 +365,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		criteria.sex(Sex.MALE).birthdateYYYY(1980);
 		criteria.passportNumber(passportNr);
 		matchingUuids =
-			getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+			getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(6));
 		assertThat(
 			matchingUuids,
@@ -373,19 +373,19 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		criteria.nationalHealthId(healthId).passportNumber(null);
 		matchingUuids =
-			getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+			getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(4));
 		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person8.getUuid()));
 
 		criteria.nationalHealthId(otherHealthId);
 		matchingUuids =
-			getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+			getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(4));
 		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person9.getUuid()));
 
 		criteria.passportNumber(otherPassportNr);
 		matchingUuids =
-			getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+			getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(5));
 		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person9.getUuid(), person11.getUuid()));
 	}

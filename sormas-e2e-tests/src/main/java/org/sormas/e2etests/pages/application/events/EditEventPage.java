@@ -41,8 +41,7 @@ public class EditEventPage {
   public static final By SOURCE_TYPE_INPUT = By.cssSelector(" #srcType input");
   public static final By TYPE_OF_PLACE_INPUT = By.cssSelector("#typeOfPlace input");
   public static final By REPORT_DATE_INPUT = By.cssSelector("#reportDateTime input");
-  public static final By EVENT_DATA_SAVED_MESSAGE =
-      By.xpath("//*[contains(text(),'Event data saved')]");
+  public static final By EVENT_DATA_SAVED_MESSAGE = By.cssSelector(".v-Notification-caption");
   public static final By RISK_LEVEL_COMBOBOX = By.cssSelector("#riskLevel div");
   public static final By EVENT_MANAGEMENT_STATUS_OPTIONS =
       By.cssSelector("#eventManagementStatus .v-select-option label");

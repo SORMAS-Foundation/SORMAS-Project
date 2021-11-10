@@ -20,11 +20,12 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
+import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
+import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 
 public class SormasToSormasDto implements Serializable {
 
@@ -44,7 +45,7 @@ public class SormasToSormasDto implements Serializable {
 	@Valid
 	private List<SormasToSormasEventParticipantDto> eventParticipants;
 	@Valid
-	private List<SormasToSormasEntityDto<ImmunizationDto>> immunizations;
+	private List<SormasToSormasImmunizationDto> immunizations;
 
 	public SormasToSormasOriginInfoDto getOriginInfo() {
 		return originInfo;
@@ -94,11 +95,11 @@ public class SormasToSormasDto implements Serializable {
 		this.eventParticipants = eventParticipants;
 	}
 
-	public List<SormasToSormasEntityDto<ImmunizationDto>> getImmunizations() {
+	public List<SormasToSormasImmunizationDto> getImmunizations() {
 		return immunizations;
 	}
 
-	public void setImmunizations(List<SormasToSormasEntityDto<ImmunizationDto>> immunizations) {
+	public void setImmunizations(List<SormasToSormasImmunizationDto> immunizations) {
 		this.immunizations = immunizations;
 	}
 }

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.naming.CannotProceedException;
@@ -96,7 +97,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	private Panel contentPanel;
 
 	private C wrappedComponent;
-	private FieldGroup[] fieldGroups;
+	private ArrayList<FieldGroup> fieldGroups;
 
 	private HorizontalLayout buttonsPanel;
 	private Button commitButton;
@@ -128,7 +129,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	protected void setWrappedComponent(C component, FieldGroup... fieldGroups) {
 
 		this.wrappedComponent = component;
-		this.fieldGroups = fieldGroups;
+		this.fieldGroups = new ArrayList(Arrays.asList(fieldGroups));
 
 		if (contentPanel != null) {
 			contentPanel.setContent(wrappedComponent);
@@ -185,6 +186,24 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 		dirty = false;
 		addDirtyHandler(fieldGroups);
+	}
+
+	public void addFieldGroups(FieldGroup... fieldGroups) {
+
+		if (this.fieldGroups == null) {
+			this.fieldGroups = new ArrayList(Arrays.asList(fieldGroups));
+		} else {
+			this.fieldGroups.addAll(Arrays.asList(fieldGroups));
+		}
+		addDirtyHandler(fieldGroups);
+	}
+
+	public void removeFieldGroups(FieldGroup... fieldGroups) {
+		if (fieldGroups == null || this.fieldGroups == null) {
+			return;
+		}
+		this.fieldGroups.removeAll(Arrays.asList(fieldGroups));
+
 	}
 
 	@SuppressWarnings("deprecation")
@@ -274,7 +293,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	protected Stream<Field<?>> getFieldsStream() {
 
 		if (fieldGroups != null) {
-			return Arrays.stream(fieldGroups).map(FieldGroup::getFields).flatMap(Collection::stream);
+			return fieldGroups.stream().map(FieldGroup::getFields).flatMap(Collection::stream);
 		} else {
 			return Stream.empty();
 		}
@@ -414,18 +433,42 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	@Override
 	public void commit() throws InvalidValueException, SourceException, CommitRuntimeException {
-
 		if (fieldGroups != null) {
-			if (fieldGroups.length > 1) {
-				// validate all fields first, so commit will likely work for all fieldGroups
-				// this is basically only needed when we have multiple field groups
-				// FIXME this leads to problem #537 for AbstractEditForm with hideValidationUntilNextCommit 
-				// can hopefully be fixed easier with Vaadin 8 architecture change
-				getFieldsStream().forEach(field -> {
-					if (!field.isInvalidCommitted()) {
-						field.validate();
-					}
-				});
+			if (fieldGroups.size() > 1) {
+				List<InvalidValueException> invalidValueExceptions =
+					fieldGroups.stream().filter(fieldGroup -> !fieldGroup.isValid()).map(fieldGroup -> {
+						try {
+							// all invalid fieldGroups are committed to fetch the CommitExceptions
+							fieldGroup.commit();
+						} catch (CommitException e) {
+							return e;
+						}
+						// when the fieldGroup did not throw a CommitException, it is invalid and committed
+						throw new IllegalStateException();
+					}).map(e -> {
+						// keep invalid value exceptions, throw the rest
+						Throwable c = e.getCause();
+						if (c instanceof InvalidValueException) {
+							return (InvalidValueException) c;
+						} else if (c instanceof SourceException) {
+							throw (SourceException) c;
+						} else {
+							throw new CommitRuntimeException(e);
+						}
+					}).collect(Collectors.toList());
+
+				if (invalidValueExceptions.isEmpty()) {
+					//NOOP
+				} else if (invalidValueExceptions.size() == 1) {
+					throw invalidValueExceptions.get(0);
+				} else {
+					throw new InvalidValueException(
+						null,
+						invalidValueExceptions.stream()
+							.map(InvalidValueException::getCauses)
+							.flatMap(Arrays::stream)
+							.toArray(InvalidValueException[]::new));
+				}
 			}
 
 			try {
@@ -433,12 +476,14 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 					fieldGroup.commit();
 				}
 			} catch (CommitException e) {
-				if (e.getCause() instanceof InvalidValueException)
-					throw (InvalidValueException) e.getCause();
-				else if (e.getCause() instanceof SourceException)
-					throw (SourceException) e.getCause();
-				else
+				Throwable c = e.getCause();
+				if (c instanceof InvalidValueException) {
+					throw (InvalidValueException) c;
+				} else if (c instanceof SourceException) {
+					throw (SourceException) c;
+				} else {
 					throw new CommitRuntimeException(e);
+				}
 			}
 		} else if (wrappedComponent instanceof Buffered) {
 			((Buffered) wrappedComponent).commit();
