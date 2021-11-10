@@ -7,37 +7,37 @@
 	<packaging>pom</packaging>
 	<version>1.65.0-SNAPSHOT</version>
 
-	<properties>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<!-- *** Payara module versions *** -->
-		<jackson.version>2.10.2</jackson.version>
-		<jakarta.activation.version>1.2.1</jakarta.activation.version>
-		<javaee.version>8.0.1</javaee.version>
-		<jersey.version>2.30</jersey.version>
-		<!-- Payara version used for release. Overwrite them in settings.xml for local development with different versions -->
-		<payara.version>5.2020.2</payara.version>
+        <!-- *** Payara module versions *** -->
+        <jackson.version>2.10.2</jackson.version>
+        <jakarta.activation.version>1.2.1</jakarta.activation.version>
+        <javaee.version>8.0.1</javaee.version>
+        <jersey.version>2.30</jersey.version>
+        <!-- Payara version used for release. Overwrite them in settings.xml for local development with different versions -->
+        <payara.version>5.2020.2</payara.version>
 
-		<!-- *** Other dependency versions *** -->
-		<glassfish.jaxb.version>2.3.3</glassfish.jaxb.version>
-		<slf4j.version>1.7.30</slf4j.version>
-		<logback.version>1.1.7</logback.version>
-		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
-		<vaadin.version>8.14.1</vaadin.version>
-		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
-		<swagger.version>2.1.6</swagger.version>
-		<bouncycastle.version>1.67</bouncycastle.version>
-		<keycloak.version>12.0.4</keycloak.version>
-		<resteasy.version>3.15.1.Final</resteasy.version>
-		<xdocreport.version>2.0.2</xdocreport.version>
-		<docx4j.version>8.3.1</docx4j.version>
+        <!-- *** Other dependency versions *** -->
+        <glassfish.jaxb.version>2.3.3</glassfish.jaxb.version>
+        <slf4j.version>1.7.30</slf4j.version>
+        <logback.version>1.1.7</logback.version>
+        <vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
+        <vaadin.version>8.14.1</vaadin.version>
+        <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+        <swagger.version>2.1.6</swagger.version>
+        <bouncycastle.version>1.67</bouncycastle.version>
+        <keycloak.version>12.0.4</keycloak.version>
+        <resteasy.version>3.15.1.Final</resteasy.version>
+        <xdocreport.version>2.0.2</xdocreport.version>
+        <docx4j.version>8.3.1</docx4j.version>
 
-		<!-- Attention: Compile dependencies with versions are maintained redundantly in sormas-app/app/build.gradle -->
+        <!-- Attention: Compile dependencies with versions are maintained redundantly in sormas-app/app/build.gradle -->
 
-	</properties>
+    </properties>
 
 	<distributionManagement>
 		<site>

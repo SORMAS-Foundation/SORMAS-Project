@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glassfish-ejb-jar PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.1 EJB 3.1//EN" "http://glassfish.org/dtds/glassfish-ejb-jar_3_1-1.dtd">
+<glassfish-ejb-jar>
+
+    <security-role-mapping>
+        <role-name>ADMIN</role-name>
+        <group-name>ADMIN</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>SURVEILLANCE_SUPERVISOR</role-name>
+        <group-name>SURVEILLANCE_SUPERVISOR</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>SURVEILLANCE_OFFICER</role-name>
+        <group-name>SURVEILLANCE_OFFICER</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>HOSPITAL_INFORMANT</role-name>
+        <group-name>HOSPITAL_INFORMANT</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>COMMUNITY_INFORMANT</role-name>
+        <group-name>COMMUNITY_INFORMANT</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>CASE_SUPERVISOR</role-name>
+        <group-name>CASE_SUPERVISOR</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>CASE_OFFICER</role-name>
+        <group-name>CASE_OFFICER</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>CONTACT_SUPERVISOR</role-name>
+        <group-name>CONTACT_SUPERVISOR</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>CONTACT_OFFICER</role-name>
+        <group-name>CONTACT_OFFICER</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>EVENT_OFFICER</role-name>
+        <group-name>EVENT_OFFICER</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>LAB_USER</role-name>
+        <group-name>LAB_USER</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>EXTERNAL_LAB_USER</role-name>
+        <group-name>EXTERNAL_LAB_USER</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>NATIONAL_USER</role-name>
+        <group-name>NATIONAL_USER</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>NATIONAL_OBSERVER</role-name>
+        <group-name>NATIONAL_OBSERVER</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>STATE_OBSERVER</role-name>
+        <group-name>STATE_OBSERVER</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>NATIONAL_CLINICIAN</role-name>
+        <group-name>NATIONAL_CLINICIAN</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>POE_INFORMANT</role-name>
+        <group-name>POE_INFORMANT</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>POE_SUPERVISOR</role-name>
+        <group-name>POE_SUPERVISOR</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>POE_NATIONAL_USER</role-name>
+        <group-name>POE_NATIONAL_USER</group-name>
+    </security-role-mapping>
+
+	<!-- SYSTEM ROLE -->
+	<security-role-mapping>
+		<role-name>SYSTEM</role-name>
+		<principal-name>SYSTEM</principal-name>
+	</security-role-mapping>
+
+	<enterprise-beans></enterprise-beans>
+	<disable-nonportable-jndi-names>true</disable-nonportable-jndi-names>
+</glassfish-ejb-jar>

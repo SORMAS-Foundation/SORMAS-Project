@@ -10,7 +10,6 @@ services:
       - DB_NAME_AUDIT=sormas_audit_db
       - SORMAS_POSTGRES_PASSWORD=sormas
       - SORMAS_POSTGRES_USER=sormas_user
-      - SORMAS_POSTGRES_PORT=5432
       - TZ=Europe/Berlin
     volumes:
       - psqldata_cargoserver:/var/lib/postgresql/data
