@@ -21,7 +21,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import android.view.View;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -36,10 +35,13 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.validation.ValidationHelper;
 import de.symeda.sormas.app.databinding.FragmentImmunizationNewLayoutBinding;
+import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
@@ -79,7 +81,10 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 	}
 
 	public static ImmunizationNewFragment newInstanceFromEventParticipant(Immunization activityRootData, String eventParticipantUuid) {
-		return newInstance(ImmunizationNewFragment.class, ImmunizationNewActivity.buildBundleWithEvent(eventParticipantUuid).get(), activityRootData);
+		return newInstance(
+			ImmunizationNewFragment.class,
+			ImmunizationNewActivity.buildBundleWithEventParticipant(eventParticipantUuid).get(),
+			activityRootData);
 	}
 
 	@Override
@@ -165,21 +170,25 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		contentBinding.immunizationMeansOfImmunization.initializeSpinner(meansOfImmunizationList);
 
 		contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>());
-		contentBinding.personBirthdateMM.initializeSpinner(monthList, field -> {
-			DataUtils.updateListOfDays(
+		contentBinding.personBirthdateMM.initializeSpinner(
+			monthList,
+			field -> DataUtils.updateListOfDays(
 				contentBinding.personBirthdateDD,
 				(Integer) contentBinding.personBirthdateYYYY.getValue(),
-				(Integer) field.getValue());
-		});
-		contentBinding.personBirthdateYYYY.initializeSpinner(yearList, field -> {
-			DataUtils.updateListOfDays(
+				(Integer) field.getValue()));
+		contentBinding.personBirthdateYYYY.initializeSpinner(
+			yearList,
+			field -> DataUtils.updateListOfDays(
 				contentBinding.personBirthdateDD,
 				(Integer) field.getValue(),
-				(Integer) contentBinding.personBirthdateMM.getValue());
-		});
+				(Integer) contentBinding.personBirthdateMM.getValue()));
 		int year = Calendar.getInstance().get(Calendar.YEAR);
 		contentBinding.personBirthdateYYYY.setSelectionOnOpen(year - 35);
 		contentBinding.personSex.initializeSpinner(sexList);
+
+		if (record.getDisease() != null && new Bundler(getArguments()).getEventParticipantUuid() != null) {
+			contentBinding.immunizationDisease.setEnabled(false);
+		}
 
 		// Initialize ControlDateFields
 		contentBinding.immunizationReportDate.initializeDateField(getFragmentManager());
@@ -214,13 +223,8 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 			}
 		});
 
-		contentBinding.overwriteImmunizationManagementStatusCheckBox.addValueChangedListener(e -> {
-			if (Boolean.TRUE.equals(e.getValue())) {
-				contentBinding.immunizationImmunizationManagementStatus.setEnabled(true);
-			} else {
-				contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
-			}
-		});
+		contentBinding.overwriteImmunizationManagementStatusCheckBox
+			.addValueChangedListener(e -> contentBinding.immunizationImmunizationManagementStatus.setEnabled(Boolean.TRUE.equals(e.getValue())));
 
 		contentBinding.immunizationImmunizationManagementStatus.addValueChangedListener(e -> {
 			if (e.getValue() == ImmunizationManagementStatus.SCHEDULED || e.getValue() == ImmunizationManagementStatus.ONGOING) {
@@ -245,5 +249,14 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 				contentBinding.facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());
 			}
 		}
+	}
+
+	private Disease getEventDisease() {
+		String eventParticipantUuid = new Bundler(getArguments()).getEventParticipantUuid();
+		if (eventParticipantUuid != null) {
+			EventParticipant eventParticipant = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipantUuid);
+			return eventParticipant.getEvent().getDisease();
+		}
+		return null;
 	}
 }
