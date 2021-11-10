@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -42,6 +43,7 @@ import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
@@ -255,6 +257,39 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 
 	@Override
+	public boolean isPropertyValueTrue(FeatureType featureType, FeatureTypeProperty property) {
+
+		if (!featureType.getSupportedProperties().contains(property)) {
+			throw new IllegalArgumentException("Feature type " + featureType + " does not support property " + property + ".");
+		}
+
+		if (!Boolean.class.isAssignableFrom(property.getReturnType())) {
+			throw new IllegalArgumentException(
+				"Feature type property " + property + " does not have specified return type " + Boolean.class.getSimpleName() + ".");
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object> cq = cb.createQuery(Object.class);
+		Root<FeatureConfiguration> root = cq.from(FeatureConfiguration.class);
+
+		cq.where(cb.and(cb.equal(root.get(FeatureConfiguration.FEATURE_TYPE), featureType)));
+		cq.select(root.get(FeatureConfiguration.PROPERTIES));
+
+		@SuppressWarnings("unchecked")
+		Map<FeatureTypeProperty, Object> properties = (Map<FeatureTypeProperty, Object>) em.createQuery(cq).getSingleResult();
+
+		boolean result;
+		if (properties != null && properties.containsKey(property)) {
+			result = (boolean) properties.get(property);
+		} else {
+			// Compare the expected property value with the default value
+			result = (boolean) featureType.getSupportedPropertyDefaults().get(property);
+		}
+
+		return result;
+	}
+
+	@Override
 	public boolean isFeatureEnabled(FeatureType featureType) {
 		return !isFeatureDisabled(featureType);
 	}
@@ -316,6 +351,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		target.setDisease(source.getDisease());
 		target.setEndDate(source.getEndDate());
 		target.setEnabled(source.isEnabled());
+		target.setProperties(source.getProperties());
 
 		return target;
 	}
@@ -331,6 +367,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		target.setDisease(source.getDisease());
 		target.setEndDate(source.getEndDate());
 		target.setEnabled(source.isEnabled());
+		target.setProperties(source.getProperties());
 
 		return target;
 	}
