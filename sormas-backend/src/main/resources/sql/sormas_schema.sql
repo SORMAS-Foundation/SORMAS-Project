@@ -8861,8 +8861,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (426, '[DEMIS2SORMAS
 ALTER TABLE featureconfiguration ADD COLUMN properties text;
 ALTER TABLE featureconfiguration_history ADD COLUMN properties text;
 
-UPDATE featureconfiguration SET properties = '{"REDUCED":false}' WHERE featuretype = 'IMMUNIZATION_MANAGEMENT';
-
 INSERT INTO schema_version (version_number, comment) VALUES (427, 'Add properties to feature configurations #7111');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
