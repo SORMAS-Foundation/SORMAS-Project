@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.feature;
 
 import java.util.Date;
+import java.util.Map;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
@@ -12,7 +13,6 @@ public class FeatureConfigurationDto extends EntityDto {
 
 	private static final long serialVersionUID = 4027927530101427321L;
 
-	public static final String FEATURE_TYPE = "featureType";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String DISEASE = "disease";
@@ -25,6 +25,7 @@ public class FeatureConfigurationDto extends EntityDto {
 	private Disease disease;
 	private Date endDate;
 	private boolean enabled;
+	private Map<FeatureTypeProperty, Object> properties;
 
 	public static FeatureConfigurationDto build() {
 		FeatureConfigurationDto config = new FeatureConfigurationDto();
@@ -78,5 +79,13 @@ public class FeatureConfigurationDto extends EntityDto {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public Map<FeatureTypeProperty, Object> getProperties() {
+		return properties;
+	}
+
+	public void setProperties(Map<FeatureTypeProperty, Object> properties) {
+		this.properties = properties;
 	}
 }
