@@ -79,7 +79,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 		Vaccination existingVaccination = dto.getUuid() != null ? vaccinationService.getByUuid(dto.getUuid()) : null;
 		VaccinationDto existingDto = toDto(existingVaccination);
-		Date currentVaccinationDate = existingVaccination.getVaccinationDate();
+		Date currentVaccinationDate = existingVaccination != null ? existingVaccination.getVaccinationDate() : null;
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		restorePseudonymizedDto(dto, existingDto, existingVaccination, pseudonymizer);
