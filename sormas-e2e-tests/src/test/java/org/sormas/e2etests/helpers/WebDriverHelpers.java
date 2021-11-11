@@ -598,8 +598,7 @@ public class WebDriverHelpers {
   }
 
   /**
-   * Description: this method is used to perform scrolling in tables
-   * Parameters: scrollingStep -
+   * Description: this method is used to perform scrolling in tables Parameters: scrollingStep -
    * where we can set how many rows we want per scroll action
    */
   @SneakyThrows
