@@ -119,16 +119,22 @@ public class ImmunizationResource extends EntityDtoResource {
 	@Path("/createVaccination")
 	public VaccinationDto createVaccination(
 		@Valid VaccinationDto vaccination,
-		RegionReferenceDto region,
-		DistrictReferenceDto district,
-		PersonReferenceDto person,
-		Disease disease) {
-		return FacadeProvider.getVaccinationFacade().create(vaccination, region, district, person, disease);
+		@QueryParam("regionUuid") String regionUuid,
+		@QueryParam("districtUuid") String districtUuid,
+		@QueryParam("personUuid") String personUuid,
+		@QueryParam("disease") Disease disease) {
+		return FacadeProvider.getVaccinationFacade()
+			.create(
+				vaccination,
+				new RegionReferenceDto(regionUuid),
+				new DistrictReferenceDto(districtUuid),
+				new PersonReferenceDto(personUuid),
+				disease);
 	}
 
 	@POST
 	@Path("/vaccinations")
-	public List<VaccinationDto> getAllVaccinations(String personUuid, Disease disease) {
+	public List<VaccinationDto> getAllVaccinations(@QueryParam("personUuid") String personUuid, @QueryParam("disease") Disease disease) {
 		return FacadeProvider.getVaccinationFacade().getAllVaccinations(personUuid, disease);
 	}
 

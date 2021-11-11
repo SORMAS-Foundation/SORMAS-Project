@@ -77,6 +77,7 @@ import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -952,8 +953,11 @@ public class PersonFacadeEjb implements PersonFacade {
 			// Fetch Person.id per association and find the distinct count.
 			Set<Long> distinctPersonIds = new HashSet<>();
 			Arrays.stream(PersonAssociation.getSingleAssociations())
+				.filter(
+					e -> !(featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)
+						&& e == PersonAssociation.IMMUNIZATION))
 				.map(e -> getPersonIds(SerializationUtils.clone(nullSafeCriteria).personAssociation(e)))
-				.forEach(e -> distinctPersonIds.addAll(e));
+				.forEach(distinctPersonIds::addAll);
 			count = distinctPersonIds.size();
 		} else {
 			// Directly fetch the count for the only required association

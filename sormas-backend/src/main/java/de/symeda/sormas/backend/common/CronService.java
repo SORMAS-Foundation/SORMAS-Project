@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRole;
@@ -40,9 +41,9 @@ import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLoca
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.central.CentralInfraSyncFacade;
 import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb.LabMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.central.CentralInfraSyncFacade;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb.SystemEventFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 
@@ -176,7 +177,8 @@ public class CronService {
 
 	@Schedule(hour = "1", minute = "40", second = "0", persistent = false)
 	public void updateImmunizationStatuses() {
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.IMMUNIZATION_STATUS_AUTOMATION)) {
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.IMMUNIZATION_STATUS_AUTOMATION)
+			&& !featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 			immunizationFacade.updateImmunizationStatuses();
 		}
 	}

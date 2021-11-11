@@ -23,6 +23,7 @@ import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEqualsReferenceDto;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -62,6 +63,8 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonAssociation;
@@ -85,6 +88,7 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventUserFilterCriteria;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.geocoding.GeocodingService;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -120,6 +124,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	private GeocodingService geocodingService;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public PersonService() {
 		super(Person.class);
@@ -180,16 +186,19 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		List<String> eventPersonsResultList = em.createQuery(eventPersonsQuery).getResultList();
 
 		// persons by immunization
-		CriteriaQuery<String> immunizationPersonsQuery = cb.createQuery(String.class);
-		Root<Immunization> immunizationPersonsRoot = immunizationPersonsQuery.from(Immunization.class);
-		Join<Immunization, Person> immunizationPersonsSelect = immunizationPersonsRoot.join(Immunization.PERSON);
-		immunizationPersonsQuery.select(immunizationPersonsSelect.get(Person.UUID));
-		Predicate immunizationPersonsFilter = immunizationService.createUserFilter(cb, immunizationPersonsQuery, immunizationPersonsRoot);
-		if (immunizationPersonsFilter != null) {
-			immunizationPersonsQuery.where(immunizationPersonsFilter);
+		List<String> immunizationPersonsResultList = new ArrayList<>();
+		if (!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			CriteriaQuery<String> immunizationPersonsQuery = cb.createQuery(String.class);
+			Root<Immunization> immunizationPersonsRoot = immunizationPersonsQuery.from(Immunization.class);
+			Join<Immunization, Person> immunizationPersonsSelect = immunizationPersonsRoot.join(Immunization.PERSON);
+			immunizationPersonsQuery.select(immunizationPersonsSelect.get(Person.UUID));
+			Predicate immunizationPersonsFilter = immunizationService.createUserFilter(cb, immunizationPersonsQuery, immunizationPersonsRoot);
+			if (immunizationPersonsFilter != null) {
+				immunizationPersonsQuery.where(immunizationPersonsFilter);
+			}
+			immunizationPersonsQuery.distinct(true);
+			immunizationPersonsResultList = em.createQuery(immunizationPersonsQuery).getResultList();
 		}
-		immunizationPersonsQuery.distinct(true);
-		List<String> immunizationPersonsResultList = em.createQuery(immunizationPersonsQuery).getResultList();
 
 		// persons by travel entry
 		CriteriaQuery<String> travelEntryPersonsQuery = cb.createQuery(String.class);
@@ -231,6 +240,9 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final CriteriaQuery cq = personQueryContext.getQuery();
 		final PersonJoins joins = (PersonJoins) personQueryContext.getJoins();
 
+		final boolean fullImmunizationModuleUsed =
+			!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED);
+
 		// 1. Define filters per association lazy to avoid superfluous joins
 		final Supplier<Predicate> caseFilter = () -> CriteriaBuilderHelper.and(
 			cb,
@@ -250,10 +262,12 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 				joins.getEventParticipant(),
 				new EventUserFilterCriteria().includeUserCaseAndEventParticipantFilter(false).forceRegionJurisdiction(true)),
 			eventParticipantService.createDefaultFilter(cb, joins.getEventParticipant()));
-		final Supplier<Predicate> immunizationFilter = () -> CriteriaBuilderHelper.and(
-			cb,
-			immunizationService.createUserFilter(cb, cq, joins.getImmunization()),
-			immunizationService.createDefaultFilter(cb, joins.getImmunization()));
+		final Supplier<Predicate> immunizationFilter = fullImmunizationModuleUsed
+			? () -> CriteriaBuilderHelper.and(
+				cb,
+				immunizationService.createUserFilter(cb, cq, joins.getImmunization()),
+				immunizationService.createDefaultFilter(cb, joins.getImmunization()))
+			: () -> null;
 		final Supplier<Predicate> travelEntryFilter = () -> CriteriaBuilderHelper.and(
 			cb,
 			travelEntryService.createUserFilter(cb, cq, joins.getTravelEntry()),
@@ -264,8 +278,13 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			Optional.ofNullable(personCriteria).map(e -> e.getPersonAssociation()).orElse(PersonCriteria.DEFAULT_ASSOCIATION);
 		switch (personAssociation) {
 		case ALL:
-			return CriteriaBuilderHelper
-				.or(cb, caseFilter.get(), contactFilter.get(), eventParticipantFilter.get(), immunizationFilter.get(), travelEntryFilter.get());
+			return CriteriaBuilderHelper.or(
+				cb,
+				caseFilter.get(),
+				contactFilter.get(),
+				eventParticipantFilter.get(),
+				fullImmunizationModuleUsed ? immunizationFilter.get() : null,
+				travelEntryFilter.get());
 		case CASE:
 			return caseFilter.get();
 		case CONTACT:
@@ -273,6 +292,10 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		case EVENT_PARTICIPANT:
 			return eventParticipantFilter.get();
 		case IMMUNIZATION:
+			if (!fullImmunizationModuleUsed) {
+				throw new UnsupportedOperationException(
+					"Filtering persons by immunizations is not supported when the reduced immunization module is used.");
+			}
 			return immunizationFilter.get();
 		case TRAVEL_ENTRY:
 			return travelEntryFilter.get();
@@ -419,24 +442,27 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		List<Person> eventPersonsResultList = em.createQuery(eventPersonsQuery).getResultList();
 
 		// persons by immunization
-		CriteriaQuery<Person> immunizationPersonsQuery = cb.createQuery(Person.class);
-		Root<Immunization> immunizationPersonsRoot = immunizationPersonsQuery.from(Immunization.class);
-		Join<Immunization, Person> immunizationPersonsSelect = immunizationPersonsRoot.join(Immunization.PERSON);
-		immunizationPersonsSelect.fetch(Person.ADDRESS);
-		immunizationPersonsQuery.select(immunizationPersonsSelect);
-		Predicate immunizationPersonsFilter = immunizationService.createUserFilter(cb, immunizationPersonsQuery, immunizationPersonsRoot);
-		// date range
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, immunizationPersonsSelect, DateHelper.toTimestampUpper(date));
-			Predicate immunizationDateFilter =
-				immunizationService.createChangeDateFilter(cb, immunizationPersonsRoot, DateHelper.toTimestampUpper(date));
-			immunizationPersonsFilter = and(cb, immunizationPersonsFilter, cb.or(dateFilter, immunizationDateFilter));
+		List<Person> immunizationPersonsResultList = new ArrayList<>();
+		if (!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			CriteriaQuery<Person> immunizationPersonsQuery = cb.createQuery(Person.class);
+			Root<Immunization> immunizationPersonsRoot = immunizationPersonsQuery.from(Immunization.class);
+			Join<Immunization, Person> immunizationPersonsSelect = immunizationPersonsRoot.join(Immunization.PERSON);
+			immunizationPersonsSelect.fetch(Person.ADDRESS);
+			immunizationPersonsQuery.select(immunizationPersonsSelect);
+			Predicate immunizationPersonsFilter = immunizationService.createUserFilter(cb, immunizationPersonsQuery, immunizationPersonsRoot);
+			// date range
+			if (date != null) {
+				Predicate dateFilter = createChangeDateFilter(cb, immunizationPersonsSelect, DateHelper.toTimestampUpper(date));
+				Predicate immunizationDateFilter =
+					immunizationService.createChangeDateFilter(cb, immunizationPersonsRoot, DateHelper.toTimestampUpper(date));
+				immunizationPersonsFilter = and(cb, immunizationPersonsFilter, cb.or(dateFilter, immunizationDateFilter));
+			}
+			if (immunizationPersonsFilter != null) {
+				immunizationPersonsQuery.where(immunizationPersonsFilter);
+			}
+			immunizationPersonsQuery.distinct(true);
+			immunizationPersonsResultList = em.createQuery(immunizationPersonsQuery).getResultList();
 		}
-		if (immunizationPersonsFilter != null) {
-			immunizationPersonsQuery.where(immunizationPersonsFilter);
-		}
-		immunizationPersonsQuery.distinct(true);
-		List<Person> immunizationPersonsResultList = em.createQuery(immunizationPersonsQuery).getResultList();
 
 		// persons by travel entries
 		CriteriaQuery<Person> tepQuery = cb.createQuery(Person.class);
@@ -538,12 +564,15 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			and(cb, personEventParticipantJoin.get(EventParticipant.ID).isNotNull(), activeEventParticipantsFilter, eventParticipantUserFilter);
 
 		// Persons of active immunizations
-		Predicate activeImmunizationsFilter = activeEntriesOnly
-			? immunizationService.createActiveImmunizationsFilter(cb, personImmunizationJoin)
-			: immunizationService.createDefaultFilter(cb, personImmunizationJoin);
-		Predicate immunizationUserFilter = immunizationService.createUserFilter(cb, personQuery, personImmunizationJoin);
-		Predicate personImmunizationPredicate =
-			and(cb, personImmunizationJoin.get(Immunization.ID).isNotNull(), immunizationUserFilter, activeImmunizationsFilter);
+		Predicate personImmunizationPredicate = null;
+		if (!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			Predicate activeImmunizationsFilter = activeEntriesOnly
+				? immunizationService.createActiveImmunizationsFilter(cb, personImmunizationJoin)
+				: immunizationService.createDefaultFilter(cb, personImmunizationJoin);
+			Predicate immunizationUserFilter = immunizationService.createUserFilter(cb, personQuery, personImmunizationJoin);
+			personImmunizationPredicate =
+				and(cb, personImmunizationJoin.get(Immunization.ID).isNotNull(), immunizationUserFilter, activeImmunizationsFilter);
+		}
 
 		// Persons of active travel entries
 		Predicate activeTravelEntriesFilter = activeEntriesOnly
