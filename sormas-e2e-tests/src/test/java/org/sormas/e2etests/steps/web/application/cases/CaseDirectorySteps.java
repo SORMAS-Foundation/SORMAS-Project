@@ -23,6 +23,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE
 
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.common.*;
@@ -66,6 +67,7 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CASE_DIRECTORY_DETAILED_RADIOBUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               By.xpath(String.format(RESULTS_GRID_HEADER, "Sex")), 20);
+          webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(GRID_HEADERS, 41);
         });
 
     When(
@@ -77,6 +79,7 @@ public class CaseDirectorySteps implements En {
               CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
           webDriverHelpers.clickOnWebElementBySelector(
               CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // needed for table refresh
         });
 
     When(

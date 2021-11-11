@@ -49,6 +49,12 @@ public interface FeatureConfigurationFacade {
 
 	boolean isFeatureEnabled(FeatureType featureType);
 
+	/**
+	 * Checks whether the property of the specified feature type in the database equals to true.
+	 * If the property is not defined in the database, does the check against the property's default instead.
+	 */
+	boolean isPropertyValueTrue(FeatureType featureType, FeatureTypeProperty property);
+
 	boolean isAnySurveillanceEnabled();
 
 	boolean isCountryEnabled();
