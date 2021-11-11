@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. --><project basedir="." default="build" name="sormas-widgetset">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../eclipse/"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
+    <path id="Maven Dependencies.libraryclasspath">
+        <pathelement location="../../../.m2/repository/com/vaadin/vaadin-compatibility-client/8.14.1/vaadin-compatibility-client-8.14.1.jar"/>
+        <pathelement location="../../../.m2/repository/com/vaadin/vaadin-client/8.14.1/vaadin-client-8.14.1.jar"/>
+        <pathelement location="../../../.m2/repository/com/vaadin/vaadin-shared/8.14.1/vaadin-shared-8.14.1.jar"/>
+        <pathelement location="../../../.m2/repository/com/google/gwt/gwt-elemental/2.8.2/gwt-elemental-2.8.2.jar"/>
+        <pathelement location="../../../.m2/repository/com/google/gwt/gwt-user/2.8.2/gwt-user-2.8.2.jar"/>
+        <pathelement location="../../../.m2/repository/com/google/jsinterop/jsinterop-annotations/1.0.2/jsinterop-annotations-1.0.2.jar"/>
+        <pathelement location="../../../.m2/repository/com/google/jsinterop/jsinterop-annotations/1.0.2/jsinterop-annotations-1.0.2-sources.jar"/>
+        <pathelement location="../../../.m2/repository/javax/validation/validation-api/2.0.1.Final/validation-api-2.0.1.Final.jar"/>
+        <pathelement location="../../../.m2/repository/javax/validation/validation-api/1.0.0.GA/validation-api-1.0.0.GA-sources.jar"/>
+        <pathelement location="../../../.m2/repository/com/vaadin/vaadin-compatibility-server/8.14.1/vaadin-compatibility-server-8.14.1.jar"/>
+        <pathelement location="../../../.m2/repository/com/vaadin/vaadin-compatibility-shared/8.14.1/vaadin-compatibility-shared-8.14.1.jar"/>
+        <pathelement location="../../../.m2/repository/com/vaadin/vaadin-client-compiler/8.14.1/vaadin-client-compiler-8.14.1.jar"/>
+        <pathelement location="../../../.m2/repository/com/google/gwt/gwt-dev/2.8.2/gwt-dev-2.8.2.jar"/>
+        <pathelement location="../../../.m2/repository/com/google/code/findbugs/jsr305/1.3.9/jsr305-1.3.9.jar"/>
+        <pathelement location="../../../.m2/repository/com/google/code/gson/gson/2.6.2/gson-2.6.2.jar"/>
+        <pathelement location="../../../.m2/repository/org/ow2/asm/asm/5.0.3/asm-5.0.3.jar"/>
+        <pathelement location="../../../.m2/repository/org/ow2/asm/asm-util/5.0.3/asm-util-5.0.3.jar"/>
+        <pathelement location="../../../.m2/repository/org/ow2/asm/asm-tree/5.0.3/asm-tree-5.0.3.jar"/>
+        <pathelement location="../../../.m2/repository/org/ow2/asm/asm-commons/5.0.3/asm-commons-5.0.3.jar"/>
+        <pathelement location="../../../.m2/repository/colt/colt/1.2.0/colt-1.2.0.jar"/>
+        <pathelement location="../../../.m2/repository/ant/ant/1.6.5/ant-1.6.5.jar"/>
+        <pathelement location="../../../.m2/repository/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar"/>
+        <pathelement location="../../../.m2/repository/commons-io/commons-io/2.8.0/commons-io-2.8.0.jar"/>
+        <pathelement location="../../../.m2/repository/com/ibm/icu/icu4j/50.1.1/icu4j-50.1.1.jar"/>
+        <pathelement location="../../../.m2/repository/tapestry/tapestry/4.0.2/tapestry-4.0.2.jar"/>
+        <pathelement location="../../../.m2/repository/net/sourceforge/htmlunit/htmlunit/2.19/htmlunit-2.19.jar"/>
+        <pathelement location="../../../.m2/repository/xalan/xalan/2.7.2/xalan-2.7.2.jar"/>
+        <pathelement location="../../../.m2/repository/xalan/serializer/2.7.2/serializer-2.7.2.jar"/>
+        <pathelement location="../../../.m2/repository/org/apache/commons/commons-lang3/3.11/commons-lang3-3.11.jar"/>
+        <pathelement location="../../../.m2/repository/org/apache/httpcomponents/httpclient/4.5.13/httpclient-4.5.13.jar"/>
+        <pathelement location="../../../.m2/repository/org/apache/httpcomponents/httpcore/4.4.14/httpcore-4.4.14.jar"/>
+        <pathelement location="../../../.m2/repository/org/apache/httpcomponents/httpmime/4.5.1/httpmime-4.5.1.jar"/>
+        <pathelement location="../../../.m2/repository/commons-codec/commons-codec/1.15/commons-codec-1.15.jar"/>
+        <pathelement location="../../../.m2/repository/net/sourceforge/htmlunit/htmlunit-core-js/2.17/htmlunit-core-js-2.17.jar"/>
+        <pathelement location="../../../.m2/repository/xerces/xercesImpl/2.11.0/xercesImpl-2.11.0.jar"/>
+        <pathelement location="../../../.m2/repository/xml-apis/xml-apis/1.4.01/xml-apis-1.4.01.jar"/>
+        <pathelement location="../../../.m2/repository/net/sourceforge/nekohtml/nekohtml/1.9.22/nekohtml-1.9.22.jar"/>
+        <pathelement location="../../../.m2/repository/net/sourceforge/cssparser/cssparser/0.9.18/cssparser-0.9.18.jar"/>
+        <pathelement location="../../../.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar"/>
+        <pathelement location="../../../.m2/repository/org/eclipse/jetty/websocket/websocket-client/9.2.13.v20150730/websocket-client-9.2.13.v20150730.jar"/>
+        <pathelement location="../../../.m2/repository/org/eclipse/jetty/websocket/websocket-common/9.2.13.v20150730/websocket-common-9.2.13.v20150730.jar"/>
+        <pathelement location="../../../.m2/repository/org/eclipse/jetty/websocket/websocket-api/9.2.13.v20150730/websocket-api-9.2.13.v20150730.jar"/>
+        <pathelement location="../../../.m2/repository/org/eclipse/jetty/jetty-webapp/9.2.14.v20151106/jetty-webapp-9.2.14.v20151106.jar"/>
+        <pathelement location="../../../.m2/repository/org/eclipse/jetty/jetty-xml/9.2.14.v20151106/jetty-xml-9.2.14.v20151106.jar"/>
+        <pathelement location="../../../.m2/repository/org/eclipse/jetty/jetty-servlet/9.2.14.v20151106/jetty-servlet-9.2.14.v20151106.jar"/>
+        <pathelement location="../../../.m2/repository/org/eclipse/jetty/jetty-security/9.2.14.v20151106/jetty-security-9.2.14.v20151106.jar"/>
+        <pathelement location="../../../.m2/repository/org/eclipse/jetty/jetty-servlets/9.2.14.v20151106/jetty-servlets-9.2.14.v20151106.jar"/>
+        <pathelement location="../../../.m2/repository/org/eclipse/jetty/jetty-continuation/9.2.14.v20151106/jetty-continuation-9.2.14.v20151106.jar"/>
+        <pathelement location="../../../.m2/repository/org/eclipse/jetty/jetty-http/9.2.14.v20151106/jetty-http-9.2.14.v20151106.jar"/>
+        <pathelement location="../../../.m2/repository/org/eclipse/jetty/jetty-util/9.2.14.v20151106/jetty-util-9.2.14.v20151106.jar"/>
+        <pathelement location="../../../.m2/repository/org/eclipse/jetty/jetty-io/9.2.14.v20151106/jetty-io-9.2.14.v20151106.jar"/>
+        <pathelement location="../../../.m2/repository/org/eclipse/jetty/jetty-annotations/9.2.14.v20151106/jetty-annotations-9.2.14.v20151106.jar"/>
+        <pathelement location="../../../.m2/repository/org/eclipse/jetty/jetty-plus/9.2.14.v20151106/jetty-plus-9.2.14.v20151106.jar"/>
+        <pathelement location="../../../.m2/repository/org/eclipse/jetty/jetty-jndi/9.2.14.v20151106/jetty-jndi-9.2.14.v20151106.jar"/>
+        <pathelement location="../../../.m2/repository/javax/annotation/javax.annotation-api/1.2/javax.annotation-api-1.2.jar"/>
+        <pathelement location="../../../.m2/repository/org/eclipse/jetty/apache-jsp/9.2.14.v20151106/apache-jsp-9.2.14.v20151106.jar"/>
+        <pathelement location="../../../.m2/repository/org/eclipse/jetty/jetty-server/9.2.14.v20151106/jetty-server-9.2.14.v20151106.jar"/>
+        <pathelement location="../../../.m2/repository/org/eclipse/jetty/toolchain/jetty-schemas/3.1.M0/jetty-schemas-3.1.M0.jar"/>
+        <pathelement location="../../../.m2/repository/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar"/>
+        <pathelement location="../../../.m2/repository/org/mortbay/jasper/apache-jsp/8.0.9.M3/apache-jsp-8.0.9.M3.jar"/>
+        <pathelement location="../../../.m2/repository/org/mortbay/jasper/apache-el/8.0.9.M3/apache-el-8.0.9.M3.jar"/>
+        <pathelement location="../../../.m2/repository/com/vaadin/vaadin-sass-compiler/0.9.13/vaadin-sass-compiler-0.9.13.jar"/>
+        <pathelement location="../../../.m2/repository/org/w3c/css/sac/1.3/sac-1.3.jar"/>
+        <pathelement location="../../../.m2/repository/com/vaadin/external/flute/flute/1.3.0.gg2/flute-1.3.0.gg2.jar"/>
+        <pathelement location="../../../.m2/repository/org/vaadin/addons/popupbutton/3.0.0/popupbutton-3.0.0.jar"/>
+        <pathelement location="../../../.m2/repository/org/vaadin/addons/extended-token-field/0.3.0/extended-token-field-0.3.0.jar"/>
+        <pathelement location="../../../.m2/repository/com/wcs/wcslib/wcslib-vaadin-widget-multifileupload/4.0/wcslib-vaadin-widget-multifileupload-4.0.jar"/>
+        <pathelement location="../../../.m2/repository/com/vaadin/vaadin-server/8.14.1/vaadin-server-8.14.1.jar"/>
+        <pathelement location="../../../.m2/repository/org/jsoup/jsoup/1.14.2/jsoup-1.14.2.jar"/>
+        <pathelement location="../../../.m2/repository/com/vaadin/external/gentyref/1.2.0.vaadin1/gentyref-1.2.0.vaadin1.jar"/>
+        <pathelement location="../../../.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"/>
+        <pathelement location="../../../.m2/repository/junit/junit/4.13.1/junit-4.13.1.jar"/>
+        <pathelement location="../../../.m2/repository/org/hamcrest/hamcrest-library/1.3/hamcrest-library-1.3.jar"/>
+        <pathelement location="../../../.m2/repository/org/mockito/mockito-inline/3.5.15/mockito-inline-3.5.15.jar"/>
+        <pathelement location="../../../.m2/repository/org/mockito/mockito-core/3.5.15/mockito-core-3.5.15.jar"/>
+        <pathelement location="../../../.m2/repository/net/bytebuddy/byte-buddy/1.10.15/byte-buddy-1.10.15.jar"/>
+        <pathelement location="../../../.m2/repository/net/bytebuddy/byte-buddy-agent/1.10.15/byte-buddy-agent-1.10.15.jar"/>
+        <pathelement location="../../../.m2/repository/org/objenesis/objenesis/3.1/objenesis-3.1.jar"/>
+    </path>
+    <path id="sormas-widgetset.classpath">
+        <pathelement location="target/classes"/>
+        <path refid="Maven Dependencies.libraryclasspath"/>
+        <pathelement location="target/test-classes"/>
+    </path>
+    <target name="init">
+        <mkdir dir="target/classes"/>
+        <mkdir dir="target/test-classes"/>
+        <copy includeemptydirs="false" todir="target/classes">
+            <fileset dir="src/main/resources">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+                <exclude name="**"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="target/classes">
+            <fileset dir="src/main/java">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="target/test-classes">
+            <fileset dir="src/test/java">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="target/classes">
+            <fileset dir="target/generated-resources/gwt">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="target/classes"/>
+        <delete dir="target/test-classes"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="target/classes" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src/main/resources"/>
+            <src path="src/main/java"/>
+            <src path="target/generated-resources/gwt"/>
+            <exclude name="**"/>
+            <classpath refid="sormas-widgetset.classpath"/>
+        </javac>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="target/test-classes" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src/test/java"/>
+            <classpath refid="sormas-widgetset.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+</project>
