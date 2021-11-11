@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -181,44 +182,39 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		}
 	}
 
-	protected boolean getBoolean(String name, boolean defaultValue) {
+	private <T> T parseProperty(String propertyName, T defaultValue, Function<String, T> parse) {
 
-		try {
-			return Boolean.parseBoolean(getProperty(name, Boolean.toString(defaultValue)));
-		} catch (Exception e) {
-			logger.error("Could not parse boolean value of property '" + name + "': " + e.getMessage());
+		String prop = props.getProperty(propertyName);
+		if (prop == null) {
 			return defaultValue;
 		}
+
+		try {
+			if (prop.isEmpty()) {
+				logger.debug("The property '" + propertyName + "' is set to empty value");
+			}
+
+			return parse.apply(prop);
+		} catch (Exception e) {
+			logger.error("Could not parse value of property '" + propertyName + "': " + e.getMessage());
+			return defaultValue;
+		}
+	}
+
+	protected boolean getBoolean(String name, boolean defaultValue) {
+		return parseProperty(name, defaultValue, Boolean::parseBoolean);
 	}
 
 	protected double getDouble(String name, double defaultValue) {
-
-		try {
-			return Double.parseDouble(getProperty(name, Double.toString(defaultValue)));
-		} catch (Exception e) {
-			logger.error("Could not parse numeric value of property '" + name + "': " + e.getMessage());
-			return defaultValue;
-		}
+		return parseProperty(name, defaultValue, Double::parseDouble);
 	}
 
 	protected int getInt(String name, int defaultValue) {
-
-		try {
-			return Integer.parseInt(getProperty(name, Integer.toString(defaultValue)));
-		} catch (Exception e) {
-			logger.error("Could not parse integer value of property '" + name + "': " + e.getMessage());
-			return defaultValue;
-		}
+		return parseProperty(name, defaultValue, Integer::parseInt);
 	}
 
-	protected long getLong(String name, int defaultValue) {
-
-		try {
-			return Long.parseLong(getProperty(name, Long.toString(defaultValue)));
-		} catch (Exception e) {
-			logger.error("Could not parse long value of property '" + name + "': " + e.getMessage());
-			return defaultValue;
-		}
+	protected long getLong(String name, long defaultValue) {
+		return parseProperty(name, defaultValue, Long::parseLong);
 	}
 
 	@Override
@@ -226,7 +222,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 		String countryName = getProperty(COUNTRY_NAME, "");
 		if (countryName.isEmpty()) {
-			logger.info("No country name is specified in sormas.properties.");
+			logger.debug("No country name is specified in sormas.properties.");
 		}
 		return new String(countryName.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
 	}

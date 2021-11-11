@@ -2,7 +2,7 @@
 Feature: Case filter functionality
 
   Scenario: Check Cases on Sample page work as expected
-    Given API: I create several new cases
+    Given API: I create 10 new cases
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     And I log in with National User
@@ -13,5 +13,3 @@ Feature: Case filter functionality
     When I search for cases created with the API using Person's name
     Then I apply Disease filter "COVID-19"
     And I check that all displayed cases have "COVID-19" in grid Disease column
-    When I search for cases created with the API using Person's name
-    Then I check the displayed Case Classification filter dropdown

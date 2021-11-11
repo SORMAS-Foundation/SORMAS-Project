@@ -1659,9 +1659,8 @@ public class TestDataCreator {
 		return labMessage;
 	}
 
-	public TestReportDto createTestReport(PathogenTestReferenceDto pathogenTest, LabMessageReferenceDto labMessage) {
+	public TestReportDto createTestReport(LabMessageReferenceDto labMessage) {
 		TestReportDto testReport = TestReportDto.build();
-		testReport.setPathogenTest(pathogenTest);
 		testReport.setLabMessage(labMessage);
 
 		beanTest.getTestReportFacade().saveTestReport(testReport);

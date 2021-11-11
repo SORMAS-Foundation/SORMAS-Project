@@ -24,9 +24,9 @@ public class CaseDirectoryPage {
   public static final By NEW_CASE_BUTTON = By.cssSelector("div#caseNewCase");
   public static final By TOTAL_CASES_COUNTER = By.cssSelector(".badge");
   public static final By CASE_DIRECTORY_DETAILED_RADIOBUTTON =
-      By.cssSelector("#contactsViewSwitcher span:nth-child(2)");
+      By.cssSelector("#casesViewSwitcher span:nth-child(2)");
   public static final By CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT =
-      By.cssSelector("input#nameUuidEpidNumberLike");
+      By.cssSelector("input#caseLike");
   public static final By CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON =
       By.cssSelector("div#actionApplyFilters");
   public static final By CASE_DETAILED_TABLE_DATA = By.tagName("td");
@@ -36,6 +36,8 @@ public class CaseDirectoryPage {
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By FIRST_CASE_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
   public static final By NAME_UUID_EPID_NUMBER_LIKE_INPUT = By.cssSelector("input#caseLike");
+  public static final By PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT =
+      By.cssSelector("#personLike");
   public static final By CASE_OUTCOME_FILTER_COMBOBOX =
       By.cssSelector("[id='outcome'] [class='v-filterselect-button']");
   public static final By CASE_CLASSIFICATION_FILTER_COMBOBOX =
