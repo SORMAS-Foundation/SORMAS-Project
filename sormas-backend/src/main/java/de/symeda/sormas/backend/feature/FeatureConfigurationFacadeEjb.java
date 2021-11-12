@@ -30,6 +30,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -396,8 +397,12 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		cq.where(cb.and(cb.equal(root.get(FeatureConfiguration.FEATURE_TYPE), featureType)));
 		cq.select(root.get(FeatureConfiguration.PROPERTIES));
 
-		@SuppressWarnings("unchecked")
-		Map<FeatureTypeProperty, Object> properties = (Map<FeatureTypeProperty, Object>) em.createQuery(cq).getSingleResult();
+		Map<FeatureTypeProperty, Object> properties = null;
+		try {
+			properties = (Map<FeatureTypeProperty, Object>) em.createQuery(cq).getSingleResult();
+		} catch (NoResultException e) {
+			// NOOP
+		}
 
 		boolean result;
 		if (properties != null && properties.containsKey(property)) {

@@ -48,7 +48,12 @@ public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionV
 		this.joins = joins;
 	}
 
-	public static PersonJurisdictionPredicateValidator of(CriteriaQuery<?> cq, CriteriaBuilder cb, PersonJoins joins, User user) {
+	public static PersonJurisdictionPredicateValidator of(
+		CriteriaQuery<?> cq,
+		CriteriaBuilder cb,
+		PersonJoins joins,
+		User user,
+		boolean includeImmunizations) {
 		final List<PredicateJurisdictionValidator> associatedJurisdictionValidators = new ArrayList<>();
 
 		associatedJurisdictionValidators.add(CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, joins.getCaze()), user));
@@ -57,8 +62,10 @@ public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionV
 			.add(EventParticipantJurisdictionPredicateValidator.of(new EventParticipantQueryContext<>(cb, cq, joins.getEventParticipant()), user));
 		associatedJurisdictionValidators
 			.add(TravelEntryJurisdictionPredicateValidator.of(new TravelEntryQueryContext(cb, cq, joins.getTravelEntry()), user));
-		associatedJurisdictionValidators
-			.add(ImmunizationJurisdictionPredicateValidator.of(new ImmunizationQueryContext<>(cb, cq, joins.getImmunization()), user));
+		if (includeImmunizations) {
+			associatedJurisdictionValidators
+				.add(ImmunizationJurisdictionPredicateValidator.of(new ImmunizationQueryContext<>(cb, cq, joins.getImmunization()), user));
+		}
 
 		return new PersonJurisdictionPredicateValidator(cb, joins, user, associatedJurisdictionValidators);
 	}
