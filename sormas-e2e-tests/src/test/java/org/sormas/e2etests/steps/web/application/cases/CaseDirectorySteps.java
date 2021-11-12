@@ -23,11 +23,10 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE
 
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
-import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.common.*;
-import org.sormas.e2etests.enums.CaseClasification;
 import org.sormas.e2etests.enums.CaseOutcome;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.helpers.AssertHelpers;
@@ -68,6 +67,7 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CASE_DIRECTORY_DETAILED_RADIOBUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               By.xpath(String.format(RESULTS_GRID_HEADER, "Sex")), 20);
+          webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(GRID_HEADERS, 41);
         });
 
     When(
@@ -79,6 +79,7 @@ public class CaseDirectorySteps implements En {
               CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
           webDriverHelpers.clickOnWebElementBySelector(
               CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // needed for table refresh
         });
 
     When(
@@ -108,7 +109,7 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitUntilAListOfElementsIsPresent(
               CASE_GRID_RESULTS_ROWS, maximumNumberOfRows);
           webDriverHelpers.fillAndSubmitInWebElement(
-              NAME_UUID_EPID_NUMBER_LIKE_INPUT,
+              PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
               apiState.getLastCreatedPerson().getFirstName()
                   + " "
                   + apiState.getLastCreatedPerson().getLastName());
@@ -145,32 +146,6 @@ public class CaseDirectorySteps implements En {
                               webDriverHelpers.getTextFromPresentWebElement(TOTAL_CASES_COUNTER))));
         });
     // TODO refactor method to use a specific outcome once the other fix is done
-
-    Then(
-        "^I check the displayed Case Classification filter dropdown",
-        () ->
-            Arrays.stream(CaseClasification.values())
-                .forEach(
-                    clasification -> {
-                      webDriverHelpers.selectFromCombobox(
-                          CASE_CLASSIFICATION_FILTER_COMBOBOX, clasification.getClassification());
-                      webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
-                      webDriverHelpers.waitUntilAListOfElementsHasText(
-                          CASE_GRID_RESULTS_ROWS, clasification.getClassification());
-                      assertHelpers.assertWithPoll20Second(
-                          () ->
-                              Truth.assertThat(
-                                      apiState.getCreatedCases().stream()
-                                          .filter(
-                                              sample ->
-                                                  sample
-                                                      .getCaseClassification()
-                                                      .contentEquals(clasification.toString()))
-                                          .count())
-                                  .isEqualTo(
-                                      webDriverHelpers.getNumberOfElements(
-                                          CASE_GRID_RESULTS_ROWS)));
-                    }));
 
     Then(
         "I apply Disease filter {string}",

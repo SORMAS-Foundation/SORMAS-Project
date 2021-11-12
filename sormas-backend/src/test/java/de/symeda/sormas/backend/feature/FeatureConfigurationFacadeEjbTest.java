@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.feature;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.List;
 
@@ -9,6 +10,7 @@ import org.junit.Test;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -34,5 +36,18 @@ public class FeatureConfigurationFacadeEjbTest extends AbstractBeanTest {
 
 		List<TaskDto> caseTasks = getTaskFacade().getAllPendingByCase(caze.toReference());
 		assertEquals(0, caseTasks.size());
+	}
+
+	@Test
+	public void testIsPropertyValue() {
+
+		FeatureConfigurationIndexDto indexFeatureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(indexFeatureConfiguration, FeatureType.IMMUNIZATION_MANAGEMENT);
+
+		// Check against the default value when the property column is empty
+		assertFalse(getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED));
+
+		// TODO: Test for an explicitely added property; currently problematic because H2 has issues with the JSON converting
 	}
 }

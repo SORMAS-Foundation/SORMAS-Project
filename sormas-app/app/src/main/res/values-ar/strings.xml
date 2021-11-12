@@ -400,7 +400,6 @@
     <string name="info_user_report">Please briefly describe the problem you have experienced. Don\'t enter any personal or otherwise sensitive data!</string>
     <string name="info_pick_or_create_case">There is at least one existing case in the database that seems very similar to the one you are about to create. Please do one of the following:\n\n\u2022 Tap on a case that you <b>are sure</b> is the same case that you were about to create\n\u2022 Scroll to the bottom of this window and check the check box if you <b>are sure</b> that your case is a new case\n\nClick on the button in the bottom right to confirm your choice.</string>
     <string name="info_case_creation_mark_check_box">This case is a <b>new case</b> and <b>not a duplicate</b> of one of the cases above</string>
-    <string name="info_aggregate_report_legend">C = New cases; L = Lab confirmations; D = Deaths</string>
     <string name="main_menu_cases">Cases</string>
     <string name="main_menu_contacts">Contacts</string>
     <string name="main_menu_dashboard">Dashboard</string>
