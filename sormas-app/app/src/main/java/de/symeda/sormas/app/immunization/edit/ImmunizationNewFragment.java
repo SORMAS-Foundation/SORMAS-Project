@@ -21,6 +21,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import android.view.View;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -35,8 +36,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.validation.ValidationHelper;
@@ -211,16 +210,20 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 			contentBinding.immunizationHealthFacilityDetails);
 
 		contentBinding.immunizationMeansOfImmunization.addValueChangedListener(e -> {
-			if (e.getValue() == MeansOfImmunization.OTHER || e.getValue() == MeansOfImmunization.RECOVERY) {
-				contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.COMPLETED);
-				contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
+			if (!Boolean.TRUE.equals(contentBinding.overwriteImmunizationManagementStatusCheckBox.getValue())) {
+				if (e.getValue() == MeansOfImmunization.OTHER || e.getValue() == MeansOfImmunization.RECOVERY) {
+					contentBinding.overwriteImmunizationManagementStatusCheckBox.setValue(false);
+					contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.COMPLETED);
+					contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
+				}
+				if (e.getValue() == MeansOfImmunization.VACCINATION || e.getValue() == MeansOfImmunization.VACCINATION_RECOVERY) {
+					contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.SCHEDULED);
+					contentBinding.immunizationImmunizationStatus.setValue(ImmunizationStatus.PENDING);
+				}
 			}
-			if (e.getValue() == MeansOfImmunization.VACCINATION || e.getValue() == MeansOfImmunization.VACCINATION_RECOVERY) {
-				contentBinding.immunizationNumberOfDoses.setVisibility(View.VISIBLE);
-				contentBinding.immunizationNumberOfDoses.setEnabled(true);
-			} else {
-				contentBinding.immunizationNumberOfDoses.setVisibility(View.GONE);
-			}
+			boolean isVaccination = MeansOfImmunization.isVaccination((MeansOfImmunization) e.getValue());
+			contentBinding.immunizationNumberOfDoses.setVisibility(isVaccination ? View.VISIBLE : View.GONE);
+			contentBinding.immunizationNumberOfDoses.setEnabled(isVaccination);
 		});
 
 		contentBinding.overwriteImmunizationManagementStatusCheckBox
@@ -249,14 +252,5 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 				contentBinding.facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());
 			}
 		}
-	}
-
-	private Disease getEventDisease() {
-		String eventParticipantUuid = new Bundler(getArguments()).getEventParticipantUuid();
-		if (eventParticipantUuid != null) {
-			EventParticipant eventParticipant = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipantUuid);
-			return eventParticipant.getEvent().getDisease();
-		}
-		return null;
 	}
 }
