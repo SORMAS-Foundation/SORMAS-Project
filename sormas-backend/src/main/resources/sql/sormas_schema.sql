@@ -8810,12 +8810,13 @@ ALTER TABLE cases_history ALTER COLUMN externalData TYPE json USING externalData
 
 INSERT INTO schema_version (version_number, comment) VALUES (424, 'Allow to store external data for a case #7068');
 
+-- 2021-11-03 Change case external data from json to jsonb #7068
 ALTER TABLE cases ALTER COLUMN externalData set DATA TYPE jsonb using externalData::jsonb;
 ALTER TABLE cases_history ALTER COLUMN externalData set DATA TYPE jsonb using externalData::jsonb;
 
 INSERT INTO schema_version (version_number, comment) VALUES (425, 'Change case externalData from JSON to JSONB #7068');
 
-
+-- 2021-11-09 [DEMIS2SORMAS] Handle New Profile: Process multiple test reports #5899
 /*
 change reference from
   test report references pathogen test
@@ -8855,5 +8856,11 @@ ALTER TABLE labmessage DROP COLUMN pathogentest_id;
 ALTER TABLE labmessage_history DROP COLUMN pathogentest_id;
 
 INSERT INTO schema_version (version_number, comment) VALUES (426, '[DEMIS2SORMAS] Handle New Profile: Process multiple test reports #5899');
+
+-- 2021-11-05 Add properties to feature configurations #7111
+ALTER TABLE featureconfiguration ADD COLUMN properties text;
+ALTER TABLE featureconfiguration_history ADD COLUMN properties text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (427, 'Add properties to feature configurations #7111');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
