@@ -98,6 +98,7 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		Disease disease1 = Disease.CORONAVIRUS;
 		Disease disease2 = Disease.CHOLERA;
 
+		// Immunization association case 1 covered
 		VaccinationDto vaccination11 = VaccinationDto.build(nationalUser.toReference());
 		vaccination11 = getVaccinationFacade().create(vaccination11, rdcf1.region, rdcf1.district, person1.toReference(), disease1);
 		ImmunizationReferenceDto immunization11 = vaccination11.getImmunization();
@@ -139,26 +140,31 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		ImmunizationDto immunizationReport = creator.createImmunization(disease1, person3.toReference(), nationalUser.toReference(), rdcf1);
 		ImmunizationDto immunizationReport2 = creator.createImmunization(disease2, person3.toReference(), nationalUser.toReference(), rdcf1);
 
+		// Immunization association case 2 covered
 		VaccinationDto vaccination31 = VaccinationDto.build(nationalUser.toReference());
 		vaccination31.setVaccinationDate(DateHelper.subtractDays(referenceDate, 390));
 		vaccination31 = getVaccinationFacade().create(vaccination31, rdcf1.region, rdcf1.district, person3.toReference(), disease1);
 		assertEquals(vaccination31.getImmunization(), immunizationStartEnd.toReference());
 
+		// Immunization association case 3 covered
 		VaccinationDto vaccination32 = VaccinationDto.build(nationalUser.toReference());
 		vaccination32.setVaccinationDate(DateHelper.subtractDays(referenceDate, 415));
 		vaccination32 = getVaccinationFacade().create(vaccination32, rdcf1.region, rdcf1.district, person3.toReference(), disease1);
 		assertEquals(vaccination32.getImmunization(), immunizationStart.toReference());
 
+		// Immunization association case 3 covered
 		VaccinationDto vaccination33 = VaccinationDto.build(nationalUser.toReference());
 		vaccination33.setVaccinationDate(DateHelper.subtractDays(referenceDate, 0));
 		vaccination33 = getVaccinationFacade().create(vaccination33, rdcf1.region, rdcf1.district, person3.toReference(), disease1);
 		assertEquals(vaccination33.getImmunization(), immunizationStartEnd.toReference());
 
+		// Immunization association case 4 covered
 		VaccinationDto vaccination34 = VaccinationDto.build(nationalUser.toReference());
 		vaccination34.setVaccinationDate(DateHelper.subtractDays(referenceDate, 100));
 		vaccination34 = getVaccinationFacade().create(vaccination34, rdcf1.region, rdcf1.district, person3.toReference(), disease2);
 		assertEquals(vaccination34.getImmunization(), immunizationReport2.toReference());
 
+		// Immunization association case 4 covered
 		VaccinationDto vaccination35 = VaccinationDto.build(nationalUser.toReference());
 		vaccination35 = getVaccinationFacade().create(vaccination35, rdcf1.region, rdcf1.district, person3.toReference(), disease1);
 		assertThat(vaccination35.getImmunization(), anyOf(is(immunizationReport.toReference()), is(immunizationReport2.toReference())));

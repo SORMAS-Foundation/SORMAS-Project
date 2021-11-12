@@ -59,7 +59,8 @@ import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.immunization.joins.ImmunizationJoins;
 import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.person.PersonQueryContext;
+import de.symeda.sormas.backend.person.PersonJoins;
+import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
@@ -436,9 +437,14 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			return CriteriaBuilderHelper.or(
 				qc.getCriteriaBuilder(),
 				qc.getCriteriaBuilder().equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
-				personService.createUserFilter(
-					new PersonQueryContext(qc.getCriteriaBuilder(), qc.getQuery(), qc.getRoot().join(Immunization.PERSON, JoinType.LEFT)),
-					null));
+				PersonJurisdictionPredicateValidator
+					.of(
+						qc.getQuery(),
+						qc.getCriteriaBuilder(),
+						new PersonJoins<>(((ImmunizationJoins<Immunization>) qc.getJoins()).getPerson()),
+						currentUser,
+						false)
+					.inJurisdictionOrOwned());
 		}
 	}
 

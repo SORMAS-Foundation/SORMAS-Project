@@ -522,7 +522,12 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	public Predicate inJurisdictionOrOwned(PersonQueryContext personQueryContext) {
 		final User currentUser = userService.getCurrentUser();
 		return PersonJurisdictionPredicateValidator
-			.of(personQueryContext.getQuery(), personQueryContext.getCriteriaBuilder(), (PersonJoins) personQueryContext.getJoins(), currentUser)
+			.of(
+				personQueryContext.getQuery(),
+				personQueryContext.getCriteriaBuilder(),
+				(PersonJoins) personQueryContext.getJoins(),
+				currentUser,
+				!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED))
 			.inJurisdictionOrOwned();
 	}
 
