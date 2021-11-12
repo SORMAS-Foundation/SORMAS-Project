@@ -65,4 +65,8 @@ public class FeatureConfigurationCriteria extends BaseCriteria implements Clonea
 		this.enabled = enabled;
 		return this;
 	}
+
+	public void setFeatureTypes(FeatureType... featureTypes) {
+		this.featureTypes = featureTypes;
+	}
 }
