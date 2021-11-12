@@ -71,8 +71,7 @@ public class TaskManagementSteps implements En {
                       EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnTask()));
           do {
             webDriverHelpers.scrollInTable(10);
-          }
-          while (!webDriverHelpers.isElementVisibleWithTimeout(lastTaskEditButton, 2));
+          } while (!webDriverHelpers.isElementVisibleWithTimeout(lastTaskEditButton, 2));
           webDriverHelpers.clickOnWebElementBySelector(lastTaskEditButton);
           webDriverHelpers.isElementVisibleWithTimeout(TASK_POPUP, 5);
         });

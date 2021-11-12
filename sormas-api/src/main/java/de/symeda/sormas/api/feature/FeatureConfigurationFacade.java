@@ -18,11 +18,16 @@ package de.symeda.sormas.api.feature;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface FeatureConfigurationFacade {
@@ -36,6 +41,14 @@ public interface FeatureConfigurationFacade {
 	List<String> getDeletedUuids(Date date);
 
 	List<FeatureConfigurationIndexDto> getFeatureConfigurations(FeatureConfigurationCriteria criteria, boolean includeInactive);
+
+	Map<Disease, List<FeatureConfigurationIndexDto>> getEnabledFeatureConfigurations(FeatureConfigurationCriteria criteria);
+
+	Page<FeatureConfigurationIndexDto> getIndexPage(
+		@NotNull FeatureConfigurationCriteria criteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties);
 
 	void saveFeatureConfigurations(@Valid Collection<FeatureConfigurationIndexDto> configurations, FeatureType featureType);
 
