@@ -22,6 +22,7 @@ import org.sormas.e2etests.enums.ContactOutcome;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.enums.TestDataUser;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -47,6 +48,10 @@ public class CaseDetailedTableViewSteps implements En {
         () -> {
           List<Map<String, String>> tableRowsData = getTableRowsData();
           Map<String, String> detailedCaseDTableRow = tableRowsData.get(0);
+          softly
+              .assertThat(detailedCaseDTableRow.size())
+              .isEqualTo(41)
+              .withFailMessage("Detailed view table wasn't correctly displayed");
           softly
               .assertThat(
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.CASE_ID.toString()))
@@ -104,7 +109,10 @@ public class CaseDetailedTableViewSteps implements En {
               .assertThat(
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.DATE_OF_REPORT.toString()))
               .containsIgnoringCase(
-                  getDateOfReportDateTime(apiState.getCreatedCase().getReportDate().toString()));
+                  getDateOfReportDateTime(apiState.getCreatedCase().getReportDate().toString())
+                      .replace(
+                          "/0",
+                          "/")); // fix for dates between 1-10 where 0 is missing in front of them
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
@@ -123,14 +131,18 @@ public class CaseDetailedTableViewSteps implements En {
                   detailedCaseDTableRow.get(
                       CaseDetailedTableViewHeaders.NUMBER_OF_VISITS.toString()))
               .containsIgnoringCase("0 (0 missed)");
-          softly
-              .assertThat(
-                  detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.COMPLETENESS.toString()))
-              .containsIgnoringCase("-");
+          String completenessValue =
+              detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.COMPLETENESS.toString());
+          if (!completenessValue.equalsIgnoreCase("-")) {
+            softly
+                .assertThat(
+                    detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.COMPLETENESS.toString()))
+                .containsIgnoringCase("10 %");
+          }
           softly
               .assertThat(
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.REPORTING_USER.toString()))
-              .containsIgnoringCase("Rest AUTOMATION");
+              .containsIgnoringCase(TestDataUser.REST_AUTOMATION.getUserRole());
           softly.assertAll();
         });
   }
@@ -190,7 +202,7 @@ public class CaseDetailedTableViewSteps implements En {
   public String getDateOfReportDateTime(String dateTimeString) {
     SimpleDateFormat outputFormat = new SimpleDateFormat("M/dd/yyyy h:mm a");
     // because API request is sending local GMT and UI displays GMT+2 (server GMT)
-    outputFormat.setTimeZone(TimeZone.getTimeZone("GMT+2"));
+    outputFormat.setTimeZone(TimeZone.getTimeZone("GMT+1"));
 
     // inputFormat is the format of teh dateTime as read from API created case
     DateFormat inputFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);

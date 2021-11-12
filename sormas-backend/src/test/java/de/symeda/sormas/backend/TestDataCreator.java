@@ -463,6 +463,34 @@ public class TestDataCreator {
 		return beanTest.getImmunizationFacade().save(immunization);
 	}
 
+	public ImmunizationDto createImmunization(Disease disease, PersonReferenceDto person, UserReferenceDto reportingUser, RDCF rdcf) {
+
+		return createImmunization(disease, person, reportingUser, rdcf, null);
+	}
+
+	public ImmunizationDto createImmunization(
+		Disease disease,
+		PersonReferenceDto person,
+		UserReferenceDto reportingUser,
+		RDCF rdcf,
+		Consumer<ImmunizationDto> extraConfig) {
+
+		ImmunizationDto immunization = createImmunizationDto(
+			disease,
+			person,
+			reportingUser,
+			ImmunizationStatus.PENDING,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.ONGOING,
+			rdcf);
+
+		if (extraConfig != null) {
+			extraConfig.accept(immunization);
+		}
+
+		return beanTest.getImmunizationFacade().save(immunization);
+	}
+
 	@NotNull
 	public ImmunizationDto createImmunizationDto(
 		Disease disease,
@@ -494,6 +522,10 @@ public class TestDataCreator {
 		HealthConditionsDto healthConditions) {
 
 		return createVaccination(reportingUser, immunization, healthConditions, new Date(), null, null);
+	}
+
+	public VaccinationDto createVaccination(UserReferenceDto reportingUser, ImmunizationReferenceDto immunization) {
+		return createVaccination(reportingUser, immunization, new HealthConditionsDto());
 	}
 
 	@NotNull
@@ -790,6 +822,16 @@ public class TestDataCreator {
 			null,
 			disease,
 			null);
+	}
+
+	public EventDto createEvent(UserReferenceDto reportingUser, Disease disease, Consumer<EventDto> customConfig) {
+
+		return createEvent(EventStatus.SIGNAL, EventInvestigationStatus.PENDING, "title", "description", reportingUser, (event) -> {
+			event.setReportDateTime(new Date());
+			event.setReportingUser(reportingUser);
+			event.setDisease(disease);
+			customConfig.accept(event);
+		});
 	}
 
 	public EventDto createEvent(UserReferenceDto reportingUser, Date eventDate) {
@@ -1617,9 +1659,8 @@ public class TestDataCreator {
 		return labMessage;
 	}
 
-	public TestReportDto createTestReport(PathogenTestReferenceDto pathogenTest, LabMessageReferenceDto labMessage) {
+	public TestReportDto createTestReport(LabMessageReferenceDto labMessage) {
 		TestReportDto testReport = TestReportDto.build();
-		testReport.setPathogenTest(pathogenTest);
 		testReport.setLabMessage(labMessage);
 
 		beanTest.getTestReportFacade().saveTestReport(testReport);

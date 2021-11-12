@@ -25,7 +25,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import org.sormas.e2etests.enums.AreaTypeValues;
-import org.sormas.e2etests.enums.CommunityUUIDs;
+import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.ContinentUUIDs;
 import org.sormas.e2etests.enums.CountryUUIDs;
 import org.sormas.e2etests.enums.DistrictsValues;
@@ -76,7 +76,7 @@ public class PersonApiService {
             .continent(ContinentUUIDs.Europe.toString())
             .subcontinent(SubcontinentUUIDs.WesternEurope.toString())
             .district(DistrictsValues.VoreingestellterLandkreis.getUuid())
-            .community(CommunityUUIDs.VoreingestellteGemeinde.toString())
+            .community(CommunityValues.VoreingestellteGemeinde.getUuid())
             .city(faker.address().cityName())
             .areaType(AreaTypeValues.getRandomAreaType())
             .postalCode(faker.address().zipCode())

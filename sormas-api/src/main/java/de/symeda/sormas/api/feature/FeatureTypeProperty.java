@@ -13,18 +13,20 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas;
+package de.symeda.sormas.api.feature;
 
-import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
+public enum FeatureTypeProperty {
 
-import java.util.List;
+	REDUCED(Boolean.class);
 
-import javax.ejb.Remote;
+	private final Class<?> returnType;
 
-@Remote
-public interface SormasToSormasLabMessageFacade {
+	FeatureTypeProperty(Class<?> returnType) {
+		this.returnType = returnType;
+	}
 
-	void sendLabMessages(List<String> uuids, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	public Class<?> getReturnType() {
+		return returnType;
+	}
 
-	void saveLabMessages(SormasToSormasEncryptedDataDto labMessages) throws SormasToSormasValidationException, SormasToSormasException;
 }

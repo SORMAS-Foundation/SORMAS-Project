@@ -31,7 +31,7 @@ public class HospitalizationTabSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
-        "I navigate to hospitalization tab using of created case via api",
+        "I navigate to hospitalization tab for case created via api",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               NavBarPage.SAMPLE_BUTTON);
@@ -41,7 +41,7 @@ public class HospitalizationTabSteps implements En {
         });
 
     When(
-        "I change all hospitalization fields and save",
+        "I complete all hospitalization fields and save",
         () -> {
           hospitalization = hospitalizationService.generateHospitalization();
           selectPatientAdmittedAtTheFacility(
@@ -57,8 +57,6 @@ public class HospitalizationTabSteps implements En {
           fillDateOfIsolation(hospitalization.getDateOfIsolation());
           selectWasThePatientHospitalizedPreviously(
               hospitalization.getWasThePatientHospitalizedPreviously());
-          selectWasPatientAdmittedAtTheFacilityAsAnInpatient(
-              hospitalization.getWasPatientAdmittedAtTheFacilityAsAnInpatient());
           selectLeftAgainstMedicalAdvice(hospitalization.getLeftAgainstMedicalAdvice());
 
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
@@ -119,10 +117,6 @@ public class HospitalizationTabSteps implements En {
 
   public void selectWasThePatientHospitalizedPreviously(String option) {
     webDriverHelpers.clickWebElementByText(WAS_THE_PATIENT_HOSPITALIZED_PREVIOUSLY_OPTIONS, option);
-  }
-
-  public void selectWasPatientAdmittedAtTheFacilityAsAnInpatient(String option) {
-    webDriverHelpers.clickWebElementByText(WAS_THE_PATIENT_ADMITTED_AS_IMPATIENT_OPTIONS, option);
   }
 
   public void selectLeftAgainstMedicalAdvice(String option) {

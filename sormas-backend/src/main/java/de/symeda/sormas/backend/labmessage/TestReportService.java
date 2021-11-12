@@ -37,42 +37,4 @@ public class TestReportService extends BaseAdoService<TestReport> {
 		return cb.isFalse(root.get(TestReport.DELETED));
 	}
 
-	public List<TestReport> getByPathogenTestUuidsBatched(List<String> pathogenTestUuids, boolean ordered) {
-		if (CollectionUtils.isEmpty(pathogenTestUuids)) {
-			// Avoid empty IN clause
-			return Collections.emptyList();
-		} else if (pathogenTestUuids.size() > ModelConstants.PARAMETER_LIMIT) {
-			List<TestReport> testReports = new LinkedList<>();
-			IterableHelper
-					.executeBatched(pathogenTestUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> testReports.addAll(getByPathogenTestUuids(batchedPersonUuids, ordered)));
-			return testReports;
-		} else {
-			return getByPathogenTestUuids(pathogenTestUuids, ordered);
-		}
-	}
-
-	public List<TestReport> getByPathogenTestUuid(String uuid, boolean ordered) {
-		return getByPathogenTestUuids(Collections.singletonList(uuid), ordered);
-	}
-
-	private List<TestReport> getByPathogenTestUuids(List<String> pathogenTestUuids, boolean ordered) {
-		if (pathogenTestUuids.isEmpty()) {
-			return new ArrayList<>();
-		}
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<TestReport> cq = cb.createQuery(TestReport.class);
-		Root<TestReport> testReportRoot = cq.from(TestReport.class);
-		Join<TestReport, PathogenTest> testReportJoin = testReportRoot.join(TestReport.PATHOGEN_TEST, JoinType.LEFT);
-
-		Predicate filter = cb.and(createDefaultFilter(cb, testReportRoot), testReportJoin.get(AbstractDomainObject.UUID).in(pathogenTestUuids));
-
-		cq.where(filter);
-
-		if (ordered) {
-			cq.orderBy(cb.desc(testReportRoot.get(TestReport.CREATION_DATE)));
-		}
-
-		return em.createQuery(cq).getResultList();
-	}
-
 }

@@ -114,7 +114,7 @@ public class EditPersonSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(PERSON_DATA_SAVED_POPUP);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
           // Workaround created until #5535 is fixed
           baseSteps.getDriver().navigate().refresh();
           webDriverHelpers.waitForPageLoaded();
@@ -344,6 +344,7 @@ public class EditPersonSteps implements En {
 
   public Person getPersonInformation() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USER_INFORMATION, 60);
     String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
     String uuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
     String[] personInfos = contactInfo.split(" ");

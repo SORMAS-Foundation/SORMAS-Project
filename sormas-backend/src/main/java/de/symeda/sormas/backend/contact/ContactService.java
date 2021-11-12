@@ -18,7 +18,6 @@
 package de.symeda.sormas.backend.contact;
 
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -1433,43 +1432,32 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	/**
-	 * Sets the vaccination status of all contacts of the specified person and disease with validFrom <= contact start date
-	 * and validUntil >= contact start date to VACCINATED.
+	 * Sets the vaccination status of all contacts of the specified person and disease with vaccination date <= contact start date.
+	 * Vaccinations without a vaccination date are relevant for all contacts.
 	 *
 	 * @param personId
-	 *            The ID of the immunization and contact person
+	 *            The ID of the contact person
 	 * @param disease
-	 *            The disease of the immunization and contacts
-	 * @param validFrom
-	 *            The date from which on the person is protected by the immunization
-	 * @param validUntil
-	 *            The date until which the person is protected by the immunization
+	 *            The disease of the cases
+	 * @param vaccinationDate
+	 *            The vaccination date of the created or updated vaccination
 	 */
-	public void updateVaccinationStatuses(Long personId, Disease disease, Date validFrom, Date validUntil) {
+	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Contact> cu = cb.createCriteriaUpdate(Contact.class);
 		Root<Contact> root = cu.from(Contact.class);
 
-		cu.set(Contact.CHANGE_DATE, Timestamp.from(Instant.now()));
 		cu.set(root.get(Contact.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
 
-		Predicate validUntilPredicate = validUntil != null
+		Predicate datePredicate = vaccinationDate != null
 			? cb.or(
-				cb.and(cb.isNotNull(root.get(Contact.LAST_CONTACT_DATE)), cb.lessThanOrEqualTo(root.get(Contact.LAST_CONTACT_DATE), validUntil)),
-				cb.lessThanOrEqualTo(root.get(Contact.REPORT_DATE_TIME), validUntil))
+				cb.greaterThanOrEqualTo(root.get(Contact.LAST_CONTACT_DATE), vaccinationDate),
+				cb.and(cb.isNull(root.get(Contact.LAST_CONTACT_DATE)), cb.greaterThanOrEqualTo(root.get(Contact.REPORT_DATE_TIME), vaccinationDate)))
 			: null;
 
 		cu.where(
-			CriteriaBuilderHelper.and(
-				cb,
-				cb.equal(root.get(Contact.PERSON), personId),
-				cb.equal(root.get(Contact.DISEASE), disease),
-				cb.or(
-					cb.and(
-						cb.isNotNull(root.get(Contact.LAST_CONTACT_DATE)),
-						cb.greaterThanOrEqualTo(root.get(Contact.LAST_CONTACT_DATE), validFrom)),
-					cb.greaterThanOrEqualTo(root.get(Contact.REPORT_DATE_TIME), validFrom)),
-				validUntilPredicate));
+			CriteriaBuilderHelper.and(cb, cb.equal(root.get(Contact.PERSON), personId), cb.equal(root.get(Contact.DISEASE), disease), datePredicate));
 
 		em.createQuery(cu).executeUpdate();
 	}

@@ -44,12 +44,16 @@ public class WebDriverHelpers {
       By.xpath("ancestor::div[contains(@role,'group')]//input[@checked]/following-sibling::label");
   public static final int FLUENT_WAIT_TIMEOUT_SECONDS = 20;
   public static final By CHECKBOX_TEXT_LABEL = By.xpath("ancestor::span//label");
+  public static final By TABLE_SCROLLER =
+      By.xpath("//div[@class='v-grid-scroller v-grid-scroller-vertical']");
 
   private final BaseSteps baseSteps;
   private final AssertHelpers assertHelpers;
+
   private static final String SCROLL_TO_WEB_ELEMENT_SCRIPT =
       "arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"center\"});";
   public static final String CLICK_ELEMENT_SCRIPT = "arguments[0].click();";
+  public static final String TABLE_SCROLL_SCRIPT = "arguments[0].scrollTop+=%s";
 
   @Inject
   public WebDriverHelpers(BaseSteps baseSteps, AssertHelpers assertHelpers) {
@@ -174,6 +178,9 @@ public class WebDriverHelpers {
                     .isTrue();
                 scrollToElement(selector);
                 clearWebElement(selector);
+                assertWithMessage("Field %s wasn't cleared", selector.toString())
+                    .that(getValueFromWebElement(selector))
+                    .isEqualTo("");
                 baseSteps.getDriver().findElement(selector).sendKeys(text);
                 String valueFromWebElement = getValueFromWebElement(selector);
                 assertWithMessage("The expected text %s was not %s", valueFromWebElement, text)
@@ -200,7 +207,6 @@ public class WebDriverHelpers {
   }
 
   public void clearAndFillInWebElement(By selector, String text) {
-    scrollToElement(selector);
     clearWebElement(selector);
     fillInWebElement(selector, text);
   }
@@ -543,6 +549,7 @@ public class WebDriverHelpers {
   public void clearWebElement(By selector) {
     Instant start = Instant.now();
     waitUntilElementIsVisibleAndClickable(selector);
+    scrollToElement(selector);
     WebElement webElement = baseSteps.getDriver().findElement(selector);
     while (!"".contentEquals(getValueFromWebElement(selector))) {
       log.debug("Deleted char: {}", getValueFromWebElement(selector));
@@ -568,12 +575,14 @@ public class WebDriverHelpers {
   // always needs the raw header value from the DOM, not the stylized one (the one displayed in UI)
   // rowIndex parameter will return the demanded row. 0 is the header
   // style.substring(style.length() - 17) matches the width value for the selector. it will be used
-  // to match the header and the rows by the lenght.
+  // to match the header and the rows by the length.
   public String getValueFromTableRowUsingTheHeader(String headerValue, int rowIndex) {
     By header = By.xpath("//div[contains(text(), '" + headerValue + "')]/ancestor::th");
+    waitUntilIdentifiedElementIsPresent(header);
     scrollToElement(header);
     String style = getAttributeFromWebElement(header, "style");
     By selector = By.cssSelector("[style*='" + style.substring(style.length() - 17) + "']");
+    waitUntilIdentifiedElementIsPresent(selector);
     return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
   }
 
@@ -588,6 +597,34 @@ public class WebDriverHelpers {
       return true;
     } catch (Exception e) {
       throw new NoSuchElementException("Element: " + selector + " is not visible");
+    }
+  }
+
+  /**
+   * Description: this method is used to perform scrolling in tables Parameters: scrollingStep -
+   * where we can set how many rows we want per scroll action
+   */
+  @SneakyThrows
+  public void scrollInTable(int scrollingStep) {
+    int scrollingSpeed = scrollingStep * 39;
+    JavascriptExecutor javascriptExecutor = (JavascriptExecutor) baseSteps.getDriver();
+    javascriptExecutor.executeScript(
+        String.format(TABLE_SCROLL_SCRIPT, scrollingSpeed),
+        baseSteps.getDriver().findElement(TABLE_SCROLLER));
+  }
+
+  public void waitForPageLoadingSpinnerToDisappear(int maxWaitingTime) {
+    try {
+      By loadingSpinner =
+          By.xpath("//div[@class='v-loading-indicator third v-loading-indicator-wait']");
+      assertHelpers.assertWithPoll(
+          () ->
+              assertThat(getAttributeFromWebElement(loadingSpinner, "style"))
+                  .contains("display: none"),
+          maxWaitingTime);
+    } catch (Throwable ignored) {
+      throw new TimeoutException(
+          String.format("Loading spinner didn't disappeared after %s seconds", maxWaitingTime));
     }
   }
 }
