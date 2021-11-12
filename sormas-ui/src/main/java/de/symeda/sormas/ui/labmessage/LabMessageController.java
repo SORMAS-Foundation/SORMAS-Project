@@ -31,6 +31,7 @@ import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.ui.samples.SampleController;
 import de.symeda.sormas.ui.samples.SampleEditForm;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,8 +171,14 @@ public class LabMessageController {
 	}
 
 	private void checkShortcuts(LabMessageDto labMessage) {
+
+		if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
+			showAlreadyProcessedPopup(null, false);
+			return;
+		}
+
 		String labSampleId = labMessage.getLabSampleId();
-		if (labSampleId != null && !"".equals(labSampleId)) {
+		if (!StringUtils.isBlank(labSampleId)) {
 			List<SampleDto> relatedSamples = FacadeProvider.getSampleFacade().getByLabSampleId(labSampleId);
 			SampleDto relatedSample = relatedSamples.size() == 1 ? relatedSamples.get(0) : null;
 			// if shortcut possible
@@ -179,7 +186,7 @@ public class LabMessageController {
 				List<LabMessageDto> relatedLabMessages = null;
 				// determine related messages
 				String reportId = labMessage.getReportId();
-				if (reportId != null && !"".equals(reportId)) {
+				if (!StringUtils.isBlank(reportId)) {
 					relatedLabMessages = FacadeProvider.getLabMessageFacade()
 						.getForSample(relatedSample.toReference())
 						.stream()
