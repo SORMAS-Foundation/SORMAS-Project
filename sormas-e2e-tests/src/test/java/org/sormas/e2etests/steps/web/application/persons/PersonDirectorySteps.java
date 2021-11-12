@@ -42,8 +42,19 @@ public class PersonDirectorySteps implements En {
         "I open the last created person",
         () -> {
           createdPerson = EditContactPersonSteps.fullyDetailedPerson;
-          searchAfterPersonByMultipleOptions(createdPerson.getUuid());
-          openPersonFromResultsByUUID(createdPerson.getUuid());
+          String createdPersonUUID = createdPerson.getUuid();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
+          webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, createdPersonUUID);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          By uuidLocator =
+              By.cssSelector(String.format(PERSON_RESULTS_UUID_LOCATOR, createdPersonUUID));
+          if (!webDriverHelpers.isElementVisibleWithTimeout(uuidLocator, 20)) {
+            webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON);
+            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
+          }
+          webDriverHelpers.clickOnWebElementBySelector(uuidLocator);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
+          webDriverHelpers.isElementVisibleWithTimeout(UUID_INPUT, 20);
         });
 
     When(
@@ -61,18 +72,5 @@ public class PersonDirectorySteps implements En {
           final String personUuid = EditEventSteps.person.getUuid();
           webDriverHelpers.clickOnWebElementBySelector(getByPersonUuid(personUuid));
         });
-  }
-
-  private void searchAfterPersonByMultipleOptions(String idPhoneNameEmail) {
-    webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
-    webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, idPhoneNameEmail);
-    webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-  }
-
-  private void openPersonFromResultsByUUID(String uuid) {
-    By uuidLocator = By.cssSelector(String.format(PERSON_RESULTS_UUID_LOCATOR, uuid));
-    webDriverHelpers.waitUntilIdentifiedElementIsPresent(uuidLocator);
-    webDriverHelpers.clickOnWebElementBySelector(uuidLocator);
-    webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
   }
 }
