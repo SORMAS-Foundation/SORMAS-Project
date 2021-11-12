@@ -205,7 +205,7 @@ public class LabMessageController {
 						} else {
 							pickOrCreatePerson(labMessage);
 						}
-					});
+					}).setClosable(true);
 				return;
 			}
 		}
