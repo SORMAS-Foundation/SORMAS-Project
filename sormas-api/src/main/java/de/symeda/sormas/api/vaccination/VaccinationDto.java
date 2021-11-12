@@ -103,6 +103,7 @@ public class VaccinationDto extends PseudonymizableDto {
 		VaccinationDto vaccinationDto = new VaccinationDto();
 		vaccinationDto.setUuid(DataHelper.createUuid());
 		vaccinationDto.setReportingUser(user);
+		vaccinationDto.setReportDate(new Date());
 		vaccinationDto.setHealthConditions(HealthConditionsDto.build());
 
 		return vaccinationDto;
