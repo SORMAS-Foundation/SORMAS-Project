@@ -28,6 +28,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Label;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.google.common.collect.Sets;
@@ -89,6 +92,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 	private static final String ACTION_CHANGE_WEEK_AND_DATE_FILTER = "actionChangeWeekDateFilter";
 	private static final String ACTION_WEEK_AND_DATE_FILTER = "actionWeekDateFilter";
 	private static final String FACILITY_TYPE_GROUP_FILTER = "facilityTypeGroupFilter";
+	private static final String RESPONSIBLE_USER_INFO = "responsibleUserInfo";
 
 	private static final String MORE_FILTERS_HTML_LAYOUT = filterLocs(
 		EventDto.SRC_TYPE,
@@ -99,6 +103,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		FACILITY_TYPE_GROUP_FILTER,
 		LocationDto.FACILITY_TYPE,
 		LocationDto.FACILITY,
+		EventCriteria.RESPONSIBLE_USER,
+		RESPONSIBLE_USER_INFO,
 		EventDto.EVENT_INVESTIGATION_STATUS,
 		EventDto.EVENT_MANAGEMENT_STATUS,
 		EventDto.EVENT_IDENTIFICATION_SOURCE)
@@ -146,7 +152,6 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			EventIndexDto.DISEASE,
 			EventIndexDto.DISEASE_VARIANT,
 			EventCriteria.REPORTING_USER_ROLE,
-			EventCriteria.RESPONSIBLE_USER,
 			EventCriteria.FREE_TEXT,
 			EventCriteria.FREE_TEXT_EVENT_PARTICIPANTS,
 			EventCriteria.FREE_TEXT_EVENT_GROUPS };
@@ -168,7 +173,6 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		addField(FieldConfiguration.pixelSized(EventIndexDto.DISEASE_VARIANT, 140), ComboBox.class);
 
 		addField(FieldConfiguration.withCaptionAndPixelSized(EventCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
-		addField(FieldConfiguration.pixelSized(EventCriteria.RESPONSIBLE_USER, 140));
 
 		TextField searchField = addField(
 			FieldConfiguration.withCaptionAndPixelSized(EventCriteria.FREE_TEXT, I18nProperties.getString(Strings.promptEventsSearchField), 200));
@@ -252,6 +256,14 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 				.withCaptionAndPixelSized(LocationDto.FACILITY, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.FACILITY), 140));
 		facilityField.setEnabled(false);
 		facilityField.setVisible(false);
+
+		addField(moreFiltersContainer, FieldConfiguration.pixelSized(EventCriteria.RESPONSIBLE_USER, 140));
+
+		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		infoLabel.setSizeUndefined();
+		infoLabel.setDescription(I18nProperties.getString(Strings.infoEventResponsibleUserFilter), ContentMode.TEXT);
+		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
+		moreFiltersContainer.addComponent(infoLabel, RESPONSIBLE_USER_INFO);
 
 		facilityTypeGroupField.addValueChangeListener(
 			e -> FieldHelper.updateEnumData(
