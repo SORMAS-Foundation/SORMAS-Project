@@ -147,8 +147,29 @@ public class LabMessageController {
 
 	public void processLabMessage(String labMessageUuid) {
 		LabMessageDto labMessage = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
+		checkRelatedForwardedMessages(labMessage);
 
-		// check for shortcuts
+	}
+
+	private void checkRelatedForwardedMessages(LabMessageDto labMessage) {
+		if (FacadeProvider.getLabMessageFacade().existsForwardedLabMessageWith(labMessage.getReportId())) {
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getCaption(Captions.labMessageForwardedMessageFound),
+				new Label(I18nProperties.getString(Strings.messageForwardedLabMessageFound)),
+				I18nProperties.getCaption(Captions.actionYes),
+				I18nProperties.getCaption(Captions.actionCancel),
+				null,
+				yes -> {
+					if (yes) {
+						checkShortcuts(labMessage);
+					}
+				});
+		} else {
+			checkShortcuts(labMessage);
+		}
+	}
+
+	private void checkShortcuts(LabMessageDto labMessage) {
 		String labSampleId = labMessage.getLabSampleId();
 		if (labSampleId != null && !"".equals(labSampleId)) {
 			List<SampleDto> relatedSamples = FacadeProvider.getSampleFacade().getByLabSampleId(labSampleId);
@@ -188,8 +209,8 @@ public class LabMessageController {
 				return;
 			}
 		}
+		// when there is no shortcut possible
 		pickOrCreatePerson(labMessage);
-
 	}
 
 	public void deleteAllSelectedItems(Collection<LabMessageIndexDto> selectedRows, Runnable callback) {

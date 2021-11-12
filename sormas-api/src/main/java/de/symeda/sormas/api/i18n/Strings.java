@@ -978,6 +978,7 @@ public interface Strings {
 	String messageFollowUpCanceled = "messageFollowUpCanceled";
 	String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";
 	String messageFormHasErrorsPathogenTest = "messageFormHasErrorsPathogenTest";
+	String messageForwardedLabMessageFound = "messageForwardedLabMessageFound";
 	String messageGdpr = "messageGdpr";
 	String messageGdprCheck = "messageGdprCheck";
 	String messageImmunizationArchived = "messageImmunizationArchived";
