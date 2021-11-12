@@ -80,8 +80,8 @@
     <string name="action_open_prescription">Ouvrir l\'ordonnance</string>
     <string name="action_open_resulting_case">Ouvrir le cas de résultat</string>
     <string name="action_open_source_case">Ouvrez le cas de source</string>
-    <string name="action_open_linked_case">Open Linked Case</string>
-    <string name="action_link_case">Link Case</string>
+    <string name="action_open_linked_case">Ouvrir le cas lié</string>
+    <string name="action_link_case">Lier le Cas</string>
     <string name="action_open_syncLog">Conflit de synchronisation</string>
     <string name="action_options">Options</string>
     <string name="action_pick_gps">Choisir le GPS actuel pour l\'adresse</string>
@@ -119,8 +119,8 @@
     <string name="action_kex_lbds">Échange de clés LBDS</string>
     <string name="action_sync_person_lbds">Personnes Synchro LBDS</string>
     <string name="action_sync_case_lbds">Cas de synchronisation LBDS</string>
-    <string name="action_save_vaccination">Save Vaccination</string>
-    <string name="action_edit_vaccination">Edit Vaccination</string>
+    <string name="action_save_vaccination">Enregistrer la vaccination</string>
+    <string name="action_edit_vaccination">Modifier la vaccination</string>
     <string name="caption_address">Adresse</string>
     <string name="caption_age">Age</string>
     <string name="caption_attended_by">Participé par</string>
@@ -137,7 +137,7 @@
     <string name="caption_case_samples">Échantillons de cas</string>
     <string name="caption_case_tasks">Tâches de cas</string>
     <string name="caption_case_events">Événements de cas</string>
-    <string name="caption_case_immunizations">Case Immunizations</string>
+    <string name="caption_case_immunizations">Immunité du cas</string>
     <string name="caption_case_treatments">Traitements</string>
     <string name="caption_case_similarity_create">Créer un nouveau cas</string>
     <string name="caption_changed_data_lost">Données modifiées perdues lors de la re-synchronisation.</string>
@@ -153,7 +153,7 @@
     <string name="caption_contact_tasks">Tâches de contact</string>
     <string name="caption_contact_epidemiological_data">Informations épidémiologiques</string>
     <string name="caption_contact_visits">Informations de suivi</string>
-    <string name="caption_contact_immunizations">Contact Immunizations</string>
+    <string name="caption_contact_immunizations">Immunité du contact</string>
     <string name="caption_converted_to_case">Converti en cas</string>
     <string name="caption_date_of_birth">Date de naissance (année / mois / jour)</string>
     <string name="caption_date_of_sampling">Date de prélèvement de l\'échantillon</string>
@@ -166,7 +166,7 @@
     <string name="caption_event_period">Date de l\'événement</string>
     <string name="caption_event_information">Informations sur l\'événement</string>
     <string name="caption_event_participants">Personnes impliquées</string>
-    <string name="caption_event_participant_immunizations">Event participant Immunizations</string>
+    <string name="caption_event_participant_immunizations">Immunité du participant à l\'événement</string>
     <string name="caption_event_tasks">Tâches d\'événement</string>
     <string name="caption_executed_by">Exécuté par</string>
     <string name="caption_facility_or_home">Lieu du séjour</string>
@@ -241,18 +241,18 @@
     <string name="caption_settings_debug_url_lbds">URL de débogage du serveur LBDS</string>
     <string name="caption_immunization_information">Immunization details</string>
     <string name="caption_immunization_vaccinations">Vaccinations</string>
-    <string name="caption_vaccination_information">Vaccination Information</string>
+    <string name="caption_vaccination_information">Informations sur la vaccination</string>
     <string name="caption_new_immunization">New Immunization</string>
     <string name="caption_overwrite_immunization_management_status">Overwrite immunization management status</string>
-    <string name="caption_searchCase">Search case</string>
-    <string name="caption_aggregate_new_cases">New cases</string>
-    <string name="caption_aggregate_lab_confirmations">Lab confirmations</string>
-    <string name="caption_aggregate_deaths">Deaths</string>
+    <string name="caption_searchCase">Chercher un cas</string>
+    <string name="caption_aggregate_new_cases">Nouveaux cas</string>
+    <string name="caption_aggregate_lab_confirmations">Confirmation de laboratoire</string>
+    <string name="caption_aggregate_deaths">Décès</string>
     <string name="caption_aggregate_new_cases_abbr">C</string>
     <string name="caption_aggregate_lab_confirmations_abbr">L</string>
     <string name="caption_aggregate_deaths_abbr">D</string>
-    <string name="caption_start_date_existing">Existing start date</string>
-    <string name="caption_end_date_existing">Existing end date</string>
+    <string name="caption_start_date_existing">Date de début existante</string>
+    <string name="caption_end_date_existing">Date de fin existante</string>
     <string name="confirmation_action">Êtes-vous sûr de vouloir faire cela ?</string>
     <string name="confirmation_delete">Voulez-vous vraiment supprimer cet enregistrement ?</string>
     <string name="confirmation_pick_gps">Êtes-vous dans cet endroit maintenant?</string>
@@ -410,9 +410,9 @@
     <string name="heading_campaign_form_meta_select">Sélectionnez le formulaire de campagne</string>
     <string name="heading_case_place_of_stay">Lieu du séjour</string>
     <string name="heading_vaccination">Vaccination</string>
-    <string name="heading_vaccination_edit">Edit Vaccination</string>
-    <string name="heading_vaccination_new">New Vaccination</string>
-    <string name="heading_search_for_case">Search specific case</string>
+    <string name="heading_vaccination_edit">Modifier la vaccination</string>
+    <string name="heading_vaccination_new">Nouvelle Vaccination</string>
+    <string name="heading_search_for_case">Rechercher un cas spécifique</string>
     <string name="hint_add_to_empty_list">Ajouter une nouvelle entrée en appuyant sur \"+\" en haut à droite.</string>
     <string name="hint_clear">Supprimer</string>
     <string name="hint_create_pin">Veuillez choisir un code PIN à quatre chiffres que vous utiliserez pour vous authentifier à chaque fois que vous ouvrirez l\'application SORMAS.</string>
@@ -642,5 +642,5 @@
     <string name="scan_field_sample_id">Scannez l\'id du champ d\'échantillon</string>
     <string name="caption_facility_type_group">Catégorie d\'établissement</string>
     <string name="caption_facility_type">Type d\'établissement</string>
-    <string name="value_vaccine_date_unknown">Vaccination Date N/A</string>
+    <string name="value_vaccine_date_unknown">Date de vaccination N/A</string>
 </resources>
