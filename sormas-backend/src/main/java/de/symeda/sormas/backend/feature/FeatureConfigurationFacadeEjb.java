@@ -123,10 +123,6 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 
 	public Map<Disease, List<FeatureConfigurationIndexDto>> getEnabledFeatureConfigurations(FeatureConfigurationCriteria criteria) {
-		if (criteria == null) {
-			criteria = new FeatureConfigurationCriteria();
-		}
-		criteria.setFeatureTypes(FeatureType.LINE_LISTING);
 
 		List<FeatureConfigurationIndexDto> featureConfigurations = getFeatureConfigurations(criteria, false);
 		Map<Disease, List<FeatureConfigurationIndexDto>> diseaseListMap = new TreeMap<>();

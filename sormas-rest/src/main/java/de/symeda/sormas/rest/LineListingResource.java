@@ -53,7 +53,7 @@ public class LineListingResource extends EntityDtoResource {
 
 	@POST
 	@Path("/enabled")
-	public Map<Disease, List<FeatureConfigurationIndexDto>> getIndexSummery(@RequestBody FeatureConfigurationCriteria criteria) {
+	public Map<Disease, List<FeatureConfigurationIndexDto>> getEnabledFeatureConfigurations(@RequestBody FeatureConfigurationCriteria criteria) {
 		return FacadeProvider.getFeatureConfigurationFacade().getEnabledFeatureConfigurations(criteria);
 	}
 
