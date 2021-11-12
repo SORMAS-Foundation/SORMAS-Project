@@ -1060,6 +1060,8 @@ public interface Strings {
 	String messageRegionsArchived = "messageRegionsArchived";
 	String messageRegionsArchivingNotPossible = "messageRegionsArchivingNotPossible";
 	String messageRegionsDearchived = "messageRegionsDearchived";
+	String messageRelatedSampleAndLabMessagesFound = "messageRelatedSampleAndLabMessagesFound";
+	String messageRelatedSampleFound = "messageRelatedSampleFound";
 	String messageSampleErrors = "messageSampleErrors";
 	String messageSampleOpened = "messageSampleOpened";
 	String messageSampleSaved = "messageSampleSaved";

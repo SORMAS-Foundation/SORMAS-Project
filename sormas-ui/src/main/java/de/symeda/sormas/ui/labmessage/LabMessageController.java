@@ -26,6 +26,7 @@ import javax.naming.CannotProceedException;
 import javax.naming.NamingException;
 
 import com.vaadin.server.ClientConnector;
+import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.ui.samples.SampleController;
@@ -145,49 +146,50 @@ public class LabMessageController {
 	}
 
 	public void processLabMessage(String labMessageUuid) {
-		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
-		final PersonDto personDto = buildPerson(labMessageDto);
+		LabMessageDto labMessage = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
 
-		if (FacadeProvider.getLabMessageFacade().isProcessed(labMessageUuid)) {
-			showAlreadyProcessedPopup(null, false);
-			return;
+		// check for shortcuts
+		String labSampleId = labMessage.getLabSampleId();
+		if (labSampleId != null && !"".equals(labSampleId)) {
+			List<SampleDto> relatedSamples = FacadeProvider.getSampleFacade().getByLabSampleId(labSampleId);
+			SampleDto relatedSample = relatedSamples.size() == 1 ? relatedSamples.get(0) : null;
+			// if shortcut possible
+			if (relatedSample != null) {
+				List<LabMessageDto> relatedLabMessages = null;
+				// determine related messages
+				String reportId = labMessage.getReportId();
+				if (reportId != null && !"".equals(reportId)) {
+					relatedLabMessages = FacadeProvider.getLabMessageFacade()
+						.getForSample(relatedSample.toReference())
+						.stream()
+						.filter(
+							otherLabMessage -> reportId.equals(otherLabMessage.getReportId())
+								&& LabMessageStatus.PROCESSED.equals(otherLabMessage.getStatus()))
+						.collect(Collectors.toList());
+				}
+
+				// propose to take shortcut
+				String message = (relatedLabMessages != null && !relatedLabMessages.isEmpty())
+					? I18nProperties.getString(Strings.messageRelatedSampleAndLabMessagesFound)
+					: I18nProperties.getString(Strings.messageRelatedSampleFound);
+				VaadinUiUtil.showChooseOptionPopup(
+					I18nProperties.getCaption(Captions.labMessageRelatedEntriesFound),
+					new Label(message),
+					I18nProperties.getCaption(Captions.actionYes),
+					I18nProperties.getCaption(Captions.actionNo),
+					null,
+					yes -> {
+						if (yes) {
+							editSample(relatedSample, labMessage);
+						} else {
+							pickOrCreatePerson(labMessage);
+						}
+					});
+				return;
+			}
 		}
-		ControllerProvider.getPersonController()
-			.selectOrCreatePerson(personDto, I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessage), selectedPerson -> {
-				if (FacadeProvider.getLabMessageFacade().isProcessed(labMessageUuid)) {
-					showAlreadyProcessedPopup(null, false); // it currently is not possible to delete persons, so no reversion is provided here.
-					return;
-				}
-				if (selectedPerson != null) {
-					PersonDto selectedPersonDto;
-					if (selectedPerson.getUuid().equals(personDto.getUuid())) {
-						selectedPersonDto = personDto;
-					} else {
-						selectedPersonDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
-					}
+		pickOrCreatePerson(labMessage);
 
-					CaseCriteria caseCriteria = new CaseCriteria();
-					caseCriteria.person(selectedPersonDto.toReference());
-					caseCriteria.disease(labMessageDto.getTestedDisease());
-					CaseSimilarityCriteria caseSimilarityCriteria = new CaseSimilarityCriteria();
-					caseSimilarityCriteria.caseCriteria(caseCriteria);
-					caseSimilarityCriteria.personUuid(selectedPerson.getUuid());
-					List<CaseSelectionDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(caseSimilarityCriteria);
-
-					ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
-					contactSimilarityCriteria.setPerson(selectedPerson);
-					contactSimilarityCriteria.setDisease(labMessageDto.getTestedDisease());
-					List<SimilarContactDto> similarContacts = FacadeProvider.getContactFacade().getMatchingContacts(contactSimilarityCriteria);
-
-					EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
-					eventParticipantCriteria.setPerson(selectedPerson);
-					eventParticipantCriteria.setDisease(labMessageDto.getTestedDisease());
-					List<SimilarEventParticipantDto> similarEventParticipants =
-						FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
-
-					pickOrCreateEntry(labMessageDto, similarCases, similarContacts, similarEventParticipants, selectedPersonDto);
-				}
-			}, false);
 	}
 
 	public void deleteAllSelectedItems(Collection<LabMessageIndexDto> selectedRows, Runnable callback) {
@@ -231,6 +233,51 @@ public class LabMessageController {
 		personDto.setPhone(labMessageDto.getPersonPhone());
 		personDto.setEmailAddress(labMessageDto.getPersonEmail());
 		return personDto;
+	}
+
+	private void pickOrCreatePerson(LabMessageDto labMessage) {
+		final PersonDto personDto = buildPerson(labMessage);
+
+		if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
+			showAlreadyProcessedPopup(null, false);
+			return;
+		}
+		ControllerProvider.getPersonController()
+			.selectOrCreatePerson(personDto, I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessage), selectedPerson -> {
+				if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
+					showAlreadyProcessedPopup(null, false); // it currently is not possible to delete persons, so no reversion is provided here.
+					return;
+				}
+				if (selectedPerson != null) {
+					PersonDto selectedPersonDto;
+					if (selectedPerson.getUuid().equals(personDto.getUuid())) {
+						selectedPersonDto = personDto;
+					} else {
+						selectedPersonDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
+					}
+
+					CaseCriteria caseCriteria = new CaseCriteria();
+					caseCriteria.person(selectedPersonDto.toReference());
+					caseCriteria.disease(labMessage.getTestedDisease());
+					CaseSimilarityCriteria caseSimilarityCriteria = new CaseSimilarityCriteria();
+					caseSimilarityCriteria.caseCriteria(caseCriteria);
+					caseSimilarityCriteria.personUuid(selectedPerson.getUuid());
+					List<CaseSelectionDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(caseSimilarityCriteria);
+
+					ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
+					contactSimilarityCriteria.setPerson(selectedPerson);
+					contactSimilarityCriteria.setDisease(labMessage.getTestedDisease());
+					List<SimilarContactDto> similarContacts = FacadeProvider.getContactFacade().getMatchingContacts(contactSimilarityCriteria);
+
+					EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
+					eventParticipantCriteria.setPerson(selectedPerson);
+					eventParticipantCriteria.setDisease(labMessage.getTestedDisease());
+					List<SimilarEventParticipantDto> similarEventParticipants =
+						FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
+
+					pickOrCreateEntry(labMessage, similarCases, similarContacts, similarEventParticipants, selectedPersonDto);
+				}
+			}, false);
 	}
 
 	private void pickOrCreateEntry(

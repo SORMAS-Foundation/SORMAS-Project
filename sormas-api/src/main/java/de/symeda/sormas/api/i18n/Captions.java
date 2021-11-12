@@ -1383,6 +1383,7 @@ public interface Captions {
 	String labMessageFetch = "labMessageFetch";
 	String labMessageNoNewMessages = "labMessageNoNewMessages";
 	String labMessageProcess = "labMessageProcess";
+	String labMessageRelatedEntriesFound = "labMessageRelatedEntriesFound";
 	String lastName = "lastName";
 	String latestPathogenTest = "latestPathogenTest";
 	String lineListing = "lineListing";
