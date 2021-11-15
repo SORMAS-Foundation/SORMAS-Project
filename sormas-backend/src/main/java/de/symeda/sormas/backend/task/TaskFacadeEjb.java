@@ -158,7 +158,8 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setCreatorUser(userService.getByReferenceDto(source.getCreatorUser()));
 		target.setCreatorComment(source.getCreatorComment());
 		if (source.getObserverUsers() != null) {
-			target.setObserverUsers(source.getObserverUsers().stream().map(userService::getByReferenceDto).collect(Collectors.toList()));
+			List<User> observerUsers = userService.getByReferenceDtos(source.getObserverUsers());
+			target.setObserverUsers(observerUsers);
 		}
 		target.setPriority(source.getPriority());
 		target.setDueDate(source.getDueDate());
