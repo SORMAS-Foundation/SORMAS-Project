@@ -310,6 +310,26 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	public List<SampleDto> getByLabSampleId(String labSampleId) {
+		if (labSampleId == null) {
+			return new ArrayList();
+		}
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
+		final Root<Sample> sampleRoot = cq.from(Sample.class);
+
+		Predicate filter = CriteriaBuilderHelper.and(
+			cb,
+			sampleService.createUserFilter(cb, cq, sampleRoot),
+			sampleService.createDefaultFilter(cb, sampleRoot),
+			cb.equal(sampleRoot.get(Sample.LAB_SAMPLE_ID), labSampleId));
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultList().stream().distinct().map(sample -> toDto(sample)).collect(Collectors.toList());
+	}
+
+	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
 
 		User user = userService.getCurrentUser();
