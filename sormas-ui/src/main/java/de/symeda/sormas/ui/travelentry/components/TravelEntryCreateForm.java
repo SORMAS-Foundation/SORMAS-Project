@@ -295,9 +295,10 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 			diseaseVariantField
 				.setVisible(disease != null && isVisibleAllowed(TravelEntryDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
 		});
-		diseaseVariantField.addValueChangeListener(
-			e -> diseaseVariantDetailsField
-				.setVisible(((DiseaseVariant) e.getProperty().getValue()).matchPropertyValue(DiseaseVariant.HAS_DETAILS, true)));
+		diseaseVariantField.addValueChangeListener(e -> {
+			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();
+			diseaseVariantDetailsField.setVisible(diseaseVariant != null && diseaseVariant.matchPropertyValue(DiseaseVariant.HAS_DETAILS, true));
+		});
 	}
 
 	public PersonDto getPerson() {
