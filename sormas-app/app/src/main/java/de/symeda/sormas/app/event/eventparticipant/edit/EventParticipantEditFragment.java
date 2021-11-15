@@ -17,6 +17,8 @@ package de.symeda.sormas.app.event.eventparticipant.edit;
 
 import static android.view.View.GONE;
 
+import java.util.List;
+
 import android.view.View;
 
 import de.symeda.sormas.api.caze.VaccinationStatus;
@@ -26,17 +28,24 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
+import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentEventParticipantEditLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
+import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 
 public class EventParticipantEditFragment extends BaseEditFragment<FragmentEventParticipantEditLayoutBinding, EventParticipant, EventParticipant> {
 
 	public static final String TAG = EventParticipantEditFragment.class.getSimpleName();
 
 	private EventParticipant record;
+	private List<Item> initialRegions;
+	private List<Item> initialDistricts;
 
 	public static EventParticipantEditFragment newInstance(EventParticipant activityRootData) {
 		return newInstanceWithFieldCheckers(
@@ -95,6 +104,8 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
 	@Override
 	protected void prepareFragmentData() {
 		record = getActivityRootData();
+		initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
+		initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getResponsibleRegion());
 	}
 
 	@Override
@@ -103,6 +114,21 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
 
 		contentBinding.setData(record);
 		contentBinding.setVaccinationStatusClass(VaccinationStatus.class);
+
+		InfrastructureFieldsDependencyHandler.instance.initializeRegionFields(
+			contentBinding.eventParticipantResponsibleRegion,
+			initialRegions,
+			record.getResponsibleRegion(),
+			contentBinding.eventParticipantResponsibleDistrict,
+			initialDistricts,
+			record.getResponsibleDistrict(),
+			null,
+			null,
+			null);
+
+		Location eventLocation = record.getEvent().getEventLocation();
+		contentBinding.eventParticipantResponsibleRegion.setRequired(eventLocation.getRegion() == null || eventLocation.getDistrict() == null);
+		contentBinding.eventParticipantResponsibleDistrict.setRequired(eventLocation.getRegion() == null || eventLocation.getDistrict() == null);
 	}
 
 	@Override
