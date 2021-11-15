@@ -46,7 +46,7 @@ public class FeatureConfigurationIndexDto implements Serializable {
 		String districtUuid,
 		String districtName,
 		Disease disease,
-		boolean enabled,
+		Boolean enabled,
 		Date endDate) {
 
 		this.uuid = uuid;
@@ -55,8 +55,11 @@ public class FeatureConfigurationIndexDto implements Serializable {
 		this.districtUuid = districtUuid;
 		this.districtName = districtName;
 		this.disease = disease;
-		this.enabled = enabled;
+		this.enabled = enabled != null ? enabled : false;
 		this.endDate = endDate;
+	}
+
+	public FeatureConfigurationIndexDto() {
 	}
 
 	public String getUuid() {
