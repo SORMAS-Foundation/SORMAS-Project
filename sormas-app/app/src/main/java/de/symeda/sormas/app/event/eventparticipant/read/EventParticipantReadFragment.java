@@ -17,8 +17,6 @@ package de.symeda.sormas.app.event.eventparticipant.read;
 
 import static android.view.View.GONE;
 
-import java.util.List;
-
 import android.os.Bundle;
 import android.view.View;
 
@@ -30,18 +28,14 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
-import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentEventParticipantReadLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.person.read.PersonReadFragment;
-import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 
 public class EventParticipantReadFragment extends BaseReadFragment<FragmentEventParticipantReadLayoutBinding, EventParticipant, EventParticipant> {
 
 	private EventParticipant record;
-	private List<Item> initialRegions;
-	private List<Item> initialDistricts;
 
 	// Static methods
 
@@ -87,8 +81,6 @@ public class EventParticipantReadFragment extends BaseReadFragment<FragmentEvent
 	@Override
 	protected void prepareFragmentData(Bundle savedInstanceState) {
 		record = getActivityRootData();
-		initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
-		initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getResponsibleRegion());
 	}
 
 	@Override
