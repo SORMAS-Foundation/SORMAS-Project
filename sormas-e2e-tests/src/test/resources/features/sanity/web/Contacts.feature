@@ -107,7 +107,7 @@ Feature: Contacts end to end tests
       And API: I check that POST call status code is 200
       When I log in with National User
       Then I click on the Contacts button from navbar
-      And I click on the DETAILED button from Case directory
+      And I click on the DETAILED radiobutton from Contact directory
       And I filter by Contact uuid
       Then I am checking if all the fields are correctly displayed in the Contacts directory Detailed table
 
