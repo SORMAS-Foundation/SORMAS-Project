@@ -710,6 +710,7 @@ public interface Strings {
 	String infoEpiDataFieldsHint = "infoEpiDataFieldsHint";
 	String infoEpiDataSourceCaseContacts = "infoEpiDataSourceCaseContacts";
 	String infoEventParticipantAlreadyExisting = "infoEventParticipantAlreadyExisting";
+	String infoEventResponsibleUserFilter = "infoEventResponsibleUserFilter";
 	String infoExistingImmunizationPeriod = "infoExistingImmunizationPeriod";
 	String infoExpectedFollowUpUntilDateCase = "infoExpectedFollowUpUntilDateCase";
 	String infoExpectedFollowUpUntilDateContact = "infoExpectedFollowUpUntilDateContact";
@@ -980,6 +981,7 @@ public interface Strings {
 	String messageFollowUpCanceled = "messageFollowUpCanceled";
 	String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";
 	String messageFormHasErrorsPathogenTest = "messageFormHasErrorsPathogenTest";
+	String messageForwardedLabMessageFound = "messageForwardedLabMessageFound";
 	String messageGdpr = "messageGdpr";
 	String messageGdprCheck = "messageGdprCheck";
 	String messageImmunizationArchived = "messageImmunizationArchived";
@@ -1062,6 +1064,8 @@ public interface Strings {
 	String messageRegionsArchived = "messageRegionsArchived";
 	String messageRegionsArchivingNotPossible = "messageRegionsArchivingNotPossible";
 	String messageRegionsDearchived = "messageRegionsDearchived";
+	String messageRelatedSampleAndLabMessagesFound = "messageRelatedSampleAndLabMessagesFound";
+	String messageRelatedSampleFound = "messageRelatedSampleFound";
 	String messageSampleErrors = "messageSampleErrors";
 	String messageSampleOpened = "messageSampleOpened";
 	String messageSampleSaved = "messageSampleSaved";

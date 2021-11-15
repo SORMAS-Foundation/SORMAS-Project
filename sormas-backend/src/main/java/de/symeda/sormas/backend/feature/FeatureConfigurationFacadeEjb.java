@@ -15,10 +15,13 @@
 
 package de.symeda.sormas.backend.feature;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -27,27 +30,42 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections.CollectionUtils;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.feature.FeatureConfigurationCriteria;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictCriteria;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
@@ -58,6 +76,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "FeatureConfigurationFacade")
 public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade {
@@ -73,6 +92,12 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	private DistrictService districtService;
 	@EJB
 	private UserService userService;
+
+	@EJB
+	private CountryFacadeEjb.CountryFacadeEjbLocal countryFacadeEjb;
+
+	@EJB
+	private DistrictFacadeEjb.DistrictFacadeEjbLocal districtFacadeEjb;
 
 	@Override
 	public List<FeatureConfigurationDto> getAllAfter(Date date) {
@@ -96,6 +121,105 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 
 		User user = userService.getCurrentUser();
 		return service.getDeletedUuids(since, user);
+	}
+
+	public Map<Disease, List<FeatureConfigurationIndexDto>> getEnabledFeatureConfigurations(FeatureConfigurationCriteria criteria) {
+
+		List<FeatureConfigurationIndexDto> featureConfigurations = getFeatureConfigurations(criteria, false);
+		Map<Disease, List<FeatureConfigurationIndexDto>> diseaseListMap = new TreeMap<>();
+		featureConfigurations.forEach(featureConfigurationIndexDto -> {
+			if (!diseaseListMap.containsKey(featureConfigurationIndexDto.getDisease())) {
+				diseaseListMap.put(featureConfigurationIndexDto.getDisease(), new ArrayList<>());
+			}
+			diseaseListMap.get(featureConfigurationIndexDto.getDisease()).add(featureConfigurationIndexDto);
+		});
+		return diseaseListMap;
+	}
+
+	public Page<FeatureConfigurationIndexDto> getIndexPage(
+		FeatureConfigurationCriteria criteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+		List<FeatureConfigurationIndexDto> featureConfigurationIndexList = getIndexList(criteria, offset, size, sortProperties);
+		CountryReferenceDto serverCountry = countryFacadeEjb.getServerCountry();
+		long totalElementCount = districtFacadeEjb.count(new DistrictCriteria().country(serverCountry).region(criteria.getRegion()));
+		return new Page<>(featureConfigurationIndexList, offset, size, totalElementCount);
+	}
+
+	private List<FeatureConfigurationIndexDto> getIndexList(
+		FeatureConfigurationCriteria criteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+
+		if (criteria == null || criteria.getDisease() == null) {
+			throw new IllegalArgumentException("disease field cannot be null!");
+		}
+
+		CountryReferenceDto serverCountry = countryFacadeEjb.getServerCountry();
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<FeatureConfigurationIndexDto> cq = cb.createQuery(FeatureConfigurationIndexDto.class);
+		Root<District> root = cq.from(District.class);
+		Join<District, Region> regionJoin = root.join(District.REGION, JoinType.LEFT);
+		Join<District, FeatureConfiguration> featureConfigurationJoin = root.join(District.FEATURE_CONFIGURATIONS, JoinType.LEFT);
+		Predicate filterJoinOnDisease = CriteriaBuilderHelper.or(
+			cb,
+			cb.and(cb.equal(featureConfigurationJoin.get(FeatureConfiguration.DISEASE), criteria.getDisease())),
+			cb.and(cb.isNull(featureConfigurationJoin.get(FeatureConfiguration.DISEASE))));
+		featureConfigurationJoin.on(filterJoinOnDisease);
+
+		cq.multiselect(
+			featureConfigurationJoin.get(FeatureConfiguration.UUID),
+			regionJoin.get(Region.UUID),
+			regionJoin.get(Region.NAME),
+			root.get(District.UUID),
+			root.get(District.NAME),
+			featureConfigurationJoin.get(FeatureConfiguration.DISEASE),
+			featureConfigurationJoin.get(FeatureConfiguration.ENABLED),
+			featureConfigurationJoin.get(FeatureConfiguration.END_DATE));
+
+		Predicate filter = null;
+
+		if (serverCountry != null) {
+			Path<Object> countryUuid = regionJoin.join(Region.COUNTRY, JoinType.LEFT).get(Country.UUID);
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.isNull(countryUuid), cb.equal(countryUuid, serverCountry.getUuid())));
+		}
+
+		if (criteria.getRegion() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(regionJoin.get(Region.UUID), criteria.getRegion().getUuid()));
+
+		}
+		if (criteria.getDistrict() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(District.UUID), criteria.getDistrict().getUuid()));
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		if (CollectionUtils.isNotEmpty(sortProperties)) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case FeatureConfiguration.REGION:
+					expression = regionJoin.get(Region.NAME);
+					break;
+				case FeatureConfiguration.DISTRICT:
+					expression = root.get(District.NAME);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.asc(regionJoin.get(Region.NAME)));
+		}
+		return QueryHelper.getResultList(em, cq, offset, size);
+
 	}
 
 	@Override
@@ -255,6 +379,43 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 
 	@Override
+	public boolean isPropertyValueTrue(FeatureType featureType, FeatureTypeProperty property) {
+
+		if (!featureType.getSupportedProperties().contains(property)) {
+			throw new IllegalArgumentException("Feature type " + featureType + " does not support property " + property + ".");
+		}
+
+		if (!Boolean.class.isAssignableFrom(property.getReturnType())) {
+			throw new IllegalArgumentException(
+				"Feature type property " + property + " does not have specified return type " + Boolean.class.getSimpleName() + ".");
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object> cq = cb.createQuery(Object.class);
+		Root<FeatureConfiguration> root = cq.from(FeatureConfiguration.class);
+
+		cq.where(cb.and(cb.equal(root.get(FeatureConfiguration.FEATURE_TYPE), featureType)));
+		cq.select(root.get(FeatureConfiguration.PROPERTIES));
+
+		Map<FeatureTypeProperty, Object> properties = null;
+		try {
+			properties = (Map<FeatureTypeProperty, Object>) em.createQuery(cq).getSingleResult();
+		} catch (NoResultException e) {
+			// NOOP
+		}
+
+		boolean result;
+		if (properties != null && properties.containsKey(property)) {
+			result = (boolean) properties.get(property);
+		} else {
+			// Compare the expected property value with the default value
+			result = (boolean) featureType.getSupportedPropertyDefaults().get(property);
+		}
+
+		return result;
+	}
+
+	@Override
 	public boolean isFeatureEnabled(FeatureType featureType) {
 		return !isFeatureDisabled(featureType);
 	}
@@ -316,6 +477,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		target.setDisease(source.getDisease());
 		target.setEndDate(source.getEndDate());
 		target.setEnabled(source.isEnabled());
+		target.setProperties(source.getProperties());
 
 		return target;
 	}
@@ -331,6 +493,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		target.setDisease(source.getDisease());
 		target.setEndDate(source.getEndDate());
 		target.setEnabled(source.isEnabled());
+		target.setProperties(source.getProperties());
 
 		return target;
 	}

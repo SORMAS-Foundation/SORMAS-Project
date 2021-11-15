@@ -31,6 +31,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
 import de.symeda.sormas.backend.common.InfrastructureAdo;
+import de.symeda.sormas.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 
@@ -47,6 +48,7 @@ public class District extends InfrastructureAdo {
 	public static final String COMMUNITIES = "communities";
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String EXTERNAL_ID = "externalID";
+	public static final String FEATURE_CONFIGURATIONS = "featureConfigurations";
 
 	private String name;
 	private Region region;
@@ -54,6 +56,8 @@ public class District extends InfrastructureAdo {
 	private List<Community> communities;
 	private Float growthRate;
 	private String externalID;
+
+	private List<FeatureConfiguration> featureConfigurations;
 
 	public String getName() {
 		return name;
@@ -106,6 +110,15 @@ public class District extends InfrastructureAdo {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
+	}
+
+	@OneToMany(mappedBy = FeatureConfiguration.DISTRICT, fetch = FetchType.LAZY)
+	public List<FeatureConfiguration> getFeatureConfigurations() {
+		return featureConfigurations;
+	}
+
+	public void setFeatureConfigurations(List<FeatureConfiguration> featureConfigurations) {
+		this.featureConfigurations = featureConfigurations;
 	}
 
 	@Override

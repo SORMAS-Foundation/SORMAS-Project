@@ -22,6 +22,7 @@ import org.sormas.e2etests.enums.ContactOutcome;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.enums.TestDataUser;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -47,6 +48,10 @@ public class CaseDetailedTableViewSteps implements En {
         () -> {
           List<Map<String, String>> tableRowsData = getTableRowsData();
           Map<String, String> detailedCaseDTableRow = tableRowsData.get(0);
+          softly
+              .assertThat(detailedCaseDTableRow.size())
+              .isEqualTo(41)
+              .withFailMessage("Detailed view table wasn't correctly displayed");
           softly
               .assertThat(
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.CASE_ID.toString()))
@@ -126,14 +131,18 @@ public class CaseDetailedTableViewSteps implements En {
                   detailedCaseDTableRow.get(
                       CaseDetailedTableViewHeaders.NUMBER_OF_VISITS.toString()))
               .containsIgnoringCase("0 (0 missed)");
-          softly
-              .assertThat(
-                  detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.COMPLETENESS.toString()))
-              .containsIgnoringCase("-");
+          String completenessValue =
+              detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.COMPLETENESS.toString());
+          if (!completenessValue.equalsIgnoreCase("-")) {
+            softly
+                .assertThat(
+                    detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.COMPLETENESS.toString()))
+                .containsIgnoringCase("10 %");
+          }
           softly
               .assertThat(
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.REPORTING_USER.toString()))
-              .containsIgnoringCase("Rest AUTOMATION");
+              .containsIgnoringCase(TestDataUser.REST_AUTOMATION.getUserRole());
           softly.assertAll();
         });
   }

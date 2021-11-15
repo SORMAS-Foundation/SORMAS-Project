@@ -49,6 +49,7 @@ public class CaseDirectoryPage {
   public static final String CASE_RESULTS_UUID_LOCATOR = "[title = '%s']";
   public static final By CASE_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
   public static final By LINE_LISTING_BUTTON = By.id("lineListing");
+  public static final By GRID_HEADERS = By.xpath("//thead//tr//th");
   public static final By GRID_RESULTS_DISEASE =
       By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(5)");
   public static final By GRID_RESULTS_FIRST_NAME =

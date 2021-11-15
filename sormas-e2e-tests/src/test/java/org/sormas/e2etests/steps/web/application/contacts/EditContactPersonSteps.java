@@ -126,10 +126,10 @@ public class EditContactPersonSteps implements En {
         "I click on save button from Contact Person tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(PERSON_DATA_SAVED_POPUP);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           // Workaround created until #5535 is fixed
           baseSteps.getDriver().navigate().refresh();
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_NAME_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 120);
           Person contactInfo = getPersonInformation();
           fullyDetailedPerson =
               personService.updateExistentPerson(

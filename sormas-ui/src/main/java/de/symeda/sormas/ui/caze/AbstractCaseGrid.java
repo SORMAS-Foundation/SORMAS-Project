@@ -271,12 +271,6 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			deselectAll();
 		}
 
-		if (getCriteria().getOutcome() == null) {
-			this.getColumn(CaseIndexDto.OUTCOME).setHidden(false);
-		} else if (this.getColumn(CaseIndexDto.OUTCOME) != null) {
-			this.getColumn(CaseIndexDto.OUTCOME).setHidden(true);
-		}
-
 		if (caseFollowUpEnabled) {
 			boolean hidden = getCriteria().getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP;
 			this.getColumn(NUMBER_OF_VISITS).setHidden(hidden);

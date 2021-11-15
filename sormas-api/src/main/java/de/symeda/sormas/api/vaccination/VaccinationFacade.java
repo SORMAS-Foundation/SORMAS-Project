@@ -15,17 +15,32 @@
 
 package de.symeda.sormas.api.vaccination;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 
 @Remote
 public interface VaccinationFacade {
 
 	VaccinationDto save(@Valid VaccinationDto dto);
 
-	void validate(VaccinationDto vaccinationDto);
+	VaccinationDto create(
+		@Valid VaccinationDto dto,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		PersonReferenceDto person,
+		Disease disease);
+
+	List<VaccinationDto> getAllVaccinations(String personUuid, Disease disease);
+
+	void validate(VaccinationDto vaccinationDto, boolean allowEmptyImmunization);
 
 	Map<String, String> getLastVaccinationType();
 }
