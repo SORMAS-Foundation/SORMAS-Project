@@ -1105,6 +1105,8 @@ public interface Captions {
 	String EventParticipant_person = "EventParticipant.person";
 	String EventParticipant_personUuid = "EventParticipant.personUuid";
 	String EventParticipant_region = "EventParticipant.region";
+	String EventParticipant_responsibleDistrict = "EventParticipant.responsibleDistrict";
+	String EventParticipant_responsibleRegion = "EventParticipant.responsibleRegion";
 	String EventParticipant_sex = "EventParticipant.sex";
 	String EventParticipant_uuid = "EventParticipant.uuid";
 	String EventParticipant_vaccinationStatus = "EventParticipant.vaccinationStatus";
@@ -1381,8 +1383,10 @@ public interface Captions {
 	String LabMessage_status = "LabMessage.status";
 	String LabMessage_testedDisease = "LabMessage.testedDisease";
 	String labMessageFetch = "labMessageFetch";
+	String labMessageForwardedMessageFound = "labMessageForwardedMessageFound";
 	String labMessageNoNewMessages = "labMessageNoNewMessages";
 	String labMessageProcess = "labMessageProcess";
+	String labMessageRelatedEntriesFound = "labMessageRelatedEntriesFound";
 	String lastName = "lastName";
 	String latestPathogenTest = "latestPathogenTest";
 	String lineListing = "lineListing";

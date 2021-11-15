@@ -18,7 +18,6 @@
 package de.symeda.sormas.backend.event;
 
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -475,19 +474,18 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	}
 
 	/**
-	 * Sets the vaccination status of all event participants of the specified person and disease with validFrom <= event start date
-	 * and validUntil >= event start date to VACCINATED.
+	 * Sets the vaccination status of all event participants of the specified person and disease with vaccination date <= event start date.
+	 * Vaccinations without a vaccination date are relevant for all event participants.
 	 *
 	 * @param personId
-	 *            The ID of the immunization and event participant person
+	 *            The ID of the event participant person
 	 * @param disease
-	 *            The disease of the immunization and events
-	 * @param validFrom
-	 *            The date from which on the person is protected by the immunization
-	 * @param validUntil
-	 *            The date until which the person is protected by the immunization
+	 *            The disease of the events
+	 * @param vaccinationDate
+	 *            The vaccination date of the created or updated vaccination
 	 */
-	public void updateVaccinationStatuses(Long personId, Disease disease, Date validFrom, Date validUntil) {
+	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<EventParticipant> cu = cb.createCriteriaUpdate(EventParticipant.class);
 		Root<EventParticipant> root = cu.from(EventParticipant.class);
@@ -496,23 +494,20 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		Root<Event> eventSqRoot = eventSq.from(Event.class);
 		eventSq.select(eventSqRoot);
 
-		Predicate validUntilPredicate = validUntil != null
+		Predicate datePredicate = vaccinationDate != null
 			? cb.or(
-				cb.and(cb.isNotNull(eventSqRoot.get(Event.START_DATE)), cb.greaterThanOrEqualTo(eventSqRoot.get(Event.START_DATE), validUntil)),
-				cb.greaterThanOrEqualTo(eventSqRoot.get(Event.REPORT_DATE_TIME), validUntil))
+				cb.greaterThanOrEqualTo(eventSqRoot.get(Event.START_DATE), vaccinationDate),
+				cb.and(cb.isNull(eventSqRoot.get(Event.START_DATE)), cb.greaterThanOrEqualTo(eventSqRoot.get(Event.END_DATE), vaccinationDate)),
+				cb.and(
+					cb.isNull(eventSqRoot.get(Event.START_DATE)),
+					cb.isNull(eventSqRoot.get(Event.END_DATE)),
+					cb.greaterThanOrEqualTo(eventSqRoot.get(Event.REPORT_DATE_TIME), vaccinationDate)))
 			: null;
 
 		eventSq.where(
-			CriteriaBuilderHelper.and(
-				cb,
-				cb.equal(eventSqRoot, root.get(EventParticipant.EVENT)),
-				cb.equal(eventSqRoot.get(Event.DISEASE), disease),
-				cb.or(
-					cb.and(cb.isNotNull(eventSqRoot.get(Event.START_DATE)), cb.greaterThanOrEqualTo(eventSqRoot.get(Event.START_DATE), validFrom)),
-					cb.greaterThanOrEqualTo(eventSqRoot.get(Event.REPORT_DATE_TIME), validFrom)),
-				validUntilPredicate));
+			CriteriaBuilderHelper
+				.and(cb, cb.equal(eventSqRoot, root.get(EventParticipant.EVENT)), cb.equal(eventSqRoot.get(Event.DISEASE), disease), datePredicate));
 
-		cu.set(EventParticipant.CHANGE_DATE, Timestamp.from(Instant.now()));
 		cu.set(root.get(EventParticipant.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
 
 		cu.where(cb.and(cb.equal(root.get(EventParticipant.PERSON), personId), cb.isNotNull(eventSq.getSelection())));

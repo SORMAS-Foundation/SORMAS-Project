@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import org.junit.Test;
 
 import de.symeda.sormas.api.labmessage.LabMessageDto;
@@ -78,6 +79,34 @@ public class LabMessageFacadeEjbTest extends AbstractBeanTest {
 		// deleted lab messages shall still be returned
 		result = getLabMessageFacade().getByUuid(labMessage.getUuid());
 		assertThat(result, equalTo(labMessage));
+
+	}
+
+	@Test
+	public void testExistsForwardedLabMessageWith() {
+
+		String reportId = "1234";
+
+		// create noise
+		creator.createLabMessage((lm) -> lm.setStatus(LabMessageStatus.FORWARDED));
+
+		assertFalse(getLabMessageFacade().existsForwardedLabMessageWith(reportId));
+		assertFalse(getLabMessageFacade().existsForwardedLabMessageWith(null));
+
+		creator.createLabMessage((lm) -> lm.setReportId(reportId));
+
+		assertFalse(getLabMessageFacade().existsForwardedLabMessageWith(reportId));
+
+		LabMessageDto forwardedMessage = creator.createLabMessage((lm) -> {
+			lm.setReportId(reportId);
+			lm.setStatus(LabMessageStatus.FORWARDED);
+		});
+
+		assertTrue(getLabMessageFacade().existsForwardedLabMessageWith(reportId));
+
+		getLabMessageFacade().deleteLabMessage(forwardedMessage.getUuid());
+
+		assertTrue(getLabMessageFacade().existsForwardedLabMessageWith(reportId));
 
 	}
 }
