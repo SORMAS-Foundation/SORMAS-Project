@@ -27,6 +27,7 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.user.UserService;
 import org.slf4j.Logger;
@@ -34,22 +35,24 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 
-public abstract class ReceivedDataProcessor<ADO extends AbstractDomainObject, DTO extends SormasToSormasShareableDto, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW extends PseudonymizableDto, ENTITY extends SormasToSormasShareable, SRV extends AdoServiceWithUserFilter<ADO>> {
+public abstract class ReceivedDataProcessor<ADO extends AbstractDomainObject, DTO extends SormasToSormasShareableDto, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW extends PseudonymizableDto, ENTITY extends SormasToSormasShareable, SRV extends AdoServiceWithUserFilter<ADO>, VALIDATOR extends SormasToSormasDtoValidator<DTO, SHARED, PREVIEW>> {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	protected SRV service;
 	protected UserService userService;
 	protected ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	protected VALIDATOR validator;
 
 	protected ReceivedDataProcessor() {
 
 	}
 
-	protected ReceivedDataProcessor(SRV service, UserService userService, ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade) {
+	protected ReceivedDataProcessor(SRV service, UserService userService, ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade, VALIDATOR validator) {
 		this.service = service;
 		this.userService = userService;
 		this.configFacade = configFacade;
+		this.validator = validator;
 	}
 
 	public ValidationErrors processReceivedData(SHARED sharedData, ENTITY existingData) {
@@ -59,7 +62,7 @@ public abstract class ReceivedDataProcessor<ADO extends AbstractDomainObject, DT
 		}
 
 		handleReceivedData(sharedData, existingData);
-		return validate(sharedData);
+		return validator.validateIncoming(sharedData);
 	}
 
 	public abstract void handleReceivedData(SHARED sharedData, ENTITY existingData);
@@ -69,7 +72,7 @@ public abstract class ReceivedDataProcessor<ADO extends AbstractDomainObject, DT
 		if (uuidError.hasError()) {
 			return uuidError;
 		}
-		return validatePreview(sharedPreview);
+		return validator.validateIncomingPreview(sharedPreview);
 	}
 
 	public ValidationErrors existsNotShared(
@@ -91,17 +94,13 @@ public abstract class ReceivedDataProcessor<ADO extends AbstractDomainObject, DT
 
 	public abstract ValidationErrors existsNotShared(String uuid);
 
-	public abstract ValidationErrors validate(SHARED sharedData);
-
-	public abstract ValidationErrors validatePreview(PREVIEW preview);
-
 	protected void updateReportingUser(SormasToSormasShareableDto entity, SormasToSormasShareable originalEntiy) {
 		UserReferenceDto reportingUser =
 			originalEntiy == null ? userService.getCurrentUser().toReference() : originalEntiy.getReportingUser().toReference();
 		entity.setReportingUser(reportingUser);
 	}
 
-	protected  <T> void handleIgnoredProperties(T receivedEntity, T originalEntity) {
+	protected <T> void handleIgnoredProperties(T receivedEntity, T originalEntity) {
 		Class<?> dtoType = receivedEntity.getClass();
 		SormasToSormasConfig s2SConfig = configFacade.getS2SConfig();
 		for (Field field : dtoType.getDeclaredFields()) {
