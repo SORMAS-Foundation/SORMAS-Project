@@ -940,4 +940,40 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		return em.createQuery(cq).getResultList();
 	}
+
+	public boolean hasRegionAndDistrict(String eventUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Event> from = cq.from(getElementClass());
+		Join<Event, Location> locationJoin = from.join(Event.EVENT_LOCATION, JoinType.LEFT);
+
+		cq.where(
+			CriteriaBuilderHelper.and(
+				cb,
+				cb.equal(from.get(AbstractDomainObject.UUID), eventUuid),
+				cb.isNotNull(locationJoin.get(Location.REGION)),
+				cb.isNotNull(locationJoin.get(Location.DISTRICT))));
+		cq.select(cb.count(from));
+
+		return em.createQuery(cq).getSingleResult() > 0;
+	}
+
+	public boolean hasAnyEventParticipantWithoutJurisdiction(String eventUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<EventParticipant> from = cq.from(EventParticipant.class);
+		Join<EventParticipant, Event> eventJoin = from.join(EventParticipant.EVENT, JoinType.LEFT);
+
+		cq.where(
+			CriteriaBuilderHelper.and(
+				cb,
+				cb.equal(eventJoin.get(AbstractDomainObject.UUID), eventUuid),
+				cb.or(cb.isNull(from.get(EventParticipant.REGION)), cb.isNull(from.get(EventParticipant.DISTRICT)))));
+		cq.select(cb.count(from));
+
+		return em.createQuery(cq).getSingleResult() > 0;
+	}
+
 }
