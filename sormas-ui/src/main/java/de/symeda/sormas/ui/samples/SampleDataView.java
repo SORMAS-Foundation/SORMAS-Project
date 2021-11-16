@@ -134,6 +134,7 @@ public class SampleDataView extends AbstractSampleView {
 
 		editComponent =
 			ControllerProvider.getSampleController().getSampleEditComponent(getSampleRef().getUuid(), sampleDto.isPseudonymized(), disease, true);
+		ControllerProvider.getSampleController().addReferOrLinkToOtherLabButton(editComponent, disease);
 		editComponent.setMargin(new MarginInfo(false, false, true, false));
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);

@@ -468,7 +468,7 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasShare
 		return sample;
 	}
 
-	public static SampleDto buildReferral(UserReferenceDto userRef, SampleDto referredSample) {
+	public static SampleDto buildReferralDto(UserReferenceDto userRef, SampleDto referredSample, SampleDto alternativeSampleInfo) {
 
 		final SampleDto sample;
 		final CaseReferenceDto associatedCase = referredSample.getAssociatedCase();
@@ -481,17 +481,24 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasShare
 		} else {
 			sample = build(userRef, associatedEventParticipant);
 		}
-		sample.setSampleDateTime(referredSample.getSampleDateTime());
-		sample.setSampleMaterial(referredSample.getSampleMaterial());
-		sample.setSampleMaterialText(referredSample.getSampleMaterialText());
-		sample.setSampleSource(referredSample.getSampleSource());
-		sample.setPathogenTestingRequested(referredSample.getPathogenTestingRequested());
-		sample.setAdditionalTestingRequested(referredSample.getAdditionalTestingRequested());
-		sample.setRequestedPathogenTests(referredSample.getRequestedPathogenTests());
-		sample.setRequestedAdditionalTests(referredSample.getRequestedAdditionalTests());
-		sample.setPathogenTestResult(PathogenTestResultType.PENDING);
 
+		if (alternativeSampleInfo == null) {
+			migrateAttributesOfPhysicalSample(referredSample, sample);
+		} else {
+			migrateAttributesOfPhysicalSample(alternativeSampleInfo, sample);
+		}
 		return sample;
+	}
+
+	public static void migrateAttributesOfPhysicalSample(SampleDto source, SampleDto target) {
+		target.setSampleDateTime(source.getSampleDateTime());
+		target.setSampleMaterial(source.getSampleMaterial());
+		target.setSampleMaterialText(source.getSampleMaterialText());
+		target.setSampleSource(source.getSampleSource());
+		target.setPathogenTestingRequested(source.getPathogenTestingRequested());
+		target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
+		target.setRequestedPathogenTests(source.getRequestedPathogenTests());
+		target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
 	}
 
 	@ImportIgnore
