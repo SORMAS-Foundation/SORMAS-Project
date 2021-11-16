@@ -102,4 +102,8 @@ public interface EventFacade {
 	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 
 	List<String> getSubordinateEventUuids(List<String> uuids);
+
+	boolean hasRegionAndDistrict(String eventUuid);
+
+	boolean hasAnyEventParticipantWithoutJurisdiction(String eventUuid);
 }
