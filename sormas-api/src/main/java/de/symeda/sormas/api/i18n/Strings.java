@@ -686,6 +686,7 @@ public interface Strings {
 	String infoConvertToCaseContactsAndEventParticipants = "infoConvertToCaseContactsAndEventParticipants";
 	String infoConvertToCaseEventParticipants = "infoConvertToCaseEventParticipants";
 	String infoConvertToCaseSelect = "infoConvertToCaseSelect";
+	String infoCountryNotEditableEventParticipantsWithoutJurisdiction = "infoCountryNotEditableEventParticipantsWithoutJurisdiction";
 	String infoCreateEntry = "infoCreateEntry";
 	String infoCreateNewContactDiscardsChanges = "infoCreateNewContactDiscardsChanges";
 	String infoCreateNewSampleDiscardsChanges = "infoCreateNewSampleDiscardsChanges";
