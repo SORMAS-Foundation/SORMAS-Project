@@ -28,12 +28,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Task;
@@ -93,12 +93,12 @@ public class TaskManagementSteps implements En {
         });
 
     When(
-        "^I search last created task by API using Contact UUID and wait for (\\d+) results to be displayed$",
-        (Integer displayedResults) -> {
+        "^I search last created task by API using Contact UUID$",
+        () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(GENERAL_SEARCH_INPUT);
           webDriverHelpers.fillAndSubmitInWebElement(
               GENERAL_SEARCH_INPUT, apiState.getCreatedContact().getUuid());
-          webDriverHelpers.waitUntilNumberOfElementsIsReduceToGiven(TABLE_ROW, displayedResults);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
         });
 
     When(
@@ -152,7 +152,6 @@ public class TaskManagementSteps implements En {
     When(
         "^I collect the task column objects$",
         () -> {
-          TimeUnit.SECONDS.sleep(5); // time needed for table to load data
           List<Map<String, String>> tableRowsData = getTableRowsData();
           taskTableRows = new ArrayList<>();
           tableRowsData.forEach(
@@ -230,7 +229,11 @@ public class TaskManagementSteps implements En {
 
   private LocalDateTime getLocalDateTimeFromColumns(String date) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy h:mm a");
-    return LocalDateTime.parse(date, formatter);
+    try {
+      return LocalDateTime.parse(date, formatter);
+    } catch (Exception e) {
+      throw new WebDriverException(String.format("Unable to parse date: %s", date));
+    }
   }
 
   private String getPartialUuidFromAssociatedLink(String associatedLink) {

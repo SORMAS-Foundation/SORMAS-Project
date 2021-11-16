@@ -143,10 +143,6 @@ public class NavBarSteps implements En {
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
         });
 
-    And(
-        "^I confirm navigation$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CONFIRM_NAVIGATION));
-
     Then(
         "I wait for {string} page to load and calculate elapsed time",
         (String page) -> {
