@@ -6,6 +6,7 @@
 	  padding-right: 2px;
   
 	  .v-radiobutton, .v-checkbox {
+		
 	    margin: 0 -2px -2px 0 !important;
 	    padding: 0 !important;
 	    border: $v-border;
@@ -168,6 +169,55 @@
 	  }
    
   }
+
+
+
+
+  .v-select-optiongroup {
+  	
+  	.v-checkbox {	 
+	  &.v-checkbox-disabled {
+	  	& > input {
+	  	  & ~ label:before,
+	  	  & ~ label:after {
+	  	  	border-color: $v-focus-color !important;
+	  	  }
+	  	}
+	    label {
+	  	  cursor: default;
+	    }
+	  }
+	}
+  	
+ 	&.soft-required,
+ 	&.v-required {
+	  .v-checkbox {
+	 	& > input {
+	  	  & ~ label:before,
+	      & ~ label:after {
+		    border-color: $v-selection-color;
+		  }
+        }
+	  }
+    }
+
+	  &.v-select-optiongroup-grid-layout {
+		  .v-checkbox {
+			  width: 50%;
+
+			  label {
+				  width: 100%;
+				  text-align: center;
+			  }
+		  }
+	  }
+   
+  }
+
+
+
+
+
 
   .v-caption-caption-inline {
     float: left;

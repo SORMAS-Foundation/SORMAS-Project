@@ -69,6 +69,8 @@ public interface ConfigFacade {
 	boolean isDevMode();
 
 	boolean isCustomBranding();
+	
+	boolean isCampaign(); 
 
 	String getCustomBrandingName();
 

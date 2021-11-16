@@ -252,7 +252,7 @@ public final class CssStyles {
 
 	// Login
 	public static final String LOGINDEATILS = "login-details";
-	public static final String LOGINFORM = "login-form";
+	public static final String LOGINFORM = "login-form"; 
 	public static final String LOGINFORM_CONTAINER = "login-form-container";
 	public static final String LOGINSCREEN = "login-screen";
 	public static final String LOGINSCREEN_BACK = "login-screen-back";

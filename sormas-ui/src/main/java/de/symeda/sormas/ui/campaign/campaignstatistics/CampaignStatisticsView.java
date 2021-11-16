@@ -188,7 +188,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 						if (type != null) {
 							CampaignFormElementType campaignFormElementType = CampaignFormElementType.fromString(type);
 							if (campaignFormElementType == CampaignFormElementType.NUMBER
-								|| campaignFormElementType == CampaignFormElementType.YES_NO) {
+									|| campaignFormElementType == CampaignFormElementType.YES_NO || campaignFormElementType == CampaignFormElementType.RADIO) {
 								String caption = null;
 								if (translations != null) {
 									caption = translations.getTranslations()

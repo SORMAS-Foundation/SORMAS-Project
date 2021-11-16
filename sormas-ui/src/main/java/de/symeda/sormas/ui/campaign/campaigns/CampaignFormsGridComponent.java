@@ -32,7 +32,7 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 	protected Button.ClickListener newRowEvent() {
 		return event -> {
 			final ArrayList<CampaignFormMetaReferenceDto> gridItems = getItems();
-			gridItems.add(new CampaignFormMetaReferenceDto(null, ""));
+			gridItems.add(new CampaignFormMetaReferenceDto(null, "Please select an item from the list and save"));
 			grid.setItems(gridItems);
 		};
 	}

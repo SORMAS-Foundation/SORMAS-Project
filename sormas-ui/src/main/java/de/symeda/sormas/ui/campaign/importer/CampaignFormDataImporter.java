@@ -156,9 +156,13 @@ public class CampaignFormDataImporter extends DataImporter {
 			return !entry.getValue().toString().matches("[0-9]+");
 		} else if (definition.getType().equalsIgnoreCase(CampaignFormElementType.YES_NO.toString())) {
 			return Arrays.stream(CampaignFormElementType.YES_NO.getAllowedValues())
-				.map(String::toLowerCase)
-				.anyMatch(v -> v.equals(entry.getValue().toString().toLowerCase()));
-		}
+					.map(String::toLowerCase)
+					.anyMatch(v -> v.equals(entry.getValue().toString().toLowerCase()));
+			}else if (definition.getType().equalsIgnoreCase(CampaignFormElementType.RADIO.toString())) {
+				return Arrays.stream(CampaignFormElementType.RADIO.getAllowedValues())
+						.map(String::toLowerCase)
+						.anyMatch(v -> v.equals(entry.getValue().toString().toLowerCase()));
+				}
 		return true;
 	}
 
@@ -248,6 +252,14 @@ public class CampaignFormDataImporter extends DataImporter {
 
 				// Convert yes/no values to true/false
 				if (CampaignFormElementType.YES_NO.toString().equals(existingFormElement.get().getType())) {
+					String value = formEntry.getValue().toString();
+					if ("yes".equalsIgnoreCase(value) || "true".equalsIgnoreCase(value)) {
+						formEntry.setValue(true);
+					} else if ("no".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
+						formEntry.setValue(false);
+					}
+				}
+				if (CampaignFormElementType.RADIO.toString().equals(existingFormElement.get().getType())) {
 					String value = formEntry.getValue().toString();
 					if ("yes".equalsIgnoreCase(value) || "true".equalsIgnoreCase(value)) {
 						formEntry.setValue(true);

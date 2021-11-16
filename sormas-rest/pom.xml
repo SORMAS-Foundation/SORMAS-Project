@@ -135,7 +135,7 @@
 			</plugin>
 
 			<!-- Swagger Generation -->
-			<plugin>
+		<!-- 	<plugin>
 				<groupId>io.openapitools.swagger</groupId>
 				<artifactId>swagger-maven-plugin</artifactId>
 				<executions>
@@ -170,7 +170,9 @@
 					</execution>
 				</executions>
 				<configuration>
-					<!-- Swagger Generation Config -->
+				
+				 -->
+					<!-- Swagger Generation Config
 					<resourcePackages>
 						<resourcePackage>de.symeda.sormas.rest</resourcePackage>
 						<resourcePackage>de.symeda.sormas.rest.security</resourcePackage>
@@ -180,8 +182,8 @@
 					<outputFilename>swagger</outputFilename>
 					<outputFormats>JSON,YAML</outputFormats>
 					<prettyPrint>true</prettyPrint>
-
-					<!-- Swagger API documentation metadata -->
+ -->
+					<!-- Swagger API documentation metadata 
 					<swaggerConfig>
 						<info>
 							<title>SORMAS REST API</title>
@@ -194,7 +196,9 @@
 						</servers>
 					</swaggerConfig>
 				</configuration>
+				
 			</plugin>
+			 -->
 		</plugins>
 	</build>
 

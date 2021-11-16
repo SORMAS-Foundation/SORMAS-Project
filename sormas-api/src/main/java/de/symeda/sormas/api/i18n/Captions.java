@@ -1414,6 +1414,7 @@ public interface Captions {
 	String Location_postalCode = "Location.postalCode";
 	String Location_street = "Location.street";
 	String Login_doLogIn = "Login.doLogIn";
+	String Login_APMIScaption = "APMIS";
 	String Login_login = "Login.login";
 	String Login_password = "Login.password";
 	String Login_username = "Login.username";

@@ -304,6 +304,8 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 		if (type.equals(CampaignFormElementType.YES_NO.toString())) {
 			return StringUtils.equalsAnyIgnoreCase(value, CampaignFormElementType.YES_NO.getAllowedValues());
 		}
+		
+		
 
 		return true;
 	}

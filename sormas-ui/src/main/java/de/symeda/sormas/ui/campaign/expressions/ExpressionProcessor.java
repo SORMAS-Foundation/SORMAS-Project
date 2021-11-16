@@ -93,8 +93,9 @@ public class ExpressionProcessor {
 				final Expression expression = expressionParser.parseExpression(e.getExpression());
 				final Class<?> valueType = expression.getValueType(context);
 				final Object value = expression.getValue(context, valueType);
+				final List <String> opt = null;
 				campaignFormBuilder
-					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), CampaignFormElementType.fromString(e.getType()), value);
+					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), CampaignFormElementType.fromString(e.getType()), value, opt);
 			} catch (SpelEvaluationException evaluationException) {
 				LOG.error("Error evaluating expression: {} / {}", evaluationException.getMessageCode(), evaluationException.getMessage());
 			}

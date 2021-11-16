@@ -39,7 +39,7 @@ $valo-menu-background-color: $s-default-color !default;
       margin: 0;
     }
 	  
-    .valo-menu-item {
+    .valo-menu-item { 
 	  color: inherit;
 	  text-shadow: none;
 	  padding: 8px 16px;
@@ -52,12 +52,12 @@ $valo-menu-background-color: $s-default-color !default;
 	  }
 		
 	  &.selected {
-		background: $v-background-color !important;
-	    color: $v-selection-color !important;
+		background: #F28A35!important;
+	    color: #ffffff !important;
 		text-shadow: none !important;
 		  
 		.v-icon {
-	      color: #005A9C !important;
+	      color: #ffffff!important;
 		}
 		  
 		&::before {

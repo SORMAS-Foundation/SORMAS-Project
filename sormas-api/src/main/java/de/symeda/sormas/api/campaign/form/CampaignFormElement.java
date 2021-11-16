@@ -26,7 +26,11 @@ public class CampaignFormElement implements Serializable {
 		CampaignFormElementType.SECTION.toString(),
 		CampaignFormElementType.NUMBER.toString(),
 		CampaignFormElementType.TEXT.toString(),
-		CampaignFormElementType.YES_NO.toString() };
+		CampaignFormElementType.YES_NO.toString(),
+		CampaignFormElementType.RADIO.toString(),
+	CampaignFormElementType.DROPDOWN.toString(),
+	CampaignFormElementType.TEXTBOX.toString(),
+	CampaignFormElementType.CHECKBOX.toString()};
 
 	public static final String[] VALID_STYLES = {
 		CampaignFormElementStyle.INLINE.toString(),
@@ -67,6 +71,7 @@ public class CampaignFormElement implements Serializable {
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String expression;
 	private String[] styles;
+	private String[] options;
 	@Size(max = CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String dependingOn;
 	private String[] dependingOnValues;
@@ -102,6 +107,14 @@ public class CampaignFormElement implements Serializable {
 
 	public void setStyles(String[] styles) {
 		this.styles = styles;
+	}
+	
+	public String[] getOptions() {
+		return options;
+	}
+
+	public void setOptions(String[] options) {
+		this.options = options;
 	}
 
 	public String getDependingOn() {
@@ -151,6 +164,7 @@ public class CampaignFormElement implements Serializable {
 				Objects.equals(caption, that.caption) &&
 				Objects.equals(expression, that.expression) &&
 				Arrays.equals(styles, that.styles) &&
+				Arrays.equals(options, that.options) &&
 				Objects.equals(dependingOn, that.dependingOn) &&
 				Arrays.equals(dependingOnValues, that.dependingOnValues);
 	}
@@ -159,6 +173,7 @@ public class CampaignFormElement implements Serializable {
 	public int hashCode() {
 		int result = Objects.hash(type, id, caption, expression, dependingOn, important);
 		result = 31 * result + Arrays.hashCode(styles);
+		result = 31 * result + Arrays.hashCode(options);
 		result = 31 * result + Arrays.hashCode(dependingOnValues);
 		return result;
 	}

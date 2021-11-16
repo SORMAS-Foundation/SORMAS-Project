@@ -81,12 +81,13 @@ public class Menu extends CssLayout {
 		top.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 		top.addStyleName(ValoTheme.MENU_TITLE);
 		top.setSpacing(true);
-		Label title = new Label(FacadeProvider.getConfigFacade().getSormasInstanceName());
-		title.setSizeUndefined();
+		// Label title = new
+		// Label(FacadeProvider.getConfigFacade().getSormasInstanceName());
+		// title.setSizeUndefined();
 
 		Image image;
 		if (FacadeProvider.getConfigFacade().isCustomBranding()
-			&& StringUtils.isNotBlank(FacadeProvider.getConfigFacade().getCustomBrandingLogoPath())) {
+				&& StringUtils.isNotBlank(FacadeProvider.getConfigFacade().getCustomBrandingLogoPath())) {
 			Path logoPath = Paths.get(FacadeProvider.getConfigFacade().getCustomBrandingLogoPath());
 			image = new Image(null, new FileResource(logoPath.toFile()));
 		} else {
@@ -94,8 +95,9 @@ public class Menu extends CssLayout {
 		}
 		CssStyles.style(image, ValoTheme.MENU_LOGO, ValoTheme.BUTTON_LINK);
 		top.addComponent(image);
-		top.addComponent(title);
-		top.addLayoutClickListener(listener -> SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME));
+		// top.addComponent(title);
+		top.addLayoutClickListener(
+				listener -> SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME));
 		menuPart.addComponent(top);
 
 		// button for toggling the visibility of the menu when on a small screen
@@ -117,7 +119,8 @@ public class Menu extends CssLayout {
 		// settings menu item
 		MenuBar settingsMenu = new MenuBar();
 		settingsMenu.setId(Captions.actionSettings);
-		settingsMenu.addItem(I18nProperties.getCaption(Captions.actionSettings), VaadinIcons.COG, (Command) selectedItem -> showSettingsPopup());
+		settingsMenu.addItem(I18nProperties.getCaption(Captions.actionSettings), VaadinIcons.COG,
+				(Command) selectedItem -> showSettingsPopup());
 
 		settingsMenu.addStyleNames("user-menu", "settings-menu");
 		menuPart.addComponent(settingsMenu);
@@ -126,9 +129,8 @@ public class Menu extends CssLayout {
 		MenuBar logoutMenu = new MenuBar();
 		logoutMenu.setId(Captions.actionLogout);
 		logoutMenu.addItem(
-			I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")",
-			VaadinIcons.SIGN_OUT,
-			(Command) selectedItem -> LoginHelper.logout());
+				I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")",
+				VaadinIcons.SIGN_OUT, (Command) selectedItem -> LoginHelper.logout());
 
 		logoutMenu.addStyleNames("user-menu", "logout-menu");
 		menuPart.addComponent(logoutMenu);
@@ -142,8 +144,8 @@ public class Menu extends CssLayout {
 		window.setCaption(I18nProperties.getString(Strings.headingUserSettings));
 		window.setModal(true);
 
-		CommitDiscardWrapperComponent<UserSettingsForm> component =
-			ControllerProvider.getUserController().getUserSettingsComponent(() -> window.close());
+		CommitDiscardWrapperComponent<UserSettingsForm> component = ControllerProvider.getUserController()
+				.getUserSettingsComponent(() -> window.close());
 
 		window.setContent(component);
 		UI.getCurrent().addWindow(window);
@@ -155,14 +157,10 @@ public class Menu extends CssLayout {
 	 *
 	 * @see Navigator#addView(String, View)
 	 *
-	 * @param view
-	 *            view instance to register
-	 * @param name
-	 *            view name
-	 * @param caption
-	 *            view caption in the menu
-	 * @param icon
-	 *            view icon in the menu
+	 * @param view    view instance to register
+	 * @param name    view name
+	 * @param caption view caption in the menu
+	 * @param icon    view icon in the menu
 	 */
 	public void addView(View view, final String name, String caption, Resource icon) {
 
@@ -171,19 +169,15 @@ public class Menu extends CssLayout {
 	}
 
 	/**
-	 * Register a view in the navigation menu and in the {@link Navigator} based
-	 * on a view class.
+	 * Register a view in the navigation menu and in the {@link Navigator} based on
+	 * a view class.
 	 *
 	 * @see Navigator#addView(String, Class)
 	 *
-	 * @param viewClass
-	 *            class of the views to create
-	 * @param name
-	 *            view name
-	 * @param caption
-	 *            view caption in the menu
-	 * @param icon
-	 *            view icon in the menu
+	 * @param viewClass class of the views to create
+	 * @param name      view name
+	 * @param caption   view caption in the menu
+	 * @param icon      view icon in the menu
 	 */
 	public void addView(Class<? extends View> viewClass, final String name, String caption, Resource icon) {
 
@@ -193,7 +187,8 @@ public class Menu extends CssLayout {
 
 	private void createViewButton(final String name, String caption, Resource icon) {
 
-		Button button = ButtonHelper.createIconButtonWithCaption(name, caption, icon, event -> navigator.navigateTo(name));
+		Button button = ButtonHelper.createIconButtonWithCaption(name, caption, icon,
+				event -> navigator.navigateTo(name));
 		button.setPrimaryStyleName(ValoTheme.MENU_ITEM);
 
 		menuItemsLayout.addComponent(button);
@@ -201,11 +196,10 @@ public class Menu extends CssLayout {
 	}
 
 	/**
-	 * Highlights a view navigation button as the currently active view in the
-	 * menu. This method does not perform the actual navigation.
+	 * Highlights a view navigation button as the currently active view in the menu.
+	 * This method does not perform the actual navigation.
 	 *
-	 * @param viewName
-	 *            the name of the view to show as active
+	 * @param viewName the name of the view to show as active
 	 */
 	public void setActiveView(String viewName) {
 
