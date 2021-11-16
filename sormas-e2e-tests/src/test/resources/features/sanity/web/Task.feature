@@ -39,6 +39,6 @@ Feature: Tasks functionalities
     And API: I check that POST call status code is 200
     Given I log in as a Surveillance Officer
     And I click on the Tasks button from navbar
-    And I search last created task by API using Contact UUID and wait for 3 results to be displayed
+    And I search last created task by API using Contact UUID
     And I collect the task column objects
     Then I am checking if all the fields are correctly displayed in the Task Management table
