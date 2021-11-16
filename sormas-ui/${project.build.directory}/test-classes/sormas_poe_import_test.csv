@@ -1,0 +1,3 @@
+pointOfEntryType,name,region,district,latitude,longitude,active,archived,externalID
+AIRPORT,Airport,Region with ä,District with ß,,,true,false,
+AIRPORT,Airport,Region with ä,District with ß,,,true,false,

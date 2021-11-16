@@ -1,0 +1,40 @@
+FILE IDENTIFIER (Filename to which this metadata record applies): mdg_polbnda_adm1_region_NDMO_OCHA
+
+POINT OF CONTACT (Person or Organization that can be contacted for acquiring knowledge about or acquisition of the resource): UN OCHA ROSA (United Nations, Office for the Coordination of Humanitarian Affairs, Regional Office for Southern Africa). 
+Contact: Amanda Vickers E-mail: vickersa@un.org +27 11 517 1635  Web: http://ochaonline.un.org/rosa
+
+METADATA DATE STAMP (The date on which the metadata record was created - YYYYMMDD): 20 March 2012
+
+TITLE (The title of the map or data set, the name by which the cited resource is known): Regions: Administrative Boundaries Level 1 for Madagascar
+     
+DATASET REFERENCE DATE (The date on which the data set was published or created): September 2011
+
+DATASET REFERENCE DATE TYPE (Does the date above indicate publication or creation): Date Unknown 
+
+ABSTRACT (A brief narrative summary of the content of the dataset):
+Madagascar Region (Farita) Boundaries, Administrative Level 1.  
+Cleaned & merged from the commune (adm3) shape data obtained from Madagascar BNGRC (National Disaster Management Office) in 2011, based on the Region name field, by OCHA.
+Differences from SALB and GAUL Regional Boundaries: 
+Toamasina II District falls in Atsinanana Region according  the commune shapefile, however it falls in Analanjirofo region in the SALB and GAUL region boundaries.
+
+*There were previously 6 provinces (Faritany), which were larger than Regions, but the provinces were dissolved in 2007 and the regional boundaries became the first administrative boundary level.
+
+RESOURCE PROVIDER (The person or organization that provides the resource, the source of the dataset): UN OCHA ROSA (United Nations, Office for the Coordination of Humanitarian Affairs, Regional Office for Southern Africa) & NDMO/BNGRC (Madagascar National Disaster Management Office
+
+PLACE KEYWORD (A keyword that describes the geographical extent of the data set): Madagascar
+
+DATASET LANGUAGE (The language or languages of any text information in the data set): English
+
+COORDINATE REFERENCE SYSTEM (The projection and datum used for geographic data): Geographic WGS84 (converted from Hotine_Oblique_Mercator_Azimuth_Center projection)
+
+DATA DICTIONARY (Description of the contents of all attributes and coded values in the dataset):
+REGION:    Region Name (adm1) in which the District falls.    
+REG_PCODE: OCHA Unique Region ID (Country abbreviation + Region Code)
+R_CODE:    Region code from the Madagascar Government/ National Disaster Management Office
+SOURCE:    Data Source 
+
+Source: Data was cleaned and merged by OCHA, based on the region name in the Commune (adm3) data received from the BNGRC (National Disaster Management Office) in 2011. 
+
+DISTRIBUTION INFORMATION (Description of distribution rights, to the extent it is known): Not for commercial use.
+The presentation of this material does not imply the expression of any opinion whatsoever on the part of the Secretariat of the United Nations concerning the legal status of any country, territory, city or area or of its authorities, or concerning the delimitation of its frontiers or boundaries.
+
