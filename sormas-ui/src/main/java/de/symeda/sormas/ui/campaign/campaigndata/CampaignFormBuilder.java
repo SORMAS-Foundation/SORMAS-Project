@@ -57,6 +57,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.campaign.jsonHelpers.RadioBasicGroup;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.NumberNumericValueValidator;
@@ -248,14 +249,14 @@ public class CampaignFormBuilder {
 			field = fieldFactory.createField(String.class, (Class<T>) TextArea.class);
 			
 		} else if (type == CampaignFormElementType.RADIO) {
-			field = fieldFactory.createField(CampaignFormElementEnumOptions.class, (Class<T>) CustomField.class);
+			field = fieldFactory.createField(CampaignFormElementEnumOptions.class, (Class<T>) RadioBasicGroup.class);
 			
 		} else if (type == CampaignFormElementType.DROPDOWN) {
 			field = fieldFactory.createField(CampaignFormElementOptions.class, (Class<T>) ComboBox.class);
 			
 		} else if (type == CampaignFormElementType.CHECKBOX) {
 			//Flash class is only use as a placeholder
-			field = fieldFactory.createField(CampaignFormElementEnumOptions.class, (Class<T>) TextArea.class);
+			field = fieldFactory.createField(CampaignFormElementEnumOptions.class, (Class<T>) CheckboxBasicGroup.class);
 			
 		} else {
 			field = null;

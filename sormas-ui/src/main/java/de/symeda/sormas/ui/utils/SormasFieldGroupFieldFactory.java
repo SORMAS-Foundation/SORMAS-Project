@@ -18,11 +18,9 @@ import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractTextField;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.CustomField;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
-import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -36,6 +34,8 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ActivityAsCase.ActivityAsCaseField;
+import de.symeda.sormas.ui.campaign.jsonHelpers.CheckboxBasicGroup;
+import de.symeda.sormas.ui.campaign.jsonHelpers.RadioBasicGroup;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.exposure.ExposuresField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
@@ -71,11 +71,11 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 				CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
 				return (T) field;
 				//remember that the class used here are just dummies-hack
-			} else if ((CustomField.class.isAssignableFrom(fieldType) && CampaignFormElementEnumOptions.class.isAssignableFrom(type))
-					|| (TextArea.class.isAssignableFrom(fieldType) && CampaignFormElementEnumOptions.class.isAssignableFrom(type))) {
+			} else if ((RadioBasicGroup.class.isAssignableFrom(fieldType) && CampaignFormElementEnumOptions.class.isAssignableFrom(type))
+					|| (CheckboxBasicGroup.class.isAssignableFrom(fieldType) && CampaignFormElementEnumOptions.class.isAssignableFrom(type))) {
 				//Flash class is only use as a placeholder
 				Boolean swt = false;
-				if (TextArea.class.isAssignableFrom(fieldType)) {
+				if (CheckboxBasicGroup.class.isAssignableFrom(fieldType)) {
 					swt = true;
 				}
 			//	fieldType = (Class<T>) RadioButtonGroup.class;
