@@ -156,7 +156,9 @@ public class EventDao extends AbstractAdoDao<Event> {
 			Where<EventParticipant, Long> where = builder.where();
 			Where<Event, Long> eventWhere = eventBuilder.where();
 			eventWhere.eq(Event.UUID, eventUuid);
-			where.or(where.isNull(EventParticipant.RESPONSIBLE_REGION + "_id"), where.isNull(EventParticipant.RESPONSIBLE_DISTRICT + "_id"));
+			where.and(
+				where.eq(AbstractDomainObject.SNAPSHOT, false),
+				where.or(where.isNull(EventParticipant.RESPONSIBLE_REGION + "_id"), where.isNull(EventParticipant.RESPONSIBLE_DISTRICT + "_id")));
 			builder = builder.leftJoin(eventBuilder);
 			return (int) builder.countOf() > 0;
 		} catch (SQLException e) {
