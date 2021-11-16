@@ -25,6 +25,9 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import org.apache.commons.lang3.time.DateUtils;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -71,6 +74,11 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	private Long casesPlacedInQuarantineCount = 0L;
 	private Long contactsConvertedToCaseCount = 0L;
 	private Long caseWithReferenceDefinitionFulfilledCount = 0L;
+	private RegionReferenceDto region;
+	private DistrictReferenceDto district;
+	private DiseaseBurdenDto diseaseBurdenDetail;
+	private Map<PathogenTestResultType, Long> testResultCountByResultType;
+
 
 	public void refreshData() {
 
@@ -86,6 +94,19 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	@Override
 	protected DashboardCriteria newCriteria() {
 		return new DashboardCriteria();
+	}
+	public void refreshDiseaseData() {
+		System.out.println("Dashboard data provider on refreshDiseaseData=:" + disease);
+
+		setDiseaseBurdenDetail(
+			FacadeProvider.getDiseaseFacade().getDiseaseForDashboard(region, district, disease, fromDate, toDate, previousFromDate, previousToDate));
+
+		setOutbreakDistrictCount(
+			FacadeProvider.getOutbreakFacade()
+				.getOutbreakDistrictCount(
+					new OutbreakCriteria().region(region).district(district).disease(disease).reportedBetween(fromDate, toDate)));
+
+		this.refreshDataForSelectedDisease();
 	}
 
 	private void refreshDataForQuarantinedContacts() {
@@ -200,6 +221,27 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 			}
 		}
 
+		if (getDashboardType() == DashboardType.DISEASE || this.disease != null) {
+			// Cases
+			CaseCriteria caseCriteria = new CaseCriteria();
+			caseCriteria.region(region).district(district).disease(disease).newCaseDateBetween(fromDate, toDate, NewCaseDateType.MOST_RELEVANT);
+			setCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria));
+			setLastReportedDistrict(FacadeProvider.getCaseFacade().getLastReportedDistrictName(caseCriteria, true, true));
+
+			caseCriteria.newCaseDateBetween(previousFromDate, previousToDate, NewCaseDateType.MOST_RELEVANT);
+			setPreviousCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria));
+
+			if (getDashboardType() != DashboardType.CONTACTS) {
+				if (getCases().size() > 0) {
+					setTestResultCountByResultType(
+						FacadeProvider.getSampleFacade()
+							.getNewTestResultCountByResultType(getCases().stream().map(c -> c.getId()).collect(Collectors.toList())));
+				} else {
+					setTestResultCountByResultType(new HashMap<>());
+				}
+			}
+		}
+
 		if (this.disease == null || getDashboardType() == DashboardType.CONTACTS) {
 			return;
 		}
@@ -222,7 +264,9 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	private DashboardCriteria buildDashboardCriteria(Date fromDate, Date toDate) {
 		return buildDashboardCriteria().newCaseDateType(newCaseDateType).dateBetween(fromDate, toDate);
 	}
-
+	public void setTestResultCountByResultType(Map<PathogenTestResultType, Long> testResults) {
+		this.testResultCountByResultType = testResults;
+	}
 	public List<DashboardCaseDto> getCases() {
 		return cases;
 	}
@@ -288,11 +332,22 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	}
 
 	public List<DiseaseBurdenDto> getDiseasesBurden() {
+		System.out.println("DashboardDataProvider am i getting from getDiseasesBurden(): " + diseasesBurden);
+
 		return diseasesBurden;
 	}
 
 	public void setDiseasesBurden(List<DiseaseBurdenDto> diseasesBurden) {
 		this.diseasesBurden = diseasesBurden;
+	}
+
+	public DiseaseBurdenDto getDiseaseBurdenDetail() {
+		System.out.println("What am i getting from getDiseaseBurdenDetail(): " + diseaseBurdenDetail);
+		return diseaseBurdenDetail;
+	}
+
+	public void setDiseaseBurdenDetail(DiseaseBurdenDto diseaseBurdenDetail) {
+		this.diseaseBurdenDetail = diseaseBurdenDetail;
 	}
 
 	public Long getOutbreakDistrictCount() {

@@ -19,6 +19,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDefinition;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
@@ -27,6 +28,8 @@ public class DashboardCaseDto extends AbstractUuidDto {
 	private static final long serialVersionUID = -5705128377788207648L;
 
 	public static final String I18N_PREFIX = "CaseData";
+	private  Date onsetDate;
+	private  InvestigationStatus investigationStatus;
 
 	private long id;
 	private Date reportDate;
@@ -60,6 +63,27 @@ public class DashboardCaseDto extends AbstractUuidDto {
 		this.caseReferenceDefinition = caseReferenceDefinition;
 	}
 
+	public DashboardCaseDto(
+			long id,
+			String uuid,
+			Date reportDate,
+			Date onsetDate,
+			CaseClassification caseClassification,
+			Disease disease,
+			InvestigationStatus investigationStatus,
+			PresentCondition casePersonCondition,
+			Disease causeOfDeathDisease) {
+		super(uuid);
+
+		this.id = id;
+		this.reportDate = reportDate;
+		this.onsetDate = onsetDate;
+		this.caseClassification = caseClassification;
+		this.disease = disease;
+		this.investigationStatus = investigationStatus;
+		this.casePersonCondition = casePersonCondition;
+		this.causeOfDeathDisease = causeOfDeathDisease;
+	}
 	public long getId() {
 		return id;
 	}

@@ -21,10 +21,13 @@ import static de.symeda.sormas.ui.UiUtil.permitted;
 
 import com.vaadin.navigator.Navigator;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
+import de.symeda.sormas.ui.dashboard.diseasedetails.DiseaseDetailsView;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 
@@ -48,5 +51,10 @@ public class DashboardController {
 		if (permitted(FeatureType.SAMPLES_LAB, UserRight.DASHBOARD_SAMPLES_VIEW)) {
 			navigator.addView(SampleDashboardView.VIEW_NAME, SampleDashboardView.class);
 		}
+	}
+
+	public void navigateToDisease(Disease disease) {
+		String navigationState = DiseaseDetailsView.VIEW_NAME + "/" + disease.getName();
+		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 }

@@ -36,7 +36,7 @@ public class SurveillanceDashboardView extends AbstractDashboardView {
 	protected SurveillanceDiseaseCarouselLayout diseaseCarouselLayout;
 
 	public SurveillanceDashboardView() {
-		super(VIEW_NAME);
+		super(VIEW_NAME, DashboardType.SURVEILLANCE);
 
 		dashboardDataProvider = new DashboardDataProvider();
 		if (dashboardDataProvider.getDashboardType() == null) {

@@ -31,6 +31,7 @@ public abstract class AbstractDashboardDataProvider<C extends BaseDashboardCrite
 	protected RegionReferenceDto region;
 	protected DistrictReferenceDto district;
 	protected Disease disease;
+	private DashboardType dashboardType;
 
 	public abstract void refreshData();
 
@@ -98,5 +99,13 @@ public abstract class AbstractDashboardDataProvider<C extends BaseDashboardCrite
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	public DashboardType getDashboardType() {
+		return dashboardType;
+	}
+
+	public void setDashboardType(DashboardType dashboardType) {
+		this.dashboardType = dashboardType;
 	}
 }

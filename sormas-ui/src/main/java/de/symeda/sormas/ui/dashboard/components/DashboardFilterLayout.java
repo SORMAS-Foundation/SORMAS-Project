@@ -23,21 +23,22 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.*;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.action.ActionDto;
+import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
+import de.symeda.sormas.ui.dashboard.DashboardType;
 import org.apache.commons.lang3.ArrayUtils;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 
@@ -97,8 +98,36 @@ public abstract class DashboardFilterLayout<P extends AbstractDashboardDataProvi
 	private DateFilterType currentDateFilterType;
 
 	private HorizontalLayout customDateFilterLayout;
+	private ComboBox diseaseFilter;
 
 	private Runnable dateFilterChangeCallback;
+	private Consumer<Boolean> diseaseFilterChangeCallback;
+	private Label infoLabel;
+
+
+	public DashboardFilterLayout(AbstractDashboardView dashboardView, P dashboardDataProvider) {
+		this.dashboardView = dashboardView;
+		this.dashboardDataProvider = dashboardDataProvider;
+		this.regionFilter = new ComboBox();
+		this.districtFilter = new ComboBox();
+		this.diseaseFilter = new ComboBox();
+		dateFilterButtons = new HashSet<>();
+		dateComparisonButtons = new HashSet<>();
+
+		setSpacing(true);
+		setSizeUndefined();
+		setMargin(new MarginInfo(true, true, false, true));
+
+		createDateFilters();
+//		createRegionAndDistrictFilter();
+		if (dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE) {
+			createRegionAndDistrictFilter();
+		}
+		if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
+			createRegionAndDistrictFilter();
+			createDiseaseFilter();
+		}
+	}
 
 	public DashboardFilterLayout(AbstractDashboardView dashboardView, P dashboardDataProvider, String[] templateContent) {
 		this.dashboardView = dashboardView;
@@ -128,6 +157,26 @@ public abstract class DashboardFilterLayout<P extends AbstractDashboardDataProvi
 		createDateFilters();
 		createResetAndApplyButtons();
 	};
+
+
+	private void createDiseaseFilter() {
+		diseaseFilter.setWidth(200, Unit.PIXELS);
+		diseaseFilter.setInputPrompt(I18nProperties.getString(Strings.promptDisease));
+		if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
+			diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseasesWithFollowUp(true, true, true).toArray());
+			diseaseFilter.setValue(dashboardDataProvider.getDisease());
+		} else {
+			diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true).toArray());
+		}
+		diseaseFilter.addValueChangeListener(e -> {
+			if (diseaseFilterChangeCallback != null) {
+				diseaseFilterChangeCallback.accept(diseaseFilter.getValue() != null);
+			}
+			dashboardDataProvider.setDisease((Disease) diseaseFilter.getValue());
+			dashboardView.refreshDashboard();
+		});
+		addComponent(diseaseFilter);
+	}
 
 	protected void createRegionAndDistrictFilter() {
 		createRegionFilter(null);
@@ -207,6 +256,13 @@ public abstract class DashboardFilterLayout<P extends AbstractDashboardDataProvi
 			CssStyles.BUTTON_FILTER_LIGHT);
 
 		dateFilterLayout.addComponents(btnCurrentPeriod, lblComparedTo, btnComparisonPeriod);
+
+
+		infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		infoLabel.setSizeUndefined();
+		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
+		addComponent(infoLabel);
+		setComponentAlignment(infoLabel, Alignment.TOP_RIGHT);
 
 		// Set initial date filter
 		CssStyles.style(btnThisWeek, CssStyles.BUTTON_FILTER_DARK);
@@ -533,6 +589,10 @@ public abstract class DashboardFilterLayout<P extends AbstractDashboardDataProvi
 			dashboardDataProvider.setPreviousFromDate(DateHelper.subtractYears(dashboardDataProvider.getFromDate(), 1));
 			dashboardDataProvider.setPreviousToDate(DateHelper.subtractYears(dashboardDataProvider.getToDate(), 1));
 		}
+	}
+
+	public void setInfoLabelText(String text) {
+		infoLabel.setDescription(text);
 	}
 
 	private enum DateFilterType {

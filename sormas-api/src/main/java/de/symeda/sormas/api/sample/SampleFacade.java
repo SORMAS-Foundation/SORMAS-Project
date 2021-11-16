@@ -20,6 +20,7 @@ package de.symeda.sormas.api.sample;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
@@ -90,4 +91,6 @@ public interface SampleFacade extends DeletableFacade {
 	Date getEarliestPositiveSampleDate(String contactUuid);
 
 	List<DiseaseVariant> getAssociatedDiseaseVariants(String sampleUuid);
+
+    Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> collect);
 }

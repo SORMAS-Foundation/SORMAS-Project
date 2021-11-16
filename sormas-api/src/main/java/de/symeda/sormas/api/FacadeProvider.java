@@ -41,6 +41,7 @@ import de.symeda.sormas.api.dashboard.DashboardFacade;
 import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
 import de.symeda.sormas.api.deletionconfiguration.DeletionConfigurationFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
+import de.symeda.sormas.api.disease.DiseaseFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
@@ -524,7 +525,11 @@ public class FacadeProvider {
         return get().lookupEjbRemote(ManualMessageLogFacade.class);
     }
 
-	@SuppressWarnings("unchecked")
+	public static DiseaseFacade getDiseaseFacade() {
+		return get().lookupEjbRemote(DiseaseFacade.class);
+	}
+
+    @SuppressWarnings("unchecked")
 	public <P> P lookupEjbRemote(Class<P> clazz) {
 		try {
 			return (P) get().ic.lookup(buildJndiLookupName(clazz));
