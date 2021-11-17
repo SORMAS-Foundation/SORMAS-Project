@@ -230,9 +230,11 @@ public class TaskManagementSteps implements En {
   private LocalDateTime getLocalDateTimeFromColumns(String date) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy h:mm a");
     try {
-      return LocalDateTime.parse(date, formatter);
+      return LocalDateTime.parse(date.trim(), formatter);
     } catch (Exception e) {
-      throw new WebDriverException(String.format("Unable to parse date: %s", date));
+      throw new WebDriverException(
+          String.format(
+              "Unable to parse date: %s due to caught exception: %s", date, e.getMessage()));
     }
   }
 

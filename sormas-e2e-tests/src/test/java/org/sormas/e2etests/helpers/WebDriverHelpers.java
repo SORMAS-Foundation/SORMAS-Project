@@ -220,7 +220,8 @@ public class WebDriverHelpers {
             .getDriver()
             .findElement(selector)
             .findElement(By.xpath("preceding-sibling::input"));
-    comboboxInput.sendKeys(Keys.chord(Keys.BACK_SPACE));
+    // TODO check in Jenkins if this is a fix for flaky situations when option is selected twice
+    // comboboxInput.sendKeys(Keys.chord(Keys.BACK_SPACE));
     String comboBoxItemWithText =
         "//td[@role='listitem']/span[ contains(text(), '"
             + text
@@ -534,7 +535,12 @@ public class WebDriverHelpers {
 
   public void waitUntilIdentifiedElementIsPresent(final Object selector) {
     if (selector instanceof WebElement) {
-      assertHelpers.assertWithPoll20Second(() -> assertThat(selector).isNotNull());
+      WebElement element = (WebElement) selector;
+      assertHelpers.assertWithPoll20Second(
+          () ->
+              assertWithMessage("Webelement: %s is not displayed within 20s", element)
+                  .that(element.isDisplayed())
+                  .isTrue());
     } else {
       assertHelpers.assertWithPoll20Second(
           () -> assertThat(getNumberOfElements((By) selector) > 0).isTrue());
@@ -624,7 +630,7 @@ public class WebDriverHelpers {
     waitUntilIdentifiedElementIsPresent(header);
     scrollToElement(header);
     String style = getAttributeFromWebElement(header, "style");
-    By selector = By.cssSelector("[style*='" + style.substring(style.length() - 17) + "']");
+    By selector = By.cssSelector("td[style*='" + style.substring(style.length() - 17) + "']");
     waitUntilIdentifiedElementIsPresent(selector);
     return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
   }
