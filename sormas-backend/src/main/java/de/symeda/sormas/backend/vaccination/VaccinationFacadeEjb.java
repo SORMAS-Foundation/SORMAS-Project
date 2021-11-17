@@ -148,7 +148,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 	private boolean addImmunizationToVaccination(Vaccination vaccination, String personUuid, Disease disease) {
 
-		List<Immunization> immunizations = immunizationService.getByPersonAndDisease(personUuid, disease);
+		List<Immunization> immunizations = immunizationService.getByPersonAndDisease(personUuid, disease, true);
 
 		if (immunizations.isEmpty()) {
 			return false;
@@ -208,7 +208,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	@Override
 	public List<VaccinationDto> getAllVaccinations(String personUuid, Disease disease) {
 
-		List<Immunization> immunizations = immunizationService.getByPersonAndDisease(personUuid, disease);
+		List<Immunization> immunizations = immunizationService.getByPersonAndDisease(personUuid, disease, false);
 		return immunizations.stream().flatMap(i -> i.getVaccinations().stream()).map(VaccinationFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
@@ -277,8 +277,13 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 
 		Vaccination vaccination = vaccinationService.getByUuid(uuid);
-		vaccination.getImmunization().getVaccinations().remove(vaccination);
-		immunizationService.ensurePersisted(vaccination.getImmunization());
+		Immunization immunization = vaccination.getImmunization();
+		immunization.getVaccinations().remove(vaccination);
+		immunizationService.ensurePersisted(immunization);
+
+		if (immunization.getVaccinations().isEmpty()) {
+			immunizationService.delete(immunization);
+		}
 	}
 
 	@Override

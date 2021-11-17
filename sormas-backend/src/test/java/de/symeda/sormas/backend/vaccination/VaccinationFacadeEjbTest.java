@@ -173,6 +173,18 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		VaccinationDto vaccination35 = VaccinationDto.build(nationalUser.toReference());
 		vaccination35 = getVaccinationFacade().create(vaccination35, rdcf1.region, rdcf1.district, person3.toReference(), disease1);
 		assertThat(vaccination35.getImmunization(), anyOf(is(immunizationReport.toReference()), is(immunizationReport2.toReference())));
+
+		// Ignore immunizations with a means of immunization that does not include vaccination
+		PersonDto person4 = creator.createPerson("Johanna", "Doe");
+		ImmunizationDto recoveryImmunization = creator.createImmunization(
+			disease1,
+			person4.toReference(),
+			nationalUser.toReference(),
+			rdcf1,
+			i -> i.setMeansOfImmunization(MeansOfImmunization.RECOVERY));
+		VaccinationDto vaccination41 = VaccinationDto.build(nationalUser.toReference());
+		vaccination41 = getVaccinationFacade().create(vaccination41, rdcf1.region, rdcf1.district, person4.toReference(), disease1);
+		assertNotEquals(vaccination41.getImmunization(), recoveryImmunization.toReference());
 	}
 
 	@Test

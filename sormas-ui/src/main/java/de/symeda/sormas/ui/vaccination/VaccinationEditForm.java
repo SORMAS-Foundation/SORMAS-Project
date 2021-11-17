@@ -115,10 +115,14 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 			addField(VaccinationDto.PREGNANT);
 			addField(VaccinationDto.TRIMESTER);
 			addField(VaccinationDto.HEALTH_CONDITIONS, HealthConditionsForm.class).setCaption(null);
-		}
 
-		FieldHelper
-			.setVisibleWhen(getFieldGroup(), VaccinationDto.TRIMESTER, VaccinationDto.PREGNANT, Collections.singletonList(YesNoUnknown.YES), true);
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				VaccinationDto.TRIMESTER,
+				VaccinationDto.PREGNANT,
+				Collections.singletonList(YesNoUnknown.YES),
+				true);
+		}
 
 	}
 }

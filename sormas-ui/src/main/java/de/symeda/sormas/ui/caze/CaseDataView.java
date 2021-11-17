@@ -178,11 +178,8 @@ public class CaseDataView extends AbstractCaseView {
 					new ImmunizationListCriteria.Builder(caze.getPerson()).wihDisease(caze.getDisease()).build();
 				layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
 			} else {
-				VaccinationListReferenceData referenceData = new VaccinationListReferenceData(
-					caze.getRegion() != null ? caze.getRegion() : caze.getResponsibleRegion(),
-					caze.getDistrict() != null ? caze.getDistrict() : caze.getResponsibleDistrict(),
-					caze.getPerson(),
-					caze.getDisease());
+				VaccinationListReferenceData referenceData =
+					new VaccinationListReferenceData(caze.getResponsibleRegion(), caze.getResponsibleDistrict(), caze.getPerson(), caze.getDisease());
 				layout.addComponent(new SideComponentLayout(new VaccinationListComponent(referenceData, true)), VACCINATIONS_LOC);
 			}
 		}

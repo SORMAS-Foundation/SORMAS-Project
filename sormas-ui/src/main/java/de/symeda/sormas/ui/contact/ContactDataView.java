@@ -253,12 +253,8 @@ public class ContactDataView extends AbstractContactView {
 				layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
 			} else {
 				VaccinationListReferenceData referenceData = new VaccinationListReferenceData(
-					contactDto.getRegion() != null
-						? contactDto.getRegion()
-						: caseDto.getRegion() != null ? caseDto.getRegion() : caseDto.getResponsibleRegion(),
-					contactDto.getDistrict() != null
-						? contactDto.getDistrict()
-						: caseDto.getDistrict() != null ? caseDto.getDistrict() : caseDto.getResponsibleDistrict(),
+					contactDto.getRegion() != null ? contactDto.getRegion() : caseDto.getResponsibleRegion(),
+					contactDto.getDistrict() != null ? contactDto.getDistrict() : caseDto.getResponsibleDistrict(),
 					contactDto.getPerson(),
 					contactDto.getDisease());
 				layout.addComponent(new SideComponentLayout(new VaccinationListComponent(referenceData, true)), VACCINATIONS_LOC);
