@@ -23,47 +23,54 @@ import javax.ejb.Remote;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface EventGroupFacade {
 
-    EventGroupReferenceDto getReferenceByUuid(String uuid);
+	EventGroupReferenceDto getReferenceByUuid(String uuid);
 
-    boolean exists(String uuid);
+	boolean exists(String uuid);
 
-    boolean isArchived(String uuid);
+	boolean isArchived(String uuid);
 
-    EventGroupDto getEventGroupByUuid(String uuid);
+	EventGroupDto getEventGroupByUuid(String uuid);
 
-    List<EventGroupReferenceDto> getCommonEventGroupsByEvents(List<EventReferenceDto> eventReferences);
+	List<EventGroupReferenceDto> getCommonEventGroupsByEvents(List<EventReferenceDto> eventReferences);
 
-    List<EventGroupIndexDto> getIndexList(EventGroupCriteria eventGroupCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+	List<EventGroupIndexDto> getIndexList(EventGroupCriteria eventGroupCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-    long count(EventGroupCriteria eventGroupCriteria);
+	long count(EventGroupCriteria eventGroupCriteria);
 
-    EventGroupDto saveEventGroup(@Valid @NotNull EventGroupDto eventGroup);
+	Page<EventGroupIndexDto> getIndexPage(
+		@NotNull EventGroupCriteria eventGroupCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties);
 
-    void linkEventToGroup(EventReferenceDto eventReference, EventGroupReferenceDto eventGroupReference);
+	EventGroupDto saveEventGroup(@Valid @NotNull EventGroupDto eventGroup);
 
-    void linkEventToGroups(EventReferenceDto eventReference, List<EventGroupReferenceDto> eventGroupReferences);
+	void linkEventToGroup(EventReferenceDto eventReference, EventGroupReferenceDto eventGroupReference);
 
-    void linkEventsToGroup(List<EventReferenceDto> eventReferences, EventGroupReferenceDto eventGroupReference);
+	void linkEventToGroups(EventReferenceDto eventReference, List<EventGroupReferenceDto> eventGroupReferences);
 
-    void linkEventsToGroups(List<EventReferenceDto> eventReferences, List<EventGroupReferenceDto> eventGroupReferences);
+	void linkEventsToGroup(List<EventReferenceDto> eventReferences, EventGroupReferenceDto eventGroupReference);
 
-    void unlinkEventGroup(EventReferenceDto eventReference, EventGroupReferenceDto eventGroupReference);
+	void linkEventsToGroups(List<EventReferenceDto> eventReferences, List<EventGroupReferenceDto> eventGroupReferences);
 
-    void deleteEventGroup(String uuid);
+	void unlinkEventGroup(EventReferenceDto eventReference, EventGroupReferenceDto eventGroupReference);
 
-    void archiveOrDearchiveEventGroup(String uuid, boolean archive);
+	void deleteEventGroup(String uuid);
 
-    List<RegionReferenceDto> getEventGroupRelatedRegions(String uuid);
+	void archiveOrDearchiveEventGroup(String uuid, boolean archive);
 
-    void notifyEventEventGroupCreated(EventGroupReferenceDto eventGroupReference);
+	List<RegionReferenceDto> getEventGroupRelatedRegions(String uuid);
 
-    void notifyEventAddedToEventGroup(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences);
+	void notifyEventEventGroupCreated(EventGroupReferenceDto eventGroupReference);
 
-    void notifyEventRemovedFromEventGroup(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences);
+	void notifyEventAddedToEventGroup(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences);
+
+	void notifyEventRemovedFromEventGroup(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences);
 }

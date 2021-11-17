@@ -686,6 +686,7 @@ public interface Strings {
 	String infoConvertToCaseContactsAndEventParticipants = "infoConvertToCaseContactsAndEventParticipants";
 	String infoConvertToCaseEventParticipants = "infoConvertToCaseEventParticipants";
 	String infoConvertToCaseSelect = "infoConvertToCaseSelect";
+	String infoCountryNotEditableEventParticipantsWithoutJurisdiction = "infoCountryNotEditableEventParticipantsWithoutJurisdiction";
 	String infoCreateEntry = "infoCreateEntry";
 	String infoCreateNewContactDiscardsChanges = "infoCreateNewContactDiscardsChanges";
 	String infoCreateNewSampleDiscardsChanges = "infoCreateNewSampleDiscardsChanges";
@@ -754,6 +755,8 @@ public interface Strings {
 	String infoNoSourceCaseSelectedLineListing = "infoNoSourceCaseSelectedLineListing";
 	String infoNoSubordinateEvents = "infoNoSubordinateEvents";
 	String infoNoSuperordinateEvent = "infoNoSuperordinateEvent";
+	String infoObserverMissingEmail = "infoObserverMissingEmail";
+	String infoObserverMissingEmailOrPhoneNumber = "infoObserverMissingEmailOrPhoneNumber";
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
@@ -979,6 +982,7 @@ public interface Strings {
 	String messageFollowUpCanceled = "messageFollowUpCanceled";
 	String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";
 	String messageFormHasErrorsPathogenTest = "messageFormHasErrorsPathogenTest";
+	String messageForwardedLabMessageFound = "messageForwardedLabMessageFound";
 	String messageGdpr = "messageGdpr";
 	String messageGdprCheck = "messageGdprCheck";
 	String messageImmunizationArchived = "messageImmunizationArchived";
@@ -1061,6 +1065,8 @@ public interface Strings {
 	String messageRegionsArchived = "messageRegionsArchived";
 	String messageRegionsArchivingNotPossible = "messageRegionsArchivingNotPossible";
 	String messageRegionsDearchived = "messageRegionsDearchived";
+	String messageRelatedSampleAndLabMessagesFound = "messageRelatedSampleAndLabMessagesFound";
+	String messageRelatedSampleFound = "messageRelatedSampleFound";
 	String messageSampleErrors = "messageSampleErrors";
 	String messageSampleOpened = "messageSampleOpened";
 	String messageSampleSaved = "messageSampleSaved";

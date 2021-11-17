@@ -25,6 +25,10 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
+import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfoDtoHelper;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
@@ -82,6 +86,8 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 			target.setPerson(null);
 		}
 
+		target.setResponsibleRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
+		target.setResponsibleDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
 		target.setInvolvementDescription(source.getInvolvementDescription());
 		target.setResultingCaseUuid(source.getResultingCase() != null ? source.getResultingCase().getUuid() : null);
 		target.setVaccinationStatus(source.getVaccinationStatus());
@@ -114,6 +120,20 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 			target.setPerson(personHelper.adoToDto(person));
 		} else {
 			target.setPerson(null);
+		}
+
+		if (source.getResponsibleRegion() != null) {
+			Region region = DatabaseHelper.getRegionDao().queryForId(source.getResponsibleRegion().getId());
+			target.setRegion(RegionDtoHelper.toReferenceDto(region));
+		} else {
+			target.setRegion(null);
+		}
+
+		if (source.getResponsibleDistrict() != null) {
+			District district = DatabaseHelper.getDistrictDao().queryForId(source.getResponsibleDistrict().getId());
+			target.setDistrict(DistrictDtoHelper.toReferenceDto(district));
+		} else {
+			target.setDistrict(null);
 		}
 
 		// Resulting case is never set to null from within the app because it

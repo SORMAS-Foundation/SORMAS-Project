@@ -72,9 +72,7 @@ public class CreateNewSamplePage {
       By.cssSelector("[id='testResult'] [class='v-filterselect-button']");
   public static final By PATHOGEN_TEST_RESULT_INPUT = By.cssSelector("[id='testResult'] input");
   public static final By PATHOGEN_LABORATORY_COMBOBOX =
-      By.cssSelector(
-          "[class='v-filterselect v-widget v-required v-filterselect-required"
-              + " v-has-width v-filterselect-prompt'] [class='v-filterselect-button']");
+      By.cssSelector("[class='v-panel v-widget'] [location='lab'] [class='v-filterselect-button']");
   public static final By PATHOGEN_LABORATORY_INPUT =
       By.cssSelector(
           "[location='lab'] [class='v-filterselect v-widget v-required v-filterselect-required v-has-width'] input");
