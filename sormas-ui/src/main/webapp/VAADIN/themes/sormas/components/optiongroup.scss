@@ -172,7 +172,11 @@
 			  }
 		  }
 	  }
-   
+
+    &.v-select-optiongroup-max-height-150 {
+        max-height: 150px;
+        overflow-y: auto;
+    }
   }
 
   .v-caption-caption-inline {
