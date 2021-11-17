@@ -8863,4 +8863,24 @@ ALTER TABLE featureconfiguration_history ADD COLUMN properties text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (427, 'Add properties to feature configurations #7111');
 
+-- 2021-11-04 Add observers to tasks #7021
+CREATE TABLE task_observer(
+    task_id bigint not null,
+    user_id bigint not null,
+
+    sys_period tstzrange not null,
+    PRIMARY KEY (task_id, user_id)
+);
+
+ALTER TABLE task_observer OWNER TO sormas_user;
+ALTER TABLE task_observer ADD CONSTRAINT fk_task_observer_task_id FOREIGN KEY (task_id) REFERENCES task (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE task_observer ADD CONSTRAINT fk_task_observer_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+CREATE TABLE task_observer_history (LIKE task_observer);
+ALTER TABLE task_observer_history OWNER TO sormas_user;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON task_observer
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'task_observer_history', true);
+
+INSERT INTO schema_version (version_number, comment) VALUES (428, 'Add observers to tasks #7021');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
