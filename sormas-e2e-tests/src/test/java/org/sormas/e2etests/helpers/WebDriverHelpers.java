@@ -62,7 +62,6 @@ public class WebDriverHelpers {
   }
 
   public void waitForPageLoaded() {
-    log.info("Waiting for page to be loaded at HTML level");
     assertHelpers.assertWithPoll20Second(
         () ->
             assertWithMessage("Page HTML wasn't loaded under 20s")
@@ -543,7 +542,10 @@ public class WebDriverHelpers {
                   .isTrue());
     } else {
       assertHelpers.assertWithPoll20Second(
-          () -> assertThat(getNumberOfElements((By) selector) > 0).isTrue());
+          () ->
+              assertWithMessage("Locator: %s is not displayed within 20s", selector)
+                  .that(getNumberOfElements((By) selector) > 0)
+                  .isTrue());
     }
   }
 
