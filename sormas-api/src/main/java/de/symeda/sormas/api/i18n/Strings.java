@@ -240,6 +240,7 @@ public interface Strings {
 	String entityTreatments = "entityTreatments";
 	String entityUser = "entityUser";
 	String entityUserRoles = "entityUserRoles";
+	String entityVaccinations = "entityVaccinations";
 	String epiWeek = "epiWeek";
 	String errorAccessDenied = "errorAccessDenied";
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
@@ -802,6 +803,8 @@ public interface Strings {
 	String infoUserSyncProcess = "infoUserSyncProcess";
 	String infoWeeklyReportsView = "infoWeeklyReportsView";
 	String labelActualLongSeed = "labelActualLongSeed";
+	String labelNoVaccinationDate = "labelNoVaccinationDate";
+	String labelNoVaccineName = "labelNoVaccineName";
 	String labelNumberOfAreas = "labelNumberOfAreas";
 	String labelNumberOfCommunities = "labelNumberOfCommunities";
 	String labelNumberOfContinents = "labelNumberOfContinents";

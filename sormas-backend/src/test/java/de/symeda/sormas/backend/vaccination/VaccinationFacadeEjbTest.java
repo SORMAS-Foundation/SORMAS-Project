@@ -1,9 +1,12 @@
 package de.symeda.sormas.backend.vaccination;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -17,6 +20,7 @@ import java.util.List;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
@@ -33,6 +37,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
+import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -203,6 +208,49 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		assertThat(vaccinations, hasSize(2));
 		assertThat(vaccinations, contains(vaccination211, vaccination212));
 		vaccinations = getVaccinationFacade().getAllVaccinations(person2.getUuid(), disease2);
+		assertThat(vaccinations, hasSize(0));
+	}
+
+	@Test
+	public void testGetEntriesList() {
+
+		loginWith(nationalUser);
+
+		PersonDto person1 = creator.createPerson("John", "Doe");
+		PersonDto person2 = creator.createPerson("Jane", "Doe");
+		Disease disease1 = Disease.CORONAVIRUS;
+		Disease disease2 = Disease.CHOLERA;
+
+		ImmunizationDto immunization11 = creator.createImmunization(disease1, person1.toReference(), nationalUser.toReference(), rdcf1);
+		ImmunizationDto immunization12 = creator.createImmunization(disease1, person1.toReference(), nationalUser.toReference(), rdcf1);
+		ImmunizationDto immunization13 = creator.createImmunization(disease2, person1.toReference(), nationalUser.toReference(), rdcf1);
+		ImmunizationDto immunization21 = creator.createImmunization(disease1, person2.toReference(), nationalUser.toReference(), rdcf1);
+		creator.createImmunization(disease2, person2.toReference(), nationalUser.toReference(), rdcf1);
+
+		VaccinationDto vaccination111 = creator.createVaccination(nationalUser.toReference(), immunization11.toReference());
+		VaccinationDto vaccination112 = creator.createVaccination(nationalUser.toReference(), immunization11.toReference());
+		VaccinationDto vaccination121 = creator.createVaccination(nationalUser.toReference(), immunization12.toReference());
+		VaccinationDto vaccination131 = creator.createVaccination(nationalUser.toReference(), immunization13.toReference());
+		VaccinationDto vaccination211 = creator.createVaccination(nationalUser.toReference(), immunization21.toReference());
+		VaccinationDto vaccination212 = creator.createVaccination(nationalUser.toReference(), immunization21.toReference());
+
+		List<VaccinationListEntryDto> vaccinations = getVaccinationFacade().getEntriesList(person1.getUuid(), disease1, null, null);
+		assertThat(vaccinations, hasSize(3));
+		assertThat(
+			vaccinations,
+			hasItems(
+				hasProperty(EntityDto.UUID, is(vaccination111.getUuid())),
+				hasProperty(EntityDto.UUID, is(vaccination112.getUuid())),
+				hasProperty(EntityDto.UUID, is(vaccination121.getUuid()))));
+		vaccinations = getVaccinationFacade().getEntriesList(person1.getUuid(), disease2, null, null);
+		assertThat(vaccinations, hasSize(1));
+		assertThat(vaccinations, hasItem(hasProperty(EntityDto.UUID, is(vaccination131.getUuid()))));
+		vaccinations = getVaccinationFacade().getEntriesList(person2.getUuid(), disease1, null, null);
+		assertThat(vaccinations, hasSize(2));
+		assertThat(
+			vaccinations,
+			hasItems(hasProperty(EntityDto.UUID, is(vaccination211.getUuid())), hasProperty(EntityDto.UUID, is(vaccination212.getUuid()))));
+		vaccinations = getVaccinationFacade().getEntriesList(person2.getUuid(), disease2, null, null);
 		assertThat(vaccinations, hasSize(0));
 	}
 

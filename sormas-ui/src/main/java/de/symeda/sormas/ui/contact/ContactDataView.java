@@ -32,6 +32,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -56,6 +57,8 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
+import de.symeda.sormas.ui.vaccination.list.VaccinationListComponent;
+import de.symeda.sormas.ui.vaccination.list.VaccinationListReferenceData;
 
 public class ContactDataView extends AbstractContactView {
 
@@ -70,6 +73,7 @@ public class ContactDataView extends AbstractContactView {
 	public static final String TASKS_LOC = "tasks";
 	public static final String SAMPLES_LOC = "samples";
 	public static final String IMMUNIZATION_LOC = "immunizations";
+	public static final String VACCINATIONS_LOC = "vaccinations";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 	public static final String DOCUMENTS_LOC = "documents";
 
@@ -92,6 +96,7 @@ public class ContactDataView extends AbstractContactView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, IMMUNIZATION_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, VACCINATIONS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, DOCUMENTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QuarantineOrderDocumentsComponent.QUARANTINE_LOC));
@@ -117,8 +122,10 @@ public class ContactDataView extends AbstractContactView {
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, EDIT_LOC);
 
+		CaseDataDto caseDto = null;
 		if (contactDto.getCaze() != null) {
-			layout.addComponent(createCaseInfoLayout(contactDto.getCaze().getUuid()), CASE_LOC);
+			caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
+			layout.addComponent(createCaseInfoLayout(caseDto), CASE_LOC);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_REASSIGN_CASE)) {
@@ -239,9 +246,23 @@ public class ContactDataView extends AbstractContactView {
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
-			final ImmunizationListCriteria immunizationListCriteria =
-				new ImmunizationListCriteria.Builder(contactDto.getPerson()).wihDisease(contactDto.getDisease()).build();
-			layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
+			if (!FacadeProvider.getFeatureConfigurationFacade()
+				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+				final ImmunizationListCriteria immunizationListCriteria =
+					new ImmunizationListCriteria.Builder(contactDto.getPerson()).wihDisease(contactDto.getDisease()).build();
+				layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
+			} else {
+				VaccinationListReferenceData referenceData = new VaccinationListReferenceData(
+					contactDto.getRegion() != null
+						? contactDto.getRegion()
+						: caseDto.getRegion() != null ? caseDto.getRegion() : caseDto.getResponsibleRegion(),
+					contactDto.getDistrict() != null
+						? contactDto.getDistrict()
+						: caseDto.getDistrict() != null ? caseDto.getDistrict() : caseDto.getResponsibleDistrict(),
+					contactDto.getPerson(),
+					contactDto.getDisease());
+				layout.addComponent(new SideComponentLayout(new VaccinationListComponent(referenceData, true)), VACCINATIONS_LOC);
+			}
 		}
 
 		boolean sormasToSormasfeatureEnabled = FacadeProvider.getSormasToSormasFacade().isSharingCasesContactsAndSamplesEnabledForUser();
@@ -270,7 +291,11 @@ public class ContactDataView extends AbstractContactView {
 
 	private CaseInfoLayout createCaseInfoLayout(String caseUuid) {
 
-		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
+		return createCaseInfoLayout(FacadeProvider.getCaseFacade().getByUuid(caseUuid));
+	}
+
+	private CaseInfoLayout createCaseInfoLayout(CaseDataDto caseDto) {
+
 		CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto);
 		caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 

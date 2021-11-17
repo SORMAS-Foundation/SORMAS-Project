@@ -32,14 +32,18 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
+import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.vaccination.VaccinationFacade;
+import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -123,6 +127,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			immunizationDto.setResponsibleDistrict(district);
 			immunizationDto.setReportingUser(userService.getCurrentUser().toReference());
 			immunizationDto.setMeansOfImmunization(MeansOfImmunization.VACCINATION);
+			immunizationDto.setImmunizationStatus(ImmunizationStatus.ACQUIRED);
+			immunizationDto.setImmunizationManagementStatus(ImmunizationManagementStatus.COMPLETED);
 			immunizationFacade.save(immunizationDto);
 
 			Immunization immunization = immunizationService.getByUuid(immunizationDto.getUuid());
@@ -206,6 +212,11 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return immunizations.stream().flatMap(i -> i.getVaccinations().stream()).map(VaccinationFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
+	@Override
+	public List<VaccinationListEntryDto> getEntriesList(String personUuid, Disease disease, Integer first, Integer max) {
+		return vaccinationService.getEntriesList(personUuid, disease, first, max);
+	}
+
 	public VaccinationDto convertToDto(Vaccination source, Pseudonymizer pseudonymizer) {
 
 		VaccinationDto dto = toDto(source);
@@ -257,6 +268,22 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			contactService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
 			eventParticipantService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
 		}
+	}
+
+	@Override
+	public void delete(String uuid) {
+		if (!userService.hasRight(UserRight.IMMUNIZATION_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete vaccinations");
+		}
+
+		Vaccination vaccination = vaccinationService.getByUuid(uuid);
+		vaccination.getImmunization().getVaccinations().remove(vaccination);
+		immunizationService.ensurePersisted(vaccination.getImmunization());
+	}
+
+	@Override
+	public VaccinationDto getByUuid(String uuid) {
+		return toDto(vaccinationService.getByUuid(uuid));
 	}
 
 	@Override

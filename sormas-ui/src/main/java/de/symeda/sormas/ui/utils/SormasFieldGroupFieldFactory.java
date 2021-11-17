@@ -126,7 +126,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		} else if (LocationsField.class.isAssignableFrom(fieldType)) {
 			return (T) new LocationsField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (VaccinationsField.class.isAssignableFrom(fieldType)) {
-			return (T) new VaccinationsField(fieldVisibilityCheckers, fieldAccessCheckers);
+			return (T) new VaccinationsField(fieldAccessCheckers);
 		} else if (JsonForm.class.isAssignableFrom(fieldType)) {
 			return (T) new JsonForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (fieldType.equals(Field.class)) {
