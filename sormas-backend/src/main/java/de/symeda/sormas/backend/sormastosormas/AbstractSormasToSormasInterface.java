@@ -89,8 +89,8 @@ import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.entities.ProcessedDataPersister;
-import de.symeda.sormas.backend.sormastosormas.entities.ReceivedDataProcessor;
+import de.symeda.sormas.backend.sormastosormas.entities.ProcessedEntitiesPersister;
+import de.symeda.sormas.backend.sormastosormas.entities.ReceivedEntitiesProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.entities.ShareDataExistingEntities;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
@@ -145,9 +145,9 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	@EJB
 	private ShareDataBuilder shareDataBuilder;
 	@EJB
-	private ReceivedDataProcessor receivedDataProcessor;
+	private ReceivedEntitiesProcessor receivedEntitiesProcessor;
 	@EJB
-	private ProcessedDataPersister processedDataPersister;
+	private ProcessedEntitiesPersister processedEntitiesPersister;
 	@EJB
 	private CaseService caseService;
 	@EJB
@@ -264,7 +264,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		decryptAndPersist(
 			encryptedData,
-			(data, existingData) -> processedDataPersister.persistSharedData(data, shareRequest.getOriginInfo(), existingData));
+			(data, existingData) -> processedEntitiesPersister.persistSharedData(data, shareRequest.getOriginInfo(), existingData));
 
 		// notify the sender that the request has been accepted
 		sormasToSormasRestClient.post(organizationId, REQUEST_ACCEPTED_ENDPOINT, uuid, null);
@@ -322,7 +322,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	@Override
 	public void saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
-		decryptAndPersist(encryptedData, (data, existingData) -> processedDataPersister.persistSharedData(data, data.getOriginInfo(), existingData));
+		decryptAndPersist(encryptedData, (data, existingData) -> processedEntitiesPersister.persistSharedData(data, data.getOriginInfo(), existingData));
 	}
 
 	@Override
@@ -362,7 +362,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		ShareDataExistingEntities existingEntities = loadExistingEntities(syncData.getShareData());
 		perisist(
 			syncData.getShareData(),
-			(data, existinCase) -> processedDataPersister
+			(data, existinCase) -> processedEntitiesPersister
 				.persistSyncData(data, syncData.getShareData().getOriginInfo(), syncData.getCriteria(), existingEntities));
 	}
 
@@ -395,7 +395,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	private void perisist(@Valid SormasToSormasDto receivedData, Persister persister) throws SormasToSormasValidationException {
 		ShareDataExistingEntities existingEntities = loadExistingEntities(receivedData);
-		List<ValidationErrors> validationErrors = receivedDataProcessor.processReceivedData(receivedData, existingEntities);
+		List<ValidationErrors> validationErrors = receivedEntitiesProcessor.processReceivedData(receivedData, existingEntities);
 
 		if (!validationErrors.isEmpty()) {
 			throw new SormasToSormasValidationException(validationErrors);
@@ -685,7 +685,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		throws SormasToSormasException, SormasToSormasValidationException {
 		ShareRequestData shareData = sormasToSormasEncryptionEjb.decryptAndVerify(encryptedData, ShareRequestData.class);
 
-		List<ValidationErrors> validationErrors = receivedDataProcessor.processReceivedRequest(shareData);
+		List<ValidationErrors> validationErrors = receivedEntitiesProcessor.processReceivedRequest(shareData);
 
 		if (!validationErrors.isEmpty()) {
 			throw new SormasToSormasValidationException(validationErrors);
