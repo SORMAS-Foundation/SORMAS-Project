@@ -45,7 +45,7 @@ import de.symeda.sormas.backend.sormastosormas.entities.sample.ProcessedSampleDa
 
 @Stateless
 @LocalBean
-public class ProcessedDataPersister {
+public class ProcessedEntitiesPersister {
 
 	@EJB
 	private ProcessedCaseDataPersister caseDataPersister;
