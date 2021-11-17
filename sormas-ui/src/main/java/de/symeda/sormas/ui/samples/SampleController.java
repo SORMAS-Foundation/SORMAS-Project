@@ -256,43 +256,25 @@ public class SampleController {
 
 	public void createReferral(SampleDto existingSample, Disease disease) {
 
-		CommitDiscardWrapperComponent<SampleCreateForm> createView = getReferralCreateComponent(existingSample, disease, null);
-
+		CommitDiscardWrapperComponent<SampleCreateForm> createView = getReferralCreateComponent(existingSample, disease, null, () -> {
+		});
+		createView.addDoneListener(() -> navigateToData(existingSample.getUuid()));
 		createView.getWrappedComponent().getValue().setPathogenTestResult(PathogenTestResultType.PENDING);
-
-		createView.addCommitListener(() -> {
-			if (!createView.getWrappedComponent().getFieldGroup().isModified()) {
-				navigateToData(existingSample.getUuid());
-			}
-		});
-		// Reload the page when the form is discarded because the sample has been saved before
-		createView.addDiscardListener(new DiscardListener() {
-
-			@Override
-			public void onDiscard() {
-				navigateToData(existingSample.getUuid());
-			}
-		});
-
 		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingReferSample));
 	}
 
 	public CommitDiscardWrapperComponent<SampleCreateForm> getReferralCreateComponent(
 		SampleDto existingSample,
 		Disease disease,
-		SampleDto alternativeSampleInfo) {
+		SampleDto alternativeSampleInfo,
+		Runnable callback) {
 		final SampleDto referralSample =
 			SampleDto.buildReferralDto(UserProvider.getCurrent().getUserReference(), existingSample, alternativeSampleInfo);
-		final SampleCreateForm createForm = new SampleCreateForm(disease);
-		createForm.setValue(referralSample);
-		final CommitDiscardWrapperComponent<SampleCreateForm> createView = new CommitDiscardWrapperComponent<>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE),
-			createForm.getFieldGroup());
+
+		final CommitDiscardWrapperComponent<SampleCreateForm> createView = getSampleCreateComponent(referralSample, disease, callback);
 
 		createView.addCommitListener(() -> {
-			if (!createForm.getFieldGroup().isModified()) {
-				FacadeProvider.getSampleFacade().saveSample(referralSample);
+			if (!createView.getWrappedComponent().getFieldGroup().isModified()) {
 
 				SampleDto updatedSample = FacadeProvider.getSampleFacade().getSampleByUuid(existingSample.getUuid());
 				updatedSample.setReferredTo(referralSample.toReference());
