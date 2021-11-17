@@ -73,7 +73,7 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 
 		Predicate filter = cb.equal(personJoin.get(AbstractDomainObject.UUID), personUuid);
 		if (disease != null) {
-			CriteriaBuilderHelper.and(cb, filter, cb.equal(immunizationJoin.get(Immunization.DISEASE), disease));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(immunizationJoin.get(Immunization.DISEASE), disease));
 		}
 		cq.where(filter);
 		cq.orderBy(cb.desc(root.get(Vaccination.VACCINATION_DATE)), cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
