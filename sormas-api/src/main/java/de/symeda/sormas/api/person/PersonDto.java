@@ -339,8 +339,6 @@ public class PersonDto extends PseudonymizableDto {
 	@HideForCountriesExcept
 	@SensitiveData
 	private CountryReferenceDto birthCountry;
-	@HideForCountriesExcept
-	@SensitiveData
 	private CountryReferenceDto citizenship;
 	@SensitiveData
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)

@@ -125,6 +125,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					fluidRowLocs(PersonDto.UUID, "")+
                     fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
 					fluidRowLocs(PersonDto.SALUTATION, PersonDto.OTHER_SALUTATION) +
+					fluidRowLocs(PersonDto.CITIZENSHIP, "") +
                     fluidRow(
                             fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
                             fluidRowLocs(PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE, PersonDto.APPROXIMATE_AGE_REFERENCE_DATE)
@@ -174,7 +175,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 									fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
 									fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
 									fluidRowLocs(PersonDto.NAMES_OF_GUARDIANS) +
-                                    fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
+                                    fluidRowLocs(PersonDto.BIRTH_COUNTRY) +
 					fluidRowLocs(PersonDto.PERSON_CONTACT_DETAILS)) +
 					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
 	//@formatter:on
@@ -314,7 +315,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
 		addInfrastructureField(PersonDto.BIRTH_COUNTRY).addItems(countries);
-		addInfrastructureField(PersonDto.CITIZENSHIP).addItems(countries);
 
 		addFields(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID);
 		Field externalId = addField(PersonDto.EXTERNAL_ID);
@@ -334,6 +334,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			setVisible(false, PersonDto.HAS_COVID_APP, PersonDto.COVID_CODE_DELIVERED);
 		}
 
+		ComboBox cbCitizenship = addInfrastructureField(PersonDto.CITIZENSHIP);
 		ComboBox cbPlaceOfBirthRegion = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_REGION);
 		ComboBox cbPlaceOfBirthDistrict = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_DISTRICT);
 		ComboBox cbPlaceOfBirthCommunity = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_COMMUNITY);
@@ -434,6 +435,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		});
 
 		addListenersToInfrastructureFields(
+			cbCitizenship,
 			cbPlaceOfBirthRegion,
 			cbPlaceOfBirthDistrict,
 			cbPlaceOfBirthCommunity,
@@ -441,7 +443,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			cbPlaceOfBirthFacility,
 			tfPlaceOfBirthFacilityDetails,
 			true);
-		cbPlaceOfBirthRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+
+		cbCitizenship.addItems(countries);
 
 		addFieldListeners(PersonDto.PRESENT_CONDITION, e -> toogleDeathAndBurialFields());
 
@@ -512,6 +515,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	}
 
 	private void addListenersToInfrastructureFields(
+		ComboBox citizenField,
 		ComboBox regionField,
 		ComboBox districtField,
 		ComboBox communityField,
@@ -519,6 +523,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		ComboBox facilityField,
 		TextField detailsField,
 		boolean allowNoneFacility) {
+
+		citizenField.addValueChangeListener(e -> {
+			CountryReferenceDto citizenDto = (CountryReferenceDto) e.getProperty().getValue();
+			FieldHelper
+				.updateItems(regionField, citizenDto != null ? FacadeProvider.getRegionFacade().getAllActiveByCountry(citizenDto.getUuid()) : null);
+		});
 
 		regionField.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
