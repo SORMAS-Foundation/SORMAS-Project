@@ -671,4 +671,12 @@ public class WebDriverHelpers {
           String.format("Loading spinner didn't disappeared after %s seconds", maxWaitingTime));
     }
   }
+
+  public void waitForRowToBeSelected(By rowLocator) {
+    assertHelpers.assertWithPoll20Second(
+        () ->
+            assertWithMessage("Row element: %s wasn't selected within 20s", rowLocator)
+                .that(getAttributeFromWebElement(rowLocator, "class"))
+                .contains("row-selected"));
+  }
 }
