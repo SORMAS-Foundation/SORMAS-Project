@@ -252,5 +252,16 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 				contentBinding.facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());
 			}
 		}
+
+		// Disable personal details fields when immunization is created from case, contact or event participant
+		Bundler bundler = new Bundler(getArguments());
+		if (bundler.getCaseUuid() != null || bundler.getContactUuid() != null || bundler.getEventParticipantUuid() != null) {
+			contentBinding.personFirstName.setEnabled(false);
+			contentBinding.personLastName.setEnabled(false);
+			contentBinding.personSex.setEnabled(false);
+			contentBinding.personBirthdateYYYY.setEnabled(false);
+			contentBinding.personBirthdateMM.setEnabled(false);
+			contentBinding.personBirthdateDD.setEnabled(false);
+		}
 	}
 }

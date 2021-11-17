@@ -178,12 +178,17 @@ public class ImmunizationNewActivity extends BaseEditActivity<Immunization> {
 			return;
 		}
 
-		SelectOrCreatePersonDialog.selectOrCreatePerson(immunization.getPerson(), person -> {
-			if (person != null) {
-				immunization.setPerson(person);
-				pickOrCreateImmunizationAndSave(immunization, fragment);
-			}
-		});
+		// Person selection can be skipped if the immunization was created from a case, contact or event participant
+		if (caseUuid != null || contactUuid != null || eventParticipantUuid != null) {
+			pickOrCreateImmunizationAndSave(immunization, fragment);
+		} else {
+			SelectOrCreatePersonDialog.selectOrCreatePerson(immunization.getPerson(), person -> {
+				if (person != null) {
+					immunization.setPerson(person);
+					pickOrCreateImmunizationAndSave(immunization, fragment);
+				}
+			});
+		}
 	}
 
 	private void pickOrCreateImmunizationAndSave(Immunization immunization, ImmunizationNewFragment fragment) {
