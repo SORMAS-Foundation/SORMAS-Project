@@ -157,22 +157,22 @@ public class EditContactsSteps implements En {
     Then(
         "I check the linked contact information is correctly displayed",
         () -> {
-          String contactId = webDriverHelpers.getValueFromTableRowUsingTheHeader("Contact ID", 1);
+          String contactId = webDriverHelpers.getValueFromTableRowUsingTheHeader("Contact ID", 0);
           String contactDisease =
-              (webDriverHelpers.getValueFromTableRowUsingTheHeader("Disease", 1).equals("COVID-19"))
+              (webDriverHelpers.getValueFromTableRowUsingTheHeader("Disease", 0).equals("COVID-19"))
                   ? "CORONAVIRUS"
                   : "Not expected string!";
           String contactClassification =
               (webDriverHelpers
-                      .getValueFromTableRowUsingTheHeader("Contact classification", 1)
+                      .getValueFromTableRowUsingTheHeader("Contact classification", 0)
                       .equals("Unconfirmed contact"))
                   ? "UNCONFIRMED"
                   : "Not expected string!";
           String firstName =
               webDriverHelpers.getValueFromTableRowUsingTheHeader(
-                  "First name of contact person", 1);
+                  "First name of contact person", 0);
           String lastName =
-              webDriverHelpers.getValueFromTableRowUsingTheHeader("Last name of contact person", 1);
+              webDriverHelpers.getValueFromTableRowUsingTheHeader("Last name of contact person", 0);
 
           softly
               .assertThat(apiState.getCreatedContact().getUuid().substring(0, 6))

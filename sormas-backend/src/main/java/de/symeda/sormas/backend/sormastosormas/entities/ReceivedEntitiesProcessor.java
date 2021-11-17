@@ -50,7 +50,7 @@ import de.symeda.sormas.backend.sormastosormas.share.ShareRequestData;
 
 @Stateless
 @LocalBean
-public class ReceivedDataProcessor {
+public class ReceivedEntitiesProcessor {
 
 	@EJB
 	private ReceivedCaseProcessor caseProcessor;

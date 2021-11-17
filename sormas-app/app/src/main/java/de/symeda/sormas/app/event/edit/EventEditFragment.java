@@ -139,7 +139,13 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		final Location locationClone = (Location) location.clone();
 		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, false, null);
 		locationDialog.show();
-		locationDialog.setRequiredFieldsBasedOnCountry();
+		if (DatabaseHelper.getEventDao().hasAnyEventParticipantWithoutJurisdiction(record.getUuid())) {
+			locationDialog.getContentBinding().locationRegion.setRequired(true);
+			locationDialog.getContentBinding().locationDistrict.setRequired(true);
+			locationDialog.getContentBinding().locationCountry.setEnabled(false);
+		} else {
+			locationDialog.setRequiredFieldsBasedOnCountry();
+		}
 		locationDialog.setFacilityFieldsVisible(record.getTypeOfPlace() == TypeOfPlace.FACILITY, true);
 
 		locationDialog.setPositiveCallback(() -> {

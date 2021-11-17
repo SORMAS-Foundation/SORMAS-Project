@@ -46,6 +46,7 @@ public class CreateNewTaskSteps implements En {
           task = taskService.buildGeneratedTask();
           fillAllFields(task);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
         });
 
     When(
