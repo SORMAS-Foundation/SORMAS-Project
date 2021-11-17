@@ -206,6 +206,7 @@ public class SampleController {
 			pathogenTest.setTestResult(testResult);
 			pathogenTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
 			pathogenTest.setTestedDiseaseVariant((DiseaseVariant) (createForm.getField(PathogenTestDto.TESTED_DISEASE_VARIANT)).getValue());
+			pathogenTest.setTestedDiseaseVariantDetails((String) (createForm.getField(PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS)).getValue());
 			pathogenTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
 			pathogenTest.setTestResultText((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());
 			final Boolean testResultVerified = (Boolean) createForm.getField(PathogenTestDto.TEST_RESULT_VERIFIED).getValue();
