@@ -13,40 +13,49 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.vaccination.list;
+package de.symeda.sormas.api.vaccination;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
-public class VaccinationListReferenceData {
+public class VaccinationListCriteria extends BaseCriteria {
 
-	private final RegionReferenceDto region;
-	private final DistrictReferenceDto district;
-	private final PersonReferenceDto person;
+	private static final long serialVersionUID = 577972890587599470L;
+
+	private final PersonReferenceDto personReferenceDto;
 	private final Disease disease;
 
-	public VaccinationListReferenceData(RegionReferenceDto region, DistrictReferenceDto district, PersonReferenceDto person, Disease disease) {
-		this.region = region;
-		this.district = district;
-		this.person = person;
-		this.disease = disease;
+	public static class Builder {
+
+		private final PersonReferenceDto personReferenceDto;
+		private Disease disease;
+
+		public Builder(PersonReferenceDto personReferenceDto) {
+			this.personReferenceDto = personReferenceDto;
+		}
+
+		public VaccinationListCriteria.Builder withDisease(Disease disease) {
+			this.disease = disease;
+			return this;
+		}
+
+		public VaccinationListCriteria build() {
+			return new VaccinationListCriteria(this);
+		}
 	}
 
-	public RegionReferenceDto getRegion() {
-		return region;
-	}
-
-	public DistrictReferenceDto getDistrict() {
-		return district;
+	private VaccinationListCriteria(VaccinationListCriteria.Builder builder) {
+		this.personReferenceDto = builder.personReferenceDto;
+		this.disease = builder.disease;
 	}
 
 	public PersonReferenceDto getPerson() {
-		return person;
+		return personReferenceDto;
 	}
 
 	public Disease getDisease() {
 		return disease;
 	}
+
 }

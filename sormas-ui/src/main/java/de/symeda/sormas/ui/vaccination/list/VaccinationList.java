@@ -24,7 +24,9 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
@@ -44,7 +46,11 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 
 	@Override
 	public void reload() {
-		List<VaccinationListEntryDto> list = FacadeProvider.getVaccinationFacade().getEntriesList(personUuid, disease, 0, maxDisplayedEntries * 20);
+		List<VaccinationListEntryDto> list = FacadeProvider.getVaccinationFacade()
+			.getEntriesList(
+				new VaccinationListCriteria.Builder(new PersonReferenceDto(personUuid)).withDisease(disease).build(),
+				0,
+				maxDisplayedEntries * 20);
 
 		setEntries(list);
 		if (!list.isEmpty()) {

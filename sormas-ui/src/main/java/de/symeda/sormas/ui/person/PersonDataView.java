@@ -14,6 +14,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
@@ -29,7 +30,6 @@ import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 import de.symeda.sormas.ui.vaccination.list.VaccinationListComponent;
-import de.symeda.sormas.ui.vaccination.list.VaccinationListReferenceData;
 
 public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 
@@ -130,8 +130,8 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 				final ImmunizationListCriteria immunizationListCriteria = new ImmunizationListCriteria.Builder(getReference()).build();
 				layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
 			} else {
-				VaccinationListReferenceData referenceData = new VaccinationListReferenceData(null, null, getReference(), null);
-				layout.addComponent(new SideComponentLayout(new VaccinationListComponent(referenceData, false)), VACCINATIONS_LOC);
+				VaccinationListCriteria criteria = new VaccinationListCriteria.Builder(getReference()).build();
+				layout.addComponent(new SideComponentLayout(new VaccinationListComponent(criteria, null, null, false)), VACCINATIONS_LOC);
 			}
 		}
 	}

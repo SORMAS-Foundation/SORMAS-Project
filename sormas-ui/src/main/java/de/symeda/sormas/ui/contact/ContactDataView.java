@@ -39,6 +39,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
@@ -58,7 +59,6 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 import de.symeda.sormas.ui.vaccination.list.VaccinationListComponent;
-import de.symeda.sormas.ui.vaccination.list.VaccinationListReferenceData;
 
 public class ContactDataView extends AbstractContactView {
 
@@ -252,12 +252,16 @@ public class ContactDataView extends AbstractContactView {
 					new ImmunizationListCriteria.Builder(contactDto.getPerson()).wihDisease(contactDto.getDisease()).build();
 				layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
 			} else {
-				VaccinationListReferenceData referenceData = new VaccinationListReferenceData(
-					contactDto.getRegion() != null ? contactDto.getRegion() : caseDto.getResponsibleRegion(),
-					contactDto.getDistrict() != null ? contactDto.getDistrict() : caseDto.getResponsibleDistrict(),
-					contactDto.getPerson(),
-					contactDto.getDisease());
-				layout.addComponent(new SideComponentLayout(new VaccinationListComponent(referenceData, true)), VACCINATIONS_LOC);
+				VaccinationListCriteria criteria =
+					new VaccinationListCriteria.Builder(contactDto.getPerson()).withDisease(contactDto.getDisease()).build();
+				layout.addComponent(
+					new SideComponentLayout(
+						new VaccinationListComponent(
+							criteria,
+							contactDto.getRegion() != null ? contactDto.getRegion() : caseDto.getResponsibleRegion(),
+							contactDto.getDistrict() != null ? contactDto.getDistrict() : caseDto.getResponsibleDistrict(),
+							true)),
+					VACCINATIONS_LOC);
 			}
 		}
 

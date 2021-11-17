@@ -30,7 +30,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
@@ -55,7 +55,7 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 		return result;
 	}
 
-	public List<VaccinationListEntryDto> getEntriesList(String personUuid, Disease disease, Integer first, Integer max) {
+	public List<VaccinationListEntryDto> getEntriesList(VaccinationListCriteria criteria, Integer first, Integer max) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<VaccinationListEntryDto> cq = cb.createQuery(VaccinationListEntryDto.class);
@@ -71,9 +71,9 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 			immunizationJoin.get(Immunization.DISEASE),
 			root.get(AbstractDomainObject.CHANGE_DATE));
 
-		Predicate filter = cb.equal(personJoin.get(AbstractDomainObject.UUID), personUuid);
-		if (disease != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(immunizationJoin.get(Immunization.DISEASE), disease));
+		Predicate filter = cb.equal(personJoin.get(AbstractDomainObject.UUID), criteria.getPerson().getUuid());
+		if (criteria.getDisease() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(immunizationJoin.get(Immunization.DISEASE), criteria.getDisease()));
 		}
 		cq.where(filter);
 		cq.orderBy(cb.desc(root.get(Vaccination.VACCINATION_DATE)), cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));

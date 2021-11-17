@@ -22,8 +22,11 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -31,10 +34,14 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class VaccinationListComponent extends SideComponent {
 
-	public VaccinationListComponent(VaccinationListReferenceData referenceData, boolean showCreateButton) {
+	public VaccinationListComponent(
+		VaccinationListCriteria criteria,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		boolean showCreateButton) {
 		super(I18nProperties.getString(Strings.entityVaccinations));
 
-		VaccinationList vaccinationList = new VaccinationList(referenceData.getPerson().getUuid(), referenceData.getDisease());
+		VaccinationList vaccinationList = new VaccinationList(criteria.getPerson().getUuid(), criteria.getDisease());
 
 		UserProvider currentUser = UserProvider.getCurrent();
 		if (showCreateButton && currentUser != null && currentUser.hasUserRight(UserRight.IMMUNIZATION_CREATE)) {
@@ -45,10 +52,10 @@ public class VaccinationListComponent extends SideComponent {
 				e -> ControllerProvider.getVaccinationController()
 					.create(
 						null,
-						referenceData.getRegion(),
-						referenceData.getDistrict(),
-						referenceData.getPerson(),
-						referenceData.getDisease(),
+						region,
+						district,
+						criteria.getPerson(),
+						criteria.getDisease(),
 						UiFieldAccessCheckers.getNoop(),
 						true,
 						v -> vaccinationList.reload()));

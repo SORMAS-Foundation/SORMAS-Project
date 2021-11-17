@@ -40,7 +40,7 @@ public interface VaccinationFacade {
 
 	List<VaccinationDto> getAllVaccinations(String personUuid, Disease disease);
 
-	List<VaccinationListEntryDto> getEntriesList(String personUuid, Disease disease, Integer first, Integer max);
+	List<VaccinationListEntryDto> getEntriesList(VaccinationListCriteria criteria, Integer first, Integer max);
 
 	void validate(VaccinationDto vaccinationDto, boolean allowEmptyImmunization);
 
