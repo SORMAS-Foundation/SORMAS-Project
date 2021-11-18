@@ -124,7 +124,7 @@ public class ImmunizationResource extends EntityDtoResource {
 		@QueryParam("personUuid") String personUuid,
 		@QueryParam("disease") Disease disease) {
 		return FacadeProvider.getVaccinationFacade()
-			.create(
+			.createWithImmunization(
 				vaccination,
 				new RegionReferenceDto(regionUuid),
 				new DistrictReferenceDto(districtUuid),
