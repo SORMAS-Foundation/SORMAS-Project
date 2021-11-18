@@ -92,9 +92,9 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 		if (caze != null && caze.isUnreferredPortHealthCase()) {
 			menuItems.set(CaseSection.SAMPLES.ordinal(), null);
 		}
-		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
-			menuItems.set(CaseSection.IMMUNIZATIONS.ordinal(), null);
-		}
+		// if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		// 	menuItems.set(CaseSection.IMMUNIZATIONS.ordinal(), null);
+		// }
 		if (caze != null && caze.isUnreferredPortHealthCase()) {
 			menuItems.set(CaseSection.EVENTS.ordinal(), null);
 		}

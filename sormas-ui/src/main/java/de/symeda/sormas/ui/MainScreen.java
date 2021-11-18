@@ -185,14 +185,14 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples), VaadinIcons.DATABASE);
 		}
 
-		if (permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)) {
-			ControllerProvider.getImmunizationController().registerViews(navigator);
-			menu.addView(
-				ImmunizationsView.class,
-				ImmunizationsView.VIEW_NAME,
-				I18nProperties.getCaption(Captions.mainMenuImmunizations),
-				VaadinIcons.HEALTH_CARD);
-		}
+		// if (permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)) {
+		// 	ControllerProvider.getImmunizationController().registerViews(navigator);
+		// 	menu.addView(
+		// 		ImmunizationsView.class,
+		// 		ImmunizationsView.VIEW_NAME,
+		// 		I18nProperties.getCaption(Captions.mainMenuImmunizations),
+		// 		VaadinIcons.HEALTH_CARD);
+		// }
 
 		if (permitted(FeatureType.TRAVEL_ENTRIES, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS)
 			&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
