@@ -237,12 +237,12 @@ public class ContactDataView extends AbstractContactView {
 			layout.addComponent(eventsLayout, EVENTS_LOC);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
-			final ImmunizationListCriteria immunizationListCriteria =
-				new ImmunizationListCriteria.Builder(contactDto.getPerson()).wihDisease(contactDto.getDisease()).build();
-			layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
-		}
+		// if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+		// 	&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		// 	final ImmunizationListCriteria immunizationListCriteria =
+		// 		new ImmunizationListCriteria.Builder(contactDto.getPerson()).wihDisease(contactDto.getDisease()).build();
+		// 	layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
+		// }
 
 		boolean sormasToSormasfeatureEnabled = FacadeProvider.getSormasToSormasFacade().isSharingCasesContactsAndSamplesEnabledForUser();
 		if (sormasToSormasfeatureEnabled || contactDto.getSormasToSormasOriginInfo() != null) {

@@ -117,12 +117,12 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 			layout.addComponent(new SideComponentLayout(new TravelEntryListComponent(travelEntryListCriteria)), TRAVEL_ENTRIES_LOC);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
-			&& currentUser != null
-			&& currentUser.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
-			final ImmunizationListCriteria immunizationListCriteria = new ImmunizationListCriteria.Builder(getReference()).build();
-			layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
-		}
+		// if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+		// 	&& currentUser != null
+		// 	&& currentUser.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		// 	final ImmunizationListCriteria immunizationListCriteria = new ImmunizationListCriteria.Builder(getReference()).build();
+		// 	layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
+		// }
 	}
 
 	@Override
