@@ -314,10 +314,10 @@ public class WebDriverHelpers {
                   .that(baseSteps.getDriver().findElement(selector).isDisplayed())
                   .isTrue(),
           seconds);
+      return true;
     } catch (Throwable ignored) {
       return false;
     }
-    return true;
   }
 
   public void clickOnWebElementWhichMayNotBePresent(final By byObject, final int index) {
@@ -375,9 +375,9 @@ public class WebDriverHelpers {
         assertHelpers.assertWithPoll20Second(
             () -> {
               javascriptExecutor.executeScript(SCROLL_TO_WEB_ELEMENT_SCRIPT, selector);
-              assertWithMessage("Element: %s is not displayed", selector)
-                  .that(((WebElement) selector).isDisplayed())
-                  .isTrue();
+                            assertWithMessage("Element: %s is not displayed", selector)
+                                .that(((WebElement) selector).isDisplayed())
+                                .isTrue();
             });
       } else {
         assertHelpers.assertWithPoll20Second(
@@ -665,9 +665,9 @@ public class WebDriverHelpers {
   }
 
   public void waitForPageLoadingSpinnerToDisappear(int maxWaitingTime) {
+    By loadingSpinner =
+        By.xpath("//div[@class='v-loading-indicator third v-loading-indicator-wait']");
     try {
-      By loadingSpinner =
-          By.xpath("//div[@class='v-loading-indicator third v-loading-indicator-wait']");
       if (isElementVisibleWithTimeout(loadingSpinner, 3))
         assertHelpers.assertWithPoll(
             () ->
@@ -675,8 +675,9 @@ public class WebDriverHelpers {
                     .contains("display: none"),
             maxWaitingTime);
     } catch (Throwable ignored) {
-      throw new TimeoutException(
-          String.format("Loading spinner didn't disappeared after %s seconds", maxWaitingTime));
+      if (!getAttributeFromWebElement(loadingSpinner, "style").contains("display: none"))
+        throw new TimeoutException(
+            String.format("Loading spinner didn't disappeared after %s seconds", maxWaitingTime));
     }
   }
 

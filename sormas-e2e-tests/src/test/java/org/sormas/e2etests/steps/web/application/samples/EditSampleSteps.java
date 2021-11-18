@@ -93,6 +93,7 @@ public class EditSampleSteps implements En {
           fillLabSampleId(editedSample.getLabSampleId());
           fillCommentsOnSample(editedSample.getCommentsOnSample());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
         });
 
     When(
