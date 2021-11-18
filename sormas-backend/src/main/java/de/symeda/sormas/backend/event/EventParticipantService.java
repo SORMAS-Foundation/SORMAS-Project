@@ -509,6 +509,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 				.and(cb, cb.equal(eventSqRoot, root.get(EventParticipant.EVENT)), cb.equal(eventSqRoot.get(Event.DISEASE), disease), datePredicate));
 
 		cu.set(root.get(EventParticipant.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
+		cu.set(root.get(AbstractDomainObject.CHANGE_DATE), new Date());
 
 		cu.where(cb.and(cb.equal(root.get(EventParticipant.PERSON), personId), cb.isNotNull(eventSq.getSelection())));
 

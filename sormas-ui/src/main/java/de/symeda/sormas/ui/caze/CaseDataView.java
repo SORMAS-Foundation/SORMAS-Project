@@ -24,11 +24,13 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.messaging.SmsListComponent;
@@ -47,6 +49,7 @@ import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
+import de.symeda.sormas.ui.vaccination.list.VaccinationListComponent;
 
 /**
  * CaseDataView for reading and editing the case data fields. Contains the
@@ -60,6 +63,7 @@ public class CaseDataView extends AbstractCaseView {
 	public static final String SAMPLES_LOC = "samples";
 	public static final String EVENTS_LOC = "events";
 	public static final String IMMUNIZATION_LOC = "immunizations";
+	public static final String VACCINATIONS_LOC = "vaccinations";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 	public static final String SMS_LOC = "sms";
 	public static final String SURVEILLANCE_REPORTS_LOC = "surveillanceReports";
@@ -84,6 +88,7 @@ public class CaseDataView extends AbstractCaseView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, IMMUNIZATION_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, VACCINATIONS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SMS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ExternalSurveillanceServiceGateway.EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC),
@@ -165,11 +170,19 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(eventLayout, EVENTS_LOC);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
-			final ImmunizationListCriteria immunizationListCriteria =
-				new ImmunizationListCriteria.Builder(caze.getPerson()).wihDisease(caze.getDisease()).build();
-			layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)) {
+			if (!FacadeProvider.getFeatureConfigurationFacade()
+				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+				final ImmunizationListCriteria immunizationListCriteria =
+					new ImmunizationListCriteria.Builder(caze.getPerson()).wihDisease(caze.getDisease()).build();
+				layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
+			} else {
+				VaccinationListCriteria criteria = new VaccinationListCriteria.Builder(caze.getPerson()).withDisease(caze.getDisease()).build();
+				layout.addComponent(
+					new SideComponentLayout(new VaccinationListComponent(criteria, caze.getResponsibleRegion(), caze.getResponsibleDistrict(), true)),
+					VACCINATIONS_LOC);
+			}
 		}
 
 		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isSharingCasesContactsAndSamplesEnabledForUser();
