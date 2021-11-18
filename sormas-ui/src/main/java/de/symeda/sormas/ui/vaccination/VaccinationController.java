@@ -42,10 +42,22 @@ public class VaccinationController {
 		Disease disease,
 		UiFieldAccessCheckers fieldAccessCheckers,
 		Consumer<VaccinationDto> commitCallback) {
+
 		create(immunization, null, null, null, disease, fieldAccessCheckers, false, commitCallback);
 	}
 
 	public void create(
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		PersonReferenceDto person,
+		Disease disease,
+		UiFieldAccessCheckers fieldAccessCheckers,
+		Consumer<VaccinationDto> commitCallback) {
+
+		create(null, region, district, person, disease, fieldAccessCheckers, true, commitCallback);
+	}
+
+	private void create(
 		ImmunizationReferenceDto immunization,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
@@ -73,7 +85,7 @@ public class VaccinationController {
 				if (doSave && immunization != null) {
 					FacadeProvider.getVaccinationFacade().save(form.getValue());
 				} else if (doSave) {
-					FacadeProvider.getVaccinationFacade().create(form.getValue(), region, district, person, disease);
+					FacadeProvider.getVaccinationFacade().createWithImmunization(form.getValue(), region, district, person, disease);
 				}
 
 				if (commitCallback != null) {
@@ -115,7 +127,7 @@ public class VaccinationController {
 			cdwComponent.addDeleteListener(() -> {
 				popupWindow.close();
 				if (doSave) {
-					FacadeProvider.getVaccinationFacade().delete(vaccination.getUuid());
+					FacadeProvider.getVaccinationFacade().deleteWithImmunization(vaccination.getUuid());
 				}
 				if (deleteCallback != null) {
 					deleteCallback.run();

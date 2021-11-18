@@ -51,13 +51,11 @@ public class VaccinationListComponent extends SideComponent {
 			createButton.addClickListener(
 				e -> ControllerProvider.getVaccinationController()
 					.create(
-						null,
 						region,
 						district,
 						criteria.getPerson(),
 						criteria.getDisease(),
 						UiFieldAccessCheckers.getNoop(),
-						true,
 						v -> vaccinationList.reload()));
 			addCreateButton(createButton);
 		}

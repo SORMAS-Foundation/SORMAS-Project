@@ -104,15 +104,19 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	@Override
-	public VaccinationDto create(
+	public VaccinationDto createWithImmunization(
 		VaccinationDto dto,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
 		PersonReferenceDto person,
 		Disease disease) {
 
+		if (dto.getImmunization() != null) {
+			throw new IllegalArgumentException("VaccinationDto already has an immunization assigned");
+		}
+
 		if (dto.getUuid() != null && vaccinationService.getByUuid(dto.getUuid()) != null) {
-			throw new IllegalArgumentException("DTO already has a UUID");
+			throw new IllegalArgumentException("VaccinationDto already has a UUID");
 		}
 
 		validate(dto, true);
@@ -272,7 +276,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	@Override
-	public void delete(String uuid) {
+	public void deleteWithImmunization(String uuid) {
+
 		if (!userService.hasRight(UserRight.IMMUNIZATION_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete vaccinations");
 		}

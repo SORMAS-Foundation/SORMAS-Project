@@ -31,7 +31,20 @@ public interface VaccinationFacade {
 
 	VaccinationDto save(@Valid VaccinationDto dto);
 
-	VaccinationDto create(
+	/**
+	 * Creates the passed DTO as an entity and automatically assigns an existing immunization or, if none is found,
+	 * creates a new immunization with the passed region, district, person, and disease, and assigns it to the vaccination.
+	 * Throws an exception when called with a DTO that already has an immunization assigned or has a UUID that already
+	 * exists in the database.
+	 * 
+	 * If the vaccination date is empty, assigns the vaccination to the latest immunization (defined by
+	 * ImmunizationEntityHelper.getDateForComparison).
+	 * If the vaccination date is not empty, assigns an existing immunization according to the following priorities:
+	 * 1. Immunization with start date <= vaccination date <= end date
+	 * 2. Immunization with the nearest start or end date to the vaccination date
+	 * 3. Immunization with the nearest report date to the vaccination date
+	 */
+	VaccinationDto createWithImmunization(
 		@Valid VaccinationDto dto,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
@@ -46,7 +59,11 @@ public interface VaccinationFacade {
 
 	Map<String, String> getLastVaccinationType();
 
-	void delete(String uuid);
+	/**
+	 * Deletes the vaccination with the specified UUID, and also deletes the associated immunization if it
+	 * is not associated with any other vaccination in the database.
+	 */
+	void deleteWithImmunization(String uuid);
 
 	VaccinationDto getByUuid(String uuid);
 }
