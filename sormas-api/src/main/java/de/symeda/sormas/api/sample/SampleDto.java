@@ -496,6 +496,10 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasShare
 		target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
 		target.setRequestedPathogenTests(source.getRequestedPathogenTests());
 		target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
+		target.setFieldSampleID(source.getFieldSampleID());
+		target.setSamplingReason(source.getSamplingReason());
+		target.setSamplingReasonDetails(source.getSamplingReasonDetails());
+		target.setSamplePurpose(source.getSamplePurpose());
 	}
 
 	@ImportIgnore
