@@ -17,15 +17,21 @@ package de.symeda.sormas.app.immunization.vaccination;
 
 import java.util.List;
 
+import android.view.View;
+
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
-import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.vaccination.Vaccination;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
@@ -50,7 +56,7 @@ public class VaccinationEditFragment extends BaseEditFragment<FragmentVaccinatio
 			VaccinationEditFragment.class,
 			null,
 			activityRootData,
-			FieldVisibilityCheckers.withDisease(activityRootData.getImmunization().getDisease()),
+			null,
 			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
@@ -72,6 +78,12 @@ public class VaccinationEditFragment extends BaseEditFragment<FragmentVaccinatio
 	public void onLayoutBinding(FragmentVaccinationEditLayoutBinding contentBinding) {
 		contentBinding.setData(record);
 		contentBinding.setTrimesterClass(Trimester.class);
+		if (ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			&& !DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			contentBinding.vaccinationPregnant.setVisibility(View.VISIBLE);
+		} else {
+			contentBinding.vaccinationPregnant.setVisibility(View.GONE);
+		}
 
 		contentBinding.vaccinationVaccineName.addValueChangedListener(new ValueChangeListener() {
 

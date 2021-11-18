@@ -17,11 +17,17 @@ package de.symeda.sormas.app.backend.vaccination;
 
 import java.io.Serializable;
 
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.immunization.Immunization;
 
 public class VaccinationCriteria implements Serializable {
 
 	private Immunization immunization;
+	private Case caze;
+	private Contact contact;
+	private EventParticipant eventParticipant;
 
 	public VaccinationCriteria immunization(Immunization immunization) {
 		this.immunization = immunization;
@@ -30,5 +36,29 @@ public class VaccinationCriteria implements Serializable {
 
 	public Immunization getImmunization() {
 		return immunization;
+	}
+
+	public Case getCaze() {
+		return caze;
+	}
+
+	public void caze(Case caze) {
+		this.caze = caze;
+	}
+
+	public Contact getContact() {
+		return contact;
+	}
+
+	public void contact(Contact contact) {
+		this.contact = contact;
+	}
+
+	public EventParticipant getEventParticipant() {
+		return eventParticipant;
+	}
+
+	public void eventParticipant(EventParticipant eventParticipant) {
+		this.eventParticipant = eventParticipant;
 	}
 }

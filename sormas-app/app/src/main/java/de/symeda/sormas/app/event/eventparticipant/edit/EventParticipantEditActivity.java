@@ -15,6 +15,11 @@
 
 package de.symeda.sormas.app.event.eventparticipant.edit;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
+
+import java.util.List;
+
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,9 +27,9 @@ import android.view.Menu;
 
 import androidx.annotation.NonNull;
 
-import java.util.List;
-
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -44,10 +49,8 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.event.eventparticipant.EventParticipantSection;
 import de.symeda.sormas.app.immunization.edit.ImmunizationNewActivity;
+import de.symeda.sormas.app.immunization.vaccination.VaccinationNewActivity;
 import de.symeda.sormas.app.util.Bundler;
-
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class EventParticipantEditActivity extends BaseEditActivity<EventParticipant> {
 
@@ -99,8 +102,13 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 	@Override
 	public List<PageMenuItem> getPageMenuData() {
 		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(EventParticipantSection.values(), getContext());
-		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			|| DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 			menuItems.set(EventParticipantSection.IMMUNIZATIONS.ordinal(), null);
+		}
+		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			|| !DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			menuItems.set(EventParticipantSection.VACCINATIONS.ordinal(), null);
 		}
 		return menuItems;
 	}
@@ -118,6 +126,9 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 		case IMMUNIZATIONS:
 			fragment = EventParticipantEditImmunizationListFragment.newInstance(activityRootData);
 			break;
+		case VACCINATIONS:
+			fragment = EventParticipantEditVaccinationListFragment.newInstance(activityRootData);
+			break;
 		default:
 			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
 		}
@@ -130,6 +141,8 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 
 		if (activeSection == EventParticipantSection.IMMUNIZATIONS) {
 			ImmunizationNewActivity.startActivityFromCase(getContext(), getRootUuid());
+		} else if (activeSection == EventParticipantSection.VACCINATIONS) {
+			VaccinationNewActivity.startActivityFromEventParticipant(getContext(), getRootUuid());
 		}
 	}
 

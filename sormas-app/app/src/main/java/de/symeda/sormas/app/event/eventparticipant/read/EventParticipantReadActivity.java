@@ -15,15 +15,17 @@
 
 package de.symeda.sormas.app.event.eventparticipant.read;
 
+import java.util.List;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 
-import java.util.List;
-
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
@@ -67,12 +69,16 @@ public class EventParticipantReadActivity extends BaseReadActivity<EventParticip
 		return DatabaseHelper.getEventParticipantDao().queryUuid(recordUuid);
 	}
 
-
 	@Override
 	public List<PageMenuItem> getPageMenuData() {
 		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(EventParticipantSection.values(), getContext());
-		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			|| DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 			menuItems.set(EventParticipantSection.IMMUNIZATIONS.ordinal(), null);
+		}
+		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			|| !DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			menuItems.set(EventParticipantSection.VACCINATIONS.ordinal(), null);
 		}
 		return menuItems;
 	}
@@ -84,14 +90,17 @@ public class EventParticipantReadActivity extends BaseReadActivity<EventParticip
 		BaseReadFragment fragment;
 		switch (section) {
 
-			case EVENT_PARTICIPANT_INFO:
-				fragment = EventParticipantReadFragment.newInstance(activityRootData);
-				break;
-			case IMMUNIZATIONS:
-				fragment = EventParticipantReadImmunizationListFragment.newInstance(activityRootData);
-				break;
-			default:
-				throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
+		case EVENT_PARTICIPANT_INFO:
+			fragment = EventParticipantReadFragment.newInstance(activityRootData);
+			break;
+		case IMMUNIZATIONS:
+			fragment = EventParticipantReadImmunizationListFragment.newInstance(activityRootData);
+			break;
+		case VACCINATIONS:
+			fragment = EventParticipantReadVaccinationListFragment.newInstance(activityRootData);
+			break;
+		default:
+			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
 		}
 		return fragment;
 	}
