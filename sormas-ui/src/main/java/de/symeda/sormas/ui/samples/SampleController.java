@@ -78,11 +78,12 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.labmessage.LabMessagesView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
+
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
 
 public class SampleController {
 
@@ -256,22 +257,20 @@ public class SampleController {
 
 	public void createReferral(SampleDto existingSample, Disease disease) {
 
-		CommitDiscardWrapperComponent<SampleCreateForm> createView = getReferralCreateComponent(existingSample, disease, null, () -> {
-		});
+		CommitDiscardWrapperComponent<SampleCreateForm> createView = getSampleReferralCreateComponent(existingSample, disease, true);
 		createView.addDoneListener(() -> navigateToData(existingSample.getUuid()));
 		createView.getWrappedComponent().getValue().setPathogenTestResult(PathogenTestResultType.PENDING);
 		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingReferSample));
 	}
 
-	public CommitDiscardWrapperComponent<SampleCreateForm> getReferralCreateComponent(
+	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleReferralCreateComponent(
 		SampleDto existingSample,
 		Disease disease,
-		SampleDto alternativeSampleInfo,
-		Runnable callback) {
-		final SampleDto referralSample =
-			SampleDto.buildReferralDto(UserProvider.getCurrent().getUserReference(), existingSample, alternativeSampleInfo);
+		boolean migrateAttributes) {
+		final SampleDto referralSample = SampleDto.buildReferralDto(UserProvider.getCurrent().getUserReference(), existingSample, migrateAttributes);
 
-		final CommitDiscardWrapperComponent<SampleCreateForm> createView = getSampleCreateComponent(referralSample, disease, callback);
+		final CommitDiscardWrapperComponent<SampleCreateForm> createView = getSampleCreateComponent(referralSample, disease, () -> {
+		});
 
 		createView.addCommitListener(() -> {
 			if (!createView.getWrappedComponent().getFieldGroup().isModified()) {
@@ -384,6 +383,25 @@ public class SampleController {
 		if (referOrLinkToOtherLabButton != null) {
 			editForm.getButtonsPanel().addComponentAsFirst(referOrLinkToOtherLabButton);
 			editForm.getButtonsPanel().setComponentAlignment(referOrLinkToOtherLabButton, Alignment.BOTTOM_LEFT);
+		}
+	}
+
+	public void addReferredFromButton(CommitDiscardWrapperComponent<SampleEditForm> editForm) {
+		SampleReferenceDto referredFromRef = FacadeProvider.getSampleFacade().getReferredFrom(editForm.getWrappedComponent().getValue().getUuid());
+		if (referredFromRef != null) {
+			SampleDto referredFrom = FacadeProvider.getSampleFacade().getSampleByUuid(referredFromRef.getUuid());
+			FacilityReferenceDto referredFromLab = referredFrom.getLab();
+			String referredButtonCaption = referredFromLab == null
+				? I18nProperties.getCaption(Captions.sampleReferredFromInternal) + " ("
+					+ DateFormatHelper.formatLocalDateTime(referredFrom.getSampleDateTime()) + ")"
+				: I18nProperties.getCaption(Captions.sampleReferredFrom) + " " + referredFromLab.toString();
+			Button referredButton = ButtonHelper.createButton(
+				"referredFrom",
+				referredButtonCaption,
+				event -> ControllerProvider.getSampleController().navigateToData(referredFrom.getUuid()),
+				ValoTheme.BUTTON_LINK,
+				VSPACE_NONE);
+			editForm.getWrappedComponent().addReferredFromButton(referredButton);
 		}
 	}
 

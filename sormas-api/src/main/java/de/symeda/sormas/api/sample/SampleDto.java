@@ -468,7 +468,7 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasShare
 		return sample;
 	}
 
-	public static SampleDto buildReferralDto(UserReferenceDto userRef, SampleDto referredSample, SampleDto alternativeSampleInfo) {
+	public static SampleDto buildReferralDto(UserReferenceDto userRef, SampleDto referredSample, boolean migrateAttributes) {
 
 		final SampleDto sample;
 		final CaseReferenceDto associatedCase = referredSample.getAssociatedCase();
@@ -481,11 +481,8 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasShare
 		} else {
 			sample = build(userRef, associatedEventParticipant);
 		}
-
-		if (alternativeSampleInfo == null) {
+		if (migrateAttributes) {
 			migrateAttributesOfPhysicalSample(referredSample, sample);
-		} else {
-			migrateAttributesOfPhysicalSample(alternativeSampleInfo, sample);
 		}
 		return sample;
 	}
