@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.SoftAssertions;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.EventActionTableEntry;
@@ -179,7 +180,13 @@ public class EventActionsTableSteps implements En {
 
   private LocalDateTime getLocalDateTimeFromColumns(String date) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy h:mm a");
-    return LocalDateTime.parse(date, formatter);
+    try {
+      return LocalDateTime.parse(date, formatter);
+    } catch (Exception e) {
+      throw new WebDriverException(
+          String.format(
+              "Unable to parse date: %s due to caught exception: %s", date, e.getMessage()));
+    }
   }
 
   private String getPartialUuidFromAssociatedLink(String associatedLink) {

@@ -54,6 +54,7 @@ public class NavBarSteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CASES_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
     When(
@@ -87,6 +88,7 @@ public class NavBarSteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.TASKS_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
     When(
@@ -142,10 +144,6 @@ public class NavBarSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.USERS_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
         });
-
-    And(
-        "^I confirm navigation$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CONFIRM_NAVIGATION));
 
     Then(
         "I wait for {string} page to load and calculate elapsed time",

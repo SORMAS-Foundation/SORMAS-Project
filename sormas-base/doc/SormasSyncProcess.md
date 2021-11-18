@@ -1,5 +1,7 @@
 # Synchronization process between SORMAS App and Server
 
+## Synchronisation of modified and created data
+
 ![alt text](SormasSyncProcess.png "Synchronization process between SORMAS app and server")
 
 1. Make local changes
@@ -37,3 +39,35 @@
 8. "Merge" / save
 
    As in step 4 the pulled data from the server will be merged. Since there are no local changes, this means effectively that the data is just saved.
+
+## Synchronisation modes
+
+### "Changes"
+
+This is the default mode for synchronisation.
+
+1. Pull infrastructure data (based on change date)
+2. Once every 24 hours: Pull uuids of entities that have been deleted on the server -> delete
+3. Once every 24 hours: Pull uuids of entities that have been archived on the server -> delete
+4. Synchronize core & support data, as explained above (based on change date)
+
+### "Complete"
+
+This mode is used, if a synchronisation in "Changes" mode fails (except for connection related fails) OR completes but still leaves unsynchronized data on the device.
+
+1. Pull infrastructure data (based on change date)
+2. **Pull all infrastructure uuids to delete invalid data and pull missing**
+3. **Push new entities**
+4. **Pull all core & support uuids to delete invalid data and pull missing**
+5. Synchronize core & support data, as explained above (based on change date)
+
+### "Complete and Repull"
+
+This mode is used, if a synchronisation in "Complete" mode fails (except for connection related fails).
+
+1. Pull infrastructure data (based on change date)
+2. Pull all infrastructure uuids to delete invalid data and pull missing
+3. **Re-pull all core & support data and part of the infrastructure data**
+4. Push new entities
+5. Pull all core & support uuids to delete invalid data and pull missing
+6. Synchronize core & support data, as explained above (based on change date)

@@ -1305,6 +1305,16 @@ public class EventFacadeEjb implements EventFacade {
 		return subordinateEventUuids;
 	}
 
+	@Override
+	public boolean hasRegionAndDistrict(String eventUuid) {
+		return eventService.hasRegionAndDistrict(eventUuid);
+	}
+
+	@Override
+	public boolean hasAnyEventParticipantWithoutJurisdiction(String eventUuid) {
+		return eventService.hasAnyEventParticipantWithoutJurisdiction(eventUuid);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class EventFacadeEjbLocal extends EventFacadeEjb {
