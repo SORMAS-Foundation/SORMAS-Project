@@ -995,6 +995,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		cq.select(cb.count(root));
+		cq.distinct(true);
 		return em.createQuery(cq).getSingleResult();
 	}
 
