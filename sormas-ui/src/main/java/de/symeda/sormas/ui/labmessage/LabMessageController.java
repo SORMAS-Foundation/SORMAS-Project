@@ -628,8 +628,10 @@ public class LabMessageController {
 
 		Window window = VaadinUiUtil.createPopupWindow();
 
+		// button configuration
 		addReferOrLinkToOtherLabButton(sampleEditComponent, sampleController.getDiseaseOf(sample), labMessage, window);
 		addReferredFromButton(sampleEditComponent, labMessage, window);
+
 		sampleEditComponent.addCommitListener(window::close);
 		sampleEditComponent.addDiscardListener(window::close);
 
@@ -657,7 +659,7 @@ public class LabMessageController {
 								editForm.getWrappedComponent().commit();
 								SampleDto sampleDto = editForm.getWrappedComponent().getValue();
 								sampleDto = FacadeProvider.getSampleFacade().saveSample(sampleDto);
-								createReferral(sampleDto, disease, labMessage);
+								createSampleReferral(sampleDto, disease, labMessage);
 								window.close();
 							} catch (Buffered.SourceException | Validator.InvalidValueException e) {
 								Notification.show(I18nProperties.getString(Strings.messageSampleErrors), Notification.Type.ERROR_MESSAGE);
@@ -709,7 +711,7 @@ public class LabMessageController {
 		}
 	}
 
-	private void createReferral(SampleDto existingSample, Disease disease, LabMessageDto labMessage) {
+	private void createSampleReferral(SampleDto existingSample, Disease disease, LabMessageDto labMessage) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
