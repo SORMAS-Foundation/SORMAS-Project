@@ -12,10 +12,6 @@ public class CountryReferenceDto extends InfrastructureDataReferenceDto implemen
 	public CountryReferenceDto() {
 	}
 
-	public CountryReferenceDto(String uuid) {
-		super(uuid);
-	}
-
 	public CountryReferenceDto(String uuid, String isoCode) {
 		super(uuid);
 		this.isoCode = isoCode;
