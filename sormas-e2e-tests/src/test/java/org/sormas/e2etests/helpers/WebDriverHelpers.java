@@ -375,9 +375,9 @@ public class WebDriverHelpers {
         assertHelpers.assertWithPoll20Second(
             () -> {
               javascriptExecutor.executeScript(SCROLL_TO_WEB_ELEMENT_SCRIPT, selector);
-                            assertWithMessage("Element: %s is not displayed", selector)
-                                .that(((WebElement) selector).isDisplayed())
-                                .isTrue();
+              assertWithMessage("Element: %s is not displayed", selector)
+                  .that(((WebElement) selector).isDisplayed())
+                  .isTrue();
             });
       } else {
         assertHelpers.assertWithPoll20Second(
@@ -632,7 +632,7 @@ public class WebDriverHelpers {
     waitUntilIdentifiedElementIsPresent(header);
     scrollToElement(header);
     String style = getAttributeFromWebElement(header, "style");
-    By selector = By.cssSelector("td[style*='" + style.substring(style.length() - 17) + "']");
+    By selector = By.cssSelector("[style*='" + style.substring(style.length() - 17) + "']");
     waitUntilIdentifiedElementIsPresent(selector);
     return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
   }
