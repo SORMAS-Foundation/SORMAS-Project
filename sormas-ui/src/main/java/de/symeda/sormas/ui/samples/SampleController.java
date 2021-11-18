@@ -350,9 +350,8 @@ public class SampleController {
 						@Override
 						public void buttonClick(ClickEvent event) {
 							try {
-								editForm.getWrappedComponent().commit();
+								editForm.commit();
 								SampleDto sampleDto = editForm.getWrappedComponent().getValue();
-								sampleDto = FacadeProvider.getSampleFacade().saveSample(sampleDto);
 								createReferral(sampleDto, disease);
 							} catch (SourceException | InvalidValueException e) {
 								Notification.show(I18nProperties.getString(Strings.messageSampleErrors), Type.ERROR_MESSAGE);
