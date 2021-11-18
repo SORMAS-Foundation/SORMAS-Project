@@ -9,6 +9,10 @@ public class ContinentReferenceDto extends InfrastructureDataReferenceDto implem
 	public ContinentReferenceDto() {
 	}
 
+	public ContinentReferenceDto(String uuid) {
+		super(uuid);
+	}
+
 	public ContinentReferenceDto(String uuid, String caption, String externalId) {
 		super(uuid, caption, externalId);
 	}
