@@ -857,6 +857,18 @@ public class LabMessageController {
 		}
 	}
 
+	private FacilityReferenceDto getLabReference(TestReportDto testReport) {
+		FacilityFacade facilityFacade = FacadeProvider.getFacilityFacade();
+		List<FacilityReferenceDto> labs = testReport.getTestLabExternalId() != null
+			? facilityFacade.getByExternalIdAndType(testReport.getTestLabExternalId(), FacilityType.LABORATORY, false)
+			: null;
+		if (labs != null && labs.size() == 1) {
+			return labs.get(0);
+		} else {
+			return facilityFacade.getReferenceByUuid(FacilityDto.OTHER_FACILITY_UUID);
+		}
+	}
+
 	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
 		SampleDto sample,
 		LabMessageDto labMessageDto,
@@ -915,6 +927,9 @@ public class LabMessageController {
 			migrateAttributes(testReport, pathogenTest);
 		}
 		pathogenTest.setTestedDisease(testedDisease);
+
+		pathogenTest.setLab(getLabReference(testReport));
+		pathogenTest.setLabDetails(testReport.getTestLabName());
 
 		pathogenTest.setReportDate(reportDate);
 		return pathogenTest;
