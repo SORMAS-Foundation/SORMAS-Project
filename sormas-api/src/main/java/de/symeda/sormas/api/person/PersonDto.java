@@ -969,4 +969,24 @@ public class PersonDto extends PseudonymizableDto {
 	public PersonReferenceDto toReference() {
 		return new PersonReferenceDto(getUuid(), firstName, lastName);
 	}
+
+	@Override
+	public PersonDto clone() throws CloneNotSupportedException {
+		PersonDto clone = (PersonDto) super.clone();
+		clone.setAddress((LocationDto) getAddress().clone());
+
+		List<LocationDto> addressesClone = new ArrayList<>();
+		for (LocationDto locationDto : getAddresses()) {
+			addressesClone.add((LocationDto) locationDto.clone());
+		}
+		clone.setAddresses(addressesClone);
+
+		List<PersonContactDetailDto> contactDetailsClone = new ArrayList<>();
+		for (PersonContactDetailDto personContactDetailDto : getPersonContactDetails()) {
+			contactDetailsClone.add((PersonContactDetailDto) personContactDetailDto.clone());
+		}
+		clone.setPersonContactDetails(contactDetailsClone);
+
+		return clone;
+	}
 }

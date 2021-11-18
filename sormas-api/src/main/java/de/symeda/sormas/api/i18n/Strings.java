@@ -394,6 +394,9 @@ public interface Strings {
 	String headingContactsPerCase = "headingContactsPerCase";
 	String headingContactsPlacedInQuarantine = "headingContactsPlacedInQuarantine";
 	String headingContactTracingFirstContact = "headingContactTracingFirstContact";
+	String headingCorrectPathogenTest = "headingCorrectPathogenTest";
+	String headingCorrectPerson = "headingCorrectPerson";
+	String headingCorrectSample = "headingCorrectSample";
 	String headingCreateAdditionalTest = "headingCreateAdditionalTest";
 	String headingCreateCampaignDataForm = "headingCreateCampaignDataForm";
 	String headingCreateEntry = "headingCreateEntry";
@@ -585,6 +588,9 @@ public interface Strings {
 	String headingPointOfEntryInformation = "headingPointOfEntryInformation";
 	String headingPrescriptionsDeleted = "headingPrescriptionsDeleted";
 	String headingPreviousHospitalizations = "headingPreviousHospitalizations";
+	String headingPreviousPathogenTestInformation = "headingPreviousPathogenTestInformation";
+	String headingPreviousPersonInformation = "headingPreviousPersonInformation";
+	String headingPreviousSampleInformation = "headingPreviousSampleInformation";
 	String headingQuarantineForCases = "headingQuarantineForCases";
 	String headingRecovery = "headingRecovery";
 	String headingReduceQuarantine = "headingReduceQuarantine";
@@ -632,6 +638,9 @@ public interface Strings {
 	String headingUnderFollowUp = "headingUnderFollowUp";
 	String headingUnlinkCaseFromEvent = "headingUnlinkCaseFromEvent";
 	String headingUpdateCaseWithNewDiseaseVariant = "headingUpdateCaseWithNewDiseaseVariant";
+	String headingUpdatedPathogenTestInformation = "headingUpdatedPathogenTestInformation";
+	String headingUpdatedPersonInformation = "headingUpdatedPersonInformation";
+	String headingUpdatedSampleInformation = "headingUpdatedSampleInformation";
 	String headingUpdatePassword = "headingUpdatePassword";
 	String headingUpdatePersonContactDetails = "headingUpdatePersonContactDetails";
 	String headingUploadSuccess = "headingUploadSuccess";

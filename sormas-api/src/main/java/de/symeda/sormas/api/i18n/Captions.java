@@ -58,6 +58,7 @@ public interface Captions {
 	String actionDeselectAndContinue = "actionDeselectAndContinue";
 	String actionDisable = "actionDisable";
 	String actionDiscard = "actionDiscard";
+	String actionDiscardAllAndContinue = "actionDiscardAllAndContinue";
 	String actionDiscardChanges = "actionDiscardChanges";
 	String actionDismiss = "actionDismiss";
 	String actionEnable = "actionEnable";
@@ -90,6 +91,7 @@ public interface Captions {
 	String actionResetEnumCache = "actionResetEnumCache";
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
+	String actionSaveAndContinue = "actionSaveAndContinue";
 	String actionSaveAndOpenHospitalization = "actionSaveAndOpenHospitalization";
 	String actionSaveChanges = "actionSaveChanges";
 	String actionSearch = "actionSearch";

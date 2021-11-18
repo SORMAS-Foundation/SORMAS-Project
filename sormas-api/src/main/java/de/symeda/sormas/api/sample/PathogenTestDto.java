@@ -339,4 +339,9 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public void setExternalOrderId(String externalOrderId) {
 		this.externalOrderId = externalOrderId;
 	}
+
+	@Override
+	public PathogenTestDto clone() throws CloneNotSupportedException {
+		return (PathogenTestDto) super.clone();
+	}
 }

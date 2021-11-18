@@ -515,4 +515,8 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 	protected boolean isEditableAllowed(String propertyId) {
 		return isEditableAllowed(getFieldGroup().getField(propertyId));
 	}
+
+	public void setHeading(String heading) {
+		throw new RuntimeException("setHeading should be implemented in " + getClass().getSimpleName());
+	}
 }

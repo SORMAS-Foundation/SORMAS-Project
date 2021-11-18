@@ -20,20 +20,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.naming.CannotProceedException;
 import javax.naming.NamingException;
 
-import com.vaadin.server.ClientConnector;
-import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.ui.samples.SampleController;
-import de.symeda.sormas.ui.samples.SampleEditForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.ClientConnector;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
@@ -47,7 +44,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.ui.CheckBox;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -84,8 +80,11 @@ import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.labmessage.SimilarEntriesDto;
 import de.symeda.sormas.api.labmessage.TestReportDto;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.sample.SpecimenCondition;
@@ -99,8 +98,11 @@ import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.events.EventParticipantEditForm;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
+import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.samples.PathogenTestForm;
+import de.symeda.sormas.ui.samples.SampleController;
 import de.symeda.sormas.ui.samples.SampleCreateForm;
+import de.symeda.sormas.ui.samples.SampleEditForm;
 import de.symeda.sormas.ui.samples.SampleSelectionField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -145,49 +147,65 @@ public class LabMessageController {
 	}
 
 	public void processLabMessage(String labMessageUuid) {
-		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
-		final PersonDto personDto = buildPerson(labMessageDto);
+		final LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
+		final LabMessageMapper mapper = new LabMessageMapper(labMessageDto);
+
+		final PersonDto personDto = buildPerson(mapper);
 
 		if (FacadeProvider.getLabMessageFacade().isProcessed(labMessageUuid)) {
 			showAlreadyProcessedPopup(null, false);
 			return;
 		}
-		ControllerProvider.getPersonController()
-			.selectOrCreatePerson(personDto, I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessage), selectedPerson -> {
-				if (FacadeProvider.getLabMessageFacade().isProcessed(labMessageUuid)) {
-					showAlreadyProcessedPopup(null, false); // it currently is not possible to delete persons, so no reversion is provided here.
-					return;
+
+		CorrectionLabMessageHandler correctionLabMessageHandler = new CorrectionLabMessageHandler();
+
+		correctionLabMessageHandler
+			.handle(labMessageDto, mapper, this::showPersonCorrectionWindow, this::showSampleCorrectionWindow, this::showPathogenTestCorrectionWindow)
+			.whenComplete((handled, e) -> {
+				if (e != null) {
+					throw new RuntimeException(e);
 				}
-				if (selectedPerson != null) {
-					PersonDto selectedPersonDto;
-					if (selectedPerson.getUuid().equals(personDto.getUuid())) {
-						selectedPersonDto = personDto;
-					} else {
-						selectedPersonDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
-					}
 
-					CaseCriteria caseCriteria = new CaseCriteria();
-					caseCriteria.person(selectedPersonDto.toReference());
-					caseCriteria.disease(labMessageDto.getTestedDisease());
-					CaseSimilarityCriteria caseSimilarityCriteria = new CaseSimilarityCriteria();
-					caseSimilarityCriteria.caseCriteria(caseCriteria);
-					caseSimilarityCriteria.personUuid(selectedPerson.getUuid());
-					List<CaseSelectionDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(caseSimilarityCriteria);
+				if (!handled) {
+					ControllerProvider.getPersonController()
+						.selectOrCreatePerson(personDto, I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessage), selectedPerson -> {
+							if (FacadeProvider.getLabMessageFacade().isProcessed(labMessageUuid)) {
+								showAlreadyProcessedPopup(null, false); // it currently is not possible to delete persons, so no reversion is provided here.
+								return;
+							}
+							if (selectedPerson != null) {
+								PersonDto selectedPersonDto;
+								if (selectedPerson.getUuid().equals(personDto.getUuid())) {
+									selectedPersonDto = personDto;
+								} else {
+									selectedPersonDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
+								}
 
-					ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
-					contactSimilarityCriteria.setPerson(selectedPerson);
-					contactSimilarityCriteria.setDisease(labMessageDto.getTestedDisease());
-					List<SimilarContactDto> similarContacts = FacadeProvider.getContactFacade().getMatchingContacts(contactSimilarityCriteria);
+								CaseCriteria caseCriteria = new CaseCriteria();
+								caseCriteria.person(selectedPersonDto.toReference());
+								caseCriteria.disease(labMessageDto.getTestedDisease());
+								CaseSimilarityCriteria caseSimilarityCriteria = new CaseSimilarityCriteria();
+								caseSimilarityCriteria.caseCriteria(caseCriteria);
+								caseSimilarityCriteria.personUuid(selectedPerson.getUuid());
+								List<CaseSelectionDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(caseSimilarityCriteria);
 
-					EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
-					eventParticipantCriteria.setPerson(selectedPerson);
-					eventParticipantCriteria.setDisease(labMessageDto.getTestedDisease());
-					List<SimilarEventParticipantDto> similarEventParticipants =
-						FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
+								ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
+								contactSimilarityCriteria.setPerson(selectedPerson);
+								contactSimilarityCriteria.setDisease(labMessageDto.getTestedDisease());
+								List<SimilarContactDto> similarContacts =
+									FacadeProvider.getContactFacade().getMatchingContacts(contactSimilarityCriteria);
 
-					pickOrCreateEntry(labMessageDto, similarCases, similarContacts, similarEventParticipants, selectedPersonDto);
+								EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
+								eventParticipantCriteria.setPerson(selectedPerson);
+								eventParticipantCriteria.setDisease(labMessageDto.getTestedDisease());
+								List<SimilarEventParticipantDto> similarEventParticipants =
+									FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
+
+								pickOrCreateEntry(labMessageDto, similarCases, similarContacts, similarEventParticipants, selectedPersonDto);
+							}
+						}, false);
 				}
-			}, false);
+			});
 	}
 
 	public void deleteAllSelectedItems(Collection<LabMessageIndexDto> selectedRows, Runnable callback) {
@@ -220,16 +238,9 @@ public class LabMessageController {
 		}
 	}
 
-	private PersonDto buildPerson(LabMessageDto labMessageDto) {
+	private PersonDto buildPerson(LabMessageMapper mapper) {
 		final PersonDto personDto = PersonDto.build();
-		personDto.setFirstName(labMessageDto.getPersonFirstName());
-		personDto.setLastName(labMessageDto.getPersonLastName());
-		personDto.setBirthdateDD(labMessageDto.getPersonBirthDateDD());
-		personDto.setBirthdateMM(labMessageDto.getPersonBirthDateMM());
-		personDto.setBirthdateYYYY(labMessageDto.getPersonBirthDateYYYY());
-		personDto.setSex(labMessageDto.getPersonSex());
-		personDto.setPhone(labMessageDto.getPersonPhone());
-		personDto.setEmailAddress(labMessageDto.getPersonEmail());
+		mapper.mapToPerson(personDto);
 		return personDto;
 	}
 
@@ -454,12 +465,16 @@ public class LabMessageController {
 			&& personDto.getAddress().getHouseNumber() == null
 			&& personDto.getAddress().getPostalCode() == null
 			&& personDto.getAddress().getStreet() == null) {
-			personDto.getAddress().setStreet(labMessageDto.getPersonStreet());
-			personDto.getAddress().setHouseNumber(labMessageDto.getPersonHouseNumber());
-			personDto.getAddress().setPostalCode(labMessageDto.getPersonPostalCode());
-			personDto.getAddress().setCity(labMessageDto.getPersonCity());
+			new LabMessageMapper(labMessageDto).mapToLocation(personDto.getAddress());
 		}
 		FacadeProvider.getPersonFacade().savePerson(personDto);
+	}
+
+	private void migratePersonAddressAttributes(LabMessageDto source, LocationDto target) {
+		target.setStreet(source.getPersonStreet());
+		target.setHouseNumber(source.getPersonHouseNumber());
+		target.setPostalCode(source.getPersonPostalCode());
+		target.setCity(source.getPersonCity());
 	}
 
 	private void pickOrCreateSample(PseudonymizableDto dto, LabMessageDto labMessageDto, List<SampleDto> samples) {
@@ -969,5 +984,90 @@ public class LabMessageController {
 		} else {
 			return false;
 		}
+	}
+
+	// correction
+	private void showPersonCorrectionWindow(
+		PersonDto person,
+		PersonDto updatedPerson,
+		List<String[]> changedFields,
+		CorrectionLabMessageHandler.CorrectionHandlerChain chain) {
+		CorrectionPanel<PersonDto> personCorrectionPanel = new CorrectionPanel<>(
+			() -> new PersonEditForm(person.isPseudonymized()),
+			person,
+			updatedPerson,
+			Strings.headingPreviousPersonInformation,
+			Strings.headingUpdatedPersonInformation,
+			changedFields);
+
+		showCorrectionWindow(Strings.headingCorrectPerson, personCorrectionPanel, FacadeProvider.getPersonFacade()::savePerson, chain);
+	}
+
+	private void showSampleCorrectionWindow(
+		SampleDto sample,
+		SampleDto updatedSample,
+		List<String[]> changedFields,
+		CorrectionLabMessageHandler.CorrectionHandlerChain chain) {
+		CorrectionPanel<SampleDto> personCorrectionPanel = new CorrectionPanel<>(
+			() -> new SampleEditForm(sample.isPseudonymized(), ControllerProvider.getSampleController().getDiseaseOf(sample)),
+			sample,
+			updatedSample,
+			Strings.headingPreviousSampleInformation,
+			Strings.headingUpdatedSampleInformation,
+			changedFields);
+
+		showCorrectionWindow(Strings.headingCorrectSample, personCorrectionPanel, FacadeProvider.getSampleFacade()::saveSample, chain);
+	}
+
+	private void showPathogenTestCorrectionWindow(
+		PathogenTestDto pathogenTest,
+		PathogenTestDto updatedPathogenTest,
+		List<String[]> changedFields,
+		CorrectionLabMessageHandler.CorrectionHandlerChain chain) {
+
+		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(pathogenTest.getSample().getUuid());
+		int caseSampleCount = ControllerProvider.getSampleController().caseSampleCountOf(sample);
+
+		CorrectionPanel<PathogenTestDto> personCorrectionPanel = new CorrectionPanel<>(
+			() -> new PathogenTestForm(sample, false, caseSampleCount, sample.isPseudonymized()),
+			pathogenTest,
+			updatedPathogenTest,
+			Strings.headingPreviousPathogenTestInformation,
+			Strings.headingUpdatedPathogenTestInformation,
+			changedFields);
+
+		showCorrectionWindow(
+			Strings.headingCorrectPathogenTest,
+			personCorrectionPanel,
+			FacadeProvider.getPathogenTestFacade()::savePathogenTest,
+			chain);
+	}
+
+	private <T> void showCorrectionWindow(
+		String titleTag,
+		CorrectionPanel<T> correctionPanel,
+		Consumer<T> save,
+		CorrectionLabMessageHandler.CorrectionHandlerChain chain) {
+		Window window = VaadinUiUtil.createPopupWindow();
+
+		window.setSizeFull();
+		window.setCaption(I18nProperties.getString(titleTag));
+
+		correctionPanel.setCancelListener((e) -> {
+			window.close();
+			chain.cancel();
+		});
+		correctionPanel.setDiscardListener(() -> {
+			window.close();
+			chain.next();
+		});
+		correctionPanel.setCommitListener((updated) -> {
+			save.accept(updated);
+			window.close();
+			chain.next();
+		});
+
+		window.setContent(correctionPanel);
+		UI.getCurrent().addWindow(window);
 	}
 }
