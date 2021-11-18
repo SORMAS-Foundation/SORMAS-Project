@@ -62,7 +62,6 @@ public class WebDriverHelpers {
   }
 
   public void waitForPageLoaded() {
-    log.info("Waiting for page to be loaded at HTML level");
     assertHelpers.assertWithPoll20Second(
         () ->
             assertWithMessage("Page HTML wasn't loaded under 20s")
@@ -315,10 +314,10 @@ public class WebDriverHelpers {
                   .that(baseSteps.getDriver().findElement(selector).isDisplayed())
                   .isTrue(),
           seconds);
+      return true;
     } catch (Throwable ignored) {
       return false;
     }
-    return true;
   }
 
   public void clickOnWebElementWhichMayNotBePresent(final By byObject, final int index) {
@@ -543,7 +542,10 @@ public class WebDriverHelpers {
                   .isTrue());
     } else {
       assertHelpers.assertWithPoll20Second(
-          () -> assertThat(getNumberOfElements((By) selector) > 0).isTrue());
+          () ->
+              assertWithMessage("Locator: %s is not displayed within 20s", selector)
+                  .that(getNumberOfElements((By) selector) > 0)
+                  .isTrue());
     }
   }
 
@@ -630,7 +632,7 @@ public class WebDriverHelpers {
     waitUntilIdentifiedElementIsPresent(header);
     scrollToElement(header);
     String style = getAttributeFromWebElement(header, "style");
-    By selector = By.cssSelector("td[style*='" + style.substring(style.length() - 17) + "']");
+    By selector = By.cssSelector("[style*='" + style.substring(style.length() - 17) + "']");
     waitUntilIdentifiedElementIsPresent(selector);
     return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
   }
@@ -663,9 +665,9 @@ public class WebDriverHelpers {
   }
 
   public void waitForPageLoadingSpinnerToDisappear(int maxWaitingTime) {
+    By loadingSpinner =
+        By.xpath("//div[@class='v-loading-indicator third v-loading-indicator-wait']");
     try {
-      By loadingSpinner =
-          By.xpath("//div[@class='v-loading-indicator third v-loading-indicator-wait']");
       if (isElementVisibleWithTimeout(loadingSpinner, 3))
         assertHelpers.assertWithPoll(
             () ->
@@ -673,8 +675,9 @@ public class WebDriverHelpers {
                     .contains("display: none"),
             maxWaitingTime);
     } catch (Throwable ignored) {
-      throw new TimeoutException(
-          String.format("Loading spinner didn't disappeared after %s seconds", maxWaitingTime));
+      if (!getAttributeFromWebElement(loadingSpinner, "style").contains("display: none"))
+        throw new TimeoutException(
+            String.format("Loading spinner didn't disappeared after %s seconds", maxWaitingTime));
     }
   }
 

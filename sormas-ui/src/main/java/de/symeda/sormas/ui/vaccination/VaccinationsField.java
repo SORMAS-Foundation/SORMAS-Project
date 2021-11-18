@@ -18,7 +18,6 @@ package de.symeda.sormas.ui.vaccination;
 import java.util.function.Consumer;
 
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Window;
 import com.vaadin.v7.ui.Table;
 
 import de.symeda.sormas.api.Disease;
@@ -28,27 +27,23 @@ import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
-import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class VaccinationsField extends AbstractTableField<VaccinationDto> {
 
-	private final FieldVisibilityCheckers fieldVisibilityCheckers;
 	private Disease disease;
+	private final UiFieldAccessCheckers fieldAccessCheckers;
 
-	public VaccinationsField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
+	public VaccinationsField(UiFieldAccessCheckers fieldAccessCheckers) {
 		super(fieldAccessCheckers);
-		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
+		this.fieldAccessCheckers = fieldAccessCheckers;
 	}
 
 	@Override
@@ -68,29 +63,11 @@ public class VaccinationsField extends AbstractTableField<VaccinationDto> {
 			}
 		}
 
-		VaccinationEditForm vaccinationEditForm =
-			new VaccinationEditForm(create, fieldVisibilityCheckers.andWithDisease(disease), fieldAccessCheckers);
-		vaccinationEditForm.setValue(entry);
-
-		final CommitDiscardWrapperComponent<VaccinationEditForm> editView = new CommitDiscardWrapperComponent<>(
-			vaccinationEditForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_EDIT),
-			vaccinationEditForm.getFieldGroup());
-		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
-
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
-
-		editView.addCommitListener(() -> {
-			if (!vaccinationEditForm.getFieldGroup().isModified()) {
-				commitCallback.accept(vaccinationEditForm.getValue());
-			}
-		});
-
-		if (!isEmpty(entry) && UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
-			editView.addDeleteListener(() -> {
-				popupWindow.close();
-				VaccinationsField.this.removeEntry(entry);
-			}, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
+		if (create) {
+			ControllerProvider.getVaccinationController().create(entry.getImmunization(), disease, fieldAccessCheckers, commitCallback);
+		} else {
+			ControllerProvider.getVaccinationController()
+				.edit(entry, disease, fieldAccessCheckers, false, commitCallback, () -> VaccinationsField.this.removeEntry(entry));
 		}
 	}
 
