@@ -126,9 +126,9 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 		if (caze != null && caze.isUnreferredPortHealthCase()) {
 			menuItems.set(CaseSection.SAMPLES.ordinal(), null);
 		}
-		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
-			menuItems.set(CaseSection.IMMUNIZATIONS.ordinal(), null);
-		}
+		// if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		// 	menuItems.set(CaseSection.IMMUNIZATIONS.ordinal(), null);
+		// }
 		if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW)
 			|| (caze != null && caze.isUnreferredPortHealthCase())
 			|| (caze != null && !DiseaseConfigurationCache.getInstance().hasFollowUp(caze.getDisease()))) {
