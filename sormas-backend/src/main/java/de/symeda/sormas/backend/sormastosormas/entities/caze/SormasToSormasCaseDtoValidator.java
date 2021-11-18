@@ -40,7 +40,7 @@ public class SormasToSormasCaseDtoValidator extends SormasToSormasDtoValidator<C
 		infraValidator.validateResponsibleCommunity(caze.getResponsibleCommunity(), groupNameTag, validationErrors, caze::setResponsibleCommunity);
 
 		infraValidator.validateRegion(caze.getRegion(), groupNameTag, validationErrors, caze::setRegion);
-		infraValidator.validateDistrit(caze.getDistrict(), groupNameTag, validationErrors, caze::setDistrict);
+		infraValidator.validateDistrict(caze.getDistrict(), groupNameTag, validationErrors, caze::setDistrict);
 		infraValidator.validateCommunity(caze.getCommunity(), groupNameTag, validationErrors, caze::setCommunity);
 
 		infraValidator.validateFacility(
@@ -81,7 +81,7 @@ public class SormasToSormasCaseDtoValidator extends SormasToSormasDtoValidator<C
 
 		final String groupNameTag = Captions.CaseData;
 		infraValidator.validateRegion(preview.getRegion(), groupNameTag, validationErrors, preview::setRegion);
-		infraValidator.validateDistrit(preview.getDistrict(), groupNameTag, validationErrors, preview::setDistrict);
+		infraValidator.validateDistrict(preview.getDistrict(), groupNameTag, validationErrors, preview::setDistrict);
 		infraValidator.validateCommunity(preview.getCommunity(), groupNameTag, validationErrors, preview::setCommunity);
 		infraValidator.validateFacility(
 			preview.getHealthFacility(),
