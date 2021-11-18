@@ -109,6 +109,9 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 	private CheckBox quarantineOrderedOfficialDocument;
 	private CheckBox differentPointOfEntryJurisdiction;
 	private DEAFormBuilder deaFormBuilder;
+	private ComboBox responsibleRegion;
+	private ComboBox responsibleDistrict;
+	private ComboBox responsibleCommunity;
 
 	public TravelEntryDataForm(String travelEntryUuid, boolean isPseudonymized) {
 		super(
@@ -155,15 +158,15 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		jurisdictionHeadingLabel.addStyleName(H3);
 		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
 
-		ComboBox responsibleRegion = addInfrastructureField(TravelEntryDto.RESPONSIBLE_REGION);
+		responsibleRegion = addInfrastructureField(TravelEntryDto.RESPONSIBLE_REGION);
 		responsibleRegion.setRequired(true);
-		ComboBox responsibleDistrictCombo = addInfrastructureField(TravelEntryDto.RESPONSIBLE_DISTRICT);
-		responsibleDistrictCombo.setRequired(true);
-		ComboBox responsibleCommunityCombo = addInfrastructureField(TravelEntryDto.RESPONSIBLE_COMMUNITY);
-		responsibleCommunityCombo.setNullSelectionAllowed(true);
-		responsibleCommunityCombo.addStyleName(SOFT_REQUIRED);
+		responsibleDistrict = addInfrastructureField(TravelEntryDto.RESPONSIBLE_DISTRICT);
+		responsibleDistrict.setRequired(true);
+		responsibleCommunity = addInfrastructureField(TravelEntryDto.RESPONSIBLE_COMMUNITY);
+		responsibleCommunity.setNullSelectionAllowed(true);
+		responsibleCommunity.addStyleName(SOFT_REQUIRED);
 
-		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrictCombo, responsibleCommunityCombo);
+		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrict, responsibleCommunity);
 
 		differentPointOfEntryJurisdiction = addCustomField(DIFFERENT_POINT_OF_ENTRY_JURISDICTION, Boolean.class, CheckBox.class);
 		differentPointOfEntryJurisdiction.addStyleName(VSPACE_3);
@@ -182,7 +185,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 				getPointsOfEntryForDistrict(null);
 			} else {
 				cbPointOfEntry.setValue(null);
-				districtDto = (DistrictReferenceDto) responsibleDistrictCombo.getValue();
+				districtDto = (DistrictReferenceDto) responsibleDistrict.getValue();
 				getPointsOfEntryForDistrict(districtDto);
 			}
 		});
@@ -203,19 +206,9 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 			if (differentPointOfEntryJurisdiction.getValue()) {
 				getPointsOfEntryForDistrict(districtDto);
 			} else {
-				getPointsOfEntryForDistrict((DistrictReferenceDto) responsibleDistrictCombo.getValue());
+				getPointsOfEntryForDistrict((DistrictReferenceDto) responsibleDistrict.getValue());
 			}
 		});
-
-		UserProvider currentUserProvider = UserProvider.getCurrent();
-		JurisdictionLevel userJurisditionLevel =
-			currentUserProvider != null ? UserRole.getJurisdictionLevel(currentUserProvider.getUserRoles()) : JurisdictionLevel.NONE;
-		if (userJurisditionLevel == JurisdictionLevel.COMMUNITY
-			|| userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY
-			|| userJurisditionLevel == JurisdictionLevel.POINT_OF_ENTRY) {
-			regionCombo.setReadOnly(true);
-			districtCombo.setReadOnly(true);
-		}
 
 		quarantine = addField(TravelEntryDto.QUARANTINE);
 		quarantine.addValueChangeListener(e -> onValueChange());
@@ -372,7 +365,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 
 		setReadOnly(true, TravelEntryDto.UUID, TravelEntryDto.REPORTING_USER);
 
-		responsibleDistrictCombo.addValueChangeListener(e -> {
+		responsibleDistrict.addValueChangeListener(e -> {
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			getPointsOfEntryForDistrict(districtDto);
 		});
@@ -465,6 +458,16 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		}
 		super.setValue(newFieldValue);
 		buildDeaContent(newFieldValue);
+
+		UserProvider currentUserProvider = UserProvider.getCurrent();
+		JurisdictionLevel userJurisditionLevel =
+			currentUserProvider != null ? UserRole.getJurisdictionLevel(currentUserProvider.getUserRoles()) : JurisdictionLevel.NONE;
+
+		if (userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY) {
+			responsibleRegion.setReadOnly(true);
+			responsibleDistrict.setReadOnly(true);
+			responsibleCommunity.setReadOnly(true);
+		}
 	}
 
 	private void buildDeaContent(TravelEntryDto newFieldValue) {

@@ -38,6 +38,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -91,6 +92,9 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 	private ComboBox cbPointOfEntry;
 	private ComboBox birthDateDay;
 	private DEAFormBuilder deaFormBuilder;
+	private ComboBox responsibleRegion;
+	private ComboBox responsibleDistrict;
+	private ComboBox responsibleCommunity;
 
 	public TravelEntryCreateForm() {
 		super(
@@ -125,15 +129,15 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		jurisdictionHeadingLabel.addStyleName(H3);
 		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
 
-		ComboBox responsibleRegion = addInfrastructureField(TravelEntryDto.RESPONSIBLE_REGION);
+		responsibleRegion = addInfrastructureField(TravelEntryDto.RESPONSIBLE_REGION);
 		responsibleRegion.setRequired(true);
-		ComboBox responsibleDistrictCombo = addInfrastructureField(TravelEntryDto.RESPONSIBLE_DISTRICT);
-		responsibleDistrictCombo.setRequired(true);
-		ComboBox responsibleCommunityCombo = addInfrastructureField(TravelEntryDto.RESPONSIBLE_COMMUNITY);
-		responsibleCommunityCombo.setNullSelectionAllowed(true);
-		responsibleCommunityCombo.addStyleName(SOFT_REQUIRED);
+		responsibleDistrict = addInfrastructureField(TravelEntryDto.RESPONSIBLE_DISTRICT);
+		responsibleDistrict.setRequired(true);
+		responsibleCommunity = addInfrastructureField(TravelEntryDto.RESPONSIBLE_COMMUNITY);
+		responsibleCommunity.setNullSelectionAllowed(true);
+		responsibleCommunity.addStyleName(SOFT_REQUIRED);
 
-		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrictCombo, responsibleCommunityCombo);
+		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrict, responsibleCommunity);
 
 		CheckBox differentPointOfEntryJurisdiction = addCustomField(DIFFERENT_POINT_OF_ENTRY_JURISDICTION, Boolean.class, CheckBox.class);
 		differentPointOfEntryJurisdiction.addStyleName(VSPACE_3);
@@ -231,17 +235,9 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 			if (differentPointOfEntryJurisdiction.getValue()) {
 				cbPointOfEntry.removeAllItems();
 			} else {
-				getPointsOfEntryForDistrict((DistrictReferenceDto) responsibleDistrictCombo.getValue());
+				getPointsOfEntryForDistrict((DistrictReferenceDto) responsibleDistrict.getValue());
 			}
 		});
-
-		UserProvider currentUserProvider = UserProvider.getCurrent();
-		JurisdictionLevel userJurisditionLevel =
-			currentUserProvider != null ? UserRole.getJurisdictionLevel(currentUserProvider.getUserRoles()) : JurisdictionLevel.NONE;
-		if (userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY) {
-			regionCombo.setReadOnly(true);
-			districtCombo.setReadOnly(true);
-		}
 
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
@@ -282,7 +278,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 			false,
 			null);
 
-		responsibleDistrictCombo.addValueChangeListener(e -> {
+		responsibleDistrict.addValueChangeListener(e -> {
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			getPointsOfEntryForDistrict(districtDto);
 		});
@@ -445,5 +441,19 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 	public void setValue(TravelEntryDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
 		buildDeaContent(newFieldValue);
+
+		UserProvider currentUserProvider = UserProvider.getCurrent();
+		JurisdictionLevel userJurisditionLevel =
+			currentUserProvider != null ? UserRole.getJurisdictionLevel(currentUserProvider.getUserRoles()) : JurisdictionLevel.NONE;
+
+		if (userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY) {
+			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(currentUserProvider.getUser().getHealthFacility().getUuid());
+			responsibleRegion.setValue(facility.getRegion());
+			responsibleRegion.setReadOnly(true);
+			responsibleDistrict.setValue(facility.getDistrict());
+			responsibleDistrict.setReadOnly(true);
+			responsibleCommunity.setValue(facility.getCommunity());
+			responsibleCommunity.setReadOnly(true);
+		}
 	}
 }
