@@ -222,7 +222,7 @@ public class CreateNewUserSteps implements En {
   }
 
   public void closeNewPasswordPopUp() {
-    webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_DIALOG_BUTTON);
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CLOSE_DIALOG_BUTTON, 15);
     webDriverHelpers.clickOnWebElementBySelector(CLOSE_DIALOG_BUTTON);
   }
 

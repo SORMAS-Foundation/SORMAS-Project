@@ -128,10 +128,7 @@ public class EditContactPersonSteps implements En {
         "I click on save button from Contact Person tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          // Workaround created until #5535 is fixed
-          baseSteps.getDriver().navigate().refresh();
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 120);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           Person contactInfo = getPersonInformation();
           fullyDetailedPerson =
               personService.updateExistentPerson(
@@ -176,8 +173,8 @@ public class EditContactPersonSteps implements En {
   private void fillExternalToken(String token) {
     webDriverHelpers.fillInWebElement(EXTERNAL_TOKEN_INPUT, token);
     // TODO validate if this fix is stable in Jenkins run
-    TimeUnit.SECONDS.sleep(1);
-    webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+    TimeUnit.SECONDS.sleep(3);
+    webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
   }
 
   private void selectTypeOfOccupation(String occupation) {
