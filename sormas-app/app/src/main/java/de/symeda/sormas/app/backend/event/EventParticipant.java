@@ -46,6 +46,8 @@ public class EventParticipant extends PseudonymizableAdo {
 	public static final String PERSON = "person";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	public static final String RESULTING_CASE_UUID = "resultingCaseUuid";
+	public static final String RESPONSIBLE_REGION = "responsibleRegion";
+	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User reportingUser;

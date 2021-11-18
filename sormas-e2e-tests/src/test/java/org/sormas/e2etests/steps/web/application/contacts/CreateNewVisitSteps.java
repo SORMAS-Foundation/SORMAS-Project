@@ -135,6 +135,7 @@ public class CreateNewVisitSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           String uuid = apiState.getCreatedContact().getUuid();
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MULTIPLE_OPTIONS_SEARCH_INPUT);
           webDriverHelpers.clearAndFillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, uuid);
           fillDateFrom(followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit());
           fillDateTo(followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit());

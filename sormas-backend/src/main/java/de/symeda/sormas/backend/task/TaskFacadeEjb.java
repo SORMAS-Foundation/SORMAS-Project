@@ -157,6 +157,10 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setAssigneeReply(source.getAssigneeReply());
 		target.setCreatorUser(userService.getByReferenceDto(source.getCreatorUser()));
 		target.setCreatorComment(source.getCreatorComment());
+		if (source.getObserverUsers() != null) {
+			List<User> observerUsers = userService.getByReferenceDtos(source.getObserverUsers());
+			target.setObserverUsers(observerUsers);
+		}
 		target.setPriority(source.getPriority());
 		target.setDueDate(source.getDueDate());
 		target.setSuggestedStart(source.getSuggestedStart());
@@ -233,6 +237,9 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setAssigneeReply(source.getAssigneeReply());
 		target.setCreatorUser(UserFacadeEjb.toReferenceDto(source.getCreatorUser()));
 		target.setCreatorComment(source.getCreatorComment());
+		if (source.getObserverUsers() != null) {
+			target.setObserverUsers(source.getObserverUsers().stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toSet()));
+		}
 		target.setPriority(source.getPriority());
 		target.setDueDate(source.getDueDate());
 		target.setSuggestedStart(source.getSuggestedStart());
@@ -297,11 +304,14 @@ public class TaskFacadeEjb implements TaskFacade {
 		if (ado.getTaskType() == TaskType.CONTACT_FOLLOW_UP && ado.getTaskStatus() == TaskStatus.DONE && ado.getContact() != null) {
 			try {
 				messagingService.sendMessages(() -> {
-					final List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
+					final List<User> messageRecipients = new ArrayList<>(userService.getAllByRegionsAndUserRoles(
 						JurisdictionHelper.getContactRegions(ado.getContact()),
 						UserRole.SURVEILLANCE_SUPERVISOR,
 						UserRole.CASE_SUPERVISOR,
-						UserRole.CONTACT_SUPERVISOR);
+						UserRole.CONTACT_SUPERVISOR));
+					if (ado.getObserverUsers() != null) {
+						messageRecipients.addAll(ado.getObserverUsers());
+					}
 					final Map<User, String> mapToReturn = new HashMap<>();
 					messageRecipients.forEach(
 						user -> mapToReturn.put(
@@ -835,15 +845,19 @@ public class TaskFacadeEjb implements TaskFacade {
 					final AbstractDomainObject associatedEntity = context == TaskContext.CASE
 						? task.getCaze()
 						: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
+					String message = context == TaskContext.GENERAL
+						? String.format(I18nProperties.getString(MessageContents.CONTENT_TASK_START_GENERAL), task.getTaskType().toString())
+						: String.format(
+						I18nProperties.getString(MessageContents.CONTENT_TASK_START_SPECIFIC),
+						task.getTaskType().toString(),
+						buildAssociatedEntityLinkContent(context, associatedEntity));
 					if (task.getAssigneeUser() != null) {
-						mapToReturn.put(
-							task.getAssigneeUser(),
-							context == TaskContext.GENERAL
-								? String.format(I18nProperties.getString(MessageContents.CONTENT_TASK_START_GENERAL), task.getTaskType().toString())
-								: String.format(
-									I18nProperties.getString(MessageContents.CONTENT_TASK_START_SPECIFIC),
-									task.getTaskType().toString(),
-									buildAssociatedEntityLinkContent(context, associatedEntity)));
+						mapToReturn.put(task.getAssigneeUser(), message);
+					}
+					if (task.getObserverUsers() != null) {
+						for (User observerUser : task.getObserverUsers()) {
+							mapToReturn.put(observerUser, message);
+						}
 					}
 				}
 				return mapToReturn;
@@ -861,15 +875,19 @@ public class TaskFacadeEjb implements TaskFacade {
 					final AbstractDomainObject associatedEntity = context == TaskContext.CASE
 						? task.getCaze()
 						: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
+					String message = context == TaskContext.GENERAL
+						? String.format(I18nProperties.getString(MessageContents.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString())
+						: String.format(
+						I18nProperties.getString(MessageContents.CONTENT_TASK_DUE_SPECIFIC),
+						task.getTaskType().toString(),
+						buildAssociatedEntityLinkContent(context, associatedEntity));
 					if (task.getAssigneeUser() != null) {
-						mapToReturn.put(
-							task.getAssigneeUser(),
-							context == TaskContext.GENERAL
-								? String.format(I18nProperties.getString(MessageContents.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString())
-								: String.format(
-									I18nProperties.getString(MessageContents.CONTENT_TASK_DUE_SPECIFIC),
-									task.getTaskType().toString(),
-									buildAssociatedEntityLinkContent(context, associatedEntity)));
+						mapToReturn.put(task.getAssigneeUser(), message);
+					}
+					if (task.getObserverUsers() != null) {
+						for (User observerUser : task.getObserverUsers()) {
+							mapToReturn.put(observerUser, message);
+						}
 					}
 				}
 				return mapToReturn;
