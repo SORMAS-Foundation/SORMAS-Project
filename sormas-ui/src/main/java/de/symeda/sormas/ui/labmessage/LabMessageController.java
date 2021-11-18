@@ -726,9 +726,7 @@ public class LabMessageController {
 		Window window) {
 		SampleController sampleController = ControllerProvider.getSampleController();
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
-			sampleController.getSampleReferralCreateComponent(existingSample, disease, false);
-		SampleCreateForm form = sampleCreateComponent.getWrappedComponent();
-		fillSample(form.getValue(), labMessage);
+			sampleController.getSampleReferralCreateComponent(existingSample, disease);
 		addAllTestReportsOf(labMessage, sampleCreateComponent);
 		// add option to create additional pathogen tests
 		sampleController.addPathogenTestButton(sampleCreateComponent, true);
