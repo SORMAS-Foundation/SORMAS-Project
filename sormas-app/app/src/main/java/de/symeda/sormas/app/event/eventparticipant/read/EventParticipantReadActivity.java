@@ -20,7 +20,6 @@ import java.util.List;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
-
 import androidx.annotation.NonNull;
 
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -133,11 +132,7 @@ public class EventParticipantReadActivity extends BaseReadActivity<EventParticip
 			DatabaseHelper.getEventParticipantDao().getByReferenceDto(new EventParticipantReferenceDto(getRootUuid()));
 
 		if (editMenu != null) {
-			if (EventEditAuthorization.isEventParticipantEditAllowed(selectedEventParticipant)) {
-				editMenu.setVisible(true);
-			} else {
-				editMenu.setVisible(false);
-			}
+			editMenu.setVisible(EventEditAuthorization.isEventParticipantEditAllowed(selectedEventParticipant));
 		}
 	}
 }

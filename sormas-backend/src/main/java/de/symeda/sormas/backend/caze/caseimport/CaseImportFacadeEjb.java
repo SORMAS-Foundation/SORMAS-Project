@@ -346,6 +346,9 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			pathogenTests.remove(pathogenTests.size() - 1);
 		}
 
+		// Sanitize non-HOME address
+		PersonHelper.sanitizeNonHomeAddress(entities.getPerson());
+
 		return result;
 	}
 

@@ -24,7 +24,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
-
 import androidx.annotation.NonNull;
 
 import de.symeda.sormas.api.event.EventStatus;
@@ -158,8 +157,9 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 	public void saveData() {
 
 		if (saveTask != null) {
+			// don't save multiple times
 			NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
-			return; // don't save multiple times
+			return;
 		}
 
 		final EventParticipant eventParticipant = (EventParticipant) getActiveFragment().getPrimaryData();
@@ -193,7 +193,8 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 				if (taskResult.getResultStatus().isSuccess()) {
 					finish();
 				} else {
-					onResume(); // reload data
+					// reload data
+					onResume();
 				}
 				saveTask = null;
 			}
@@ -204,7 +205,8 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 	public void onDestroy() {
 		super.onDestroy();
 
-		if (saveTask != null && !saveTask.isCancelled())
+		if (saveTask != null && !saveTask.isCancelled()) {
 			saveTask.cancel(true);
+		}
 	}
 }
