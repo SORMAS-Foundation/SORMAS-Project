@@ -141,9 +141,9 @@
     <string name="caption_case_prescriptions">Prescriptions</string>
     <string name="caption_case_samples">Case Samples</string>
     <string name="caption_case_tasks">Case Tasks</string>
-    <string name="caption_case_events" >Case Events</string>
-    <string name="caption_case_immunizations" >Case Immunizations</string>
-    <string name="caption_case_vaccinations" >Case Vaccinations</string>
+    <string name="caption_case_events">Case Events</string>
+    <string name="caption_case_immunizations">Case Immunizations</string>
+    <string name="caption_case_vaccinations">Case Vaccinations</string>
     <string name="caption_case_treatments">Treatments</string>
     <string name="caption_case_similarity_create">Create a new case</string>
     <string name="caption_changed_data_lost">Changed data lost during re-sync.</string>
@@ -159,8 +159,8 @@
     <string name="caption_contact_tasks">Contact Tasks</string>
     <string name="caption_contact_epidemiological_data">Epidemiological info</string>
     <string name="caption_contact_visits">Follow-Up Information</string>
-    <string name="caption_contact_immunizations" >Contact Immunizations</string>
-    <string name="caption_contact_vaccinations" >Contact Vaccinations</string>
+    <string name="caption_contact_immunizations">Contact Immunizations</string>
+    <string name="caption_contact_vaccinations">Contact Vaccinations</string>
     <string name="caption_converted_to_case">Converted to Case</string>
     <string name="caption_date_of_birth">Date of birth (year / month / day)</string>
     <string name="caption_date_of_sampling">Date of Sampling</string>
