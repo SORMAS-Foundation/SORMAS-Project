@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -64,7 +64,13 @@ public class CorrectionLabMessageHandler {
 		void handle(T original, T updated, List<String[]> changedFields, CorrectionHandlerChain chain);
 	}
 
-	public CompletableFuture<Boolean> handle(
+	public enum CorrectionResult {
+		NO_RELATIONS_FOUND,
+		NO_CORRECTIONS,
+		HANDLED
+	}
+
+	public CompletionStage<CorrectionResult> handle(
 		LabMessageDto labMessage,
 		LabMessageMapper mapper,
 		CorrectedEntityHandler<PersonDto> personHandler,
@@ -73,38 +79,29 @@ public class CorrectionLabMessageHandler {
 		RelatedEntities relatedEntities = getRelatedEntities(labMessage);
 
 		if (relatedEntities == null) {
-			return CompletableFuture.completedFuture(true);
+			return CompletableFuture.completedFuture(CorrectionResult.NO_RELATIONS_FOUND);
 		}
 
-		CompletableFuture<Boolean> chained = handlePersonCorrection(relatedEntities.person, mapper, personHandler, false)
-			.thenCompose((handled) -> handleSampleCorrection(relatedEntities.sample, mapper, sampleHandler, handled));
+		CompletionStage<CorrectionResult> chain =
+			handlePersonCorrection(relatedEntities.person, mapper, personHandler, CorrectionResult.NO_CORRECTIONS)
+				.thenCompose((personCorrection) -> handleSampleCorrection(relatedEntities.sample, mapper, sampleHandler, personCorrection));
 
 		if (relatedEntities.pathogenTests.size() > 0) {
 			for (PathogenTestDto p : relatedEntities.pathogenTests) {
-				chained = chained.thenCompose((handled) -> handlePathogenTestCorrection(p, mapper, pathogenTestHandler, handled));
+				chain =
+					chain.thenCompose((testCorrectionResult) -> handlePathogenTestCorrection(p, mapper, pathogenTestHandler, testCorrectionResult));
 			}
 		}
 
-		return chained.exceptionally(e -> {
-			// cancelled chain means some kind of handling
-			if (e.getCause() instanceof CancellationException) {
-				return true;
-			}
-
-			if (e.getCause() instanceof RuntimeException) {
-				throw (RuntimeException) e.getCause();
-			}
-
-			throw new RuntimeException(e);
-		});
+		return chain;
 	}
 
 	// correction
-	private CompletableFuture<Boolean> handlePersonCorrection(
+	private CompletionStage<CorrectionResult> handlePersonCorrection(
 		PersonDto person,
 		LabMessageMapper mapper,
 		CorrectedEntityHandler<PersonDto> personHandler,
-		boolean defaultValue) {
+		CorrectionResult defaultResult) {
 
 		return handleCorrection(
 			person,
@@ -112,32 +109,32 @@ public class CorrectionLabMessageHandler {
 				.flatMap(s -> s)
 				.collect(Collectors.toList()),
 			personHandler,
-			defaultValue);
+			defaultResult);
 	}
 
-	public CompletableFuture<Boolean> handleSampleCorrection(
+	public CompletionStage<CorrectionResult> handleSampleCorrection(
 		SampleDto sample,
 		LabMessageMapper mapper,
 		CorrectedEntityHandler<SampleDto> sampleHandler,
-		boolean defaultValue) {
+		CorrectionResult defaultResult) {
 
-		return handleCorrection(sample, mapper::mapToSample, sampleHandler, defaultValue);
+		return handleCorrection(sample, mapper::mapToSample, sampleHandler, defaultResult);
 	}
 
-	public CompletableFuture<Boolean> handlePathogenTestCorrection(
+	public CompletionStage<CorrectionResult> handlePathogenTestCorrection(
 		PathogenTestDto pathogenTest,
 		LabMessageMapper mapper,
 		CorrectedEntityHandler<PathogenTestDto> pathogenTestHandler,
-		boolean defaultValue) {
+		CorrectionResult defaultResult) {
 
-		return handleCorrection(pathogenTest, mapper::mapToPathogenTest, pathogenTestHandler, defaultValue);
+		return handleCorrection(pathogenTest, mapper::mapToPathogenTest, pathogenTestHandler, defaultResult);
 	}
 
-	private <T extends EntityDto> CompletableFuture<Boolean> handleCorrection(
+	private <T extends EntityDto> CompletionStage<CorrectionResult> handleCorrection(
 		T entity,
 		Function<T, List<String[]>> mapper,
 		CorrectedEntityHandler<T> correctionHandler,
-		boolean defaultValue) {
+		CorrectionResult defaultResult) {
 		T updatedEntity;
 		try {
 			updatedEntity = (T) entity.clone();
@@ -148,12 +145,12 @@ public class CorrectionLabMessageHandler {
 		List<String[]> changedFields = mapper.apply(updatedEntity);
 
 		if (changedFields.isEmpty()) {
-			return CompletableFuture.completedFuture(defaultValue);
+			return CompletableFuture.completedFuture(defaultResult);
 		}
 
-		CompletableFuture<Boolean> future = new CompletableFuture<>();
+		CompletableFuture<CorrectionResult> future = new CompletableFuture<>();
 		correctionHandler.handle(entity, updatedEntity, changedFields, new CorrectionHandlerChain(() -> {
-			future.complete(true);
+			future.complete(CorrectionResult.HANDLED);
 		}, () -> future.cancel(true)));
 
 		return future;
@@ -215,7 +212,7 @@ public class CorrectionLabMessageHandler {
 					samplePathogenTests.stream().filter(pt -> DataHelper.equal(tr.getExternalId(), pt.getExternalId())).collect(Collectors.toList())))
 			.collect(Collectors.toList());
 
-		testReportPathogenTestPairs.forEach(p -> {
+		for (DataHelper.Pair<TestReportDto, List<PathogenTestDto>> p : testReportPathogenTestPairs) {
 			TestReportDto testReport = p.getElement0();
 			List<PathogenTestDto> pathogenTests = p.getElement1();
 
@@ -224,9 +221,10 @@ public class CorrectionLabMessageHandler {
 			} else if (pathogenTests.isEmpty()) {
 				unmatchedTestReports.add(testReport);
 			} else {
-				// TODO ???
+				// test report with multiple pathogen test related could not be considered as a correction one
+				return null;
 			}
-		});
+		}
 
 		return new RelatedEntities(relatedSample, relatedPerson, relatedPathogenTests, unmatchedTestReports);
 	}

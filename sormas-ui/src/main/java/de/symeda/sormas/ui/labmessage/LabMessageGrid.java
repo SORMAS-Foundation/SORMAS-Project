@@ -75,7 +75,7 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 			setCriteria(criteria);
 		}
 
-		addShowColumn(e -> ControllerProvider.getLabMessageController().showLabMessage(e.getUuid(), this::reload));
+		addShowColumn(e -> ControllerProvider.getLabMessageController().showLabMessage(e.getUuid(), true, this::reload));
 
 		addComponentColumn(
 			indexDto -> indexDto.getStatus().isProcessable()

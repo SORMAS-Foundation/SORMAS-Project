@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.Test;
@@ -56,6 +57,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
+import de.symeda.sormas.ui.labmessage.CorrectionLabMessageHandler.CorrectionResult;
 
 public class CorrectionLabMessageHandlerTest extends AbstractBeanTest {
 
@@ -236,7 +238,7 @@ public class CorrectionLabMessageHandlerTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_noRelatedEntities() {
+	public void test_noRelatedEntities() throws ExecutionException, InterruptedException {
 
 		createProcessedLabMessage();
 
@@ -251,19 +253,21 @@ public class CorrectionLabMessageHandlerTest extends AbstractBeanTest {
 		CorrectionLabMessageHandler.CorrectedEntityHandler<PathogenTestDto> pathogenTestChangesHandler =
 			Mockito.mock(CorrectionLabMessageHandler.CorrectedEntityHandler.class);
 
-		handler
-			.handle(
-				labMessageToProcess,
-				new LabMessageMapper(labMessageToProcess),
-				personChangesHandler,
-				sampleChangesHandler,
-				pathogenTestChangesHandler)
-			.whenComplete((handled, e) -> {
-				assertThat(e, is(nullValue()));
-				assertThat(handled, is(true));
-				Mockito.verify(personChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-				Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-			});
+		CorrectionResult result =
+			handler
+				.handle(
+					labMessageToProcess,
+					new LabMessageMapper(labMessageToProcess),
+					personChangesHandler,
+					sampleChangesHandler,
+					pathogenTestChangesHandler)
+				.toCompletableFuture()
+				.get();
+
+		assertThat(result, is(CorrectionResult.NO_RELATIONS_FOUND));
+		Mockito.verify(personChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+		Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+
 	}
 
 	@Test
@@ -306,14 +310,17 @@ public class CorrectionLabMessageHandlerTest extends AbstractBeanTest {
 			return null;
 		}).when(sampleChangesHandler).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 
-		assertThat(
-			handler.handle(labMessageToProcess, new LabMessageMapper(labMessageToProcess), personChangesHandler, sampleChangesHandler, null).get(),
-			is(true));
+		CorrectionResult result =
+			handler.handle(labMessageToProcess, new LabMessageMapper(labMessageToProcess), personChangesHandler, sampleChangesHandler, null)
+				.toCompletableFuture()
+				.get();
+
+		assertThat(result, is(CorrectionResult.HANDLED));
 		Mockito.verify(personChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 	}
 
 	@Test
-	public void test_handleSampleChanges() {
+	public void test_handleSampleChanges() throws ExecutionException, InterruptedException {
 
 		SampleDto sample = createProcessedLabMessage();
 
@@ -353,16 +360,17 @@ public class CorrectionLabMessageHandlerTest extends AbstractBeanTest {
 			return null;
 		}).when(sampleChangesHandler).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 
-		handler.handle(labMessageToProcess, new LabMessageMapper(labMessageToProcess), personChangesHandler, sampleChangesHandler, null)
-			.whenComplete((handled, e) -> {
-				assertThat(e, is(nullValue()));
-				assertThat(handled, is(true));
-				Mockito.verify(sampleChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-			});
+		CorrectionResult result =
+			handler.handle(labMessageToProcess, new LabMessageMapper(labMessageToProcess), personChangesHandler, sampleChangesHandler, null)
+				.toCompletableFuture()
+				.get();
+
+		assertThat(result, is(CorrectionResult.HANDLED));
+		Mockito.verify(sampleChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 	}
 
 	@Test
-	public void test_handlePathogenTestChanges() {
+	public void test_handlePathogenTestChanges() throws ExecutionException, InterruptedException {
 
 		SampleDto sample = createProcessedLabMessage();
 		PathogenTestDto pathogenTest = creator.createPathogenTest(sample.toReference(), userRef, p -> {
@@ -426,25 +434,27 @@ public class CorrectionLabMessageHandlerTest extends AbstractBeanTest {
 			return null;
 		}).when(pathogenTestChangesHandler).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 
-		handler
-			.handle(
-				labMessageToProcess,
-				new LabMessageMapper(labMessageToProcess),
-				personChangesHandler,
-				sampleChangesHandler,
-				pathogenTestChangesHandler)
-			.whenComplete((handled, e) -> {
-				assertThat(e, is(nullValue()));
-				assertThat(handled, is(true));
+		CorrectionResult result =
+			handler
+				.handle(
+					labMessageToProcess,
+					new LabMessageMapper(labMessageToProcess),
+					personChangesHandler,
+					sampleChangesHandler,
+					pathogenTestChangesHandler)
+				.toCompletableFuture()
+				.get();
 
-				Mockito.verify(personChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-				Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-				Mockito.verify(pathogenTestChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-			});
+		assertThat(result, is(CorrectionResult.HANDLED));
+
+		Mockito.verify(personChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+		Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+		Mockito.verify(pathogenTestChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+
 	}
 
 	@Test
-	public void test_handleMultiplePathogenTests() {
+	public void test_handleMultiplePathogenTests() throws ExecutionException, InterruptedException {
 
 		SampleDto sample = createProcessedLabMessage();
 		PathogenTestDto pathogenTest1 = creator.createPathogenTest(sample.toReference(), userRef, p -> {
@@ -534,28 +544,27 @@ public class CorrectionLabMessageHandlerTest extends AbstractBeanTest {
 			return null;
 		}).when(pathogenTestChangesHandler).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 
-		handler
-			.handle(
-				labMessageToProcess,
-				new LabMessageMapper(labMessageToProcess),
-				personChangesHandler,
-				sampleChangesHandler,
-				pathogenTestChangesHandler)
-			.whenComplete((handled, e) -> {
-				assertThat(e, is(nullValue()));
-				assertThat(handled, is(true));
-				Mockito.verify(sampleChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+		CorrectionResult result =
+			handler
+				.handle(
+					labMessageToProcess,
+					new LabMessageMapper(labMessageToProcess),
+					personChangesHandler,
+					sampleChangesHandler,
+					pathogenTestChangesHandler)
+				.toCompletableFuture()
+				.get();
 
-				Mockito.verify(personChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-				Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-				Mockito.verify(pathogenTestChangesHandler, Mockito.times(2)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-			});
+		assertThat(result, is(CorrectionResult.HANDLED));
+		Mockito.verify(personChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+		Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+		Mockito.verify(pathogenTestChangesHandler, Mockito.times(2)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 	}
 
 	@Test
 	public void test_cancelOnPersonLevel() {
 
-		SampleDto sample = createProcessedLabMessage();
+		createProcessedLabMessage();
 
 		LabMessageDto labMessageToProcess = LabMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
@@ -575,19 +584,24 @@ public class CorrectionLabMessageHandlerTest extends AbstractBeanTest {
 			return null;
 		}).when(sampleChangesHandler).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 
-		handler.handle(labMessageToProcess, new LabMessageMapper(labMessageToProcess), personChangesHandler, sampleChangesHandler, null)
-			.whenComplete((handled, e) -> {
-				assertThat(e, is(nullValue()));
-				assertThat(handled, is(true));
-				Mockito.verify(sampleChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-				Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-			});
+		CorrectionResult result = null;
+		try {
+			result = handler.handle(labMessageToProcess, new LabMessageMapper(labMessageToProcess), personChangesHandler, sampleChangesHandler, null)
+				.toCompletableFuture()
+				.get();
+		} catch (Exception e) {
+			assertThat(e.getCause(), instanceOf(CancellationException.class));
+		}
+
+		assertThat(result, is(nullValue()));
+		Mockito.verify(personChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+		Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 	}
 
 	@Test
 	public void test_cancelOnSample() {
 
-		SampleDto sample = createProcessedLabMessage();
+		createProcessedLabMessage();
 
 		LabMessageDto labMessageToProcess = LabMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
@@ -611,21 +625,26 @@ public class CorrectionLabMessageHandlerTest extends AbstractBeanTest {
 			Mockito.mock(CorrectionLabMessageHandler.CorrectedEntityHandler.class);
 		Mockito.doAnswer(invocation -> null).when(pathogenTestChangesHandler).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 
-		handler
-			.handle(
-				labMessageToProcess,
-				new LabMessageMapper(labMessageToProcess),
-				personChangesHandler,
-				sampleChangesHandler,
-				pathogenTestChangesHandler)
-			.whenComplete((handled, e) -> {
-				assertThat(e, is(nullValue()));
-				assertThat(handled, is(true));
-				Mockito.verify(sampleChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+		CorrectionResult result = null;
+		try {
+			result =
+				handler
+					.handle(
+						labMessageToProcess,
+						new LabMessageMapper(labMessageToProcess),
+						personChangesHandler,
+						sampleChangesHandler,
+						pathogenTestChangesHandler)
+					.toCompletableFuture()
+					.get();
+		} catch (Exception e) {
+			assertThat(e.getCause(), instanceOf(CancellationException.class));
+		}
 
-				Mockito.verify(sampleChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-				Mockito.verify(pathogenTestChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-			});
+		assertThat(result, is(nullValue()));
+		Mockito.verify(sampleChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+		Mockito.verify(pathogenTestChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+
 	}
 
 	private static class TestException extends RuntimeException {
@@ -635,7 +654,7 @@ public class CorrectionLabMessageHandlerTest extends AbstractBeanTest {
 	@Test()
 	public void test_exceptionOnPerson() {
 
-		SampleDto sample = createProcessedLabMessage();
+		createProcessedLabMessage();
 
 		LabMessageDto labMessageToProcess = LabMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
@@ -654,15 +673,17 @@ public class CorrectionLabMessageHandlerTest extends AbstractBeanTest {
 			return null;
 		}).when(sampleChangesHandler).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 
+		CorrectionResult result = null;
 		try {
-			assertThat(
-				handler.handle(labMessageToProcess, new LabMessageMapper(labMessageToProcess), personChangesHandler, sampleChangesHandler, null),
-				is(true));
+			result = handler.handle(labMessageToProcess, new LabMessageMapper(labMessageToProcess), personChangesHandler, sampleChangesHandler, null)
+				.toCompletableFuture()
+				.get();
 		} catch (Exception e) {
 			assertThat(e, instanceOf(TestException.class));
-		} finally {
-			Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		}
+
+		assertThat(result, is(nullValue()));
+		Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 	}
 
 	@Test()
@@ -687,13 +708,18 @@ public class CorrectionLabMessageHandlerTest extends AbstractBeanTest {
 			throw new TestException();
 		}).when(sampleChangesHandler).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 
-		handler.handle(labMessageToProcess, new LabMessageMapper(labMessageToProcess), personChangesHandler, sampleChangesHandler, null)
-			.whenComplete((handled, e) -> {
-				assertThat(e, instanceOf(TestException.class));
-				assertThat(handled, is(true));
-				Mockito.verify(personChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-				Mockito.verify(sampleChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-			});
+		CorrectionResult result = null;
+		try {
+			result = handler.handle(labMessageToProcess, new LabMessageMapper(labMessageToProcess), personChangesHandler, sampleChangesHandler, null)
+				.toCompletableFuture()
+				.get();
+		} catch (Exception e) {
+			assertThat(e.getCause(), instanceOf(TestException.class));
+		}
+
+		assertThat(result, is(nullValue()));
+		Mockito.verify(personChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+		Mockito.verify(sampleChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 	}
 
 	private SampleDto createProcessedLabMessage() {

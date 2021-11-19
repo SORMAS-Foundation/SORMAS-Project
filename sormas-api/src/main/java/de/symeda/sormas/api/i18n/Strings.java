@@ -157,6 +157,8 @@ public interface Strings {
 	String confirmationUnclearLabMessage = "confirmationUnclearLabMessage";
 	String confirmationUnlinkCaseFromEvent = "confirmationUnlinkCaseFromEvent";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
+	String confirmLabMessageCorrectionNoChanges = "confirmLabMessageCorrectionNoChanges";
+	String confirmLabMessageCorrectionThrough = "confirmLabMessageCorrectionThrough";
 	String confirmNetworkDiagramTooManyContacts = "confirmNetworkDiagramTooManyContacts";
 	String date = "date";
 	String day = "day";
@@ -528,6 +530,7 @@ public interface Strings {
 	String headingInfrastructureLocked = "headingInfrastructureLocked";
 	String headingIntroduction = "headingIntroduction";
 	String headingInvalidDateEntered = "headingInvalidDateEntered";
+	String headingLabMessageCorrectionThrough = "headingLabMessageCorrectionThrough";
 	String headingLabMessageDownload = "headingLabMessageDownload";
 	String headingLabMessagesDeleted = "headingLabMessagesDeleted";
 	String headingLabMessagesDeleteProcessed = "headingLabMessagesDeleteProcessed";

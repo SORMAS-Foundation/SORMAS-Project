@@ -43,10 +43,23 @@ public class CorrectionPanel<T> extends HorizontalLayout {
 
 	private static final long serialVersionUID = -8809131575832967278L;
 
-	private final Button cancelButton;
-	private final CommitDiscardWrapperComponent<AbstractEditForm<T>> commitDiscardForm;
+	private Button cancelButton;
+	private CommitDiscardWrapperComponent<AbstractEditForm<T>> commitDiscardForm;
 
 	public CorrectionPanel(
+		Supplier<AbstractEditForm<T>> formSupplier,
+		T formData,
+		T updatedFormData,
+		String originalDataFormHeaderTag,
+		String editFormHeaderTag,
+		List<String[]> changedFields) {
+		setHeightFull();
+		setMargin(true);
+
+		addComponent(createSplitPanel(formSupplier, formData, updatedFormData, originalDataFormHeaderTag, editFormHeaderTag, changedFields));
+	}
+
+	private Panel createSplitPanel(
 		Supplier<AbstractEditForm<T>> formSupplier,
 		T formData,
 		T updatedFormData,
@@ -65,7 +78,7 @@ public class CorrectionPanel<T> extends HorizontalLayout {
 		updateForm.setHeading(I18nProperties.getString(editFormHeaderTag));
 		markChangedFields(updateForm, changedFields);
 
-		commitDiscardForm = new CommitDiscardWrapperComponent<>(updateForm);
+		commitDiscardForm = new CommitDiscardWrapperComponent<>(updateForm, updateForm.getFieldGroup());
 		commitDiscardForm.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionSaveAndContinue));
 		commitDiscardForm.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionDiscardAllAndContinue));
 		commitDiscardForm.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionDiscardAllAndContinue));
@@ -83,10 +96,7 @@ public class CorrectionPanel<T> extends HorizontalLayout {
 		Panel panel = new Panel();
 		panel.setHeightFull();
 		panel.setContent(splitPanel);
-
-		setHeightFull();
-		setMargin(true);
-		addComponent(panel);
+		return panel;
 	}
 
 	private void markChangedFields(AbstractEditForm<T> form, List<String[]> changedFields) {
