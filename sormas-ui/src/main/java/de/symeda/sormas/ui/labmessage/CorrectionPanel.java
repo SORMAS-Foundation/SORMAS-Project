@@ -54,6 +54,7 @@ public class CorrectionPanel<T> extends HorizontalLayout {
 		setHeightFull();
 		setMargin(true);
 
+		addStyleName(CssStyles.LAB_MESSAGE_NO_REQUiRED_BORDER);
 		addComponent(createSplitPanel(formSupplier, formData, updatedFormData, originalDataFormHeaderTag, editFormHeaderTag, changedFields));
 	}
 
@@ -110,11 +111,11 @@ public class CorrectionPanel<T> extends HorizontalLayout {
 	}
 
 	private void markChanged(Field<?> field) {
-		field.addStyleName(CssStyles.BACKGROUND_CRITICAL);
+		field.addStyleName(CssStyles.LAB_MESSAGE_PROCESSING_BORDER_DIRTY);
 	}
 
 	private void unmarkChanged(Field<?> field) {
-		field.removeStyleName(CssStyles.BACKGROUND_CRITICAL);
+		field.removeStyleName(CssStyles.LAB_MESSAGE_PROCESSING_BORDER_DIRTY);
 	}
 
 	private void iterateFields(AbstractEditForm<T> form, BiConsumer<Field<?>, String[]> action) {
