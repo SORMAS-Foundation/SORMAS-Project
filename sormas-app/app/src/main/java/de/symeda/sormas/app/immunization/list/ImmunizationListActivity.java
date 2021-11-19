@@ -15,6 +15,11 @@
 
 package de.symeda.sormas.app.immunization.list;
 
+import java.util.List;
+import java.util.Random;
+
+import org.joda.time.DateTime;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
@@ -24,11 +29,6 @@ import android.widget.AdapterView;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
-
-import org.joda.time.DateTime;
-
-import java.util.List;
-import java.util.Random;
 
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -161,6 +161,9 @@ public class ImmunizationListActivity extends PagedBaseListActivity {
 		filterBinding.startDateFromFilter.initializeDateField(getSupportFragmentManager());
 		filterBinding.endDateToFilter.initializeDateField(getSupportFragmentManager());
 
+		filterBinding.validFromFilter.initializeDateField(getSupportFragmentManager());
+		filterBinding.validToFilter.initializeDateField(getSupportFragmentManager());
+
 		filterBinding.positiveTestResultDateFromFilter.initializeDateField(getSupportFragmentManager());
 		filterBinding.positiveTestResultDateToFilter.initializeDateField(getSupportFragmentManager());
 
@@ -186,6 +189,8 @@ public class ImmunizationListActivity extends PagedBaseListActivity {
 			model.getImmunizationCriteria().setReportDateTo(null);
 			model.getImmunizationCriteria().setStartDateFrom(null);
 			model.getImmunizationCriteria().setEndDateTo(null);
+			model.getImmunizationCriteria().setValidFrom(null);
+			model.getImmunizationCriteria().setValidUntil(null);
 			model.getImmunizationCriteria().setRecoveryDateFrom(null);
 			model.getImmunizationCriteria().setRecoveryDateTo(null);
 			model.getImmunizationCriteria().setPositiveTestResultDateFrom(null);

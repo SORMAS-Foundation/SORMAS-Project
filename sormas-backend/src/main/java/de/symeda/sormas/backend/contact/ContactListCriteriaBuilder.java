@@ -21,6 +21,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
@@ -162,6 +164,9 @@ public class ContactListCriteriaBuilder {
 		case ContactIndexDto.VACCINATION_STATUS:
 			expressions.add(contact.get(sortProperty.propertyName));
 			break;
+		case ContactIndexDto.PERSON_UUID:
+			expressions.add(joins.getPerson().get(Person.UUID));
+			break;
 		case ContactIndexDto.PERSON_FIRST_NAME:
 		case ContactIndexDto.PERSON_LAST_NAME:
 		case ContactIndexDto.SYMPTOM_JOURNAL_STATUS:
@@ -263,7 +268,7 @@ public class ContactListCriteriaBuilder {
 		cq.multiselect(selections);
 		cq.distinct(true);
 
-		if (sortProperties == null || sortProperties.size() == 0) {
+		if (CollectionUtils.isEmpty(sortProperties)) {
 			cq.orderBy(cb.desc(latestChangedDateFunction));
 		} else {
 			List<Order> order = new ArrayList<>(sortProperties.size());
