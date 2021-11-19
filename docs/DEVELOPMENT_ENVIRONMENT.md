@@ -38,7 +38,7 @@ If you plan to work on the Android App as well, you will also need the **Java 8 
   - Enter `http://localhost:6080/sormas-ui` into the `URL` field
   - Make sure that the correct JRE is specified (your Java 11 JDK)
   - Enter the path to the SORMAS domain and the credentials that you've specified when setting up the server
-  - Open the `Deployment` tab and add the artifacts `sormas-ear`, `sormas-rest` and `sormas-ui` (make sure the respect the order as specified here as there are depdendencies between artifacts at startup)
+  - Open the `Deployment` tab and add the artifacts `sormas-ear`, `sormas-rest` and `sormas-ui` (make sure to respect this order as there are dependencies between artifacts at startup)
   - Open the `Logs` tab and add a new log file pointing to the `logs/server.log` file in your SORMAS domain
   - Open the `Startup/Connection` tab and make sure that `Pass environment variables` is NOT checked; ignore warnings about the debug configuration not being correct
   - Open the `config/domain.xml` file in your domain directory and make sure that the `java-config` node contains the following code: `<java-config classpath-suffix="" debug-enabled="true" debug-options="-agentlib:jdwp=transport=dt_socket,address=6009,server=n,suspend=y" ...`
