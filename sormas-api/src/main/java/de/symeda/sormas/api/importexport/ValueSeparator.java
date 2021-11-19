@@ -1,6 +1,6 @@
 package de.symeda.sormas.api.importexport;
 
-import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum ValueSeparator {
 
@@ -32,7 +32,18 @@ public enum ValueSeparator {
 		return separator;
 	}
 
-	public static char getSeparator(ValueSeparator value) {
-		return value == DEFAULT ? FacadeProvider.getConfigFacade().getCsvSeparator() : value.getSeparator();
+	public static char getSeparator(ValueSeparator value, char defaultSeparator) {
+		return value == DEFAULT ? defaultSeparator : value.getSeparator();
+	}
+
+	public String getCaption(char defaultSeparator) {
+		if (this == DEFAULT) {
+			ValueSeparator matchingSeparator = get(defaultSeparator);
+			return String.format(
+				I18nProperties.getEnumCaption(this),
+				matchingSeparator != null ? I18nProperties.getEnumCaption(matchingSeparator) : defaultSeparator);
+		} else {
+			return I18nProperties.getEnumCaption(this);
+		}
 	}
 }

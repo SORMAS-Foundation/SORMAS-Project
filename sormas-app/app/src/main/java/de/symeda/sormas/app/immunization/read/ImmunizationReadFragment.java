@@ -15,9 +15,12 @@
 
 package de.symeda.sormas.app.immunization.read;
 
+import static android.view.View.GONE;
+
 import android.os.Bundle;
 import android.view.View;
 
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -30,8 +33,6 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.databinding.FragmentImmunizationReadLayoutBinding;
-
-import static android.view.View.GONE;
 
 public class ImmunizationReadFragment extends BaseReadFragment<FragmentImmunizationReadLayoutBinding, Immunization, Immunization> {
 
@@ -72,6 +73,12 @@ public class ImmunizationReadFragment extends BaseReadFragment<FragmentImmunizat
 				contentBinding.facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());
 			}
 		}
+
+		boolean isVaccination = MeansOfImmunization.isVaccination(record.getMeansOfImmunization());
+		contentBinding.immunizationVaccinationLayout.setVisibility(isVaccination ? View.VISIBLE : View.GONE);
+
+		boolean isRecovery = MeansOfImmunization.isRecovery(record.getMeansOfImmunization());
+		contentBinding.immunizationRecoveryLayout.setVisibility(isRecovery ? View.VISIBLE : View.GONE);
 
 		if (record.getRelatedCase() == null) {
 			contentBinding.openLinkedCase.setVisibility(View.GONE);

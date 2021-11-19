@@ -145,7 +145,7 @@ public abstract class DataImporter {
 				+ DateHelper.formatDateForExport(new Date()) + ".csv");
 		this.errorReportFilePath = errorReportFilePath.toString();
 
-		this.csvSeparator = ValueSeparator.getSeparator(csvSeparator);
+		this.csvSeparator = ValueSeparator.getSeparator(csvSeparator, FacadeProvider.getConfigFacade().getCsvSeparator());
 	}
 
 	/**
