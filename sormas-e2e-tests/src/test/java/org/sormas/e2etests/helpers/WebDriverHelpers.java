@@ -533,19 +533,25 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilIdentifiedElementIsPresent(final Object selector) {
-    if (selector instanceof WebElement) {
-      WebElement element = (WebElement) selector;
-      assertHelpers.assertWithPoll20Second(
-          () ->
-              assertWithMessage("Webelement: %s is not displayed within 20s", element)
-                  .that(element.isDisplayed())
-                  .isTrue());
-    } else {
-      assertHelpers.assertWithPoll20Second(
-          () ->
-              assertWithMessage("Locator: %s is not displayed within 20s", selector)
-                  .that(getNumberOfElements((By) selector) > 0)
-                  .isTrue());
+    try {
+      if (selector instanceof WebElement) {
+        WebElement element = (WebElement) selector;
+        assertHelpers.assertWithPoll20Second(
+            () ->
+                assertWithMessage("Webelement: %s is not displayed within 20s", element)
+                    .that(element.isDisplayed())
+                    .isTrue());
+      } else {
+        assertHelpers.assertWithPoll20Second(
+            () ->
+                assertWithMessage("Locator: %s is not displayed within 20s", selector)
+                    .that(getNumberOfElements((By) selector) > 0)
+                    .isTrue());
+      }
+    } catch (StaleElementReferenceException staleEx) {
+      log.warn("StaleElement found at: {}", selector);
+      log.info("Performing again wait until element is present action");
+      waitUntilIdentifiedElementIsPresent(selector);
     }
   }
 
