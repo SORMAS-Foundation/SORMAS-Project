@@ -212,13 +212,9 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		contentBinding.immunizationMeansOfImmunization.addValueChangedListener(e -> {
 			if (!Boolean.TRUE.equals(contentBinding.overwriteImmunizationManagementStatusCheckBox.getValue())) {
 				if (e.getValue() == MeansOfImmunization.OTHER || e.getValue() == MeansOfImmunization.RECOVERY) {
-					contentBinding.overwriteImmunizationManagementStatusCheckBox.setValue(false);
 					contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.COMPLETED);
-					contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
-				}
-				if (e.getValue() == MeansOfImmunization.VACCINATION || e.getValue() == MeansOfImmunization.VACCINATION_RECOVERY) {
+				} else {
 					contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.SCHEDULED);
-					contentBinding.immunizationImmunizationStatus.setValue(ImmunizationStatus.PENDING);
 				}
 			}
 			boolean isVaccination = MeansOfImmunization.isVaccination((MeansOfImmunization) e.getValue());
