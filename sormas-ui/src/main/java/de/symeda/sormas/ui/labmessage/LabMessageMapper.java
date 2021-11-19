@@ -113,18 +113,7 @@ public class LabMessageMapper {
 		return changedFields;
 	}
 
-	public List<String[]> mapToPathogenTest(PathogenTestDto pathogenTest) {
-		List<TestReportDto> sourceTestReports = labMessage.getTestReports()
-			.stream()
-			.filter(t -> DataHelper.equal(t.getExternalId(), pathogenTest.getExternalId()))
-			.collect(Collectors.toList());
-
-		if (sourceTestReports.size() != 1) {
-			throw new IllegalArgumentException("No matching test report for the given pathogen test");
-		}
-
-		TestReportDto sourceTestReport = sourceTestReports.get(0);
-
+	public List<String[]> mapToPathogenTest(TestReportDto sourceTestReport, PathogenTestDto pathogenTest) {
 		return map(
 			Stream.of(
 				Mapping.of(pathogenTest::setTestResult, pathogenTest.getTestResult(), sourceTestReport.getTestResult(), PathogenTestDto.TEST_RESULT),

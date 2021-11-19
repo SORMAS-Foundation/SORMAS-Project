@@ -19,8 +19,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,27 +43,13 @@ import de.symeda.sormas.api.utils.DataHelper;
 
 public class CorrectionLabMessageHandler {
 
-	public static class CorrectionHandlerChain {
-
-		private final Runnable onNext;
-		private final Runnable onCancel;
-
-		public CorrectionHandlerChain(Runnable onNext, Runnable onCancel) {
-			this.onNext = onNext;
-			this.onCancel = onCancel;
-		}
-
-		public void next() {
-			onNext.run();
-		}
-
-		public void cancel() {
-			onCancel.run();
-		}
-	}
 	public interface CorrectedEntityHandler<T> {
 
 		void handle(T original, T updated, List<String[]> changedFields, CorrectionHandlerChain chain);
+	}
+	public interface CrateEntityHandler<T> {
+
+		void handle(T entity, CorrectionHandlerChain chain);
 	}
 
 	public enum CorrectionResult {
@@ -70,12 +58,34 @@ public class CorrectionLabMessageHandler {
 		HANDLED
 	}
 
+	public static class CorrectionHandlerChain {
+
+		private final CompletableFuture<CorrectionResult> future;
+
+		public CorrectionHandlerChain(CompletableFuture<CorrectionResult> future) {
+			this.future = future;
+		}
+
+		public void next() {
+			future.complete(CorrectionResult.HANDLED);
+		}
+
+		public void cancel() {
+			future.cancel(true);
+		}
+
+		public boolean done() {
+			return future.isDone();
+		}
+	}
+
 	public CompletionStage<CorrectionResult> handle(
 		LabMessageDto labMessage,
 		LabMessageMapper mapper,
 		CorrectedEntityHandler<PersonDto> personHandler,
 		CorrectedEntityHandler<SampleDto> sampleHandler,
-		CorrectedEntityHandler<PathogenTestDto> pathogenTestHandler) {
+		CorrectedEntityHandler<PathogenTestDto> pathogenTestHandler,
+		CrateEntityHandler<PathogenTestDto> cratePathogenTestHandler) {
 		RelatedEntities relatedEntities = getRelatedEntities(labMessage);
 
 		if (relatedEntities == null) {
@@ -86,11 +96,16 @@ public class CorrectionLabMessageHandler {
 			handlePersonCorrection(relatedEntities.person, mapper, personHandler, CorrectionResult.NO_CORRECTIONS)
 				.thenCompose((personCorrection) -> handleSampleCorrection(relatedEntities.sample, mapper, sampleHandler, personCorrection));
 
-		if (relatedEntities.pathogenTests.size() > 0) {
-			for (PathogenTestDto p : relatedEntities.pathogenTests) {
-				chain =
-					chain.thenCompose((testCorrectionResult) -> handlePathogenTestCorrection(p, mapper, pathogenTestHandler, testCorrectionResult));
+		for (PathogenTestDto p : relatedEntities.pathogenTests) {
+			Optional<TestReportDto> testReport = labMessage.getTestReports().stream().filter(t -> matchPathogenTest(t, p)).findFirst();
+			if (testReport.isPresent()) {
+				chain = chain.thenCompose(
+					(testCorrectionResult) -> handlePathogenTestCorrection(testReport.get(), p, mapper, pathogenTestHandler, testCorrectionResult));
 			}
+		}
+
+		for (TestReportDto r : relatedEntities.unmatchedTestReports) {
+			chain = chain.thenCompose((result) -> handlePathogenTestCreation(r, relatedEntities.sample, mapper, cratePathogenTestHandler));
 		}
 
 		return chain;
@@ -122,12 +137,13 @@ public class CorrectionLabMessageHandler {
 	}
 
 	public CompletionStage<CorrectionResult> handlePathogenTestCorrection(
+		TestReportDto testReport,
 		PathogenTestDto pathogenTest,
 		LabMessageMapper mapper,
 		CorrectedEntityHandler<PathogenTestDto> pathogenTestHandler,
 		CorrectionResult defaultResult) {
 
-		return handleCorrection(pathogenTest, mapper::mapToPathogenTest, pathogenTestHandler, defaultResult);
+		return handleCorrection(pathogenTest, (t) -> mapper.mapToPathogenTest(testReport, t), pathogenTestHandler, defaultResult);
 	}
 
 	private <T extends EntityDto> CompletionStage<CorrectionResult> handleCorrection(
@@ -148,12 +164,19 @@ public class CorrectionLabMessageHandler {
 			return CompletableFuture.completedFuture(defaultResult);
 		}
 
-		CompletableFuture<CorrectionResult> future = new CompletableFuture<>();
-		correctionHandler.handle(entity, updatedEntity, changedFields, new CorrectionHandlerChain(() -> {
-			future.complete(CorrectionResult.HANDLED);
-		}, () -> future.cancel(true)));
+		return handleWithChain(chain -> correctionHandler.handle(entity, updatedEntity, changedFields, chain));
+	}
 
-		return future;
+	private CompletionStage<CorrectionResult> handlePathogenTestCreation(
+		TestReportDto testReport,
+		SampleDto sample,
+		LabMessageMapper mapper,
+		CrateEntityHandler<PathogenTestDto> cratePathogenTestHandler) {
+		PathogenTestDto pathogenTest = PathogenTestDto.build(sample, FacadeProvider.getUserFacade().getCurrentUser());
+
+		mapper.mapToPathogenTest(testReport, pathogenTest);
+
+		return handleWithChain(chain -> cratePathogenTestHandler.handle(pathogenTest, chain));
 	}
 
 	// related entities
@@ -209,7 +232,7 @@ public class CorrectionLabMessageHandler {
 			.map(
 				tr -> DataHelper.Pair.createPair(
 					tr,
-					samplePathogenTests.stream().filter(pt -> DataHelper.equal(tr.getExternalId(), pt.getExternalId())).collect(Collectors.toList())))
+					samplePathogenTests.stream().filter(pt -> matchPathogenTest(tr, pt)).collect(Collectors.toList())))
 			.collect(Collectors.toList());
 
 		for (DataHelper.Pair<TestReportDto, List<PathogenTestDto>> p : testReportPathogenTestPairs) {
@@ -221,12 +244,23 @@ public class CorrectionLabMessageHandler {
 			} else if (pathogenTests.isEmpty()) {
 				unmatchedTestReports.add(testReport);
 			} else {
-				// test report with multiple pathogen test related could not be considered as a correction one
+				// test report with multiple pathogen test related could not be considered as related
 				return null;
 			}
 		}
 
 		return new RelatedEntities(relatedSample, relatedPerson, relatedPathogenTests, unmatchedTestReports);
+	}
+
+	private boolean matchPathogenTest(TestReportDto tr, PathogenTestDto pt) {
+		return DataHelper.equal(tr.getExternalId(), pt.getExternalId());
+	}
+
+	private CompletionStage<CorrectionResult> handleWithChain(Consumer<CorrectionHandlerChain> action) {
+		CompletableFuture<CorrectionResult> future = new CompletableFuture<>();
+		action.accept(new CorrectionHandlerChain(future));
+
+		return future;
 	}
 
 	public static class RelatedEntities {

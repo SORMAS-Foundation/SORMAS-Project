@@ -103,6 +103,7 @@ import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.events.EventParticipantEditForm;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
+import de.symeda.sormas.ui.labmessage.CorrectionLabMessageHandler.CorrectionHandlerChain;
 import de.symeda.sormas.ui.labmessage.CorrectionLabMessageHandler.CorrectionResult;
 import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.samples.PathogenTestForm;
@@ -171,7 +172,8 @@ public class LabMessageController {
 				mapper,
 				(person, updated, changes, chain) -> showPersonCorrectionWindow(labMessageDto, person, updated, changes, chain),
 				(sample, updated, changes, chain) -> showSampleCorrectionWindow(labMessageDto, sample, updated, changes, chain),
-				(test, updated, changes, chain) -> showPathogenTestCorrectionWindow(labMessageDto, test, updated, changes, chain))
+				(test, updated, changes, chain) -> showPathogenTestCorrectionWindow(labMessageDto, test, updated, changes, chain),
+				(pathogenTest, chain) -> showCreatePathogenTestWindow(labMessageDto, pathogenTest, chain))
 			.thenCompose((result) -> handleCorrectionResult(result, labMessageDto))
 			.whenComplete((doProcessingFlow, e) -> {
 				if (e != null) {
@@ -1011,7 +1013,7 @@ public class LabMessageController {
 		PersonDto person,
 		PersonDto updatedPerson,
 		List<String[]> changedFields,
-		CorrectionLabMessageHandler.CorrectionHandlerChain chain) {
+		CorrectionHandlerChain chain) {
 		CorrectionPanel<PersonDto> personCorrectionPanel = new CorrectionPanel<>(
 			() -> new PersonEditForm(person.isPseudonymized()),
 			person,
@@ -1028,7 +1030,7 @@ public class LabMessageController {
 		SampleDto sample,
 		SampleDto updatedSample,
 		List<String[]> changedFields,
-		CorrectionLabMessageHandler.CorrectionHandlerChain chain) {
+		CorrectionHandlerChain chain) {
 		CorrectionPanel<SampleDto> personCorrectionPanel = new CorrectionPanel<>(
 			() -> new SampleEditForm(sample.isPseudonymized(), ControllerProvider.getSampleController().getDiseaseOf(sample)),
 			sample,
@@ -1045,7 +1047,7 @@ public class LabMessageController {
 		PathogenTestDto pathogenTest,
 		PathogenTestDto updatedPathogenTest,
 		List<String[]> changedFields,
-		CorrectionLabMessageHandler.CorrectionHandlerChain chain) {
+		CorrectionHandlerChain chain) {
 
 		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(pathogenTest.getSample().getUuid());
 		int caseSampleCount = ControllerProvider.getSampleController().caseSampleCountOf(sample);
@@ -1071,21 +1073,26 @@ public class LabMessageController {
 		String titleTag,
 		CorrectionPanel<T> correctionPanel,
 		Consumer<T> save,
-		CorrectionLabMessageHandler.CorrectionHandlerChain chain) {
+		CorrectionHandlerChain chain) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		correctionPanel.setCancelListener((e) -> {
-			window.close();
 			chain.cancel();
+			window.close();
 		});
 		correctionPanel.setDiscardListener(() -> {
-			window.close();
 			chain.next();
+			window.close();
 		});
 		correctionPanel.setCommitListener((updated) -> {
 			save.accept(updated);
-			window.close();
 			chain.next();
+			window.close();
+		});
+		window.addCloseListener(e -> {
+			if (!chain.done()) {
+				chain.cancel();
+			}
 		});
 
 		HorizontalLayout toolbar = new HorizontalLayout(ButtonHelper.createIconButton(null, VaadinIcons.EYE, e -> {
@@ -1116,6 +1123,46 @@ public class LabMessageController {
 		}
 
 		return CompletableFuture.completedFuture(true);
+	}
+
+	private void showCreatePathogenTestWindow(LabMessageDto labMessageDto, PathogenTestDto pathogenTest, CorrectionHandlerChain chain) {
+		Window window = VaadinUiUtil.createPopupWindow();
+
+		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(pathogenTest.getSample().getUuid());
+		int caseSampleCount = ControllerProvider.getSampleController().caseSampleCountOf(sample);
+
+		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
+			ControllerProvider.getPathogenTestController().getPathogenTestCreateComponent(sample, caseSampleCount, () -> {
+			}, (savedPathogenTest, callback) -> {
+				chain.next();
+				window.close();
+			});
+		pathogenTestCreateComponent.getWrappedComponent().setValue(pathogenTest);
+		ControllerProvider.getSampleController().setViaLimsFieldChecked(pathogenTestCreateComponent.getWrappedComponent());
+
+		Button cancelButton = LabMessageUiHelper.addCancelAndUpdateLabels(pathogenTestCreateComponent, Captions.actionDiscardAndContinue);
+
+		pathogenTestCreateComponent.addDiscardListener(() -> {
+			chain.next();
+			window.close();
+		});
+		cancelButton.addClickListener(e -> {
+			chain.cancel();
+			window.close();
+		});
+
+		window.addCloseListener(e -> {
+			if (!chain.done()) {
+				chain.cancel();
+			}
+		});
+
+		showFormWithLabMessage(
+			labMessageDto,
+			pathogenTestCreateComponent,
+			window,
+			I18nProperties.getString(Strings.headingCreatePathogenTestResult),
+			false);
 	}
 
 	private CompletionStage<Boolean> confirmContinueProcessing(LabMessageDto labMessageDto, String messageTag) {

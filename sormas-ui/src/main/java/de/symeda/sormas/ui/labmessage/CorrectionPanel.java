@@ -24,7 +24,6 @@ import java.util.function.Supplier;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
@@ -35,7 +34,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -79,15 +77,7 @@ public class CorrectionPanel<T> extends HorizontalLayout {
 		markChangedFields(updateForm, changedFields);
 
 		commitDiscardForm = new CommitDiscardWrapperComponent<>(updateForm, updateForm.getFieldGroup());
-		commitDiscardForm.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionSaveAndContinue));
-		commitDiscardForm.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionDiscardAllAndContinue));
-		commitDiscardForm.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionDiscardAllAndContinue));
-		commitDiscardForm.getButtonsPanel().setExpandRatio(commitDiscardForm.getDiscardButton(), 0);
-		cancelButton = ButtonHelper.createButton(Captions.actionCancel, (e) -> {
-		});
-		commitDiscardForm.getButtonsPanel().addComponent(cancelButton, 0);
-		commitDiscardForm.getButtonsPanel().setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
-		commitDiscardForm.getButtonsPanel().setExpandRatio(cancelButton, 1);
+		cancelButton = LabMessageUiHelper.addCancelAndUpdateLabels(commitDiscardForm, Captions.actionDiscardAllAndContinue);
 
 		HorizontalSplitPanel splitPanel = new HorizontalSplitPanel(originalDataForm, commitDiscardForm);
 		splitPanel.setSizeFull();

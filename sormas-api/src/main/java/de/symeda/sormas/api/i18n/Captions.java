@@ -59,6 +59,7 @@ public interface Captions {
 	String actionDisable = "actionDisable";
 	String actionDiscard = "actionDiscard";
 	String actionDiscardAllAndContinue = "actionDiscardAllAndContinue";
+	String actionDiscardAndContinue = "actionDiscardAndContinue";
 	String actionDiscardChanges = "actionDiscardChanges";
 	String actionDismiss = "actionDismiss";
 	String actionEnable = "actionEnable";
