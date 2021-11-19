@@ -45,11 +45,11 @@ public class CorrectionLabMessageHandler {
 
 	public interface CorrectedEntityHandler<T> {
 
-		void handle(T original, T updated, List<String[]> changedFields, CorrectionHandlerChain chain);
+		void handle(LabMessageDto labMessage, T original, T updated, List<String[]> changedFields, CorrectionHandlerChain chain);
 	}
-	public interface CrateEntityHandler<T> {
+	public interface CratePathogenTestHandler {
 
-		void handle(T entity, CorrectionHandlerChain chain);
+		void handle(LabMessageDto labMessage, TestReportDto testReportDto, SampleDto sample, CorrectionHandlerChain chain);
 	}
 
 	public enum CorrectionResult {
@@ -79,33 +79,42 @@ public class CorrectionLabMessageHandler {
 		}
 	}
 
-	public CompletionStage<CorrectionResult> handle(
-		LabMessageDto labMessage,
-		LabMessageMapper mapper,
+	private final CorrectedEntityHandler<PersonDto> personHandler;
+	private final CorrectedEntityHandler<SampleDto> sampleHandler;
+	private final CorrectedEntityHandler<PathogenTestDto> pathogenTestHandler;
+	private final CratePathogenTestHandler cratePathogenTestHandler;
+
+	public CorrectionLabMessageHandler(
 		CorrectedEntityHandler<PersonDto> personHandler,
 		CorrectedEntityHandler<SampleDto> sampleHandler,
 		CorrectedEntityHandler<PathogenTestDto> pathogenTestHandler,
-		CrateEntityHandler<PathogenTestDto> cratePathogenTestHandler) {
+		CratePathogenTestHandler cratePathogenTestHandler) {
+		this.personHandler = personHandler;
+		this.sampleHandler = sampleHandler;
+		this.pathogenTestHandler = pathogenTestHandler;
+		this.cratePathogenTestHandler = cratePathogenTestHandler;
+	}
+
+	public CompletionStage<CorrectionResult> handle(LabMessageDto labMessage, LabMessageMapper mapper) {
 		RelatedEntities relatedEntities = getRelatedEntities(labMessage);
 
 		if (relatedEntities == null) {
 			return CompletableFuture.completedFuture(CorrectionResult.NO_RELATIONS_FOUND);
 		}
 
-		CompletionStage<CorrectionResult> chain =
-			handlePersonCorrection(relatedEntities.person, mapper, personHandler, CorrectionResult.NO_CORRECTIONS)
-				.thenCompose((personCorrection) -> handleSampleCorrection(relatedEntities.sample, mapper, sampleHandler, personCorrection));
+		CompletionStage<CorrectionResult> chain = handlePersonCorrection(labMessage, relatedEntities.person, mapper, CorrectionResult.NO_CORRECTIONS)
+			.thenCompose((personCorrectionResult) -> handleSampleCorrection(labMessage, relatedEntities.sample, mapper, personCorrectionResult));
 
 		for (PathogenTestDto p : relatedEntities.pathogenTests) {
 			Optional<TestReportDto> testReport = labMessage.getTestReports().stream().filter(t -> matchPathogenTest(t, p)).findFirst();
 			if (testReport.isPresent()) {
 				chain = chain.thenCompose(
-					(testCorrectionResult) -> handlePathogenTestCorrection(testReport.get(), p, mapper, pathogenTestHandler, testCorrectionResult));
+					(testCorrectionResult) -> handlePathogenTestCorrection(labMessage, testReport.get(), p, mapper, testCorrectionResult));
 			}
 		}
 
 		for (TestReportDto r : relatedEntities.unmatchedTestReports) {
-			chain = chain.thenCompose((result) -> handlePathogenTestCreation(r, relatedEntities.sample, mapper, cratePathogenTestHandler));
+			chain = chain.thenCompose((result) -> handlePathogenTestCreation(labMessage, r, relatedEntities.sample));
 		}
 
 		return chain;
@@ -113,12 +122,13 @@ public class CorrectionLabMessageHandler {
 
 	// correction
 	private CompletionStage<CorrectionResult> handlePersonCorrection(
+		LabMessageDto labMessage,
 		PersonDto person,
 		LabMessageMapper mapper,
-		CorrectedEntityHandler<PersonDto> personHandler,
 		CorrectionResult defaultResult) {
 
 		return handleCorrection(
+			labMessage,
 			person,
 			(p) -> Stream.of(mapper.mapToPerson(p).stream(), mapper.mapToLocation(p.getAddress()).stream())
 				.flatMap(s -> s)
@@ -128,25 +138,26 @@ public class CorrectionLabMessageHandler {
 	}
 
 	public CompletionStage<CorrectionResult> handleSampleCorrection(
+		LabMessageDto labMessage,
 		SampleDto sample,
 		LabMessageMapper mapper,
-		CorrectedEntityHandler<SampleDto> sampleHandler,
 		CorrectionResult defaultResult) {
 
-		return handleCorrection(sample, mapper::mapToSample, sampleHandler, defaultResult);
+		return handleCorrection(labMessage, sample, mapper::mapToSample, sampleHandler, defaultResult);
 	}
 
 	public CompletionStage<CorrectionResult> handlePathogenTestCorrection(
+		LabMessageDto labMessage,
 		TestReportDto testReport,
 		PathogenTestDto pathogenTest,
 		LabMessageMapper mapper,
-		CorrectedEntityHandler<PathogenTestDto> pathogenTestHandler,
 		CorrectionResult defaultResult) {
 
-		return handleCorrection(pathogenTest, (t) -> mapper.mapToPathogenTest(testReport, t), pathogenTestHandler, defaultResult);
+		return handleCorrection(labMessage, pathogenTest, (t) -> mapper.mapToPathogenTest(testReport, t), pathogenTestHandler, defaultResult);
 	}
 
 	private <T extends EntityDto> CompletionStage<CorrectionResult> handleCorrection(
+		LabMessageDto labMessage,
 		T entity,
 		Function<T, List<String[]>> mapper,
 		CorrectedEntityHandler<T> correctionHandler,
@@ -164,19 +175,12 @@ public class CorrectionLabMessageHandler {
 			return CompletableFuture.completedFuture(defaultResult);
 		}
 
-		return handleWithChain(chain -> correctionHandler.handle(entity, updatedEntity, changedFields, chain));
+		return handleWithChain(chain -> correctionHandler.handle(labMessage, entity, updatedEntity, changedFields, chain));
 	}
 
-	private CompletionStage<CorrectionResult> handlePathogenTestCreation(
-		TestReportDto testReport,
-		SampleDto sample,
-		LabMessageMapper mapper,
-		CrateEntityHandler<PathogenTestDto> cratePathogenTestHandler) {
-		PathogenTestDto pathogenTest = PathogenTestDto.build(sample, FacadeProvider.getUserFacade().getCurrentUser());
+	private CompletionStage<CorrectionResult> handlePathogenTestCreation(LabMessageDto labMessage, TestReportDto testReport, SampleDto sample) {
 
-		mapper.mapToPathogenTest(testReport, pathogenTest);
-
-		return handleWithChain(chain -> cratePathogenTestHandler.handle(pathogenTest, chain));
+		return handleWithChain(chain -> cratePathogenTestHandler.handle(labMessage, testReport, sample, chain));
 	}
 
 	// related entities
@@ -230,9 +234,8 @@ public class CorrectionLabMessageHandler {
 
 		List<DataHelper.Pair<TestReportDto, List<PathogenTestDto>>> testReportPathogenTestPairs = testReports.stream()
 			.map(
-				tr -> DataHelper.Pair.createPair(
-					tr,
-					samplePathogenTests.stream().filter(pt -> matchPathogenTest(tr, pt)).collect(Collectors.toList())))
+				tr -> DataHelper.Pair
+					.createPair(tr, samplePathogenTests.stream().filter(pt -> matchPathogenTest(tr, pt)).collect(Collectors.toList())))
 			.collect(Collectors.toList());
 
 		for (DataHelper.Pair<TestReportDto, List<PathogenTestDto>> p : testReportPathogenTestPairs) {

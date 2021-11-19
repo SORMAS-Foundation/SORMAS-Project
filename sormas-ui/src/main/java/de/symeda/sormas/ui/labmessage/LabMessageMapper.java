@@ -40,7 +40,11 @@ public class LabMessageMapper {
 
 	private final LabMessageDto labMessage;
 
-	public LabMessageMapper(LabMessageDto labMessage) {
+	public static LabMessageMapper forLabMessage(LabMessageDto labMessage) {
+		return new LabMessageMapper(labMessage);
+	}
+
+	private LabMessageMapper(LabMessageDto labMessage) {
 		this.labMessage = labMessage;
 	}
 
