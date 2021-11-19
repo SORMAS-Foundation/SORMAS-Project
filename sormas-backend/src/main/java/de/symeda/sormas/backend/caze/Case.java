@@ -188,6 +188,7 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT = "quarantineOfficialOrderSent";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
 	public static final String POSTPARTUM = "postpartum";
+	public static final String TRANSMITTED = "transmitted";
 	public static final String TRIMESTER = "trimester";
 	public static final String SAMPLES = "samples";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
@@ -346,6 +347,7 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	private boolean overwriteFollowUpUntil;
 
 	private YesNoUnknown postpartum;
+	private YesNoUnknown transmitted;
 	private Trimester trimester;
 
 	private List<Task> tasks;
@@ -1355,6 +1357,15 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	public void setPostpartum(YesNoUnknown postpartum) {
 		this.postpartum = postpartum;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getTransmitted() {
+		return transmitted;
+	}
+
+	public void setTransmitted(YesNoUnknown transmitted) {
+		this.transmitted = transmitted;
 	}
 
 	@Enumerated(EnumType.STRING)

@@ -752,7 +752,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPerson().get(Person.EDUCATION_TYPE),
 				joins.getPerson().get(Person.EDUCATION_DETAILS), joins.getPerson().get(Person.OCCUPATION_TYPE),
 				joins.getPerson().get(Person.OCCUPATION_DETAILS), joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE), joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
-				caseRoot.get(Case.VACCINATION_STATUS), caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
+				caseRoot.get(Case.VACCINATION_STATUS), caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRANSMITTED), caseRoot.get(Case.TRIMESTER),
 				eventCountSq,
 				caseRoot.get(Case.EXTERNAL_ID),
 				caseRoot.get(Case.EXTERNAL_TOKEN),
@@ -2515,6 +2515,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 		target.setPostpartum(source.getPostpartum());
+		target.setTransmitted(source.getTransmitted());
 		target.setTrimester(source.getTrimester());
 		target.setFollowUpComment(source.getFollowUpComment());
 		target.setFollowUpStatus(source.getFollowUpStatus());
@@ -2681,6 +2682,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 		target.setPostpartum(source.getPostpartum());
+		target.setTransmitted(source.getTransmitted());
 		target.setTrimester(source.getTrimester());
 		target.setFacilityType(source.getFacilityType());
 		if (source.getSormasToSormasOriginInfo() != null) {
