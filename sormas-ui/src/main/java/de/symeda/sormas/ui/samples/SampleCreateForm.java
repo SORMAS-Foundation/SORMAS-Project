@@ -54,6 +54,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 		+ fluidRowLocs(PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED)
 		+ fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.PCR_TEST_SPECIFICATION)
 		+ fluidRowLocs(PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TESTED_DISEASE_VARIANT)
+		+ fluidRowLocs("", PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS)
 		+ fluidRowLocs(PathogenTestDto.CQ_VALUE, PathogenTestDto.TYPING_ID)
 		+ fluidRowLocs(PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.TEST_RESULT_TEXT);
 
@@ -98,6 +99,9 @@ public class SampleCreateForm extends AbstractSampleForm {
 		ComboBox pcrTestSpecification = addCustomField(PathogenTestDto.PCR_TEST_SPECIFICATION, PCRTestSpecification.class, ComboBox.class);
 		ComboBox testedDiseaseField = addCustomField(PathogenTestDto.TESTED_DISEASE, Disease.class, ComboBox.class);
 		ComboBox diseaseVariantField = addCustomField(PathogenTestDto.TESTED_DISEASE_VARIANT, DiseaseVariant.class, ComboBox.class);
+		diseaseVariantField.setNullSelectionAllowed(true);
+		TextField diseaseVariantDetailsField = addCustomField(PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS, String.class, TextField.class);
+		diseaseVariantDetailsField.setVisible(false);
 		TextField cqValueField = addCustomField(PathogenTestDto.CQ_VALUE, Float.class, TextField.class);
 		cqValueField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, cqValueField.getCaption()));
 		TextField typingIdField = addCustomField(PathogenTestDto.TYPING_ID, String.class, TextField.class);
@@ -165,6 +169,11 @@ public class SampleCreateForm extends AbstractSampleForm {
 				disease != null && isVisibleAllowed(PathogenTestDto.TESTED_DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
 			PathogenTestType testType = (PathogenTestType) testTypeField.getValue();
 			showPcrTestSpecificationField(pcrTestSpecification, testType, disease);
+		});
+
+		diseaseVariantField.addValueChangeListener(e -> {
+			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();
+			diseaseVariantDetailsField.setVisible(diseaseVariant != null && diseaseVariant.matchPropertyValue(DiseaseVariant.HAS_DETAILS, true));
 		});
 
 		pathogenTestResultField.addValueChangeListener(e -> {
@@ -238,6 +247,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 		final ComboBox pcrTestSpecification = (ComboBox) getField(PathogenTestDto.PCR_TEST_SPECIFICATION);
 		final ComboBox testedDiseaseField = (ComboBox) getField(PathogenTestDto.TESTED_DISEASE);
 		final ComboBox testedDiseaseVariantField = (ComboBox) getField(PathogenTestDto.TESTED_DISEASE_VARIANT);
+		final TextField testedDiseaseVariantDetailsField = getField(PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS);
 		final TextField cqValueField = (TextField) getField(PathogenTestDto.CQ_VALUE);
 		final TextField typingIdField = (TextField) getField(PathogenTestDto.TYPING_ID);
 		final DateTimeField testDateField = (DateTimeField) getField(PathogenTestDto.TEST_DATE_TIME);
@@ -262,6 +272,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 		pcrTestSpecification.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.PCR_TEST_SPECIFICATION));
 		testedDiseaseField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TESTED_DISEASE));
 		testedDiseaseVariantField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TESTED_DISEASE_VARIANT));
+		testedDiseaseVariantDetailsField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS));
 		cqValueField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.CQ_VALUE));
 		typingIdField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TYPING_ID));
 		testDateField.setCaption(getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_DATE_TIME));

@@ -430,9 +430,10 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			FieldHelper.updateItems(specificRiskField, specificRiskValues);
 			specificRiskField.setVisible(isVisibleAllowed(EventDto.SPECIFIC_RISK) && CollectionUtils.isNotEmpty(specificRiskValues));
 		});
-		diseaseVariantField.addValueChangeListener(
-			e -> diseaseVariantDetailsField
-				.setVisible(((DiseaseVariant) e.getProperty().getValue()).matchPropertyValue(DiseaseVariant.HAS_DETAILS, true)));
+		diseaseVariantField.addValueChangeListener(e -> {
+			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();
+			diseaseVariantDetailsField.setVisible(diseaseVariant != null && diseaseVariant.matchPropertyValue(DiseaseVariant.HAS_DETAILS, true));
+		});
 
 		setRequired(true, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_TITLE, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 

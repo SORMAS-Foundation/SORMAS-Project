@@ -139,7 +139,8 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		FieldHelper
 			.setVisibleWhen(intensiveCareUnit, Arrays.asList(intensiveCareUnitStart, intensiveCareUnitEnd), Arrays.asList(YesNoUnknown.YES), true);
 		final Field isolationDateField = addField(HospitalizationDto.ISOLATION_DATE);
-		addField(HospitalizationDto.DESCRIPTION, TextArea.class).setRows(4);
+		final TextArea descriptionField = addField(HospitalizationDto.DESCRIPTION, TextArea.class);
+		descriptionField.setRows(4);
 		final NullableOptionGroup isolatedField = addField(HospitalizationDto.ISOLATED, NullableOptionGroup.class);
 		final NullableOptionGroup leftAgainstAdviceField = addField(HospitalizationDto.LEFT_AGAINST_ADVICE, NullableOptionGroup.class);
 
@@ -161,6 +162,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 				intensiveCareUnitStart,
 				intensiveCareUnitEnd,
 				isolationDateField,
+				descriptionField,
 				isolatedField,
 				leftAgainstAdviceField,
 				hospitalizationReason,
