@@ -21,6 +21,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View" />
         <import type="de.symeda.sormas.api.caze.Vaccine" />
         <import type="de.symeda.sormas.app.util.DateFormatHelper" />
         <variable name="data" type="de.symeda.sormas.app.backend.vaccination.Vaccination" />
@@ -83,39 +84,29 @@
 
             </LinearLayout>
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/txtVaccineName"
+                style="@style/ControlSingleColumnStyle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/listActivityRowPrimaryText"
+                android:textSize="@dimen/listActivityRowPrimaryTextSize"
+                android:visibility="@{data.VaccineName == Vaccine.OTHER ? View.GONE : View.VISIBLE}"
+                app:defaultValue='@{@string/value_task_type_unknown}'
+                app:value="@{data.VaccineName}"
+                />
 
-                <TextView
-                    android:id="@+id/txtVaccineName"
-                    style="@style/ControlFirstOfTwoColumnsStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
-                    android:textColor="@color/listActivityRowPrimaryText"
-                    android:textSize="@dimen/listActivityRowPrimaryTextSize"
-                    app:defaultValue='@{@string/value_task_type_unknown}'
-                    app:value="@{data.VaccineName}"
-                    />
-
-                <TextView
-                    android:id="@+id/txtOtherVaccineName"
-                    style="@style/ControlSecondOfTwoColumnsStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
-                    android:gravity="right"
-                    android:textColor="@color/listActivityRowPrimaryText"
-                    android:textSize="@dimen/listActivityRowPrimaryTextSize"
-                    app:defaultValue='@{@string/value_task_type_unknown}'
-                    app:dependencyParentField="@{txtVaccineName}"
-                    app:dependencyParentValue="@{Vaccine.OTHER.toString()}"
-                    app:value="@{data.otherVaccineName}"
-                    />
-
-            </LinearLayout>
+            <TextView
+                android:id="@+id/txtOtherVaccineName"
+                style="@style/ControlSingleColumnStyle"
+                android:layout_width="match_parent"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/listActivityRowPrimaryText"
+                android:textSize="@dimen/listActivityRowPrimaryTextSize"
+                android:visibility="@{data.VaccineName != Vaccine.OTHER ? View.GONE : View.VISIBLE}"
+                app:defaultValue='@{@string/value_task_type_unknown}'
+                app:value="@{data.otherVaccineName}"
+                />
 
             <LinearLayout
                 android:layout_width="match_parent"

@@ -148,6 +148,7 @@ public class VaccinationNewActivity extends BaseEditActivity<Vaccination> {
 
 	@Override
 	protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Vaccination activityRootData) {
+
 		BaseEditFragment fragment = VaccinationEditFragment.newInstance(activityRootData);
 		fragment.setLiveValidationDisabled(true);
 		return fragment;
@@ -197,11 +198,13 @@ public class VaccinationNewActivity extends BaseEditActivity<Vaccination> {
 			@Override
 			public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
 
-				Immunization newImmunization = buildImmunizationFromRootEntity();
-
-				boolean immunizationFound = addImmunizationToVaccination(vaccination, newImmunization.getPerson(), newImmunization.getDisease());
-				if (!immunizationFound) {
-					createImmunization(newImmunization);
+				if (vaccination.getImmunization() == null) {
+					//in case of Reduced immunization feature
+					Immunization newImmunization = buildImmunizationFromRootEntity();
+					boolean immunizationFound = addImmunizationToVaccination(vaccination, newImmunization.getPerson(), newImmunization.getDisease());
+					if (!immunizationFound) {
+						createImmunization(newImmunization);
+					}
 				}
 
 				final Vaccination savedVaccination = DatabaseHelper.getVaccinationDao().saveAndSnapshot(vaccination);
@@ -306,8 +309,14 @@ public class VaccinationNewActivity extends BaseEditActivity<Vaccination> {
 			Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
 			immunizationPerson = contact.getPerson();
 			immunizationDisease = contact.getDisease();
-			immunizationRegion = contact.getRegion();
-			immunizationDistrict = contact.getDistrict();
+			if (contact.getRegion() == null || contact.getDistrict() == null) {
+				Case sourceCase = DatabaseHelper.getCaseDao().queryUuid(contact.getCaseUuid());
+				immunizationRegion = sourceCase.getResponsibleRegion();
+				immunizationDistrict = sourceCase.getResponsibleDistrict();
+			} else {
+				immunizationRegion = contact.getRegion();
+				immunizationDistrict = contact.getDistrict();
+			}
 		}
 
 		if (eventParticipantUuid != null) {
@@ -327,8 +336,8 @@ public class VaccinationNewActivity extends BaseEditActivity<Vaccination> {
 		newImmunization.setDisease(immunizationDisease);
 		newImmunization.setResponsibleRegion(immunizationRegion);
 		newImmunization.setResponsibleDistrict(immunizationDistrict);
-		newImmunization.setImmunizationManagementStatus(ImmunizationManagementStatus.SCHEDULED);
-		newImmunization.setImmunizationStatus(ImmunizationStatus.PENDING);
+		newImmunization.setImmunizationManagementStatus(ImmunizationManagementStatus.COMPLETED);
+		newImmunization.setImmunizationStatus(ImmunizationStatus.ACQUIRED);
 		newImmunization.setMeansOfImmunization(MeansOfImmunization.VACCINATION);
 		newImmunization.setReportDate(new Date());
 
