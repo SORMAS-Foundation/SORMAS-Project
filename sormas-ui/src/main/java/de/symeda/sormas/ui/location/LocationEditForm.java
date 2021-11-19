@@ -21,7 +21,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.divs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ErrorMessage;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -52,25 +52,25 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.continent.ContinentCriteria;
 import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.geo.GeoLatLon;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentCriteria;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.map.LeafletMap;
@@ -92,13 +92,14 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	private static final String FACILITY_TYPE_GROUP_LOC = "typeGroupLoc";
 	private static final String GEO_BUTTONS_LOC = "geoButtons";
+	private static final String COUNTRY_HINT_LOC = "countryHintLoc";
 
 	private static final String HTML_LAYOUT =
 		//XXX #1620 are the divs needed?
 		divs(
 			fluidRowLocs(LocationDto.ADDRESS_TYPE, LocationDto.ADDRESS_TYPE_DETAILS, ""),
 			fluidRowLocs(LocationDto.CONTINENT, LocationDto.SUB_CONTINENT, ""),
-			fluidRowLocs(LocationDto.COUNTRY, "", ""),
+			fluidRowLocs(LocationDto.COUNTRY, COUNTRY_HINT_LOC, ""),
 			fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
 			fluidRowLocs(FACILITY_TYPE_GROUP_LOC, LocationDto.FACILITY_TYPE),
 			fluidRowLocs(LocationDto.FACILITY, LocationDto.FACILITY_DETAILS),
@@ -106,11 +107,12 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			fluidRowLocs(LocationDto.POSTAL_CODE, LocationDto.CITY, LocationDto.AREA_TYPE),
 			fluidRowLocs(LocationDto.CONTACT_PERSON_FIRST_NAME, LocationDto.CONTACT_PERSON_LAST_NAME),
 			fluidRowLocs(LocationDto.CONTACT_PERSON_PHONE, LocationDto.CONTACT_PERSON_EMAIL),
-			fluidRow(fluidColumnLoc(4, 0, LocationDto.DETAILS),
-							fluidColumnLoc(2, 0, GEO_BUTTONS_LOC),
-							fluidColumnLoc(2, 0, LocationDto.LATITUDE),
-							fluidColumnLoc(2, 0, LocationDto.LONGITUDE),
-							fluidColumnLoc(2, 0, LocationDto.LAT_LON_ACCURACY)));
+			fluidRow(
+				fluidColumnLoc(4, 0, LocationDto.DETAILS),
+				fluidColumnLoc(2, 0, GEO_BUTTONS_LOC),
+				fluidColumnLoc(2, 0, LocationDto.LATITUDE),
+				fluidColumnLoc(2, 0, LocationDto.LONGITUDE),
+				fluidColumnLoc(2, 0, LocationDto.LAT_LON_ACCURACY)));
 
 	private MapPopupView leafletMapPopup;
 	private ComboBox addressType;
@@ -120,6 +122,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private TextField facilityDetails;
 	private ComboBox continent;
 	private ComboBox subcontinent;
+	private ComboBox country;
 	private TextField contactPersonFirstName;
 	private TextField contactPersonLastName;
 	private TextField contactPersonPhone;
@@ -244,7 +247,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		continent = addInfrastructureField(LocationDto.CONTINENT);
 		subcontinent = addInfrastructureField(LocationDto.SUB_CONTINENT);
-		ComboBox country = addInfrastructureField(LocationDto.COUNTRY);
+		country = addInfrastructureField(LocationDto.COUNTRY);
 		ComboBox region = addInfrastructureField(LocationDto.REGION);
 		ComboBox district = addInfrastructureField(LocationDto.DISTRICT);
 		ComboBox community = addInfrastructureField(LocationDto.COMMUNITY);
@@ -674,6 +677,15 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	public void setDistrictRequiredOnDefaultCountry(boolean required) {
 		this.districtRequiredOnDefaultCountry = required;
+	}
+
+	public void setCountryDisabledWithHint(String hint) {
+		country.setEnabled(false);
+		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		infoLabel.setSizeUndefined();
+		infoLabel.setDescription(hint, ContentMode.HTML);
+		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY, CssStyles.VSPACE_TOP_3);
+		getContent().addComponent(infoLabel, COUNTRY_HINT_LOC);
 	}
 
 	@Override

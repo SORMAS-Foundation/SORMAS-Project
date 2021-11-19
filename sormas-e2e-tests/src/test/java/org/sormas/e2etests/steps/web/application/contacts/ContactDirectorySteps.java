@@ -65,7 +65,12 @@ public class ContactDirectorySteps implements En {
 
     When(
         "I click on the DETAILED radiobutton from Contact directory",
-        () -> webDriverHelpers.clickOnWebElementBySelector(CONTACT_DIRECTORY_DETAILED_RADIOBUTTON));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_DIRECTORY_DETAILED_RADIOBUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              By.xpath(String.format(RESULTS_GRID_HEADER, "Sex")), 20);
+          webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(GRID_HEADERS, 18);
+        });
 
     When(
         "I filter by Contact uuid",

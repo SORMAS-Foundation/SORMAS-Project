@@ -41,7 +41,6 @@ public class TestReport extends CoreAdo {
 	public static final String TEST_RESULT = "testResult";
 	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
 	public static final String TEST_RESULT_TEXT = "testResultText";
-	public static final String PATHOGEN_TEST = "pathogenTest";
 
 	private LabMessage labMessage;
 	private String testLabName;
@@ -57,8 +56,6 @@ public class TestReport extends CoreAdo {
 	private String typingId;
 	private String externalId;
 	private String externalOrderId;
-
-	private PathogenTest pathogenTest;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
@@ -149,15 +146,6 @@ public class TestReport extends CoreAdo {
 
 	public void setTestResultText(String testResultText) {
 		this.testResultText = testResultText;
-	}
-
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	public PathogenTest getPathogenTest() {
-		return pathogenTest;
-	}
-
-	public void setPathogenTest(PathogenTest pathogenTest) {
-		this.pathogenTest = pathogenTest;
 	}
 
 	public String getTypingId() {

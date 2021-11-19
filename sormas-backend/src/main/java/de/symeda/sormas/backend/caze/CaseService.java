@@ -1734,19 +1734,18 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	/**
-	 * Sets the vaccination status of all cases of the specified person and disease with validFrom <= case start date
-	 * and validUntil >= case start date to VACCINATED.
+	 * Sets the vaccination status of all cases of the specified person and disease with vaccination date <= case start date.
+	 * Vaccinations without a vaccination date are relevant for all cases.
 	 * 
 	 * @param personId
-	 *            The ID of the immunization and case person
+	 *            The ID of the case person
 	 * @param disease
-	 *            The disease of the immunization and cases
-	 * @param validFrom
-	 *            The date from which on the person is protected by the immunization
-	 * @param validUntil
-	 *            The date until which the person is protected by the immunization
+	 *            The disease of the cases
+	 * @param vaccinationDate
+	 *            The vaccination date of the created or updated vaccination
 	 */
-	public void updateVaccinationStatuses(Long personId, Disease disease, Date validFrom, Date validUntil) {
+	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
 		Root<Case> root = cu.from(Case.class);
@@ -1756,24 +1755,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		symptomsSq.select(symptomsSqRoot.get(Symptoms.ONSET_DATE));
 		symptomsSq.where(cb.equal(symptomsSqRoot, root.get(Case.SYMPTOMS)));
 
-		cu.set(Case.CHANGE_DATE, Timestamp.from(Instant.now()));
 		cu.set(root.get(Case.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
+		cu.set(root.get(AbstractDomainObject.CHANGE_DATE), new Date());
 
-		Predicate validUntilPredicate = validUntil != null
+		Predicate datePredicate = vaccinationDate != null
 			? cb.or(
-				cb.and(cb.isNull(symptomsSq.getSelection()), cb.lessThanOrEqualTo(root.get(Case.REPORT_DATE), validUntil)),
-				cb.and(cb.isNotNull(symptomsSq.getSelection()), cb.lessThanOrEqualTo(symptomsSq.getSelection().as(Date.class), validUntil)))
+				cb.greaterThanOrEqualTo(symptomsSq.getSelection().as(Date.class), vaccinationDate),
+				cb.and(cb.isNull(symptomsSq.getSelection()), cb.greaterThanOrEqualTo(root.get(Case.REPORT_DATE), vaccinationDate)))
 			: null;
 
-		cu.where(
-			CriteriaBuilderHelper.and(
-				cb,
-				cb.equal(root.get(Case.PERSON), personId),
-				cb.equal(root.get(Case.DISEASE), disease),
-				cb.or(
-					cb.and(cb.isNull(symptomsSq.getSelection()), cb.greaterThanOrEqualTo(root.get(Case.REPORT_DATE), validFrom)),
-					cb.and(cb.isNotNull(symptomsSq.getSelection()), cb.greaterThanOrEqualTo(symptomsSq.getSelection().as(Date.class), validFrom))),
-				validUntilPredicate));
+		cu.where(CriteriaBuilderHelper.and(cb, cb.equal(root.get(Case.PERSON), personId), cb.equal(root.get(Case.DISEASE), disease), datePredicate));
 
 		em.createQuery(cu).executeUpdate();
 	}

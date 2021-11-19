@@ -63,7 +63,10 @@ public class CaseLineListingSteps implements En {
 
     When(
         "^I save the new case using line listing feature$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_SAVE_BUTTON));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
+        });
 
     When(
         "I am checking all data created from Case Line Listing option is saved and displayed",

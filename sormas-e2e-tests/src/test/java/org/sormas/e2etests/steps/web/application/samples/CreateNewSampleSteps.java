@@ -45,7 +45,7 @@ public class CreateNewSampleSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
-        "^I create a new Sample with specific data$",
+        "^I create a new Sample with specific data and save$",
         () -> {
           sample = sampleService.buildGeneratedSample();
           selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
@@ -61,22 +61,6 @@ public class CreateNewSampleSteps implements En {
           selectSpecimenCondition(sample.getSpecimenCondition());
           fillLabSampleId(sample.getLabSampleId());
           fillCommentsOnSample(sample.getCommentsOnSample());
-        });
-
-    When(
-        "^I create a new Test result with specific data$",
-        () -> {
-          sampleTestResult = sampleService.buildGeneratedSampleTestResult();
-          selectSampleTestResultButton();
-          fillReportDate(sampleTestResult.getReportDate());
-          selectTypeOfTest(sampleTestResult.getTypeOfTest());
-          selectTestedDisease(sampleTestResult.getTestedDisease());
-          fillDateOfResult(sampleTestResult.getDateOfResult());
-          fillTimeOfResult(sampleTestResult.getTimeOfResult());
-          selectResultVerifiedByLabSupervisor(
-              sampleTestResult.getResultVerifiedByLabSupervisor(),
-              RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
-          fillTestResultsComment(sampleTestResult.getTestResultsComment());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
         });
 
@@ -85,48 +69,6 @@ public class CreateNewSampleSteps implements En {
         () -> {
           final Sample actualSample = collectSampleData();
           Truth.assertThat(sample).isEqualTo(actualSample);
-        });
-
-    Then(
-        "^I check the created Test result is correctly displayed on Edit Sample page, Test creation tab",
-        () -> {
-          final Sample actualSampleTestResult = collectPathogenTestResultsData();
-          Truth.assertThat(sampleTestResult).isEqualTo(actualSampleTestResult);
-        });
-
-    When(
-        "^I change all Sample fields$",
-        () -> {
-          sample = sampleService.buildEditSample();
-          selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_EDIT_PURPOSE_OPTIONS);
-          fillDateOfCollection(sample.getDateOfCollection());
-          fillTimeOfCollection(sample.getTimeOfCollection());
-          selectSampleType(sample.getSampleType());
-          selectReasonForSample(sample.getReasonForSample());
-          fillSampleID(sample.getSampleID());
-          selectLaboratory(sample.getLaboratory());
-          selectLaboratoryName(sample.getLaboratoryName());
-          fillReceivedDate(sample.getReceivedDate());
-          selectSpecimenCondition(sample.getSpecimenCondition());
-          fillLabSampleId(sample.getLabSampleId());
-          fillCommentsOnSample(sample.getCommentsOnSample());
-          webDriverHelpers.clickOnWebElementBySelector(EDIT_TEST_RESULTS_BUTTON);
-        });
-
-    When(
-        "^I change all Test result fields and save$",
-        () -> {
-          sampleTestResult = sampleService.buildEditSampleEditTestResult();
-          fillReportDate(sampleTestResult.getReportDate());
-          selectTypeOfTest(sampleTestResult.getTypeOfTest());
-          selectTestedDisease(sampleTestResult.getTestedDisease());
-          fillDateOfResult(sampleTestResult.getDateOfResult());
-          fillTimeOfResult(sampleTestResult.getTimeOfResult());
-          selectResultVerifiedByLabSupervisor(
-              sampleTestResult.getResultVerifiedByLabSupervisor(),
-              RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
-          fillTestResultsComment(sampleTestResult.getTestResultsComment());
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
         });
 
     When(

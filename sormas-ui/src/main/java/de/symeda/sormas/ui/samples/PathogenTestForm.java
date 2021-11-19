@@ -95,7 +95,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		this.sample = sample;
 		this.caseSampleCount = caseSampleCount;
 		this.create = create;
-		setWidth(600, Unit.PIXELS);
+		setWidth(900, Unit.PIXELS);
 
 		addFields();
 		if (create) {
