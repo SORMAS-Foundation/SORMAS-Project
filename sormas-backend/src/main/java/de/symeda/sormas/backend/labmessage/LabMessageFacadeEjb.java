@@ -384,6 +384,19 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		return em.createQuery(cq).getResultList().stream().map(this::toDto).collect(toList());
 	}
 
+	@Override
+	public boolean existsForwardedLabMessageWith(String reportId) {
+
+		List<LabMessageDto> relatedLabMessages = getByReportId(reportId);
+
+		for (LabMessageDto labMessage : relatedLabMessages) {
+			if (LabMessageStatus.FORWARDED.equals(labMessage.getStatus())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static LabMessageReferenceDto toReferenceDto(LabMessage entity) {
 
 		if (entity == null) {

@@ -16,9 +16,11 @@
 package de.symeda.sormas.app;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
 
@@ -29,6 +31,7 @@ import org.junit.runner.RunWith;
 
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
+
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -153,5 +156,19 @@ public class EventBackendTest {
 		assertThat(DatabaseHelper.getEventDao().queryForAll().size(), is(0));
 		assertThat(DatabaseHelper.getEventParticipantDao().queryForAll().size(), is(0));
 		assertThat(DatabaseHelper.getTaskDao().queryForAll().size(), is(0));
+	}
+
+	@Test
+	public void testHasAnyEventParticipantWithoutJurisdiction() throws DaoException {
+
+		Event event = TestEntityCreator.createEvent();
+		EventParticipant ep1 = TestEntityCreator.createEventParticipant(event);
+		ep1.setResponsibleRegion(DatabaseHelper.getRegionDao().queryForAll().get(0));
+		ep1.setResponsibleDistrict(DatabaseHelper.getDistrictDao().queryForAll().get(0));
+		DatabaseHelper.getEventParticipantDao().saveAndSnapshot(ep1);
+		assertFalse(DatabaseHelper.getEventDao().hasAnyEventParticipantWithoutJurisdiction(event.getUuid()));
+
+		TestEntityCreator.createEventParticipant(event);
+		assertTrue(DatabaseHelper.getEventDao().hasAnyEventParticipantWithoutJurisdiction(event.getUuid()));
 	}
 }

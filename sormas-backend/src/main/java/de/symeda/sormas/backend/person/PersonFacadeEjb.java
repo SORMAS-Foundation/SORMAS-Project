@@ -77,6 +77,7 @@ import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -528,13 +529,13 @@ public class PersonFacadeEjb implements PersonFacade {
 			> 1) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.personMultiplePrimaryEmailAddresses));
 		}
-		if (StringUtils.isNotBlank(source.getEmailAddress()) && !source.getEmailAddress().matches(DataHelper.getEmailValidationRegex())) {
+		if (!DataHelper.isValidEmailAddress(source.getEmailAddress())) {
 			throw new ValidationRuntimeException(
 				I18nProperties.getValidationError(
 					Validations.validEmailAddress,
 					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.EMAIL_ADDRESS)));
 		}
-		if (StringUtils.isNotBlank(source.getPhone()) && source.getPhone().matches(DataHelper.getPhoneNumberValidationRegex())) {
+		if (!DataHelper.isValidPhoneNumber(source.getPhone())) {
 			throw new ValidationRuntimeException(
 				I18nProperties
 					.getValidationError(Validations.validPhoneNumber, I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PHONE)));
@@ -577,15 +578,13 @@ public class PersonFacadeEjb implements PersonFacade {
 				source.getAddress().getContactPersonPhone()) && source.getAddress().getFacilityType() == null) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importPersonContactDetailsWithoutFacilityType));
 			}
-			if (StringUtils.isNotBlank(source.getAddress().getContactPersonEmail())
-				&& !source.getAddress().getContactPersonEmail().matches(DataHelper.getEmailValidationRegex())) {
+			if (!DataHelper.isValidEmailAddress(source.getAddress().getContactPersonEmail())) {
 				throw new ValidationRuntimeException(
 					I18nProperties.getValidationError(
 						Validations.validEmailAddress,
 						I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_EMAIL)));
 			}
-			if (StringUtils.isNotBlank(source.getAddress().getContactPersonPhone())
-				&& source.getAddress().getContactPersonPhone().matches(DataHelper.getPhoneNumberValidationRegex())) {
+			if (!DataHelper.isValidPhoneNumber(source.getAddress().getContactPersonPhone())) {
 				throw new ValidationRuntimeException(
 					I18nProperties.getValidationError(
 						Validations.validPhoneNumber,
@@ -953,9 +952,12 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (nullSafeCriteria.getPersonAssociation() == PersonAssociation.ALL) {
 			// Fetch Person.id per association and find the distinct count.
 			Set<Long> distinctPersonIds = new HashSet<>();
+			boolean immunizationModuleReduced =
+				featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED);
 			Arrays.stream(PersonAssociation.getSingleAssociations())
+				.filter(e -> !(immunizationModuleReduced && e == PersonAssociation.IMMUNIZATION))
 				.map(e -> getPersonIds(SerializationUtils.clone(nullSafeCriteria).personAssociation(e)))
-				.forEach(e -> distinctPersonIds.addAll(e));
+				.forEach(distinctPersonIds::addAll);
 			count = distinctPersonIds.size();
 		} else {
 			// Directly fetch the count for the only required association

@@ -233,9 +233,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				FieldVisibilityCheckers.withDisease(disease),
 				PathogenTestType.class);
 		});
-		diseaseVariantField.addValueChangeListener(
-			e -> diseaseVariantDetailsField
-				.setVisible(((DiseaseVariant) e.getProperty().getValue()).matchPropertyValue(DiseaseVariant.HAS_DETAILS, true)));
+		diseaseVariantField.addValueChangeListener(e -> {
+			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();
+			diseaseVariantDetailsField.setVisible(diseaseVariant != null && diseaseVariant.matchPropertyValue(DiseaseVariant.HAS_DETAILS, true));
+		});
 
 		testTypeField.addValueChangeListener(e -> {
 			PathogenTestType testType = (PathogenTestType) e.getProperty().getValue();

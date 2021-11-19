@@ -243,6 +243,7 @@ public interface Strings {
 	String entityTreatments = "entityTreatments";
 	String entityUser = "entityUser";
 	String entityUserRoles = "entityUserRoles";
+	String entityVaccinations = "entityVaccinations";
 	String epiWeek = "epiWeek";
 	String errorAccessDenied = "errorAccessDenied";
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
@@ -700,6 +701,7 @@ public interface Strings {
 	String infoConvertToCaseContactsAndEventParticipants = "infoConvertToCaseContactsAndEventParticipants";
 	String infoConvertToCaseEventParticipants = "infoConvertToCaseEventParticipants";
 	String infoConvertToCaseSelect = "infoConvertToCaseSelect";
+	String infoCountryNotEditableEventParticipantsWithoutJurisdiction = "infoCountryNotEditableEventParticipantsWithoutJurisdiction";
 	String infoCreateEntry = "infoCreateEntry";
 	String infoCreateNewContactDiscardsChanges = "infoCreateNewContactDiscardsChanges";
 	String infoCreateNewSampleDiscardsChanges = "infoCreateNewSampleDiscardsChanges";
@@ -724,6 +726,7 @@ public interface Strings {
 	String infoEpiDataFieldsHint = "infoEpiDataFieldsHint";
 	String infoEpiDataSourceCaseContacts = "infoEpiDataSourceCaseContacts";
 	String infoEventParticipantAlreadyExisting = "infoEventParticipantAlreadyExisting";
+	String infoEventResponsibleUserFilter = "infoEventResponsibleUserFilter";
 	String infoExistingImmunizationPeriod = "infoExistingImmunizationPeriod";
 	String infoExpectedFollowUpUntilDateCase = "infoExpectedFollowUpUntilDateCase";
 	String infoExpectedFollowUpUntilDateContact = "infoExpectedFollowUpUntilDateContact";
@@ -767,6 +770,8 @@ public interface Strings {
 	String infoNoSourceCaseSelectedLineListing = "infoNoSourceCaseSelectedLineListing";
 	String infoNoSubordinateEvents = "infoNoSubordinateEvents";
 	String infoNoSuperordinateEvent = "infoNoSuperordinateEvent";
+	String infoObserverMissingEmail = "infoObserverMissingEmail";
+	String infoObserverMissingEmailOrPhoneNumber = "infoObserverMissingEmailOrPhoneNumber";
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
@@ -815,6 +820,8 @@ public interface Strings {
 	String infoUserSyncProcess = "infoUserSyncProcess";
 	String infoWeeklyReportsView = "infoWeeklyReportsView";
 	String labelActualLongSeed = "labelActualLongSeed";
+	String labelNoVaccinationDate = "labelNoVaccinationDate";
+	String labelNoVaccineName = "labelNoVaccineName";
 	String labelNumberOfAreas = "labelNumberOfAreas";
 	String labelNumberOfCommunities = "labelNumberOfCommunities";
 	String labelNumberOfContinents = "labelNumberOfContinents";
@@ -992,6 +999,7 @@ public interface Strings {
 	String messageFollowUpCanceled = "messageFollowUpCanceled";
 	String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";
 	String messageFormHasErrorsPathogenTest = "messageFormHasErrorsPathogenTest";
+	String messageForwardedLabMessageFound = "messageForwardedLabMessageFound";
 	String messageGdpr = "messageGdpr";
 	String messageGdprCheck = "messageGdprCheck";
 	String messageImmunizationArchived = "messageImmunizationArchived";
@@ -1074,6 +1082,8 @@ public interface Strings {
 	String messageRegionsArchived = "messageRegionsArchived";
 	String messageRegionsArchivingNotPossible = "messageRegionsArchivingNotPossible";
 	String messageRegionsDearchived = "messageRegionsDearchived";
+	String messageRelatedSampleAndLabMessagesFound = "messageRelatedSampleAndLabMessagesFound";
+	String messageRelatedSampleFound = "messageRelatedSampleFound";
 	String messageSampleErrors = "messageSampleErrors";
 	String messageSampleOpened = "messageSampleOpened";
 	String messageSampleSaved = "messageSampleSaved";

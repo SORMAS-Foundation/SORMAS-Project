@@ -37,6 +37,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonContactDetail;
 import de.symeda.sormas.app.component.dialog.FormDialog;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
+import de.symeda.sormas.app.component.validation.ValidationHelper;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogPersonContactDetailEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
@@ -89,6 +90,12 @@ public class PersonContactDetailDialog extends FormDialog {
 				contentBinding.personContactDetailDetails.setVisibility(View.GONE);
 			} else {
 				contentBinding.personContactDetailDetails.setVisibility(View.VISIBLE);
+			}
+			ValidationHelper.resetValidator(contentBinding.personContactDetailContactInformation);
+			if (e.getValue() == PersonContactDetailType.EMAIL) {
+				ValidationHelper.initEmailValidator(contentBinding.personContactDetailContactInformation);
+			} else if (e.getValue() == PersonContactDetailType.PHONE) {
+				ValidationHelper.initPhoneNumberValidator(contentBinding.personContactDetailContactInformation);
 			}
 		});
 		contentBinding.personContactDetailPhoneNumberType.addValueChangedListener(e -> {

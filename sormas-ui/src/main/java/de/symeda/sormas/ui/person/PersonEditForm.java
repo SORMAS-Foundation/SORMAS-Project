@@ -708,6 +708,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				PersonDto.BURIAL_DATE,
 				PersonDto.BURIAL_PLACE_DESCRIPTION,
 				PersonDto.BURIAL_CONDUCTOR);
+			getField(PersonDto.DEATH_DATE).setValue(null);
+			getField(PersonDto.BURIAL_DATE).setValue(null);
 			toggleCauseOfDeathFields(false);
 		} else {
 			switch (type) {
@@ -738,6 +740,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					PersonDto.BURIAL_DATE,
 					PersonDto.BURIAL_PLACE_DESCRIPTION,
 					PersonDto.BURIAL_CONDUCTOR);
+				getField(PersonDto.DEATH_DATE).setValue(null);
+				getField(PersonDto.BURIAL_DATE).setValue(null);
 				toggleCauseOfDeathFields(false);
 				break;
 			}

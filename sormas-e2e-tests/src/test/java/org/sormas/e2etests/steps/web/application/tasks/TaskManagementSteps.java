@@ -18,7 +18,6 @@
 
 package org.sormas.e2etests.steps.web.application.tasks;
 
-import static java.util.function.Predicate.*;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_POPUP;
 import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_TYPE_COMBOBOX;
@@ -35,6 +34,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Task;
@@ -66,10 +66,14 @@ public class TaskManagementSteps implements En {
     When(
         "^I open last created task$",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(
+          By lastTaskEditButton =
               By.xpath(
                   String.format(
-                      EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnTask())));
+                      EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnTask()));
+          do {
+            webDriverHelpers.scrollInTable(10);
+          } while (!webDriverHelpers.isElementVisibleWithTimeout(lastTaskEditButton, 2));
+          webDriverHelpers.clickOnWebElementBySelector(lastTaskEditButton);
           webDriverHelpers.isElementVisibleWithTimeout(TASK_POPUP, 5);
         });
 
@@ -90,12 +94,12 @@ public class TaskManagementSteps implements En {
         });
 
     When(
-        "^I search last created task by API using Contact UUID and wait for (\\d+) results to be displayed$",
-        (Integer displayedResults) -> {
+        "^I search last created task by API using Contact UUID$",
+        () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(GENERAL_SEARCH_INPUT);
           webDriverHelpers.fillAndSubmitInWebElement(
               GENERAL_SEARCH_INPUT, apiState.getCreatedContact().getUuid());
-          webDriverHelpers.waitUntilNumberOfElementsIsReduceToGiven(TABLE_ROW, displayedResults);
+          TimeUnit.SECONDS.sleep(20);
         });
 
     When(
@@ -149,7 +153,6 @@ public class TaskManagementSteps implements En {
     When(
         "^I collect the task column objects$",
         () -> {
-          TimeUnit.SECONDS.sleep(5); // time needed for table to load data
           List<Map<String, String>> tableRowsData = getTableRowsData();
           taskTableRows = new ArrayList<>();
           tableRowsData.forEach(
@@ -227,7 +230,13 @@ public class TaskManagementSteps implements En {
 
   private LocalDateTime getLocalDateTimeFromColumns(String date) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy h:mm a");
-    return LocalDateTime.parse(date, formatter);
+    try {
+      return LocalDateTime.parse(date.trim(), formatter);
+    } catch (Exception e) {
+      throw new WebDriverException(
+          String.format(
+              "Unable to parse date: %s due to caught exception: %s", date, e.getMessage()));
+    }
   }
 
   private String getPartialUuidFromAssociatedLink(String associatedLink) {
