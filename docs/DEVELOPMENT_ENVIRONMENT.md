@@ -62,7 +62,7 @@ If you plan to work on the Android App as well, you will also need the **Java 8 
 - Either run `mvn install` on the `sormas-base` project or execute the `install [default]` Ant script (this needs a Maven installation on your system with the M2_HOME variable set)
 - Execute the `deploy-serverlibs` Ant script
 - Highlight all Eclipse projects and choose `Maven -> Update Project` from the right-click menu; perform the update for all projects
-- Start the Glassfish server and deploy `sormas-ear`, `sormas-rest` and `sormas-ui` by dragging the respective projects onto it, or use the `Add and Remove...` function by right-clicking on the server (make sure the respect the order as specified here as there are depdendencies between artifacts at startup)
+- Start the Glassfish server and deploy `sormas-ear`, `sormas-rest` and `sormas-ui` by dragging the respective projects onto it, or use the `Add and Remove...` function by right-clicking on the server (make sure to respect this order as there are depdendencies between artifacts at startup)
 - Open your browser and type in `http://localhost:6080/sormas-ui` to test whether the server and IDE have been set up correctly
 
 ### Android Studio
