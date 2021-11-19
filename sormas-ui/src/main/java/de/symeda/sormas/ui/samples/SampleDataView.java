@@ -15,6 +15,7 @@
 package de.symeda.sormas.ui.samples;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.vaadin.shared.ui.MarginInfo;
@@ -135,7 +136,9 @@ public class SampleDataView extends AbstractSampleView {
 		SampleController sampleController = ControllerProvider.getSampleController();
 		editComponent = sampleController.getSampleEditComponent(getSampleRef().getUuid(), sampleDto.isPseudonymized(), disease, true);
 		sampleController.addReferOrLinkToOtherLabButton(editComponent, disease);
-		sampleController.addReferredFromButton(editComponent);
+
+		Consumer<SampleDto> navigate = targetSampleDto -> sampleController.navigateToData(targetSampleDto.getUuid());
+		sampleController.addReferredFromButton(editComponent, navigate);
 
 		editComponent.setMargin(new MarginInfo(false, false, true, false));
 		editComponent.setWidth(100, Unit.PERCENTAGE);

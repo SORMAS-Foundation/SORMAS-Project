@@ -382,7 +382,7 @@ public class SampleController {
 		}
 	}
 
-	public void addReferredFromButton(CommitDiscardWrapperComponent<SampleEditForm> editForm) {
+	public void addReferredFromButton(CommitDiscardWrapperComponent<SampleEditForm> editForm, Consumer<SampleDto> navigation) {
 		SampleReferenceDto referredFromRef = FacadeProvider.getSampleFacade().getReferredFrom(editForm.getWrappedComponent().getValue().getUuid());
 		if (referredFromRef != null) {
 			SampleDto referredFrom = FacadeProvider.getSampleFacade().getSampleByUuid(referredFromRef.getUuid());
@@ -391,12 +391,8 @@ public class SampleController {
 				? I18nProperties.getCaption(Captions.sampleReferredFromInternal) + " ("
 					+ DateFormatHelper.formatLocalDateTime(referredFrom.getSampleDateTime()) + ")"
 				: I18nProperties.getCaption(Captions.sampleReferredFrom) + " " + referredFromLab.toString();
-			Button referredButton = ButtonHelper.createButton(
-				"referredFrom",
-				referredButtonCaption,
-				event -> ControllerProvider.getSampleController().navigateToData(referredFrom.getUuid()),
-				ValoTheme.BUTTON_LINK,
-				VSPACE_NONE);
+			Button referredButton = ButtonHelper
+				.createButton("referredFrom", referredButtonCaption, event -> navigation.accept(referredFrom), ValoTheme.BUTTON_LINK, VSPACE_NONE);
 			editForm.getWrappedComponent().addReferredFromButton(referredButton);
 		}
 	}

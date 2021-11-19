@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.naming.CannotProceedException;
@@ -630,7 +631,12 @@ public class LabMessageController {
 
 		// button configuration
 		addReferOrLinkToOtherLabButton(sampleEditComponent, sampleController.getDiseaseOf(sample), labMessage, window);
-		addReferredFromButton(sampleEditComponent, labMessage, window);
+
+		Consumer<SampleDto> navigate = sampleDto -> {
+			editSample(sampleDto, labMessage);
+			window.close();
+		};
+		sampleController.addReferredFromButton(sampleEditComponent, navigate);
 
 		sampleEditComponent.addCommitListener(window::close);
 		sampleEditComponent.addDiscardListener(window::close);
@@ -691,23 +697,6 @@ public class LabMessageController {
 		if (referOrLinkToOtherLabButton != null) {
 			editForm.getButtonsPanel().addComponentAsFirst(referOrLinkToOtherLabButton);
 			editForm.getButtonsPanel().setComponentAlignment(referOrLinkToOtherLabButton, Alignment.BOTTOM_LEFT);
-		}
-	}
-
-	public void addReferredFromButton(CommitDiscardWrapperComponent<SampleEditForm> editForm, LabMessageDto labMessage, Window window) {
-		SampleReferenceDto referredFromRef = FacadeProvider.getSampleFacade().getReferredFrom(editForm.getWrappedComponent().getValue().getUuid());
-		if (referredFromRef != null) {
-			SampleDto referredFrom = FacadeProvider.getSampleFacade().getSampleByUuid(referredFromRef.getUuid());
-			FacilityReferenceDto referredFromLab = referredFrom.getLab();
-			String referredButtonCaption = referredFromLab == null
-				? I18nProperties.getCaption(Captions.sampleReferredFromInternal) + " ("
-					+ DateFormatHelper.formatLocalDateTime(referredFrom.getSampleDateTime()) + ")"
-				: I18nProperties.getCaption(Captions.sampleReferredFrom) + " " + referredFromLab.toString();
-			Button referredButton = ButtonHelper.createButton("referredFrom", referredButtonCaption, event -> {
-				editSample(referredFrom, labMessage);
-				window.close();
-			}, ValoTheme.BUTTON_LINK, VSPACE_NONE);
-			editForm.getWrappedComponent().addReferredFromButton(referredButton);
 		}
 	}
 
