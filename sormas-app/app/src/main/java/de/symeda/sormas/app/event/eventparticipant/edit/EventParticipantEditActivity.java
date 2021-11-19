@@ -40,6 +40,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
@@ -102,12 +103,14 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 	@Override
 	public List<PageMenuItem> getPageMenuData() {
 		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(EventParticipantSection.values(), getContext());
+		Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
 		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
 			|| DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 			menuItems.set(EventParticipantSection.IMMUNIZATIONS.ordinal(), null);
 		}
 		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
-			|| !DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			|| !DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)
+			|| event.getDisease() == null) {
 			menuItems.set(EventParticipantSection.VACCINATIONS.ordinal(), null);
 		}
 		return menuItems;

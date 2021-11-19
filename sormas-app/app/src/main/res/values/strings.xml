@@ -667,5 +667,7 @@
     <string name="caption_facility_type_group">Facility category</string>
     <string name="caption_facility_type">Facility type</string>
     <string name="value_vaccine_date_unknown">Vaccination Date N/A</string>
+    <string name="value_vaccine_name_unknown">Vaccine N/A</string>
+    <string name="value_vaccine_manufacturer_unknown">Manufacturer N/A</string>
 
 </resources>

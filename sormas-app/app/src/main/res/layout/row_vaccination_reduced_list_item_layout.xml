@@ -92,7 +92,7 @@
                 android:textColor="@color/listActivityRowPrimaryText"
                 android:textSize="@dimen/listActivityRowPrimaryTextSize"
                 android:visibility="@{data.VaccineName == Vaccine.OTHER ? View.GONE : View.VISIBLE}"
-                app:defaultValue='@{@string/value_task_type_unknown}'
+                app:defaultValue='@{@string/value_vaccine_name_unknown}'
                 app:value="@{data.VaccineName}"
                 />
 
@@ -104,7 +104,7 @@
                 android:textColor="@color/listActivityRowPrimaryText"
                 android:textSize="@dimen/listActivityRowPrimaryTextSize"
                 android:visibility="@{data.VaccineName != Vaccine.OTHER ? View.GONE : View.VISIBLE}"
-                app:defaultValue='@{@string/value_task_type_unknown}'
+                app:defaultValue='@{@string/value_vaccine_name_unknown}'
                 app:value="@{data.otherVaccineName}"
                 />
 
@@ -133,7 +133,7 @@
                         android:scrollHorizontally="true"
                         android:textColor="@color/row_entry_secondary_text"
                         android:textSize="@dimen/row_entry_secondary_text_size"
-                        app:defaultValue='@{@string/value_person_unknown}'
+                        app:defaultValue='@{@string/value_vaccine_manufacturer_unknown}'
                         app:value="@{data.vaccineManufacturer}"
                         />
 
