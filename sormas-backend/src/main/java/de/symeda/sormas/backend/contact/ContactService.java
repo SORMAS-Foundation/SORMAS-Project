@@ -1449,6 +1449,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Root<Contact> root = cu.from(Contact.class);
 
 		cu.set(root.get(Contact.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
+		cu.set(root.get(AbstractDomainObject.CHANGE_DATE), new Date());
 
 		Predicate datePredicate = vaccinationDate != null
 			? cb.or(

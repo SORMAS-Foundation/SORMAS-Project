@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.safety.Whitelist;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -151,7 +152,12 @@ public final class ClassificationHtmlRenderer {
 		return sb.toString();
 	}
 
-	public static String createHtmlForDownload(String sormasServerUrl, List<Disease> diseases, Language language) {
+	public static String createHtmlForDownload(
+		String sormasServerUrl,
+		List<Disease> diseases,
+		Language language,
+		CaseClassificationFacade caseClassificationFacade,
+		ConfigFacade configFacade) {
 		StringBuilder html = new StringBuilder();
 		html.append("<html><header><style>");
 
@@ -223,13 +229,13 @@ public final class ClassificationHtmlRenderer {
 		//@formatter:on
 
 		for (Disease disease : diseases) {
-			DiseaseClassificationCriteriaDto diseaseCriteria = FacadeProvider.getCaseClassificationFacade().getByDisease(disease);
+			DiseaseClassificationCriteriaDto diseaseCriteria = caseClassificationFacade.getByDisease(disease);
 			if (diseaseCriteria != null && diseaseCriteria.hasAnyCriteria()) {
 				html.append("<h2 style=\"text-align: center; color: #005A9C;\">" + disease.toString() + "</h2>");
 				html.append(createSuspectHtmlString(diseaseCriteria));
 				html.append(createProbableHtmlString(diseaseCriteria));
 				html.append(createConfirmedHtmlString(diseaseCriteria));
-				if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)){
+				if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 					html.append(createConfirmedNoSymptomsHtmlString(diseaseCriteria));
 					html.append(createConfirmedUnknownSymptomsHtmlString(diseaseCriteria));
 				}
