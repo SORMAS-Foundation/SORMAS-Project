@@ -97,8 +97,8 @@ import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.events.EventParticipantEditForm;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
-import de.symeda.sormas.ui.labmessage.CorrectionLabMessageHandler.CorrectionHandlerChain;
-import de.symeda.sormas.ui.labmessage.CorrectionLabMessageHandler.CorrectionResult;
+import de.symeda.sormas.ui.labmessage.RelatedLabMessageHandler.CorrectionHandlerChain;
+import de.symeda.sormas.ui.labmessage.RelatedLabMessageHandler.CorrectionResult;
 import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.samples.PathogenTestForm;
 import de.symeda.sormas.ui.samples.SampleController;
@@ -114,10 +114,11 @@ public class LabMessageController {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private final CorrectionLabMessageHandler correctionLabMessageHandler;
+	private final RelatedLabMessageHandler relatedLabMessageHandler;
 
 	public LabMessageController() {
-		correctionLabMessageHandler = new CorrectionLabMessageHandler(
+		relatedLabMessageHandler = new RelatedLabMessageHandler(
+			this::confirmHandleCorrections,
 			this::showPersonCorrectionWindow,
 			this::showSampleCorrectionWindow,
 			this::showPathogenTestCorrectionWindow,
@@ -162,7 +163,7 @@ public class LabMessageController {
 			return;
 		}
 
-		correctionLabMessageHandler.handle(labMessageDto, mapper)
+		relatedLabMessageHandler.handle(labMessageDto, mapper)
 			.thenCompose((result) -> handleCorrectionResult(result, labMessageDto))
 			.whenComplete((doProcessingFlow, e) -> {
 				if (e != null) {
@@ -860,51 +861,49 @@ public class LabMessageController {
 
 		buttonsPanel.addComponent(deleteButton);
 
-		Button unclearButton =
-			ButtonHelper.createButton(
-				Captions.actionUnclearLabMessage,
-				I18nProperties.getCaption(Captions.actionUnclearLabMessage),
-				(e) -> VaadinUiUtil.showConfirmationPopup(
-					I18nProperties.getString(Strings.headingConfirmUnclearLabMessage),
-					new Label(I18nProperties.getString(Strings.confirmationUnclearLabMessage)),
-					I18nProperties.getString(Strings.yes),
-					I18nProperties.getString(Strings.no),
-					null,
-					(confirmed) -> {
-						if (confirmed) {
-							if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
-								showAlreadyProcessedPopup(null, false);
-							} else {
-								labMessage.setStatus(LabMessageStatus.UNCLEAR);
-								FacadeProvider.getLabMessageFacade().save(labMessage);
-								callback.run();
-							}
+		Button unclearButton = ButtonHelper.createButton(
+			Captions.actionUnclearLabMessage,
+			I18nProperties.getCaption(Captions.actionUnclearLabMessage),
+			(e) -> VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingConfirmUnclearLabMessage),
+				new Label(I18nProperties.getString(Strings.confirmationUnclearLabMessage)),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				null,
+				(confirmed) -> {
+					if (confirmed) {
+						if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
+							showAlreadyProcessedPopup(null, false);
+						} else {
+							labMessage.setStatus(LabMessageStatus.UNCLEAR);
+							FacadeProvider.getLabMessageFacade().save(labMessage);
+							callback.run();
 						}
-					}));
+					}
+				}));
 
 		buttonsPanel.addComponent(unclearButton);
 
-		Button forwardButton = ButtonHelper
-			.createButton(
-				Captions.actionManualForwardLabMessage,
-				I18nProperties.getCaption(Captions.actionManualForwardLabMessage),
-				(e) -> VaadinUiUtil.showConfirmationPopup(
-					I18nProperties.getString(Strings.headingConfirmManuallyForwardedLabMessage),
-					new Label(I18nProperties.getString(Strings.confirmationManuallyForwardedLabMessage)),
-					I18nProperties.getString(Strings.yes),
-					I18nProperties.getString(Strings.no),
-					null,
-					(confirmed) -> {
-						if (confirmed) {
-							if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
-								showAlreadyProcessedPopup(null, false);
-							} else {
-								labMessage.setStatus(LabMessageStatus.FORWARDED);
-								FacadeProvider.getLabMessageFacade().save(labMessage);
-								callback.run();
-							}
+		Button forwardButton = ButtonHelper.createButton(
+			Captions.actionManualForwardLabMessage,
+			I18nProperties.getCaption(Captions.actionManualForwardLabMessage),
+			(e) -> VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingConfirmManuallyForwardedLabMessage),
+				new Label(I18nProperties.getString(Strings.confirmationManuallyForwardedLabMessage)),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				null,
+				(confirmed) -> {
+					if (confirmed) {
+						if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
+							showAlreadyProcessedPopup(null, false);
+						} else {
+							labMessage.setStatus(LabMessageStatus.FORWARDED);
+							FacadeProvider.getLabMessageFacade().save(labMessage);
+							callback.run();
 						}
-					}));
+					}
+				}));
 
 		buttonsPanel.addComponent(forwardButton);
 
@@ -949,6 +948,21 @@ public class LabMessageController {
 	}
 
 	// correction
+	private CompletionStage<Boolean> confirmHandleCorrections() {
+		CompletableFuture<Boolean> ret = new CompletableFuture<>();
+
+		Window window = VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingLabMessageRelatedLabMessage),
+			new Label(I18nProperties.getString(Strings.confirmationLabMessageRelatedLabMessage)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			null,
+			ret::complete);
+		window.addCloseListener(e -> ret.complete(false));
+
+		return ret;
+	}
+
 	private void showPersonCorrectionWindow(
 		LabMessageDto labMessageDto,
 		PersonDto person,

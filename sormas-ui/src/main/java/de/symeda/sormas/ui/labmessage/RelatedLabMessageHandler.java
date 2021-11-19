@@ -24,6 +24,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,7 +42,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
-public class CorrectionLabMessageHandler {
+public class RelatedLabMessageHandler {
 
 	public interface CorrectedEntityHandler<T> {
 
@@ -53,7 +54,7 @@ public class CorrectionLabMessageHandler {
 	}
 
 	public enum CorrectionResult {
-		NO_RELATIONS_FOUND,
+		NOT_HANDLED,
 		NO_CORRECTIONS,
 		HANDLED
 	}
@@ -79,16 +80,19 @@ public class CorrectionLabMessageHandler {
 		}
 	}
 
+	private final Supplier<CompletionStage<Boolean>> confirmation;
 	private final CorrectedEntityHandler<PersonDto> personHandler;
 	private final CorrectedEntityHandler<SampleDto> sampleHandler;
 	private final CorrectedEntityHandler<PathogenTestDto> pathogenTestHandler;
 	private final CratePathogenTestHandler cratePathogenTestHandler;
 
-	public CorrectionLabMessageHandler(
+	public RelatedLabMessageHandler(
+		Supplier<CompletionStage<Boolean>> confirmation,
 		CorrectedEntityHandler<PersonDto> personHandler,
 		CorrectedEntityHandler<SampleDto> sampleHandler,
 		CorrectedEntityHandler<PathogenTestDto> pathogenTestHandler,
 		CratePathogenTestHandler cratePathogenTestHandler) {
+		this.confirmation = confirmation;
 		this.personHandler = personHandler;
 		this.sampleHandler = sampleHandler;
 		this.pathogenTestHandler = pathogenTestHandler;
@@ -99,25 +103,32 @@ public class CorrectionLabMessageHandler {
 		RelatedEntities relatedEntities = getRelatedEntities(labMessage);
 
 		if (relatedEntities == null) {
-			return CompletableFuture.completedFuture(CorrectionResult.NO_RELATIONS_FOUND);
+			return CompletableFuture.completedFuture(CorrectionResult.NOT_HANDLED);
 		}
 
-		CompletionStage<CorrectionResult> chain = handlePersonCorrection(labMessage, relatedEntities.person, mapper, CorrectionResult.NO_CORRECTIONS)
-			.thenCompose((personCorrectionResult) -> handleSampleCorrection(labMessage, relatedEntities.sample, mapper, personCorrectionResult));
+		return confirmation.get().thenCompose((confirmed) -> {
+			if (confirmed) {
+				CompletionStage<CorrectionResult> chain =
+					handlePersonCorrection(labMessage, relatedEntities.person, mapper, CorrectionResult.NO_CORRECTIONS).thenCompose(
+						(personCorrectionResult) -> handleSampleCorrection(labMessage, relatedEntities.sample, mapper, personCorrectionResult));
 
-		for (PathogenTestDto p : relatedEntities.pathogenTests) {
-			Optional<TestReportDto> testReport = labMessage.getTestReports().stream().filter(t -> matchPathogenTest(t, p)).findFirst();
-			if (testReport.isPresent()) {
-				chain = chain.thenCompose(
-					(testCorrectionResult) -> handlePathogenTestCorrection(labMessage, testReport.get(), p, mapper, testCorrectionResult));
+				for (PathogenTestDto p : relatedEntities.pathogenTests) {
+					Optional<TestReportDto> testReport = labMessage.getTestReports().stream().filter(t -> matchPathogenTest(t, p)).findFirst();
+					if (testReport.isPresent()) {
+						chain = chain.thenCompose(
+							(testCorrectionResult) -> handlePathogenTestCorrection(labMessage, testReport.get(), p, mapper, testCorrectionResult));
+					}
+				}
+
+				for (TestReportDto r : relatedEntities.unmatchedTestReports) {
+					chain = chain.thenCompose((result) -> handlePathogenTestCreation(labMessage, r, relatedEntities.sample));
+				}
+
+				return chain;
 			}
-		}
 
-		for (TestReportDto r : relatedEntities.unmatchedTestReports) {
-			chain = chain.thenCompose((result) -> handlePathogenTestCreation(labMessage, r, relatedEntities.sample));
-		}
-
-		return chain;
+			return CompletableFuture.completedFuture(CorrectionResult.NOT_HANDLED);
+		});
 	}
 
 	// correction
