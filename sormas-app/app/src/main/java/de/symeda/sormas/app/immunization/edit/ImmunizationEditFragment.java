@@ -196,7 +196,6 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		contentBinding.immunizationLastInfectionDate.initializeDateField(getFragmentManager());
 
 		updateMeansOfImmunizationFields(contentBinding);
-		updateImmunizationStatus(contentBinding);
 
 		contentBinding.immunizationMeansOfImmunization.addValueChangedListener(e -> {
 			MeansOfImmunization meansOfImmunization = (MeansOfImmunization) e.getValue();
@@ -207,6 +206,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 					removeVaccinationsConfirmation(contentBinding);
 				} else {
 					updateMeansOfImmunizationFields(contentBinding);
+					updateImmunizationStatus(contentBinding);
 				}
 			}
 		});
@@ -293,7 +293,6 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 			contentBinding.immunizationRecoveryDate.setValue(null);
 			contentBinding.immunizationPositiveTestResultDate.setValue(null);
 		}
-		updateImmunizationStatus(contentBinding);
 
 		meansOfImmunizationChange.accept(meansOfImmunizationValue);
 		currentMeansOfImmunization = meansOfImmunizationValue;
@@ -324,14 +323,9 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 				if (numberOfDoses != null && CollectionUtils.isNotEmpty(record.getVaccinations())) {
 					if (record.getVaccinations().size() >= numberOfDoses) {
 						contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.COMPLETED);
-						contentBinding.immunizationImmunizationStatus.setValue(ImmunizationStatus.ACQUIRED);
 					} else {
 						contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.ONGOING);
-						contentBinding.immunizationImmunizationStatus.setValue(ImmunizationStatus.PENDING);
 					}
-				} else {
-					contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.SCHEDULED);
-					contentBinding.immunizationImmunizationStatus.setValue(ImmunizationStatus.PENDING);
 				}
 			}
 		}
@@ -347,6 +341,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		dialog.setPositiveCallback(() -> {
 			record.setVaccinations(new ArrayList<>());
 			updateMeansOfImmunizationFields(contentBinding);
+			updateImmunizationStatus(contentBinding);
 		});
 		dialog.setNegativeCallback(() -> {
 			contentBinding.immunizationMeansOfImmunization.setValue(currentMeansOfImmunization);
