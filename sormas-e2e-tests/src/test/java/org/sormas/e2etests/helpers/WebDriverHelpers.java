@@ -338,11 +338,9 @@ public class WebDriverHelpers {
     waitUntilIdentifiedElementIsPresent(selector);
     try {
       if (selector instanceof WebElement) {
-        log.info("Scrolling to element: {}", selector);
         javascriptExecutor.executeScript(SCROLL_TO_WEB_ELEMENT_SCRIPT, selector);
       } else {
         waitUntilIdentifiedElementIsPresent(selector);
-        log.info("Scrolling to element: {}", selector);
         javascriptExecutor.executeScript(
             SCROLL_TO_WEB_ELEMENT_SCRIPT, baseSteps.getDriver().findElement((By) selector));
       }
