@@ -194,6 +194,14 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(District.UUID), criteria.getDistrict().getUuid()));
 		}
 
+		if (criteria.getSearchText() != null) {
+			Predicate searchText = CriteriaBuilderHelper.unaccentedIlike(cb, root.get(District.NAME), criteria.getSearchText());
+			if (criteria.getRegion() == null) {
+				searchText = cb.or(searchText, CriteriaBuilderHelper.unaccentedIlike(cb, regionJoin.get(Region.NAME), criteria.getSearchText()));
+			}
+			filter = CriteriaBuilderHelper.and(cb, filter, searchText);
+		}
+
 		if (filter != null) {
 			cq.where(filter);
 		}

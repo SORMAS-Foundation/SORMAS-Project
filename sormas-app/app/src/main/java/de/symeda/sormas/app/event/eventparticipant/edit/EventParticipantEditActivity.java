@@ -15,15 +15,16 @@
 
 package de.symeda.sormas.app.event.eventparticipant.edit;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
+
+import java.util.List;
+
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
-
 import androidx.annotation.NonNull;
-
-import java.util.List;
-
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -35,6 +36,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
@@ -45,9 +47,6 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.event.eventparticipant.EventParticipantSection;
 import de.symeda.sormas.app.immunization.edit.ImmunizationNewActivity;
 import de.symeda.sormas.app.util.Bundler;
-
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class EventParticipantEditActivity extends BaseEditActivity<EventParticipant> {
 
@@ -99,7 +98,8 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 	@Override
 	public List<PageMenuItem> getPageMenuData() {
 		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(EventParticipantSection.values(), getContext());
-		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
+		if (event.getDisease() == null || !ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
 			menuItems.set(EventParticipantSection.IMMUNIZATIONS.ordinal(), null);
 		}
 		return menuItems;
@@ -129,7 +129,7 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 		EventParticipantSection activeSection = EventParticipantSection.fromOrdinal(getActivePage().getPosition());
 
 		if (activeSection == EventParticipantSection.IMMUNIZATIONS) {
-			ImmunizationNewActivity.startActivityFromCase(getContext(), getRootUuid());
+			ImmunizationNewActivity.startActivityFromEventParticipant(getContext(), getRootUuid());
 		}
 	}
 
@@ -142,8 +142,9 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 	public void saveData() {
 
 		if (saveTask != null) {
+			// don't save multiple times
 			NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
-			return; // don't save multiple times
+			return;
 		}
 
 		final EventParticipant eventParticipant = (EventParticipant) getActiveFragment().getPrimaryData();
@@ -177,7 +178,8 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 				if (taskResult.getResultStatus().isSuccess()) {
 					finish();
 				} else {
-					onResume(); // reload data
+					// reload data
+					onResume();
 				}
 				saveTask = null;
 			}
@@ -188,7 +190,8 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 	public void onDestroy() {
 		super.onDestroy();
 
-		if (saveTask != null && !saveTask.isCancelled())
+		if (saveTask != null && !saveTask.isCancelled()) {
 			saveTask.cancel(true);
+		}
 	}
 }

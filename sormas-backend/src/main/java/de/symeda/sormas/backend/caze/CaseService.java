@@ -1756,6 +1756,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		symptomsSq.where(cb.equal(symptomsSqRoot, root.get(Case.SYMPTOMS)));
 
 		cu.set(root.get(Case.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
+		cu.set(root.get(AbstractDomainObject.CHANGE_DATE), new Date());
 
 		Predicate datePredicate = vaccinationDate != null
 			? cb.or(
