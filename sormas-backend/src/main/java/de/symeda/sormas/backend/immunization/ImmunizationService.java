@@ -129,7 +129,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		Root<Immunization> root = cq.from(Immunization.class);
 		cq.multiselect(JurisdictionHelper.booleanSelector(cb, createUserFilter(new ImmunizationQueryContext<>(cb, cq, root))));
 		cq.where(cb.equal(root.get(Immunization.UUID), immunization.getUuid()));
-		return em.createQuery(cq).getSingleResult();
+		return em.createQuery(cq).getResultStream().anyMatch(isInJurisdiction -> isInJurisdiction);
 	}
 
 	@Override
