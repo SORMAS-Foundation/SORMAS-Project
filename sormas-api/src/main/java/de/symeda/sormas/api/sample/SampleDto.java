@@ -468,7 +468,7 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasShare
 		return sample;
 	}
 
-	public static SampleDto buildReferral(UserReferenceDto userRef, SampleDto referredSample) {
+	public static SampleDto buildReferralDto(UserReferenceDto userRef, SampleDto referredSample) {
 
 		final SampleDto sample;
 		final CaseReferenceDto associatedCase = referredSample.getAssociatedCase();
@@ -481,17 +481,35 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasShare
 		} else {
 			sample = build(userRef, associatedEventParticipant);
 		}
-		sample.setSampleDateTime(referredSample.getSampleDateTime());
-		sample.setSampleMaterial(referredSample.getSampleMaterial());
-		sample.setSampleMaterialText(referredSample.getSampleMaterialText());
-		sample.setSampleSource(referredSample.getSampleSource());
-		sample.setPathogenTestingRequested(referredSample.getPathogenTestingRequested());
-		sample.setAdditionalTestingRequested(referredSample.getAdditionalTestingRequested());
-		sample.setRequestedPathogenTests(referredSample.getRequestedPathogenTests());
-		sample.setRequestedAdditionalTests(referredSample.getRequestedAdditionalTests());
-		sample.setPathogenTestResult(PathogenTestResultType.PENDING);
+		migrateAttributesOfPhysicalSample(referredSample, sample);
 
 		return sample;
+	}
+
+	/**
+	 * The physical sample is neither the source, nor the target. This method is about migrating the attributes that belong to the real
+	 * (physical) sample out there in the labs.
+	 * Source and target should both refer to the physical sample, but have different values for some attributes. For example, the
+	 * specimenCondition may be different in source and target.
+	 * In one lab (source), the specimenCondition may be ADEQUATE. But then during transport to another lab (target) the specimenCondition
+	 * can change to NOT_ADEQUATE.
+	 *
+	 * In contrast, the attributes of the physical sample don't change (e.g. samplingReason) and thus should be migrated when a sample
+	 * referral is created in SORMAS.
+	 */
+	private static void migrateAttributesOfPhysicalSample(SampleDto source, SampleDto target) {
+		target.setSampleDateTime(source.getSampleDateTime());
+		target.setSampleMaterial(source.getSampleMaterial());
+		target.setSampleMaterialText(source.getSampleMaterialText());
+		target.setSampleSource(source.getSampleSource());
+		target.setPathogenTestingRequested(source.getPathogenTestingRequested());
+		target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
+		target.setRequestedPathogenTests(source.getRequestedPathogenTests());
+		target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
+		target.setFieldSampleID(source.getFieldSampleID());
+		target.setSamplingReason(source.getSamplingReason());
+		target.setSamplingReasonDetails(source.getSamplingReasonDetails());
+		target.setSamplePurpose(source.getSamplePurpose());
 	}
 
 	@ImportIgnore
