@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
@@ -29,13 +28,6 @@ import java.util.stream.Collectors;
 import javax.naming.CannotProceedException;
 import javax.naming.NamingException;
 
-import com.vaadin.server.ClientConnector;
-import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
-import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.ui.samples.SampleController;
-import de.symeda.sormas.ui.samples.SampleEditForm;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,8 +96,8 @@ import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.events.EventParticipantEditForm;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
-import de.symeda.sormas.ui.labmessage.RelatedLabMessageHandler.CorrectionHandlerChain;
-import de.symeda.sormas.ui.labmessage.RelatedLabMessageHandler.CorrectionResult;
+import de.symeda.sormas.ui.labmessage.RelatedLabMessageHandler.HandlerResult;
+import de.symeda.sormas.ui.labmessage.RelatedLabMessageHandler.RelatedLabMessageHandlerChain;
 import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.samples.PathogenTestForm;
 import de.symeda.sormas.ui.samples.SampleController;
@@ -126,10 +118,13 @@ public class LabMessageController {
 	public LabMessageController() {
 		relatedLabMessageHandler = new RelatedLabMessageHandler(
 			this::confirmHandleCorrections,
+			this::confirmShortcut,
 			this::showPersonCorrectionWindow,
 			this::showSampleCorrectionWindow,
 			this::showPathogenTestCorrectionWindow,
-			this::showCreatePathogenTestWindow);
+			this::showCreatePathogenTestWindow,
+			this::confirmContinueProcessing,
+			this::editSample);
 	}
 
 	public void showLabMessage(String labMessageUuid, boolean withActions, Runnable onFormActionPerformed) {
@@ -167,30 +162,6 @@ public class LabMessageController {
 
 	}
 
-/*public void processLabMessage(String labMessageUuid) {
-		final LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
-		final LabMessageMapper mapper = LabMessageMapper.forLabMessage(labMessageDto);
-
-		if (FacadeProvider.getLabMessageFacade().isProcessed(labMessageUuid)) {
-			showAlreadyProcessedPopup(null, false);
-			return;
-		}
-
-		relatedLabMessageHandler.handle(labMessageDto, mapper)
-			.thenCompose((result) -> handleCorrectionResult(result, labMessageDto))
-			.whenComplete((doProcessingFlow, e) -> {
-				if (e != null) {
-					if (e.getCause() instanceof CancellationException) {
-						// stop when canceled
-						return;
-					} else {
-						logger.error("Failed to handle correction lab message", e);
-						throw (RuntimeException) e;
-					}
-				}
-
-				if (doProcessingFlow) {
-					final PersonDto personDto = buildPerson(mapper);*/
 	private void checkRelatedForwardedMessages(LabMessageDto labMessage) {
 		if (FacadeProvider.getLabMessageFacade().existsForwardedLabMessageWith(labMessage.getReportId())) {
 			VaadinUiUtil.showConfirmationPopup(
@@ -201,62 +172,35 @@ public class LabMessageController {
 				null,
 				yes -> {
 					if (yes) {
-						checkShortcuts(labMessage);
+						handleRelatedLabMessages(labMessage);
 					}
 				});
 		} else {
-			checkShortcuts(labMessage);
+			handleRelatedLabMessages(labMessage);
 		}
 	}
 
-	private void checkShortcuts(LabMessageDto labMessage) {
+	private void handleRelatedLabMessages(LabMessageDto labMessage) {
 
 		if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
 			showAlreadyProcessedPopup(null, false);
 			return;
 		}
 
-		String labSampleId = labMessage.getLabSampleId();
-		if (!StringUtils.isBlank(labSampleId)) {
-			List<SampleDto> relatedSamples = FacadeProvider.getSampleFacade().getByLabSampleId(labSampleId);
-			SampleDto relatedSample = relatedSamples.size() == 1 ? relatedSamples.get(0) : null;
-			// if shortcut possible
-			if (relatedSample != null) {
-				List<LabMessageDto> relatedLabMessages = null;
-				// determine related messages
-				String reportId = labMessage.getReportId();
-				if (!StringUtils.isBlank(reportId)) {
-					relatedLabMessages = FacadeProvider.getLabMessageFacade()
-						.getForSample(relatedSample.toReference())
-						.stream()
-						.filter(
-							otherLabMessage -> reportId.equals(otherLabMessage.getReportId())
-								&& LabMessageStatus.PROCESSED.equals(otherLabMessage.getStatus()))
-						.collect(Collectors.toList());
-				}
-
-				// propose to take shortcut
-				String message = (relatedLabMessages != null && !relatedLabMessages.isEmpty())
-					? I18nProperties.getString(Strings.messageRelatedSampleAndLabMessagesFound)
-					: I18nProperties.getString(Strings.messageRelatedSampleFound);
-				VaadinUiUtil.showChooseOptionPopup(
-					I18nProperties.getCaption(Captions.labMessageRelatedEntriesFound),
-					new Label(message),
-					I18nProperties.getCaption(Captions.actionYes),
-					I18nProperties.getCaption(Captions.actionNo),
-					null,
-					yes -> {
-						if (yes) {
-							editSample(relatedSample, labMessage);
-						} else {
-							pickOrCreatePerson(labMessage);
-						}
-					}).setClosable(true);
-				return;
+		relatedLabMessageHandler.handle(labMessage).whenComplete((result, e) -> {
+			if (e != null) {
+				logger.error("Failed to handle correction lab message", e);
+				throw (RuntimeException) e;
 			}
-		}
-		// when there is no shortcut possible
-		pickOrCreatePerson(labMessage);
+
+			if (result == HandlerResult.NOT_HANDLED) {
+				pickOrCreatePerson(labMessage);
+			} else if (result == HandlerResult.CANCELED_WITH_UPDATES) {
+				showCorrectionsSavedPopup();
+			} else if (result == HandlerResult.HANDLED) {
+				finishProcessingLabMessage(labMessage, labMessage.getSample());
+			}
+		});
 	}
 
 	public void deleteAllSelectedItems(Collection<LabMessageIndexDto> selectedRows, Runnable callback) {
@@ -296,7 +240,7 @@ public class LabMessageController {
 	}
 
 	private void pickOrCreatePerson(LabMessageDto labMessage) {
-		final PersonDto personDto = buildPerson(labMessage);
+		final PersonDto personDto = buildPerson(LabMessageMapper.forLabMessage(labMessage));
 
 		if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
 			showAlreadyProcessedPopup(null, false);
@@ -607,7 +551,21 @@ public class LabMessageController {
 		showFormWithLabMessage(labMessageDto, selectionField, window, I18nProperties.getString(Strings.headingPickOrCreateSample), false);
 	}
 
+	private void editSample(LabMessageDto labMessage, SampleDto sample, RelatedLabMessageHandlerChain chain) {
+		Window sampleWindow = showSampleEditWindow(sample, labMessage, () -> chain.next(true));
+
+		sampleWindow.addCloseListener((e) -> {
+			if (!chain.done()) {
+				chain.cancel();
+			}
+		});
+	}
+
 	private void editSample(SampleDto sample, LabMessageDto labMessage) {
+		showSampleEditWindow(sample, labMessage, () -> finishProcessingLabMessage(labMessage, sample.toReference()));
+	}
+
+	private Window showSampleEditWindow(SampleDto sample, LabMessageDto labMessage, CommitDiscardWrapperComponent.CommitListener callback) {
 
 		SampleController sampleController = ControllerProvider.getSampleController();
 		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent =
@@ -635,7 +593,7 @@ public class LabMessageController {
 		// add option to create additional pathogen tests
 		sampleController.addPathogenTestButton(sampleEditComponent, true);
 
-		sampleEditComponent.addCommitListener(() -> finishProcessingLabMessage(labMessage, sample.toReference()));
+		sampleEditComponent.addCommitListener(callback);
 
 		// add newly submitted tests to sample edit component
 		List<String> existingTestExternalIds =
@@ -657,6 +615,7 @@ public class LabMessageController {
 
 		showFormWithLabMessage(labMessage, sampleEditComponent, window, I18nProperties.getString(Strings.headingEditSample), false);
 
+		return window;
 	}
 
 	private void createCase(LabMessageDto labMessageDto, PersonDto person) {
@@ -750,8 +709,6 @@ public class LabMessageController {
 			I18nProperties.getString(Strings.headingCreateNewSample),
 			newEntityCreated);
 	}
-
-	sampleDto.setSpecimenCondition(labMessageDto.getSpecimenCondition());
 
 	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
 		SampleDto sample,
@@ -1032,7 +989,7 @@ public class LabMessageController {
 		return Optional.empty();
 	}
 
-	// correction
+	// related lab messages
 	private CompletionStage<Boolean> confirmHandleCorrections() {
 		CompletableFuture<Boolean> ret = new CompletableFuture<>();
 
@@ -1048,12 +1005,32 @@ public class LabMessageController {
 		return ret;
 	}
 
+	private CompletionStage<Boolean> confirmShortcut(boolean hasRelatedLabMessages) {
+		CompletableFuture<Boolean> ret = new CompletableFuture<>();
+
+		String message = hasRelatedLabMessages
+			? I18nProperties.getString(Strings.messageRelatedSampleAndLabMessagesFound)
+			: I18nProperties.getString(Strings.messageRelatedSampleFound);
+
+		Window window = VaadinUiUtil.showChooseOptionPopup(
+			I18nProperties.getCaption(Captions.labMessageRelatedEntriesFound),
+			new Label(message),
+			I18nProperties.getCaption(Captions.actionYes),
+			I18nProperties.getCaption(Captions.actionNo),
+			null,
+			ret::complete);
+
+		window.addCloseListener(e -> ret.complete(false));
+
+		return ret;
+	}
+
 	private void showPersonCorrectionWindow(
 		LabMessageDto labMessageDto,
 		PersonDto person,
 		PersonDto updatedPerson,
 		List<String[]> changedFields,
-		CorrectionHandlerChain chain) {
+		RelatedLabMessageHandlerChain chain) {
 		CorrectionPanel<PersonDto> personCorrectionPanel = new CorrectionPanel<>(
 			() -> new PersonEditForm(person.isPseudonymized()),
 			person,
@@ -1062,7 +1039,10 @@ public class LabMessageController {
 			Strings.headingUpdatedPersonInformation,
 			changedFields);
 
-		showCorrectionWindow(labMessageDto, Strings.headingCorrectPerson, personCorrectionPanel, FacadeProvider.getPersonFacade()::savePerson, chain);
+		showCorrectionWindow(labMessageDto, Strings.headingCorrectPerson, personCorrectionPanel, (p) -> {
+			FacadeProvider.getPersonFacade().savePerson(p);
+			Notification.show(I18nProperties.getString(Strings.messagePersonSaved), Notification.Type.TRAY_NOTIFICATION);
+		}, chain);
 	}
 
 	private void showSampleCorrectionWindow(
@@ -1070,7 +1050,7 @@ public class LabMessageController {
 		SampleDto sample,
 		SampleDto updatedSample,
 		List<String[]> changedFields,
-		CorrectionHandlerChain chain) {
+		RelatedLabMessageHandlerChain chain) {
 		CorrectionPanel<SampleDto> personCorrectionPanel = new CorrectionPanel<>(
 			() -> new SampleEditForm(sample.isPseudonymized(), ControllerProvider.getSampleController().getDiseaseOf(sample)),
 			sample,
@@ -1079,7 +1059,10 @@ public class LabMessageController {
 			Strings.headingUpdatedSampleInformation,
 			changedFields);
 
-		showCorrectionWindow(labMessage, Strings.headingCorrectSample, personCorrectionPanel, FacadeProvider.getSampleFacade()::saveSample, chain);
+		showCorrectionWindow(labMessage, Strings.headingCorrectSample, personCorrectionPanel, (s) -> {
+			FacadeProvider.getSampleFacade().saveSample(s);
+			Notification.show(I18nProperties.getString(Strings.messageSampleSaved), Notification.Type.TRAY_NOTIFICATION);
+		}, chain);
 	}
 
 	private void showPathogenTestCorrectionWindow(
@@ -1087,7 +1070,7 @@ public class LabMessageController {
 		PathogenTestDto pathogenTest,
 		PathogenTestDto updatedPathogenTest,
 		List<String[]> changedFields,
-		CorrectionHandlerChain chain) {
+		RelatedLabMessageHandlerChain chain) {
 
 		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(pathogenTest.getSample().getUuid());
 		int caseSampleCount = ControllerProvider.getSampleController().caseSampleCountOf(sample);
@@ -1100,12 +1083,10 @@ public class LabMessageController {
 			Strings.headingUpdatedPathogenTestInformation,
 			changedFields);
 
-		showCorrectionWindow(
-			labMessage,
-			Strings.headingCorrectPathogenTest,
-			personCorrectionPanel,
-			FacadeProvider.getPathogenTestFacade()::savePathogenTest,
-			chain);
+		showCorrectionWindow(labMessage, Strings.headingCorrectPathogenTest, personCorrectionPanel, (t) -> {
+			FacadeProvider.getPathogenTestFacade().savePathogenTest(t);
+			Notification.show(I18nProperties.getString(Strings.messagePathogenTestSavedShort), Notification.Type.TRAY_NOTIFICATION);
+		}, chain);
 	}
 
 	private <T> void showCorrectionWindow(
@@ -1113,7 +1094,7 @@ public class LabMessageController {
 		String titleTag,
 		CorrectionPanel<T> correctionPanel,
 		Consumer<T> save,
-		CorrectionHandlerChain chain) {
+		RelatedLabMessageHandlerChain chain) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		correctionPanel.setCancelListener((e) -> {
@@ -1121,12 +1102,12 @@ public class LabMessageController {
 			window.close();
 		});
 		correctionPanel.setDiscardListener(() -> {
-			chain.next();
+			chain.next(false);
 			window.close();
 		});
 		correctionPanel.setCommitListener((updated) -> {
 			save.accept(updated);
-			chain.next();
+			chain.next(true);
 			window.close();
 		});
 		window.addCloseListener(e -> {
@@ -1154,17 +1135,11 @@ public class LabMessageController {
 		UI.getCurrent().addWindow(window);
 	}
 
-	private CompletionStage<Boolean> handleCorrectionResult(CorrectionResult result, LabMessageDto labMessageDto) {
-		if (result == CorrectionResult.HANDLED) {
-			return confirmContinueProcessing(labMessageDto, Strings.confirmLabMessageCorrectionThrough);
-		} else if (result == CorrectionResult.NO_CORRECTIONS) {
-			return confirmContinueProcessing(labMessageDto, Strings.confirmLabMessageCorrectionNoChanges);
-		}
-
-		return CompletableFuture.completedFuture(true);
-	}
-
-	private void showCreatePathogenTestWindow(LabMessageDto labMessageDto, TestReportDto testReport, SampleDto sample, CorrectionHandlerChain chain) {
+	private void showCreatePathogenTestWindow(
+		LabMessageDto labMessageDto,
+		TestReportDto testReport,
+		SampleDto sample,
+		RelatedLabMessageHandlerChain chain) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		int caseSampleCount = ControllerProvider.getSampleController().caseSampleCountOf(sample);
@@ -1172,7 +1147,7 @@ public class LabMessageController {
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
 			ControllerProvider.getPathogenTestController().getPathogenTestCreateComponent(sample, caseSampleCount, () -> {
 			}, (savedPathogenTest, callback) -> {
-				chain.next();
+				chain.next(false);
 				window.close();
 			});
 		pathogenTestCreateComponent.getWrappedComponent().setValue(buildPathogenTest(testReport, labMessageDto, sample));
@@ -1181,7 +1156,7 @@ public class LabMessageController {
 		Button cancelButton = LabMessageUiHelper.addCancelAndUpdateLabels(pathogenTestCreateComponent, Captions.actionDiscardAndContinue);
 
 		pathogenTestCreateComponent.addDiscardListener(() -> {
-			chain.next();
+			chain.next(true);
 			window.close();
 		});
 		cancelButton.addClickListener(e -> {
@@ -1203,11 +1178,12 @@ public class LabMessageController {
 			false);
 	}
 
-	private CompletionStage<Boolean> confirmContinueProcessing(LabMessageDto labMessageDto, String messageTag) {
+	private CompletionStage<Boolean> confirmContinueProcessing(LabMessageDto labMessageDto) {
+
 		CompletableFuture<Boolean> ret = new CompletableFuture<>();
 
 		Window window = VaadinUiUtil.createPopupWindow();
-		Label label = new Label(I18nProperties.getString(messageTag));
+		Label label = new Label(I18nProperties.getString(Strings.confirmLabMessageCorrectionThrough));
 		label.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
 		CommitDiscardWrapperComponent<Label> confirmComponent = new CommitDiscardWrapperComponent<>(label);
 		confirmComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionYes));
@@ -1229,5 +1205,15 @@ public class LabMessageController {
 		showFormWithLabMessage(labMessageDto, confirmComponent, window, I18nProperties.getString(Strings.headingLabMessageCorrectionThrough), false);
 
 		return ret;
+	}
+
+	private void showCorrectionsSavedPopup() {
+		VerticalLayout warningLayout = VaadinUiUtil.createWarningLayout();
+		Window popupWindow = VaadinUiUtil.showPopupWindow(warningLayout);
+		Label infoLabel = new Label(I18nProperties.getValidationError(Validations.labMessageCorrectionsMade));
+		CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+		warningLayout.addComponent(infoLabel);
+		popupWindow.addCloseListener(e -> popupWindow.close());
+		popupWindow.setWidth(400, Sizeable.Unit.PIXELS);
 	}
 }

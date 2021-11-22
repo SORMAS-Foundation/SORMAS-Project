@@ -33,7 +33,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DataHelper;
 
 public class LabMessageMapper {
@@ -90,7 +89,8 @@ public class LabMessageMapper {
 					sample.getSampleMaterialText(),
 					labMessage.getSampleMaterialText(),
 					SampleDto.SAMPLE_MATERIAL_TEXT),
-				Mapping.of(sample::setSpecimenCondition, sample.getSpecimenCondition(), SpecimenCondition.ADEQUATE, SampleDto.SPECIMEN_CONDITION),
+				Mapping
+					.of(sample::setSpecimenCondition, sample.getSpecimenCondition(), labMessage.getSpecimenCondition(), SampleDto.SPECIMEN_CONDITION),
 				Mapping.of(sample::setLab, sample.getLab(), getLabReference(labMessage), SampleDto.LAB),
 				Mapping.of(sample::setLabDetails, sample.getLabDetails(), labMessage.getLabName(), SampleDto.LAB_DETAILS)));
 

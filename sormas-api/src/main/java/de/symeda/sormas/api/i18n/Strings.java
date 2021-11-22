@@ -158,7 +158,6 @@ public interface Strings {
 	String confirmationUnclearLabMessage = "confirmationUnclearLabMessage";
 	String confirmationUnlinkCaseFromEvent = "confirmationUnlinkCaseFromEvent";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
-	String confirmLabMessageCorrectionNoChanges = "confirmLabMessageCorrectionNoChanges";
 	String confirmLabMessageCorrectionThrough = "confirmLabMessageCorrectionThrough";
 	String confirmNetworkDiagramTooManyContacts = "confirmNetworkDiagramTooManyContacts";
 	String date = "date";
