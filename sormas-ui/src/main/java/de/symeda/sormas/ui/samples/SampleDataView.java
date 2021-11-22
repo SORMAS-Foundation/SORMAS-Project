@@ -135,7 +135,15 @@ public class SampleDataView extends AbstractSampleView {
 
 		SampleController sampleController = ControllerProvider.getSampleController();
 		editComponent = sampleController.getSampleEditComponent(getSampleRef().getUuid(), sampleDto.isPseudonymized(), disease, true);
-		sampleController.addReferOrLinkToOtherLabButton(editComponent, disease);
+
+		Consumer<Disease> createReferral = (relatedDisease) -> {
+			// save changes before referral creation
+			editComponent.commit();
+			SampleDto committedSample = editComponent.getWrappedComponent().getValue();
+			sampleController.createReferral(committedSample, relatedDisease);
+		};
+		Consumer<SampleDto> openReferredSample = referredSample -> sampleController.navigateToData(referredSample.getUuid());
+		sampleController.addReferOrLinkToOtherLabButton(editComponent, disease, createReferral, openReferredSample);
 
 		Consumer<SampleDto> navigate = targetSampleDto -> sampleController.navigateToData(targetSampleDto.getUuid());
 		sampleController.addReferredFromButton(editComponent, navigate);

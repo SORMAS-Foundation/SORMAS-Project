@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -630,74 +631,26 @@ public class LabMessageController {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		// button configuration
-		addReferOrLinkToOtherLabButton(sampleEditComponent, sampleController.getDiseaseOf(sample), labMessage, window);
-
-		Consumer<SampleDto> navigate = sampleDto -> {
-			editSample(sampleDto, labMessage);
+		Consumer<Disease> createReferral = (disease) -> {
+			// discard current changes and create sample referral
+			SampleDto existingSample =
+				FacadeProvider.getSampleFacade().getSampleByUuid(sampleEditComponent.getWrappedComponent().getValue().getUuid());
+			createSampleReferral(existingSample, disease, labMessage);
 			window.close();
 		};
-		sampleController.addReferredFromButton(sampleEditComponent, navigate);
+		Consumer<SampleDto> editSample = referredTo -> {
+			editSample(referredTo, labMessage);
+			window.close();
+		};
+		sampleController.addReferOrLinkToOtherLabButton(sampleEditComponent, sampleController.getDiseaseOf(sample), createReferral, editSample);
+
+		sampleController.addReferredFromButton(sampleEditComponent, editSample);
 
 		sampleEditComponent.addCommitListener(window::close);
 		sampleEditComponent.addDiscardListener(window::close);
 
 		showFormWithLabMessage(labMessage, sampleEditComponent, window, I18nProperties.getString(Strings.headingEditSample), false);
 
-	}
-
-	private void addReferOrLinkToOtherLabButton(
-		CommitDiscardWrapperComponent<SampleEditForm> editForm,
-		Disease disease,
-		LabMessageDto labMessage,
-		Window window) {
-		Button referOrLinkToOtherLabButton = null;
-		SampleDto sample = editForm.getWrappedComponent().getValue();
-		if (sample.getReferredTo() == null) {
-			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_TRANSFER)) {
-				referOrLinkToOtherLabButton =
-					ButtonHelper.createButton("referOrLinkToOtherLab", I18nProperties.getCaption(Captions.sampleRefer), new Button.ClickListener() {
-
-						private static final long serialVersionUID = 1L;
-
-						@Override
-						public void buttonClick(Button.ClickEvent event) {
-							try {
-								editForm.getWrappedComponent().commit();
-								SampleDto sampleDto = editForm.getWrappedComponent().getValue();
-								sampleDto = FacadeProvider.getSampleFacade().saveSample(sampleDto);
-								createSampleReferral(sampleDto, disease, labMessage);
-								window.close();
-							} catch (Buffered.SourceException | Validator.InvalidValueException e) {
-								Notification.show(I18nProperties.getString(Strings.messageSampleErrors), Notification.Type.ERROR_MESSAGE);
-							}
-						}
-					}, ValoTheme.BUTTON_LINK);
-			}
-		} else {
-			SampleDto referredDto = FacadeProvider.getSampleFacade().getSampleByUuid(sample.getReferredTo().getUuid());
-			FacilityReferenceDto referredDtoLab = referredDto.getLab();
-			String referOrLinkToOtherLabButtonCaption = referredDtoLab == null
-				? I18nProperties.getCaption(Captions.sampleReferredToInternal) + " ("
-					+ DateFormatHelper.formatLocalDateTime(referredDto.getSampleDateTime()) + ")"
-				: I18nProperties.getCaption(Captions.sampleReferredTo) + " " + referredDtoLab.toString();
-
-			referOrLinkToOtherLabButton =
-				ButtonHelper.createButton("referOrLinkToOtherLab", referOrLinkToOtherLabButtonCaption, new Button.ClickListener() {
-
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public void buttonClick(Button.ClickEvent event) {
-						editSample(referredDto, labMessage);
-						window.close();
-					}
-				});
-		}
-
-		if (referOrLinkToOtherLabButton != null) {
-			editForm.getButtonsPanel().addComponentAsFirst(referOrLinkToOtherLabButton);
-			editForm.getButtonsPanel().setComponentAlignment(referOrLinkToOtherLabButton, Alignment.BOTTOM_LEFT);
-		}
 	}
 
 	private void createSampleReferral(SampleDto existingSample, Disease disease, LabMessageDto labMessage) {

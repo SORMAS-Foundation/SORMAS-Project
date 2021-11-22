@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.samples;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -334,7 +335,11 @@ public class SampleController {
 	 * @param disease
 	 *            required for field visibility checks in the sample create form opened when a sample reference shall be created
 	 */
-	public void addReferOrLinkToOtherLabButton(CommitDiscardWrapperComponent<SampleEditForm> editForm, Disease disease) {
+	public void addReferOrLinkToOtherLabButton(
+		CommitDiscardWrapperComponent<SampleEditForm> editForm,
+		Disease disease,
+		Consumer<Disease> createReferral,
+		Consumer<SampleDto> openReferredSample) {
 		Button referOrLinkToOtherLabButton = null;
 		SampleDto sample = editForm.getWrappedComponent().getValue();
 		if (sample.getReferredTo() == null) {
@@ -347,9 +352,7 @@ public class SampleController {
 						@Override
 						public void buttonClick(ClickEvent event) {
 							try {
-								editForm.commit();
-								SampleDto sampleDto = editForm.getWrappedComponent().getValue();
-								createReferral(sampleDto, disease);
+								createReferral.accept(disease);
 							} catch (SourceException | InvalidValueException e) {
 								Notification.show(I18nProperties.getString(Strings.messageSampleErrors), Type.ERROR_MESSAGE);
 							}
@@ -370,7 +373,7 @@ public class SampleController {
 
 				@Override
 				public void buttonClick(ClickEvent event) {
-					navigateToData(sample.getReferredTo().getUuid());
+					openReferredSample.accept(referredDto);
 				}
 
 			});
