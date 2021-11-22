@@ -225,18 +225,18 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		contentBinding.symptomsOnsetDate.initializeDateField(getFragmentManager());
 
 		contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>());
-		contentBinding.personBirthdateMM.initializeSpinner(monthList, field -> {
-			DataUtils.updateListOfDays(
+		contentBinding.personBirthdateMM.initializeSpinner(
+			monthList,
+			field -> DataUtils.updateListOfDays(
 				contentBinding.personBirthdateDD,
 				(Integer) contentBinding.personBirthdateYYYY.getValue(),
-				(Integer) field.getValue());
-		});
-		contentBinding.personBirthdateYYYY.initializeSpinner(yearList, field -> {
-			DataUtils.updateListOfDays(
+				(Integer) field.getValue()));
+		contentBinding.personBirthdateYYYY.initializeSpinner(
+			yearList,
+			field -> DataUtils.updateListOfDays(
 				contentBinding.personBirthdateDD,
 				(Integer) field.getValue(),
-				(Integer) contentBinding.personBirthdateMM.getValue());
-		});
+				(Integer) contentBinding.personBirthdateMM.getValue()));
 
 		int year = Calendar.getInstance().get(Calendar.YEAR);
 		contentBinding.personBirthdateYYYY.setSelectionOnOpen(year - 35);
@@ -288,6 +288,8 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			contentBinding.facilityOrHome.setEnabled(false);
 			contentBinding.facilityTypeGroup.setEnabled(false);
 			contentBinding.caseDataFacilityType.setEnabled(false);
+			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setEnabled(false);
+			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setVisibility(GONE);
 		}
 
 		if (user.hasUserRole(UserRole.POE_INFORMANT) && user.getPointOfEntry() != null) {
