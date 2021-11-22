@@ -25,7 +25,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import androidx.annotation.NonNull;
+
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -46,6 +49,7 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.event.eventparticipant.EventParticipantSection;
 import de.symeda.sormas.app.immunization.edit.ImmunizationNewActivity;
+import de.symeda.sormas.app.immunization.vaccination.VaccinationNewActivity;
 import de.symeda.sormas.app.util.Bundler;
 
 public class EventParticipantEditActivity extends BaseEditActivity<EventParticipant> {
@@ -99,8 +103,14 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 	public List<PageMenuItem> getPageMenuData() {
 		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(EventParticipantSection.values(), getContext());
 		Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
-		if (event.getDisease() == null || !ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			|| DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 			menuItems.set(EventParticipantSection.IMMUNIZATIONS.ordinal(), null);
+		}
+		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			|| !DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)
+			|| event.getDisease() == null) {
+			menuItems.set(EventParticipantSection.VACCINATIONS.ordinal(), null);
 		}
 		return menuItems;
 	}
@@ -118,6 +128,9 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 		case IMMUNIZATIONS:
 			fragment = EventParticipantEditImmunizationListFragment.newInstance(activityRootData);
 			break;
+		case VACCINATIONS:
+			fragment = EventParticipantEditVaccinationListFragment.newInstance(activityRootData);
+			break;
 		default:
 			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
 		}
@@ -129,7 +142,9 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 		EventParticipantSection activeSection = EventParticipantSection.fromOrdinal(getActivePage().getPosition());
 
 		if (activeSection == EventParticipantSection.IMMUNIZATIONS) {
-			ImmunizationNewActivity.startActivityFromEventParticipant(getContext(), getRootUuid());
+			ImmunizationNewActivity.startActivityFromCase(getContext(), getRootUuid());
+		} else if (activeSection == EventParticipantSection.VACCINATIONS) {
+			VaccinationNewActivity.startActivityFromEventParticipant(getContext(), getRootUuid());
 		}
 	}
 
