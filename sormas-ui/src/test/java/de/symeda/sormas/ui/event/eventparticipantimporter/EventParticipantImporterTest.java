@@ -1,8 +1,24 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.ui.event.eventparticipantimporter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +35,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Test;
 
 import com.opencsv.exceptions.CsvValidationException;
@@ -39,7 +56,6 @@ import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -128,7 +144,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			rdcf);
 
 		// Person Similarity: pick
-		List<PersonNameDto> persons = FacadeProvider.getPersonFacade().getMatchingNameDtos(user.toReference(), new PersonSimilarityCriteria());
+		List<SimilarPersonDto> persons = FacadeProvider.getPersonFacade().getSimilarPersonDtos(user.toReference(), new PersonSimilarityCriteria());
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_similarities.csv").toURI());
 
 		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, false, user, eventRef) {
@@ -142,10 +158,10 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 				UI currentUI) {
 
 				List<SimilarPersonDto> entries = new ArrayList<>();
-				for (PersonNameDto person : persons) {
+				for (SimilarPersonDto person : persons) {
 					if (PersonHelper
 						.areNamesSimilar(newPerson.getFirstName(), newPerson.getLastName(), person.getFirstName(), person.getLastName(), null)) {
-						entries.addAll(FacadeProvider.getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(person.getUuid())));
+						entries.add(person);
 					}
 				}
 				resultConsumer.accept((T) new PersonImportSimilarityResult(entries.get(0), ImportSimilarityResultOption.PICK));
@@ -192,7 +208,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		EventParticipantDto eventParticipant = creator.createEventParticipant(eventRef, person, "old desc", user.toReference());
 
 		// Person Similarity: pick event participant
-		List<PersonNameDto> persons = FacadeProvider.getPersonFacade().getMatchingNameDtos(user.toReference(), new PersonSimilarityCriteria());
+		List<SimilarPersonDto> persons = FacadeProvider.getPersonFacade().getSimilarPersonDtos(user.toReference(), new PersonSimilarityCriteria());
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_similarities.csv").toURI());
 
 		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, false, user, eventRef) {
@@ -206,10 +222,10 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 				UI currentUI) {
 
 				List<SimilarPersonDto> entries = new ArrayList<>();
-				for (PersonNameDto person : persons) {
+				for (SimilarPersonDto person : persons) {
 					if (PersonHelper
 						.areNamesSimilar(newPerson.getFirstName(), newPerson.getLastName(), person.getFirstName(), person.getLastName(), null)) {
-						entries.addAll(FacadeProvider.getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(person.getUuid())));
+						entries.add(person);
 					}
 				}
 				resultConsumer.accept((T) new PersonImportSimilarityResult(entries.get(0), ImportSimilarityResultOption.PICK));
@@ -350,6 +366,66 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(5, eventParticipantFacade.count(new EventParticipantCriteria().withEvent(eventRef)));
+	}
+
+	@Test
+	public void testImportEventParticipantDifferentAddressTypes()
+		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
+
+		EventParticipantFacadeEjbLocal eventParticipantFacade = getBean(EventParticipantFacadeEjbLocal.class);
+
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		EventDto event = creator.createEvent(
+			EventStatus.SIGNAL,
+			"Title",
+			"Description",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			DateHelper.subtractDays(new Date(), 2),
+			new Date(),
+			user.toReference(),
+			user.toReference(),
+			Disease.EVD);
+		EventReferenceDto eventRef = event.toReference();
+
+		// import of 3 event participants with different address types
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_address_types.csv").toURI());
+		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, false, user, eventRef);
+		ImportResultStatus importResult = eventParticipantImporter.runImport();
+
+		List<EventParticipantDto> eventParticipants = getEventParticipantFacade().getByEventUuids(Collections.singletonList(eventRef.getUuid()));
+
+		assertEquals(3, eventParticipants.size());
+
+		boolean foundOtto = false;
+		boolean foundOskar = false;
+		boolean foundOona = false;
+
+		for (EventParticipantDto eventParticipant : eventParticipants) {
+			PersonDto person = eventParticipant.getPerson();
+			if ("Otto".equals(person.getFirstName())) {
+				foundOtto = true;
+				assertTrue(CollectionUtils.isEmpty(person.getAddresses()));
+				assertEquals("131", person.getAddress().getHouseNumber());
+			}
+			if ("Oskar".equals(person.getFirstName())) {
+				foundOskar = true;
+				assertTrue(CollectionUtils.isEmpty(person.getAddresses()));
+				assertEquals("132", person.getAddress().getHouseNumber());
+			}
+			if ("Oona".equals(person.getFirstName())) {
+				foundOona = true;
+				assertTrue(person.getAddress().checkIsEmptyLocation());
+				assertEquals(1, person.getAddresses().size());
+				assertEquals("133", person.getAddresses().get(0).getHouseNumber());
+			}
+		}
+
+		assertTrue("Not all eventparticipants found.", foundOtto && foundOskar && foundOona);
 	}
 
 	private static class EventParticipantImporterExtension extends EventParticipantImporter {

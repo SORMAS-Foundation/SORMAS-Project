@@ -82,6 +82,8 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
 		Person person = DatabaseHelper.getPersonDao().build();
 		EventParticipant eventParticipant = DatabaseHelper.getEventParticipantDao().build();
 		eventParticipant.setPerson(person);
+		Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
+		eventParticipant.setEvent(event);
 		return eventParticipant;
 	}
 

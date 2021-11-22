@@ -148,6 +148,25 @@ public class EventDao extends AbstractAdoDao<Event> {
 		}
 	}
 
+	public boolean hasAnyEventParticipantWithoutJurisdiction(String eventUuid) {
+
+		try {
+			QueryBuilder<EventParticipant, Long> builder = DatabaseHelper.getEventParticipantDao().queryBuilder();
+			QueryBuilder<Event, Long> eventBuilder = queryBuilder();
+			Where<EventParticipant, Long> where = builder.where();
+			Where<Event, Long> eventWhere = eventBuilder.where();
+			eventWhere.eq(Event.UUID, eventUuid);
+			where.and(
+				where.eq(AbstractDomainObject.SNAPSHOT, false),
+				where.or(where.isNull(EventParticipant.RESPONSIBLE_REGION + "_id"), where.isNull(EventParticipant.RESPONSIBLE_DISTRICT + "_id")));
+			builder = builder.leftJoin(eventBuilder);
+			return (int) builder.countOf() > 0;
+		} catch (SQLException e) {
+			Log.e(getTableName(), "Could not perform hasAnyEventParticipantWithoutJurisdiction on Event");
+			throw new RuntimeException(e);
+		}
+	}
+
 	private QueryBuilder<Event, Long> buildQueryBuilder(EventCriteria criteria) throws SQLException {
 		QueryBuilder<Event, Long> queryBuilder = queryBuilder();
 		List<Where<Event, Long>> whereStatements = new ArrayList<>();

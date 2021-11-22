@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.contact.importer;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -14,12 +15,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -39,7 +40,6 @@ import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -83,7 +83,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 		assertEquals(5, contactFacade.count(null));
 
 		// Person Similarity: pick
-		List<PersonNameDto> persons = FacadeProvider.getPersonFacade().getMatchingNameDtos(user.toReference(), new PersonSimilarityCriteria());
+		List<SimilarPersonDto> persons = FacadeProvider.getPersonFacade().getSimilarPersonDtos(user.toReference(), new PersonSimilarityCriteria());
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").toURI());
 		contactImporter = new ContactImporterExtension(csvFile, false, user, caze) {
 
@@ -96,10 +96,10 @@ public class ContactImporterTest extends AbstractBeanTest {
 				UI currentUI) {
 
 				List<SimilarPersonDto> entries = new ArrayList<>();
-				for (PersonNameDto person : persons) {
+				for (SimilarPersonDto person : persons) {
 					if (PersonHelper
 						.areNamesSimilar(newPerson.getFirstName(), newPerson.getLastName(), person.getFirstName(), person.getLastName(), null)) {
-						entries.addAll(FacadeProvider.getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(person.getUuid())));
+						entries.add(person);
 					}
 				}
 				resultConsumer.accept((T) new ContactImportSimilarityResult(entries.get(0), null, ImportSimilarityResultOption.PICK));
@@ -214,9 +214,64 @@ public class ContactImporterTest extends AbstractBeanTest {
 		assertEquals(8, contactFacade.count(null));
 	}
 
+	@Test
+	public void testImportCaseContactsDifferentAddressTypes()
+		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
+
+		ContactFacadeEjb contactFacade = getBean(ContactFacadeEjbLocal.class);
+
+		RDCF rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto casePerson = creator.createPerson("John", "Smith");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			casePerson.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.CONFIRMED,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		// import of 3 contacts with different address types
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_address_types.csv").toURI());
+		ContactImporter contactImporter = new ContactImporterExtension(csvFile, false, user, caze);
+		ImportResultStatus importResult = contactImporter.runImport();
+
+		List<ContactDto> contacts = getContactFacade().getAllActiveContactsAfter(null);
+
+		assertEquals(3, contacts.size());
+
+		boolean foundOtto = false;
+		boolean foundOskar = false;
+		boolean foundOona = false;
+
+		for (ContactDto contact : contacts) {
+			PersonDto person = getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+			if ("Otto".equals(person.getFirstName())) {
+				foundOtto = true;
+				assertTrue(CollectionUtils.isEmpty(person.getAddresses()));
+				assertEquals("131", person.getAddress().getHouseNumber());
+			}
+			if ("Oskar".equals(person.getFirstName())) {
+				foundOskar = true;
+				assertTrue(CollectionUtils.isEmpty(person.getAddresses()));
+				assertEquals("132", person.getAddress().getHouseNumber());
+			}
+			if ("Oona".equals(person.getFirstName())) {
+				foundOona = true;
+				assertTrue(person.getAddress().checkIsEmptyLocation());
+				assertEquals(1, person.getAddresses().size());
+				assertEquals("133", person.getAddresses().get(0).getHouseNumber());
+			}
+		}
+
+		assertTrue("Not all contacts found.", foundOtto && foundOskar && foundOona);
+	}
+
 	public static class ContactImporterExtension extends ContactImporter {
 
-		public StringBuilder stringBuilder = new StringBuilder("");
+		public StringBuilder stringBuilder = new StringBuilder();
 		private StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
 
 		public ContactImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze) throws IOException {

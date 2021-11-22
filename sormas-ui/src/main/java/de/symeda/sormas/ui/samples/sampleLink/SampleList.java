@@ -86,16 +86,15 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 
 	private void addEditButton(SampleListEntry listEntry) {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT)) {
-			listEntry.addEditListener(
-				(ClickListener) event -> ControllerProvider.getSampleController().navigateToData(listEntry.getSample().getUuid()));
+			listEntry
+				.addEditListener((ClickListener) event -> ControllerProvider.getSampleController().navigateToData(listEntry.getSample().getUuid()));
 		}
 	}
 
 	private void addViewLabMessageButton(SampleListEntry listEntry) {
-		List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getForSample(listEntry.getSample().getUuid());
+		List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getForSample(listEntry.getSample().toReference());
 		if (!labMessages.isEmpty()) {
-			listEntry
-				.addAssociatedLabMessagesListener(clickEvent -> ControllerProvider.getLabMessageController().showLabMessagesSlider(labMessages));
+			listEntry.addAssociatedLabMessagesListener(clickEvent -> ControllerProvider.getLabMessageController().showLabMessagesSlider(labMessages));
 		}
 	}
 }

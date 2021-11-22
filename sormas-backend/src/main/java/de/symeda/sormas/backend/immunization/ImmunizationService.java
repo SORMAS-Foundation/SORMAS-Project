@@ -40,10 +40,13 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -51,11 +54,15 @@ import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.immunization.joins.ImmunizationJoins;
 import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonJoins;
+import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -74,6 +81,10 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	private UserService userService;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private PersonService personService;
 
 	public ImmunizationService() {
 		super(Immunization.class);
@@ -308,6 +319,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 		cq.where(
 			cb.and(
+				cb.isFalse(root.get(Immunization.DELETED)),
 				cb.equal(root.get(Immunization.PERSON).get(Person.UUID), personUuid),
 				cb.equal(root.get(Immunization.DISEASE), disease),
 				cb.lessThanOrEqualTo(lastVaccinationPath, referenceDate)));
@@ -372,6 +384,30 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	public List<Immunization> getByPersonAndDisease(String personUuid, Disease disease, boolean onlyVaccinationImmunizations) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Immunization> cq = cb.createQuery(Immunization.class);
+		Root<Immunization> immunizationRoot = cq.from(Immunization.class);
+		Join<Immunization, Person> personJoin = immunizationRoot.join(Immunization.PERSON, JoinType.INNER);
+
+		Predicate filter = CriteriaBuilderHelper.and(
+			cb,
+			createDefaultFilter(cb, immunizationRoot),
+			cb.equal(personJoin.get(AbstractDomainObject.UUID), personUuid),
+			cb.equal(immunizationRoot.get(Immunization.DISEASE), disease));
+		if (onlyVaccinationImmunizations) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(
+					cb.equal(immunizationRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION),
+					cb.equal(immunizationRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION_RECOVERY)));
+		}
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultList();
+	}
+
 	public void unlinkRelatedCase(Case caze) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Immunization> cu = cb.createCriteriaUpdate(Immunization.class);
@@ -408,7 +444,22 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 	private Predicate createUserFilter(ImmunizationQueryContext<Immunization> qc) {
 		final User currentUser = userService.getCurrentUser();
-		return ImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
+
+		if (!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			return ImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
+		} else {
+			return CriteriaBuilderHelper.or(
+				qc.getCriteriaBuilder(),
+				qc.getCriteriaBuilder().equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
+				PersonJurisdictionPredicateValidator
+					.of(
+						qc.getQuery(),
+						qc.getCriteriaBuilder(),
+						new PersonJoins<>(((ImmunizationJoins<Immunization>) qc.getJoins()).getPerson()),
+						currentUser,
+						false)
+					.inJurisdictionOrOwned());
+		}
 	}
 
 	private Predicate createDateFilter(CriteriaBuilder cb, Root<Immunization> from, ImmunizationSimilarityCriteria criteria) {

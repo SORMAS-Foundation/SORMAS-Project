@@ -13,7 +13,6 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
 import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.labmessage.TestReportFacade;
-import de.symeda.sormas.backend.sample.PathogenTestService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "TestReportFacade")
@@ -24,9 +23,6 @@ public class TestReportFacadeEjb implements TestReportFacade {
 
 	@EJB
 	private TestReportService testReportService;
-
-	@EJB
-	private PathogenTestService pathogenTestService;
 
 	@Override
 	public TestReportDto getByUuid(String uuid) {
@@ -78,9 +74,6 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTestResultText(source.getTestResultText());
 		target.setTypingId(source.getTypingId());
 		target.setExternalId(source.getExternalId());
-		if (source.getPathogenTest() != null) {
-			target.setPathogenTest(source.getPathogenTest().toReference());
-		}
 		target.setExternalOrderId(source.getExternalOrderId());
 		target.setPreliminary(source.getPreliminary());
 
@@ -102,7 +95,6 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTestResultText(source.getTestResultText());
 		target.setTypingId(source.getTypingId());
 		target.setExternalId(source.getExternalId());
-		target.setPathogenTest(pathogenTestService.getByReferenceDto(source.getPathogenTest()));
 		target.setExternalOrderId(source.getExternalOrderId());
 		target.setPreliminary(source.getPreliminary());
 

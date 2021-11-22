@@ -50,6 +50,9 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.backend.event.EventService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,6 +163,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	private CaseService caseService;
 	@EJB
 	private ContactService contactService;
+	@EJB
+	private EventService eventService;
 	@EJB
 	private EventParticipantService eventParticipantService;
 	@EJB
@@ -302,6 +307,26 @@ public class SampleFacadeEjb implements SampleFacade {
 			.stream()
 			.map(s -> convertToDto(s, pseudonymizer))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<SampleDto> getByLabSampleId(String labSampleId) {
+		if (labSampleId == null) {
+			return new ArrayList();
+		}
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
+		final Root<Sample> sampleRoot = cq.from(Sample.class);
+
+		Predicate filter = CriteriaBuilderHelper.and(
+			cb,
+			sampleService.createUserFilter(cb, cq, sampleRoot),
+			sampleService.createDefaultFilter(cb, sampleRoot),
+			cb.equal(sampleRoot.get(Sample.LAB_SAMPLE_ID), labSampleId));
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultList().stream().distinct().map(sample -> toDto(sample)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -1215,4 +1240,5 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return sampleService.isSampleEditAllowed(sample);
 	}
+
 }

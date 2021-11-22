@@ -109,6 +109,7 @@ Feature: Create events
     And I collect the event actions from table view
     And I am checking if all the fields are correctly displayed in the Event directory Actions table
 
+  @issue=7189
   Scenario: Add a Task from event and verify the fields
     Given API: I create a new event
     Then API: I check that POST call body is "OK"

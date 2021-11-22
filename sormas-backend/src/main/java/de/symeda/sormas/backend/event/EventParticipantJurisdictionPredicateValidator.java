@@ -2,16 +2,17 @@ package de.symeda.sormas.backend.event;
 
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
@@ -30,8 +31,18 @@ public class EventParticipantJurisdictionPredicateValidator extends PredicateJur
 		this.cq = qc.getQuery();
 	}
 
+	private EventParticipantJurisdictionPredicateValidator(EventParticipantQueryContext qc, Path userPath) {
+		super(qc.getCriteriaBuilder(), null, userPath, null);
+		this.joins = (EventParticipantJoins<?>) qc.getJoins();
+		this.cq = qc.getQuery();
+	}
+
 	public static EventParticipantJurisdictionPredicateValidator of(EventParticipantQueryContext qc, User user) {
 		return new EventParticipantJurisdictionPredicateValidator(qc, user);
+	}
+
+	public static EventParticipantJurisdictionPredicateValidator of(EventParticipantQueryContext qc, Path userPath) {
+		return new EventParticipantJurisdictionPredicateValidator(qc, userPath);
 	}
 
 	@Override
@@ -75,8 +86,7 @@ public class EventParticipantJurisdictionPredicateValidator extends PredicateJur
 
 	@Override
 	protected Predicate whenCommunityLevel() {
-		return CriteriaBuilderHelper
-			.or(cb, cb.equal(joins.getEventAddress().get(Location.COMMUNITY).get(Community.ID), user.getCommunity().getId()));
+		return CriteriaBuilderHelper.or(cb, cb.equal(joins.getEventAddress().get(Location.COMMUNITY).get(Community.ID), user.getCommunity().getId()));
 	}
 
 	@Override
@@ -95,8 +105,10 @@ public class EventParticipantJurisdictionPredicateValidator extends PredicateJur
 		final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
 		final SampleJoins sampleJoins = new SampleJoins(sampleRoot);
 		final Join eventParticipant = sampleJoins.getEventParticipant();
-		SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator =
-			SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, user);
+		SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator = user != null
+			? SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, user)
+			: SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, userPath);
+
 		sampleSubQuery.where(cb.and(cb.equal(eventParticipant, joins.getRoot()), sampleJurisdictionPredicateValidator.inJurisdictionOrOwned()));
 		sampleSubQuery.select(sampleRoot.get(Sample.ID));
 		return cb.exists(sampleSubQuery);

@@ -23,19 +23,20 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
@@ -50,6 +51,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
+import de.symeda.sormas.ui.vaccination.list.VaccinationListComponent;
 
 public class EventParticipantDataView extends AbstractDetailView<EventParticipantReferenceDto> {
 
@@ -61,6 +63,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 	public static final String SAMPLES_LOC = "samples";
 	public static final String CONTACTS_LOC = "contacts";
 	public static final String IMMUNIZATION_LOC = "immunizations";
+	public static final String VACCINATIONS_LOC = "vaccinations";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 
 	public static final String HTML_LAYOUT = LayoutUtil.fluidRow(
@@ -68,6 +71,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
 		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LOC),
 		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, IMMUNIZATION_LOC),
+		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, VACCINATIONS_LOC),
 		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QUARANTINE_LOC),
 		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC));
 
@@ -126,12 +130,13 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 		layout.addComponent(editComponent, EDIT_LOC);
 
+		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			VerticalLayout sampleLocLayout = new VerticalLayout();
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);
 
-			EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
 			SampleListComponent sampleList = new SampleListComponent(eventParticipantRef, event.getDisease());
 			sampleList.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.VSPACE_NONE);
 			sampleLocLayout.addComponent(sampleList);
@@ -185,13 +190,24 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
-			final EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
-			final Disease disease = eventDto.getDisease();
-			if (disease != null) {
+			&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			&& event.getDisease() != null) {
+			if (!FacadeProvider.getFeatureConfigurationFacade()
+				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 				final ImmunizationListCriteria immunizationListCriteria =
-					new ImmunizationListCriteria.Builder(eventParticipant.getPerson().toReference()).wihDisease(disease).build();
+					new ImmunizationListCriteria.Builder(eventParticipant.getPerson().toReference()).wihDisease(event.getDisease()).build();
 				layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
+			} else {
+				VaccinationListCriteria criteria =
+					new VaccinationListCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease()).build();
+				layout.addComponent(
+					new SideComponentLayout(
+						new VaccinationListComponent(
+							criteria,
+							eventParticipant.getRegion() != null ? eventParticipant.getRegion() : event.getEventLocation().getRegion(),
+							eventParticipant.getDistrict() != null ? eventParticipant.getDistrict() : event.getEventLocation().getDistrict(),
+							true)),
+					VACCINATIONS_LOC);
 			}
 		}
 	}

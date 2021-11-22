@@ -27,6 +27,8 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,9 +52,6 @@ import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.sample.PathogenTest;
-import de.symeda.sormas.backend.sample.PathogenTestService;
-import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -77,15 +76,13 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@EJB
 	private LabMessageService labMessageService;
 	@EJB
-	private PathogenTestService pathogenTestService;
-	@EJB
-	private TestReportService testReportService;
-	@EJB
 	private TestReportFacadeEjb.TestReportFacadeEjbLocal testReportFacade;
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private SyncFacadeEjb.SyncFacadeEjbLocal syncFacadeEjb;
+	@EJB
+	private SampleService sampleService;
 
 	LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target, boolean checkChangeDate) {
 
@@ -126,7 +123,9 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			target.setTestReports(testReports);
 		}
 		target.setReportId(source.getReportId());
-
+		if (source.getSample() != null) {
+			target.setSample(sampleService.getByReferenceDto(source.getSample()));
+		}
 		return target;
 	}
 
@@ -179,11 +178,15 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			target.setTestReports(source.getTestReports().stream().map(t -> TestReportFacadeEjb.toDto(t)).collect(toList()));
 		}
 		target.setReportId(source.getReportId());
+		if (source.getSample() != null) {
+			target.setSample(source.getSample().toReference());
+		}
 
 		return target;
 	}
 
 	@Override
+	// Also returns deleted lab messages
 	public LabMessageDto getByUuid(String uuid) {
 		return toDto(labMessageService.getByUuid(uuid));
 	}
@@ -204,29 +207,12 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
-	public List<LabMessageDto> getForSample(String sampleUuid) {
+	// Does not return deleted lab messages
+	public List<LabMessageDto> getForSample(SampleReferenceDto sample) {
 
-		List<String> pathogenTestUuids = new ArrayList<>();
-		for (PathogenTest pathogenTest : pathogenTestService.getBySampleUuid(sampleUuid, false)) {
-			pathogenTestUuids.add(pathogenTest.getUuid());
-		}
-
-		List<TestReport> testReports = testReportService.getByPathogenTestUuidsBatched(pathogenTestUuids, false);
-
-		List<LabMessage> labMessages = testReports.stream().map(TestReport::getLabMessage).distinct().collect(Collectors.toList());
+		List<LabMessage> labMessages = labMessageService.getForSample(sample);
 
 		return labMessages.stream().map(this::toDto).collect(Collectors.toList());
-
-	}
-
-	@Override
-	public List<LabMessageDto> getByPathogenTestUuid(String pathogenTestUuid) {
-
-		List<TestReport> testReports = testReportService.getByPathogenTestUuid(pathogenTestUuid, false);
-
-		List<LabMessage> labMessages = testReports.stream().map(TestReport::getLabMessage).distinct().collect(Collectors.toList());
-
-		return labMessages.stream().map(labMessage -> toDto(labMessage)).collect(Collectors.toList());
 
 	}
 
@@ -290,6 +276,10 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 		// Distinct is necessary here to avoid duplicate results due to the user role join in taskService.createAssigneeFilter
 		cq.distinct(true);
+
+		// remove deleted entities from result
+		Predicate filter = labMessageService.createDefaultFilter(cb, labMessage);
+		cq.where(filter);
 
 		List<Order> order = Optional.ofNullable(sortProperties)
 			.orElseGet(ArrayList::new)
@@ -392,6 +382,19 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		cq.where(cb.equal(from.get(LabMessage.REPORT_ID), reportId));
 
 		return em.createQuery(cq).getResultList().stream().map(this::toDto).collect(toList());
+	}
+
+	@Override
+	public boolean existsForwardedLabMessageWith(String reportId) {
+
+		List<LabMessageDto> relatedLabMessages = getByReportId(reportId);
+
+		for (LabMessageDto labMessage : relatedLabMessages) {
+			if (LabMessageStatus.FORWARDED.equals(labMessage.getStatus())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static LabMessageReferenceDto toReferenceDto(LabMessage entity) {

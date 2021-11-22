@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.task;
 
 import java.util.Date;
+import java.util.Set;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -62,6 +63,7 @@ public class TaskDto extends EntityDto {
 	public static final String CLOSED_LAT = "closedLat";
 	public static final String CLOSED_LON = "closedLon";
 	public static final String TRAVEL_ENTRY = "travelEntry";
+	public static final String OBSERVER_USERS = "observerUsers";
 
 	@Required
 	private TaskContext taskContext;
@@ -96,6 +98,7 @@ public class TaskDto extends EntityDto {
 	private UserReferenceDto assigneeUser;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String assigneeReply;
+	private Set<UserReferenceDto> observerUsers;
 
 	@Min(value = -90, message = Validations.numberTooSmall)
 	@Max(value = 90, message = Validations.numberTooBig)
@@ -243,6 +246,14 @@ public class TaskDto extends EntityDto {
 
 	public void setAssigneeReply(String assigneeReply) {
 		this.assigneeReply = assigneeReply;
+	}
+
+	public Set<UserReferenceDto> getObserverUsers() {
+		return observerUsers;
+	}
+
+	public void setObserverUsers(Set<UserReferenceDto> observerUsers) {
+		this.observerUsers = observerUsers;
 	}
 
 	public TaskPriority getPriority() {
