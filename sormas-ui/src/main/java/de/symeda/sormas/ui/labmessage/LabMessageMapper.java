@@ -91,7 +91,7 @@ public class LabMessageMapper {
 					SampleDto.SAMPLE_MATERIAL_TEXT),
 				Mapping
 					.of(sample::setSpecimenCondition, sample.getSpecimenCondition(), labMessage.getSpecimenCondition(), SampleDto.SPECIMEN_CONDITION),
-				Mapping.of(sample::setLab, sample.getLab(), getLabReference(labMessage), SampleDto.LAB),
+				Mapping.of(sample::setLab, sample.getLab(), getLabReference(labMessage.getLabExternalId()), SampleDto.LAB),
 				Mapping.of(sample::setLabDetails, sample.getLabDetails(), labMessage.getLabName(), SampleDto.LAB_DETAILS)));
 
 		if (labMessage.getSampleReceivedDate() != null) {
@@ -143,7 +143,11 @@ public class LabMessageMapper {
 					pathogenTest::setExternalOrderId,
 					pathogenTest.getExternalOrderId(),
 					sourceTestReport.getExternalOrderId(),
-					PathogenTestDto.EXTERNAL_ORDER_ID)));
+					PathogenTestDto.EXTERNAL_ORDER_ID),
+				Mapping
+					.of(pathogenTest::setLab, pathogenTest.getLab(), getLabReference(sourceTestReport.getTestLabExternalId()), PathogenTestDto.LAB),
+				Mapping
+					.of(pathogenTest::setLabDetails, pathogenTest.getLabDetails(), sourceTestReport.getTestLabName(), PathogenTestDto.LAB_DETAILS)));
 	}
 
 	private List<String[]> map(Stream<Mapping<?>> mappings) {
@@ -191,11 +195,10 @@ public class LabMessageMapper {
 		}
 	}
 
-	private FacilityReferenceDto getLabReference(LabMessageDto labMessageDto) {
+	private FacilityReferenceDto getLabReference(String labExternalId) {
 		FacilityFacade facilityFacade = FacadeProvider.getFacilityFacade();
-		List<FacilityReferenceDto> labs = labMessageDto.getLabExternalId() != null
-			? facilityFacade.getByExternalIdAndType(labMessageDto.getLabExternalId(), FacilityType.LABORATORY, false)
-			: null;
+		List<FacilityReferenceDto> labs =
+			labExternalId != null ? facilityFacade.getByExternalIdAndType(labExternalId, FacilityType.LABORATORY, false) : null;
 		if (labs != null && labs.size() == 1) {
 			return labs.get(0);
 		} else {

@@ -135,7 +135,7 @@ public interface Strings {
 	String confirmationExtendFollowUp = "confirmationExtendFollowUp";
 	String confirmationExtendQuarantine = "confirmationExtendQuarantine";
 	String confirmationFetchLabMessages = "confirmationFetchLabMessages";
-	String confirmationLabMessageRelatedLabMessage = "confirmationLabMessageRelatedLabMessage";
+	String confirmationLabMessageCorrection = "confirmationLabMessageCorrection";
 	String confirmationLocationFacilityAddressOverride = "confirmationLocationFacilityAddressOverride";
 	String confirmationLostToFollowUp = "confirmationLostToFollowUp";
 	String confirmationManuallyForwardedLabMessage = "confirmationManuallyForwardedLabMessage";
@@ -531,9 +531,9 @@ public interface Strings {
 	String headingInfrastructureLocked = "headingInfrastructureLocked";
 	String headingIntroduction = "headingIntroduction";
 	String headingInvalidDateEntered = "headingInvalidDateEntered";
+	String headingLabMessageCorrection = "headingLabMessageCorrection";
 	String headingLabMessageCorrectionThrough = "headingLabMessageCorrectionThrough";
 	String headingLabMessageDownload = "headingLabMessageDownload";
-	String headingLabMessageRelatedLabMessage = "headingLabMessageRelatedLabMessage";
 	String headingLabMessagesDeleted = "headingLabMessagesDeleted";
 	String headingLabMessagesDeleteProcessed = "headingLabMessagesDeleteProcessed";
 	String headingLaboratorySample = "headingLaboratorySample";
