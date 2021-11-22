@@ -167,6 +167,7 @@ public class EventActionsTableSteps implements En {
     HashMap<String, Integer> headerHashmap = new HashMap<>();
     webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EVENT_ACTIONS_COLUMN_HEADERS);
     webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(EVENT_ACTIONS_COLUMN_HEADERS);
+    webDriverHelpers.scrollToElementUntilIsVisible(EVENT_ACTIONS_COLUMN_HEADERS);
     baseSteps
         .getDriver()
         .findElements(EVENT_ACTIONS_COLUMN_HEADERS)

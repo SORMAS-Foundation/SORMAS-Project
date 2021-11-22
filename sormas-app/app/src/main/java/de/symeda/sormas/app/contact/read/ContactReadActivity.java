@@ -15,16 +15,17 @@
 
 package de.symeda.sormas.app.contact.read;
 
+import java.util.List;
+
 import android.content.Context;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import java.util.List;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
@@ -67,9 +68,15 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 		if (DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.VIEW_TAB_CONTACTS_FOLLOW_UP_VISITS)) {
 			menuItems.set(ContactSection.VISITS.ordinal(), null);
 		}
-		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			|| DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 			menuItems.set(ContactSection.IMMUNIZATIONS.ordinal(), null);
 		}
+		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			|| !DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			menuItems.set(ContactSection.VACCINATIONS.ordinal(), null);
+		}
+
 		return menuItems;
 	}
 
@@ -100,6 +107,9 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 			break;
 		case IMMUNIZATIONS:
 			fragment = ContactReadImmunizationListFragment.newInstance(activityRootData);
+			break;
+		case VACCINATIONS:
+			fragment = ContactReadVaccinationListFragment.newInstance(activityRootData);
 			break;
 		default:
 			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
