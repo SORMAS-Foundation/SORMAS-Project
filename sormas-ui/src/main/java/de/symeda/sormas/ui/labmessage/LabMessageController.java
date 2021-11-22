@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -28,15 +27,10 @@ import javax.naming.CannotProceedException;
 import javax.naming.NamingException;
 
 import com.vaadin.server.ClientConnector;
-import com.vaadin.ui.Alignment;
-import com.vaadin.v7.data.Buffered;
-import com.vaadin.v7.data.Validator;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.ui.samples.SampleController;
 import de.symeda.sormas.ui.samples.SampleEditForm;
-import de.symeda.sormas.ui.utils.DateFormatHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,8 +106,6 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
 
 public class LabMessageController {
 
