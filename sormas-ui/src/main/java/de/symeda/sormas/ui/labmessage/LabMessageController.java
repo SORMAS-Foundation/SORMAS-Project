@@ -26,6 +26,7 @@ import javax.naming.CannotProceedException;
 import javax.naming.NamingException;
 
 import com.vaadin.server.ClientConnector;
+import com.vaadin.shared.ui.ContentMode;
 import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -201,7 +202,7 @@ public class LabMessageController {
 					: I18nProperties.getString(Strings.messageRelatedSampleFound);
 				VaadinUiUtil.showChooseOptionPopup(
 					I18nProperties.getCaption(Captions.labMessageRelatedEntriesFound),
-					new Label(message),
+					new Label(message, ContentMode.HTML),
 					I18nProperties.getCaption(Captions.actionYes),
 					I18nProperties.getCaption(Captions.actionNo),
 					null,
