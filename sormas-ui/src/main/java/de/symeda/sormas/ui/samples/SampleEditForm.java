@@ -20,11 +20,14 @@ package de.symeda.sormas.ui.samples;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 
@@ -32,6 +35,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -48,8 +52,11 @@ public class SampleEditForm extends AbstractSampleForm {
 
 	private static final String HTML_LAYOUT = loc(LABORATORY_SAMPLE_HEADING_LOC) + SAMPLE_COMMON_HTML_LAYOUT;
 
+	private List<PathogenTestReferenceDto> testsToBeRemovedOnCommit;
+
 	public SampleEditForm(boolean isPseudonymized, Disease disease) {
 		super(SampleDto.class, SampleDto.I18N_PREFIX, disease, UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
+		testsToBeRemovedOnCommit = new ArrayList();
 	}
 
 	@SuppressWarnings("deprecation")
@@ -107,8 +114,16 @@ public class SampleEditForm extends AbstractSampleForm {
 		}
 	}
 
+	public void addReferredFromButton(Button button) {
+		getContent().addComponent(button, REFERRED_FROM_BUTTON_LOC);
+	}
+
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
+	}
+
+	public List<PathogenTestReferenceDto> getTestsToBeRemovedOnCommit() {
+		return testsToBeRemovedOnCommit;
 	}
 }

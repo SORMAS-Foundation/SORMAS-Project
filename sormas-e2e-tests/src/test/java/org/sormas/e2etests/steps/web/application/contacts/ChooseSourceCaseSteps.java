@@ -48,6 +48,7 @@ public class ChooseSourceCaseSteps implements En {
         "^I open the first found result in the CHOOSE SOURCE window$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitForRowToBeSelected(SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_CASE_WINDOW_CONFIRM_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_CONFIRM_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(

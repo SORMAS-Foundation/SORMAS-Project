@@ -20,17 +20,22 @@ package de.symeda.sormas.backend.task;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -70,6 +75,10 @@ public class Task extends AbstractDomainObject {
 	public static final String ARCHIVED = "archived";
 	public static final String TRAVEL_ENTRY = "travelEntry";
 
+	public static final String TASK_OBSERVER_TABLE = "task_observer";
+	public static final String TASK_OBSERVER_JOIN_COLUMN = "task_id";
+	public static final String TASK_OBSERVER_INVERSE_JOIN_COLUMN = "user_id";
+
 	private TaskContext taskContext;
 	private Case caze;
 	private Contact contact;
@@ -88,6 +97,7 @@ public class Task extends AbstractDomainObject {
 	private String creatorComment;
 	private User assigneeUser;
 	private String assigneeReply;
+	private List<User> observerUsers;
 
 	private Double closedLat;
 	private Double closedLon;
@@ -201,6 +211,19 @@ public class Task extends AbstractDomainObject {
 
 	public void setAssigneeUser(User assigneeUser) {
 		this.assigneeUser = assigneeUser;
+	}
+
+	@AuditedIgnore
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = TASK_OBSERVER_TABLE,
+		joinColumns = @JoinColumn(name = TASK_OBSERVER_JOIN_COLUMN),
+		inverseJoinColumns = @JoinColumn(name = TASK_OBSERVER_INVERSE_JOIN_COLUMN))
+	public List<User> getObserverUsers() {
+		return observerUsers;
+	}
+
+	public void setObserverUsers(List<User> observerUsers) {
+		this.observerUsers = observerUsers;
 	}
 
 	@Column(length = CHARACTER_LIMIT_BIG)

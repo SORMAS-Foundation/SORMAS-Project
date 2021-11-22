@@ -21,7 +21,11 @@ import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleService;
 import junit.framework.TestCase;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -29,6 +33,8 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 
 	@Mock
 	private TestReportFacadeEjb.TestReportFacadeEjbLocal testReportFacade;
+	@Mock
+	private SampleService sampleService;
 	@InjectMocks
 	private LabMessageFacadeEjb sut;
 
@@ -40,6 +46,11 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		TestReport testReport = new TestReport();
 		TestReportDto testReportDto = TestReportFacadeEjb.toDto(testReport);
 
+		Sample sample = new Sample();
+		sample.setUuid("Uuid");
+		SampleReferenceDto sampleRef = sample.toReference();
+
+		when(sampleService.getByReferenceDto(sampleRef)).thenReturn(sample);
 		when(testReportFacade.fromDto(eq(testReportDto), any(LabMessage.class), eq(false))).thenReturn(testReport);
 
 		source.addTestReport(testReportDto);
@@ -72,6 +83,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setPersonEmail("mail@domain.com");
 		source.setLabMessageDetails("Lab Message Details");
 		source.setSampleOverallTestResult(PathogenTestResultType.POSITIVE);
+		source.setSample(sampleRef);
 
 		LabMessage result = sut.fromDto(source, null, true);
 
@@ -103,6 +115,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getPersonHouseNumber(), result.getPersonHouseNumber());
 		assertEquals(source.getLabMessageDetails(), result.getLabMessageDetails());
 		assertEquals(source.getSampleOverallTestResult(), result.getSampleOverallTestResult());
+		assertEquals(sample, result.getSample());
 	}
 
 	@Test
@@ -116,6 +129,9 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		TestReportDto testReportDto = TestReportFacadeEjb.toDto(testReport);
 		ArrayList<TestReportDto> testReportDtos = new ArrayList<>();
 		testReportDtos.add(testReportDto);
+
+		Sample sample = new Sample();
+		sample.setUuid("Uuid");
 
 		source.setTestReports(testReports);
 		source.setCreationDate(new Timestamp(new Date().getTime()));
@@ -148,6 +164,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setLabMessageDetails("Lab Message Details");
 		source.setStatus(LabMessageStatus.PROCESSED);
 		source.setSampleOverallTestResult(PathogenTestResultType.NEGATIVE);
+		source.setSample(sample);
 
 		LabMessageDto result = sut.toDto(source);
 
@@ -179,5 +196,6 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getPersonHouseNumber(), result.getPersonHouseNumber());
 		assertEquals(source.getLabMessageDetails(), result.getLabMessageDetails());
 		assertEquals(source.getSampleOverallTestResult(), result.getSampleOverallTestResult());
+		assertEquals(source.getSample().toReference(), result.getSample());
 	}
 }

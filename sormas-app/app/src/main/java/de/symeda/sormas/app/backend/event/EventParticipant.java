@@ -28,6 +28,8 @@ import com.j256.ormlite.table.DatabaseTable;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.app.backend.user.User;
 
@@ -44,6 +46,8 @@ public class EventParticipant extends PseudonymizableAdo {
 	public static final String PERSON = "person";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	public static final String RESULTING_CASE_UUID = "resultingCaseUuid";
+	public static final String RESPONSIBLE_REGION = "responsibleRegion";
+	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User reportingUser;
@@ -64,6 +68,12 @@ public class EventParticipant extends PseudonymizableAdo {
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	@DatabaseField
 	private boolean ownershipHandedOver;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Region responsibleRegion;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private District responsibleDistrict;
 
 	@Enumerated(EnumType.STRING)
 	private VaccinationStatus vaccinationStatus;
@@ -152,5 +162,21 @@ public class EventParticipant extends PseudonymizableAdo {
 
 	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
 		this.ownershipHandedOver = ownershipHandedOver;
+	}
+
+	public Region getResponsibleRegion() {
+		return responsibleRegion;
+	}
+
+	public void setResponsibleRegion(Region responsibleRegion) {
+		this.responsibleRegion = responsibleRegion;
+	}
+
+	public District getResponsibleDistrict() {
+		return responsibleDistrict;
+	}
+
+	public void setResponsibleDistrict(District responsibleDistrict) {
+		this.responsibleDistrict = responsibleDistrict;
 	}
 }

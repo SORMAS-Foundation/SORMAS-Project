@@ -2,11 +2,9 @@ package de.symeda.sormas.backend.labmessage;
 
 import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
 import de.symeda.sormas.api.labmessage.TestReportDto;
-import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.PathogenTestService;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -43,11 +41,6 @@ public class TestReportFacadeEjbMappingTest extends TestCase {
 		LabMessageReferenceDto labMessageReference = LabMessageFacadeEjb.toReferenceDto(labMessage);
 		when(labMessageService.getByReferenceDto(labMessageReference)).thenReturn(labMessage);
 
-		PathogenTest pathogenTest = new PathogenTest();
-		pathogenTest.setUuid(DataHelper.createUuid());
-		PathogenTestReferenceDto pathogenTestReference = pathogenTest.toReference();
-		when(pathogenTestService.getByReferenceDto(pathogenTestReference)).thenReturn(pathogenTest);
-
 		when(testReportService.getByUuid("UUID")).thenReturn(null);
 
 		TestReportDto source = new TestReportDto();
@@ -65,7 +58,6 @@ public class TestReportFacadeEjbMappingTest extends TestCase {
 		source.setTestResult(PathogenTestResultType.POSITIVE);
 		source.setTestResultVerified(true);
 		source.setTestResultText("Test result text");
-		source.setPathogenTest(pathogenTestReference);
 
 		TestReport result = sut.fromDto(source, true);
 
@@ -82,14 +74,11 @@ public class TestReportFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getTestResult(), result.getTestResult());
 		assertEquals(source.isTestResultVerified(), result.isTestResultVerified());
 		assertEquals(source.getTestResultText(), result.getTestResultText());
-		assertEquals(source.getPathogenTest(), result.getPathogenTest().toReference());
 
 	}
 
 	@Test
 	public void testToDto() {
-		PathogenTest pathogenTest = new PathogenTest();
-		pathogenTest.setUuid(DataHelper.createUuid());
 
 		LabMessage labMessage = new LabMessage();
 		labMessage.setUuid(DataHelper.createUuid());
@@ -109,7 +98,6 @@ public class TestReportFacadeEjbMappingTest extends TestCase {
 		source.setTestResult(PathogenTestResultType.POSITIVE);
 		source.setTestResultVerified(true);
 		source.setTestResultText("Test result text");
-		source.setPathogenTest(pathogenTest);
 
 		TestReportDto result = sut.toDto(source);
 
@@ -126,7 +114,6 @@ public class TestReportFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getTestResult(), result.getTestResult());
 		assertEquals(source.isTestResultVerified(), result.isTestResultVerified());
 		assertEquals(source.getTestResultText(), result.getTestResultText());
-		assertEquals(source.getPathogenTest().toReference(), result.getPathogenTest());
 
 	}
 }

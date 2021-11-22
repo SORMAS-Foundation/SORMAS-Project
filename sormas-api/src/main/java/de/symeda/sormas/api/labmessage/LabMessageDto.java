@@ -13,6 +13,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -88,6 +89,8 @@ public class LabMessageDto extends EntityDto {
 	private String personPhone;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personEmail;
+
+	private SampleReferenceDto sample;
 
 	@Valid
 	private List<TestReportDto> testReports = new ArrayList<>();
@@ -352,5 +355,13 @@ public class LabMessageDto extends EntityDto {
 
 	public LabMessageReferenceDto toReference() {
 		return new LabMessageReferenceDto(getUuid());
+	}
+
+	public SampleReferenceDto getSample() {
+		return sample;
+	}
+
+	public void setSample(SampleReferenceDto sample) {
+		this.sample = sample;
 	}
 }

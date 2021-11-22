@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.backend.labmessage.LabMessageService;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.ReceivedCaseProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.contact.ReceivedContactProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.event.ReceivedEventProcessor;
@@ -179,7 +180,6 @@ import de.symeda.sormas.backend.share.ExternalShareInfoFacadeEjb.ExternalShareIn
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
@@ -569,6 +569,10 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(LabMessageFacadeEjbLocal.class);
 	}
 
+	public LabMessageService getLabMessageService() {
+		return getBean(LabMessageService.class);
+	}
+
 	public SormasToSormasLabMessageFacade getSormasToSormasLabMessageFacade() {
 		return getBean(SormasToSormasLabMessageFacadeEjbLocal.class);
 	}
@@ -603,10 +607,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public ShareDataBuilderHelper getShareDataBuilderHelper() {
 		return getBean(ShareDataBuilderHelper.class);
-	}
-
-	public Sormas2SormasDataValidator getSormas2SormasDataValidator() {
-		return getBean(Sormas2SormasDataValidator.class);
 	}
 
 	public ReceivedCaseProcessor getReceivedCaseProcessor() {

@@ -161,6 +161,9 @@ public class EventParticipantImporter extends DataImporter {
 
 		PersonDto newPerson = newPersonTemp;
 
+		// Sanitize non-HOME address
+		PersonHelper.sanitizeNonHomeAddress(newPerson);
+
 		// If the eventparticipant still does not have any import errors, search for persons similar to the eventparticipant person in the database and,
 		// if there are any, display a window to resolve the conflict to the user
 		if (!eventParticipantHasImportError) {

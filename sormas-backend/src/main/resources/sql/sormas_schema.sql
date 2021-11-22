@@ -8810,15 +8810,83 @@ ALTER TABLE cases_history ALTER COLUMN externalData TYPE json USING externalData
 
 INSERT INTO schema_version (version_number, comment) VALUES (424, 'Allow to store external data for a case #7068');
 
+-- 2021-11-03 Change case external data from json to jsonb #7068
 ALTER TABLE cases ALTER COLUMN externalData set DATA TYPE jsonb using externalData::jsonb;
 ALTER TABLE cases_history ALTER COLUMN externalData set DATA TYPE jsonb using externalData::jsonb;
 
 INSERT INTO schema_version (version_number, comment) VALUES (425, 'Change case externalData from JSON to JSONB #7068');
 
+-- 2021-11-09 [DEMIS2SORMAS] Handle New Profile: Process multiple test reports #5899
+/*
+change reference from
+  test report references pathogen test
+  to
+  lab message references sample
+ */
+
+ALTER TABLE labmessage
+    ADD COLUMN sample_id bigint;
+ALTER TABLE labmessage_history
+    ADD COLUMN sample_id bigint;
+
+ALTER TABLE labmessage
+    ADD CONSTRAINT fk_labmessage_sample_id FOREIGN KEY (sample_id) REFERENCES samples (id);
+
+UPDATE labmessage
+SET sample_id = p.sample_id FROM
+testreport AS t
+INNER JOIN pathogentest AS p
+ON t.pathogentest_id = p.id
+WHERE labmessage.id = t.labmessage_id;
+
+/*
+ Make lab message a CoreAdo
+ */
+
+ALTER TABLE labmessage ADD COLUMN deleted boolean DEFAULT false;
+ALTER TABLE labmessage_history ADD COLUMN deleted boolean;
+
+/*
+ Delete obsolete columns
+ */
+ALTER TABLE testreport DROP COLUMN pathogentest_id;
+ALTER TABLE testreport_history DROP COLUMN pathogentest_id;
+
+ALTER TABLE labmessage DROP COLUMN pathogentest_id;
+ALTER TABLE labmessage_history DROP COLUMN pathogentest_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (426, '[DEMIS2SORMAS] Handle New Profile: Process multiple test reports #5899');
+
+-- 2021-11-05 Add properties to feature configurations #7111
+ALTER TABLE featureconfiguration ADD COLUMN properties text;
+ALTER TABLE featureconfiguration_history ADD COLUMN properties text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (427, 'Add properties to feature configurations #7111');
+
+-- 2021-11-04 Add observers to tasks #7021
+CREATE TABLE task_observer(
+    task_id bigint not null,
+    user_id bigint not null,
+
+    sys_period tstzrange not null,
+    PRIMARY KEY (task_id, user_id)
+);
+
+ALTER TABLE task_observer OWNER TO sormas_user;
+ALTER TABLE task_observer ADD CONSTRAINT fk_task_observer_task_id FOREIGN KEY (task_id) REFERENCES task (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE task_observer ADD CONSTRAINT fk_task_observer_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+CREATE TABLE task_observer_history (LIKE task_observer);
+ALTER TABLE task_observer_history OWNER TO sormas_user;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON task_observer
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'task_observer_history', true);
+
+INSERT INTO schema_version (version_number, comment) VALUES (428, 'Add observers to tasks #7021');
+
 -- 2021-11-04 [DEMIS2SORMAS] Handle New Profile: DiagnosticReport.conclusionCode #5159
 ALTER TABLE labmessage ADD COLUMN sampleoveralltestresult varchar(255);
 ALTER TABLE labmessage_history ADD COLUMN sampleoveralltestresult varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (426, '[DEMIS2SORMAS] Handle New Profile: DiagnosticReport.conclusionCode #5159');
+INSERT INTO schema_version (version_number, comment) VALUES (429, '[DEMIS2SORMAS] Handle New Profile: DiagnosticReport.conclusionCode #5159');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
