@@ -67,8 +67,10 @@ public class CreateNewUserSteps implements En {
           selectLimitedDisease(user.getLimitedDisease());
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           closeNewPasswordPopUp();
         });
+
     And(
         "^I change user data and save the changes$",
         () -> {

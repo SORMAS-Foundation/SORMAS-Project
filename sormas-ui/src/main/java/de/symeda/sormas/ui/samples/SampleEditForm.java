@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 
@@ -113,6 +114,10 @@ public class SampleEditForm extends AbstractSampleForm {
 		if (pathogenTestResultField.getValue() == null) {
 			pathogenTestResultField.setValue(PathogenTestResultType.PENDING);
 		}
+	}
+
+	public void addReferredFromButton(Button button) {
+		getContent().addComponent(button, REFERRED_FROM_BUTTON_LOC);
 	}
 
 	@Override

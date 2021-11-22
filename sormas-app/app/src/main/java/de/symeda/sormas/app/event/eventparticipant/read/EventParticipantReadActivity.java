@@ -21,7 +21,10 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
 import androidx.annotation.NonNull;
+
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
@@ -70,8 +73,14 @@ public class EventParticipantReadActivity extends BaseReadActivity<EventParticip
 	public List<PageMenuItem> getPageMenuData() {
 		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(EventParticipantSection.values(), getContext());
 		Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
-		if (event.getDisease() == null || !ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			|| DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 			menuItems.set(EventParticipantSection.IMMUNIZATIONS.ordinal(), null);
+		}
+		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			|| !DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)
+			|| event.getDisease() == null) {
+			menuItems.set(EventParticipantSection.VACCINATIONS.ordinal(), null);
 		}
 		return menuItems;
 	}
@@ -88,6 +97,9 @@ public class EventParticipantReadActivity extends BaseReadActivity<EventParticip
 			break;
 		case IMMUNIZATIONS:
 			fragment = EventParticipantReadImmunizationListFragment.newInstance(activityRootData);
+			break;
+		case VACCINATIONS:
+			fragment = EventParticipantReadVaccinationListFragment.newInstance(activityRootData);
 			break;
 		default:
 			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));

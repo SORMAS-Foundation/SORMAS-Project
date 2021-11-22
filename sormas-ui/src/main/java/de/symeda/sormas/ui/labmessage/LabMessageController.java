@@ -14,6 +14,10 @@
  */
 package de.symeda.sormas.ui.labmessage;
 
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -28,6 +32,13 @@ import java.util.stream.Collectors;
 import javax.naming.CannotProceedException;
 import javax.naming.NamingException;
 
+import com.vaadin.server.ClientConnector;
+import com.vaadin.shared.ui.ContentMode;
+import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.ui.samples.SampleController;
+import de.symeda.sormas.ui.samples.SampleEditForm;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -192,6 +203,8 @@ public class LabMessageController {
 				logger.error("Failed to handle correction lab message", e);
 				throw (RuntimeException) e;
 			}
+
+			ContentMode.HTML
 
 			if (result == HandlerResult.NOT_HANDLED) {
 				pickOrCreatePerson(labMessage);
@@ -610,12 +623,57 @@ public class LabMessageController {
 		}
 
 		Window window = VaadinUiUtil.createPopupWindow();
+
+		// button configuration
+		Consumer<Disease> createReferral = (disease) -> {
+			// discard current changes and create sample referral
+			SampleDto existingSample =
+				FacadeProvider.getSampleFacade().getSampleByUuid(sampleEditComponent.getWrappedComponent().getValue().getUuid());
+			createSampleReferral(existingSample, disease, labMessage);
+			window.close();
+		};
+		Consumer<SampleDto> editSample = referredTo -> {
+			editSample(referredTo, labMessage);
+			window.close();
+		};
+		sampleController.addReferOrLinkToOtherLabButton(sampleEditComponent, sampleController.getDiseaseOf(sample), createReferral, editSample);
+
+		sampleController.addReferredFromButton(sampleEditComponent, editSample);
+
 		sampleEditComponent.addCommitListener(window::close);
 		sampleEditComponent.addDiscardListener(window::close);
 
 		showFormWithLabMessage(labMessage, sampleEditComponent, window, I18nProperties.getString(Strings.headingEditSample), false);
 
 		return window;
+	}
+
+	private void createSampleReferral(SampleDto existingSample, Disease disease, LabMessageDto labMessage) {
+		Window window = VaadinUiUtil.createPopupWindow();
+
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
+			getSampleReferralCreateComponent(existingSample, disease, labMessage, window);
+		sampleCreateComponent.addCommitListener(() -> finishProcessingLabMessage(labMessage, sampleCreateComponent.getWrappedComponent().getValue()));
+
+		showFormWithLabMessage(labMessage, sampleCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewSample), false);
+	}
+
+	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleReferralCreateComponent(
+		SampleDto existingSample,
+		Disease disease,
+		LabMessageDto labMessage,
+		Window window) {
+		SampleController sampleController = ControllerProvider.getSampleController();
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
+			sampleController.getSampleReferralCreateComponent(existingSample, disease);
+		addAllTestReportsOf(labMessage, sampleCreateComponent);
+		// add option to create additional pathogen tests
+		sampleController.addPathogenTestButton(sampleCreateComponent, true);
+
+		sampleCreateComponent.addCommitListener(window::close);
+		sampleCreateComponent.addDiscardListener(window::close);
+
+		return sampleCreateComponent;
 	}
 
 	private void createCase(LabMessageDto labMessageDto, PersonDto person) {
@@ -710,6 +768,47 @@ public class LabMessageController {
 			newEntityCreated);
 	}
 
+	private void fillSample(SampleDto sampleDto, LabMessageDto labMessageDto) {
+		sampleDto.setSampleDateTime(labMessageDto.getSampleDateTime());
+		if (labMessageDto.getSampleReceivedDate() != null) {
+			sampleDto.setReceived(true);
+			sampleDto.setReceivedDate(labMessageDto.getSampleReceivedDate());
+			sampleDto.setLabSampleID(labMessageDto.getLabSampleId());
+		}
+		sampleDto.setSampleMaterial(labMessageDto.getSampleMaterial());
+		sampleDto.setSampleMaterialText(labMessageDto.getSampleMaterialText());
+		sampleDto.setSpecimenCondition(labMessageDto.getSpecimenCondition());
+		sampleDto.setLab(getLabReference(labMessageDto));
+		sampleDto.setLabDetails(labMessageDto.getLabName());
+		if (homogenousTestResultTypesIn(labMessageDto)) {
+			sampleDto.setPathogenTestResult(labMessageDto.getTestReports().get(0).getTestResult());
+		}
+	}
+
+	private FacilityReferenceDto getLabReference(LabMessageDto labMessageDto) {
+		FacilityFacade facilityFacade = FacadeProvider.getFacilityFacade();
+		List<FacilityReferenceDto> labs = labMessageDto.getLabExternalId() != null
+				? facilityFacade.getByExternalIdAndType(labMessageDto.getLabExternalId(), FacilityType.LABORATORY, false)
+				: null;
+		if (labs != null && labs.size() == 1) {
+			return labs.get(0);
+		} else {
+			return facilityFacade.getReferenceByUuid(FacilityDto.OTHER_FACILITY_UUID);
+		}
+	}
+
+	private FacilityReferenceDto getLabReference(TestReportDto testReport) {
+		FacilityFacade facilityFacade = FacadeProvider.getFacilityFacade();
+		List<FacilityReferenceDto> labs = testReport.getTestLabExternalId() != null
+				? facilityFacade.getByExternalIdAndType(testReport.getTestLabExternalId(), FacilityType.LABORATORY, false)
+				: null;
+		if (labs != null && labs.size() == 1) {
+			return labs.get(0);
+		} else {
+			return facilityFacade.getReferenceByUuid(FacilityDto.OTHER_FACILITY_UUID);
+		}
+	}
+
 	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
 		SampleDto sample,
 		LabMessageDto labMessageDto,
@@ -720,9 +819,20 @@ public class LabMessageController {
 		});
 
 		sampleCreateComponent.addCommitListener(() -> finishProcessingLabMessage(labMessageDto, sample.toReference()));
-
 		// add pathogen test create components
-		//********************
+		addAllTestReportsOf(labMessageDto, sampleCreateComponent);
+		// add option to create additional pathogen tests
+		sampleController.addPathogenTestButton(sampleCreateComponent, true);
+
+		sampleCreateComponent.addCommitListener(window::close);
+		sampleCreateComponent.addDiscardListener(window::close);
+		return sampleCreateComponent;
+	}
+
+	public void addAllTestReportsOf(LabMessageDto labMessageDto, CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent) {
+
+		SampleController sampleController = ControllerProvider.getSampleController();
+		SampleDto sample = sampleCreateComponent.getWrappedComponent().getValue();
 		List<PathogenTestDto> pathogenTests = buildPathogenTests(sample, labMessageDto);
 		int caseSampleCount = sampleController.caseSampleCountOf(sample);
 
@@ -731,12 +841,6 @@ public class LabMessageController {
 				sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTest, caseSampleCount);
 			sampleController.setViaLimsFieldChecked(pathogenTestCreateComponent);
 		}
-		// add option to create additional pathogen tests
-		sampleController.addPathogenTestButton(sampleCreateComponent, true);
-
-		sampleCreateComponent.addCommitListener(window::close);
-		sampleCreateComponent.addDiscardListener(window::close);
-		return sampleCreateComponent;
 	}
 
 	private List<PathogenTestDto> buildPathogenTests(SampleDto sample, LabMessageDto labMessage) {
@@ -758,6 +862,9 @@ public class LabMessageController {
 		}
 
 		pathogenTest.setTestedDisease(labMessage.getTestedDisease());
+
+		pathogenTest.setLab(getLabReference(testReport));
+		pathogenTest.setLabDetails(testReport.getTestLabName());
 
 		Date reportDate = null;
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {

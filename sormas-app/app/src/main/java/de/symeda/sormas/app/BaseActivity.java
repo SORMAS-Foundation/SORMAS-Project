@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -437,11 +438,12 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 					ConfigProvider.hasUserRight(UserRight.SAMPLE_VIEW)
 						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.SAMPLES_LAB));
 
-
 			if (immunizationMenu != null)
 				immunizationMenu.setVisible(
 					ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
-						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.IMMUNIZATION_MANAGEMENT));
+						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+						&& !DatabaseHelper.getFeatureConfigurationDao()
+							.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED));
 
 			if (eventMenu != null)
 				eventMenu.setVisible(
