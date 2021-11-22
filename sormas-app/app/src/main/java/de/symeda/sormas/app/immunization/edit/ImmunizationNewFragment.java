@@ -40,6 +40,7 @@ import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.validation.ValidationHelper;
 import de.symeda.sormas.app.databinding.FragmentImmunizationNewLayoutBinding;
+import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
@@ -79,7 +80,10 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 	}
 
 	public static ImmunizationNewFragment newInstanceFromEventParticipant(Immunization activityRootData, String eventParticipantUuid) {
-		return newInstance(ImmunizationNewFragment.class, ImmunizationNewActivity.buildBundleWithEvent(eventParticipantUuid).get(), activityRootData);
+		return newInstance(
+			ImmunizationNewFragment.class,
+			ImmunizationNewActivity.buildBundleWithEventParticipant(eventParticipantUuid).get(),
+			activityRootData);
 	}
 
 	@Override
@@ -165,21 +169,25 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		contentBinding.immunizationMeansOfImmunization.initializeSpinner(meansOfImmunizationList);
 
 		contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>());
-		contentBinding.personBirthdateMM.initializeSpinner(monthList, field -> {
-			DataUtils.updateListOfDays(
+		contentBinding.personBirthdateMM.initializeSpinner(
+			monthList,
+			field -> DataUtils.updateListOfDays(
 				contentBinding.personBirthdateDD,
 				(Integer) contentBinding.personBirthdateYYYY.getValue(),
-				(Integer) field.getValue());
-		});
-		contentBinding.personBirthdateYYYY.initializeSpinner(yearList, field -> {
-			DataUtils.updateListOfDays(
+				(Integer) field.getValue()));
+		contentBinding.personBirthdateYYYY.initializeSpinner(
+			yearList,
+			field -> DataUtils.updateListOfDays(
 				contentBinding.personBirthdateDD,
 				(Integer) field.getValue(),
-				(Integer) contentBinding.personBirthdateMM.getValue());
-		});
+				(Integer) contentBinding.personBirthdateMM.getValue()));
 		int year = Calendar.getInstance().get(Calendar.YEAR);
 		contentBinding.personBirthdateYYYY.setSelectionOnOpen(year - 35);
 		contentBinding.personSex.initializeSpinner(sexList);
+
+		if (record.getDisease() != null && new Bundler(getArguments()).getEventParticipantUuid() != null) {
+			contentBinding.immunizationDisease.setEnabled(false);
+		}
 
 		// Initialize ControlDateFields
 		contentBinding.immunizationReportDate.initializeDateField(getFragmentManager());
@@ -202,25 +210,20 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 			contentBinding.immunizationHealthFacilityDetails);
 
 		contentBinding.immunizationMeansOfImmunization.addValueChangedListener(e -> {
-			if (e.getValue() == MeansOfImmunization.OTHER || e.getValue() == MeansOfImmunization.RECOVERY) {
-				contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.COMPLETED);
-				contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
+			if (!Boolean.TRUE.equals(contentBinding.overwriteImmunizationManagementStatusCheckBox.getValue())) {
+				if (e.getValue() == MeansOfImmunization.OTHER || e.getValue() == MeansOfImmunization.RECOVERY) {
+					contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.COMPLETED);
+				} else {
+					contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.SCHEDULED);
+				}
 			}
-			if (e.getValue() == MeansOfImmunization.VACCINATION || e.getValue() == MeansOfImmunization.VACCINATION_RECOVERY) {
-				contentBinding.immunizationNumberOfDoses.setVisibility(View.VISIBLE);
-				contentBinding.immunizationNumberOfDoses.setEnabled(true);
-			} else {
-				contentBinding.immunizationNumberOfDoses.setVisibility(View.GONE);
-			}
+			boolean isVaccination = MeansOfImmunization.isVaccination((MeansOfImmunization) e.getValue());
+			contentBinding.immunizationNumberOfDoses.setVisibility(isVaccination ? View.VISIBLE : View.GONE);
+			contentBinding.immunizationNumberOfDoses.setEnabled(isVaccination);
 		});
 
-		contentBinding.overwriteImmunizationManagementStatusCheckBox.addValueChangedListener(e -> {
-			if (Boolean.TRUE.equals(e.getValue())) {
-				contentBinding.immunizationImmunizationManagementStatus.setEnabled(true);
-			} else {
-				contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
-			}
-		});
+		contentBinding.overwriteImmunizationManagementStatusCheckBox
+			.addValueChangedListener(e -> contentBinding.immunizationImmunizationManagementStatus.setEnabled(Boolean.TRUE.equals(e.getValue())));
 
 		contentBinding.immunizationImmunizationManagementStatus.addValueChangedListener(e -> {
 			if (e.getValue() == ImmunizationManagementStatus.SCHEDULED || e.getValue() == ImmunizationManagementStatus.ONGOING) {
@@ -244,6 +247,17 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 			if (facilityType != null) {
 				contentBinding.facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());
 			}
+		}
+
+		// Disable personal details fields when immunization is created from case, contact or event participant
+		Bundler bundler = new Bundler(getArguments());
+		if (bundler.getCaseUuid() != null || bundler.getContactUuid() != null || bundler.getEventParticipantUuid() != null) {
+			contentBinding.personFirstName.setEnabled(false);
+			contentBinding.personLastName.setEnabled(false);
+			contentBinding.personSex.setEnabled(false);
+			contentBinding.personBirthdateYYYY.setEnabled(false);
+			contentBinding.personBirthdateMM.setEnabled(false);
+			contentBinding.personBirthdateDD.setEnabled(false);
 		}
 	}
 }

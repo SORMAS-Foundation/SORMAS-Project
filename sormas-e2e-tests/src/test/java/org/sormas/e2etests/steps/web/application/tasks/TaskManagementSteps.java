@@ -196,6 +196,7 @@ public class TaskManagementSteps implements En {
                 indexWithData.put(atomicInt.getAndIncrement(), dataText.getText());
               });
           tableDataList.add(indexWithData);
+          webDriverHelpers.scrollToElementUntilIsVisible(TABLE_DATA);
         });
     List<Map<String, String>> tableObjects = new ArrayList<>();
     tableDataList.forEach(
@@ -217,6 +218,7 @@ public class TaskManagementSteps implements En {
     HashMap<String, Integer> headerHashmap = new HashMap<>();
     webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(COLUMN_HEADERS_TEXT);
     webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(COLUMN_HEADERS_TEXT);
+    webDriverHelpers.scrollToElementUntilIsVisible(COLUMN_HEADERS_TEXT);
     baseSteps
         .getDriver()
         .findElements(COLUMN_HEADERS_TEXT)
@@ -225,6 +227,7 @@ public class TaskManagementSteps implements En {
               webDriverHelpers.scrollToElementUntilIsVisible(webElement);
               headerHashmap.put(webElement.getText(), atomicInt.getAndIncrement());
             });
+    webDriverHelpers.scrollToElementUntilIsVisible(COLUMN_HEADERS_TEXT);
     return headerHashmap;
   }
 

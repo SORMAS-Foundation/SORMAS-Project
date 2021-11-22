@@ -103,6 +103,15 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 		}
 	}
 
+	public List<Immunization> queryAllByCriteria(ImmunizationCriteria criteria) {
+		try {
+			return buildQueryBuilder(criteria).orderBy(Immunization.CHANGE_DATE, false).query();
+		} catch (SQLException e) {
+			Log.e(getTableName(), "Could not perform queryByCriteria on Immunization");
+			throw new RuntimeException(e);
+		}
+	}
+
 	public long countByCriteria(ImmunizationCriteria criteria) {
 		try {
 			return buildQueryBuilder(criteria).countOf();
