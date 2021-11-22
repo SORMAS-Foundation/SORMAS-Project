@@ -21,33 +21,38 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View" />
+        <import type="de.symeda.sormas.api.caze.Vaccine" />
+        <import type="de.symeda.sormas.app.util.DateFormatHelper" />
         <variable name="data" type="de.symeda.sormas.app.backend.vaccination.Vaccination" />
 
-        <import type="de.symeda.sormas.app.util.DateFormatHelper" />
+        <variable name="fontColorGrey" type="java.lang.Boolean" />
+
     </data>
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:layout_gravity="fill"
+        android:layout_weight="1"
+        android:background="@drawable/selector_list_activity_row_background"
+        android:orientation="vertical"
         android:paddingLeft="@dimen/rowListItemHorizontalMargin"
         android:paddingRight="@dimen/rowListItemHorizontalMargin"
-        android:background="@drawable/selector_list_activity_row_background"
         >
 
         <!---->
         <LinearLayout
             android:id="@+id/row_item"
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="fill"
             android:layout_gravity="fill"
+            android:alpha="@{fontColorGrey ? 0.5f : 1f}"
+            android:background="@drawable/background_list_activity_row"
+            android:gravity="fill"
+            android:orientation="vertical"
             android:paddingTop="@dimen/rowListItemVerticalPadding"
             android:paddingBottom="@dimen/rowListItemVerticalPadding"
-            android:background="@drawable/background_list_activity_row"
             >
 
             <LinearLayout
@@ -79,12 +84,37 @@
 
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/txtVaccineName"
+                style="@style/ControlSingleColumnStyle"
+                android:layout_width="match_parent"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/listActivityRowPrimaryText"
+                android:textSize="@dimen/listActivityRowPrimaryTextSize"
+                android:visibility="@{data.VaccineName == Vaccine.OTHER ? View.GONE : View.VISIBLE}"
+                app:defaultValue='@{@string/value_vaccine_name_unknown}'
+                app:value="@{data.VaccineName}"
+                />
+
+            <TextView
+                android:id="@+id/txtOtherVaccineName"
+                style="@style/ControlSingleColumnStyle"
+                android:layout_width="match_parent"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/listActivityRowPrimaryText"
+                android:textSize="@dimen/listActivityRowPrimaryTextSize"
+                android:visibility="@{data.VaccineName != Vaccine.OTHER ? View.GONE : View.VISIBLE}"
+                app:defaultValue='@{@string/value_vaccine_name_unknown}'
+                app:value="@{data.otherVaccineName}"
+                />
+
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_gravity="fill"
                 android:gravity="fill"
-                android:layout_gravity="fill">
+                android:orientation="horizontal">
+
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -92,37 +122,22 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/txtVaccineName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/listActivityRowPrimaryTextSize"
-                        android:textColor="@color/listActivityRowPrimaryText"
-                        android:fontFamily="sans-serif-medium"
-                        android:scrollHorizontally="true"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        app:value="@{data.vaccineName}"
-                        app:defaultValue='@{@string/value_vaccine_name_unknown}'
-                        />
-
-                    <TextView
                         android:id="@+id/txtVaccineManufacturer"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:gravity="top"
                         android:layout_marginBottom="@dimen/listActivityRowSecondaryTextVerticalMargin"
-                        android:textSize="@dimen/row_entry_secondary_text_size"
-                        android:textColor="@color/row_entry_secondary_text"
-                        android:scrollHorizontally="true"
-                        android:maxLines="1"
+                        android:layout_weight="1"
                         android:ellipsize="end"
-                        app:value="@{data.vaccineManufacturer}"
+                        android:gravity="top"
+                        android:maxLines="1"
+                        android:scrollHorizontally="true"
+                        android:textColor="@color/row_entry_secondary_text"
+                        android:textSize="@dimen/row_entry_secondary_text_size"
                         app:defaultValue='@{@string/value_vaccine_manufacturer_unknown}'
+                        app:value="@{data.vaccineManufacturer}"
                         />
 
                 </LinearLayout>
-
 
                 <RelativeLayout
                     android:layout_width="100dp"
@@ -134,13 +149,13 @@
                         android:id="@+id/imgSyncIcon"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:tint="@color/syncIconListActivityRowItem"
-                        android:scaleType="fitEnd"
-                        android:layout_alignParentTop="false"
-                        android:layout_alignParentBottom="false"
                         android:layout_alignParentLeft="true"
+                        android:layout_alignParentTop="false"
                         android:layout_alignParentRight="true"
+                        android:layout_alignParentBottom="false"
+                        android:layout_centerVertical="true"
+                        android:scaleType="fitEnd"
+                        android:tint="@color/syncIconListActivityRowItem"
                         />
 
                 </RelativeLayout>
@@ -159,10 +174,10 @@
 
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/listItemConentIndentRight"
+                android:orientation="horizontal"
                 >
 
                 <TextView
@@ -173,17 +188,6 @@
                     android:textColor="@color/listActivityRowLeastText"
                     android:textSize="@dimen/listActivityRowTertiaryTextSize"
                     app:value="@{data.vaccineType}" />
-
-                <TextView
-                    android:id="@+id/txtVaccineDose"
-                    android:layout_weight="1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
-                    android:gravity="right"
-                    android:textColor="@color/listActivityRowLeastText"
-                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
-                    app:value="@{data.vaccineDose}" />
 
             </LinearLayout>
 
