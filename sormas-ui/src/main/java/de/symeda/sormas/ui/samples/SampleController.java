@@ -332,7 +332,11 @@ public class SampleController {
 	 * @param editForm
 	 *            the edit form to attach the 'Refer to another laboratory' button to.
 	 * @param disease
-	 *            required for field visibility checks in the sample create form opened when a sample reference shall be created
+	 *            required for field visibility checks in the sample create form opened when a sample reference shall be created.
+	 * @param createReferral
+	 *            instructions for what shall happen when the user chooses to create a referral
+	 * @param openReferredSample
+	 *            instructions for what shall happen when the user chooses to open the referred sample
 	 */
 	public void addReferOrLinkToOtherLabButton(
 		CommitDiscardWrapperComponent<SampleEditForm> editForm,
@@ -384,6 +388,13 @@ public class SampleController {
 		}
 	}
 
+	/**
+	 * 
+	 * @param editForm
+	 *            the edit form to attach the 'Referred from' button to.
+	 * @param navigation
+	 *            instructions for what shall happen when the user chooses to open the related sample
+	 */
 	public void addReferredFromButton(CommitDiscardWrapperComponent<SampleEditForm> editForm, Consumer<SampleDto> navigation) {
 		SampleReferenceDto referredFromRef = FacadeProvider.getSampleFacade().getReferredFrom(editForm.getWrappedComponent().getValue().getUuid());
 		if (referredFromRef != null) {
