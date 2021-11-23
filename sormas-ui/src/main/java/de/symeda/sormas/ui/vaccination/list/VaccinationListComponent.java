@@ -38,7 +38,8 @@ public class VaccinationListComponent extends SideComponent {
 		VaccinationListCriteria criteria,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
-		boolean showCreateButton) {
+		boolean showCreateButton,
+		Runnable refreshCallback) {
 		super(I18nProperties.getString(Strings.entityVaccinations));
 
 		VaccinationList vaccinationList = new VaccinationList(criteria.getPerson().getUuid(), criteria.getDisease());
@@ -56,7 +57,7 @@ public class VaccinationListComponent extends SideComponent {
 						criteria.getPerson(),
 						criteria.getDisease(),
 						UiFieldAccessCheckers.getNoop(),
-						v -> vaccinationList.reload()));
+						v -> refreshCallback.run()));
 			addCreateButton(createButton);
 		}
 
