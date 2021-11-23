@@ -47,8 +47,8 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -154,7 +154,7 @@ public class UsersView extends AbstractView {
 			addHeaderComponent(exportUserRightsButton);
 		}
 
-		if (AuthProvider.getProvider().isUserSyncSupported()) {
+		if (AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isUserSyncSupported()) {
 			syncButton = ButtonHelper.createIconButton(Captions.syncUsers, VaadinIcons.REFRESH, e -> ControllerProvider.getUserController().sync());
 
 			addHeaderComponent(syncButton);

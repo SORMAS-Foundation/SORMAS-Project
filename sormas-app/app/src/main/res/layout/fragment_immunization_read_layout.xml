@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/base_layout"
+    android:descendantFocusability="beforeDescendants"
+    tools:ignore="contentDescription">
+
+    <data>
+
+        <variable
+            name="data"
+            type="de.symeda.sormas.app.backend.immunization.Immunization" />
+
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+        <import type="de.symeda.sormas.api.i18n.Strings" />
+        <import type="de.symeda.sormas.api.immunization.MeansOfImmunization" />
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+        <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical"
+            android:padding="@dimen/fragment_padding">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/immunization_reportingUser"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@{data.reportingUser}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/immunization_reportDate"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:value="@{data.reportDate}" />
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/immunization_uuid"
+                style="@style/ControlSingleColumnStyle"
+                app:shortUuidValue="@{data.uuid}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/immunization_disease"
+                style="@style/ControlSingleColumnStyle"
+                app:appendValue="@{data.diseaseDetails}"
+                app:value="@{data.disease}"
+                app:valueFormat="@string/two_strings_with_hyphen_format"/>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/immunization_meansOfImmunization"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.meansOfImmunization}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/immunization_immunizationManagementStatus"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.immunizationManagementStatus}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/immunization_immunizationStatus"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.immunizationStatus}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/immunization_externalId"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.externalId}" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/immunization_responsibleRegion"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@{data.responsibleRegion}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/immunization_responsibleDistrict"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:value="@{data.responsibleDistrict}" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/immunization_responsibleCommunity"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.responsibleCommunity}" />
+
+            <LinearLayout
+                android:id="@+id/facility_type_fields_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/facilityTypeGroup"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:caption="@string/caption_facility_type_group"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/immunization_facilityType"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:value="@{data.facilityType}"/>
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/immunization_healthFacility"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.healthFacility}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/immunization_healthFacilityDetails"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.healthFacilityDetails}" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/immunization_startDate"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@{data.startDate}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/immunization_endDate"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:value="@{data.endDate}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/immunization_validFrom"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@{data.validFrom}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/immunization_validUntil"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:value="@{data.validUntil}" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/immunization_previousInfection"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.previousInfection}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/immunization_lastInfectionDate"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{immunizationPreviousInfection}"
+                app:dependencyParentValue="@{YesNoUnknown.YES}"
+                app:value="@{data.lastInfectionDate}" />
+
+        <LinearLayout
+            android:id="@+id/immunization_vaccination_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/immunization_vaccination_heading"
+                style="@style/SubHeadingStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{I18nProperties.getString(Strings.immunizationVaccinationHeading)}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/immunization_numberOfDoses"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.numberOfDoses}" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/immunization_recovery_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/immunization_recovery_heading"
+                style="@style/SubHeadingStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{I18nProperties.getString(Strings.immunizationRecoveryHeading)}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/immunization_positiveTestResultDate"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.positiveTestResultDate}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/immunization_recoveryDate"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.recoveryDate}" />
+
+        </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/immunization_additionalDetails"
+                style="@style/ControlSingleColumnStyle"
+                app:maxLines="3"
+                app:showCaption="true"
+                app:singleLine="false"
+                app:textArea="true"
+                app:value="@{data.additionalDetails}" />
+
+            <de.symeda.sormas.app.component.controls.ControlButton
+                android:id="@+id/open_linked_case"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlHalfMarginBottom"
+                android:text="@string/action_open_linked_case"
+                app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
+                app:iconStart="@drawable/ic_open_case_black_24dp"
+                app:rounded="true" />
+
+        </LinearLayout>
+    </ScrollView>
+</layout>

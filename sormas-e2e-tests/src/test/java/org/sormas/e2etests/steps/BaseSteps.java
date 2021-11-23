@@ -22,6 +22,9 @@ import com.google.inject.Inject;
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
+import customreport.chartbuilder.ReportChartBuilder;
+import customreport.data.TableDataManager;
+import customreport.reportbuilder.CustomReportBuilder;
 import io.qameta.allure.listener.StepLifecycleListener;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
@@ -29,6 +32,7 @@ import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.sormas.e2etests.steps.web.application.NavBarSteps;
 import org.sormas.e2etests.ui.DriverManager;
 import recorders.StepsLogger;
 
@@ -53,9 +57,10 @@ public class BaseSteps implements StepLifecycleListener {
       driver = driverManager.borrowRemoteWebDriver(scenario.getName());
       StepsLogger.setRemoteWebDriver(driver);
       WebDriver.Options options = driver.manage();
-      options.window().maximize();
       options.timeouts().setScriptTimeout(Duration.ofMinutes(2));
       options.timeouts().pageLoadTimeout(Duration.ofMinutes(2));
+      log.info("Browser's resolution: " + driver.manage().window().getSize().toString());
+      log.info("Starting test: " + scenario.getName());
     }
   }
 
@@ -69,6 +74,23 @@ public class BaseSteps implements StepLifecycleListener {
     if (isNonApiScenario(scenario)) {
       driverManager.releaseRemoteWebDriver(scenario.getName());
     }
+    log.info("Finished test: " + scenario.getName());
+  }
+
+  @After(value = "@PagesMeasurements")
+  public void afterPageLoadTests(Scenario scenario) {
+    String testName = scenario.getName().replace("Check", "").replace("loading time", "");
+    log.info(scenario.getName() + " done, adding page meassurement result into TableDataManager");
+    TableDataManager.addRowEntity(testName, NavBarSteps.elapsedTime);
+  }
+
+  @After(value = "@PublishCustomReport")
+  public void generateMeasurementsReport() {
+    log.info("Creating Chart for UI Meassurements report");
+    ReportChartBuilder.buildChartForData(TableDataManager.getTableRowsDataList());
+    log.info("Generating Sormas Custom report");
+    CustomReportBuilder.generateReport(TableDataManager.getTableRowsAsHtml());
+    log.info("Custom report was created!");
   }
 
   private static boolean isNonApiScenario(Scenario scenario) {

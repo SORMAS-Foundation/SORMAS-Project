@@ -29,7 +29,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -62,6 +62,8 @@ public interface TaskFacade {
 	List<String> getAllActiveUuids();
 
 	void deleteTask(TaskDto taskDto);
+
+	List<String> deleteTasks(List<String> taskUuids);
 
 	long count(TaskCriteria criteria);
 

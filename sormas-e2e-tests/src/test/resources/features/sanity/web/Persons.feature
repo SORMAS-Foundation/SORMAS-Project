@@ -2,7 +2,7 @@
 Feature: Edit Persons
 
   Scenario: Edit existent person
-    Given I log in with the user
+    Given I log in with National User
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     Then I create a new contact
@@ -11,8 +11,7 @@ Feature: Edit Persons
     When I click on new entry button from Contact Information section
     Then I complete all fields from Person Contact Details popup and save
     Then I click on save button from Contact Person tab
-    And I click on the Persons button from navbar
-    When I open the last created person
+    Then I navigate to the last created Person page via URL
     Then I check that previous created person is correctly displayed in Edit Person page
     And While on Person edit page, I will edit all fields with new values
     And I edit all Person primary contact details and save

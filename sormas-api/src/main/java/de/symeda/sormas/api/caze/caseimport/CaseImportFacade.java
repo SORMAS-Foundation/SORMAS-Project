@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.caze.caseimport;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
@@ -36,8 +37,9 @@ public interface CaseImportFacade {
 		String caseUuid,
 		String[] values,
 		String[] entityClasses,
-		String[][] entityPropertyPaths)
+		String[][] entityPropertyPaths,
+		boolean skipPersonValidation)
 		throws InvalidColumnException;
 
-	ImportLineResultDto<CaseImportEntities> saveImportedEntities(CaseImportEntities entities);
+	ImportLineResultDto<CaseImportEntities> saveImportedEntities(@Valid CaseImportEntities entities, boolean skipPersonValidation);
 }

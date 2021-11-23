@@ -2,9 +2,13 @@ package de.symeda.sormas.api.sample;
 
 import java.util.Date;
 
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Order;
 
 public class AdditionalTestDto extends EntityDto {
@@ -58,6 +62,7 @@ public class AdditionalTestDto extends EntityDto {
 	private Float wbcCount;
 	private Float platelets;
 	private Float prothrombinTime;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String otherTestResults;
 
 	public static AdditionalTestDto build(SampleReferenceDto sample) {

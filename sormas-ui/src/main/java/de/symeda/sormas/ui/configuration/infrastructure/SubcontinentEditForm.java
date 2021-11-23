@@ -6,7 +6,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.region.SubcontinentDto;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -48,7 +48,7 @@ public class SubcontinentEditForm extends AbstractEditForm<SubcontinentDto> {
 
 		addField(SubcontinentDto.DEFAULT_NAME, TextField.class);
 		addField(SubcontinentDto.EXTERNAL_ID, TextField.class);
-		ComboBox continent = addField(SubcontinentDto.CONTINENT, ComboBox.class);
+		ComboBox continent = addInfrastructureField(SubcontinentDto.CONTINENT);
 
 		continent.addItems(FacadeProvider.getContinentFacade().getAllActiveAsReference());
 

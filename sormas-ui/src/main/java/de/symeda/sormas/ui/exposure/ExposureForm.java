@@ -49,7 +49,7 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -59,6 +59,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
@@ -208,12 +209,11 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	}
 
 	private void addBasicFields() {
+		addFields(ExposureDto.UUID, ExposureDto.REPORTING_USER, ExposureDto.PROBABLE_INFECTION_ENVIRONMENT);
+
+		addFields(DateTimeField.class, ExposureDto.START_DATE, ExposureDto.END_DATE);
+
 		addFields(
-			ExposureDto.UUID,
-			ExposureDto.REPORTING_USER,
-			ExposureDto.PROBABLE_INFECTION_ENVIRONMENT,
-			ExposureDto.START_DATE,
-			ExposureDto.END_DATE,
 			ExposureDto.EXPOSURE_TYPE,
 			ExposureDto.EXPOSURE_TYPE_DETAILS,
 			ExposureDto.GATHERING_TYPE,

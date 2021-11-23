@@ -30,15 +30,19 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -51,14 +55,12 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
-import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
-import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoService;
 
 @Stateless
 @LocalBean
@@ -68,8 +70,6 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	private EventService eventService;
 	@EJB
 	private SampleService sampleService;
-	@EJB
-	private VaccinationInfoService vaccinationInfoService;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
@@ -209,9 +209,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			Join<EventParticipant, Sample> samples = from.join(EventParticipant.SAMPLES, JoinType.LEFT);
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), criteria.getPathogenTestResult()));
 		}
-		if (criteria.getVaccination() != null) {
-			Join<EventParticipant, VaccinationInfo> vaccinationInfoJoin = from.join(EventParticipant.VACCINATION_INFO, JoinType.LEFT);
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(vaccinationInfoJoin.get(VaccinationInfo.VACCINATION), criteria.getVaccination()));
+		if (criteria.getVaccinationStatus() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(EventParticipant.VACCINATION_STATUS), criteria.getVaccinationStatus()));
 		}
 		if (Boolean.TRUE.equals(criteria.getNoResultingCase())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(EventParticipant.RESULTING_CASE)));
@@ -228,12 +227,17 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return cb.and(cb.isFalse(event.get(Event.ARCHIVED)), cb.isFalse(event.get(Event.DELETED)));
 	}
 
-	public Predicate createActiveEventsForEventParticipantsFilter(CriteriaBuilder cb, Join<?, EventParticipant> eventParticipantJoin) {
+	public Predicate createActiveEventParticipantsInActiveEventsFilter(CriteriaBuilder cb, Join<?, EventParticipant> eventParticipantJoin) {
+
 		Join<EventParticipant, Event> event = eventParticipantJoin.join(EventParticipant.EVENT, JoinType.LEFT);
-		return cb.and(cb.isFalse(event.get(Event.ARCHIVED)), cb.isFalse(event.get(Event.DELETED)));
+		return cb.and(
+			cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)),
+			cb.isFalse(event.get(Event.ARCHIVED)),
+			cb.isFalse(event.get(Event.DELETED)));
 	}
 
 	public Predicate createActiveEventParticipantsFilter(CriteriaBuilder cb, Join<?, EventParticipant> eventParticipantJoin) {
+
 		return cb.and(cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
 	}
 
@@ -250,8 +254,15 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
 		eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
 		eventUserFilterCriteria.forceRegionJurisdiction(true);
+		return createUserFilterForJoin(cb, cq, eventParticipantPath, eventUserFilterCriteria);
 
-		// can see the participants of all accessible events
+	}
+
+	public Predicate createUserFilterForJoin(
+		CriteriaBuilder cb,
+		CriteriaQuery cq,
+		From<?, EventParticipant> eventParticipantPath,
+		EventUserFilterCriteria eventUserFilterCriteria) {
 		return eventService.createUserFilter(cb, cq, null, eventParticipantPath, eventUserFilterCriteria);
 	}
 
@@ -336,6 +347,12 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return cb.isFalse(root.get(EventParticipant.DELETED));
 	}
 
+	public Predicate createDefaultInUndeletedEventsFilter(CriteriaBuilder cb, From<?, EventParticipant> root) {
+
+		Join<EventParticipant, Event> eventJoin = root.join(EventParticipant.EVENT, JoinType.LEFT);
+		return CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, root), cb.isFalse(eventJoin.get(Event.DELETED)));
+	}
+
 	public List<EventParticipant> findBy(EventParticipantCriteria criteria, User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -386,9 +403,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, EventParticipant> from, Timestamp date) {
 		Predicate dateFilter = super.createChangeDateFilter(cb, from, date);
-		dateFilter =
-			cb.or(dateFilter, vaccinationInfoService.createChangeDateFilter(cb, from.join(EventParticipant.VACCINATION_INFO, JoinType.LEFT), date));
-		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, EventParticipant.SHARE_INFO_EVENT_PARTICIPANTS));
+		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, EventParticipant.SORMAS_TO_SORMAS_ORIGIN_INFO));
+		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, EventParticipant.SORMAS_TO_SORMAS_SHARES));
 
 		return dateFilter;
 
@@ -455,5 +471,48 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	public Predicate inJurisdictionOrOwned(EventParticipantQueryContext qc) {
 		final User currentUser = this.getCurrentUser();
 		return EventParticipantJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
+	}
+
+	/**
+	 * Sets the vaccination status of all event participants of the specified person and disease with vaccination date <= event start date.
+	 * Vaccinations without a vaccination date are relevant for all event participants.
+	 *
+	 * @param personId
+	 *            The ID of the event participant person
+	 * @param disease
+	 *            The disease of the events
+	 * @param vaccinationDate
+	 *            The vaccination date of the created or updated vaccination
+	 */
+	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<EventParticipant> cu = cb.createCriteriaUpdate(EventParticipant.class);
+		Root<EventParticipant> root = cu.from(EventParticipant.class);
+
+		Subquery<Event> eventSq = cu.subquery(Event.class);
+		Root<Event> eventSqRoot = eventSq.from(Event.class);
+		eventSq.select(eventSqRoot);
+
+		Predicate datePredicate = vaccinationDate != null
+			? cb.or(
+				cb.greaterThanOrEqualTo(eventSqRoot.get(Event.START_DATE), vaccinationDate),
+				cb.and(cb.isNull(eventSqRoot.get(Event.START_DATE)), cb.greaterThanOrEqualTo(eventSqRoot.get(Event.END_DATE), vaccinationDate)),
+				cb.and(
+					cb.isNull(eventSqRoot.get(Event.START_DATE)),
+					cb.isNull(eventSqRoot.get(Event.END_DATE)),
+					cb.greaterThanOrEqualTo(eventSqRoot.get(Event.REPORT_DATE_TIME), vaccinationDate)))
+			: null;
+
+		eventSq.where(
+			CriteriaBuilderHelper
+				.and(cb, cb.equal(eventSqRoot, root.get(EventParticipant.EVENT)), cb.equal(eventSqRoot.get(Event.DISEASE), disease), datePredicate));
+
+		cu.set(root.get(EventParticipant.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
+		cu.set(root.get(AbstractDomainObject.CHANGE_DATE), new Date());
+
+		cu.where(cb.and(cb.equal(root.get(EventParticipant.PERSON), personId), cb.isNotNull(eventSq.getSelection())));
+
+		em.createQuery(cu).executeUpdate();
 	}
 }

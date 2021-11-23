@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.ui.person;
 
 import java.util.ArrayList;
@@ -78,23 +76,23 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 	}
 
 	private void addPersonDetailsComponent() {
-		HorizontalLayout personDetailsLayout = new HorizontalLayout();
-		personDetailsLayout.setSpacing(true);
+		HorizontalLayout personDetailsLayout1 = new HorizontalLayout();
+		personDetailsLayout1.setSpacing(true);
 
 		Label lblFirstName = new Label(referencePerson.getFirstName());
 		lblFirstName.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
 		lblFirstName.setWidthUndefined();
-		personDetailsLayout.addComponent(lblFirstName);
+		personDetailsLayout1.addComponent(lblFirstName);
 
 		Label lblLastName = new Label(referencePerson.getLastName());
 		lblLastName.setWidthUndefined();
 		lblLastName.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
-		personDetailsLayout.addComponent(lblLastName);
+		personDetailsLayout1.addComponent(lblLastName);
 
 		Label lblNickname = new Label(referencePerson.getNickname());
 		lblNickname.setWidthUndefined();
 		lblNickname.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.NICKNAME));
-		personDetailsLayout.addComponent(lblNickname);
+		personDetailsLayout1.addComponent(lblNickname);
 
 		Label lblBirthDateAndAge = new Label(
 			PersonHelper.getAgeAndBirthdateString(
@@ -102,50 +100,79 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 				referencePerson.getApproximateAgeType(),
 				referencePerson.getBirthdateDD(),
 				referencePerson.getBirthdateMM(),
-				referencePerson.getBirthdateYYYY(),
-				I18nProperties.getUserLanguage()));
+				referencePerson.getBirthdateYYYY()));
 		lblBirthDateAndAge.setWidthUndefined();
 		lblBirthDateAndAge.setCaption(I18nProperties.getCaption(Captions.personAgeAndBirthdate));
-		personDetailsLayout.addComponent(lblBirthDateAndAge);
+		personDetailsLayout1.addComponent(lblBirthDateAndAge);
 
 		Label lblSex = new Label(referencePerson.getSex() != null ? referencePerson.getSex().toString() : "");
 		lblSex.setWidthUndefined();
 		lblSex.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
-		personDetailsLayout.addComponent(lblSex);
+		personDetailsLayout1.addComponent(lblSex);
 
 		Label lblPresentCondition = new Label(referencePerson.getPresentCondition() != null ? referencePerson.getPresentCondition().toString() : "");
 		lblPresentCondition.setWidthUndefined();
 		lblPresentCondition.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
-		personDetailsLayout.addComponent(lblPresentCondition);
+		personDetailsLayout1.addComponent(lblPresentCondition);
+
+		Label lblPhone = new Label(referencePerson.getPhone());
+		lblPhone.setWidthUndefined();
+		lblPhone.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PHONE));
+		personDetailsLayout1.addComponent(lblPhone);
+
+		mainLayout.addComponent(personDetailsLayout1);
+
+		HorizontalLayout personDetailsLayout2 = new HorizontalLayout();
+		personDetailsLayout2.setSpacing(true);
 
 		Label lblDistrict =
 			new Label(referencePerson.getAddress().getDistrict() != null ? referencePerson.getAddress().getDistrict().toString() : "");
 		lblDistrict.setWidthUndefined();
 		lblDistrict.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT));
-		personDetailsLayout.addComponent(lblDistrict);
+		personDetailsLayout2.addComponent(lblDistrict);
 
 		Label lblCommunity =
 			new Label(referencePerson.getAddress().getCommunity() != null ? referencePerson.getAddress().getCommunity().toString() : "");
 		lblCommunity.setWidthUndefined();
 		lblCommunity.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.COMMUNITY));
-		personDetailsLayout.addComponent(lblCommunity);
+		personDetailsLayout2.addComponent(lblCommunity);
+
+		Label lblPostalCode = new Label(referencePerson.getAddress().getPostalCode());
+		lblPostalCode.setWidthUndefined();
+		lblPostalCode.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.POSTAL_CODE));
+		personDetailsLayout2.addComponent(lblPostalCode);
 
 		Label lblCity = new Label(referencePerson.getAddress().getCity());
 		lblCity.setWidthUndefined();
 		lblCity.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CITY));
-		personDetailsLayout.addComponent(lblCity);
+		personDetailsLayout2.addComponent(lblCity);
+
+		Label lblStreet = new Label(referencePerson.getAddress().getStreet());
+		lblStreet.setWidthUndefined();
+		lblStreet.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.STREET));
+		personDetailsLayout2.addComponent(lblStreet);
+
+		Label lblHouseNumber = new Label(referencePerson.getAddress().getHouseNumber());
+		lblHouseNumber.setWidthUndefined();
+		lblHouseNumber.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.HOUSE_NUMBER));
+		personDetailsLayout2.addComponent(lblHouseNumber);
+
+		mainLayout.addComponent(personDetailsLayout2);
+
+		HorizontalLayout personDetailsLayout3 = new HorizontalLayout();
+		personDetailsLayout3.setSpacing(true);
 
 		Label lblNationalHealthId = new Label(referencePerson.getNationalHealthId());
 		lblNationalHealthId.setWidthUndefined();
 		lblNationalHealthId.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.NATIONAL_HEALTH_ID));
-		personDetailsLayout.addComponent(lblNationalHealthId);
+		personDetailsLayout3.addComponent(lblNationalHealthId);
 
 		Label lblPassportNumber = new Label(referencePerson.getPassportNumber());
 		lblPassportNumber.setWidthUndefined();
 		lblPassportNumber.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PASSPORT_NUMBER));
-		personDetailsLayout.addComponent(lblPassportNumber);
+		personDetailsLayout3.addComponent(lblPassportNumber);
 
-		mainLayout.addComponent(personDetailsLayout);
+		mainLayout.addComponent(personDetailsLayout3);
 	}
 
 	private void addSelectPersonRadioGroup() {
@@ -196,9 +223,7 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 				personGrid.loadData(filterForm.getValue());
 			}
 		});
-		filterForm.addResetHandler((e) -> {
-			filterForm.setValue(new PersonSimilarityCriteria());
-		});
+		filterForm.addResetHandler((e) -> filterForm.setValue(new PersonSimilarityCriteria()));
 
 		mainLayout.addComponent(filterForm);
 	}
@@ -278,8 +303,7 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 	@Override
 	public SimilarPersonDto getValue() {
 		if (personGrid != null) {
-			SimilarPersonDto value = (SimilarPersonDto) personGrid.getSelectedRow();
-			return value;
+			return (SimilarPersonDto) personGrid.getSelectedRow();
 		}
 
 		return null;

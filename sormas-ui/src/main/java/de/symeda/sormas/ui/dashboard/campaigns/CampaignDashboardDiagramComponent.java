@@ -52,6 +52,8 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	private boolean showPercentages;
 	private boolean showAsColumnChart;
 	private boolean showDataLabels = false;
+	private boolean ignoreTotalsError = false;
+
 	private final HighChart campaignColumnChart;
 
 	public CampaignDashboardDiagramComponent(
@@ -340,10 +342,11 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 							seriesData.get(axisKey).getGroupingKey(),
 							totalValuesWithoutStacks ? null : series.getStack()));
 					if (totalValue == null) {
-						if (!isCommunityGrouping) {
+						if (!isCommunityGrouping && !ignoreTotalsError) {
 							Notification.show(
 								String.format(I18nProperties.getString(Strings.errorCampaignDiagramTotalsCalculationError), getDiagramCaption()),
 								ERROR_MESSAGE);
+							ignoreTotalsError = true; // only show once
 						}
 					} else if (totalValue > 0) {
 						final double originalValue = seriesData.get(axisKey).getValueSum().doubleValue() / totalValue * 100;

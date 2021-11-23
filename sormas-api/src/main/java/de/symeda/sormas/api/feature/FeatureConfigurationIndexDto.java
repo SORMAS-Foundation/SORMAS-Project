@@ -1,9 +1,17 @@
 package de.symeda.sormas.api.feature;
 
+import static de.symeda.sormas.api.HasUuid.UUID_REGEX;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_UUID_MAX;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_UUID_MIN;
+
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.i18n.Validations;
 
 public class FeatureConfigurationIndexDto implements Serializable {
 
@@ -16,9 +24,15 @@ public class FeatureConfigurationIndexDto implements Serializable {
 	public static final String ENABLED = "enabled";
 	public static final String END_DATE = "endDate";
 
+	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
+	@Size(min = CHARACTER_LIMIT_UUID_MIN, max = CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
 	private String uuid;
+	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
+	@Size(min = CHARACTER_LIMIT_UUID_MIN, max = CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
 	private String regionUuid;
 	private String regionName;
+	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
+	@Size(min = CHARACTER_LIMIT_UUID_MIN, max = CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
 	private String districtUuid;
 	private String districtName;
 	private Disease disease;
@@ -32,7 +46,7 @@ public class FeatureConfigurationIndexDto implements Serializable {
 		String districtUuid,
 		String districtName,
 		Disease disease,
-		boolean enabled,
+		Boolean enabled,
 		Date endDate) {
 
 		this.uuid = uuid;
@@ -41,8 +55,11 @@ public class FeatureConfigurationIndexDto implements Serializable {
 		this.districtUuid = districtUuid;
 		this.districtName = districtName;
 		this.disease = disease;
-		this.enabled = enabled;
+		this.enabled = enabled != null ? enabled : false;
 		this.endDate = endDate;
+	}
+
+	public FeatureConfigurationIndexDto() {
 	}
 
 	public String getUuid() {

@@ -106,7 +106,7 @@ public class EditPersonPage {
   public static final By POPUP_SAVE = By.cssSelector("#commit");
   public static final By POPUP_RESPONSIBLE_REGION_COMBOBOX = By.cssSelector("#region div");
   public static final By POPUP_RESPONSIBLE_DISTRICT_COMBOBOX = By.cssSelector("#district div");
-  public static final By PERSON_DATA_SAVED = By.xpath("//*[contains(text(),'Person data saved')]");
+  public static final By PERSON_DATA_SAVED = By.cssSelector(".v-Notification-caption");
   public static final By PERSON_DATA_ADDED_AS_A_PARTICIPANT_MESSAGE =
       By.xpath(
           "//*[contains(text(),'The case person was added as an event participant to the selected event.')]");

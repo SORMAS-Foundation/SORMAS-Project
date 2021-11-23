@@ -204,7 +204,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 		table.addGeneratedColumn(COLUMN_DATE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ExposureDto exposure = (ExposureDto) itemId;
-			return DateFormatHelper.buildPeriodString(exposure.getStartDate(), exposure.getEndDate());
+			return DateFormatHelper.buildPeriodDateTimeString(exposure.getStartDate(), exposure.getEndDate());
 		});
 
 		table.addGeneratedColumn(

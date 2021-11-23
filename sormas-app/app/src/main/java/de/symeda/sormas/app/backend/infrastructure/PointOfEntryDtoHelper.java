@@ -18,8 +18,8 @@ package de.symeda.sormas.app.backend.infrastructure;
 import java.util.List;
 
 import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
-import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.region.District;

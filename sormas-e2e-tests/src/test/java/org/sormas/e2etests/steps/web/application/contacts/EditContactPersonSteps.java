@@ -26,7 +26,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import lombok.SneakyThrows;
 import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Person;
@@ -126,10 +128,7 @@ public class EditContactPersonSteps implements En {
         "I click on save button from Contact Person tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(PERSON_DATA_SAVED_POPUP);
-          // Workaround created until #5535 is fixed
-          baseSteps.getDriver().navigate().refresh();
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_NAME_INPUT);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           Person contactInfo = getPersonInformation();
           fullyDetailedPerson =
               personService.updateExistentPerson(
@@ -170,8 +169,12 @@ public class EditContactPersonSteps implements En {
     webDriverHelpers.fillInWebElement(EXTERNAL_ID_INPUT, id);
   }
 
+  @SneakyThrows
   private void fillExternalToken(String token) {
     webDriverHelpers.fillInWebElement(EXTERNAL_TOKEN_INPUT, token);
+    // TODO validate if this fix is stable in Jenkins run
+    TimeUnit.SECONDS.sleep(3);
+    webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
   }
 
   private void selectTypeOfOccupation(String occupation) {

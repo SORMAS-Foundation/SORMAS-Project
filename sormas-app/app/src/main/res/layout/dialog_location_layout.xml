@@ -57,32 +57,32 @@
                 android:visibility="gone"
                 app:value="@={data.addressTypeDetails}" />
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                 android:id="@+id/location_continent"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.continent}" />
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                 android:id="@+id/location_subcontinent"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.subcontinent}" />
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                 android:id="@+id/location_country"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.country}" />
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                 android:id="@+id/location_region"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.region}" />
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                 android:id="@+id/location_district"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.district}" />
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                 android:id="@+id/location_community"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.community}" />
@@ -97,7 +97,7 @@
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.facilityType}"/>
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                 android:id="@+id/location_facility"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.facility}" />

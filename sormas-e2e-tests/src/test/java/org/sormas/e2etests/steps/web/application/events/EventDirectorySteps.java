@@ -22,6 +22,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.*;
 
 import cucumber.api.java8.En;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -47,8 +48,12 @@ public class EventDirectorySteps implements En {
         "^I check if it appears under ([^\"]*) filter in event directory",
         (String eventStatus) -> {
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
+          if (eventStatus.equalsIgnoreCase("Signal") || eventStatus.equalsIgnoreCase("Event")) {
+            System.out.println("a");
+          }
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(eventUuid));
           webDriverHelpers.clickWebElementByText(EVENT_STATUS_FILTER_BUTTONS, eventStatus);
+          TimeUnit.SECONDS.sleep(3); // TODO check in Jenkins if is a stable fix
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_STATUS_FILTER_BUTTONS);
           webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_PARTICIPANTS_TAB);
@@ -60,7 +65,8 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(RESET_FILTER, 35);
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER);
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEARCH_EVENT_BY_FREE_TEXT_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SEARCH_EVENT_BY_FREE_TEXT_INPUT, 15);
           webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUuid);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
         });

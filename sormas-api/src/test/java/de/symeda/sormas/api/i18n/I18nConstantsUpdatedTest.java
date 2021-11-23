@@ -3,7 +3,6 @@ package de.symeda.sormas.api.i18n;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,9 +11,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.utils.DataHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class I18nConstantsUpdatedTest {
 
@@ -36,14 +36,14 @@ public class I18nConstantsUpdatedTest {
 			}
 		}
 		if (!invalid.isEmpty()) {
-			fail(String.format("%d Constants file(s) outdated: %s", invalid.size(), invalid.toString()));
+			fail(String.format("%d Constants file(s) outdated: %s", invalid.size(), invalid));
 		}
 	}
 
 	private String getDifference(I18nConstantGenerator generator, String expectedContent) throws IOException {
 
 		try (BufferedReader reader =
-			new BufferedReader(new InputStreamReader(new FileInputStream(new File(generator.getOutputClassFilePath())), StandardCharsets.UTF_8))) {
+			new BufferedReader(new InputStreamReader(new FileInputStream(generator.getOutputClassFilePath()), StandardCharsets.UTF_8))) {
 
 			StringBuilder sb = new StringBuilder();
 			String line;

@@ -89,7 +89,8 @@ public class EditCaseSteps implements En {
         () -> aCase = collectCasePersonUuid());
 
     When(
-        "I click on New Task", () -> webDriverHelpers.clickOnWebElementBySelector(NEW_TASK_BUTTON));
+        "I click on New Task from Case page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(NEW_TASK_BUTTON));
 
     When(
         "I click on first edit Task",
@@ -132,13 +133,11 @@ public class EditCaseSteps implements En {
           selectReinfection(aCase.getReinfection());
           selectOutcomeOfCase(aCase.getOutcomeOfCase());
           selectSequelae(aCase.getSequelae());
-          selectReportingDistrict(aCase.getReportingDistrict());
           selectCaseIdentificationSource(aCase.getCaseIdentificationSource());
           selectRegion(aCase.getRegion());
           selectDistrict(aCase.getDistrict());
           selectCommunity(aCase.getCommunity());
           fillPlaceDescription(aCase.getPlaceDescription());
-          selectResponsibleJurisdiction(aCase.getResponsibleJurisdiction());
           selectResponsibleRegion(aCase.getResponsibleRegion());
           selectResponsibleDistrict(aCase.getResponsibleDistrict());
           selectResponsibleCommunity(aCase.getResponsibleCommunity());
@@ -180,7 +179,6 @@ public class EditCaseSteps implements En {
           Truth.assertThat(editCase.getReinfection()).isEqualTo(aCase.getReinfection());
           Truth.assertThat(editCase.getOutcomeOfCase()).isEqualTo(aCase.getOutcomeOfCase());
           Truth.assertThat(editCase.getSequelae()).isEqualTo(aCase.getSequelae());
-          Truth.assertThat(editCase.getReportingDistrict()).isEqualTo(aCase.getReportingDistrict());
           Truth.assertThat(editCase.getCaseIdentificationSource())
               .isEqualTo(aCase.getCaseIdentificationSource());
           Truth.assertThat(editCase.getRegion()).isEqualTo(aCase.getRegion());
@@ -271,7 +269,6 @@ public class EditCaseSteps implements En {
         .outcomeOfCase(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(OUTCOME_OF_CASE_OPTIONS))
         .sequelae(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SEQUELAE_OPTIONS))
-        .reportingDistrict(webDriverHelpers.getValueFromCombobox(REPORTING_DISTRICT_COMBOBOX))
         .caseIdentificationSource(
             webDriverHelpers.getValueFromCombobox(CASE_IDENTIFICATION_SOURCE_COMBOBOX))
         .region(webDriverHelpers.getValueFromCombobox(REGION_COMBOBOX))
@@ -281,8 +278,6 @@ public class EditCaseSteps implements En {
         .responsibleRegion(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_REGION_COMBOBOX))
         .responsibleDistrict(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX))
         .responsibleCommunity(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX))
-        .responsibleJurisdiction(
-            webDriverHelpers.getTextFromWebElement(RESPONSIBLE_JURISDICTION_OPTIONS))
         .prohibitionToWork(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PROHIBITION_TO_WORK_OPTIONS))
         .homeBasedQuarantinePossible(
@@ -392,10 +387,6 @@ public class EditCaseSteps implements En {
     webDriverHelpers.clickWebElementByText(OUTCOME_OF_CASE_OPTIONS, outcomeOfCase);
   }
 
-  public void selectReportingDistrict(String reportingDistrict) {
-    webDriverHelpers.selectFromCombobox(REPORTING_DISTRICT_COMBOBOX, reportingDistrict);
-  }
-
   public void selectCaseIdentificationSource(String caseIdentificationSource) {
     webDriverHelpers.selectFromCombobox(
         CASE_IDENTIFICATION_SOURCE_COMBOBOX, caseIdentificationSource);
@@ -415,11 +406,6 @@ public class EditCaseSteps implements En {
 
   public void fillPlaceDescription(String placeDescription) {
     webDriverHelpers.fillInWebElement(PLACE_DESCRIPTION_INPUT, placeDescription);
-  }
-
-  public void selectResponsibleJurisdiction(String responsibleJurisdiction) {
-    webDriverHelpers.clickWebElementByText(
-        RESPONSIBLE_JURISDICTION_OPTIONS, responsibleJurisdiction);
   }
 
   public void selectResponsibleRegion(String responsibleRegion) {
@@ -481,7 +467,6 @@ public class EditCaseSteps implements En {
   }
 
   public void fillDateReceivedAtDistrictLevel(LocalDate dateReceivedAtDistrictLevel) {
-
     webDriverHelpers.fillInWebElement(
         DATE_RECEIVED_AT_DISTRICT_LEVEL_INPUT, DATE_FORMATTER.format(dateReceivedAtDistrictLevel));
   }

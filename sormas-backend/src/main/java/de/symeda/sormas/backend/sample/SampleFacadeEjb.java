@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,6 +50,9 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.backend.event.EventService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,12 +63,12 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -79,6 +83,7 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -90,6 +95,7 @@ import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
@@ -103,20 +109,19 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoHelper;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
@@ -159,6 +164,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private ContactService contactService;
 	@EJB
+	private EventService eventService;
+	@EJB
 	private EventParticipantService eventParticipantService;
 	@EJB
 	private FacilityService facilityService;
@@ -176,8 +183,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
-	@EJB
-	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -225,6 +230,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
 		final Root<Sample> root = cq.from(Sample.class);
+		cq.distinct(true);
 
 		SampleJoins<Sample> joins = new SampleJoins<>(root);
 
@@ -304,6 +310,26 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	public List<SampleDto> getByLabSampleId(String labSampleId) {
+		if (labSampleId == null) {
+			return new ArrayList();
+		}
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
+		final Root<Sample> sampleRoot = cq.from(Sample.class);
+
+		Predicate filter = CriteriaBuilderHelper.and(
+			cb,
+			sampleService.createUserFilter(cb, cq, sampleRoot),
+			sampleService.createDefaultFilter(cb, sampleRoot),
+			cb.equal(sampleRoot.get(Sample.LAB_SAMPLE_ID), labSampleId));
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultList().stream().distinct().map(sample -> toDto(sample)).collect(Collectors.toList());
+	}
+
+	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
 
 		User user = userService.getCurrentUser();
@@ -324,9 +350,14 @@ public class SampleFacadeEjb implements SampleFacade {
 		return saveSample(dto, true, true, true);
 	}
 
-	public SampleDto saveSample(SampleDto dto, boolean handleChanges, boolean checkChangeDate, boolean syncShares) {
+	public SampleDto saveSample(@Valid SampleDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal) {
 
 		Sample existingSample = sampleService.getByUuid(dto.getUuid());
+
+		if (internal && existingSample != null && !sampleService.isSampleEditAllowed(existingSample)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorSampleNotEditable));
+		}
+
 		SampleDto existingSampleDto = toDto(existingSample);
 
 		restorePseudonymizedDto(dto, existingSample, existingSampleDto);
@@ -344,7 +375,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		sampleService.ensurePersisted(sample);
 
 		if (handleChanges) {
-			onSampleChanged(existingSampleDto, sample, syncShares);
+			onSampleChanged(existingSampleDto, sample, internal);
 		}
 
 		return toDto(sample);
@@ -915,6 +946,25 @@ public class SampleFacadeEjb implements SampleFacade {
 		logger.debug("deleteAllSamples(sampleUuids) finished. samplesCount = {}, {}ms", sampleUuids.size(), DateHelper.durationMillies(startTime));
 	}
 
+	public List<String> deleteSamples(List<String> sampleUuids) {
+		User user = userService.getCurrentUser();
+		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
+			.contains(UserRight.SAMPLE_DELETE)) {
+			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete samples.");
+		}
+		List<String> deletedSampleUuids = new ArrayList<>();
+		List<Sample> samplesToBeDeleted = sampleService.getByUuids(sampleUuids);
+		if (samplesToBeDeleted != null) {
+			samplesToBeDeleted.forEach(sampleToBeDeleted -> {
+				if (!sampleToBeDeleted.isDeleted()) {
+					sampleService.delete(sampleToBeDeleted);
+					deletedSampleUuids.add(sampleToBeDeleted.getUuid());
+				}
+			});
+		}
+		return deletedSampleUuids;
+	}
+
 	@Override
 	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
 		return sampleService.getNewTestResultCountByResultType(caseIds);
@@ -1088,7 +1138,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
-		target.setOwnershipHandedOver(source.getShareInfoSamples().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
 		return target;
 	}
@@ -1120,33 +1170,33 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (newSample.isShipped()
 			&& (existingSample == null || !existingSample.isShipped())
 			&& !StringUtils.equals(newSample.getLab().getUuid(), FacilityDto.OTHER_FACILITY_UUID)) {
-			List<User> messageRecipients = userService.getLabUsersOfLab(newSample.getLab());
+			try {
 
-			for (User recipient : messageRecipients) {
-				try {
-					String messageContent = null;
+				messagingService.sendMessages(() -> {
+					final String messageContent;
 					if (newSample.getAssociatedCase() != null) {
 						messageContent = String.format(
-							I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT),
+							I18nProperties.getString(MessageContents.CONTENT_LAB_SAMPLE_SHIPPED_SHORT),
 							DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid()));
 					} else if (newSample.getAssociatedContact() != null) {
 						messageContent = String.format(
-							I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_CONTACT),
+							I18nProperties.getString(MessageContents.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_CONTACT),
 							DataHelper.getShortUuid(newSample.getAssociatedContact().getUuid()));
 					} else if (newSample.getAssociatedEventParticipant() != null) {
 						messageContent = String.format(
-							I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_EVENT_PARTICIPANT),
+							I18nProperties.getString(MessageContents.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_EVENT_PARTICIPANT),
 							DataHelper.getShortUuid(newSample.getAssociatedEventParticipant().getUuid()));
+					} else {
+						messageContent = null;
 					}
-					messagingService.sendMessage(recipient, MessageSubject.LAB_SAMPLE_SHIPPED, messageContent, MessageType.EMAIL, MessageType.SMS);
+					final Map<User, String> mapToReturn = new HashMap<>();
+					userService.getLabUsersOfLab(newSample.getLab()).forEach(user -> mapToReturn.put(user, messageContent));
+					return mapToReturn;
+				}, MessageSubject.LAB_SAMPLE_SHIPPED, MessageType.EMAIL, MessageType.SMS);
 
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format(
-							"EmailDeliveryFailedException when trying to notify supervisors about " + "the shipment of a lab sample. "
-								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-							recipient.getUuid()));
-				}
+			} catch (NotificationDeliveryFailedException e) {
+				logger
+					.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about " + "the shipment of a lab sample."));
 			}
 		}
 	}
@@ -1188,10 +1238,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	public Boolean isSampleEditAllowed(String sampleUuid) {
 		Sample sample = sampleService.getByUuid(sampleUuid);
 
-		if (sample.getSormasToSormasOriginInfo() != null && !sample.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return false;
-		}
-
-		return sampleService.inJurisdictionOrOwned(sample).getInJurisdiction() && !sormasToSormasShareInfoService.isSamlpeOwnershipHandedOver(sample);
+		return sampleService.isSampleEditAllowed(sample);
 	}
+
 }

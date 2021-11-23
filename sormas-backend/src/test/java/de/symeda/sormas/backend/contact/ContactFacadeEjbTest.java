@@ -42,7 +42,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
@@ -55,6 +54,9 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -82,10 +84,17 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
+import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -101,6 +110,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitIndexDto;
@@ -113,9 +123,9 @@ import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
 
@@ -168,10 +178,13 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		final List<SimilarContactDto> matchingContacts = getContactFacade().getMatchingContacts(contactSimilarityCriteria);
 		Assert.assertNotNull(matchingContacts);
 		Assert.assertEquals(2, matchingContacts.size());
+		ArrayList<String> uuids = new ArrayList<>();
+		uuids.add(contact1.getUuid());
+		uuids.add(contact2.getUuid());
 		final SimilarContactDto similarContactDto1 = matchingContacts.get(0);
-		Assert.assertEquals(contact1.getUuid(), similarContactDto1.getUuid());
+		assertTrue(uuids.contains(similarContactDto1.getUuid()));
 		final SimilarContactDto similarContactDto2 = matchingContacts.get(1);
-		Assert.assertEquals(contact2.getUuid(), similarContactDto2.getUuid());
+		assertTrue(uuids.contains(similarContactDto2.getUuid()));
 	}
 
 	@Test
@@ -478,10 +491,10 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
+		ContactDto contact =
+			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
-		UserDto labUser = creator
-				.createUser(null, null, null, "Lab", "Off", UserRole.LAB_USER);
+		UserDto labUser = creator.createUser(null, null, null, "Lab", "Off", UserRole.LAB_USER);
 		FacilityReferenceDto laboratory = new FacilityReferenceDto(rdcf.facility.getUuid(), rdcf.facility.toString(), rdcf.facility.getExternalID());
 		labUser.setLaboratory(laboratory);
 		getUserFacade().saveUser(labUser);
@@ -513,7 +526,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		// "mainUser" is the user which executes the grid query
 		UserDto mainUser = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		when(MockProducer.getPrincipal().getName()).thenReturn("SurvSup");
+		loginWith(mainUser);
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
@@ -574,7 +587,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			"Surv2",
 			"Sup2",
 			UserRole.SURVEILLANCE_SUPERVISOR);
-		when(MockProducer.getPrincipal().getName()).thenReturn("Surv2Sup2");
+		loginWith(user2);
 
 		// 4) contact created by different user, jurisdiction same with main user, no case linked
 		PersonDto contactPersonSameJurisdictionDiffUserNoCase = creator.createPerson("contactSameJurisdictionDiffUserNoCase", "Person4");
@@ -585,8 +598,12 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			null,
 			new Date(),
 			new Date(),
-			null);
-		updateContactJurisdictionAndCase(contactSameJurisdictionDiffUserNoCase.getUuid(), regionReferenceDto, districtReferenceDto, null);
+			null,
+			null,
+			c -> {
+				c.setRegion(regionReferenceDto);
+				c.setDistrict(districtReferenceDto);
+			});
 
 		// 5) contact created by different user, jurisdiction different from main user, no case linked
 		PersonDto contactPersonDiffJurisdictionDiffUserNoCase = creator.createPerson("contactDiffJurisdictionDiffUserNoCase", "Person5");
@@ -609,16 +626,15 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			null,
 			new Date(),
 			new Date(),
-			null);
-		updateContactJurisdictionAndCase(
-			contactDiffJurisdictionDiffUserCaseSameJurisdiction.getUuid(),
 			null,
 			null,
-			new CaseReferenceDto(caze.getUuid()));
+			c -> {
+				c.setCaze(new CaseReferenceDto(caze.getUuid()));
+			});
 
 		// includeContactsFromOtherJurisdictionsFilter = false - return 1, 3, 4, 6
 		// includeContactsFromOtherJurisdictionsFilter = true - return 1, 2, 3, 4, 6
-		when(MockProducer.getPrincipal().getName()).thenReturn("SurvSup");
+		loginWith(mainUser);
 		ContactCriteria gridContactCriteria = new ContactCriteria();
 		List<ContactIndexDto> contactList = getContactFacade().getIndexList(gridContactCriteria, 0, 100, null);
 		List<String> contactListUuids = new ArrayList<>();
@@ -1007,6 +1023,52 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);
 
+		ImmunizationDto immunization = creator.createImmunization(
+			contact.getDisease(),
+			contact.getPerson(),
+			contact.getReportingUser(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf,
+			DateHelper.subtractDays(new Date(), 10),
+			DateHelper.subtractDays(new Date(), 5),
+			DateHelper.subtractDays(new Date(), 1),
+			null);
+		creator.createImmunization(
+			contact.getDisease(),
+			contact.getPerson(),
+			contact.getReportingUser(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf,
+			DateHelper.subtractDays(new Date(), 8),
+			DateHelper.subtractDays(new Date(), 7),
+			null,
+			null);
+		VaccinationDto firstVaccination = creator.createVaccination(
+			contact.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			DateHelper.subtractDays(new Date(), 7),
+			Vaccine.OXFORD_ASTRA_ZENECA,
+			VaccineManufacturer.ASTRA_ZENECA);
+		creator.createVaccination(
+			contact.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			DateHelper.subtractDays(new Date(), 4),
+			Vaccine.MRNA_1273,
+			VaccineManufacturer.MODERNA);
+		VaccinationDto thirdVaccination = creator.createVaccination(
+			contact.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			new Date(),
+			Vaccine.COMIRNATY,
+			VaccineManufacturer.BIONTECH_PFIZER);
+
 		List<ContactExportDto> results;
 		results = getContactFacade().getExportList(null, Collections.emptySet(), 0, 100, null, Language.EN);
 
@@ -1023,6 +1085,10 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("Test number", exportDto.getHouseNumber());
 		assertEquals("Test information", exportDto.getAdditionalInformation());
 		assertEquals("1234", exportDto.getPostalCode());
+		assertEquals(VaccinationStatus.VACCINATED, exportDto.getVaccinationStatus());
+		assertEquals(thirdVaccination.getVaccineName(), exportDto.getVaccineName());
+		assertEquals(firstVaccination.getVaccinationDate(), exportDto.getFirstVaccinationDate());
+		assertEquals(thirdVaccination.getVaccinationDate(), exportDto.getLastVaccinationDate());
 
 		assertNotNull(exportDto.getLastCooperativeVisitDate());
 		assertTrue(StringUtils.isNotEmpty(exportDto.getLastCooperativeVisitSymptoms()));
@@ -1383,6 +1449,10 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		UserDto leadUser = creator.createUser("", "", "", "", "");
 		UserReferenceDto leadUserReference = new UserReferenceDto(leadUser.getUuid());
 		PersonDto leadPerson = creator.createPerson("Alex", "Miller");
+		PersonContactDetailDto leadContactDetail =
+			creator.createPersonContactDetail(leadPerson.toReference(), true, PersonContactDetailType.PHONE, "123");
+		leadPerson.setPersonContactDetails(Collections.singletonList(leadContactDetail));
+		getPersonFacade().savePerson(leadPerson);
 		PersonReferenceDto leadPersonReference = new PersonReferenceDto(leadPerson.getUuid());
 		RDCF leadRdcf = creator.createRDCF();
 		CaseDataDto sourceCase = creator.createCase(
@@ -1414,6 +1484,9 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		UserDto otherUser = creator.createUser("", "", "", "", "");
 		UserReferenceDto otherUserReference = new UserReferenceDto(otherUser.getUuid());
 		PersonDto otherPerson = creator.createPerson("Max", "Smith");
+		PersonContactDetailDto otherContactDetail =
+			creator.createPersonContactDetail(otherPerson.toReference(), true, PersonContactDetailType.PHONE, "456");
+		otherPerson.setPersonContactDetails(Collections.singletonList(otherContactDetail));
 		otherPerson.setBirthWeight(2);
 		getPersonFacade().savePerson(otherPerson);
 		PersonReferenceDto otherPersonReference = new PersonReferenceDto(otherPerson.getUuid());
@@ -1438,7 +1511,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		District district = creator.createDistrict("", region);
 		Facility facility = creator.createFacility("", region, district, creator.createCommunity("", district));
 		SampleDto sample =
-			creator.createSample(otherContactReference, otherUserReference, getFacilityFacade().getFacilityReferenceByUuid(facility.getUuid()), null);
+			creator.createSample(otherContactReference, otherUserReference, getFacilityFacade().getReferenceByUuid(facility.getUuid()), null);
 		TaskDto task = creator.createTask(
 			TaskContext.CONTACT,
 			TaskType.CONTACT_INVESTIGATION,

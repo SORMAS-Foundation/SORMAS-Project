@@ -1,39 +1,39 @@
 import com.github.sherter.googlejavaformatgradleplugin.GoogleJavaFormat
 
 plugins {
-	id 'com.github.sherter.google-java-format' version '0.9'
+	id "com.github.sherter.google-java-format" version "0.9"
 	id "com.diffplug.spotless" version "5.12.4"
 }
 
-apply plugin: 'java'
+apply plugin: "java"
 
 repositories {
 	mavenCentral()
 }
 
 dependencies {
-	implementation("io.qameta.allure:allure-cucumber4-jvm:$allureCucumber4JvmVersion")
-    implementation 'org.junit.jupiter:junit-jupiter:5.4.2'
-    testImplementation("io.qameta.allure:allure-java-commons:$allureJavaCommonsVersion")
-	testImplementation("io.qameta.allure:allure-rest-assured:$allureRestAssureVersion")
-	testImplementation("ru.yandex.qatools.allure:allure-java-adaptor-api:$allureVersion")
+	implementation "org.junit.jupiter:junit-jupiter:5.4.2"
+	implementation("io.qameta.allure:allure-cucumber4-jvm:$allureVersion")
+    testImplementation("io.qameta.allure:allure-java-commons:$allureVersion")
+	testImplementation("io.qameta.allure:allure-rest-assured:$allureVersion")
+	testImplementation("ru.yandex.qatools.allure:allure-java-adaptor-api:$allureJavaAdapterVersion")
 
 	implementation("io.github.prashant-ramcharan:courgette-jvm:$ioGithubPrashantRamcharan") {
-		exclude group: 'org.testng', module: 'testng'
-		exclude group: 'org.yaml', module: 'testng'
+		exclude group: "org.testng", module: "testng"
+		exclude group: "org.yaml", module: "testng"
 	}
 	implementation("io.github.bonigarcia:webdrivermanager:$webdrivermanager")
 	implementation("org.seleniumhq.selenium:selenium-java:$seleniumhqVersion") {
-		exclude group: 'com.google.guava', module: 'guava'
+		exclude group: "com.google.guava", module: "guava"
 	}
 	implementation("org.awaitility:awaitility:$orgAwaitility")
 	testImplementation("org.awaitility:awaitility:$orgAwaitility")
 
 	testImplementation("com.google.truth.extensions:truth-java8-extension:$truthVersion") {
-		exclude group: 'com.google.guava', module: 'guava'
+		exclude group: "com.google.guava", module: "guava"
 	}
 	implementation("com.google.truth.extensions:truth-java8-extension:$truthVersion") {
-		exclude group: 'com.google.guava', module: 'guava'
+		exclude group: "com.google.guava", module: "guava"
 	}
 
 	implementation("org.projectlombok:lombok:$lombokVersion")
@@ -51,81 +51,75 @@ dependencies {
 	implementation("ch.qos.logback:logback-classic:$logBackVersion")
 	implementation("ch.qos.logback:logback-core:$logBackVersion")
 
-	implementation("com.github.javafaker:javafaker:$javaFakerVersion") { exclude module: 'org.yaml' }
+	implementation("com.github.javafaker:javafaker:$javaFakerVersion") { exclude module: "org.yaml" }
 
-	testImplementation group: 'org.assertj', name: 'assertj-core', version: assertjCore
+	testImplementation group: "org.assertj", name: "assertj-core", version: assertjCore
 
 	implementation("io.rest-assured:rest-assured:$restAssured")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonDatatypeJdk8")
 	implementation("com.fasterxml.jackson.core:jackson-core:$jacksonDatatypeJdk8")
-	implementation group: 'org.assertj', name: 'assertj-core', version: assertjCore
+	implementation group: "org.assertj", name: "assertj-core", version: assertjCore
 
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.8.8'
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.8.8'
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.8'
+	compile group: "com.fasterxml.jackson.core", name: "jackson-core", version: "2.8.8"
+	compile group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: "2.8.8"
+	compile group: "com.fasterxml.jackson.core", name: "jackson-databind", version: "2.8.8"
+
+	implementation group: 'org.jfree', name: 'jfreechart', version: '1.5.0'
+
 
 }
 
 task format(type: GoogleJavaFormat) {
-	source 'src/main'
-	source 'src/test'
-	include '**/*.java'
+	source "src/main"
+	source "src/test"
+	include "**/*.java"
 }
 
 tasks.withType(Test) {
 	maxParallelForks = (int) (Runtime.runtime.availableProcessors().intdiv(2) ?: 1)
-	systemProperties = System.getProperties()
+	systemProperties = System.getProperties() as Map<String, ?>
 	systemProperties.remove("java.endorsed.dirs") // needs to be removed from Java 9
 }
 
 task createReportFolderIfNotExist() {
-	// Create a File object representing the folder 'A/B'
-	def folder = new File('allureReports')
-
-	// If it doesn't exist
+	def folder = new File("allureReports")
 	if (!folder.exists()) {
-		// Create all folders up-to and including B
 		folder.mkdirs()
 	}
 }
 
-tasks.register('startTests') {
+task startTests {
 	doLast {
-		println 'Starting the test cases'
+		println "Starting the test cases"
 	}
 }
 
-task copyGeneratedReport(type: Copy) {
-	dependsOn 'createReportFolderIfNotExist'
-
-	from file("$buildDir/reports/allure-report")
-	into file("allureReports")
-}
-
 task copyToGeneratedReport(type: Copy) {
+	dependsOn "createReportFolderIfNotExist"
+
 	from file("allureReports/history")
 	into file("$buildDir/allure-results/history")
 }
 
-task copyCategoriesJson(type: Copy) {
-	from file("src/test/resources/allurefiles/categories.json")
-	into file("$buildDir/allure-results")
-}
-task copyEnvironmentProperties(type: Copy) {
-	dependsOn 'copyCategoriesJson'
+task copyAllureFiles(type: Copy) {
+	copy {
+		from file("src/test/resources/allurefiles/categories.json")
+		into file("$buildDir/allure-results")
+	}
 
-	from file("$buildDir/resources/test/allurefiles/environment.properties")
-	into file("$buildDir/allure-results")
+	copy {
+		from file("$buildDir/resources/test/allurefiles/environment.properties")
+		into file("$buildDir/allure-results")
+	}
 }
 
 task createAllureReport(type: Exec) {
-	workingDir System.getProperty("user.dir")
-	def workingDirectory = System.getProperty("user.dir")
-	def isWindows = System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')
+	workingDir "."
+	def isWindows = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("windows")
 	if (isWindows) {
-		commandLine 'cmd', '/c', 'allure.bat', 'generate', "${workingDirectory}/build/allure-results", '-c', '-o', "${workingDirectory}/allureReports"
+		commandLine "cmd", "/c", "allure.bat", "generate", "$buildDir/allure-results", "-c", "-o", "./allureReports"
 	} else {
-		commandLine "allure", 'generate', "${workingDirectory}/build/allure-results", '-c', '-o', "${workingDirectory}/allureReports"
+		commandLine "allure", "generate", "$buildDir/allure-results", "-c", "-o", "./allureReports"
 	}
 }
 
@@ -142,6 +136,5 @@ test {
 compileJava.dependsOn format
 startTests.finalizedBy copyToGeneratedReport
 copyToGeneratedReport.finalizedBy test
-test.finalizedBy copyEnvironmentProperties
-copyEnvironmentProperties.finalizedBy createAllureReport
-createAllureReport.finalizedBy copyGeneratedReport
+test.finalizedBy copyAllureFiles
+copyAllureFiles.finalizedBy createAllureReport

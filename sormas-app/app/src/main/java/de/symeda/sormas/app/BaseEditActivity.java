@@ -178,6 +178,16 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
 		this.storedRootEntity = entity;
 	}
 
+	/**
+	 * Discard the non saved changes done on root entity when navigation to child entity's activity not to get warning about
+	 * overridden data after saving of child entity.
+	 *
+	 * This method should be removed once we have a better solution for how to handle these scenarios.
+	 */
+	public void discardStoredRootEntity() {
+		this.storedRootEntity = null;
+	}
+
 	protected String getRootUuid() {
 		if (storedRootEntity != null) {
 			return storedRootEntity.getUuid();

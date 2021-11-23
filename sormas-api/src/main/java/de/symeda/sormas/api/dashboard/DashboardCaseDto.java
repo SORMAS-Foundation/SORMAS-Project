@@ -22,6 +22,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.person.PresentCondition;
 
 public class DashboardCaseDto implements Serializable {
@@ -37,6 +38,7 @@ public class DashboardCaseDto implements Serializable {
 	private Disease disease;
 	private PresentCondition casePersonCondition;
 	private Disease causeOfDeathDisease;
+	private CaseReferenceDefinition caseReferenceDefinition;
 
 	private DashboardQuarantineDataDto dashboardQuarantineDataDto;
 
@@ -49,7 +51,8 @@ public class DashboardCaseDto implements Serializable {
 		PresentCondition casePersonCondition,
 		Disease causeOfDeathDisease,
 		Date quarantineFrom,
-		Date quarantineTo) {
+		Date quarantineTo,
+		CaseReferenceDefinition caseReferenceDefinition) {
 
 		this.id = id;
 		this.uuid = uuid;
@@ -59,6 +62,7 @@ public class DashboardCaseDto implements Serializable {
 		this.casePersonCondition = casePersonCondition;
 		this.causeOfDeathDisease = causeOfDeathDisease;
 		this.dashboardQuarantineDataDto = new DashboardQuarantineDataDto(id, quarantineFrom, quarantineTo);
+		this.caseReferenceDefinition = caseReferenceDefinition;
 	}
 
 	public long getId() {
@@ -123,5 +127,13 @@ public class DashboardCaseDto implements Serializable {
 
 	public DashboardQuarantineDataDto getDashboardQuarantineDataDto() {
 		return dashboardQuarantineDataDto;
+	}
+
+	public CaseReferenceDefinition getCaseReferenceDefinition() {
+		return caseReferenceDefinition;
+	}
+
+	public void setCaseReferenceDefinition(CaseReferenceDefinition caseReferenceDefinition) {
+		this.caseReferenceDefinition = caseReferenceDefinition;
 	}
 }

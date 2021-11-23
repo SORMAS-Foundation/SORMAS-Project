@@ -24,7 +24,7 @@ import javax.persistence.criteria.Predicate;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 
 public class JurisdictionHelper {
 

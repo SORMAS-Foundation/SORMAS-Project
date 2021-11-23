@@ -15,25 +15,36 @@
 
 package de.symeda.sormas.api.event;
 
-import de.symeda.sormas.api.disease.DiseaseVariant;
 import java.util.Date;
 import java.util.Map;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.format.ImportExportFormat;
+import de.symeda.sormas.api.importexport.format.ImportFormat;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
-public class EventDto extends PseudonymizableDto implements SormasToSormasEntityDto {
+public class EventDto extends PseudonymizableDto implements SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = 2430932452606853497L;
 
@@ -81,6 +92,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String DISEASE_VARIANT = "diseaseVariant";
+	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	public static final String REPORT_LAT = "reportLat";
@@ -112,10 +124,16 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	private Date eventInvestigationStartDate;
 	private Date eventInvestigationEndDate;
 	private EventManagementStatus eventManagementStatus;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalId;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalToken;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String eventTitle;
 	@Required
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String eventDesc;
 	private YesNoUnknown nosocomial;
 	private Date startDate;
@@ -125,12 +143,16 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	@Required
 	private UserReferenceDto reportingUser;
 	private Date evolutionDate;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String evolutionComment;
+	@Valid
 	private LocationDto eventLocation;
 	private TypeOfPlace typeOfPlace;
 	private MeansOfTransport meansOfTransport;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String meansOfTransportDetails;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String connectionNumber;
 	private Date travelDate;
 
@@ -138,21 +160,37 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 
 	private EventSourceType srcType;
 	private InstitutionalPartnerType srcInstitutionalPartnerType;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String srcInstitutionalPartnerTypeDetails;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String srcFirstName;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String srcLastName;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String srcTelNo;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String srcEmail;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String srcMediaWebsite;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String srcMediaName;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String srcMediaDetails;
 	private Disease disease;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String diseaseVariantDetails;
 	@SensitiveData
 	private UserReferenceDto responsibleUser;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String typeOfPlaceText;
+	@Min(value = -90, message = Validations.numberTooSmall)
+	@Max(value = 90, message = Validations.numberTooBig)
 	private Double reportLat;
+	@Min(value = -180, message = Validations.numberTooSmall)
+	@Max(value = 180, message = Validations.numberTooBig)
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
 	private YesNoUnknown transregionalOutbreak;
@@ -176,10 +214,13 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	@HideForCountriesExcept
 	private Map<LaboratoryDiagnosticEvidenceDetail, Boolean> laboratoryDiagnosticEvidenceDetails;
 
+	@Valid
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
 	private boolean ownershipHandedOver;
 
 	@HideForCountriesExcept
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String internalToken;
 
 	private EventIdentificationSource eventIdentificationSource;
@@ -288,6 +329,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 		return startDate;
 	}
 
+	@ImportFormat(ImportExportFormat.DATE_TIME)
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
@@ -296,6 +338,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 		return endDate;
 	}
 
+	@ImportFormat(ImportExportFormat.DATE_TIME)
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
@@ -498,6 +541,14 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 
 	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
+	}
+
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	public UserReferenceDto getResponsibleUser() {

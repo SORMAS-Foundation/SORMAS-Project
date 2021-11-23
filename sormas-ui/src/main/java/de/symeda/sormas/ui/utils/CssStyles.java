@@ -127,6 +127,7 @@ public final class CssStyles {
 	public static final String LABEL_BACKGROUND_FOLLOW_UP_NOT_PERFORMED = "bg-follow-up-not-performed";
 	public static final String LABEL_WHITE_SPACE_NORMAL = "white-space-normal";
 	public static final String LABEL_TEXT_ALIGN_RIGHT = "text-align-right";
+	public static final String LABEL_CAPTION_TRUNCATED = "caption-truncated";
 
 	// Layout styles
 	public static final String LAYOUT_MINIMAL = "minimal";
@@ -200,6 +201,7 @@ public final class CssStyles {
 	public static final String OPTIONGROUP_GRID_LAYOUT = "grid-layout";
 	public static final String OPTIONGROUP_CAPTION_INLINE = "caption-inline";
 	public static final String OPTIONGROUP_CAPTION_AREA_INLINE = "caption-area-inline";
+	public static final String OPTIONGROUP_MAX_HEIGHT_150 = "max-height-150";
 
 	public static final String GRID_CELL_PRIORITY_HIGH = "priority-high";
 	public static final String GRID_CELL_PRIORITY_NORMAL = "priority-normal";

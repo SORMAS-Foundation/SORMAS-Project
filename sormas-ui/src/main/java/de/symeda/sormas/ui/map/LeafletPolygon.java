@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.region.GeoLatLon;
+import de.symeda.sormas.api.geo.GeoLatLon;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;

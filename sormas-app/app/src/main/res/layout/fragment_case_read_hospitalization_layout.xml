@@ -25,7 +25,7 @@
     <data>
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
         <import type="de.symeda.sormas.api.hospitalization.HospitalizationReasonType" />
-        <import type="de.symeda.sormas.api.facility.FacilityType" />
+        <import type="de.symeda.sormas.api.infrastructure.facility.FacilityType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.hospitalization.Hospitalization" />
         <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case" />
@@ -157,6 +157,11 @@
                     app:value="@{data.hospitalizationReason}"
                     app:appendValue="@{data.otherHospitalizationReason}"
                     style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseHospitalization_description"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{data.description}" />
 
             </LinearLayout>
 

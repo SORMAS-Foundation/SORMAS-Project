@@ -15,9 +15,12 @@
 
 package de.symeda.sormas.ui.sormastosormas;
 
+import java.util.Arrays;
+
 import com.vaadin.navigator.ViewChangeListener;
 
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestCriteria;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.task.TasksView;
@@ -60,6 +63,7 @@ public class ShareRequestsView extends AbstractView {
 		if (!ViewModelProviders.of(TasksView.class).has(TaskCriteria.class)) {
 			// init default filter
 			criteria = new ShareRequestCriteria();
+			criteria.setStatusesExcepted(Arrays.asList(ShareRequestStatus.REJECTED, ShareRequestStatus.REVOKED));
 			ViewModelProviders.of(ShareRequestsView.class).get(ShareRequestCriteria.class, criteria);
 		}
 		return criteria;

@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.app.backend.sample;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
 import java.util.Date;
 
@@ -106,7 +106,7 @@ public class AdditionalTest extends AbstractDomainObject {
 	@DatabaseField
 	private Float prothrombinTime;
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	private String otherTestResults;
 
 	public boolean hasArterialVenousGasValue() {

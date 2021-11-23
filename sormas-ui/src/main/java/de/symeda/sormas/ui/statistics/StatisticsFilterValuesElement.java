@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.statistics;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.caze.CaseFacade;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.explicatis.ext_token_field.ExtTokenField;
@@ -36,14 +37,14 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
@@ -178,7 +179,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 			case QUARTER_OF_YEAR:
 			case MONTH_OF_YEAR:
 			case EPI_WEEK_OF_YEAR:
-				List<StatisticsGroupingKey> dateValues = StatisticsHelper.getTimeGroupingKeys(attribute, subAttribute);
+				List<StatisticsGroupingKey> dateValues = StatisticsHelper.getTimeGroupingKeys(attribute, subAttribute, FacadeProvider.getCaseFacade());
 				return createTokens(dateValues);
 			case REGION:
 				return createTokens(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());

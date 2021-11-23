@@ -61,6 +61,8 @@ public interface SampleFacade {
 
 	void deleteAllSamples(List<String> sampleUuids);
 
+	List<String> deleteSamples(List<String> sampleUuids);
+
 	void validate(SampleDto sample) throws ValidationRuntimeException;
 
 	List<String> getDeletedUuidsSince(Date since);
@@ -80,4 +82,6 @@ public interface SampleFacade {
 	boolean exists(String uuid);
 
 	List<SampleDto> getByEventParticipantUuids(List<String> asList);
+
+	List<SampleDto> getByLabSampleId(String labSampleId);
 }

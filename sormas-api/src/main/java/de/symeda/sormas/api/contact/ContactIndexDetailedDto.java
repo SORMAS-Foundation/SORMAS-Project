@@ -4,7 +4,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
@@ -59,12 +59,12 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	private ContactRelation relationToCase;
 
 	//@formatter:off
-	public ContactIndexDetailedDto(String uuid, String personFirstName, String personLastName,
+	public ContactIndexDetailedDto(String uuid, String personUuid, String personFirstName, String personLastName,
 								   String cazeUuid,
 								   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionName,
 								   String districtName, Date lastContactDate, ContactCategory contactCategory,
 								   ContactProximity contactProximity, ContactClassification contactClassification, ContactStatus contactStatus, Float completeness,
-								   FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Vaccination vaccination, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
+								   FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, VaccinationStatus vaccinationStatus, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 								   CaseClassification caseClassification,
 								   String caseRegionName,
 								   String caseDistrictName,
@@ -72,15 +72,16 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   String externalID, String externalToken, String internalToken, boolean isInJurisdiction, boolean isCaseInJurisdiction,
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
 								   String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
-								   String reportingUserFirstName, String reportingUserLastName, ContactRelation relationToCase, int visitCount
+								   String reportingUserFirstName, String reportingUserLastName, ContactRelation relationToCase, int visitCount,
+								   Date latestChangedDate // unused, only here for TypedQuery mapping
 	) {
 	//@formatter:on
 
 		//@formatter:off
-		super(uuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName,
+		super(uuid, personUuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName,
 			regionName, districtName, lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus,
-				completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccination, contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
-			caseRegionName, caseDistrictName, changeDate, externalID, externalToken, internalToken, isInJurisdiction, isCaseInJurisdiction , visitCount);
+				completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccinationStatus, contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
+			caseRegionName, caseDistrictName, changeDate, externalID, externalToken, internalToken, isInJurisdiction, isCaseInJurisdiction , visitCount, latestChangedDate);
 
 		//@formatter:on
 

@@ -1,9 +1,9 @@
 package de.symeda.sormas.api.report;
 
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 

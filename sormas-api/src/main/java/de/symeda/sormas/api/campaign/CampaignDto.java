@@ -4,11 +4,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class CampaignDto extends EntityDto {
 
@@ -23,12 +28,15 @@ public class CampaignDto extends EntityDto {
 	public static final String CREATING_USER = "creatingUser";
 	public static final String CAMPAIGN_FORM_METAS = "campaignFormMetas";
 
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String description;
 	private Date startDate;
 	private Date endDate;
 	private UserReferenceDto creatingUser;
 	private Set<CampaignFormMetaReferenceDto> campaignFormMetas;
+	@Valid
 	private List<CampaignDashboardElement> campaignDashboardElements;
 
 	public static CampaignDto build() {
