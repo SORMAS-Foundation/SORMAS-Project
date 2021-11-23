@@ -26,7 +26,10 @@ import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 import androidx.paging.PositionalDataSource;
 
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.vaccination.Vaccination;
 import de.symeda.sormas.app.backend.vaccination.VaccinationCriteria;
@@ -47,6 +50,30 @@ public class VaccinationListViewModel extends ViewModel {
 	public void initializeViewModel() {
 		vaccinationDataFactory = new VaccinationDataFactory();
 		VaccinationCriteria vaccinationCriteria = new VaccinationCriteria();
+		vaccinationDataFactory.setVaccinationCriteria(vaccinationCriteria);
+		initializeList();
+	}
+
+	public void initializeViewModel(Case caze) {
+		vaccinationDataFactory = new VaccinationDataFactory();
+		VaccinationCriteria vaccinationCriteria = new VaccinationCriteria();
+		vaccinationCriteria.caze(caze);
+		vaccinationDataFactory.setVaccinationCriteria(vaccinationCriteria);
+		initializeList();
+	}
+
+	public void initializeViewModel(Contact contact) {
+		vaccinationDataFactory = new VaccinationDataFactory();
+		VaccinationCriteria vaccinationCriteria = new VaccinationCriteria();
+		vaccinationCriteria.contact(contact);
+		vaccinationDataFactory.setVaccinationCriteria(vaccinationCriteria);
+		initializeList();
+	}
+
+	public void initializeViewModel(EventParticipant eventParticipant) {
+		vaccinationDataFactory = new VaccinationDataFactory();
+		VaccinationCriteria vaccinationCriteria = new VaccinationCriteria();
+		vaccinationCriteria.eventParticipant(eventParticipant);
 		vaccinationDataFactory.setVaccinationCriteria(vaccinationCriteria);
 		initializeList();
 	}
