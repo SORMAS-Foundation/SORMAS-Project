@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.sormastosormas.validation;
 
-import static org.junit.Assert.assertEquals;
+import static org.hibernate.validator.internal.util.Contracts.assertTrue;
 import static org.junit.Assert.assertFalse;
 
 import java.lang.reflect.Constructor;
@@ -463,7 +463,8 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 		// smoke test, in case both are empty some reason this will blow up
 		assertFalse(foundFields.isEmpty());
 		assertFalse(expected.isEmpty());
-		assertEquals(new ArrayList<String>(), CollectionUtils.disjunction(foundFields, expected));
+		final Collection disjunction = CollectionUtils.disjunction(foundFields, expected);
+		assertTrue(disjunction.isEmpty(), "The following fields are not validated in the DTO: " + disjunction);
 	}
 
 	@Test
