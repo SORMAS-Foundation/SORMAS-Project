@@ -26,7 +26,7 @@
     <string name="no">No</string>
     <string name="notAnswered">Not answered</string>
     <string name="system">System</string>
-    <string name="yes">Yes</string>
+    <string name="yes">Да</string>
     <string name="all">All</string>
     <string name="completed">completed</string>
     <string name="action_add_missing_case">Add Missing Case</string>
@@ -538,7 +538,7 @@
     <string name="message_case_numbers_submitted">Thank you for submitting your collected case numbers.</string>
     <string name="message_change_final_laboratory_result">The result of this pathogen test differs from the current final laboratory result of the sample. Do you want to update the final laboratory result?</string>
     <string name="message_change_case_disease">Really change case disease?</string>
-    <string name="action_change_case_disease">Yes, change disease</string>
+    <string name="action_change_case_disease">Да, изменить болезнь</string>
     <string name="message_language_change_unsuccessful">The language could not be changed due to an internal error.</string>
     <string name="message_Event_and_Case_disease_mismatch">The new event to be linked to case has a different disease than case disease </string>
     <string name="message_Event_already_linked_to_Case">The event has already been linked to this case </string>
@@ -568,7 +568,7 @@
     <string name="time_future_x_years">within %1$s years</string>
     <string name="time_now">just now</string>
     <string name="time_past_almost_two_years">almost two years ago</string>
-    <string name="time_past_one_day">yesterday</string>
+    <string name="time_past_one_day">вчера</string>
     <string name="time_past_one_hour">about an hour ago</string>
     <string name="time_past_one_minute">a min ago</string>
     <string name="time_past_one_month">about a month ago</string>
