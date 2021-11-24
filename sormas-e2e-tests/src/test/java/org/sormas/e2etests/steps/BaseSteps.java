@@ -60,6 +60,7 @@ public class BaseSteps implements StepLifecycleListener {
       options.timeouts().setScriptTimeout(Duration.ofMinutes(2));
       options.timeouts().pageLoadTimeout(Duration.ofMinutes(2));
       log.info("Browser's resolution: " + driver.manage().window().getSize().toString());
+      log.info("Starting test: " + scenario.getName());
     }
   }
 
@@ -73,6 +74,7 @@ public class BaseSteps implements StepLifecycleListener {
     if (isNonApiScenario(scenario)) {
       driverManager.releaseRemoteWebDriver(scenario.getName());
     }
+    log.info("Finished test: " + scenario.getName());
   }
 
   @After(value = "@PagesMeasurements")

@@ -78,11 +78,12 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.labmessage.LabMessagesView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
+
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
 
 public class SampleController {
 
@@ -254,45 +255,36 @@ public class SampleController {
 		viaLimsCheckbox.setValue(Boolean.TRUE);
 	}
 
-	public void createReferral(SampleDto sample, Disease disease) {
+	public void createReferral(SampleDto existingSample, Disease disease) {
 
-		final SampleCreateForm createForm = new SampleCreateForm(disease);
-		final SampleDto referralSample = SampleDto.buildReferral(UserProvider.getCurrent().getUserReference(), sample);
-		createForm.setValue(referralSample);
-		final CommitDiscardWrapperComponent<SampleCreateForm> createView = new CommitDiscardWrapperComponent<>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE),
-			createForm.getFieldGroup());
+		CommitDiscardWrapperComponent<SampleCreateForm> createView = getSampleReferralCreateComponent(existingSample, disease);
+		createView.addDoneListener(() -> navigateToData(existingSample.getUuid()));
+		createView.getWrappedComponent().getValue().setPathogenTestResult(PathogenTestResultType.PENDING);
+		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingReferSample));
+	}
+
+	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleReferralCreateComponent(SampleDto existingSample, Disease disease) {
+		final SampleDto referralSample = SampleDto.buildReferralDto(UserProvider.getCurrent().getUserReference(), existingSample);
+
+		final CommitDiscardWrapperComponent<SampleCreateForm> createView = getSampleCreateComponent(referralSample, disease, () -> {
+		});
 
 		createView.addCommitListener(() -> {
-			if (!createForm.getFieldGroup().isModified()) {
-				FacadeProvider.getSampleFacade().saveSample(referralSample);
+			if (!createView.getWrappedComponent().getFieldGroup().isModified()) {
 
-				SampleDto updatedSample = FacadeProvider.getSampleFacade().getSampleByUuid(sample.getUuid());
+				SampleDto updatedSample = FacadeProvider.getSampleFacade().getSampleByUuid(existingSample.getUuid());
 				updatedSample.setReferredTo(referralSample.toReference());
 				FacadeProvider.getSampleFacade().saveSample(updatedSample);
-
-				navigateToData(sample.getUuid());
 			}
 		});
-
-		// Reload the page when the form is discarded because the sample has been saved before
-		createView.addDiscardListener(new DiscardListener() {
-
-			@Override
-			public void onDiscard() {
-				navigateToData(sample.getUuid());
-			}
-		});
-
-		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingReferSample));
+		return createView;
 	}
 
 	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(
 		final String sampleUuid,
 		boolean isPseudonymized,
 		Disease disease,
-		boolean showReferAndDeleteButton) {
+		boolean showDeleteButton) {
 
 		SampleEditForm form = new SampleEditForm(isPseudonymized, disease);
 		form.setWidth(form.getWidth() * 10 / 12, Unit.PIXELS);
@@ -320,17 +312,41 @@ public class SampleController {
 			}
 		});
 
-		if (showReferAndDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
+		if (showDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
 			editView.addDeleteListener(() -> {
 				FacadeProvider.getSampleFacade().deleteSample(dto.toReference());
 				UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entitySample));
 		}
 
-		// Initialize 'Refer to another laboratory' button or link to referred sample
+		if (dto.getReferredTo() != null || dto.getSamplePurpose() == SamplePurpose.EXTERNAL) {
+			editView.getWrappedComponent().getField(SampleDto.SAMPLE_PURPOSE).setEnabled(false);
+		}
+
+		return editView;
+	}
+
+	/**
+	 * Initialize 'Refer to another laboratory' button or link to referred sample
+	 * 
+	 * @param editForm
+	 *            the edit form to attach the 'Refer to another laboratory' button to.
+	 * @param disease
+	 *            required for field visibility checks in the sample create form opened when a sample reference shall be created.
+	 * @param createReferral
+	 *            instructions for what shall happen when the user chooses to create a referral
+	 * @param openReferredSample
+	 *            instructions for what shall happen when the user chooses to open the referred sample
+	 */
+	public void addReferOrLinkToOtherLabButton(
+		CommitDiscardWrapperComponent<SampleEditForm> editForm,
+		Disease disease,
+		Consumer<Disease> createReferral,
+		Consumer<SampleDto> openReferredSample) {
 		Button referOrLinkToOtherLabButton = null;
-		if (showReferAndDeleteButton && dto.getReferredTo() == null) {
-			if (dto.getSamplePurpose() == SamplePurpose.EXTERNAL && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_TRANSFER)) {
+		SampleDto sample = editForm.getWrappedComponent().getValue();
+		if (sample.getReferredTo() == null) {
+			if (sample.getSamplePurpose() == SamplePurpose.EXTERNAL && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_TRANSFER)) {
 				referOrLinkToOtherLabButton =
 					ButtonHelper.createButton("referOrLinkToOtherLab", I18nProperties.getCaption(Captions.sampleRefer), new ClickListener() {
 
@@ -339,18 +355,15 @@ public class SampleController {
 						@Override
 						public void buttonClick(ClickEvent event) {
 							try {
-								form.commit();
-								SampleDto sampleDto = form.getValue();
-								sampleDto = FacadeProvider.getSampleFacade().saveSample(sampleDto);
-								createReferral(sampleDto, disease);
+								createReferral.accept(disease);
 							} catch (SourceException | InvalidValueException e) {
 								Notification.show(I18nProperties.getString(Strings.messageSampleErrors), Type.ERROR_MESSAGE);
 							}
 						}
 					}, ValoTheme.BUTTON_LINK);
 			}
-		} else if (showReferAndDeleteButton) {
-			SampleDto referredDto = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getReferredTo().getUuid());
+		} else {
+			SampleDto referredDto = FacadeProvider.getSampleFacade().getSampleByUuid(sample.getReferredTo().getUuid());
 			FacilityReferenceDto referredDtoLab = referredDto.getLab();
 			String referOrLinkToOtherLabButtonCaption = referredDtoLab == null
 				? I18nProperties.getCaption(Captions.sampleReferredToInternal) + " ("
@@ -363,23 +376,38 @@ public class SampleController {
 
 				@Override
 				public void buttonClick(ClickEvent event) {
-					navigateToData(dto.getReferredTo().getUuid());
+					openReferredSample.accept(referredDto);
 				}
 
 			});
-
 		}
 
 		if (referOrLinkToOtherLabButton != null) {
-			editView.getButtonsPanel().addComponentAsFirst(referOrLinkToOtherLabButton);
-			editView.getButtonsPanel().setComponentAlignment(referOrLinkToOtherLabButton, Alignment.BOTTOM_LEFT);
+			editForm.getButtonsPanel().addComponentAsFirst(referOrLinkToOtherLabButton);
+			editForm.getButtonsPanel().setComponentAlignment(referOrLinkToOtherLabButton, Alignment.BOTTOM_LEFT);
 		}
+	}
 
-		if (dto.getReferredTo() != null || dto.getSamplePurpose() == SamplePurpose.EXTERNAL) {
-			editView.getWrappedComponent().getField(SampleDto.SAMPLE_PURPOSE).setEnabled(false);
+	/**
+	 * 
+	 * @param editForm
+	 *            the edit form to attach the 'Referred from' button to.
+	 * @param navigation
+	 *            instructions for what shall happen when the user chooses to open the related sample
+	 */
+	public void addReferredFromButton(CommitDiscardWrapperComponent<SampleEditForm> editForm, Consumer<SampleDto> navigation) {
+		SampleReferenceDto referredFromRef = FacadeProvider.getSampleFacade().getReferredFrom(editForm.getWrappedComponent().getValue().getUuid());
+		if (referredFromRef != null) {
+			SampleDto referredFrom = FacadeProvider.getSampleFacade().getSampleByUuid(referredFromRef.getUuid());
+			FacilityReferenceDto referredFromLab = referredFrom.getLab();
+			String referredButtonCaption = referredFromLab == null
+				? I18nProperties.getCaption(Captions.sampleReferredFromInternal) + " ("
+					+ DateFormatHelper.formatLocalDateTime(referredFrom.getSampleDateTime()) + ")"
+				: I18nProperties.getCaption(Captions.sampleReferredFrom) + " " + referredFromLab.toString();
+			Button referredButton = ButtonHelper
+				.createButton("referredFrom", referredButtonCaption, event -> navigation.accept(referredFrom), ValoTheme.BUTTON_LINK, VSPACE_NONE);
+			editForm.getWrappedComponent().addReferredFromButton(referredButton);
 		}
-
-		return editView;
 	}
 
 	private void requestSampleCollectionTaskCreation(SampleDto dto, SampleEditForm form) {

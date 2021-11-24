@@ -21,7 +21,6 @@ package org.sormas.e2etests.steps.web.application.contacts;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
 
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -105,7 +104,9 @@ public class EditContactSteps implements En {
         "I check the edited data is correctly displayed on Edit Contact page after editing",
         () -> {
           aContact = collectContactDataAfterEdit();
-          Truth.assertThat(editedContact).isEqualTo(aContact);
+          SoftAssertions softly = new SoftAssertions();
+          softly.assertThat(editedContact).isEqualTo(aContact);
+          softly.assertAll();
         });
 
     When(

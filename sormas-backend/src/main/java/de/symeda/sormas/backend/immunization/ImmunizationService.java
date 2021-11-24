@@ -46,6 +46,7 @@ import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -128,7 +129,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		Root<Immunization> root = cq.from(Immunization.class);
 		cq.multiselect(JurisdictionHelper.booleanSelector(cb, createUserFilter(new ImmunizationQueryContext<>(cb, cq, root))));
 		cq.where(cb.equal(root.get(Immunization.UUID), immunization.getUuid()));
-		return em.createQuery(cq).getSingleResult();
+		return em.createQuery(cq).getResultStream().anyMatch(isInJurisdiction -> isInJurisdiction);
 	}
 
 	@Override
@@ -318,6 +319,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 		cq.where(
 			cb.and(
+				cb.isFalse(root.get(Immunization.DELETED)),
 				cb.equal(root.get(Immunization.PERSON).get(Person.UUID), personUuid),
 				cb.equal(root.get(Immunization.DISEASE), disease),
 				cb.lessThanOrEqualTo(lastVaccinationPath, referenceDate)));
@@ -382,14 +384,26 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Immunization> getByPersonAndDisease(String personUuid, Disease disease) {
+	public List<Immunization> getByPersonAndDisease(String personUuid, Disease disease, boolean onlyVaccinationImmunizations) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Immunization> cq = cb.createQuery(Immunization.class);
 		Root<Immunization> immunizationRoot = cq.from(Immunization.class);
 		Join<Immunization, Person> personJoin = immunizationRoot.join(Immunization.PERSON, JoinType.INNER);
 
-		cq.where(
-			cb.and(cb.equal(personJoin.get(AbstractDomainObject.UUID), personUuid), cb.equal(immunizationRoot.get(Immunization.DISEASE), disease)));
+		Predicate filter = CriteriaBuilderHelper.and(
+			cb,
+			createDefaultFilter(cb, immunizationRoot),
+			cb.equal(personJoin.get(AbstractDomainObject.UUID), personUuid),
+			cb.equal(immunizationRoot.get(Immunization.DISEASE), disease));
+		if (onlyVaccinationImmunizations) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(
+					cb.equal(immunizationRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION),
+					cb.equal(immunizationRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION_RECOVERY)));
+		}
+		cq.where(filter);
 
 		return em.createQuery(cq).getResultList();
 	}

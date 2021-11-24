@@ -28,6 +28,7 @@ import java.time.format.TextStyle;
 import java.util.Locale;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.openqa.selenium.ElementClickInterceptedException;
 import org.sormas.e2etests.comparators.PersonComparator;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Person;
@@ -112,12 +113,8 @@ public class EditPersonSteps implements En {
     Then(
         "I click on save button from Edit Person page",
         () -> {
-          webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
-          // Workaround created until #5535 is fixed
-          baseSteps.getDriver().navigate().refresh();
-          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
           previousCreatedPerson = collectedPerson;
         });
 
@@ -140,7 +137,12 @@ public class EditPersonSteps implements En {
   }
 
   private void fillFirstName(String firstName) {
-    webDriverHelpers.clearAndFillInWebElement(FIRST_NAME_INPUT, firstName);
+    try {
+      webDriverHelpers.clearAndFillInWebElement(FIRST_NAME_INPUT, firstName);
+    } catch (ElementClickInterceptedException elementClickInterceptedException) {
+      webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+      webDriverHelpers.clearAndFillInWebElement(FIRST_NAME_INPUT, firstName);
+    }
   }
 
   private void fillLastName(String lastName) {

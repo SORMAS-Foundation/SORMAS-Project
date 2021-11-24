@@ -16,10 +16,16 @@
 package de.symeda.sormas.app.immunization.vaccination;
 
 import android.os.Bundle;
+import android.view.View;
 
 import de.symeda.sormas.api.caze.Trimester;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.vaccination.Vaccination;
 import de.symeda.sormas.app.databinding.FragmentVaccinationReadLayoutBinding;
 
@@ -41,6 +47,13 @@ public class VaccinationReadFragment extends BaseReadFragment<FragmentVaccinatio
 
 		contentBinding.setData(record);
 		contentBinding.setTrimesterClass(Trimester.class);
+
+		if (ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			&& !DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			contentBinding.vaccinationPregnant.setVisibility(View.VISIBLE);
+		} else {
+			contentBinding.vaccinationPregnant.setVisibility(View.GONE);
+		}
 	}
 
 	@Override

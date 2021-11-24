@@ -1105,6 +1105,8 @@ public interface Captions {
 	String EventParticipant_person = "EventParticipant.person";
 	String EventParticipant_personUuid = "EventParticipant.personUuid";
 	String EventParticipant_region = "EventParticipant.region";
+	String EventParticipant_responsibleDistrict = "EventParticipant.responsibleDistrict";
+	String EventParticipant_responsibleRegion = "EventParticipant.responsibleRegion";
 	String EventParticipant_sex = "EventParticipant.sex";
 	String EventParticipant_uuid = "EventParticipant.uuid";
 	String EventParticipant_vaccinationStatus = "EventParticipant.vaccinationStatus";
@@ -2154,6 +2156,7 @@ public interface Captions {
 	String Task_creatorUser = "Task.creatorUser";
 	String Task_dueDate = "Task.dueDate";
 	String Task_event = "Task.event";
+	String Task_observerUsers = "Task.observerUsers";
 	String Task_perceivedStart = "Task.perceivedStart";
 	String Task_priority = "Task.priority";
 	String Task_statusChangeDate = "Task.statusChangeDate";
@@ -2306,6 +2309,9 @@ public interface Captions {
 	String Vaccination_vaccineName = "Vaccination.vaccineName";
 	String Vaccination_vaccineType = "Vaccination.vaccineType";
 	String Vaccination_vaccineUniiCode = "Vaccination.vaccineUniiCode";
+	String vaccinationNewVaccination = "vaccinationNewVaccination";
+	String vaccinationNoVaccinationsForPerson = "vaccinationNoVaccinationsForPerson";
+	String vaccinationNoVaccinationsForPersonAndDisease = "vaccinationNoVaccinationsForPersonAndDisease";
 	String View_actions = "View.actions";
 	String View_aggregatereports = "View.aggregatereports";
 	String View_aggregatereports_sub = "View.aggregatereports.sub";

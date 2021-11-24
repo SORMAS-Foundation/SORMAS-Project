@@ -34,6 +34,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Task;
@@ -93,12 +94,12 @@ public class TaskManagementSteps implements En {
         });
 
     When(
-        "^I search last created task by API using Contact UUID and wait for (\\d+) results to be displayed$",
-        (Integer displayedResults) -> {
+        "^I search last created task by API using Contact UUID$",
+        () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(GENERAL_SEARCH_INPUT);
           webDriverHelpers.fillAndSubmitInWebElement(
               GENERAL_SEARCH_INPUT, apiState.getCreatedContact().getUuid());
-          webDriverHelpers.waitUntilNumberOfElementsIsReduceToGiven(TABLE_ROW, displayedResults);
+          TimeUnit.SECONDS.sleep(20);
         });
 
     When(
@@ -152,7 +153,6 @@ public class TaskManagementSteps implements En {
     When(
         "^I collect the task column objects$",
         () -> {
-          TimeUnit.SECONDS.sleep(5); // time needed for table to load data
           List<Map<String, String>> tableRowsData = getTableRowsData();
           taskTableRows = new ArrayList<>();
           tableRowsData.forEach(
@@ -196,6 +196,7 @@ public class TaskManagementSteps implements En {
                 indexWithData.put(atomicInt.getAndIncrement(), dataText.getText());
               });
           tableDataList.add(indexWithData);
+          webDriverHelpers.scrollToElementUntilIsVisible(TABLE_DATA);
         });
     List<Map<String, String>> tableObjects = new ArrayList<>();
     tableDataList.forEach(
@@ -217,6 +218,7 @@ public class TaskManagementSteps implements En {
     HashMap<String, Integer> headerHashmap = new HashMap<>();
     webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(COLUMN_HEADERS_TEXT);
     webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(COLUMN_HEADERS_TEXT);
+    webDriverHelpers.scrollToElementUntilIsVisible(COLUMN_HEADERS_TEXT);
     baseSteps
         .getDriver()
         .findElements(COLUMN_HEADERS_TEXT)
@@ -225,12 +227,19 @@ public class TaskManagementSteps implements En {
               webDriverHelpers.scrollToElementUntilIsVisible(webElement);
               headerHashmap.put(webElement.getText(), atomicInt.getAndIncrement());
             });
+    webDriverHelpers.scrollToElementUntilIsVisible(COLUMN_HEADERS_TEXT);
     return headerHashmap;
   }
 
   private LocalDateTime getLocalDateTimeFromColumns(String date) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy h:mm a");
-    return LocalDateTime.parse(date, formatter);
+    try {
+      return LocalDateTime.parse(date.trim(), formatter);
+    } catch (Exception e) {
+      throw new WebDriverException(
+          String.format(
+              "Unable to parse date: %s due to caught exception: %s", date, e.getMessage()));
+    }
   }
 
   private String getPartialUuidFromAssociatedLink(String associatedLink) {

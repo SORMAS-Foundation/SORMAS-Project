@@ -201,6 +201,7 @@ public final class CssStyles {
 	public static final String OPTIONGROUP_GRID_LAYOUT = "grid-layout";
 	public static final String OPTIONGROUP_CAPTION_INLINE = "caption-inline";
 	public static final String OPTIONGROUP_CAPTION_AREA_INLINE = "caption-area-inline";
+	public static final String OPTIONGROUP_MAX_HEIGHT_150 = "max-height-150";
 
 	public static final String GRID_CELL_PRIORITY_HIGH = "priority-high";
 	public static final String GRID_CELL_PRIORITY_NORMAL = "priority-normal";
