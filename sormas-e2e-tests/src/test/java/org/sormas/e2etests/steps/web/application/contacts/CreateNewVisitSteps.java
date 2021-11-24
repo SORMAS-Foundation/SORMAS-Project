@@ -139,12 +139,12 @@ public class CreateNewVisitSteps implements En {
           webDriverHelpers.clearAndFillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, uuid);
           fillDateFrom(followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit());
           fillDateTo(followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit());
-
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
           webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(CONTACT_GRID_RESULTS_ROWS);
           softly
               .assertThat(webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS))
-              .isEqualTo(1);
+              .isEqualTo(1)
+              .withFailMessage("Contact grid results rows are not equal with 1");
           softly.assertAll();
         });
   }

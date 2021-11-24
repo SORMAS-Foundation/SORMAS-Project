@@ -24,6 +24,9 @@ public class EventParticipantsPage {
   public static final By ADD_PARTICIPANT_BUTTON = By.cssSelector("div#eventParticipantAddPerson");
   public static final By PARTICIPANT_FIRST_NAME_INPUT = By.cssSelector(".popupContent #firstName");
   public static final By PARTICIPANT_LAST_NAME_INPUT = By.cssSelector(".popupContent #lastName");
+  public static final By PARTICIPANT_REGION_COMBOBOX = By.cssSelector(".popupContent #region div");
+  public static final By PARTICIPANT_DISTRICT_COMBOBOX =
+      By.cssSelector(".popupContent #district div");
   public static final By SEX_COMBOBOX =
       By.cssSelector(".v-window [location='sex'] [role='combobox'] div");
   public static final By PICK_OR_CREATE_PERSON_POPUP =

@@ -1,6 +1,22 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.ui.caze.importer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +29,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -289,9 +306,39 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 	}
 
+	@Test
+	public void testImportAddressTypes()
+		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
+
+		TestDataCreator creator = new TestDataCreator();
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Saarland", "RV Saarbrücken", "Kleinblittersdorf", "Winterberg");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		// import of 3 cases with different address types
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_case_import_address_type.csv").toURI());
+		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, true, user);
+		ImportResultStatus importResult = caseImporter.runImport();
+
+		PersonDto casePerson1 = getPersonFacade().getPersonByUuid(getCaseFacade().getByExternalId("SL-DEF-GHI-19-1").get(0).getPerson().getUuid());
+		PersonDto casePerson2 = getPersonFacade().getPersonByUuid(getCaseFacade().getByExternalId("SL-DEF-GHI-19-2").get(0).getPerson().getUuid());
+		PersonDto casePerson3 = getPersonFacade().getPersonByUuid(getCaseFacade().getByExternalId("SL-DEF-GHI-19-3").get(0).getPerson().getUuid());
+
+		assertTrue(CollectionUtils.isEmpty(casePerson1.getAddresses()));
+		assertEquals("131", casePerson1.getAddress().getHouseNumber());
+
+		assertTrue(CollectionUtils.isEmpty(casePerson2.getAddresses()));
+		assertEquals("132", casePerson2.getAddress().getHouseNumber());
+
+		assertTrue(casePerson3.getAddress().checkIsEmptyLocation());
+		assertEquals(1, casePerson3.getAddresses().size());
+		assertEquals("133", casePerson3.getAddresses().get(0).getHouseNumber());
+	}
+
 	public static class CaseImporterExtension extends CaseImporter {
 
-		public StringBuilder stringBuilder = new StringBuilder("");
+		public StringBuilder stringBuilder = new StringBuilder();
 		private StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
 
 		public CaseImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) throws IOException {

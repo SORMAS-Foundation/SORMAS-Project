@@ -34,6 +34,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -88,6 +90,10 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 	@EJB
 	private FacilityService facilityService;
 
+	@EJB
+	private DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
+	@EJB
+	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private RegionFacadeEjbLocal regionFacade;
 	@EJB
@@ -152,7 +158,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			if (rowGrouping != null) {
 				allRowKeys = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(rowGrouping, rowSubGrouping);
 				if (allRowKeys == null) {
-					allRowKeys = StatisticsHelper.getAttributeGroupingKeys(rowGrouping, rowSubGrouping);
+					allRowKeys = StatisticsHelper.getAttributeGroupingKeys(rowGrouping, rowSubGrouping, diseaseConfigurationFacade, caseFacade, regionFacade, districtFacade);
 				}
 			} else {
 				allRowKeys = Arrays.asList((StatisticsGroupingKey) null);
@@ -161,7 +167,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			if (columnGrouping != null) {
 				allColumnKeys = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(columnGrouping, columnSubGrouping);
 				if (allColumnKeys == null) {
-					allColumnKeys = StatisticsHelper.getAttributeGroupingKeys(columnGrouping, columnSubGrouping);
+					allColumnKeys = StatisticsHelper.getAttributeGroupingKeys(columnGrouping, columnSubGrouping, diseaseConfigurationFacade, caseFacade, regionFacade, districtFacade);
 				}
 			} else {
 				allColumnKeys = Arrays.asList((StatisticsGroupingKey) null);

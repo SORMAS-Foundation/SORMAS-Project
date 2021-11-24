@@ -242,6 +242,7 @@ public class CaseController {
 			} else {
 				CaseDataDto selectedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(uuid);
 				selectedCase.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
+				selectedCase.setVaccinationStatus(contact.getVaccinationStatus());
 				FacadeProvider.getCaseFacade().saveCase(selectedCase);
 
 				ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
@@ -649,6 +650,7 @@ public class CaseController {
 
 					transferDataToPerson(createForm, person);
 					FacadeProvider.getPersonFacade().savePerson(person);
+					dto.setVaccinationStatus(convertedContact.getVaccinationStatus());
 
 					saveCase(dto);
 					// retrieve the contact just in case it has been changed during case saving
@@ -667,6 +669,7 @@ public class CaseController {
 					selectOrCreateCase(dto, convertedEventParticipant.getPerson(), uuid -> {
 						if (uuid == null) {
 							dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
+							dto.setVaccinationStatus(convertedEventParticipant.getVaccinationStatus());
 							saveCase(dto);
 							// retrieve the event participant just in case it has been changed during case saving
 							EventParticipantDto updatedEventParticipant =

@@ -314,10 +314,10 @@ public class WebDriverHelpers {
                   .that(baseSteps.getDriver().findElement(selector).isDisplayed())
                   .isTrue(),
           seconds);
+      return true;
     } catch (Throwable ignored) {
       return false;
     }
-    return true;
   }
 
   public void clickOnWebElementWhichMayNotBePresent(final By byObject, final int index) {
@@ -338,11 +338,9 @@ public class WebDriverHelpers {
     waitUntilIdentifiedElementIsPresent(selector);
     try {
       if (selector instanceof WebElement) {
-        log.info("Scrolling to element: {}", selector);
         javascriptExecutor.executeScript(SCROLL_TO_WEB_ELEMENT_SCRIPT, selector);
       } else {
         waitUntilIdentifiedElementIsPresent(selector);
-        log.info("Scrolling to element: {}", selector);
         javascriptExecutor.executeScript(
             SCROLL_TO_WEB_ELEMENT_SCRIPT, baseSteps.getDriver().findElement((By) selector));
       }
@@ -533,19 +531,25 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilIdentifiedElementIsPresent(final Object selector) {
-    if (selector instanceof WebElement) {
-      WebElement element = (WebElement) selector;
-      assertHelpers.assertWithPoll20Second(
-          () ->
-              assertWithMessage("Webelement: %s is not displayed within 20s", element)
-                  .that(element.isDisplayed())
-                  .isTrue());
-    } else {
-      assertHelpers.assertWithPoll20Second(
-          () ->
-              assertWithMessage("Locator: %s is not displayed within 20s", selector)
-                  .that(getNumberOfElements((By) selector) > 0)
-                  .isTrue());
+    try {
+      if (selector instanceof WebElement) {
+        WebElement element = (WebElement) selector;
+        assertHelpers.assertWithPoll20Second(
+            () ->
+                assertWithMessage("Webelement: %s is not displayed within 20s", element)
+                    .that(element.isDisplayed())
+                    .isTrue());
+      } else {
+        assertHelpers.assertWithPoll20Second(
+            () ->
+                assertWithMessage("Locator: %s is not displayed within 20s", selector)
+                    .that(getNumberOfElements((By) selector) > 0)
+                    .isTrue());
+      }
+    } catch (StaleElementReferenceException staleEx) {
+      log.warn("StaleElement found at: {}", selector);
+      log.info("Performing again wait until element is present action");
+      waitUntilIdentifiedElementIsPresent(selector);
     }
   }
 
@@ -632,7 +636,7 @@ public class WebDriverHelpers {
     waitUntilIdentifiedElementIsPresent(header);
     scrollToElement(header);
     String style = getAttributeFromWebElement(header, "style");
-    By selector = By.cssSelector("td[style*='" + style.substring(style.length() - 17) + "']");
+    By selector = By.cssSelector("[style*='" + style.substring(style.length() - 17) + "']");
     waitUntilIdentifiedElementIsPresent(selector);
     return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
   }
@@ -665,9 +669,9 @@ public class WebDriverHelpers {
   }
 
   public void waitForPageLoadingSpinnerToDisappear(int maxWaitingTime) {
+    By loadingSpinner =
+        By.xpath("//div[@class='v-loading-indicator third v-loading-indicator-wait']");
     try {
-      By loadingSpinner =
-          By.xpath("//div[@class='v-loading-indicator third v-loading-indicator-wait']");
       if (isElementVisibleWithTimeout(loadingSpinner, 3))
         assertHelpers.assertWithPoll(
             () ->
@@ -675,8 +679,9 @@ public class WebDriverHelpers {
                     .contains("display: none"),
             maxWaitingTime);
     } catch (Throwable ignored) {
-      throw new TimeoutException(
-          String.format("Loading spinner didn't disappeared after %s seconds", maxWaitingTime));
+      if (!getAttributeFromWebElement(loadingSpinner, "style").contains("display: none"))
+        throw new TimeoutException(
+            String.format("Loading spinner didn't disappeared after %s seconds", maxWaitingTime));
     }
   }
 

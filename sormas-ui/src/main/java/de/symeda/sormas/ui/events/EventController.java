@@ -489,6 +489,7 @@ public class EventController {
 			EventParticipantDto eventParticipant =
 				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
 			eventParticipant.setResultingCase(caseRef);
+			eventParticipant.setVaccinationStatus(caseDataDto.getVaccinationStatus());
 			FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
 			Notification notification =
 				new Notification(I18nProperties.getString(Strings.messagePersonAlreadyEventParticipant), "", Type.HUMANIZED_MESSAGE);
@@ -503,6 +504,7 @@ public class EventController {
 		final PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
 		final EventParticipantDto eventParticipantDto =
 			new EventParticipantDto().buildFromCase(caseRef, personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
+		eventParticipantDto.setVaccinationStatus(caseDataDto.getVaccinationStatus());
 		ControllerProvider.getEventParticipantController().createEventParticipant(eventReferenceDto, r -> {
 		}, eventParticipantDto);
 		return false;
