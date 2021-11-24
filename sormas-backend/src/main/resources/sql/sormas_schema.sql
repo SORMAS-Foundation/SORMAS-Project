@@ -8884,4 +8884,10 @@ DROP TABLE IF EXISTS epidatatravel_history;
 
 INSERT INTO schema_version (version_number, comment) VALUES (429, 'Drop unused epi data columns and tables #7301');
 
+-- 2021-11-04 [DEMIS2SORMAS] Handle New Profile: DiagnosticReport.conclusionCode #5159
+ALTER TABLE labmessage ADD COLUMN sampleoveralltestresult varchar(255);
+ALTER TABLE labmessage_history ADD COLUMN sampleoveralltestresult varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (430, '[DEMIS2SORMAS] Handle New Profile: DiagnosticReport.conclusionCode #5159');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
