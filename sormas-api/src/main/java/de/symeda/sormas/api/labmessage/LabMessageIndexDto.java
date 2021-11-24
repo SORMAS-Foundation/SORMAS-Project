@@ -15,6 +15,7 @@ public class LabMessageIndexDto implements Serializable {
 	public static final String TEST_LAB_NAME = "labName";
 	public static final String TEST_LAB_POSTAL_CODE = "labPostalCode";
 	public static final String TESTED_DISEASE = "testedDisease";
+	public static final String SAMPLE_OVERALL_TEST_RESULT = "sampleOverallTestResult";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
@@ -26,6 +27,7 @@ public class LabMessageIndexDto implements Serializable {
 	private String labName;
 	private String labPostalCode;
 	private Disease testedDisease;
+	private PathogenTestResultType sampleOverallTestResult;
 	private String personFirstName;
 	private String personLastName;
 	private String personPostalCode;
@@ -37,6 +39,7 @@ public class LabMessageIndexDto implements Serializable {
 		String labName,
 		String labPostalCode,
 		Disease testedDisease,
+		PathogenTestResultType sampleOverallTestResult,
 		String personFirstName,
 		String personLastName,
 		String personPostalCode,
@@ -47,6 +50,7 @@ public class LabMessageIndexDto implements Serializable {
 		this.labName = labName;
 		this.labPostalCode = labPostalCode;
 		this.testedDisease = testedDisease;
+		this.sampleOverallTestResult = sampleOverallTestResult;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
 		this.personPostalCode = personPostalCode;
@@ -91,6 +95,14 @@ public class LabMessageIndexDto implements Serializable {
 
 	public void setTestedDisease(Disease testedDisease) {
 		this.testedDisease = testedDisease;
+	}
+
+	public PathogenTestResultType getSampleOverallTestResult() {
+		return sampleOverallTestResult;
+	}
+
+	public void setSampleOverallTestResult(PathogenTestResultType sampleOverallTestResult) {
+		this.sampleOverallTestResult = sampleOverallTestResult;
 	}
 
 	public String getPersonFirstName() {
