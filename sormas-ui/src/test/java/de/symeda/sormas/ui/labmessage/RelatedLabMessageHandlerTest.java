@@ -282,11 +282,41 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void test_getRelatedEntities_pathogenTestMismatch() {
+
+		SampleDto sample = createProcessedLabMessage();
+		creator.createPathogenTest(sample.toReference(), userRef, (t) -> {
+			t.setExternalId("external");
+		});
+		creator.createPathogenTest(sample.toReference(), userRef, (t) -> {
+			t.setExternalId("external");
+		});
+
+		LabMessageDto labMessageToProcess = LabMessageDto.build();
+		labMessageToProcess.setReportId(reportId);
+		labMessageToProcess.setLabSampleId(labSampleId);
+
+		TestReportDto testReport1 = TestReportDto.build();
+		testReport1.setExternalId("external");
+
+		labMessageToProcess.setTestReports(Collections.singletonList(testReport1));
+
+		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessageToProcess);
+		assertThat(relatedEntities.getUnmatchedTestReports(), hasSize(1));
+		assertThat(relatedEntities.getUnmatchedTestReports().get(0).getUuid(), equalTo(testReport1.getUuid()));
+		assertThat(relatedEntities.isPathogenTestMisMatch(), is(true));
+	}
+
+	@Test
 	public void test_getRelatedEntities_unmatchedTestReports() {
 
 		SampleDto sample = createProcessedLabMessage();
 		PathogenTestDto pathogenTest = creator.createPathogenTest(sample.toReference(), userRef, (t) -> {
 			t.setExternalId(null);
+		});
+
+		creator.createPathogenTest(sample.toReference(), userRef, (t) -> {
+			t.setExternalId("external");
 		});
 
 		LabMessageDto labMessageToProcess = LabMessageDto.build();
@@ -305,7 +335,6 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		assertThat(relatedEntities.getUnmatchedTestReports(), hasSize(2));
 		assertThat(relatedEntities.getUnmatchedTestReports().get(0).getExternalId(), equalTo("external2"));
 		assertThat(relatedEntities.getUnmatchedTestReports().get(1).getUuid(), equalTo(testReport2.getUuid()));
-		assertThat(relatedEntities.getUnmatchedPathogenTests().get(0).getUuid(), equalTo(pathogenTest.getUuid()));
 	}
 
 	@Test
@@ -363,7 +392,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
-		assertThat(result, is(HandlerResult.NOT_HANDLED));
+		assertThat(result, is(HandlerResult.CONTINUE));
 
 		Mockito.verify(personChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());

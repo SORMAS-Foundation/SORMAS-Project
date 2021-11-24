@@ -118,8 +118,8 @@ public class RelatedLabMessageHandler {
 		Supplier<CompletionStage<Boolean>> correctionFlowConfirmationSupplier = createCachedCorrectionFlowConfirmationSupplier();
 
 		CompletionStage<HandlerResult> correctionFlow = CompletableFuture.completedFuture(HandlerResult.NOT_HANDLED);
-		// do correction only if there are related lab messages already processed and no unmatched pathogen tests were found
-		if (relatedEntities.relatedLabMessagesFound && relatedEntities.unmatchedPathogenTests.isEmpty()) {
+
+		if (relatedEntities.relatedLabMessagesFound && !relatedEntities.pathogenTestMisMatch) {
 			correctionFlow = correctionFlow
 				.thenCompose(
 					result -> handlePersonCorrection(
@@ -341,32 +341,32 @@ public class RelatedLabMessageHandler {
 
 		List<PathogenTestDto> relatedPathogenTests = new ArrayList<>();
 		List<TestReportDto> unmatchedTestReports = new ArrayList<>();
+		boolean pathogenTestMisMatch = false;
 
 		List<TestReportDto> testReports = labMessage.getTestReports();
 		List<PathogenTestDto> samplePathogenTests = FacadeProvider.getPathogenTestFacade().getAllBySample(relatedSample.toReference());
 
-		testReports.stream().forEach(testReport -> {
+		for (TestReportDto testReport : testReports) {
 			List<PathogenTestDto> matchedPathogenTests = StringUtils.isBlank(testReport.getExternalId())
 				? Collections.emptyList()
 				: samplePathogenTests.stream().filter(pt -> matchPathogenTest(testReport, pt)).collect(Collectors.toList());
 
-			if (matchedPathogenTests.size() == 1) {
+			if (matchedPathogenTests.isEmpty()) {
+				unmatchedTestReports.add(testReport);
+			} else if (matchedPathogenTests.size() == 1) {
 				relatedPathogenTests.add(matchedPathogenTests.get(0));
 			} else {
 				unmatchedTestReports.add(testReport);
+				pathogenTestMisMatch = true;
 			}
-		});
-
-		List<PathogenTestDto> unmatchedPathogenTests = samplePathogenTests.stream()
-			.filter(pt -> relatedPathogenTests.stream().noneMatch(rpt -> DataHelper.isSame(pt, rpt)))
-			.collect(Collectors.toList());
+		}
 
 		return new RelatedEntities(
 			relatedSample,
 			relatedPerson,
 			relatedPathogenTests,
 			unmatchedTestReports,
-			unmatchedPathogenTests,
+			pathogenTestMisMatch,
 			CollectionUtils.isNotEmpty(relatedLabMessages));
 	}
 
@@ -386,20 +386,20 @@ public class RelatedLabMessageHandler {
 
 		private final boolean relatedLabMessagesFound;
 
-		private final List<PathogenTestDto> unmatchedPathogenTests;
+		private final boolean pathogenTestMisMatch;
 
 		public RelatedEntities(
 			SampleDto sample,
 			PersonDto person,
 			List<PathogenTestDto> pathogenTests,
 			List<TestReportDto> unmatchedTestReports,
-			List<PathogenTestDto> unmatchedPathogenTests,
+			boolean pathogenTestMisMatch,
 			boolean relatedLabMessagesFound) {
 			this.sample = sample;
 			this.person = person;
 			this.pathogenTests = pathogenTests;
 			this.unmatchedTestReports = unmatchedTestReports;
-			this.unmatchedPathogenTests = unmatchedPathogenTests;
+			this.pathogenTestMisMatch = pathogenTestMisMatch;
 			this.relatedLabMessagesFound = relatedLabMessagesFound;
 		}
 
@@ -419,8 +419,8 @@ public class RelatedLabMessageHandler {
 			return unmatchedTestReports;
 		}
 
-		public List<PathogenTestDto> getUnmatchedPathogenTests() {
-			return unmatchedPathogenTests;
+		public boolean isPathogenTestMisMatch() {
+			return pathogenTestMisMatch;
 		}
 
 		public boolean isRelatedLabMessagesFound() {
