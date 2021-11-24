@@ -902,6 +902,7 @@ public class LabMessageController {
 		target.setTypingId(source.getTypingId());
 		target.setExternalId(source.getExternalId());
 		target.setExternalOrderId(source.getExternalOrderId());
+		target.setPreliminary(source.getPreliminary());
 	}
 
 	private void showFormWithLabMessage(

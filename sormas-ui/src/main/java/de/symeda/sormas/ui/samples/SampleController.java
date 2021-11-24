@@ -328,7 +328,7 @@ public class SampleController {
 
 	/**
 	 * Initialize 'Refer to another laboratory' button or link to referred sample
-	 * 
+	 *
 	 * @param editForm
 	 *            the edit form to attach the 'Refer to another laboratory' button to.
 	 * @param disease
@@ -389,7 +389,7 @@ public class SampleController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param editForm
 	 *            the edit form to attach the 'Referred from' button to.
 	 * @param navigation
