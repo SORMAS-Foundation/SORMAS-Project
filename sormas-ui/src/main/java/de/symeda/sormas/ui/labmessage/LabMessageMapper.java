@@ -103,15 +103,18 @@ public class LabMessageMapper {
 						Mapping.of(sample::setLabSampleID, sample.getLabSampleID(), labMessage.getLabSampleId(), SampleDto.LAB_SAMPLE_ID))));
 		}
 
-		if (homogenousTestResultTypesIn(labMessage)) {
+		PathogenTestResultType pathogenTestResult = null;
+		if (labMessage.getSampleOverallTestResult() != null) {
+			pathogenTestResult = labMessage.getSampleOverallTestResult();
+		} else if (homogenousTestResultTypesIn(labMessage)) {
+			pathogenTestResult = labMessage.getTestReports().get(0).getTestResult();
+		}
+		if (pathogenTestResult != null) {
 			changedFields.addAll(
 				map(
 					Stream.of(
-						Mapping.of(
-							sample::setPathogenTestResult,
-							sample.getPathogenTestResult(),
-							labMessage.getTestReports().get(0).getTestResult(),
-							SampleDto.PATHOGEN_TEST_RESULT))));
+						Mapping
+							.of(sample::setPathogenTestResult, sample.getPathogenTestResult(), pathogenTestResult, SampleDto.PATHOGEN_TEST_RESULT))));
 		}
 
 		return changedFields;
@@ -146,8 +149,12 @@ public class LabMessageMapper {
 					PathogenTestDto.EXTERNAL_ORDER_ID),
 				Mapping
 					.of(pathogenTest::setLab, pathogenTest.getLab(), getLabReference(sourceTestReport.getTestLabExternalId()), PathogenTestDto.LAB),
-				Mapping
-					.of(pathogenTest::setLabDetails, pathogenTest.getLabDetails(), sourceTestReport.getTestLabName(), PathogenTestDto.LAB_DETAILS)));
+				Mapping.of(pathogenTest::setLabDetails, pathogenTest.getLabDetails(), sourceTestReport.getTestLabName(), PathogenTestDto.LAB_DETAILS),
+				Mapping.of(
+					pathogenTest::setPreliminary,
+					pathogenTest.getPreliminary(),
+					sourceTestReport.getPreliminary(),
+					PathogenTestDto.PRELIMINARY)));
 	}
 
 	private List<String[]> map(Stream<Mapping<?>> mappings) {

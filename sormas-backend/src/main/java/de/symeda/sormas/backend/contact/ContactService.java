@@ -1359,7 +1359,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Root<Contact> root = cq.from(Contact.class);
 		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new ContactQueryContext(cb, cq, root), user)));
 		cq.where(cb.equal(root.get(Contact.UUID), contact.getUuid()));
-		return em.createQuery(cq).getSingleResult();
+		return em.createQuery(cq).getResultStream().anyMatch(isInJurisdiction -> isInJurisdiction);
 	}
 
 	public ContactJurisdictionFlagsDto inJurisdictionOrOwned(Contact contact) {

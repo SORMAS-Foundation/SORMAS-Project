@@ -80,7 +80,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			fluidRowLocs(PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.LAB) +
 			fluidRowLocs("", PathogenTestDto.LAB_DETAILS) +
 			fluidRowLocs(PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED) +
-			fluidRowLocs(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") + 
+			fluidRowLocs(PathogenTestDto.PRELIMINARY, "") +
+			fluidRowLocs(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") +
 			fluidRowLocs(PathogenTestDto.SEROTYPE, "") + 
 			fluidRowLocs(PathogenTestDto.CQ_VALUE, "") + 
 			fluidRowLocs(PathogenTestDto.TEST_RESULT_TEXT);
@@ -167,7 +168,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		CssStyles.style(fourFoldIncrease, VSPACE_3, VSPACE_TOP_4);
 		fourFoldIncrease.setVisible(false);
 		fourFoldIncrease.setEnabled(false);
+
 		addField(PathogenTestDto.TEST_RESULT_TEXT, TextArea.class).setRows(6);
+		addField(PathogenTestDto.PRELIMINARY).addStyleName(CssStyles.VSPACE_4);
 
 		initializeAccessAndAllowedAccesses();
 		initializeVisibilitiesAndAllowedVisibilities();

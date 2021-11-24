@@ -94,7 +94,7 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 			LabMessageIndexDto.TEST_LAB_NAME,
 			LabMessageIndexDto.TEST_LAB_POSTAL_CODE,
 			LabMessageIndexDto.TESTED_DISEASE,
-//			LabMessageIndexDto.TEST_RESULT,
+			LabMessageIndexDto.SAMPLE_OVERALL_TEST_RESULT,
 			LabMessageIndexDto.PERSON_FIRST_NAME,
 			LabMessageIndexDto.PERSON_LAST_NAME,
 			LabMessageIndexDto.PERSON_POSTAL_CODE,
