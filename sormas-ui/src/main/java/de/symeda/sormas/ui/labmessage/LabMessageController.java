@@ -147,7 +147,25 @@ public class LabMessageController {
 
 	public void processLabMessage(String labMessageUuid) {
 		LabMessageDto labMessage = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
-		checkRelatedForwardedMessages(labMessage);
+		checkDisease(labMessage);
+	}
+
+	private void checkDisease(LabMessageDto labMessage) {
+		if (labMessage.getTestedDisease() == null) {
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getCaption(Captions.labMessageNoDisease),
+				new Label(I18nProperties.getString(Strings.messageDiseaseNotSpecifiedInLabMessage)),
+				I18nProperties.getCaption(Captions.actionContinue),
+				I18nProperties.getCaption(Captions.actionCancel),
+				null,
+				yes -> {
+					if (yes) {
+						checkRelatedForwardedMessages(labMessage);
+					}
+				});
+		} else {
+			checkRelatedForwardedMessages(labMessage);
+		}
 
 	}
 
@@ -884,6 +902,7 @@ public class LabMessageController {
 		target.setTypingId(source.getTypingId());
 		target.setExternalId(source.getExternalId());
 		target.setExternalOrderId(source.getExternalOrderId());
+		target.setPreliminary(source.getPreliminary());
 	}
 
 	private void showFormWithLabMessage(

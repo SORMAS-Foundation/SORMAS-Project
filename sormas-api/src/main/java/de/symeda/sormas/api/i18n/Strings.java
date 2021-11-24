@@ -926,6 +926,7 @@ public interface Strings {
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
 	String messageDeleteImmunizationVaccinations = "messageDeleteImmunizationVaccinations";
 	String messageDeletionUnsupportedByExternalJournalWarning = "messageDeletionUnsupportedByExternalJournalWarning";
+	String messageDiseaseNotSpecifiedInLabMessage = "messageDiseaseNotSpecifiedInLabMessage";
 	String messageDistrictArchived = "messageDistrictArchived";
 	String messageDistrictArchivingNotPossible = "messageDistrictArchivingNotPossible";
 	String messageDistrictDearchived = "messageDistrictDearchived";

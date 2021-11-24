@@ -1385,6 +1385,7 @@ public interface Captions {
 	String LabMessage_testedDisease = "LabMessage.testedDisease";
 	String labMessageFetch = "labMessageFetch";
 	String labMessageForwardedMessageFound = "labMessageForwardedMessageFound";
+	String labMessageNoDisease = "labMessageNoDisease";
 	String labMessageNoNewMessages = "labMessageNoNewMessages";
 	String labMessageProcess = "labMessageProcess";
 	String labMessageRelatedEntriesFound = "labMessageRelatedEntriesFound";
@@ -1513,6 +1514,7 @@ public interface Captions {
 	String PathogenTest_lab = "PathogenTest.lab";
 	String PathogenTest_labDetails = "PathogenTest.labDetails";
 	String PathogenTest_pcrTestSpecification = "PathogenTest.pcrTestSpecification";
+	String PathogenTest_preliminary = "PathogenTest.preliminary";
 	String PathogenTest_reportDate = "PathogenTest.reportDate";
 	String PathogenTest_serotype = "PathogenTest.serotype";
 	String PathogenTest_testDateTime = "PathogenTest.testDateTime";
