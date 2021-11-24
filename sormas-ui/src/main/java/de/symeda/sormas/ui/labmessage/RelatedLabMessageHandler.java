@@ -166,7 +166,7 @@ public class RelatedLabMessageHandler {
 					.thenCompose((doPostProcess) -> CompletableFuture.completedFuture(CorrectionResult.of(result, doPostProcess)));
 			}
 
-			// if not corrections found, then continue
+			// if no corrections found, then continue
 			return CompletableFuture.completedFuture(CorrectionResult.of(result, true));
 		})
 			// check for shortcut

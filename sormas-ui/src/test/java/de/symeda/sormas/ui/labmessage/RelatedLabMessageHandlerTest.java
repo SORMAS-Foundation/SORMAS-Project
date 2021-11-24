@@ -950,6 +950,24 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		Mockito.verify(sampleChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 	}
 
+	@Test()
+	public void test_handle_doneAfterCorrection() throws ExecutionException, InterruptedException {
+
+		createProcessedLabMessage();
+
+		LabMessageDto labMessageToProcess = LabMessageDto.build();
+		labMessageToProcess.setReportId(reportId);
+		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.setPersonFirstName("Updated");
+
+		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(false)).when(continueProcessingConfirmation).apply(Mockito.any());
+
+		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
+
+		assertThat(result, is(HandlerResult.HANDLED));
+		Mockito.verify(shortcutHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any());
+	}
+
 	private SampleDto createProcessedLabMessage() {
 		CaseReferenceDto cazeRef = creator
 			.createCase(userRef, person.toReference(), Disease.CORONAVIRUS, CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), rdcf)
