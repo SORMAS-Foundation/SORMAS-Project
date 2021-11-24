@@ -64,7 +64,8 @@ public class RelatedLabMessageHandler {
 		NOT_HANDLED,
 		HANDLED,
 		CANCELED,
-		CANCELED_WITH_UPDATES
+		CANCELED_WITH_UPDATES,
+		CONTINUE
 	}
 
 	public interface RelatedLabMessageHandlerChain {
@@ -177,7 +178,7 @@ public class RelatedLabMessageHandler {
 								.thenCompose(handled -> CompletableFuture.completedFuture(HandlerResult.HANDLED));
 						}
 
-						return CompletableFuture.completedFuture(correctionResult.result);
+						return CompletableFuture.completedFuture(HandlerResult.CONTINUE);
 					});
 				}
 

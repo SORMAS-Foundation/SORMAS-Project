@@ -210,7 +210,7 @@ public class LabMessageController {
 				throw (RuntimeException) e;
 			}
 
-			if (result == HandlerResult.NOT_HANDLED) {
+			if (result == HandlerResult.NOT_HANDLED || result == HandlerResult.CONTINUE) {
 				pickOrCreatePerson(labMessage);
 			} else if (result == HandlerResult.CANCELED_WITH_UPDATES) {
 				showCorrectionsSavedPopup();
@@ -1160,13 +1160,23 @@ public class LabMessageController {
 			window.close();
 		});
 		correctionPanel.setDiscardListener(() -> {
-			chain.next(false);
-			window.close();
+			if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
+				showAlreadyProcessedPopup(null, false);
+				correctionPanel.disableContinueButtons();
+			} else {
+				chain.next(false);
+				window.close();
+			}
 		});
 		correctionPanel.setCommitListener((updated) -> {
-			save.accept(updated);
-			chain.next(true);
-			window.close();
+			if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
+				showAlreadyProcessedPopup(null, false);
+				correctionPanel.disableContinueButtons();
+			} else {
+				save.accept(updated);
+				chain.next(true);
+				window.close();
+			}
 		});
 		window.addCloseListener(e -> {
 			if (!chain.done()) {
@@ -1194,7 +1204,7 @@ public class LabMessageController {
 	}
 
 	private void showCreatePathogenTestWindow(
-		LabMessageDto labMessageDto,
+		LabMessageDto labMessage,
 		TestReportDto testReport,
 		SampleDto sample,
 		RelatedLabMessageHandlerChain chain) {
@@ -1205,18 +1215,22 @@ public class LabMessageController {
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
 			ControllerProvider.getPathogenTestController().getPathogenTestCreateComponent(sample, caseSampleCount, () -> {
 			}, (savedPathogenTest, callback) -> {
-				chain.next(false);
+				chain.next(true);
 				window.close();
 			});
-		pathogenTestCreateComponent.getWrappedComponent().setValue(buildPathogenTest(testReport, labMessageDto, sample));
-		ControllerProvider.getSampleController().setViaLimsFieldChecked(pathogenTestCreateComponent.getWrappedComponent());
-
-		Button cancelButton = LabMessageUiHelper.addCancelAndUpdateLabels(pathogenTestCreateComponent, Captions.actionDiscardAndContinue);
 
 		pathogenTestCreateComponent.addDiscardListener(() -> {
-			chain.next(true);
-			window.close();
+			if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
+				showAlreadyProcessedPopup(null, false);
+				pathogenTestCreateComponent.getCommitButton().setEnabled(false);
+				pathogenTestCreateComponent.getDiscardButton().setEnabled(false);
+			} else {
+				chain.next(true);
+				window.close();
+			}
 		});
+
+		Button cancelButton = LabMessageUiHelper.addCancelAndUpdateLabels(pathogenTestCreateComponent, Captions.actionDiscardAndContinue);
 		cancelButton.addClickListener(e -> {
 			chain.cancel();
 			window.close();
@@ -1228,12 +1242,24 @@ public class LabMessageController {
 			}
 		});
 
+		pathogenTestCreateComponent.getWrappedComponent().setValue(buildPathogenTest(testReport, labMessage, sample));
+		ControllerProvider.getSampleController().setViaLimsFieldChecked(pathogenTestCreateComponent.getWrappedComponent());
+
 		showFormWithLabMessage(
-			labMessageDto,
+			labMessage,
 			pathogenTestCreateComponent,
 			window,
 			I18nProperties.getString(Strings.headingCreatePathogenTestResult),
 			false);
+
+		pathogenTestCreateComponent.setPrimaryCommitListener(() -> {
+			if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
+				pathogenTestCreateComponent.getCommitButton().setEnabled(false);
+				pathogenTestCreateComponent.getDiscardButton().setEnabled(false);
+				showAlreadyProcessedPopup(pathogenTestCreateComponent.getWrappedComponent(), false);
+				throw new CannotProceedException("The lab message was processed in the meantime");
+			}
+		});
 	}
 
 	private CompletionStage<Boolean> confirmContinueProcessing(LabMessageDto labMessageDto) {

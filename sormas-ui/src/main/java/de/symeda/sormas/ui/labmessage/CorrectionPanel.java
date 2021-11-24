@@ -148,4 +148,9 @@ public class CorrectionPanel<T> extends HorizontalLayout {
 			listener.accept(commitDiscardForm.getWrappedComponent().getValue());
 		});
 	}
+
+	public void disableContinueButtons() {
+		commitDiscardForm.getCommitButton().setEnabled(false);
+		commitDiscardForm.getDiscardButton().setEnabled(false);
+	}
 }
