@@ -75,6 +75,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTypingId(source.getTypingId());
 		target.setExternalId(source.getExternalId());
 		target.setExternalOrderId(source.getExternalOrderId());
+		target.setPreliminary(source.getPreliminary());
 
 		return target;
 	}
@@ -95,6 +96,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTypingId(source.getTypingId());
 		target.setExternalId(source.getExternalId());
 		target.setExternalOrderId(source.getExternalOrderId());
+		target.setPreliminary(source.getPreliminary());
 
 		return target;
 	}

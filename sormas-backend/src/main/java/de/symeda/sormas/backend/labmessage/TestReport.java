@@ -56,6 +56,7 @@ public class TestReport extends CoreAdo {
 	private String typingId;
 	private String externalId;
 	private String externalOrderId;
+	private Boolean preliminary;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
@@ -172,5 +173,14 @@ public class TestReport extends CoreAdo {
 
 	public void setExternalOrderId(String externalOrderId) {
 		this.externalOrderId = externalOrderId;
+	}
+
+	@Column
+	public Boolean getPreliminary() {
+		return preliminary;
+	}
+
+	public void setPreliminary(Boolean preliminary) {
+		this.preliminary = preliminary;
 	}
 }
