@@ -5911,34 +5911,6 @@ UPDATE exposures SET watersource = epidata.watersource, watersourcedetails = epi
 UPDATE exposures SET description = 'Automatic epi data migration based on selected kinds of exposure. This exposure may be merged with another exposure of the activity type Animal Contact.' WHERE exposuretype = 'ANIMAL_CONTACT' AND typeofanimal IS NULL;
 
 UPDATE epidata SET contactwithsourcecaseknown = 'YES' WHERE directcontactconfirmedcase = 'YES' OR directcontactprobablecase = 'YES' OR closecontactprobablecase = 'YES' OR contactwithsourcerespiratorycase = 'YES';
-
--- TODO - Add this to a future version after the migration has been done on a production system;
-/*ALTER TABLE epidata DROP COLUMN rodents, DROP COLUMN bats, DROP COLUMN primates, DROP COLUMN swine, DROP COLUMN birds, DROP COLUMN eatingrawanimals, DROP COLUMN sickdeadanimals,
-    DROP COLUMN sickdeadanimalsdetails, DROP COLUMN sickdeadanimalsdate, DROP COLUMN sickdeadanimalslocation, DROP COLUMN cattle, DROP COLUMN otheranimals, DROP COLUMN otheranimalsdetails,
-    DROP COLUMN watersource, DROP COLUMN watersourceother, DROP COLUMN waterbody, DROP COLUMN waterbodydetails, DROP COLUMN tickbite, DROP COLUMN burialattended, DROP COLUMN gatheringattended,
-    DROP COLUMN traveled, DROP COLUMN dateoflastexposure, DROP COLUMN placeoflastexposure, DROP COLUMN animalcondition, DROP COLUMN fleabite, DROP COLUMN directcontactconfirmedcase,
-    DROP COLUMN directcontactprobablecase, DROP COLUMN closecontactprobablecase, DROP COLUMN areaconfirmedcases, DROP COLUMN processingconfirmedcasefluidunsafe, DROP COLUMN percutaneouscaseblood,
-    DROP COLUMN directcontactdeadunsafe, DROP COLUMN processingsuspectedcasesampleunsafe, DROP COLUMN eatingrawanimalsininfectedarea, DROP COLUMN eatingrawanimalsdetails,
-    DROP COLUMN kindofexposurebite, DROP COLUMN kindofexposuretouch, DROP COLUMN kindofexposurescratch, DROP COLUMN kindofexposurelick, DROP COLUMN kindofexposureother,
-    DROP COLUMN kindofexposuredetails, DROP COLUMN animalvaccinationstatus, DROP COLUMN dogs, DROP COLUMN cats, DROP COLUMN canidae, DROP COLUMN rabbits, DROP COLUMN prophylaxisstatus,
-    DROP COLUMN dateofprophylaxis, DROP COLUMN visitedhealthfacility, DROP COLUMN contactwithsourcerespiratorycase, DROP COLUMN visitedanimalmarket, DROP COLUMN camels, DROP COLUMN snakes;*/
-/*ALTER TABLE epidata_history DROP COLUMN rodents, DROP COLUMN bats, DROP COLUMN primates, DROP COLUMN swine, DROP COLUMN birds, DROP COLUMN eatingrawanimals, DROP COLUMN sickdeadanimals,
-    DROP COLUMN sickdeadanimalsdetails, DROP COLUMN sickdeadanimalsdate, DROP COLUMN sickdeadanimalslocation, DROP COLUMN cattle, DROP COLUMN otheranimals, DROP COLUMN otheranimalsdetails,
-    DROP COLUMN watersource, DROP COLUMN watersourceother, DROP COLUMN waterbody, DROP COLUMN waterbodydetails, DROP COLUMN tickbite, DROP COLUMN burialattended, DROP COLUMN gatheringattended,
-    DROP COLUMN traveled, DROP COLUMN dateoflastexposure, DROP COLUMN placeoflastexposure, DROP COLUMN animalcondition, DROP COLUMN fleabite, DROP COLUMN directcontactconfirmedcase,
-    DROP COLUMN directcontactprobablecase, DROP COLUMN closecontactprobablecase, DROP COLUMN areaconfirmedcases, DROP COLUMN processingconfirmedcasefluidunsafe, DROP COLUMN percutaneouscaseblood,
-    DROP COLUMN directcontactdeadunsafe, DROP COLUMN processingsuspectedcasesampleunsafe, DROP COLUMN eatingrawanimalsininfectedarea, DROP COLUMN eatingrawanimalsdetails,
-    DROP COLUMN kindofexposurebite, DROP COLUMN kindofexposuretouch, DROP COLUMN kindofexposurescratch, DROP COLUMN kindofexposurelick, DROP COLUMN kindofexposureother,
-    DROP COLUMN kindofexposuredetails, DROP COLUMN animalvaccinationstatus, DROP COLUMN dogs, DROP COLUMN cats, DROP COLUMN canidae, DROP COLUMN rabbits, DROP COLUMN prophylaxisstatus,
-    DROP COLUMN dateofprophylaxis, DROP COLUMN visitedhealthfacility, DROP COLUMN contactwithsourcerespiratorycase, DROP COLUMN visitedanimalmarket, DROP COLUMN camels, DROP COLUMN snakes;
-
-DROP TABLE epidataburial;
-DROP TABLE epidatagathering;
-DROP TABLE epidatatravel;
-DROP TABLE epidataburial_history;
-DROP TABLE epidatagathering_history;
-DROP TABLE epidatatravel_history;*/
-
 UPDATE epidata SET exposuredetailsknown = 'YES' FROM exposures WHERE (exposuredetailsknown IS NULL OR exposuredetailsknown != 'YES') AND exposures.epidata_id = epidata.id;
 
 UPDATE epidata SET changedate = now();
@@ -8883,10 +8855,39 @@ CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON task_obse
 
 INSERT INTO schema_version (version_number, comment) VALUES (428, 'Add observers to tasks #7021');
 
+-- 2021-11-18 Drop unused epi data columns and tables #7301
+ALTER TABLE epidata DROP COLUMN IF EXISTS rodents, DROP COLUMN IF EXISTS bats, DROP COLUMN IF EXISTS primates, DROP COLUMN IF EXISTS swine, DROP COLUMN IF EXISTS birds, DROP COLUMN IF EXISTS eatingrawanimals, DROP COLUMN IF EXISTS sickdeadanimals,
+                    DROP COLUMN IF EXISTS sickdeadanimalsdetails, DROP COLUMN IF EXISTS sickdeadanimalsdate, DROP COLUMN IF EXISTS sickdeadanimalslocation, DROP COLUMN IF EXISTS cattle, DROP COLUMN IF EXISTS otheranimals, DROP COLUMN IF EXISTS otheranimalsdetails,
+                    DROP COLUMN IF EXISTS watersource, DROP COLUMN IF EXISTS watersourceother, DROP COLUMN IF EXISTS waterbody, DROP COLUMN IF EXISTS waterbodydetails, DROP COLUMN IF EXISTS tickbite, DROP COLUMN IF EXISTS burialattended, DROP COLUMN IF EXISTS gatheringattended,
+                    DROP COLUMN IF EXISTS traveled, DROP COLUMN IF EXISTS dateoflastexposure, DROP COLUMN IF EXISTS placeoflastexposure, DROP COLUMN IF EXISTS animalcondition, DROP COLUMN IF EXISTS fleabite, DROP COLUMN IF EXISTS directcontactconfirmedcase,
+                    DROP COLUMN IF EXISTS directcontactprobablecase, DROP COLUMN IF EXISTS closecontactprobablecase, DROP COLUMN IF EXISTS areaconfirmedcases, DROP COLUMN IF EXISTS processingconfirmedcasefluidunsafe, DROP COLUMN IF EXISTS percutaneouscaseblood,
+                    DROP COLUMN IF EXISTS directcontactdeadunsafe, DROP COLUMN IF EXISTS processingsuspectedcasesampleunsafe, DROP COLUMN IF EXISTS eatingrawanimalsininfectedarea, DROP COLUMN IF EXISTS eatingrawanimalsdetails,
+                    DROP COLUMN IF EXISTS kindofexposurebite, DROP COLUMN IF EXISTS kindofexposuretouch, DROP COLUMN IF EXISTS kindofexposurescratch, DROP COLUMN IF EXISTS kindofexposurelick, DROP COLUMN IF EXISTS kindofexposureother,
+                    DROP COLUMN IF EXISTS kindofexposuredetails, DROP COLUMN IF EXISTS animalvaccinationstatus, DROP COLUMN IF EXISTS dogs, DROP COLUMN IF EXISTS cats, DROP COLUMN IF EXISTS canidae, DROP COLUMN IF EXISTS rabbits, DROP COLUMN IF EXISTS prophylaxisstatus,
+                    DROP COLUMN IF EXISTS dateofprophylaxis, DROP COLUMN IF EXISTS visitedhealthfacility, DROP COLUMN IF EXISTS contactwithsourcerespiratorycase, DROP COLUMN IF EXISTS visitedanimalmarket, DROP COLUMN IF EXISTS camels, DROP COLUMN IF EXISTS snakes;
+ALTER TABLE epidata_history DROP COLUMN IF EXISTS rodents, DROP COLUMN IF EXISTS bats, DROP COLUMN IF EXISTS primates, DROP COLUMN IF EXISTS swine, DROP COLUMN IF EXISTS birds, DROP COLUMN IF EXISTS eatingrawanimals, DROP COLUMN IF EXISTS sickdeadanimals,
+                            DROP COLUMN IF EXISTS sickdeadanimalsdetails, DROP COLUMN IF EXISTS sickdeadanimalsdate, DROP COLUMN IF EXISTS sickdeadanimalslocation, DROP COLUMN IF EXISTS cattle, DROP COLUMN IF EXISTS otheranimals, DROP COLUMN IF EXISTS otheranimalsdetails,
+                            DROP COLUMN IF EXISTS watersource, DROP COLUMN IF EXISTS watersourceother, DROP COLUMN IF EXISTS waterbody, DROP COLUMN IF EXISTS waterbodydetails, DROP COLUMN IF EXISTS tickbite, DROP COLUMN IF EXISTS burialattended, DROP COLUMN IF EXISTS gatheringattended,
+                            DROP COLUMN IF EXISTS traveled, DROP COLUMN IF EXISTS dateoflastexposure, DROP COLUMN IF EXISTS placeoflastexposure, DROP COLUMN IF EXISTS animalcondition, DROP COLUMN IF EXISTS fleabite, DROP COLUMN IF EXISTS directcontactconfirmedcase,
+                            DROP COLUMN IF EXISTS directcontactprobablecase, DROP COLUMN IF EXISTS closecontactprobablecase, DROP COLUMN IF EXISTS areaconfirmedcases, DROP COLUMN IF EXISTS processingconfirmedcasefluidunsafe, DROP COLUMN IF EXISTS percutaneouscaseblood,
+                            DROP COLUMN IF EXISTS directcontactdeadunsafe, DROP COLUMN IF EXISTS processingsuspectedcasesampleunsafe, DROP COLUMN IF EXISTS eatingrawanimalsininfectedarea, DROP COLUMN IF EXISTS eatingrawanimalsdetails,
+                            DROP COLUMN IF EXISTS kindofexposurebite, DROP COLUMN IF EXISTS kindofexposuretouch, DROP COLUMN IF EXISTS kindofexposurescratch, DROP COLUMN IF EXISTS kindofexposurelick, DROP COLUMN IF EXISTS kindofexposureother,
+                            DROP COLUMN IF EXISTS kindofexposuredetails, DROP COLUMN IF EXISTS animalvaccinationstatus, DROP COLUMN IF EXISTS dogs, DROP COLUMN IF EXISTS cats, DROP COLUMN IF EXISTS canidae, DROP COLUMN IF EXISTS rabbits, DROP COLUMN IF EXISTS prophylaxisstatus,
+                            DROP COLUMN IF EXISTS dateofprophylaxis, DROP COLUMN IF EXISTS visitedhealthfacility, DROP COLUMN IF EXISTS contactwithsourcerespiratorycase, DROP COLUMN IF EXISTS visitedanimalmarket, DROP COLUMN IF EXISTS camels, DROP COLUMN IF EXISTS snakes;
+
+DROP TABLE IF EXISTS epidataburial;
+DROP TABLE IF EXISTS epidatagathering;
+DROP TABLE IF EXISTS epidatatravel;
+DROP TABLE IF EXISTS epidataburial_history;
+DROP TABLE IF EXISTS epidatagathering_history;
+DROP TABLE IF EXISTS epidatatravel_history;
+
+INSERT INTO schema_version (version_number, comment) VALUES (429, 'Drop unused epi data columns and tables #7301');
+
 -- 2021-11-04 [DEMIS2SORMAS] Handle New Profile: DiagnosticReport.conclusionCode #5159
 ALTER TABLE labmessage ADD COLUMN sampleoveralltestresult varchar(255);
 ALTER TABLE labmessage_history ADD COLUMN sampleoveralltestresult varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (429, '[DEMIS2SORMAS] Handle New Profile: DiagnosticReport.conclusionCode #5159');
+INSERT INTO schema_version (version_number, comment) VALUES (430, '[DEMIS2SORMAS] Handle New Profile: DiagnosticReport.conclusionCode #5159');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
