@@ -285,19 +285,27 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 	public void test_getRelatedEntities_unmatchedTestReports() {
 
 		SampleDto sample = createProcessedLabMessage();
+		PathogenTestDto pathogenTest = creator.createPathogenTest(sample.toReference(), userRef, (t) -> {
+			t.setExternalId(null);
+		});
 
 		LabMessageDto labMessageToProcess = LabMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
 		labMessageToProcess.setLabSampleId(labSampleId);
 
-		TestReportDto testReport = TestReportDto.build();
-		testReport.setExternalId("external2");
+		TestReportDto testReport1 = TestReportDto.build();
+		testReport1.setExternalId("external2");
 
-		labMessageToProcess.setTestReports(Collections.singletonList(testReport));
+		TestReportDto testReport2 = TestReportDto.build();
+		testReport2.setExternalId(null);
+
+		labMessageToProcess.setTestReports(Arrays.asList(testReport1, testReport2));
 
 		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessageToProcess);
-		assertThat(relatedEntities.getUnmatchedTestReports(), hasSize(1));
+		assertThat(relatedEntities.getUnmatchedTestReports(), hasSize(2));
 		assertThat(relatedEntities.getUnmatchedTestReports().get(0).getExternalId(), equalTo("external2"));
+		assertThat(relatedEntities.getUnmatchedTestReports().get(1).getUuid(), equalTo(testReport2.getUuid()));
+		assertThat(relatedEntities.getUnmatchedPathogenTests().get(0).getUuid(), equalTo(pathogenTest.getUuid()));
 	}
 
 	@Test
@@ -788,6 +796,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		LabMessageDto labMessageToProcess = LabMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
 		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.setPersonFirstName("Updated");
 
 		Mockito.doAnswer(invocation -> {
 			((RelatedLabMessageHandlerChain) invocation.getArgument(4)).cancel();
@@ -809,6 +818,8 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		LabMessageDto labMessageToProcess = LabMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
 		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.setPersonFirstName("Updated");
+		labMessageToProcess.setSampleMaterial(SampleMaterial.RECTAL_SWAB);
 
 		Mockito.doAnswer(invocation -> {
 			((RelatedLabMessageHandlerChain) invocation.getArgument(4)).cancel();
@@ -832,6 +843,8 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		LabMessageDto labMessageToProcess = LabMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
 		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.setPersonFirstName("Updated");
+		labMessageToProcess.setSampleOverallTestResult(PathogenTestResultType.POSITIVE);
 
 		Mockito.doAnswer(invocation -> {
 			((RelatedLabMessageHandlerChain) invocation.getArgument(4)).next(false);
@@ -864,6 +877,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		LabMessageDto labMessageToProcess = LabMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
 		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.setPersonFirstName("Updated");
 
 		Mockito.doAnswer(invocation -> {
 			throw new TestException();
@@ -888,6 +902,8 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		LabMessageDto labMessageToProcess = LabMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
 		labMessageToProcess.setLabSampleId(labSampleId);
+		labMessageToProcess.setPersonFirstName("Updated");
+		labMessageToProcess.setSampleMaterial(SampleMaterial.RECTAL_SWAB);
 
 		Mockito.doAnswer(invocation -> {
 			throw new TestException();

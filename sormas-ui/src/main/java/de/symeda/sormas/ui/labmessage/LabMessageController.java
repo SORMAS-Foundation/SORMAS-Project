@@ -16,7 +16,6 @@ package de.symeda.sormas.ui.labmessage;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -49,7 +48,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -823,17 +821,7 @@ public class LabMessageController {
 
 	private PathogenTestDto buildPathogenTest(TestReportDto testReport, LabMessageDto labMessage, SampleDto sample) {
 		PathogenTestDto pathogenTest = PathogenTestDto.build(sample, UserProvider.getCurrent().getUser());
-		if (testReport != null) {
-			LabMessageMapper.forLabMessage(labMessage).mapToPathogenTest(testReport, pathogenTest);
-		}
-
-		pathogenTest.setTestedDisease(labMessage.getTestedDisease());
-
-		Date reportDate = null;
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			reportDate = labMessage.getMessageDateTime();
-		}
-		pathogenTest.setReportDate(reportDate);
+		LabMessageMapper.forLabMessage(labMessage).mapToPathogenTest(testReport, pathogenTest);
 
 		return pathogenTest;
 	}

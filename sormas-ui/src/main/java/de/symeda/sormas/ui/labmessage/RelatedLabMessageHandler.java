@@ -15,9 +15,8 @@
 
 package de.symeda.sormas.ui.labmessage;
 
-import static de.symeda.sormas.api.utils.DataHelper.Pair.createPair;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
@@ -29,6 +28,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -114,14 +114,7 @@ public class RelatedLabMessageHandler {
 		LabMessageMapper mapper = LabMessageMapper.forLabMessage(labMessage);
 
 		ChainHandler chainHandler = new ChainHandler();
-		final Mutable<CompletionStage<Boolean>> confirmedCorrectionFlow = new MutableObject<>();
-		Supplier<CompletionStage<Boolean>> correctionFlowConfirmationSupplier = () -> {
-			if (confirmedCorrectionFlow.getValue() == null) {
-				confirmedCorrectionFlow.setValue(correctionFlowConfirmation.get());
-			}
-
-			return confirmedCorrectionFlow.getValue();
-		};
+		Supplier<CompletionStage<Boolean>> correctionFlowConfirmationSupplier = createCachedCorrectionFlowConfirmationSupplier();
 
 		CompletionStage<HandlerResult> correctionFlow = CompletableFuture.completedFuture(HandlerResult.NOT_HANDLED);
 		// do correction only if there are related lab messages already processed and no unmatched pathogen tests were found
@@ -178,10 +171,10 @@ public class RelatedLabMessageHandler {
 			// check for shortcut
 			.thenCompose((correctionResult) -> {
 				if (correctionResult.shouldContinue) {
-					return shortcutFlowConfirmation.apply(relatedEntities.relatedLabMessagesFound).thenCompose((confirmed) -> {
+					return shortcutFlowConfirmation.apply(relatedEntities.relatedLabMessagesFound).thenCompose(confirmed -> {
 						if (confirmed) {
 							return chainHandler.run((chain) -> shortcutHandler.handle(labMessage, relatedEntities.sample, chain))
-								.thenCompose((handled) -> CompletableFuture.completedFuture(HandlerResult.HANDLED));
+								.thenCompose(handled -> CompletableFuture.completedFuture(HandlerResult.HANDLED));
 						}
 
 						return CompletableFuture.completedFuture(correctionResult.result);
@@ -197,6 +190,23 @@ public class RelatedLabMessageHandler {
 
 				throw (RuntimeException) e;
 			});
+	}
+
+	/**
+	 * Used for confirming the correction flow on the first changed entity and reuse the confirmation status on the other entities
+	 * 
+	 * @return Supplier that calls `correctionFlowConfirmation` only once, subsequent calls will return the result of confirmation
+	 */
+	private Supplier<CompletionStage<Boolean>> createCachedCorrectionFlowConfirmationSupplier() {
+		final Mutable<CompletionStage<Boolean>> confirmedCorrectionFlow = new MutableObject<>();
+
+		return () -> {
+			if (confirmedCorrectionFlow.getValue() == null) {
+				confirmedCorrectionFlow.setValue(correctionFlowConfirmation.get());
+			}
+
+			return confirmedCorrectionFlow.getValue();
+		};
 	}
 
 	// correction
@@ -273,7 +283,7 @@ public class RelatedLabMessageHandler {
 
 		return confirmationSupplier.get().thenCompose((confirmed) -> {
 			if (confirmed) {
-				return chainHandler.run((chain) -> correctionHandler.handle(labMessage, entity, updatedEntity, changedFields, chain));
+				return chainHandler.run(chain -> correctionHandler.handle(labMessage, entity, updatedEntity, changedFields, chain));
 			}
 
 			return CompletableFuture.completedFuture(defaultResult);
@@ -330,27 +340,25 @@ public class RelatedLabMessageHandler {
 
 		List<PathogenTestDto> relatedPathogenTests = new ArrayList<>();
 		List<TestReportDto> unmatchedTestReports = new ArrayList<>();
-		List<PathogenTestDto> unmatchedPathogenTests = new ArrayList<>();
 
 		List<TestReportDto> testReports = labMessage.getTestReports();
 		List<PathogenTestDto> samplePathogenTests = FacadeProvider.getPathogenTestFacade().getAllBySample(relatedSample.toReference());
 
-		List<DataHelper.Pair<TestReportDto, List<PathogenTestDto>>> testReportPathogenTestPairs = testReports.stream()
-			.map(tr -> createPair(tr, samplePathogenTests.stream().filter(pt -> matchPathogenTest(tr, pt)).collect(Collectors.toList())))
-			.collect(Collectors.toList());
+		testReports.stream().forEach(testReport -> {
+			List<PathogenTestDto> matchedPathogenTests = StringUtils.isBlank(testReport.getExternalId())
+				? Collections.emptyList()
+				: samplePathogenTests.stream().filter(pt -> matchPathogenTest(testReport, pt)).collect(Collectors.toList());
 
-		for (DataHelper.Pair<TestReportDto, List<PathogenTestDto>> p : testReportPathogenTestPairs) {
-			TestReportDto testReport = p.getElement0();
-			List<PathogenTestDto> pathogenTests = p.getElement1();
-
-			if (pathogenTests.size() == 1) {
-				relatedPathogenTests.add(pathogenTests.get(0));
-			} else if (pathogenTests.isEmpty()) {
-				unmatchedTestReports.add(testReport);
+			if (matchedPathogenTests.size() == 1) {
+				relatedPathogenTests.add(matchedPathogenTests.get(0));
 			} else {
-				unmatchedPathogenTests.addAll(pathogenTests);
+				unmatchedTestReports.add(testReport);
 			}
-		}
+		});
+
+		List<PathogenTestDto> unmatchedPathogenTests = samplePathogenTests.stream()
+			.filter(pt -> relatedPathogenTests.stream().noneMatch(rpt -> DataHelper.isSame(pt, rpt)))
+			.collect(Collectors.toList());
 
 		return new RelatedEntities(
 			relatedSample,
@@ -358,7 +366,7 @@ public class RelatedLabMessageHandler {
 			relatedPathogenTests,
 			unmatchedTestReports,
 			unmatchedPathogenTests,
-			relatedLabMessages.size() > 0);
+			CollectionUtils.isNotEmpty(relatedLabMessages));
 	}
 
 	private boolean matchPathogenTest(TestReportDto tr, PathogenTestDto pt) {

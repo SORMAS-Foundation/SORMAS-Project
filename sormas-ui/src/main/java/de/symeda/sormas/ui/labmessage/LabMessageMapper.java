@@ -16,11 +16,13 @@
 package de.symeda.sormas.ui.labmessage;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
@@ -109,52 +111,91 @@ public class LabMessageMapper {
 		} else if (homogenousTestResultTypesIn(labMessage)) {
 			pathogenTestResult = labMessage.getTestReports().get(0).getTestResult();
 		}
-		if (pathogenTestResult != null) {
-			changedFields.addAll(
-				map(
-					Stream.of(
-						Mapping
-							.of(sample::setPathogenTestResult, sample.getPathogenTestResult(), pathogenTestResult, SampleDto.PATHOGEN_TEST_RESULT))));
-		}
+
+		changedFields.addAll(
+			map(
+				Stream.of(
+					Mapping.of(sample::setPathogenTestResult, sample.getPathogenTestResult(), pathogenTestResult, SampleDto.PATHOGEN_TEST_RESULT))));
 
 		return changedFields;
 	}
 
 	public List<String[]> mapToPathogenTest(TestReportDto sourceTestReport, PathogenTestDto pathogenTest) {
-		return map(
-			Stream.of(
-				Mapping.of(pathogenTest::setTestResult, pathogenTest.getTestResult(), sourceTestReport.getTestResult(), PathogenTestDto.TEST_RESULT),
-				Mapping.of(pathogenTest::setTestType, pathogenTest.getTestType(), sourceTestReport.getTestType(), PathogenTestDto.TEST_TYPE),
-				Mapping.of(
-					pathogenTest::setTestResultVerified,
-					pathogenTest.getTestResultVerified(),
-					sourceTestReport.isTestResultVerified(),
-					PathogenTestDto.TEST_RESULT_VERIFIED),
-				Mapping.of(
-					pathogenTest::setTestDateTime,
-					pathogenTest.getTestDateTime(),
-					sourceTestReport.getTestDateTime(),
-					PathogenTestDto.TEST_DATE_TIME),
-				Mapping.of(
-					pathogenTest::setTestResultText,
-					pathogenTest.getTestResultText(),
-					sourceTestReport.getTestResultText(),
-					PathogenTestDto.TEST_RESULT_TEXT),
-				Mapping.of(pathogenTest::setTypingId, pathogenTest.getTypingId(), sourceTestReport.getTypingId(), PathogenTestDto.TYPING_ID),
-				Mapping.of(pathogenTest::setExternalId, pathogenTest.getExternalId(), sourceTestReport.getExternalId(), PathogenTestDto.EXTERNAL_ID),
-				Mapping.of(
-					pathogenTest::setExternalOrderId,
-					pathogenTest.getExternalOrderId(),
-					sourceTestReport.getExternalOrderId(),
-					PathogenTestDto.EXTERNAL_ORDER_ID),
-				Mapping
-					.of(pathogenTest::setLab, pathogenTest.getLab(), getLabReference(sourceTestReport.getTestLabExternalId()), PathogenTestDto.LAB),
-				Mapping.of(pathogenTest::setLabDetails, pathogenTest.getLabDetails(), sourceTestReport.getTestLabName(), PathogenTestDto.LAB_DETAILS),
-				Mapping.of(
-					pathogenTest::setPreliminary,
-					pathogenTest.getPreliminary(),
-					sourceTestReport.getPreliminary(),
-					PathogenTestDto.PRELIMINARY)));
+		List<String[]> changedFields = new ArrayList<>();
+
+		if (sourceTestReport != null) {
+			changedFields.addAll(
+				map(
+					Stream.of(
+						Mapping.of(
+							pathogenTest::setTestResult,
+							pathogenTest.getTestResult(),
+							sourceTestReport.getTestResult(),
+							PathogenTestDto.TEST_RESULT),
+						Mapping.of(pathogenTest::setTestType, pathogenTest.getTestType(), sourceTestReport.getTestType(), PathogenTestDto.TEST_TYPE),
+						Mapping.of(
+							pathogenTest::setTestResultVerified,
+							pathogenTest.getTestResultVerified(),
+							sourceTestReport.isTestResultVerified(),
+							PathogenTestDto.TEST_RESULT_VERIFIED),
+						Mapping.of(
+							pathogenTest::setTestDateTime,
+							pathogenTest.getTestDateTime(),
+							sourceTestReport.getTestDateTime(),
+							PathogenTestDto.TEST_DATE_TIME),
+						Mapping.of(
+							pathogenTest::setTestResultText,
+							pathogenTest.getTestResultText(),
+							sourceTestReport.getTestResultText(),
+							PathogenTestDto.TEST_RESULT_TEXT),
+						Mapping.of(pathogenTest::setTypingId, pathogenTest.getTypingId(), sourceTestReport.getTypingId(), PathogenTestDto.TYPING_ID),
+						Mapping.of(
+							pathogenTest::setExternalId,
+							pathogenTest.getExternalId(),
+							sourceTestReport.getExternalId(),
+							PathogenTestDto.EXTERNAL_ID),
+						Mapping.of(
+							pathogenTest::setExternalOrderId,
+							pathogenTest.getExternalOrderId(),
+							sourceTestReport.getExternalOrderId(),
+							PathogenTestDto.EXTERNAL_ORDER_ID),
+						Mapping.of(
+							pathogenTest::setLab,
+							pathogenTest.getLab(),
+							getLabReference(sourceTestReport.getTestLabExternalId()),
+							PathogenTestDto.LAB),
+						Mapping.of(
+							pathogenTest::setLabDetails,
+							pathogenTest.getLabDetails(),
+							sourceTestReport.getTestLabName(),
+							PathogenTestDto.LAB_DETAILS),
+						Mapping.of(
+							pathogenTest::setPreliminary,
+							pathogenTest.getPreliminary(),
+							sourceTestReport.getPreliminary(),
+							PathogenTestDto.PRELIMINARY))));
+		}
+
+		changedFields.addAll(
+			map(
+				Stream.of(
+					Mapping.of(
+						pathogenTest::setTestedDisease,
+						pathogenTest.getTestedDisease(),
+						labMessage.getTestedDisease(),
+						PathogenTestDto.TESTED_DISEASE),
+					Mapping
+						.of(pathogenTest::setReportDate, pathogenTest.getReportDate(), getPathogenTestReportDate(), PathogenTestDto.REPORT_DATE))));
+
+		return changedFields;
+	}
+
+	private Date getPathogenTestReportDate() {
+		Date reportDate = null;
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			reportDate = labMessage.getMessageDateTime();
+		}
+		return reportDate;
 	}
 
 	private List<String[]> map(Stream<Mapping<?>> mappings) {
@@ -171,7 +212,7 @@ public class LabMessageMapper {
 
 	@SuppressWarnings("rawtypes")
 	private boolean mapField(Mapping m) {
-		if (!DataHelper.equal(m.newValue, m.originalValue)) {
+		if (m.newValue != null && !DataHelper.equal(m.newValue, m.originalValue)) {
 			m.mapper.accept(m.newValue);
 			return true;
 		}
