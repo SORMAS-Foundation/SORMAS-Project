@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.sormastosormas.validation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -13,13 +14,12 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
 import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.fasterxml.classmate.members.ResolvedMember;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -31,6 +31,7 @@ import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.ResolvedTypeWithMembers;
 import com.fasterxml.classmate.TypeResolver;
 import com.fasterxml.classmate.members.ResolvedField;
+import com.fasterxml.classmate.members.ResolvedMember;
 import com.fasterxml.classmate.types.ResolvedPrimitiveType;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
@@ -157,8 +158,8 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 		final ResolvedType curType = rootField.getType();
 
 		if (curType.isInstanceOf(Map.class)) {
-			if (curType.getErasedType().equals(Map.class)) {
-				throw new NotImplementedException();
+			if (!curType.getErasedType().equals(Map.class)) {
+				throw new NotImplementedException("Ping @JonasCir");
 			}
 			// if the current dto field is a map, analyze both the key and the value class
 			List<ResolvedType> mapParams = curType.getTypeParameters();
@@ -169,7 +170,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 
 		if (curType.isInstanceOf(Collection.class)) {
 			if (!curType.isInstanceOf(List.class)) {
-				throw new NotImplementedException();
+				throw new NotImplementedException("Ping @JonasCir");
 			}
 			// if the current dto field is a list, analyze the list type
 			ResolvedType listParam = curType.getTypeParameters().get(0);
@@ -211,7 +212,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 		List<Tree<ResolvedField>> keyChildren = resolvedKeyFields.stream().map(DtoTree::new).map(this::buildDtoTree).collect(Collectors.toList());
 
 		// walk the value type
-		final ResolvedType resolvedValue = typeResolver.resolve(mapParams.get(0).getErasedType());
+		final ResolvedType resolvedValue = typeResolver.resolve(mapParams.get(1).getErasedType());
 		List<ResolvedField> resolvedValueFields = getAllFieldsForType(resolvedValue);
 		List<Tree<ResolvedField>> valueChildren = resolvedValueFields.stream().map(DtoTree::new).map(this::buildDtoTree).collect(Collectors.toList());
 
@@ -279,8 +280,8 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 
 	private boolean isInfrastructureDto(String className) {
 		return className.startsWith("de.symeda.sormas.api.infrastructure.")
-			&& !className.contains("de.symeda.sormas.api.pointofentry.")
-			&& !className.contains("de.symeda.sormas.api.facility.");
+			&& !className.startsWith("de.symeda.sormas.api.infrastructure.pointofentry.")
+			&& !className.startsWith("de.symeda.sormas.api.infrastructure.facility.");
 	}
 
 	/**
@@ -343,8 +344,9 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 		// if the current field is a list we need to descend through the elements of the list, not the list object itself
 		if (currentField.getType().isInstanceOf(Collection.class)) {
 			if (!currentField.getType().isInstanceOf(List.class)) {
-				throw new NotImplementedException();
+				throw new NotImplementedException("Ping @JonasCir");
 			}
+
 			List list = (List) childObject;
 			if (list.isEmpty()) {
 				// we just created the list, create a new element for the list
@@ -358,7 +360,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 		}
 
 		if (currentField.getType().isInstanceOf(Map.class)) {
-			throw new NotImplementedException();
+			throw new NotImplementedException("Ping @JonasCir");
 		}
 
 		currentObject = childObject;
@@ -393,11 +395,13 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 	 * @return all paths to all @{@link de.symeda.sormas.api.InfrastructureDataReferenceDto} fields contained in type T
 	 */
 	private <T> List<ResolvedField[]> getInfraPaths(DtoRootNode<T> rootNode) {
-		final ResolvedType resolve = typeResolver.resolve(rootNode.getClass());
-		final ResolvedTypeWithMembers resolvedTypeWithMembers = memberResolver.resolve(resolve, null, null);
-		final ResolvedField resolvedField = resolvedTypeWithMembers.getMemberFields()[0];
-		DtoTree caseDtoTree = new DtoTree(resolvedField);
-		DtoTree walkedTree = buildDtoTree(caseDtoTree);
+		// make the recursion work, we need a class which wraps the S2S Dto we want to test. We resolve, the dtoUnderTest
+		// field and go from there.
+		ResolvedType resolve = typeResolver.resolve(rootNode.getClass());
+		ResolvedTypeWithMembers resolvedTypeWithMembers = memberResolver.resolve(resolve, null, null);
+		ResolvedField dtoUnderTestField = resolvedTypeWithMembers.getMemberFields()[0];
+		DtoTree dtoTree = new DtoTree(dtoUnderTestField);
+		DtoTree walkedTree = buildDtoTree(dtoTree);
 		return extractInfraFieldPaths(walkedTree);
 	}
 
@@ -414,6 +418,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 	private <T extends SormasToSormasShareableDto> Set<String> getExpectedPaths(SormasToSormasEntityDto<T> entityDto, List<ResolvedField[]> paths)
 		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 		Set<String> expected = new HashSet<>();
+
 		for (ResolvedField[] path : paths) {
 			ArrayDeque<ResolvedField> queue = new ArrayDeque<>(Arrays.asList(path));
 			String caption = queue.stream().map(ResolvedMember::getName).collect(Collectors.joining("."));
@@ -450,15 +455,15 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 	private <T, DTO extends SormasToSormasShareableDto, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW extends PseudonymizableDto> void assertValidation(
 		SHARED entity,
 		DtoRootNode<T> rootNode,
-		SormasToSormasDtoValidator<DTO, SHARED, PREVIEW> validator,
-		int expectedSize)
+		SormasToSormasDtoValidator<DTO, SHARED, PREVIEW> validator)
 		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 		List<ResolvedField[]> paths = getInfraPaths(rootNode);
 		Set<String> expected = getExpectedPaths(entity, paths);
 		Set<String> foundFields = getRejectedFields(entity, validator);
 		// smoke test, in case both are empty some reason this will blow up
-		assertEquals(expected.size(), expectedSize);
-		assertEquals(foundFields, expected);
+		assertFalse(foundFields.isEmpty());
+		assertFalse(expected.isEmpty());
+		assertEquals(new ArrayList<String>(), CollectionUtils.disjunction(foundFields, expected));
 	}
 
 	@Test
@@ -474,7 +479,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 
 		SormasToSormasCaseDto caseDto = new SormasToSormasCaseDto();
 		CaseDtoRootNode rootNode = new CaseDtoRootNode(caseDto);
-		assertValidation(caseDto, rootNode, getSormasToSormasCaseDtoValidator(), 41);
+		assertValidation(caseDto, rootNode, getSormasToSormasCaseDtoValidator());
 	}
 
 	@Test
@@ -490,7 +495,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 
 		SormasToSormasContactDto ContactDto = new SormasToSormasContactDto();
 		ContactDtoRootNode rootNode = new ContactDtoRootNode(ContactDto);
-		assertValidation(ContactDto, rootNode, getSormasToSormasContactDtoValidator(), 33);
+		assertValidation(ContactDto, rootNode, getSormasToSormasContactDtoValidator());
 	}
 
 	@Test
@@ -506,7 +511,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 
 		SormasToSormasEventDto EventDto = new SormasToSormasEventDto();
 		EventDtoRootNode rootNode = new EventDtoRootNode(EventDto);
-		assertValidation(EventDto, rootNode, getSormasToSormasEventDtoValidator(), 6);
+		assertValidation(EventDto, rootNode, getSormasToSormasEventDtoValidator());
 	}
 
 	@Test
@@ -522,7 +527,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 
 		SormasToSormasEventParticipantDto EventParticipantDto = new SormasToSormasEventParticipantDto();
 		EventParticipantDtoRootNode rootNode = new EventParticipantDtoRootNode(EventParticipantDto);
-		assertValidation(EventParticipantDto, rootNode, getSormasToSormasEventParticipantDtoValidator(), 19);
+		assertValidation(EventParticipantDto, rootNode, getSormasToSormasEventParticipantDtoValidator());
 	}
 
 	@Test
@@ -538,7 +543,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 
 		SormasToSormasImmunizationDto ImmunizationDto = new SormasToSormasImmunizationDto();
 		ImmunizationDtoRootNode rootNode = new ImmunizationDtoRootNode(ImmunizationDto);
-		assertValidation(ImmunizationDto, rootNode, getSormasToSormasImmunizationDtoValidator(), 4);
+		assertValidation(ImmunizationDto, rootNode, getSormasToSormasImmunizationDtoValidator());
 	}
 
 	@Test
@@ -559,9 +564,9 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 			}
 		}
 
-		SormasToSormasSampleDto SampleDto = new SormasToSormasSampleDto();
-		SampleDtoRootNode rootNode = new SampleDtoRootNode(SampleDto);
-		assertValidation(SampleDto, rootNode, getSormasToSormasSampleDtoValidator(), 41);
+		SormasToSormasSampleDto sampleDto = new SormasToSormasSampleDto();
+		SampleDtoRootNode rootNode = new SampleDtoRootNode(sampleDto);
+		assertValidation(sampleDto, rootNode, getSormasToSormasSampleDtoValidator());
 	}
 
 }
