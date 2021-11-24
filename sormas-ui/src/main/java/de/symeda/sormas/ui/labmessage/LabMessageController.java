@@ -795,7 +795,10 @@ public class LabMessageController {
 		sampleDto.setSpecimenCondition(labMessageDto.getSpecimenCondition());
 		sampleDto.setLab(getLabReference(labMessageDto));
 		sampleDto.setLabDetails(labMessageDto.getLabName());
-		if (homogenousTestResultTypesIn(labMessageDto)) {
+
+		if(labMessageDto.getSampleOverallTestResult() != null) {
+			sampleDto.setPathogenTestResult(labMessageDto.getSampleOverallTestResult());
+		} else if (homogenousTestResultTypesIn(labMessageDto)) {
 			sampleDto.setPathogenTestResult(labMessageDto.getTestReports().get(0).getTestResult());
 		}
 	}
