@@ -493,9 +493,9 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 			}
 		}
 
-		SormasToSormasContactDto ContactDto = new SormasToSormasContactDto();
-		ContactDtoRootNode rootNode = new ContactDtoRootNode(ContactDto);
-		assertValidation(ContactDto, rootNode, getSormasToSormasContactDtoValidator());
+		SormasToSormasContactDto contactDto = new SormasToSormasContactDto();
+		ContactDtoRootNode rootNode = new ContactDtoRootNode(contactDto);
+		assertValidation(contactDto, rootNode, getSormasToSormasContactDtoValidator());
 	}
 
 	@Test
@@ -509,9 +509,9 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 			}
 		}
 
-		SormasToSormasEventDto EventDto = new SormasToSormasEventDto();
-		EventDtoRootNode rootNode = new EventDtoRootNode(EventDto);
-		assertValidation(EventDto, rootNode, getSormasToSormasEventDtoValidator());
+		SormasToSormasEventDto eventDto = new SormasToSormasEventDto();
+		EventDtoRootNode rootNode = new EventDtoRootNode(eventDto);
+		assertValidation(eventDto, rootNode, getSormasToSormasEventDtoValidator());
 	}
 
 	@Test
@@ -525,9 +525,9 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 			}
 		}
 
-		SormasToSormasEventParticipantDto EventParticipantDto = new SormasToSormasEventParticipantDto();
-		EventParticipantDtoRootNode rootNode = new EventParticipantDtoRootNode(EventParticipantDto);
-		assertValidation(EventParticipantDto, rootNode, getSormasToSormasEventParticipantDtoValidator());
+		SormasToSormasEventParticipantDto eventParticipantDto = new SormasToSormasEventParticipantDto();
+		EventParticipantDtoRootNode rootNode = new EventParticipantDtoRootNode(eventParticipantDto);
+		assertValidation(eventParticipantDto, rootNode, getSormasToSormasEventParticipantDtoValidator());
 	}
 
 	@Test
@@ -541,9 +541,9 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 			}
 		}
 
-		SormasToSormasImmunizationDto ImmunizationDto = new SormasToSormasImmunizationDto();
-		ImmunizationDtoRootNode rootNode = new ImmunizationDtoRootNode(ImmunizationDto);
-		assertValidation(ImmunizationDto, rootNode, getSormasToSormasImmunizationDtoValidator());
+		SormasToSormasImmunizationDto immunizationDto = new SormasToSormasImmunizationDto();
+		ImmunizationDtoRootNode rootNode = new ImmunizationDtoRootNode(immunizationDto);
+		assertValidation(immunizationDto, rootNode, getSormasToSormasImmunizationDtoValidator());
 	}
 
 	@Test
