@@ -96,7 +96,6 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -908,7 +907,7 @@ public class TestDataCreator {
 	}
 
 	public EventParticipantDto createEventParticipant(EventReferenceDto event, PersonDto eventPerson, UserReferenceDto reportingUser) {
-		return createEventParticipant(event, eventPerson, "Description", reportingUser, null);
+		return createEventParticipant(event, eventPerson, "Description", reportingUser, null, null);
 	}
 
 	public EventParticipantDto createEventParticipant(
@@ -916,7 +915,7 @@ public class TestDataCreator {
 		PersonDto eventPerson,
 		String involvementDescription,
 		UserReferenceDto reportingUser) {
-		return createEventParticipant(event, eventPerson, involvementDescription, reportingUser, null);
+		return createEventParticipant(event, eventPerson, involvementDescription, reportingUser, null, null);
 	}
 
 	public EventParticipantDto createEventParticipant(
@@ -924,7 +923,17 @@ public class TestDataCreator {
 		PersonDto eventPerson,
 		String involvementDescription,
 		UserReferenceDto reportingUser,
-		Consumer<EventParticipantDto> customSettings) {
+		RDCF rdcf) {
+		return createEventParticipant(event, eventPerson, involvementDescription, reportingUser, null, rdcf);
+	}
+
+	public EventParticipantDto createEventParticipant(
+		EventReferenceDto event,
+		PersonDto eventPerson,
+		String involvementDescription,
+		UserReferenceDto reportingUser,
+		Consumer<EventParticipantDto> customSettings,
+		RDCF rdcf) {
 
 		EventParticipantDto eventParticipant = EventParticipantDto.build(event, reportingUser);
 		eventParticipant.setPerson(eventPerson);
@@ -932,6 +941,10 @@ public class TestDataCreator {
 
 		if (customSettings != null) {
 			customSettings.accept(eventParticipant);
+		}
+		if (rdcf != null) {
+			eventParticipant.setRegion(rdcf.region);
+			eventParticipant.setDistrict(rdcf.district);
 		}
 
 		eventParticipant = beanTest.getEventParticipantFacade().saveEventParticipant(eventParticipant);
