@@ -52,7 +52,7 @@ public class AuthProvider {
         isUsernameCaseSensitive = SORMAS.equalsIgnoreCase(configuredProvider);
         isDefaultProvider = SORMAS.equalsIgnoreCase(configuredProvider);
         isUserSyncSupported = KEYCLOAK.equalsIgnoreCase(configuredProvider);
-        isUserSyncAtStartupEnabled = isUserSyncSupported && FacadeProvider.getConfigFacade().isAuthenticationProviderUserSyncAtStartupEnabled();
+        isUserSyncAtStartupEnabled = isUserSyncSupported && configFacade.isAuthenticationProviderUserSyncAtStartupEnabled();
         name = configuredProvider;
     }
 

@@ -290,6 +290,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 				managementStatusField.setValue(value);
 			}
 			managementStatusField.setEnabled(selectedValue);
+			ignoreMeansOfImmunizationChange = selectedValue;
 		});
 
 		meansOfImmunizationField.addValueChangeListener(valueChangeEvent -> {

@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.statistics;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.caze.CaseFacade;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.explicatis.ext_token_field.ExtTokenField;
@@ -178,7 +179,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 			case QUARTER_OF_YEAR:
 			case MONTH_OF_YEAR:
 			case EPI_WEEK_OF_YEAR:
-				List<StatisticsGroupingKey> dateValues = StatisticsHelper.getTimeGroupingKeys(attribute, subAttribute);
+				List<StatisticsGroupingKey> dateValues = StatisticsHelper.getTimeGroupingKeys(attribute, subAttribute, FacadeProvider.getCaseFacade());
 				return createTokens(dateValues);
 			case REGION:
 				return createTokens(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());

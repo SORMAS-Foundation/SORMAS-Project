@@ -527,13 +527,13 @@ public class PersonFacadeEjb implements PersonFacade {
 			> 1) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.personMultiplePrimaryEmailAddresses));
 		}
-		if (StringUtils.isNotBlank(source.getEmailAddress()) && !source.getEmailAddress().matches(DataHelper.getEmailValidationRegex())) {
+		if (!DataHelper.isValidEmailAddress(source.getEmailAddress())) {
 			throw new ValidationRuntimeException(
 				I18nProperties.getValidationError(
 					Validations.validEmailAddress,
 					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.EMAIL_ADDRESS)));
 		}
-		if (StringUtils.isNotBlank(source.getPhone()) && source.getPhone().matches(DataHelper.getPhoneNumberValidationRegex())) {
+		if (!DataHelper.isValidPhoneNumber(source.getPhone())) {
 			throw new ValidationRuntimeException(
 				I18nProperties
 					.getValidationError(Validations.validPhoneNumber, I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PHONE)));
@@ -576,15 +576,13 @@ public class PersonFacadeEjb implements PersonFacade {
 				source.getAddress().getContactPersonPhone()) && source.getAddress().getFacilityType() == null) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importPersonContactDetailsWithoutFacilityType));
 			}
-			if (StringUtils.isNotBlank(source.getAddress().getContactPersonEmail())
-				&& !source.getAddress().getContactPersonEmail().matches(DataHelper.getEmailValidationRegex())) {
+			if (!DataHelper.isValidEmailAddress(source.getAddress().getContactPersonEmail())) {
 				throw new ValidationRuntimeException(
 					I18nProperties.getValidationError(
 						Validations.validEmailAddress,
 						I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_EMAIL)));
 			}
-			if (StringUtils.isNotBlank(source.getAddress().getContactPersonPhone())
-				&& source.getAddress().getContactPersonPhone().matches(DataHelper.getPhoneNumberValidationRegex())) {
+			if (!DataHelper.isValidPhoneNumber(source.getAddress().getContactPersonPhone())) {
 				throw new ValidationRuntimeException(
 					I18nProperties.getValidationError(
 						Validations.validPhoneNumber,
