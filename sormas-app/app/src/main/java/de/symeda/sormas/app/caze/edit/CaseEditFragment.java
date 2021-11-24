@@ -25,9 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 import android.webkit.WebView;
-
 import androidx.fragment.app.FragmentActivity;
-
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -69,6 +67,7 @@ import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
@@ -206,6 +205,13 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 		contentBinding.caseDataQuarantineExtended.setVisibility(record.isQuarantineExtended() ? VISIBLE : GONE);
 		contentBinding.caseDataQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE);
+
+		User user = ConfigProvider.getUser();
+		if (user.hasUserRole(UserRole.HOSPITAL_INFORMANT)) {
+			// Hospital Informants are not allowed to change place of stay
+			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setEnabled(false);
+			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setVisibility(GONE);
+		}
 	}
 
 	private void updateCaseConfirmationVisibility(FragmentCaseEditLayoutBinding contentBinding) {
