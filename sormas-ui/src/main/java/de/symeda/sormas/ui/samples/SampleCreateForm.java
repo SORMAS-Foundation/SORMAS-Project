@@ -3,10 +3,6 @@ package de.symeda.sormas.ui.samples;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateComparisonValidator;
-import de.symeda.sormas.ui.utils.DateTimeField;
-import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public class SampleCreateForm extends AbstractSampleForm {
@@ -27,7 +23,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 
 		addValueChangeListener(e -> {
 			defaultValueChangeListener();
-			final NullableOptionGroup samplePurposeField = (NullableOptionGroup) getField(SampleDto.SAMPLE_PURPOSE);
+			final NullableOptionGroup samplePurposeField = getField(SampleDto.SAMPLE_PURPOSE);
 			samplePurposeField.setValue(SamplePurpose.EXTERNAL);
 		});
 	}
