@@ -311,9 +311,15 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		immunizationService.updateImmunizationStatusBasedOnVaccinations(immunization);
 
 		immunization.getVaccinations().forEach(vaccination -> {
-			Optional<VaccinationDto> existingVaccination =
-				existingDto.getVaccinations().stream().filter(vaccinationDto -> vaccination.getUuid().equals(vaccinationDto.getUuid())).findAny();
-			Date existingVaccinationDate = existingVaccination.isPresent() ? existingVaccination.get().getVaccinationDate() : null;
+			VaccinationDto existingVaccination = null;
+			if (existingDto != null) {
+				existingVaccination = existingDto.getVaccinations()
+					.stream()
+					.filter(vaccinationDto -> vaccination.getUuid().equals(vaccinationDto.getUuid()))
+					.findAny()
+					.orElse(null);
+			}
+			Date existingVaccinationDate = existingVaccination != null ? existingVaccination.getVaccinationDate() : null;
 			vaccinationFacade.updateVaccinationStatuses(
 				vaccination.getVaccinationDate(),
 				existingVaccinationDate,
