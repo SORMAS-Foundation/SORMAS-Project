@@ -8890,4 +8890,12 @@ ALTER TABLE labmessage_history ADD COLUMN sampleoveralltestresult varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (430, '[DEMIS2SORMAS] Handle New Profile: DiagnosticReport.conclusionCode #5159');
 
+-- 2021-11-04 [DEMIS2SORMAS] Handle New Profile: Preliminary Test Results #5551
+ALTER TABLE pathogentest ADD COLUMN preliminary boolean;
+ALTER TABLE pathogentest_history ADD COLUMN preliminary boolean;
+ALTER TABLE testreport ADD COLUMN preliminary boolean;
+ALTER TABLE testreport_history ADD COLUMN preliminary boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (431, '[DEMIS2SORMAS] Handle New Profile: Preliminary Test Results #5551');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
