@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.sormastosormas.validation;
 
+import static org.junit.Assert.assertEquals;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -7,18 +9,33 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+
 import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.fasterxml.classmate.members.ResolvedMember;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import com.fasterxml.classmate.MemberResolver;
+import com.fasterxml.classmate.ResolvedType;
+import com.fasterxml.classmate.ResolvedTypeWithMembers;
+import com.fasterxml.classmate.TypeResolver;
+import com.fasterxml.classmate.members.ResolvedField;
+import com.fasterxml.classmate.types.ResolvedPrimitiveType;
+
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
+import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
@@ -31,20 +48,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
-import org.apache.commons.lang.NotImplementedException;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import com.fasterxml.classmate.MemberResolver;
-import com.fasterxml.classmate.ResolvedType;
-import com.fasterxml.classmate.ResolvedTypeWithMembers;
-import com.fasterxml.classmate.TypeResolver;
-import com.fasterxml.classmate.members.ResolvedField;
-import com.fasterxml.classmate.types.ResolvedPrimitiveType;
-
-import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
-
-import static org.junit.Assert.assertEquals;
 
 public class InfraValidationSoundnessTest extends AbstractBeanTest {
 
@@ -94,14 +97,12 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 			return treeToString(0);
 		}
 
-		private static final int indent = 2;
-
 		private String treeToString(int indent) {
-			String prefix = String.join("", Collections.nCopies(indent, " "));
+			String prefix = StringUtils.repeat("", indent);
 			StringBuilder s = new StringBuilder();
 			s.append(prefix).append(node.data).append(" : ").append(node.label);
 			for (Tree<N> child : children) {
-				s.append("\n").append(child.treeToString(indent + Tree.indent));
+				s.append("\n").append(child.treeToString(indent + 2));
 			}
 			return s.toString();
 		}
@@ -110,27 +111,10 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 	/**
 	 * Represents a Dto as a tree structure.
 	 */
-	private static class DtoTree extends Tree<DtoData> {
+	private static class DtoTree extends Tree<ResolvedField> {
 
 		public DtoTree(ResolvedField rootField) {
-			super(new DtoData(rootField), rootField.getType().toString());
-		}
-	}
-
-	/**
-	 * The data type used in @{@link DtoTree} nodes.
-	 */
-	private static class DtoData {
-
-		ResolvedField field;
-
-		public DtoData(ResolvedField resolvedField) {
-			this.field = resolvedField;
-		}
-
-		@Override
-		public String toString() {
-			return field.toString();
+			super(rootField, rootField.getType().toString());
 		}
 	}
 
@@ -169,10 +153,13 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 	 * @return A complete @{@link DtoTree}
 	 */
 	private DtoTree buildDtoTree(DtoTree rootNode) {
-		final ResolvedField rootField = rootNode.node.data.field;
+		final ResolvedField rootField = rootNode.node.data;
 		final ResolvedType curType = rootField.getType();
 
-		if (curType.getErasedType().equals(Map.class)) {
+		if (curType.isInstanceOf(Map.class)) {
+			if (curType.getErasedType().equals(Map.class)) {
+				throw new NotImplementedException();
+			}
 			// if the current dto field is a map, analyze both the key and the value class
 			List<ResolvedType> mapParams = curType.getTypeParameters();
 			if (isNotLeaf(mapParams.get(0)) && isNotLeaf(mapParams.get(1))) {
@@ -180,7 +167,10 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 			}
 		}
 
-		if (curType.getErasedType().equals(List.class)) {
+		if (curType.isInstanceOf(Collection.class)) {
+			if (!curType.isInstanceOf(List.class)) {
+				throw new NotImplementedException();
+			}
 			// if the current dto field is a list, analyze the list type
 			ResolvedType listParam = curType.getTypeParameters().get(0);
 			if (isNotLeaf(listParam)) {
@@ -188,17 +178,8 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 			}
 		}
 
-		// We have a normal type: Find all subfields and build a tree 
-
-		List<ResolvedField> childFields = getAllFieldsForType(rootField.getType());
-		List<Tree<DtoData>> children = new ArrayList<>();
-		for (ResolvedField childField : childFields) {
-			final DtoTree newTree = new DtoTree(childField);
-			DtoTree childTree = buildDtoTree(newTree);
-			children.add(childTree);
-		}
-
-		rootNode.children = children;
+		// We have a normal type: Find all subfields and build a tree
+		rootNode.children = getAllFieldsForType(rootField.getType()).stream().map(DtoTree::new).map(this::buildDtoTree).collect(Collectors.toList());
 		return rootNode;
 	}
 
@@ -227,12 +208,12 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 		// walk the key type
 		final ResolvedType resolvedKey = typeResolver.resolve(mapParams.get(0).getErasedType());
 		List<ResolvedField> resolvedKeyFields = getAllFieldsForType(resolvedKey);
-		List<Tree<DtoData>> keyChildren = resolvedKeyFields.stream().map(DtoTree::new).map(this::buildDtoTree).collect(Collectors.toList());
+		List<Tree<ResolvedField>> keyChildren = resolvedKeyFields.stream().map(DtoTree::new).map(this::buildDtoTree).collect(Collectors.toList());
 
 		// walk the value type
 		final ResolvedType resolvedValue = typeResolver.resolve(mapParams.get(0).getErasedType());
 		List<ResolvedField> resolvedValueFields = getAllFieldsForType(resolvedValue);
-		List<Tree<DtoData>> valueChildren = resolvedValueFields.stream().map(DtoTree::new).map(this::buildDtoTree).collect(Collectors.toList());
+		List<Tree<ResolvedField>> valueChildren = resolvedValueFields.stream().map(DtoTree::new).map(this::buildDtoTree).collect(Collectors.toList());
 
 		dtoTree.children = Stream.concat(keyChildren.stream(), valueChildren.stream()).collect(Collectors.toList());
 		return dtoTree;
@@ -265,40 +246,41 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 	 *            the @{@link DtoTree} from which we extract all field paths
 	 * @return A list of paths to infra fields. Each list element described how to reach the infra field from the root.
 	 */
-	private List<DtoData[]> extractInfraFieldPaths(Tree<DtoData> dtoTree) {
-		List<DtoData[]> ret = new ArrayList<>();
-		DtoData currentNode = dtoTree.node.data;
-		List<Tree<DtoData>> currentChildren = dtoTree.children;
+	private List<ResolvedField[]> extractInfraFieldPaths(Tree<ResolvedField> dtoTree) {
+		List<ResolvedField[]> ret = new ArrayList<>();
+		ResolvedField currentNode = dtoTree.node.data;
+		List<Tree<ResolvedField>> currentChildren = dtoTree.children;
 
-		for (Tree<DtoData> subtree : currentChildren) {
+		for (Tree<ResolvedField> subtree : currentChildren) {
 			if (subtree.children.isEmpty()) {
 				// we reached a leaf node
-				final String pkgName = subtree.node.data.field.getType().getErasedType().getName();
-				final boolean isInfrastructureDto =
-					pkgName.startsWith("de.symeda.sormas.api.infrastructure.") && !pkgName.contains("pointofentry") && !pkgName.contains("facility");
+				final String className = subtree.node.data.getType().getErasedType().getName();
+				final boolean isInfrastructureDto = isInfrastructureDto(className);
 				if (isInfrastructureDto) {
 					ret.add(
-						new DtoData[] {
+						new ResolvedField[] {
 							currentNode,
 							subtree.node.data });
 				}
 			} else {
 				// not a leaf, continue walk
-				List<DtoData[]> childPaths = extractInfraFieldPaths(subtree);
+				List<ResolvedField[]> childPaths = extractInfraFieldPaths(subtree);
 				// add current prefix in front of every child prefix
-				final List<DtoData[]> completePaths = childPaths.stream()
-					.map(
-						// concatenate currentPath prefix with the child path
-						p -> Stream.concat(
-							Arrays.stream(
-								new DtoData[] {
-									currentNode }),
-							Arrays.stream(p)).toArray(DtoData[]::new))
-					.collect(Collectors.toList());
-				ret.addAll(completePaths);
+				ret.addAll(
+					childPaths.stream()
+						.map(
+							// concatenate currentPath prefix with the child path
+							p -> ArrayUtils.insert(0, p, currentNode))
+						.collect(Collectors.toList()));
 			}
 		}
 		return ret;
+	}
+
+	private boolean isInfrastructureDto(String className) {
+		return className.startsWith("de.symeda.sormas.api.infrastructure.")
+			&& !className.contains("de.symeda.sormas.api.pointofentry.")
+			&& !className.contains("de.symeda.sormas.api.facility.");
 	}
 
 	/**
@@ -313,24 +295,23 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 	 * @param caption
 	 *            the caption we put on the leaf infra ref dto
 	 */
-	private void injectWrongInfra(Queue<DtoData> path, Object currentObject, String caption)
+	private void injectWrongInfra(Queue<ResolvedField> path, Object currentObject, String caption)
 		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-		DtoData current = path.poll();
+		ResolvedField current = path.poll();
 
 		if (current == null) {
 			return;
 		}
 
 		// first elem is always the dto itself, skip it
-		if (current.field.getName().equals("dtoUnderTest")) {
+		if (current.getName().equals("dtoUnderTest")) {
 			current = path.poll();
 			if (current == null) {
 				return;
 			}
 		}
 
-		final ResolvedField currentField = current.field;
-		Object chillObject;
+		final ResolvedField currentField = current;
 
 		// get access to all fields of the current object
 		List<Field> availableFields = getFields(currentObject);
@@ -340,34 +321,39 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 		injectionPoint.setAccessible(true);
 
 		// find out if the field is already initialized
-		chillObject = injectionPoint.get(currentObject);
-		if (chillObject == null) {
+		Object childObject = injectionPoint.get(currentObject);
+		if (childObject == null) {
 			// populate the field
 
 			if (path.peek() == null) {
 				// we reached a leaf, get the InfrastructureDataReferenceDto(String uuid, String caption, String externalId) constructor
+				// in case this call errors, make sure that a constructor (String uuid, String caption, String externalId) is available in
+				// the reference DTO.
 				Constructor<?> constructor = currentField.getType().getErasedType().getConstructor(String.class, String.class, String.class);
-				chillObject = constructor.newInstance(DataHelper.createConstantUuid(0), caption, "");
+				childObject = constructor.newInstance(DataHelper.createConstantUuid(0), caption, "");
 			} else {
 				// we still descend through the object tree
 				Constructor<?> constructor = currentField.getType().getErasedType().getConstructor();
-				chillObject = constructor.newInstance();
+				childObject = constructor.newInstance();
 			}
 			// assign the created object to the current field
-			injectionPoint.set(currentObject, chillObject);
+			injectionPoint.set(currentObject, childObject);
 		}
 
 		// if the current field is a list we need to descend through the elements of the list, not the list object itself
-		if (currentField.getType().isInstanceOf(List.class)) {
-			List list = (List) chillObject;
+		if (currentField.getType().isInstanceOf(Collection.class)) {
+			if (!currentField.getType().isInstanceOf(List.class)) {
+				throw new NotImplementedException();
+			}
+			List list = (List) childObject;
 			if (list.isEmpty()) {
 				// we just created the list, create a new element for the list
 				ResolvedType elementType = currentField.getType().getTypeParameters().get(0);
 				Constructor<?> constructor = elementType.getErasedType().getConstructor();
-				chillObject = constructor.newInstance();
-				list.add(chillObject);
+				childObject = constructor.newInstance();
+				list.add(childObject);
 			} else {
-				chillObject = list.get(0);
+				childObject = list.get(0);
 			}
 		}
 
@@ -375,7 +361,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 			throw new NotImplementedException();
 		}
 
-		currentObject = chillObject;
+		currentObject = childObject;
 		injectWrongInfra(path, currentObject, caption);
 
 	}
@@ -406,7 +392,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 	 *            the type of the @{@link SormasToSormasEntityDto} tested
 	 * @return all paths to all @{@link de.symeda.sormas.api.InfrastructureDataReferenceDto} fields contained in type T
 	 */
-	private <T> List<DtoData[]> getInfraPaths(DtoRootNode<T> rootNode) {
+	private <T> List<ResolvedField[]> getInfraPaths(DtoRootNode<T> rootNode) {
 		final ResolvedType resolve = typeResolver.resolve(rootNode.getClass());
 		final ResolvedTypeWithMembers resolvedTypeWithMembers = memberResolver.resolve(resolve, null, null);
 		final ResolvedField resolvedField = resolvedTypeWithMembers.getMemberFields()[0];
@@ -425,12 +411,12 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 	 * @return the set of all property paths we expect to turn up in validation
 	 * 
 	 */
-	private <T extends SormasToSormasShareableDto> Set<String> getExpectedPaths(SormasToSormasEntityDto<T> entityDto, List<DtoData[]> paths)
+	private <T extends SormasToSormasShareableDto> Set<String> getExpectedPaths(SormasToSormasEntityDto<T> entityDto, List<ResolvedField[]> paths)
 		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 		Set<String> expected = new HashSet<>();
-		for (DtoData[] path : paths) {
-			ArrayDeque<DtoData> queue = new ArrayDeque<>(Arrays.asList(path));
-			String caption = queue.stream().map(d -> d.field.getName()).collect(Collectors.joining("."));
+		for (ResolvedField[] path : paths) {
+			ArrayDeque<ResolvedField> queue = new ArrayDeque<>(Arrays.asList(path));
+			String caption = queue.stream().map(ResolvedMember::getName).collect(Collectors.joining("."));
 			expected.add(caption);
 			injectWrongInfra(queue, entityDto, caption);
 		}
@@ -467,7 +453,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 		SormasToSormasDtoValidator<DTO, SHARED, PREVIEW> validator,
 		int expectedSize)
 		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-		List<DtoData[]> paths = getInfraPaths(rootNode);
+		List<ResolvedField[]> paths = getInfraPaths(rootNode);
 		Set<String> expected = getExpectedPaths(entity, paths);
 		Set<String> foundFields = getRejectedFields(entity, validator);
 		// smoke test, in case both are empty some reason this will blow up
