@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -297,7 +298,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 	 *            the caption we put on the leaf infra ref dto
 	 */
 	private void injectWrongInfra(Queue<ResolvedField> path, Object currentObject, String caption)
-		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
 		ResolvedField current = path.poll();
 
 		if (current == null) {
@@ -314,11 +315,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 
 		final ResolvedField currentField = current;
 
-		// get access to all fields of the current object
-		List<Field> availableFields = getFields(currentObject);
-
-		// given the found fields, find our target field which we want to set
-		Field injectionPoint = availableFields.stream().filter(f -> f.getName().equals(currentField.getName())).collect(Collectors.toList()).get(0);
+		Field injectionPoint = getField(currentField.getName(), currentObject);
 		injectionPoint.setAccessible(true);
 
 		// find out if the field is already initialized
@@ -371,20 +368,25 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 	/**
 	 * Get all field of t from its class and all superclasses
 	 * 
+	 * @param fieldName
 	 * @param t
 	 *            The object we want the fields of
 	 * @param <T>
 	 *            The type of the object
 	 * @return All fields contained in object t fof type T
 	 */
-	private <T> List<Field> getFields(T t) {
-		List<Field> fields = new ArrayList<>();
+	private <T> Field getField(String fieldName, T t) throws NoSuchFieldException {
 		Class<?> clazz = t.getClass();
 		while (clazz != Object.class) {
-			fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
-			clazz = clazz.getSuperclass();
+
+			try {
+				return clazz.getDeclaredField(fieldName);
+			} catch (NoSuchFieldException e) {
+				clazz = clazz.getSuperclass();
+			}
+
 		}
-		return fields;
+		throw new NoSuchFieldException();
 	}
 
 	/**
@@ -416,7 +418,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 	 * 
 	 */
 	private <T extends SormasToSormasShareableDto> Set<String> getExpectedPaths(SormasToSormasEntityDto<T> entityDto, List<ResolvedField[]> paths)
-		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
 		Set<String> expected = new HashSet<>();
 
 		for (ResolvedField[] path : paths) {
@@ -456,7 +458,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 		SHARED entity,
 		DtoRootNode<T> rootNode,
 		SormasToSormasDtoValidator<DTO, SHARED, PREVIEW> validator)
-		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
 		List<ResolvedField[]> paths = getInfraPaths(rootNode);
 		Set<String> expected = getExpectedPaths(entity, paths);
 		Set<String> foundFields = getRejectedFields(entity, validator);
@@ -469,7 +471,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 
 	@Test
 	public void testShareCaseValidationIncoming()
-		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
 
 		class CaseDtoRootNode extends DtoRootNode<SormasToSormasCaseDto> {
 
@@ -485,7 +487,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 
 	@Test
 	public void testShareContactValidationIncoming()
-		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
 
 		class ContactDtoRootNode extends DtoRootNode<SormasToSormasContactDto> {
 
@@ -501,7 +503,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 
 	@Test
 	public void testShareEventValidationIncoming()
-		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
 
 		class EventDtoRootNode extends DtoRootNode<SormasToSormasEventDto> {
 
@@ -517,7 +519,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 
 	@Test
 	public void testShareEventParticipantValidationIncoming()
-		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
 
 		class EventParticipantDtoRootNode extends DtoRootNode<SormasToSormasEventParticipantDto> {
 
@@ -533,7 +535,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 
 	@Test
 	public void testShareImmunizationValidationIncoming()
-		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
 
 		class ImmunizationDtoRootNode extends DtoRootNode<SormasToSormasImmunizationDto> {
 
@@ -556,7 +558,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 	@Test
 	@Ignore("samples depend on facilities which are not yet supported")
 	public void testShareSampleValidationIncoming()
-		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
 
 		class SampleDtoRootNode extends DtoRootNode<SormasToSormasSampleDto> {
 
