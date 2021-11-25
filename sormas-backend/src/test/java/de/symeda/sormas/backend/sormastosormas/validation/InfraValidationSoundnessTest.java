@@ -462,7 +462,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 		List<ResolvedField[]> paths = getInfraPaths(rootNode);
 		Set<String> expected = getExpectedPaths(entity, paths);
 		Set<String> foundFields = getRejectedFields(entity, validator);
-		// smoke test, in case both are empty some reason this will blow up
+		// smoke test, in case both are empty for some reason this will blow up
 		assertFalse(foundFields.isEmpty());
 		assertFalse(expected.isEmpty());
 		final Collection disjunction = CollectionUtils.disjunction(foundFields, expected);
