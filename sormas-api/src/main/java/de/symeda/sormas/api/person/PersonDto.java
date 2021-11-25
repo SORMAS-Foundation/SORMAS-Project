@@ -310,11 +310,11 @@ public class PersonDto extends PseudonymizableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String nationalHealthId;
-	@Valid
 	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+	@Valid
 	private List<LocationDto> addresses = new ArrayList<>();
-	@Valid
 	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+	@Valid
 	private List<PersonContactDetailDto> personContactDetails = new ArrayList<>();
 
 	@Diseases(Disease.CORONAVIRUS)

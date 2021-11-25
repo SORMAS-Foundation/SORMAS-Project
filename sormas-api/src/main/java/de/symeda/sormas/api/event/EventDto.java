@@ -17,6 +17,7 @@ package de.symeda.sormas.api.event;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+
 import java.util.Date;
 import java.util.Map;
 

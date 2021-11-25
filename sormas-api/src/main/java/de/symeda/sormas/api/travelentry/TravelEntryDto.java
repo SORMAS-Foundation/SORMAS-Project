@@ -3,6 +3,8 @@ package de.symeda.sormas.api.travelentry;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 

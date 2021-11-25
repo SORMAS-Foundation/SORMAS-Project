@@ -20,6 +20,7 @@ package de.symeda.sormas.api.user;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 

@@ -24,6 +24,7 @@ import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
