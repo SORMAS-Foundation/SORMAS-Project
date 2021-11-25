@@ -31,6 +31,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -50,7 +51,7 @@ public class LabMessageMapper {
 	}
 
 	public List<String[]> mapToPerson(PersonDto person) {
-		return map(
+		List<String[]> changedFields = map(
 			Stream.of(
 				Mapping.of(person::setFirstName, person.getFirstName(), labMessage.getPersonFirstName(), PersonDto.FIRST_NAME),
 				Mapping.of(person::setLastName, person.getLastName(), labMessage.getPersonLastName(), PersonDto.LAST_NAME),
@@ -60,6 +61,23 @@ public class LabMessageMapper {
 				Mapping.of(person::setSex, person.getSex(), labMessage.getPersonSex(), PersonDto.SEX),
 				Mapping.of(person::setPhone, person.getPhone(), labMessage.getPersonPhone(), PersonDto.PERSON_CONTACT_DETAILS),
 				Mapping.of(person::setEmailAddress, person.getEmailAddress(), labMessage.getPersonEmail(), PersonDto.PERSON_CONTACT_DETAILS)));
+
+		if (person.getBirthdateYYYY() != null) {
+			DataHelper.Pair<Integer, ApproximateAgeType> ageAndAgeType = ApproximateAgeType.ApproximateAgeHelper
+				.getApproximateAge(person.getBirthdateYYYY(), person.getBirthdateMM(), person.getBirthdateDD(), person.getDeathDate());
+
+			changedFields.addAll(
+				map(
+					Stream.of(
+						Mapping.of(person::setApproximateAge, person.getApproximateAge(), ageAndAgeType.getElement0(), PersonDto.APPROXIMATE_AGE),
+						Mapping.of(
+							person::setApproximateAgeType,
+							person.getApproximateAgeType(),
+							ageAndAgeType.getElement1(),
+							PersonDto.APPROXIMATE_AGE_TYPE))));
+		}
+
+		return changedFields;
 	}
 
 	public List<String[]> mapToLocation(LocationDto location) {

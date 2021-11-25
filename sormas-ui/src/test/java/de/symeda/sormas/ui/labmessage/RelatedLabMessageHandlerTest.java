@@ -968,6 +968,32 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		Mockito.verify(shortcutHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any());
 	}
 
+	@Test()
+	public void test_handle_newTestReportOnly() throws ExecutionException, InterruptedException {
+
+		SampleDto sample = createProcessedLabMessage();
+		creator.createPathogenTest(sample.toReference(), userRef, t -> {
+			t.setExternalId("external");
+		});
+		LabMessageDto labMessageToProcess = LabMessageDto.build();
+		labMessageToProcess.setReportId(reportId);
+		labMessageToProcess.setLabSampleId(labSampleId);
+
+		TestReportDto testReport = TestReportDto.build();
+		testReport.setExternalId("external 2");
+		labMessageToProcess.setTestReports(Collections.singletonList(testReport));
+
+		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
+
+		assertThat(result, is(HandlerResult.HANDLED));
+		Mockito.verify(personChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+		Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+		Mockito.verify(pathogenTestChangesHandler, Mockito.times(0))
+			.handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+		Mockito.verify(createPathogenTestHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+		Mockito.verify(shortcutHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any());
+	}
+
 	private SampleDto createProcessedLabMessage() {
 		CaseReferenceDto cazeRef = creator
 			.createCase(userRef, person.toReference(), Disease.CORONAVIRUS, CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), rdcf)

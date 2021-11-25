@@ -155,7 +155,19 @@ public class RelatedLabMessageHandler {
 
 			for (TestReportDto r : relatedEntities.unmatchedTestReports) {
 				correctionFlow = correctionFlow.thenCompose(
-					(result) -> handlePathogenTestCreation(labMessage, r, relatedEntities.sample, correctionFlowConfirmationSupplier, chainHandler));
+					(result) -> {
+						if (result == HandlerResult.HANDLED) {
+							// do not handle pathogen test creation if there were no corrections in the lab message
+							return handlePathogenTestCreation(
+								labMessage,
+								r,
+								relatedEntities.sample,
+								correctionFlowConfirmationSupplier,
+								chainHandler);
+						}
+
+						return CompletableFuture.completedFuture(result);
+					});
 			}
 		}
 

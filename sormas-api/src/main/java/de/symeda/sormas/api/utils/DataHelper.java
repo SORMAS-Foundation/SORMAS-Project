@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -96,6 +97,12 @@ public final class DataHelper {
 		}
 		if (b instanceof String) {
 			equal = equal || (a == null && ((String) b).isEmpty());
+		}
+
+		if (a instanceof Timestamp && b instanceof Date) {
+			equal = equal || a.equals(new Timestamp(((Date) b).getTime()));
+		} else if (a instanceof Date && b instanceof Timestamp) {
+			equal = equal || new Timestamp(((Date) a).getTime()).equals(b);
 		}
 
 		return equal;
