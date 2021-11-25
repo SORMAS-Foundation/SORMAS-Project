@@ -266,7 +266,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 	}
 
-	protected void updateVaccinationStatuses(Date newVaccinationDate, Date currentVaccinationDate, Long personId, Disease disease) {
+	public void updateVaccinationStatuses(Date newVaccinationDate, Date currentVaccinationDate, Long personId, Disease disease) {
 
 		if (currentVaccinationDate == null || newVaccinationDate != currentVaccinationDate) {
 			caseService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
