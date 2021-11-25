@@ -634,7 +634,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		LabMessageDto labMessageToProcess = LabMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
 		labMessageToProcess.setLabSampleId(labSampleId);
-		labMessageToProcess.setPersonFirstName(person.getFirstName());
+		labMessageToProcess.setPersonFirstName(person.getFirstName() + " Changed");
 		labMessageToProcess.setPersonLastName(person.getLastName());
 		labMessageToProcess.setPersonSex(person.getSex());
 		labMessageToProcess.setSampleMaterial(sample.getSampleMaterial());
@@ -672,7 +672,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
 		assertThat(result, is(HandlerResult.HANDLED));
-		Mockito.verify(personChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+		Mockito.verify(personChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		Mockito.verify(pathogenTestChangesHandler, Mockito.times(0))
 			.handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
