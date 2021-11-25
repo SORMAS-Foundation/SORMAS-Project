@@ -34,6 +34,8 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ActivityAsCase.ActivityAsCaseField;
+import de.symeda.sormas.ui.campaign.jsonHelpers.BasicRadioGroupHelper;
+import de.symeda.sormas.ui.campaign.jsonHelpers.BasicCheckboxHelper;
 import de.symeda.sormas.ui.campaign.jsonHelpers.CheckboxBasicGroup;
 import de.symeda.sormas.ui.campaign.jsonHelpers.RadioBasicGroup;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
@@ -72,10 +74,12 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 				return (T) field;
 				//remember that the class used here are just dummies-hack
 			} else if ((RadioBasicGroup.class.isAssignableFrom(fieldType) && CampaignFormElementEnumOptions.class.isAssignableFrom(type))
-					|| (CheckboxBasicGroup.class.isAssignableFrom(fieldType) && CampaignFormElementEnumOptions.class.isAssignableFrom(type))) {
+					|| (CheckboxBasicGroup.class.isAssignableFrom(fieldType) && CampaignFormElementEnumOptions.class.isAssignableFrom(type))
+							|| (BasicRadioGroupHelper.class.isAssignableFrom(fieldType) && CampaignFormElementEnumOptions.class.isAssignableFrom(type))
+									|| (BasicCheckboxHelper.class.isAssignableFrom(fieldType) && CampaignFormElementEnumOptions.class.isAssignableFrom(type))) {
 				//Flash class is only use as a placeholder
 				Boolean swt = false;
-				if (CheckboxBasicGroup.class.isAssignableFrom(fieldType)) {
+				if (CheckboxBasicGroup.class.isAssignableFrom(fieldType) || BasicCheckboxHelper.class.isAssignableFrom(fieldType)) {
 					swt = true;
 				}
 			//	fieldType = (Class<T>) RadioButtonGroup.class;

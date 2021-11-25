@@ -10,6 +10,8 @@ public enum CampaignFormElementType {
 	DROPDOWN,
 	CHECKBOX,
 	RADIO,
+	CHECKBOXBASIC,
+	RADIOBASIC,
 	TEXTBOX;
 	
 

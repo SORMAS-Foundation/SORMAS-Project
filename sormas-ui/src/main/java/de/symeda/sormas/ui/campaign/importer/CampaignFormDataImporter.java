@@ -158,11 +158,7 @@ public class CampaignFormDataImporter extends DataImporter {
 			return Arrays.stream(CampaignFormElementType.YES_NO.getAllowedValues())
 					.map(String::toLowerCase)
 					.anyMatch(v -> v.equals(entry.getValue().toString().toLowerCase()));
-			}else if (definition.getType().equalsIgnoreCase(CampaignFormElementType.RADIO.toString())) {
-				return Arrays.stream(CampaignFormElementType.RADIO.getAllowedValues())
-						.map(String::toLowerCase)
-						.anyMatch(v -> v.equals(entry.getValue().toString().toLowerCase()));
-				}
+			}
 		return true;
 	}
 

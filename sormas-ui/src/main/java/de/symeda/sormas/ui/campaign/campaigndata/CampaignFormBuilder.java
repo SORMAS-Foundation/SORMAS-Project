@@ -57,6 +57,9 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.campaign.jsonHelpers.BasicCheckboxHelper;
+import de.symeda.sormas.ui.campaign.jsonHelpers.BasicRadioGroupHelper;
+import de.symeda.sormas.ui.campaign.jsonHelpers.CheckboxBasicGroup;
 import de.symeda.sormas.ui.campaign.jsonHelpers.RadioBasicGroup;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -251,12 +254,19 @@ public class CampaignFormBuilder {
 		} else if (type == CampaignFormElementType.RADIO) {
 			field = fieldFactory.createField(CampaignFormElementEnumOptions.class, (Class<T>) RadioBasicGroup.class);
 			
+		} else if (type == CampaignFormElementType.RADIOBASIC) {
+			field = fieldFactory.createField(CampaignFormElementEnumOptions.class, (Class<T>) BasicRadioGroupHelper.class);
+			
 		} else if (type == CampaignFormElementType.DROPDOWN) {
 			field = fieldFactory.createField(CampaignFormElementOptions.class, (Class<T>) ComboBox.class);
 			
 		} else if (type == CampaignFormElementType.CHECKBOX) {
 			//Flash class is only use as a placeholder
 			field = fieldFactory.createField(CampaignFormElementEnumOptions.class, (Class<T>) CheckboxBasicGroup.class);
+			
+		}else if (type == CampaignFormElementType.CHECKBOXBASIC) {
+			//Flash class is only use as a placeholder
+			field = fieldFactory.createField(CampaignFormElementEnumOptions.class, (Class<T>) BasicCheckboxHelper.class);
 			
 		} else {
 			field = null;
@@ -273,8 +283,10 @@ public class CampaignFormBuilder {
 		if (type == CampaignFormElementType.LABEL) {
 			((Label) field).setContentMode(ContentMode.HTML);
 		} else if (type == CampaignFormElementType.YES_NO 
-				//|| type == CampaignFormElementType.CHECKBOX
-				//|| type == CampaignFormElementType.RADIO 
+				|| type == CampaignFormElementType.CHECKBOX
+				|| type == CampaignFormElementType.RADIO 
+					//	|| type == CampaignFormElementType.CHECKBOXBASIC
+					//	|| type == CampaignFormElementType.RADIOBASIC
 				|| type == CampaignFormElementType.DROPDOWN) {
 			if (!styles.contains(CampaignFormElementStyle.INLINE)) {
 				CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE,
@@ -307,6 +319,8 @@ public class CampaignFormBuilder {
 				|| type == CampaignFormElementType.RADIO && !styles.contains(CampaignFormElementStyle.INLINE)
 				|| type == CampaignFormElementType.CHECKBOX && !styles.contains(CampaignFormElementStyle.INLINE)
 				|| type == CampaignFormElementType.DROPDOWN && !styles.contains(CampaignFormElementStyle.INLINE)
+						|| type == CampaignFormElementType.CHECKBOXBASIC && !styles.contains(CampaignFormElementStyle.INLINE)
+						|| type == CampaignFormElementType.RADIOBASIC && !styles.contains(CampaignFormElementStyle.INLINE)
 						|| type == CampaignFormElementType.TEXTBOX && !styles.contains(CampaignFormElementStyle.INLINE)
 				|| (type == CampaignFormElementType.TEXT || type == CampaignFormElementType.NUMBER && styles.contains(CampaignFormElementStyle.ROW))
 				){
@@ -334,7 +348,9 @@ public class CampaignFormBuilder {
 
 		if (type == CampaignFormElementType.YES_NO && styles.contains(CampaignFormElementStyle.INLINE)
 				|| type == CampaignFormElementType.RADIO && styles.contains(CampaignFormElementStyle.INLINE)
+						|| type == CampaignFormElementType.RADIOBASIC && styles.contains(CampaignFormElementStyle.INLINE)
 						|| type == CampaignFormElementType.CHECKBOX && styles.contains(CampaignFormElementStyle.INLINE)
+								|| type == CampaignFormElementType.CHECKBOXBASIC && styles.contains(CampaignFormElementStyle.INLINE)
 								|| type == CampaignFormElementType.DROPDOWN && styles.contains(CampaignFormElementStyle.INLINE)
 				|| (type == CampaignFormElementType.TEXT || type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.TEXTBOX)
 						&& !styles.contains(CampaignFormElementStyle.ROW)
@@ -367,8 +383,14 @@ public class CampaignFormBuilder {
 		case RADIO:
 			//((RadioButtonGroup) field).setValue(Sets.newHashSet(value));
 			break;
+		case RADIOBASIC:
+			//((RadioButtonGroup) field).setValue(Sets.newHashSet(value));
+			break;
 		case CHECKBOX:
 			((OptionGroup) field).setValue(Sets.newHashSet(value));
+			break;
+		case CHECKBOXBASIC:
+		//	((OptionGroup) field).setValue(Sets.newHashSet(value));
 			break;
 		case DROPDOWN:
 			((ComboBox) field).setValue(Sets.newHashSet(value));
