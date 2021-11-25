@@ -15,16 +15,28 @@
 
 package de.symeda.sormas.app.event.eventparticipant.edit;
 
+import java.util.List;
+
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentEventParticipantNewLayoutBinding;
+import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 
 public class EventParticipantNewFragment extends BaseEditFragment<FragmentEventParticipantNewLayoutBinding, EventParticipant, EventParticipant> {
 
 	public static final String TAG = EventParticipantNewFragment.class.getSimpleName();
 
 	private EventParticipant record;
+	private List<Item> initialRegions;
+	private List<Item> initialDistricts;
 
 	public static EventParticipantNewFragment newInstance(EventParticipant activityRootData) {
 		return newInstance(EventParticipantNewFragment.class, null, activityRootData);
@@ -45,11 +57,34 @@ public class EventParticipantNewFragment extends BaseEditFragment<FragmentEventP
 	@Override
 	protected void prepareFragmentData() {
 		record = getActivityRootData();
+
+		initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
+		initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getResponsibleRegion());
 	}
 
 	@Override
 	public void onLayoutBinding(FragmentEventParticipantNewLayoutBinding contentBinding) {
 		contentBinding.setData(record);
+		InfrastructureFieldsDependencyHandler.instance.initializeRegionFields(
+			contentBinding.eventParticipantResponsibleRegion,
+			initialRegions,
+			record.getResponsibleRegion(),
+			contentBinding.eventParticipantResponsibleDistrict,
+			initialDistricts,
+			record.getResponsibleDistrict(),
+			null,
+			null,
+			null);
+
+		Location eventLocation = record.getEvent().getEventLocation();
+		contentBinding.eventParticipantResponsibleRegion.setRequired(eventLocation.getRegion() == null || eventLocation.getDistrict() == null);
+		contentBinding.eventParticipantResponsibleDistrict.setRequired(eventLocation.getRegion() == null || eventLocation.getDistrict() == null);
+	}
+
+	@Override
+	public void onAfterLayoutBinding(FragmentEventParticipantNewLayoutBinding contentBinding) {
+		List<Item> sexList = DataUtils.getEnumItems(Sex.class, true);
+		contentBinding.eventParticipantSex.initializeSpinner(sexList);
 	}
 
 	@Override

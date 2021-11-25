@@ -20,15 +20,11 @@ package de.symeda.sormas.ui.person;
 import java.util.Date;
 import java.util.function.Consumer;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.Validator;
 
 import de.symeda.sormas.api.Disease;
@@ -53,9 +49,10 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
 public class PersonController {
 
@@ -71,32 +68,13 @@ public class PersonController {
 		navigator.addView(CaseDataView.VIEW_NAME, CaseDataView.class);
 	}
 
-	public VerticalLayout getPersonViewTitleLayout(PersonDto personDto) {
-		final VerticalLayout titleLayout = new VerticalLayout();
-		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
-		titleLayout.setSpacing(false);
+	public TitleLayout getPersonViewTitleLayout(PersonDto personDto) {
+		final TitleLayout titleLayout = new TitleLayout();
 
 		final String shortUuid = DataHelper.getShortUuid(personDto.getUuid());
-		final String personFullName = personDto.toReference().getCaption();
-		final StringBuilder personLabelSb = new StringBuilder();
-		if (StringUtils.isNotBlank(personFullName)) {
-			personLabelSb.append(personFullName);
-
-			if (personDto.getBirthdateDD() != null && personDto.getBirthdateMM() != null && personDto.getBirthdateYYYY() != null) {
-				personLabelSb.append(" (* ")
-					.append(
-						PersonHelper.formatBirthdate(
-							personDto.getBirthdateDD(),
-							personDto.getBirthdateMM(),
-							personDto.getBirthdateYYYY(),
-							I18nProperties.getUserLanguage()))
-					.append(")");
-			}
-		}
-		personLabelSb.append(personLabelSb.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
-		final Label personLabel = new Label(personLabelSb.toString());
-		personLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		titleLayout.addComponent(personLabel);
+		final StringBuilder mainRowText = TitleLayoutHelper.buildPersonString(personDto);
+		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
+		titleLayout.addMainRow(mainRowText.toString());
 
 		return titleLayout;
 	}

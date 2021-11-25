@@ -17,8 +17,6 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.naming.NamingException;
-
 public class LabMessageForm extends AbstractEditForm<LabMessageDto> {
 
 	private static final long serialVersionUID = -3859401780981133265L;
@@ -43,6 +41,7 @@ public class LabMessageForm extends AbstractEditForm<LabMessageDto> {
 
 		detailsPanel = new Panel();
 		detailsPanel.setHeightFull();
+		detailsPanel.addStyleName("lab-message-details");
 		getContent().addComponent(detailsPanel, LabMessageDto.LAB_MESSAGE_DETAILS);
 	}
 
@@ -65,7 +64,7 @@ public class LabMessageForm extends AbstractEditForm<LabMessageDto> {
 				detailsPanel.setContent(createXmlDisplay(labMessage.getLabMessageDetails()));
 				VaadinUiUtil.showWarningPopup(htmlConversionResult.getError());
 			}
-		} catch (NamingException e) {
+		} catch (Exception e) {
 			detailsPanel.setContent(createXmlDisplay(labMessage.getLabMessageDetails()));
 			logger.error(e.getMessage());
 		}

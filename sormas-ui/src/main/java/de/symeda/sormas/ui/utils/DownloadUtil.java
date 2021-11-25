@@ -47,9 +47,12 @@ import java.util.function.Supplier;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVWriter;
+import com.vaadin.server.ClassResource;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.StreamResource.StreamSource;
@@ -97,6 +100,7 @@ import de.symeda.sormas.api.utils.ExportErrorException;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
+import de.symeda.sormas.ui.AboutView;
 import de.symeda.sormas.ui.statistics.DatabaseExportView;
 
 public final class DownloadUtil {
@@ -657,5 +661,21 @@ public final class DownloadUtil {
 		String processedEntityName = DataHelper.cleanStringForFileName(entityName.getLocalizedNameInSystemLanguage());
 		String exportDate = DateHelper.formatDateForExport(new Date());
 		return String.join("_", processedInstanceName, processedEntityName, exportDate, fileExtension);
+	}
+
+	public static void attachDataDictionaryDownloader(AbstractComponent target) {
+		new FileDownloader(new StreamResource(() -> new DownloadUtil.DelayedInputStream((out) -> {
+			try {
+				String documentPath = FacadeProvider.getInfoFacade().generateDataDictionary();
+				IOUtils.copy(Files.newInputStream(new File(documentPath).toPath()), out);
+			} catch (IOException e) {
+				LoggerFactory.getLogger(AboutView.class).error("Failed to generate data dictionary", e);
+
+				// fall back to pre-generated document
+				InputStream preGeneratedDocumentStream = new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx").getStream().getStream();
+				IOUtils.copy(preGeneratedDocumentStream, out);
+			}
+		}, (e) -> {
+		}), createFileNameWithCurrentDate(ExportEntityName.DATA_DICTIONARY, ".xlsx"))).extend(target);
 	}
 }

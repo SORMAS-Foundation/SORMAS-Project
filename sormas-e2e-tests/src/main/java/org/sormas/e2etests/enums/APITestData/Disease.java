@@ -75,4 +75,6 @@ public enum Disease {
   SCHISTOSOMIASIS,
   CHOLERA,
   OTHER
+
+  // TODO check usage and refactor/delete...
 }

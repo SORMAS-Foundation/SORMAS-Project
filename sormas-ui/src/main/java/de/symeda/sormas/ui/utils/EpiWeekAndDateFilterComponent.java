@@ -24,14 +24,17 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.PopupDateField;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -40,12 +43,12 @@ public class EpiWeekAndDateFilterComponent<DATE_TYPE> extends HorizontalLayout {
 
 	private static final long serialVersionUID = 8752630393182185034L;
 
-	private ComboBox dateFilterOptionFilter;
-	private ComboBox dateTypeSelector;
-	private ComboBox weekFromFilter;
-	private ComboBox weekToFilter;
-	private PopupDateField dateFromFilter;
-	private PopupDateField dateToFilter;
+	private final ComboBox dateFilterOptionFilter;
+	private final ComboBox dateTypeSelector;
+	private final ComboBox weekFromFilter;
+	private final ComboBox weekToFilter;
+	private final PopupDateField dateFromFilter;
+	private final PopupDateField dateToFilter;
 
 	public EpiWeekAndDateFilterComponent(boolean fillAutomatically, boolean showCaption, String infoText, AbstractFilterForm parentFilterForm) {
 		this(fillAutomatically, showCaption, infoText, null, null, null, parentFilterForm);
@@ -189,6 +192,26 @@ public class EpiWeekAndDateFilterComponent<DATE_TYPE> extends HorizontalLayout {
 			dateFromFilter.addValueChangeListener(e -> parentFilterForm.onChange());
 			dateToFilter.addValueChangeListener(e -> parentFilterForm.onChange());
 		}
+	}
+
+	public void setNotificationsForMissingFilters() {
+		DateFilterOption dateFilterOption = (DateFilterOption) dateFilterOptionFilter.getValue();
+		Notification notification;
+		if (dateFilterOption == DateFilterOption.DATE) {
+			notification = new Notification(
+				I18nProperties.getString(Strings.headingMissingDateFilter),
+				I18nProperties.getString(Strings.messageMissingDateFilter),
+				Notification.Type.WARNING_MESSAGE,
+				false);
+		} else {
+			notification = new Notification(
+				I18nProperties.getString(Strings.headingMissingEpiWeekFilter),
+				I18nProperties.getString(Strings.messageMissingEpiWeekFilter),
+				Notification.Type.WARNING_MESSAGE,
+				false);
+		}
+		notification.setDelayMsec(-1);
+		notification.show(Page.getCurrent());
 	}
 
 	public ComboBox getDateFilterOptionFilter() {

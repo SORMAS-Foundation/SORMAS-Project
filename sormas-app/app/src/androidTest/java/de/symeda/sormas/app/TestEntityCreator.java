@@ -21,6 +21,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -95,10 +96,11 @@ public class TestEntityCreator {
 
 		Case caze = DatabaseHelper.getCaseDao().build(person);
 		caze.setDisease(disease);
-		caze.setRegion(region);
-		caze.setDistrict(district);
-		caze.setCommunity(community);
+		caze.setResponsibleRegion(region);
+		caze.setResponsibleDistrict(district);
+		caze.setResponsibleCommunity(community);
 		caze.setHealthFacility(facility);
+		caze.setFacilityType(FacilityType.HOSPITAL);
 		caze.setCaseClassification(caseClassification);
 		caze.setInvestigationStatus(investigationStatus);
 		caze.setReportDate(new Date());
@@ -254,8 +256,7 @@ public class TestEntityCreator {
 		PathogenTestResultType pathogenTestResultType = PathogenTestResultType.NEGATIVE;
 		Date sampleTestDateTime = new Date();
 
-		PathogenTest pathogenTest = DatabaseHelper.getSampleTestDao().build();
-		pathogenTest.setSample(sample);
+		PathogenTest pathogenTest = DatabaseHelper.getSampleTestDao().build(sample);
 		pathogenTest.setTestType(pathogenTestType);
 		pathogenTest.setTestResult(pathogenTestResultType);
 		pathogenTest.setTestDateTime(sampleTestDateTime);

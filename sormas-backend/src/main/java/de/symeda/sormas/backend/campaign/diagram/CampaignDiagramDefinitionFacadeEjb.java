@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
@@ -19,7 +20,7 @@ public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefini
 	private CampaignDiagramDefinitionService service;
 
 	@Override
-	public CampaignDiagramDefinitionDto save(CampaignDiagramDefinitionDto campaignDiagramDefinitionDto) {
+	public CampaignDiagramDefinitionDto save(@Valid CampaignDiagramDefinitionDto campaignDiagramDefinitionDto) {
 
 		CampaignDiagramDefinition campaignDiagramDefinition = fromDto(campaignDiagramDefinitionDto, true);
 		service.ensurePersisted(campaignDiagramDefinition);

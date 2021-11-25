@@ -48,6 +48,7 @@ public class LabMessageSlider {
 		form.setValue(labMessages.get(index));
 		this.form = form;
 		layout.addComponent(this.form);
+		layout.addStyleName("lab-message-slider");
 
 		this.bottomLeftButton = ButtonHelper.createIconButton("", VaadinIcons.ANGLE_LEFT, (clickEvent) -> this.previous());
 		this.bottomRightButton = ButtonHelper.createIconButton("", VaadinIcons.ANGLE_RIGHT, (clickEvent) -> this.next());

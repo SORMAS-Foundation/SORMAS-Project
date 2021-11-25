@@ -1,202 +1,201 @@
-## All WHO countries
-"defaultName","externalId","isoCode","unoCode","subcontinent","archived"
-"Afghanistan",8501,"AFG",4,"Southern Asia","FALSE"
-"Albania",8201,"ALB",8,"Southeast Europe","FALSE"
-"Algeria",8304,"DZA",12,"Northwest Africa","FALSE"
-"Andorra",8202,"AND",20,"Western Europe","FALSE"
-"Angola",8305,"AGO",24,"Southwest Africa","FALSE"
-"Antigua and Barbuda",8442,"ATG",28,"Central America","FALSE"
-"Argentina",8401,"ARG",32,"South America","FALSE"
-"Armenia",8560,"ARM",51,"Middle East","FALSE"
-"Australia",8601,"AUS",36,"Australia (Subcontinent)","FALSE"
-"Austria",8229,"AUT",40,"Central Europe","FALSE"
-"Azerbaijan",8561,"AZE",31,"Middle East","FALSE"
-"Bahamas",8402,"BHS",44,"Central America","FALSE"
-"Bahrain",8502,"BHR",48,"Southwest Asia","FALSE"
-"Bangladesh",8546,"BGD",50,"Southern Asia","FALSE"
-"Barbados",8403,"BRB",52,"Central America","FALSE"
-"Belarus",8266,"BLR",112,"Eastern Europe","FALSE"
-"Belgium",8204,"BEL",56,"Western Europe","FALSE"
-"Belize",8419,"BLZ",84,"Central America","FALSE"
-"Benin",8309,"BEN",204,"Western Africa","FALSE"
-"Bhutan",8503,"BTN",64,"Southern Asia","FALSE"
-"Bolivia (Plurinational State of)",8405,"BOL",68,"South America","FALSE"
-"Bosnia and Herzegovina",8252,"BIH",70,"Southeast Europe","FALSE"
-"Botswana",8307,"BWA",72,"Southern Africa","FALSE"
-"Brazil",8406,"BRA",76,"South America","FALSE"
-"Brunei Darussalam",8504,"BRN",96,"Southern Asia","FALSE"
-"Bulgaria",8205,"BGR",100,"Southeast Europe","FALSE"
-"Burkina Faso",8337,"BFA",854,"Western Africa","FALSE"
-"Burundi",8308,"BDI",108,"Eastern Africa","FALSE"
-"Cabo Verde",8319,"CPV",132,"Western Africa","FALSE"
-"Cambodia",8518,"KHM",116,"Southeast Asia","FALSE"
-"Cameroon",8317,"CMR",120,"Central Africa","FALSE"
-"Canada",8423,"CAN",124,"North America","FALSE"
-"Central African Republic",8360,"CAF",140,"Central Africa","FALSE"
-"Chad",8356,"TCD",148,"Central Africa","FALSE"
-"Chile",8407,"CHL",152,"South America","FALSE"
-"China",8508,"CHN",156,"Eastern Asia","FALSE"
-"Colombia",8424,"COL",170,"South America","FALSE"
-"Comoros",8321,"COM",174,"Eastern Africa","FALSE"
-"Congo (Brazzaville)",8322,"COG",178,"Central Africa","FALSE"
-"Cook Islands",8682,"COK",184,"Oceania","FALSE"
-"Costa Rica",8408,"CRI",188,"Central America","FALSE"
-"Croatia",8250,"HRV",191,"Southern Europe","FALSE"
-"Cuba",8425,"CUB",192,"Central America","FALSE"
-"Cyprus",8242,"CYP",196,"Southeast Europe","FALSE"
-"Czech Republic",8244,"CZE",203,"Central Europe","FALSE"
-"Democratic People's Republic of Korea",8530,"PRK",408,"Eastern Asia","FALSE"
-"Democratic Republic of the Congo",8323,"COD",180,"Central Africa","FALSE"
-"Denmark",8206,"DNK",208,"Northern Europe","FALSE"
-"Djibouti",8303,"DJI",262,"Eastern Africa","FALSE"
-"Dominica",8440,"DMA",212,"Central America","FALSE"
-"Dominican Republic",8409,"DOM",214,"Central America","FALSE"
-"Ecuador",8410,"ECU",218,"South America","FALSE"
-"Egypt",8359,"EGY",818,"Northeast Africa","FALSE"
-"El Salvador",8411,"SLV",222,"Central America","FALSE"
-"Equatorial Guinea",8301,"GNQ",226,"Central Africa","FALSE"
-"Eritrea",8362,"ERI",232,"Northeast Africa","FALSE"
-"Estonia",8260,"EST",233,"Northern Europe","FALSE"
-"Eswatini",8352,"SWZ",748,"Southern Africa","FALSE"
-"Ethiopia",8302,"ETH",231,"Eastern Africa","FALSE"
-"Fiji",8602,"FJI",242,"Oceania","FALSE"
-"Finland",8211,"FIN",246,"Northern Europe","FALSE"
-"France",8212,"FRA",250,"Western Europe","FALSE"
-"Gabon",8311,"GAB",266,"Central Africa","FALSE"
-"Gambia",8312,"GMB",270,"Western Africa","FALSE"
-"Georgia",8562,"GEO",268,"Middle East","FALSE"
-"Germany",8207,"DEU",276,"Western Europe","FALSE"
-"Ghana",8313,"GHA",288,"Western Africa","FALSE"
-"Greece",8214,"GRC",300,"Southeast Europe","FALSE"
-"Greenland",8413,"GRL",304,"Northern Europe","FALSE"
-"Grenada",8441,"GRD",308,"Central America","FALSE"
-"Guatemala",8415,"GTM",320,"Central America","FALSE"
-"Guinea",8315,"GIN",324,"Western Africa","FALSE"
-"Guinea-Bissau",8314,"GNB",624,"Western Africa","FALSE"
-"Guyana",8417,"GUY",328,"South America","FALSE"
-"Haiti",8418,"HTI",332,"Central America","FALSE"
-"Honduras",8420,"HND",340,"Central America","FALSE"
-"Hungary",8240,"HUN",348,"Central Europe","FALSE"
-"Iceland",8217,"ISL",352,"Northern Europe","FALSE"
-"India",8510,"IND",356,"Middle East","FALSE"
-"Indonesia",8511,"IDN",360,"Southeast Asia","FALSE"
-"Iran (Islamic Republic of)",8513,"IRN",364,"Middle East","FALSE"
-"Iraq",8512,"IRQ",368,"Middle East","FALSE"
-"Ireland",8216,"IRL",372,"Northern Europe","FALSE"
-"Israel",8514,"ISR",376,"Middle East","FALSE"
-"Italy",8218,"ITA",380,"Southern Europe","FALSE"
-"Jamaica",8421,"JAM",388,"Central America","FALSE"
-"Japan",8515,"JPN",392,"Eastern Asia","FALSE"
-"Jordan",8517,"JOR",400,"Middle East","FALSE"
-"Kazakhstan",8563,"KAZ",398,"Central Asia","FALSE"
-"Kenya",8320,"KEN",404,"Eastern Africa","FALSE"
-"Kiribati",8616,"KIR",296,"Oceania","FALSE"
-"Kuwait",8521,"KWT",414,"Middle East","FALSE"
-"Kyrgyzstan",8564,"KGZ",417,"Central Asia","FALSE"
-"Lao People's Democratic Republic",8522,"LAO",418,"Southeast Asia","FALSE"
-"Latvia",8261,"LVA",428,"Northern Europe","FALSE"
-"Lebanon",8523,"LBN",422,"Middle East","FALSE"
-"Lesotho",8324,"LSO",426,"Southern Africa","FALSE"
-"Liberia",8325,"LBR",430,"Western Africa","FALSE"
-"Libya",8326,"LBY",434,"Northern Africa","FALSE"
-"Liechtenstein",8222,"LIE",438,"Central Europe","FALSE"
-"Lithuania",8262,"LTU",440,"Northern Europe","FALSE"
-"Luxembourg",8223,"LUX",442,"Western Europe","FALSE"
-"Madagascar",8327,"MDG",450,"Southeast Africa","FALSE"
-"Malawi",8329,"MWI",454,"Southeast Africa","FALSE"
-"Malaysia",8525,"MYS",458,"Southeast Asia","FALSE"
-"Maldives",8526,"MDV",462,"Southern Asia","FALSE"
-"Mali",8330,"MLI",466,"Western Africa","FALSE"
-"Malta",8224,"MLT",470,"Southern Europe","FALSE"
-"Marshall Islands",8617,"MHL",584,"Oceania","FALSE"
-"Mauritania",8332,"MRT",478,"Northwest Africa","FALSE"
-"Mauritius",8333,"MUS",480,"Southeast Africa","FALSE"
-"Mexico",8427,"MEX",484,"North America","FALSE"
-"Micronesia (Federated States of)",8618,"FSM",583,"Oceania","FALSE"
-"Monaco",8226,"MCO",492,"Southern Europe","FALSE"
-"Mongolia",8528,"MNG",496,"Central Asia","FALSE"
-"Montenegro",8254,"MNE",499,"Southeast Europe","FALSE"
-"Morocco",8331,"MAR",504,"Northwest Africa","FALSE"
-"Mozambique",8334,"MOZ",508,"Southeast Africa","FALSE"
-"Myanmar",8505,"MMR",104,"Southeast Asia","FALSE"
-"Namibia",8351,"NAM",516,"Southern Africa","FALSE"
-"Nauru",8604,"NRU",520,"Oceania","FALSE"
-"Nepal",8529,"NPL",524,"Southern Asia","FALSE"
-"Netherlands",8227,"NLD",528,"Western Europe","FALSE"
-"New Caledonia",8606,"NCL",540,"Oceania","FALSE"
-"New Zealand",8607,"NZL",554,"Oceania","FALSE"
-"Nicaragua",8429,"NIC",558,"Central America","FALSE"
-"Niger",8335,"NER",562,"Western Africa","FALSE"
-"Nigeria",8336,"NGA",566,"Western Africa","FALSE"
-"Niue",8683,"NIU",570,"Oceania","FALSE"
-"North Macedonia",8255,"MKD",807,"Southeast Europe","FALSE"
-"Norway",8228,"NOR",578,"Northern Europe","FALSE"
-"Oman",8527,"OMN",512,"Southwest Asia","FALSE"
-"Pakistan",8533,"PAK",586,"Southern Asia","FALSE"
-"Palau",8619,"PLW",585,"Oceania","FALSE"
-"Panama",8430,"PAN",591,"Central America","FALSE"
-"Papua New Guinea",8608,"PNG",598,"Oceania","FALSE"
-"Paraguay",8431,"PRY",600,"South America","FALSE"
-"Peru",8432,"PER",604,"South America","FALSE"
-"Philippines",8534,"PHL",608,"Southeast Asia","FALSE"
-"Poland",8230,"POL",616,"Eastern Europe","FALSE"
-"Portugal",8231,"PRT",620,"Western Europe","FALSE"
-"Puerto Rico",8433,"PRI",630,"North America","FALSE"
-"Qatar",8519,"QAT",634,"Southern Asia","FALSE"
-"Republic of Korea",8539,"KOR",410,"Eastern Asia","FALSE"
-"Republic of Moldova",8263,"MDA",498,"Southeast Europe","FALSE"
-"Romania",8232,"ROU",642,"Southeast Europe","FALSE"
-"Russian Federation",8264,"RUS",643,"Northeast Europe","FALSE"
-"Rwanda",8341,"RWA",646,"Eastern Africa","FALSE"
-"Saint Kitts and Nevis",8445,"KNA",659,"Central America","FALSE"
-"Saint Lucia",8443,"LCA",662,"Central America","FALSE"
-"Saint Vincent and the Grenadines",8444,"VCT",670,"Central America","FALSE"
-"Samoa",8612,"WSM",882,"Oceania","FALSE"
-"San Marino",8233,"SMR",674,"Southern Europe","FALSE"
-"Sao Tome and Principe",8344,"STP",678,"Southwest Africa","FALSE"
-"Saudi Arabia",8535,"SAU",682,"Middle East","FALSE"
-"Senegal",8345,"SEN",686,"Western Africa","FALSE"
-"Serbia",8248,"SRB",688,"Southeast Europe","FALSE"
-"Seychelles",8346,"SYC",690,"Eastern Africa","FALSE"
-"Sierra Leone",8347,"SLE",694,"Western Africa","FALSE"
-"Singapore",8537,"SGP",702,"Southeast Asia","FALSE"
-"Slovakia",8243,"SVK",703,"Central Europe","FALSE"
-"Slovenia",8251,"SVN",705,"Central Europe","FALSE"
-"Solomon Islands",8614,"SLB",90,"Oceania","FALSE"
-"Somalia",8348,"SOM",706,"Eastern Africa","FALSE"
-"South Africa",8349,"ZAF",710,"Southern Africa","FALSE"
-"South Sudan",8363,"SSD",728,"Central Africa","FALSE"
-"Spain",8236,"ESP",724,"Southern Europe","FALSE"
-"Sri Lanka",8506,"LKA",144,"Southern Asia","FALSE"
-"State of Palestine",8550,"PSE",275,"Middle East","FALSE"
-"Sudan",8350,"SDN",729,"Northeast Africa","FALSE"
-"Suriname",8435,"SUR",740,"South America","FALSE"
-"Sweden",8234,"SWE",752,"Northern Europe","FALSE"
-"Switzerland",8100,"CHE",756,"Central Europe","FALSE"
-"Syrian Arab Republic",8541,"SYR",760,"Middle East","FALSE"
-"Tajikistan",8565,"TJK",762,"Central Asia","FALSE"
-"Thailand",8542,"THA",764,"Southeast Asia","FALSE"
-"Timor-Leste",8547,"TLS",626,"Southeast Asia","FALSE"
-"Togo",8354,"TGO",768,"Western Africa","FALSE"
-"Tokelau",8684,"TKL",772,"Oceania","FALSE"
-"Tonga",8610,"TON",776,"Oceania","FALSE"
-"Trinidad and Tobago",8436,"TTO",780,"Central America","FALSE"
-"Tunisia",8357,"TUN",788,"Northern Africa","FALSE"
-"Turkey",8239,"TUR",792,"Middle East","FALSE"
-"Turkmenistan",8566,"TKM",795,"Central Asia","FALSE"
-"Tuvalu",8615,"TUV",798,"Oceania","FALSE"
-"Uganda",8358,"UGA",800,"Eastern Africa","FALSE"
-"Ukraine",8265,"UKR",804,"Eastern Europe","FALSE"
-"United Arab Emirates",8532,"ARE",784,"Southwest Asia","FALSE"
-"United Kingdom of Great Britain and Northern Ireland",8215,"GBR",826,"Northern Europe","FALSE"
-"United Republic of Tanzania",8353,"TZA",834,"Eastern Africa","FALSE"
-"United States of America",8439,"USA",840,"North America","FALSE"
-"Uruguay",8437,"URY",858,"South America","FALSE"
-"Uzbekistan",8567,"UZB",860,"Central Asia","FALSE"
-"Vanuatu",8605,"VUT",548,"Oceania","FALSE"
-"Vatican City",8241,"VAT",336,"Southern Europe","FALSE"
-"Venezuela (Bolivarian Republic of)",8438,"VEN",862,"South America","FALSE"
-"Viet Nam",8545,"VNM",704,"Southeast Asia","FALSE"
-"Yemen",8516,"YEM",887,"Middle East","FALSE"
-"Zambia",8343,"ZMB",894,"Southern Africa","FALSE"
-"Zimbabwe",8340,"ZWE",716,"Southern Africa","FALSE"
+defaultName,externalId,isoCode,unoCode,archived,subcontinent,uuid
+Afghanistan,8501,AFG,4,FALSE,Southern Asia,f5c89cb8-0aaa-5f70-8575-06bff759f043
+Albania,8201,ALB,8,FALSE,Southeast Europe,d1a71e74-fdee-5aa2-937a-2d2371645933
+Algeria,8304,DZA,12,FALSE,Northwest Africa,91a20b0c-8a50-5f5d-bff1-cd47415e04d8
+Andorra,8202,AND,20,FALSE,Western Europe,4e36dd18-faa3-5df2-85cf-2c2a1d88bbed
+Angola,8305,AGO,24,FALSE,Southwest Africa,884f40ff-0c45-5d68-b2d2-99b1596bb158
+Antigua and Barbuda,8442,ATG,28,FALSE,Central America,552ee9cd-eafa-582b-b525-4bf8d246f451
+Argentina,8401,ARG,32,FALSE,South America,ac2b1796-28f7-583e-a11e-a6f3bc8aca04
+Armenia,8560,ARM,51,FALSE,Middle East,a306d2d8-0b34-5d32-af00-37f26f2c9014
+Australia,8601,AUS,36,FALSE,Australia (Subcontinent),55a67e20-1167-5093-8a69-7a93418873cd
+Austria,8229,AUT,40,FALSE,Central Europe,0017eed4-9b71-5b43-bb4b-a39a1c2e48c1
+Azerbaijan,8561,AZE,31,FALSE,Middle East,c2366a50-92bd-555a-8059-0f3d1a901b07
+Bahamas,8402,BHS,44,FALSE,Central America,b2aceed5-8cd4-53e1-8247-2adc63eaabde
+Bahrain,8502,BHR,48,FALSE,Southwest Asia,019f0c8a-27f2-5f69-9e4c-5b1fba9deef4
+Bangladesh,8546,BGD,50,FALSE,Southern Asia,0efbde57-60a8-54ea-ba04-456faa79f39d
+Barbados,8403,BRB,52,FALSE,Central America,0da0f8ab-06b4-52e8-9f29-9c82cbfd57db
+Belarus,8266,BLR,112,FALSE,Eastern Europe,3db75ac7-8b13-5afb-92df-0b075f857ece
+Belgium,8204,BEL,56,FALSE,Western Europe,d91297ec-c09d-515c-9113-e3a4e55ad868
+Belize,8419,BLZ,84,FALSE,Central America,dcf54215-b39e-5475-8e4a-9483b4035162
+Benin,8309,BEN,204,FALSE,Western Africa,8d080afb-2f35-5218-b37d-3449db00cb6f
+Bhutan,8503,BTN,64,FALSE,Southern Asia,59a6ec29-20a7-5e90-a84a-5808c91fb50f
+Bolivia (Plurinational State of),8405,BOL,68,FALSE,South America,27b535fb-6bdc-5a7b-92e0-a255b5d6b29d
+Bosnia and Herzegovina,8252,BIH,70,FALSE,Southeast Europe,36f54ebd-62b5-5969-8f70-ed10d6155a8c
+Botswana,8307,BWA,72,FALSE,Southern Africa,fed2f13b-bb3e-5ef2-b70d-b34f38934092
+Brazil,8406,BRA,76,FALSE,South America,1a73dad1-bdf8-5e3b-a221-71cb68a538d3
+Brunei Darussalam,8504,BRN,96,FALSE,Southern Asia,da3a7fa6-c868-5451-a53a-8d6d495a054c
+Bulgaria,8205,BGR,100,FALSE,Southeast Europe,2b3b18fa-e345-5ec4-8d15-99e1244d9513
+Burkina Faso,8337,BFA,854,FALSE,Western Africa,413f5c70-e118-51c2-887e-756909520b36
+Burundi,8308,BDI,108,FALSE,Eastern Africa,b105a431-ae1d-542a-8c2f-5a801e7c3e88
+Cabo Verde,8319,CPV,132,FALSE,Western Africa,32b7d94a-23fc-5115-82d1-cf5162a68bf9
+Cambodia,8518,KHM,116,FALSE,Southeast Asia,9473d24c-3fe3-5b4a-80c5-f17d9038e0f8
+Cameroon,8317,CMR,120,FALSE,Central Africa,6e0c6386-f57a-5a02-baab-e05b262601dc
+Canada,8423,CAN,124,FALSE,North America,0775005d-131a-5306-8126-16bbd2e73562
+Central African Republic,8360,CAF,140,FALSE,Central Africa,9946e3af-57c0-5a13-a99f-2ed0c4b48fee
+Chad,8356,TCD,148,FALSE,Central Africa,34beb824-6463-5a77-b32d-261ecdef5d25
+Chile,8407,CHL,152,FALSE,South America,dcb3b8a8-37ad-54f3-bfd7-2baefa87e887
+China,8508,CHN,156,FALSE,Eastern Asia,f538b468-c222-5c30-af2f-e0e30e84b152
+Colombia,8424,COL,170,FALSE,South America,e0443b19-ed73-5673-aa41-8a59667a9f2c
+Comoros,8321,COM,174,FALSE,Eastern Africa,fb69b56d-02a0-5f70-af10-aac3052ce4ec
+Congo (Brazzaville),8322,COG,178,FALSE,Central Africa,50a014f1-b6db-51cf-90c3-82ba50b6687c
+Cook Islands,8682,COK,184,FALSE,Oceania,1145d076-7df1-5187-b54e-e41625177fe6
+Costa Rica,8408,CRI,188,FALSE,Central America,6ee4b682-6641-5b33-b164-9da26999ffff
+Croatia,8250,HRV,191,FALSE,Southern Europe,f69f4784-6d29-5c7c-a161-69aff9288d36
+Cuba,8425,CUB,192,FALSE,Central America,b4d253ed-34b6-5e24-a429-06c808edd85e
+Cyprus,8242,CYP,196,FALSE,Southeast Europe,90e73e51-6978-5423-9360-fe0d98f3b26c
+Czech Republic,8244,CZE,203,FALSE,Central Europe,0ba1c12f-a906-5626-a0f6-8d17b580f466
+Democratic People's Republic of Korea,8530,PRK,408,FALSE,Eastern Asia,bab3657a-8c7e-544e-b86b-1af981e09087
+Democratic Republic of the Congo,8323,COD,180,FALSE,Central Africa,a59d18e7-449f-5e03-b6c2-8c5ebecc4242
+Denmark,8206,DNK,208,FALSE,Northern Europe,aec066b7-2b3d-5591-a8f3-ad788bba78f0
+Djibouti,8303,DJI,262,FALSE,Eastern Africa,e89beec5-faa2-5f24-830e-08d864091503
+Dominica,8440,DMA,212,FALSE,Central America,ff97160f-a9f1-53d7-aaaa-a548bb21d537
+Dominican Republic,8409,DOM,214,FALSE,Central America,3f870420-d23e-5f92-977c-ae2b7de74bd8
+Ecuador,8410,ECU,218,FALSE,South America,0b5e0425-9777-514c-b4e3-435e42debb48
+Egypt,8359,EGY,818,FALSE,Northeast Africa,27dc920b-4064-5b7e-9e62-5f96857175b0
+El Salvador,8411,SLV,222,FALSE,Central America,b63cdeff-ee1f-5c78-9b0a-2cbdc7a8cf1d
+Equatorial Guinea,8301,GNQ,226,FALSE,Central Africa,418275ce-ecf5-5802-9ff4-3fee7909831f
+Eritrea,8362,ERI,232,FALSE,Northeast Africa,12281d67-2a3d-51b9-9694-3bae7e547034
+Estonia,8260,EST,233,FALSE,Northern Europe,0ae51346-f897-5a75-b1ef-dd613b414272
+Eswatini,8352,SWZ,748,FALSE,Southern Africa,787f7004-c643-59ad-9da3-d674dc42f5dd
+Ethiopia,8302,ETH,231,FALSE,Eastern Africa,6000f39b-40c1-5318-b89f-67c96f2b64c3
+Fiji,8602,FJI,242,FALSE,Oceania,c10c652e-3599-5440-ad28-064613049102
+Finland,8211,FIN,246,FALSE,Northern Europe,691a340e-d224-5874-98ba-f73ad726a04d
+France,8212,FRA,250,FALSE,Western Europe,9009acd3-8f4e-5b09-bfc9-c1264f206a33
+Gabon,8311,GAB,266,FALSE,Central Africa,834acd18-fc2d-5780-9845-0a1bab6c82b8
+Gambia,8312,GMB,270,FALSE,Western Africa,50fa3422-8d46-590a-ba38-23a7675a72ca
+Georgia,8562,GEO,268,FALSE,Middle East,e3542705-4379-513e-a27d-fb29ba1f0555
+Germany,8207,DEU,276,FALSE,Central Europe,66f4cbda-9cc6-59c2-b455-b0ad74666868
+Ghana,8313,GHA,288,FALSE,Western Africa,f4f02737-bd29-5e15-8e35-1f91af9db887
+Greece,8214,GRC,300,FALSE,Southeast Europe,ee353123-b545-51a6-a87b-50a7ae15128c
+Greenland,8413,GRL,304,FALSE,Northern Europe,5a045e1f-4da4-553e-88f3-63d02569ce56
+Grenada,8441,GRD,308,FALSE,Central America,359086c2-1e5a-5297-9d93-0f7c93a4f75f
+Guatemala,8415,GTM,320,FALSE,Central America,614722b0-9e0a-5c75-b70b-ba8037e86bce
+Guinea,8315,GIN,324,FALSE,Western Africa,d53e02c8-4d04-5944-85f8-cbb3b5748fa3
+Guinea-Bissau,8314,GNB,624,FALSE,Western Africa,3d0e3215-7be4-5987-89f9-8b1031ee5bbd
+Guyana,8417,GUY,328,FALSE,South America,01fd894a-fefe-5c5f-acec-2ef7ed6e4e28
+Haiti,8418,HTI,332,FALSE,Central America,3aae2922-9fe3-57ee-b502-31583fcab425
+Honduras,8420,HND,340,FALSE,Central America,4ee0cfb0-d9a4-5634-80a8-b433a0d6622b
+Hungary,8240,HUN,348,FALSE,Central Europe,87b8bf47-d180-5d7c-bb52-9e2fc46b5d0b
+Iceland,8217,ISL,352,FALSE,Northern Europe,b0ba172d-bb8f-5c68-a54b-6cc128ee8211
+India,8510,IND,356,FALSE,Middle East,7596ec5e-7331-5efd-bba7-dc1525cbe8cd
+Indonesia,8511,IDN,360,FALSE,Southeast Asia,d0d2c7d8-01b3-5673-bd1d-1d304576b6a5
+Iran (Islamic Republic of),8513,IRN,364,FALSE,Middle East,4300f3d0-c7e9-56dc-ba14-6b68ef5673fc
+Iraq,8512,IRQ,368,FALSE,Middle East,d068c506-a30a-558c-932f-68a28c46cf0a
+Ireland,8216,IRL,372,FALSE,Northern Europe,07607f70-8f04-5377-ab8d-a90252818b43
+Israel,8514,ISR,376,FALSE,Middle East,e6256027-dd70-573c-8442-4fe7f3917047
+Italy,8218,ITA,380,FALSE,Southern Europe,c9446fce-20a9-5c8b-8fa2-47178bc08b16
+Jamaica,8421,JAM,388,FALSE,Central America,3feea731-4e2a-5f21-a7f4-d86a23b352de
+Japan,8515,JPN,392,FALSE,Eastern Asia,a7cd9dea-593a-547f-b0e1-d23083948a4f
+Jordan,8517,JOR,400,FALSE,Middle East,d355138b-14f6-5ee8-b007-b7cd0eeb295d
+Kazakhstan,8563,KAZ,398,FALSE,Central Asia,7ab8e9f9-5a40-5020-8048-a656e8a7c0c2
+Kenya,8320,KEN,404,FALSE,Eastern Africa,238b0978-6f23-575a-b047-49018c2d9600
+Kiribati,8616,KIR,296,FALSE,Oceania,f5b5d035-447d-5ea4-af3c-fd514373d7d3
+Kuwait,8521,KWT,414,FALSE,Middle East,6315f01b-9db3-5ac2-a56f-147ccf6a5c9e
+Kyrgyzstan,8564,KGZ,417,FALSE,Central Asia,b70b22ba-f4e9-5fbe-99f1-08dac8261803
+Lao People's Democratic Republic,8522,LAO,418,FALSE,Southeast Asia,64166692-9999-5d6e-bec6-71da6119553e
+Latvia,8261,LVA,428,FALSE,Northern Europe,4afb7358-0f9b-51fb-9092-3a0f5d6994c6
+Lebanon,8523,LBN,422,FALSE,Middle East,0979e836-489a-5ba9-b3ce-96de11474d1b
+Lesotho,8324,LSO,426,FALSE,Southern Africa,fb3f156d-d23f-5cc6-81f6-98184f814678
+Liberia,8325,LBR,430,FALSE,Western Africa,90bf7b89-7c77-520d-9060-96302958e323
+Libya,8326,LBY,434,FALSE,Northern Africa,dd6e283b-9fa2-539d-982c-7e02105e67fc
+Liechtenstein,8222,LIE,438,FALSE,Central Europe,f3638b3e-fa6a-545d-a6b7-826209229a49
+Lithuania,8262,LTU,440,FALSE,Northern Europe,b14b2ded-b018-56ed-aa24-cf97d53497e0
+Luxembourg,8223,LUX,442,FALSE,Western Europe,a71a2734-c91a-54bd-bee5-bb0da5526e02
+Madagascar,8327,MDG,450,FALSE,Southeast Africa,d3cec931-91db-5bc4-b1b4-0361cab24003
+Malawi,8329,MWI,454,FALSE,Southeast Africa,b34aca4a-37cb-5609-b55f-de526eeb388b
+Malaysia,8525,MYS,458,FALSE,Southeast Asia,8edbbe52-48ff-5c8c-b06b-6c2af752da29
+Maldives,8526,MDV,462,FALSE,Southern Asia,9604e542-4564-535e-b1c0-ce4722f8f432
+Mali,8330,MLI,466,FALSE,Western Africa,905dcaa7-723b-518c-bb8b-dd78378938df
+Malta,8224,MLT,470,FALSE,Southern Europe,e7c65c6f-5b11-518c-8c15-fe7d57af1623
+Marshall Islands,8617,MHL,584,FALSE,Oceania,e97ba452-86b0-5b1a-bf15-613f0e4a8486
+Mauritania,8332,MRT,478,FALSE,Northwest Africa,737f7db0-2a09-5764-98b8-20274ce7211e
+Mauritius,8333,MUS,480,FALSE,Southeast Africa,339106b9-79e5-5e8b-b2fe-f67ac8cb4985
+Mexico,8427,MEX,484,FALSE,North America,082a027e-b322-583a-86c1-df43610c058e
+Micronesia (Federated States of),8618,FSM,583,FALSE,Oceania,e0c8ef11-5209-5525-839a-8e008d4747c2
+Monaco,8226,MCO,492,FALSE,Southern Europe,3890ebed-c5e5-57ae-97fb-84c0c8a4d587
+Mongolia,8528,MNG,496,FALSE,Central Asia,1ef5ee7a-229e-5a6a-82d1-459164ab7839
+Montenegro,8254,MNE,499,FALSE,Southeast Europe,61e499c4-73e2-5743-a386-848a889d4297
+Morocco,8331,MAR,504,FALSE,Northwest Africa,9ce1e2f7-bf9f-5c5e-89e0-29dd4ab877b7
+Mozambique,8334,MOZ,508,FALSE,Southeast Africa,d22c60c9-12ca-5104-be52-082530b51e25
+Myanmar,8505,MMR,104,FALSE,Southeast Asia,c577a773-8978-58d5-9f44-98e9d7a2995b
+Namibia,8351,NAM,516,FALSE,Southern Africa,9e2eb3cd-f107-59af-adc5-2eacd47c556b
+Nauru,8604,NRU,520,FALSE,Oceania,32c6d2e7-a557-5514-a86d-59d6482dbc92
+Nepal,8529,NPL,524,FALSE,Southern Asia,5dd8b14b-acb6-5f61-9f96-4fe911287cd9
+Netherlands,8227,NLD,528,FALSE,Western Europe,cfcfb611-6537-5c24-9180-348253d5bb57
+New Caledonia,8606,NCL,540,FALSE,Western Europe,050ff400-8c15-5895-8acb-12ecb0046f1d
+New Zealand,8607,NZL,554,FALSE,Oceania,b0bf8ad1-7846-5d92-8301-512be8a4324a
+Nicaragua,8429,NIC,558,FALSE,Central America,2fa9b451-8e64-542f-a186-99071ed3e324
+Niger,8335,NER,562,FALSE,Western Africa,b42addea-28b5-5f05-bf09-13976243c407
+Nigeria,8336,NGA,566,FALSE,Western Africa,a27b1cce-cd72-53b7-8ab2-b741e46eec27
+Niue,8683,NIU,570,FALSE,Oceania,b3d5d57d-b765-5a79-912d-9f391b196121
+North Macedonia,8255,MKD,807,FALSE,Southeast Europe,826aca42-8a94-5459-8049-7a47ad39660e
+Norway,8228,NOR,578,FALSE,Northern Europe,1d58afae-028d-5823-bc0b-95a411e34865
+Oman,8527,OMN,512,FALSE,Southwest Asia,e6708d27-faf5-5662-8319-878a3cff816e
+Pakistan,8533,PAK,586,FALSE,Southern Asia,c9a68771-96e1-5244-87fb-1a4e2baf18ec
+Palau,8619,PLW,585,FALSE,Oceania,277d38f4-dbd4-57a2-9c91-91d8a3494fbc
+Panama,8430,PAN,591,FALSE,Central America,a8666610-b15d-587e-b981-0917737653b1
+Papua New Guinea,8608,PNG,598,FALSE,Oceania,b774b593-42a5-59dd-9a43-f298e0c5fed4
+Paraguay,8431,PRY,600,FALSE,South America,4574ec0c-7561-5fa0-b458-eb0c585c34e8
+Peru,8432,PER,604,FALSE,South America,c416df03-3d45-5b50-a1ed-61ac082ddd9b
+Philippines,8534,PHL,608,FALSE,Southeast Asia,b221519f-b2ee-5dca-97ff-4b1278a390cc
+Poland,8230,POL,616,FALSE,Eastern Europe,f461a292-52a2-5d49-8fc4-ef0cc18dace7
+Portugal,8231,PRT,620,FALSE,Western Europe,8bdebf18-82e2-51c7-985d-8b6a8977f94c
+Puerto Rico,8433,PRI,630,FALSE,North America,b40f747b-fbe3-588e-ace0-1dde9fe9813a
+Qatar,8519,QAT,634,FALSE,Southern Asia,c31fe0b8-60e5-51bb-ab83-2f97fe05f5a3
+Republic of Korea,8539,KOR,410,FALSE,Eastern Asia,05f7f098-c430-5bd6-8a26-c5db7c145a87
+Republic of Moldova,8263,MDA,498,FALSE,Southeast Europe,28f9f970-7f7e-54f3-a630-0e340a249da0
+Romania,8232,ROU,642,FALSE,Southeast Europe,a0d246fb-c334-5b51-bfbc-70dac0386bfd
+Russian Federation,8264,RUS,643,FALSE,Northeast Europe,42451d4a-f7fb-5e5a-a298-4a4cb64e8695
+Rwanda,8341,RWA,646,FALSE,Eastern Africa,8c6304e0-9747-5cb5-afc9-46801b03931b
+Saint Kitts and Nevis,8445,KNA,659,FALSE,Central America,95eaa759-0cfc-5db1-8412-73c26b3438c0
+Saint Lucia,8443,LCA,662,FALSE,Central America,e764d467-7aa1-540a-898d-0e751e42570e
+Saint Vincent and the Grenadines,8444,VCT,670,FALSE,Central America,7347f967-336d-5ad8-8f06-e6e538af85c1
+Samoa,8612,WSM,882,FALSE,Oceania,fcf649d0-9d0b-5d08-ad3a-d88df5155600
+San Marino,8233,SMR,674,FALSE,Southern Europe,0af53e5e-4a7c-5328-95d3-8f5443a58dfb
+Sao Tome and Principe,8344,STP,678,FALSE,Southwest Africa,29e528c4-188c-54a7-9608-98f4143e8df6
+Saudi Arabia,8535,SAU,682,FALSE,Middle East,229a1338-ae91-5523-93e0-d22a9e47b009
+Senegal,8345,SEN,686,FALSE,Western Africa,8dcb2e0e-0f77-5036-b868-b5fae131a148
+Serbia,8248,SRB,688,FALSE,Southeast Europe,2b9f2e8b-519e-570f-a857-e229484dfc10
+Seychelles,8346,SYC,690,FALSE,Eastern Africa,70ed7e87-f10b-5136-b9f9-98897a461af6
+Sierra Leone,8347,SLE,694,FALSE,Western Africa,aa5254c3-1dae-588f-985d-ea21a025e368
+Singapore,8537,SGP,702,FALSE,Southeast Asia,b258f7fb-37c4-5c46-85c4-9fe1589fbafc
+Slovakia,8243,SVK,703,FALSE,Central Europe,31eab670-6e86-5058-a5d1-bddfe5a78705
+Slovenia,8251,SVN,705,FALSE,Central Europe,891aa217-fdfd-5142-8572-9926c60744b5
+Solomon Islands,8614,SLB,90,FALSE,Oceania,8ae5514f-009e-5aec-8ff6-a5b971922275
+Somalia,8348,SOM,706,FALSE,Eastern Africa,5b8ee013-a368-5ee6-8ba3-1e6b71f47136
+South Africa,8349,ZAF,710,FALSE,Southern Africa,1ad078b0-efc2-5495-b895-afb2bbf628b3
+South Sudan,8363,SSD,728,FALSE,Central Africa,6846393d-3714-57b8-a04f-7124b146c6d6
+Spain,8236,ESP,724,FALSE,Southern Europe,7d6f68a0-c727-5411-927d-86de78739613
+Sri Lanka,8506,LKA,144,FALSE,Southern Asia,142ac733-b912-5763-8702-f3301cc23108
+State of Palestine,8550,PSE,275,FALSE,Middle East,a1c41a0c-778f-52a0-9094-cdc52fb45020
+Sudan,8350,SDN,729,FALSE,Northeast Africa,02e57011-b220-5ed6-9fd1-096a8f56af92
+Suriname,8435,SUR,740,FALSE,South America,8ffbe5b4-2764-51c3-8f40-7bb711d33721
+Sweden,8234,SWE,752,FALSE,Northern Europe,36a90c0b-f1f3-564d-ae17-1a32f824c0ad
+Switzerland,8100,CHE,756,FALSE,Central Europe,2c8cae92-201d-5c85-a19c-427fde13db5d
+Syrian Arab Republic,8541,SYR,760,FALSE,Middle East,d5c850f1-c7b8-5b27-a271-7f6fcc1ce53a
+Tajikistan,8565,TJK,762,FALSE,Central Asia,71f435a9-7edc-59e3-9e4d-74b668b5e783
+Thailand,8542,THA,764,FALSE,Southeast Asia,43f561a5-611f-57f9-ad63-f3c74cc50972
+Timor-Leste,8547,TLS,626,FALSE,Southeast Asia,6946cd05-f60a-504a-9594-86bb72319134
+Togo,8354,TGO,768,FALSE,Western Africa,d765b70b-981c-579c-95c9-e57e87728c4e
+Tokelau,8684,TKL,772,FALSE,Oceania,6359d30c-28e4-5b76-9186-18b2c6721add
+Tonga,8610,TON,776,FALSE,Oceania,5bf00a25-d287-5ebb-b838-11aa377b6ab5
+Trinidad and Tobago,8436,TTO,780,FALSE,Central America,83884e7b-60b7-59d7-9e85-2ccc75192c03
+Tunisia,8357,TUN,788,FALSE,Northern Africa,d2987152-04de-546c-8435-d7d19444fc68
+Turkey,8239,TUR,792,FALSE,Middle East,944df035-be6e-5088-9800-4b4b3cf5395d
+Turkmenistan,8566,TKM,795,FALSE,Central Asia,925128ec-8719-59cb-b1ae-66594be69030
+Tuvalu,8615,TUV,798,FALSE,Oceania,f652db6f-e351-5e43-afbe-e47ecf3b3a41
+Uganda,8358,UGA,800,FALSE,Eastern Africa,32c3af1c-e447-5fc5-a15d-9474ddf24633
+Ukraine,8265,UKR,804,FALSE,Eastern Europe,a09b843f-6331-5241-8810-514900052e7a
+United Arab Emirates,8532,ARE,784,FALSE,Southwest Asia,4924be20-b902-5bbe-9b62-be564694080d
+United Kingdom of Great Britain and Northern Ireland,8215,GBR,826,FALSE,Northern Europe,5b96ab9a-0ac3-5e63-b67f-da251c1d1869
+United Republic of Tanzania,8353,TZA,834,FALSE,Eastern Africa,6dcf5262-c635-55c1-9cfb-d80f94623c0b
+United States of America,8439,USA,840,FALSE,North America,19b56174-ad83-5317-961b-2f671a914ca6
+Uruguay,8437,URY,858,FALSE,South America,eb470bb4-127b-5067-bfe3-6e09456463f4
+Uzbekistan,8567,UZB,860,FALSE,Central Asia,4fd4af99-1a33-5c54-9943-7aabeea74e41
+Vanuatu,8605,VUT,548,FALSE,Oceania,a2713af2-1263-5392-ac49-1f5da8ba8e30
+Vatican City,8241,VAT,336,FALSE,Southern Europe,ec744d4c-60c7-52c1-958f-e05530cd9b93
+Venezuela (Bolivarian Republic of),8438,VEN,862,FALSE,South America,6719f143-ad7e-5e56-8e85-143a159a4181
+Viet Nam,8545,VNM,704,FALSE,Southeast Asia,ebcf3dc6-e1a0-55ef-9293-d383dff94495
+Yemen,8516,YEM,887,FALSE,Middle East,87cad2ab-ade0-5624-93a7-0f069eea0d49
+Zambia,8343,ZMB,894,FALSE,Southern Africa,dc4855a4-ec30-5abc-b894-c9d14e246d1f
+Zimbabwe,8340,ZWE,716,FALSE,Southern Africa,1834a962-a368-5dbe-805c-20f630d5eb11

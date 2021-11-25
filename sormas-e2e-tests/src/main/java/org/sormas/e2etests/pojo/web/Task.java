@@ -38,11 +38,11 @@ public class Task {
   String priority;
   String commentsOnTask;
   String commentsOnExecution;
-  String taskStatus;
   String associatedLink;
   String region;
   String district;
   String createdBy;
+  String taskStatus;
   LocalDateTime suggestedStartDateTime;
   LocalDateTime dueDateDateTime;
 }

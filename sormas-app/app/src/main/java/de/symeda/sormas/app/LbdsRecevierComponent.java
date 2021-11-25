@@ -171,11 +171,11 @@ public class LbdsRecevierComponent extends IntentService {
 			String uuid = caseDataDto.getUuid();
 			PushResult pushResult = responsePushResults.get(i);
 			if (pushResult == PushResult.OK) {
-				Log.i("SORMAS_LBDS", "Process PushResult " + pushResult + " for PersonDto " + uuid);
+				Log.i("SORMAS_LBDS", "Process PushResult " + pushResult + " for CaseDataDto " + uuid);
 				lbdsSyncDao.logLbdsReceive(uuid);
 				successful++;
 			} else {
-				Log.i("SORMAS_LBDS", "Ignore PushResult " + pushResult + " for PersonDto " + uuid);
+				Log.i("SORMAS_LBDS", "Ignore PushResult " + pushResult + " for CaseDataDto " + uuid);
 				ignored++;
 			}
 		}

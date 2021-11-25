@@ -34,7 +34,11 @@ import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.importexport.ExportPropertyMetaInfo;
 import de.symeda.sormas.api.importexport.ExportType;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
+import de.symeda.sormas.api.person.PersonCriteria;
+import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.ui.utils.ContactDownloadUtil;
+import de.symeda.sormas.ui.utils.PersonDownloadUtil;
+import de.symeda.sormas.ui.utils.TaskDownloadUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class CustomExportController {
@@ -43,11 +47,40 @@ public class CustomExportController {
 		Window customExportWindow = VaadinUiUtil.createPopupWindow();
 		ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
 			ExportType.CONTACT,
-			ImportExportUtils.getContactExportProperties(ContactDownloadUtil::getPropertyCaption),
+			ImportExportUtils
+				.getContactExportProperties(ContactDownloadUtil::getPropertyCaption, FacadeProvider.getConfigFacade().getCountryLocale()),
 			customExportWindow::close);
-		customExportsLayout.setExportCallback((exportConfig) -> {
-			Page.getCurrent().open(ContactDownloadUtil.createContactExportResource(contactCriteria, selectedRows, exportConfig), null, true);
-		});
+		customExportsLayout.setExportCallback(
+			exportConfig -> Page.getCurrent()
+				.open(ContactDownloadUtil.createContactExportResource(contactCriteria, selectedRows, exportConfig), null, true));
+		customExportWindow.setWidth(1024, Sizeable.Unit.PIXELS);
+		customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCustom));
+		customExportWindow.setContent(customExportsLayout);
+		UI.getCurrent().addWindow(customExportWindow);
+	}
+
+	public void openTaskExportWindow(TaskCriteria taskCriteria, Supplier<Collection<String>> selectedRows) {
+		Window customExportWindow = VaadinUiUtil.createPopupWindow();
+		ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
+			ExportType.TASK,
+			ImportExportUtils.getTaskExportProperties(TaskDownloadUtil::getPropertyCaption, FacadeProvider.getConfigFacade().getCountryLocale()),
+			customExportWindow::close);
+		customExportsLayout.setExportCallback(
+			exportConfig -> Page.getCurrent().open(TaskDownloadUtil.createTaskExportResource(taskCriteria, selectedRows, exportConfig), null, true));
+		customExportWindow.setWidth(1024, Sizeable.Unit.PIXELS);
+		customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCustom));
+		customExportWindow.setContent(customExportsLayout);
+		UI.getCurrent().addWindow(customExportWindow);
+	}
+
+	public void openPersonExportWindow(PersonCriteria personCriteria) {
+		Window customExportWindow = VaadinUiUtil.createPopupWindow();
+		ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
+			ExportType.PERSON,
+			ImportExportUtils.getPersonExportProperties(PersonDownloadUtil::getPropertyCaption, FacadeProvider.getConfigFacade().getCountryLocale()),
+			customExportWindow::close);
+		customExportsLayout.setExportCallback(
+			exportConfig -> Page.getCurrent().open(PersonDownloadUtil.createPersonExportResource(personCriteria, exportConfig), null, true));
 		customExportWindow.setWidth(1024, Sizeable.Unit.PIXELS);
 		customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCustom));
 		customExportWindow.setContent(customExportsLayout);

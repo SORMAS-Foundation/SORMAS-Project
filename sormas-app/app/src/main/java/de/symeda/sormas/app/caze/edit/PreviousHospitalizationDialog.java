@@ -24,13 +24,14 @@ import android.util.Log;
 import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
+import de.symeda.sormas.app.backend.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.dialog.FormDialog;
@@ -39,6 +40,7 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogPreviousHospitalizationLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 
 public class PreviousHospitalizationDialog extends FormDialog {
 
@@ -61,6 +63,19 @@ public class PreviousHospitalizationDialog extends FormDialog {
 			UiFieldAccessCheckers.forSensitiveData(previousHospitalization.isPseudonymized()));
 
 		this.data = previousHospitalization;
+
+		if (data.getId() != null) {
+			if (data.getRegion() == null) {
+				data.setRegion(InfrastructureDaoHelper.unknownRegion);
+			}
+			if (data.getDistrict() == null) {
+				data.setDistrict(InfrastructureDaoHelper.unknownDistrict);
+			}
+			if (data.getHealthFacility() == null) {
+				data.setHealthFacility(InfrastructureDaoHelper.unknownFacility);
+			}
+		}
+
 		this.create = create;
 	}
 
@@ -81,6 +96,7 @@ public class PreviousHospitalizationDialog extends FormDialog {
 		contentBinding.casePreviousHospitalizationDischargeDate.initializeDateField(getFragmentManager());
 		contentBinding.casePreviousHospitalizationIntensiveCareUnitStart.initializeDateField(getFragmentManager());
 		contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd.initializeDateField(getFragmentManager());
+		contentBinding.casePreviousHospitalizationIsolationDate.initializeDateField(getFragmentManager());
 
 		if (data.getId() == null) {
 			setLiveValidationDisabled(true);
@@ -104,7 +120,7 @@ public class PreviousHospitalizationDialog extends FormDialog {
 		InfrastructureDaoHelper.initializeHealthFacilityDetailsFieldVisibility(
 			contentBinding.casePreviousHospitalizationHealthFacility,
 			contentBinding.casePreviousHospitalizationHealthFacilityDetails);
-		InfrastructureDaoHelper.initializeFacilityFields(
+		InfrastructureFieldsDependencyHandler.withUnknownValues.initializeFacilityFields(
 			data,
 			contentBinding.casePreviousHospitalizationRegion,
 			initialRegions,
@@ -138,6 +154,16 @@ public class PreviousHospitalizationDialog extends FormDialog {
 		} catch (ValidationException e) {
 			NotificationHelper.showDialogNotification(PreviousHospitalizationDialog.this, ERROR, e.getMessage());
 			return;
+		}
+
+		if (InfrastructureDaoHelper.isUnknownRegion(data.getRegion())) {
+			data.setRegion(null);
+		}
+		if (InfrastructureDaoHelper.isUnknownDistrict(data.getDistrict())) {
+			data.setDistrict(null);
+		}
+		if (InfrastructureDaoHelper.isUnknownFacility(data.getHealthFacility())) {
+			data.setHealthFacility(null);
 		}
 
 		super.setCloseOnPositiveButtonClick(true);

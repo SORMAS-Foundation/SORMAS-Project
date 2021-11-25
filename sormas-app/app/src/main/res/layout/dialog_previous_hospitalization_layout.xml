@@ -45,6 +45,11 @@
 
             <requestFocus/>
 
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/casePreviousHospitalization_admittedToHealthFacility"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.admittedToHealthFacility}" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -93,13 +98,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/casePreviousHospitalization_region"
                     app:required="true"
                     app:value="@={data.region}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/casePreviousHospitalization_district"
                     app:required="true"
                     app:value="@={data.district}"
@@ -112,12 +117,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/casePreviousHospitalization_community"
                     app:value="@={data.community}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/casePreviousHospitalization_healthFacility"
                     app:required="true"
                     app:value="@={data.healthFacility}"
@@ -135,6 +140,13 @@
                 android:id="@+id/casePreviousHospitalization_isolated"
                 app:value="@={data.isolated}"
                 style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlDateField
+                android:id="@+id/casePreviousHospitalization_isolationDate"
+                style="@style/ControlSingleColumnStyle"
+                dependencyParentField="@{casePreviousHospitalizationIsolated}"
+                dependencyParentValue="@{YesNoUnknown.YES}"
+                app:value="@={data.isolationDate}" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/casePreviousHospitalization_hospitalizationReason"

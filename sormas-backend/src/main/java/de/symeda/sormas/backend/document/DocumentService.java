@@ -14,17 +14,22 @@
  */
 package de.symeda.sormas.backend.document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -49,6 +54,47 @@ public class DocumentService extends AdoServiceWithUserFilter<Document> {
 	}
 
 	public List<Document> getRelatedToEntity(DocumentRelatedEntityType type, String uuid) {
+		return getRelatedToEntity(type, uuid, null);
+	}
+
+	public List<Document> getRelatedToEntities(DocumentRelatedEntityType type, List<String> uuids, List<SortProperty> sortProperties) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Document> cq = cb.createQuery(getElementClass());
+		Root<Document> from = cq.from(getElementClass());
+		from.fetch(Document.UPLOADING_USER);
+
+		Predicate filter = cb.and(
+			cb.isFalse(from.get(Document.DELETED)),
+			cb.equal(from.get(Document.RELATED_ENTITY_TYPE), type),
+			cb.in(from.get(Document.RELATED_ENTITY_UUID)).value(uuids));
+
+		cq.where(filter);
+
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case DocumentDto.UUID:
+				case DocumentDto.NAME:
+				case DocumentDto.CONTENT_TYPE:
+				case DocumentDto.SIZE:
+					expression = from.get(sortProperty.propertyName);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(from.get(Document.CHANGE_DATE)));
+		}
+		cq.distinct(true);
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<Document> getRelatedToEntity(DocumentRelatedEntityType type, String uuid, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Document> cq = cb.createQuery(getElementClass());
 		Root<Document> from = cq.from(getElementClass());
@@ -60,9 +106,28 @@ public class DocumentService extends AdoServiceWithUserFilter<Document> {
 			cb.equal(from.get(Document.RELATED_ENTITY_UUID), uuid));
 
 		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(Document.CHANGE_DATE)));
-		cq.distinct(true);
 
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case DocumentDto.UUID:
+				case DocumentDto.NAME:
+				case DocumentDto.CONTENT_TYPE:
+				case DocumentDto.SIZE:
+					expression = from.get(sortProperty.propertyName);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(from.get(Document.CHANGE_DATE)));
+		}
+		cq.distinct(true);
 		return em.createQuery(cq).getResultList();
 	}
 

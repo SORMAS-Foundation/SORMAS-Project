@@ -22,8 +22,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -77,12 +79,14 @@ import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
@@ -208,7 +212,11 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		this.validate(dto);
 
-		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
+		if (dto.getVisitStatus().equals(VisitStatus.COOPERATIVE)) {
+			SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
+		} else {
+			dto.getSymptoms().setSymptomatic(null);
+		}
 		Visit entity = fromDto(dto, true);
 
 		visitService.ensurePersisted(entity);
@@ -219,7 +227,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	public ExternalVisitDto saveExternalVisit(final ExternalVisitDto dto) {
+	public ExternalVisitDto saveExternalVisit(@Valid final ExternalVisitDto dto) {
 
 		final String personUuid = dto.getPersonUuid();
 		final UserReferenceDto currentUser = new UserReferenceDto(userService.getCurrentUser().getUuid());
@@ -455,7 +463,11 @@ public class VisitFacadeEjb implements VisitFacade {
 		return resultList;
 	}
 
-	private Expression<Object> jurisdictionSelector(CriteriaQuery cq, CriteriaBuilder cb, Join<Visit, Case> caseJoin, Join<Visit, Contact> contactJoin) {
+	private Expression<Object> jurisdictionSelector(
+		CriteriaQuery cq,
+		CriteriaBuilder cb,
+		Join<Visit, Case> caseJoin,
+		Join<Visit, Contact> contactJoin) {
 		return JurisdictionHelper.booleanSelector(
 			cb,
 			cb.or(
@@ -569,33 +581,32 @@ public class VisitFacadeEjb implements VisitFacade {
 				}
 
 				Case contactCase = contact.getCaze();
-				List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
-					JurisdictionHelper.getContactRegions(contact),
-					UserRole.SURVEILLANCE_SUPERVISOR,
-					UserRole.CONTACT_SUPERVISOR);
-				for (User recipient : messageRecipients) {
-					try {
-						String messageContent;
-						if (contactCase != null) {
-							messageContent = String.format(
-								I18nProperties.getString(MessagingService.CONTENT_CONTACT_SYMPTOMATIC),
-								DataHelper.getShortUuid(contact.getUuid()),
-								DataHelper.getShortUuid(contactCase.getUuid()));
-						} else {
-							messageContent = String.format(
-								I18nProperties.getString(MessagingService.CONTENT_CONTACT_WITHOUT_CASE_SYMPTOMATIC),
-								DataHelper.getShortUuid(contact.getUuid()));
-						}
-
-						messagingService
-							.sendMessage(recipient, MessageSubject.CONTACT_SYMPTOMATIC, messageContent, MessageType.EMAIL, MessageType.SMS);
-					} catch (NotificationDeliveryFailedException e) {
-						logger.error(
-							String.format(
-								"EmailDeliveryFailedException when trying to notify supervisors about a contact that has become symptomatic. "
-									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-								recipient.getUuid()));
+				try {
+					String messageContent;
+					if (contactCase != null) {
+						messageContent = String.format(
+							I18nProperties.getString(MessageContents.CONTENT_CONTACT_SYMPTOMATIC),
+							DataHelper.getShortUuid(contact.getUuid()),
+							DataHelper.getShortUuid(contactCase.getUuid()));
+					} else {
+						messageContent = String.format(
+							I18nProperties.getString(MessageContents.CONTENT_CONTACT_WITHOUT_CASE_SYMPTOMATIC),
+							DataHelper.getShortUuid(contact.getUuid()));
 					}
+
+					messagingService.sendMessages(() -> {
+						final Map<User, String> mapToReturn = new HashMap<>();
+						userService
+							.getAllByRegionsAndUserRoles(
+								JurisdictionHelper.getContactRegions(contact),
+								UserRole.SURVEILLANCE_SUPERVISOR,
+								UserRole.CONTACT_SUPERVISOR)
+							.forEach(user -> mapToReturn.put(user, messageContent));
+						return mapToReturn;
+					}, MessageSubject.CONTACT_SYMPTOMATIC, MessageType.EMAIL, MessageType.SMS);
+				} catch (NotificationDeliveryFailedException e) {
+					logger.error(
+						String.format("EmailDeliveryFailedException when trying to notify supervisors about a contact that has become symptomatic."));
 				}
 			}
 		}
@@ -617,7 +628,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	private void updateContactVisitAssociations(VisitDto existingVisit, Visit visit) {
 
-		if (existingVisit != null && existingVisit.getVisitDateTime() == visit.getVisitDateTime()) {
+		if (existingVisit != null && Objects.equals(existingVisit.getVisitDateTime(), visit.getVisitDateTime())) {
 			// No need to update the associations
 			return;
 		}
@@ -632,7 +643,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	private void updateCaseVisitAssociations(VisitDto existingVisit, Visit visit) {
 
 		if (existingVisit != null
-			&& existingVisit.getVisitDateTime() == visit.getVisitDateTime()
+			&& Objects.equals(existingVisit.getVisitDateTime(), visit.getVisitDateTime())
 			&& existingVisit.getPerson().equals(visit.getPerson())) {
 			// No need to update the associations
 			return;

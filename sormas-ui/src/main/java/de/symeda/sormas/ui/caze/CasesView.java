@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.ui.caze;
 
 import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isDocGenerationAllowed;
@@ -168,7 +165,13 @@ public class CasesView extends AbstractView {
 		}
 
 		if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
-			grid = new CaseFollowUpGrid(criteria, new Date(), followUpRangeInterval, getClass());
+			if (criteria.getFollowUpVisitsInterval() == null) {
+				criteria.setFollowUpVisitsInterval(followUpRangeInterval);
+				grid = new CaseFollowUpGrid(criteria, getClass());
+			} else {
+				grid = new CaseFollowUpGrid(criteria, getClass());
+			}
+
 		} else {
 			criteria.followUpUntilFrom(null);
 			grid = CasesViewType.DETAILED.equals(viewConfiguration.getViewType()) ? new CaseGridDetailed(criteria) : new CaseGrid(criteria);
@@ -225,7 +228,12 @@ public class CasesView extends AbstractView {
 		ExportConfigurationDto config = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference(), ExportType.CASE);
 
 		config.setProperties(
-			ImportExportUtils.getCaseExportProperties(CaseDownloadUtil::getPropertyCaption, caseFollowUpEnabled, hasCaseManagementRight)
+			ImportExportUtils
+				.getCaseExportProperties(
+					CaseDownloadUtil::getPropertyCaption,
+					caseFollowUpEnabled,
+					hasCaseManagementRight,
+					FacadeProvider.getConfigFacade().getCountryLocale())
 				.stream()
 				.map(ExportPropertyMetaInfo::getPropertyId)
 				.collect(Collectors.toSet()));
@@ -368,7 +376,11 @@ public class CasesView extends AbstractView {
 
 					ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
 						ExportType.CASE,
-						ImportExportUtils.getCaseExportProperties(CaseDownloadUtil::getPropertyCaption, caseFollowUpEnabled, hasCaseManagementRight),
+						ImportExportUtils.getCaseExportProperties(
+							CaseDownloadUtil::getPropertyCaption,
+							caseFollowUpEnabled,
+							hasCaseManagementRight,
+							FacadeProvider.getConfigFacade().getCountryLocale()),
 						customExportWindow::close);
 					customExportsLayout.setExportCallback(
 						(exportConfig) -> Page.getCurrent()
@@ -380,6 +392,7 @@ public class CasesView extends AbstractView {
 					customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCaseCustom));
 					customExportWindow.setContent(customExportsLayout);
 					UI.getCurrent().addWindow(customExportWindow);
+					exportPopupButton.setPopupVisible(false);
 				}, ValoTheme.BUTTON_PRIMARY);
 				btnCustomCaseExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
 				btnCustomCaseExport.setWidth(100, Unit.PERCENTAGE);
@@ -502,7 +515,7 @@ public class CasesView extends AbstractView {
 
 		TextField searchField = new TextField();
 		Runnable confirmCallback = () -> {
-			String foundCaseUuid = FacadeProvider.getCaseFacade().getUuidByUuidEpidNumberOrExternalId(searchField.getValue());
+			String foundCaseUuid = FacadeProvider.getCaseFacade().getUuidByUuidEpidNumberOrExternalId(searchField.getValue(), null);
 
 			if (foundCaseUuid != null) {
 				ControllerProvider.getCaseController().navigateToCase(foundCaseUuid);
@@ -557,7 +570,7 @@ public class CasesView extends AbstractView {
 			// Follow-up overview scrolling
 			if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 				filterLayout.setWidth(100, Unit.PERCENTAGE);
-				HorizontalLayout scrollLayout = buildScrollLayout();
+				HorizontalLayout scrollLayout = dateRangeFollowUpVisitsFilterLayout();
 				actionButtonsLayout.addComponent(scrollLayout);
 
 			}
@@ -570,7 +583,9 @@ public class CasesView extends AbstractView {
 	}
 
 	private void reloadGrid() {
-		((CaseFollowUpGrid) grid).setVisitColumns(followUpToDate, followUpRangeInterval, criteria);
+		((CaseFollowUpGrid) grid).setVisitColumns(criteria);
+		criteria.setFollowUpVisitsTo(followUpToDate);
+		criteria.setFollowUpVisitsInterval(followUpRangeInterval);
 		((CaseFollowUpGrid) grid).reload();
 		updateStatusButtons();
 		buttonPreviousOrNextClick = false;
@@ -611,8 +626,7 @@ public class CasesView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (Objects.nonNull(UserProvider.getCurrent())
-					&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+			if (Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 				int daysAfterCaseGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterCaseGetsArchived();
 				if (daysAfterCaseGetsArchived > 0) {
 					relevanceStatusInfoLabel = new Label(
@@ -681,7 +695,7 @@ public class CasesView extends AbstractView {
 					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.sormasToSormasShare), VaadinIcons.SHARE, mi -> {
 						grid.bulkActionHandler(
 							items -> ControllerProvider.getSormasToSormasController().shareSelectedCases(items, () -> navigateTo(criteria)));
-					}, FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser()));
+					}, FacadeProvider.getSormasToSormasFacade().isSharingCasesContactsAndSamplesEnabledForUser()));
 					menuBarItems.add(
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
@@ -709,7 +723,6 @@ public class CasesView extends AbstractView {
 											I18nProperties.getString(Strings.messageNoCasesSelected),
 											Notification.Type.WARNING_MESSAGE,
 											false).show(Page.getCurrent());
-
 										return;
 									}
 
@@ -717,6 +730,38 @@ public class CasesView extends AbstractView {
 										.showQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_CASE);
 								});
 							}));
+					}
+
+					if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
+						menuBarItems.add(
+							new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.bulkLinkToEvent),
+								VaadinIcons.PHONE,
+								mi -> grid.bulkActionHandler(items -> {
+									List<CaseIndexDto> selectedCases =
+										caseGrid.asMultiSelect().getSelectedItems().stream().collect(Collectors.toList());
+
+									if (selectedCases.isEmpty()) {
+										new Notification(
+											I18nProperties.getString(Strings.headingNoCasesSelected),
+											I18nProperties.getString(Strings.messageNoCasesSelected),
+											Notification.Type.WARNING_MESSAGE,
+											false).show(Page.getCurrent());
+										return;
+									}
+
+									if (!selectedCases.stream()
+										.allMatch(caze -> caze.getDisease().equals(selectedCases.stream().findAny().get().getDisease()))) {
+										new Notification(
+											I18nProperties.getString(Strings.messageBulkCasesWithDifferentDiseasesSelected),
+											Notification.Type.WARNING_MESSAGE).show(Page.getCurrent());
+										return;
+									}
+
+									ControllerProvider.getEventController()
+										.selectOrCreateEventForCaseList(
+											selectedCases.stream().map(CaseIndexDto::toReference).collect(Collectors.toList()));
+								})));
 					}
 
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);
@@ -781,17 +826,22 @@ public class CasesView extends AbstractView {
 
 	private boolean isBulkEditAllowed() {
 		return UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)
-			|| FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser();
+			|| FacadeProvider.getSormasToSormasFacade().isSharingCasesContactsAndSamplesEnabledForUser();
 	}
 
-	private HorizontalLayout buildScrollLayout() {
+	private HorizontalLayout dateRangeFollowUpVisitsFilterLayout() {
 		HorizontalLayout scrollLayout = new HorizontalLayout();
 		scrollLayout.setMargin(false);
 
-		DateField toReferenceDate = new DateField(I18nProperties.getCaption(Captions.to), LocalDate.now());
+		DateField toReferenceDate = criteria.getFollowUpVisitsTo() == null
+			? new DateField(I18nProperties.getCaption(Captions.to), LocalDate.now())
+			: new DateField(I18nProperties.getCaption(Captions.to), DateHelper8.toLocalDate(criteria.getFollowUpVisitsTo()));
 		toReferenceDate.setId("toReferenceDateField");
-		LocalDate fromReferenceLocal =
-			DateHelper8.toLocalDate(DateHelper.subtractDays(DateHelper8.toDate(LocalDate.now()), followUpRangeInterval - 1));
+
+		LocalDate fromReferenceLocal = criteria.getFollowUpVisitsFrom() == null
+			? DateHelper8.toLocalDate(DateHelper.subtractDays(DateHelper8.toDate(LocalDate.now()), followUpRangeInterval - 1))
+			: DateHelper8.toLocalDate(criteria.getFollowUpVisitsFrom());
+
 		DateField fromReferenceDate = new DateField(I18nProperties.getCaption(Captions.from), fromReferenceLocal);
 		fromReferenceDate.setId("fromReferenceDateField");
 
@@ -808,7 +858,9 @@ public class CasesView extends AbstractView {
 				followUpRangeInterval = newFollowUpRangeInterval;
 				buttonPreviousOrNextClick = true;
 				toReferenceDate.setValue(toReferenceDateValue.minusDays(followUpRangeInterval));
+				criteria.setFollowUpVisitsTo(DateHelper8.toDate(toReferenceDate.getValue()));
 				fromReferenceDate.setValue(fromReferenceDateValue.minusDays(followUpRangeInterval));
+				criteria.setFollowUpVisitsInterval(followUpRangeInterval);
 			} else {
 				Notification.show(
 					String.format(I18nProperties.getString(Strings.messageSelectedPeriodTooLong), MAX_FOLLOW_UP_VIEW_DAYS),
@@ -819,7 +871,7 @@ public class CasesView extends AbstractView {
 
 		fromReferenceDate.addValueChangeListener(e -> {
 			Date newFromDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
-			if (newFromDate.equals(criteria.getFollowUpUntilFrom())) {
+			if (newFromDate.equals(criteria.getFollowUpVisitsFrom())) {
 				return;
 			}
 
@@ -833,22 +885,24 @@ public class CasesView extends AbstractView {
 
 			if (newFollowUpRangeInterval <= MAX_FOLLOW_UP_VIEW_DAYS) {
 				applyingCriteria = true;
-				criteria.followUpUntilFrom(DateHelper.getStartOfDay(newFromDate));
+				criteria.setFollowUpVisitsFrom(DateHelper.getStartOfDay(newFromDate));
 				applyingCriteria = false;
 				followUpRangeInterval = newFollowUpRangeInterval;
+				criteria.setFollowUpVisitsInterval(followUpRangeInterval);
+				followUpToDate = criteria.getFollowUpVisitsTo();
 				reloadGrid();
 			} else {
 				Notification.show(
 					String.format(I18nProperties.getString(Strings.messageSelectedPeriodTooLong), MAX_FOLLOW_UP_VIEW_DAYS),
 					Notification.Type.WARNING_MESSAGE);
-				fromReferenceDate.setValue(DateHelper8.toLocalDate(criteria.getFollowUpUntilFrom()));
+				fromReferenceDate.setValue(DateHelper8.toLocalDate(criteria.getFollowUpVisitsFrom()));
 			}
 		});
 		scrollLayout.addComponent(fromReferenceDate);
 
 		toReferenceDate.addValueChangeListener(e -> {
 			Date newFollowUpToDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
-			if (newFollowUpToDate.equals(criteria.getFollowUpUntilTo())) {
+			if (newFollowUpToDate.equals(criteria.getFollowUpVisitsTo())) {
 				return;
 			}
 
@@ -864,9 +918,11 @@ public class CasesView extends AbstractView {
 				followUpToDate = newFollowUpToDate;
 				applyingCriteria = true;
 				criteria.reportDateTo(DateHelper.getEndOfDay(followUpToDate));
+				criteria.setFollowUpVisitsTo(followUpToDate);
 				applyingCriteria = false;
 				if (!buttonPreviousOrNextClick) {
 					followUpRangeInterval = newFollowUpRangeInterval;
+					criteria.setFollowUpVisitsInterval(followUpRangeInterval);
 					reloadGrid();
 				}
 			} else {
@@ -892,7 +948,9 @@ public class CasesView extends AbstractView {
 				followUpRangeInterval = newFollowUpRangeInterval;
 				buttonPreviousOrNextClick = true;
 				toReferenceDate.setValue(toReferenceDateValue.plusDays(followUpRangeInterval));
+				criteria.setFollowUpVisitsTo(DateHelper8.toDate(toReferenceDate.getValue()));
 				fromReferenceDate.setValue(fromReferenceDateValue.plusDays(followUpRangeInterval));
+				criteria.setFollowUpVisitsInterval(followUpRangeInterval);
 			} else {
 				Notification.show(
 					String.format(I18nProperties.getString(Strings.messageSelectedPeriodTooLong), MAX_FOLLOW_UP_VIEW_DAYS),

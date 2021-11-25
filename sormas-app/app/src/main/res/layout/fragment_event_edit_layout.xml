@@ -33,6 +33,7 @@
         <import type="de.symeda.sormas.api.event.InstitutionalPartnerType" />
         <import type="de.symeda.sormas.api.Disease" />
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
+        <import type="de.symeda.sormas.api.disease.DiseaseVariant" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.event.Event"/>
         <variable name="eventManagementStatusClass" type="Class" />
@@ -96,6 +97,7 @@
                 style="@style/ControlSingleColumnStyle"
                 app:enumClass="@{eventStatusClass}"
                 app:required="true"
+                app:nullable="false"
                 app:value="@={data.eventStatus}"/>
 
 
@@ -116,30 +118,30 @@
                 app:enumClass="@{riskLevelClass}"
                 app:value="@={data.riskLevel}"/>
 
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/event_specificRisk"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.specificRisk}"/>
+
             <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                 android:id="@+id/event_multiDayEvent"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={isMultiDayEvent}" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <de.symeda.sormas.app.component.controls.ControlDateField
+            <de.symeda.sormas.app.component.controls.ControlDateTimeField
                 android:id="@+id/event_startDate"
-                style="@style/ControlFirstOfTwoColumnsStyle"
+                style="@style/ControlSingleColumnStyle"
                 app:softRequired="true"
                 app:value="@={data.startDate}" />
 
-            <de.symeda.sormas.app.component.controls.ControlDateField
+            <de.symeda.sormas.app.component.controls.ControlDateTimeField
                 android:id="@+id/event_endDate"
-                style="@style/ControlSecondOfTwoColumnsStyle"
+                style="@style/ControlSingleColumnStyle"
                 app:dependencyParentField="@{eventMultiDayEvent}"
                 app:dependencyParentValue="@{true}"
                 app:softRequired="true"
                 app:allowedDaysInFuture="365"
                 app:value="@={data.endDate}" />
-        </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlDateField
                 android:id="@+id/event_evolutionDate"
@@ -251,6 +253,14 @@
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/event_diseaseVariant"
                 app:value="@={data.diseaseVariant}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/event_diseaseVariantDetails"
+                app:value="@={data.diseaseVariantDetails}"
+                app:customizableEnumField="@{eventDiseaseVariant}"
+                app:customizableEnumProperty="@{DiseaseVariant.HAS_DETAILS}"
+                app:customizableEnumValue="@{Boolean.TRUE}"
                 style="@style/ControlSingleColumnStyle" />
 
             <LinearLayout

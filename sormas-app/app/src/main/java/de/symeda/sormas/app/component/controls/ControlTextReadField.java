@@ -15,6 +15,12 @@
 
 package de.symeda.sormas.app.component.controls;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -29,12 +35,6 @@ import androidx.databinding.BindingAdapter;
 import androidx.databinding.BindingMethod;
 import androidx.databinding.BindingMethods;
 import androidx.databinding.InverseBindingListener;
-
-import org.apache.commons.lang3.StringUtils;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Date;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -448,9 +448,20 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 	@BindingAdapter(value = {
 		"dateTimeValue",
 		"valueFormat",
-		"defaultValue" }, requireAll = false)
-	public static void setDateTimeValue(ControlTextReadField textField, Date dateValue, String valueFormat, String defaultValue) {
-		setValue(textField, dateValue != null ? DateFormatHelper.formatLocalDateTime(dateValue) : null, null, valueFormat, defaultValue, dateValue);
+		"defaultValue",
+		"appendValue"}, requireAll = false)
+	public static void setDateTimeValue(ControlTextReadField textField, Date dateValue, String valueFormat, String defaultValue, Date appendDateValue) {
+		String appendValue = appendDateValue != null ? DateFormatHelper.formatLocalDateTime(appendDateValue) : null;
+		String stringValue;
+		if (dateValue != null) {
+			stringValue = DateFormatHelper.formatLocalDateTime(dateValue);
+		} else {
+			stringValue = appendValue;
+			appendValue = null;
+		}
+
+
+		setValue(textField, stringValue, appendValue, valueFormat, defaultValue, dateValue);
 	}
 
 	// Short uuid

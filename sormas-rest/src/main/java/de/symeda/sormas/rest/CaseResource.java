@@ -32,6 +32,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -43,6 +45,7 @@ import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.utils.Experimental;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Path("/cases")
@@ -116,6 +119,14 @@ public class CaseResource extends EntityDtoResource {
 		return FacadeProvider.getCaseFacade().getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
+	/**
+	 * 
+	 * @param criteriaWithSorting
+	 *            - The criteria object inside criteriaWithSorting cannot be null. Use an empty criteria instead.
+	 * @param offset
+	 * @param size
+	 * @return
+	 */
 	@POST
 	@Path("/detailedIndexList")
 	public Page<CaseIndexDetailedDto> getIndexDetailedList(
@@ -134,13 +145,37 @@ public class CaseResource extends EntityDtoResource {
 
 	@POST
 	@Path("/externalData")
-	public Response updateExternalData(List<ExternalDataDto> externalData) {
+	public Response updateExternalData(@Valid List<ExternalDataDto> externalData) {
 		try {
 			FacadeProvider.getCaseFacade().updateExternalData(externalData);
 			return Response.status(Response.Status.OK).build();
 		} catch (ExternalDataUpdateException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
+	}
+
+	/**
+	 * This endpoint is used to partially update the CaseData.
+	 * For allowing only a subset of the fields of the caseDataDto to be updated
+	 * THIS METHOD IS EXPERIMENTAL!!!
+	 * 
+	 * @param uuid
+	 * @param caseDataDtoJson
+	 *            - a subset of caseDataDto fields, same structure as caseDataDto
+	 * @return - the updated caseDataDto
+	 * @throws Exception
+	 */
+	@POST
+	@Path("/postUpdate/{uuid}")
+	@Experimental
+	public CaseDataDto postUpdate(@PathParam("uuid") String uuid, JsonNode caseDataDtoJson) throws Exception {
+		return FacadeProvider.getCaseFacade().postUpdate(uuid, caseDataDtoJson);
+	}
+
+	@POST
+	@Path("/delete")
+	public List<String> delete(List<String> uuids) {
+		return FacadeProvider.getCaseFacade().deleteCases(uuids);
 	}
 
 }

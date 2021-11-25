@@ -39,10 +39,10 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -122,7 +122,7 @@ public class WeeklyReportService extends AdoServiceWithUserFilter<WeeklyReport> 
 
 		User currentUser = getCurrentUser();
 		// National users can access all reports in the system
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
 		if (currentUser == null
 			|| (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
 			|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {
@@ -159,7 +159,7 @@ public class WeeklyReportService extends AdoServiceWithUserFilter<WeeklyReport> 
 			return usersStream;
 		}
 
-		final JurisdictionLevel jurisdictionLevel = user.getJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = user.getCalculatedJurisdictionLevel();
 		// National users can access all reports in the system
 		if (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(user.getUserRoles())) {
 			return usersStream;

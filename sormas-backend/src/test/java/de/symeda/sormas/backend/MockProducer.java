@@ -38,11 +38,13 @@ import javax.mail.Session;
 import javax.transaction.UserTransaction;
 
 import de.symeda.sormas.api.utils.InfoProvider;
+import de.symeda.sormas.backend.central.EtcdCentralClient;
+import de.symeda.sormas.backend.central.EtcdCentralClientProducer;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasRestClient;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasRestClientProducer;
+import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
+import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
+import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClientProducer;
 
 /**
  * Creates mocks for resources needed in bean test / external services.
@@ -51,25 +53,29 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasRestClientProducer;
  */
 public class MockProducer {
 
-	private static final SessionContext sessionContext = mock(SessionContext.class);
-	private static final Principal principal = mock(Principal.class);
-	private static final Topic topic = mock(Topic.class);
-	private static final ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
-	private static final TimerService timerService = mock(TimerService.class);
-	public static final Properties properties = new Properties();
-	private static final UserTransaction userTransaction = mock(UserTransaction.class);
-	private static final SormasToSormasRestClient SORMAS_TO_SORMAS_REST_CLIENT = mock(SormasToSormasRestClient.class);
-	private static final ManagedScheduledExecutorService managedScheduledExecutorService = mock(ManagedScheduledExecutorService.class);
 	private static final String TMP_PATH = "target/tmp";
+
+	private static SessionContext sessionContext = mock(SessionContext.class);
+	private static Principal principal = mock(Principal.class);
+	private static Topic topic = mock(Topic.class);
+	private static ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
+	private static TimerService timerService = mock(TimerService.class);
+	private static Properties properties = new Properties();
+	private static UserTransaction userTransaction = mock(UserTransaction.class);
+	private static SormasToSormasRestClient s2sRestClient = mock(SormasToSormasRestClient.class);
+	private static final EtcdCentralClient etcdCentralClient = mock(EtcdCentralClient.class);
+	private static ManagedScheduledExecutorService managedScheduledExecutorService = mock(ManagedScheduledExecutorService.class);
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
+	static {
+		// Make sure that the default session does not use a local mail server (if mock-javamail is removed)
+		Properties props = new Properties();
+		props.setProperty("mail.host", "non@existent");
+		mailSession = Session.getInstance(props);
+	}
 
 	static {
-		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME, "nigeria");
-		properties.setProperty(ConfigFacadeEjb.CSV_SEPARATOR, ";");
-		properties.setProperty(ConfigFacadeEjb.TEMP_FILES_PATH, TMP_PATH);
-
 		try {
 			Field instance = InfoProvider.class.getDeclaredField("instance");
 			instance.setAccessible(true);
@@ -83,9 +89,6 @@ public class MockProducer {
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
-
-		// Make sure that the default session does not use a local mail server (if mock-javamail is removed)
-		mailSession = Session.getInstance(properties);
 	}
 
 	static {
@@ -94,16 +97,17 @@ public class MockProducer {
 
 	public static void resetMocks() {
 
-		reset(
-			sessionContext,
-			principal,
-			topic,
-			connectionFactory,
-			timerService,
-			userTransaction,
-			SORMAS_TO_SORMAS_REST_CLIENT,
-			managedScheduledExecutorService);
+		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction, s2sRestClient, managedScheduledExecutorService);
 		wireMocks();
+		resetProperties();
+	}
+
+	private static void resetProperties() {
+
+		properties.clear();
+		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME, "nigeria");
+		properties.setProperty(ConfigFacadeEjb.CSV_SEPARATOR, ";");
+		properties.setProperty(ConfigFacadeEjb.TEMP_FILES_PATH, TMP_PATH);
 	}
 
 	public static void wireMocks() {
@@ -152,7 +156,7 @@ public class MockProducer {
 	}
 
 	public static SormasToSormasRestClient getSormasToSormasClient() {
-		return SORMAS_TO_SORMAS_REST_CLIENT;
+		return s2sRestClient;
 	}
 
 	@Specializes
@@ -161,10 +165,26 @@ public class MockProducer {
 		@Override
 		@Produces
 		public SormasToSormasRestClient sormasToSormasClient(
-			ServerAccessDataService serverAccessDataService,
-			SormasToSormasEncryptionService encryptionService) {
-			return SORMAS_TO_SORMAS_REST_CLIENT;
+			SormasToSormasDiscoveryService sormasToSormasDiscoveryService,
+			SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb,
+			ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
+			return s2sRestClient;
 		}
+	}
+
+	public static EtcdCentralClient getEtcdCentralClient() {
+		return etcdCentralClient;
+	}
+
+	@Specializes
+	public static class MockEtcdCentralClientProducer extends EtcdCentralClientProducer {
+
+		@Override
+		@Produces
+		public EtcdCentralClient etcdCentralClient(ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
+			return etcdCentralClient;
+		}
+
 	}
 
 	@Produces

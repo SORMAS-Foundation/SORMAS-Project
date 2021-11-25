@@ -1,55 +1,59 @@
 package de.symeda.sormas.backend.labmessage;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.api.labmessage.LabMessageStatus;
-import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.sample.SpecimenCondition;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.sample.PathogenTest;
-import de.symeda.sormas.backend.sample.PathogenTestService;
-import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sample.SampleService;
-import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.xml.crypto.Data;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.labmessage.LabMessageStatus;
+import de.symeda.sormas.api.labmessage.TestReportDto;
+import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 
-import static org.mockito.Mockito.when;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleService;
+import junit.framework.TestCase;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LabMessageFacadeEjbMappingTest extends TestCase {
 
 	@Mock
-	private SampleService sampleService;
-
+	private TestReportFacadeEjb.TestReportFacadeEjbLocal testReportFacade;
 	@Mock
-	private PathogenTestService pathogenTestService;
-
+	private SampleService sampleService;
 	@InjectMocks
 	private LabMessageFacadeEjb sut;
 
 	@Test
-	public void testFromDto() {;
-		PathogenTest pathogenTest = new PathogenTest();
-		pathogenTest.setUuid(DataHelper.createUuid());
-		PathogenTestReferenceDto pathogenTestReference = pathogenTest.toReference();
-		when(pathogenTestService.getByReferenceDto(pathogenTestReference)).thenReturn(pathogenTest);
+	public void testFromDto() {
 
 		LabMessageDto source = new LabMessageDto();
 
+		TestReport testReport = new TestReport();
+		TestReportDto testReportDto = TestReportFacadeEjb.toDto(testReport);
+
+		Sample sample = new Sample();
+		sample.setUuid("Uuid");
+		SampleReferenceDto sampleRef = sample.toReference();
+
+		when(sampleService.getByReferenceDto(sampleRef)).thenReturn(sample);
+		when(testReportFacade.fromDto(eq(testReportDto), any(LabMessage.class), eq(false))).thenReturn(testReport);
+
+		source.addTestReport(testReportDto);
 		source.setCreationDate(new Date());
 		source.setChangeDate(new Date());
 		source.setUuid("UUID");
@@ -59,16 +63,12 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setLabSampleId("Lab Sample Id");
 		source.setSampleMaterial(SampleMaterial.NASAL_SWAB);
 		source.setSampleMaterialText("Sample material text");
-		source.setTestLabName("Test Lab Name");
-		source.setTestLabExternalId("Test Lab External Id");
-		source.setTestLabPostalCode("Test Lab Postal Code");
-		source.setTestLabCity("Test Lab City");
+		source.setLabName("Test Lab Name");
+		source.setLabExternalId("Test Lab External Id");
+		source.setLabPostalCode("Test Lab Postal Code");
+		source.setLabCity("Test Lab City");
 		source.setSpecimenCondition(SpecimenCondition.ADEQUATE);
-		source.setTestType(PathogenTestType.PCR_RT_PCR);
 		source.setTestedDisease(Disease.CORONAVIRUS);
-		source.setTestDateTime(new Date());
-		source.setTestResult(PathogenTestResultType.NEGATIVE);
-		source.setTestResultVerified(true);
 		source.setPersonFirstName("Person First Name");
 		source.setPersonLastName("Person Last Name");
 		source.setPersonSex(Sex.OTHER);
@@ -82,10 +82,12 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setPersonPhone("0123456789");
 		source.setPersonEmail("mail@domain.com");
 		source.setLabMessageDetails("Lab Message Details");
-		source.setPathogenTest(pathogenTestReference);
+		source.setSampleOverallTestResult(PathogenTestResultType.POSITIVE);
+		source.setSample(sampleRef);
 
 		LabMessage result = sut.fromDto(source, null, true);
 
+		assertEquals(source.getTestReports(), result.getTestReports());
 		assertNotSame(source.getCreationDate().getTime(), result.getCreationDate().getTime());
 		assertNotSame(source.getChangeDate(), result.getChangeDate());
 		assertEquals(source.getUuid(), result.getUuid());
@@ -95,15 +97,12 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getLabSampleId(), result.getLabSampleId());
 		assertEquals(source.getSampleMaterial(), result.getSampleMaterial());
 		assertEquals(source.getSampleMaterialText(), result.getSampleMaterialText());
-		assertEquals(source.getTestLabName(), result.getTestLabName());
-		assertEquals(source.getTestLabExternalId(), result.getTestLabExternalId());
-		assertEquals(source.getTestLabPostalCode(), result.getTestLabPostalCode());
-		assertEquals(source.getTestLabCity(), result.getTestLabCity());
+		assertEquals(source.getLabName(), result.getLabName());
+		assertEquals(source.getLabExternalId(), result.getLabExternalId());
+		assertEquals(source.getLabPostalCode(), result.getLabPostalCode());
+		assertEquals(source.getLabCity(), result.getLabCity());
 		assertEquals(source.getSpecimenCondition(), result.getSpecimenCondition());
-		assertEquals(source.getTestType(), result.getTestType());
 		assertEquals(source.getTestedDisease(), result.getTestedDisease());
-		assertEquals(source.getTestDateTime(), result.getTestDateTime());
-		assertEquals(source.getTestResult(), result.getTestResult());
 		assertEquals(source.getPersonFirstName(), result.getPersonFirstName());
 		assertEquals(source.getPersonLastName(), result.getPersonLastName());
 		assertEquals(source.getPersonSex(), result.getPersonSex());
@@ -115,16 +114,26 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getPersonStreet(), result.getPersonStreet());
 		assertEquals(source.getPersonHouseNumber(), result.getPersonHouseNumber());
 		assertEquals(source.getLabMessageDetails(), result.getLabMessageDetails());
-		assertEquals(source.getPathogenTest().getUuid(), result.getPathogenTest().getUuid());
+		assertEquals(source.getSampleOverallTestResult(), result.getSampleOverallTestResult());
+		assertEquals(sample, result.getSample());
 	}
 
 	@Test
 	public void testToDto() {
-		PathogenTest pathogenTest = new PathogenTest();
-		pathogenTest.setUuid(DataHelper.createUuid());
-
 		LabMessage source = new LabMessage();
 
+		TestReport testReport = new TestReport();
+		ArrayList<TestReport> testReports = new ArrayList<>();
+		testReports.add(testReport);
+
+		TestReportDto testReportDto = TestReportFacadeEjb.toDto(testReport);
+		ArrayList<TestReportDto> testReportDtos = new ArrayList<>();
+		testReportDtos.add(testReportDto);
+
+		Sample sample = new Sample();
+		sample.setUuid("Uuid");
+
+		source.setTestReports(testReports);
 		source.setCreationDate(new Timestamp(new Date().getTime()));
 		source.setChangeDate(new Timestamp(new Date().getTime()));
 		source.setUuid("UUID");
@@ -134,15 +143,12 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setLabSampleId("Lab Sample Id");
 		source.setSampleMaterial(SampleMaterial.NASAL_SWAB);
 		source.setSampleMaterialText("Sample material text");
-		source.setTestLabName("Test Lab Name");
-		source.setTestLabExternalId("Test Lab External Id");
-		source.setTestLabPostalCode("Test Lab Postal Code");
-		source.setTestLabCity("Test Lab City");
+		source.setLabName("Test Lab Name");
+		source.setLabExternalId("Test Lab External Id");
+		source.setLabPostalCode("Test Lab Postal Code");
+		source.setLabCity("Test Lab City");
 		source.setSpecimenCondition(SpecimenCondition.ADEQUATE);
-		source.setTestType(PathogenTestType.PCR_RT_PCR);
 		source.setTestedDisease(Disease.CORONAVIRUS);
-		source.setTestDateTime(new Date());
-		source.setTestResult(PathogenTestResultType.NEGATIVE);
 		source.setPersonFirstName("Person First Name");
 		source.setPersonLastName("Person Last Name");
 		source.setPersonSex(Sex.OTHER);
@@ -157,10 +163,12 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setPersonEmail("mail@domain.com");
 		source.setLabMessageDetails("Lab Message Details");
 		source.setStatus(LabMessageStatus.PROCESSED);
-		source.setPathogenTest(pathogenTest);
+		source.setSampleOverallTestResult(PathogenTestResultType.NEGATIVE);
+		source.setSample(sample);
 
 		LabMessageDto result = sut.toDto(source);
 
+		assertEquals(testReportDtos, result.getTestReports());
 		assertNotSame(source.getCreationDate().getTime(), result.getCreationDate().getTime());
 		assertEquals(source.getChangeDate(), result.getChangeDate());
 		assertEquals(source.getUuid(), result.getUuid());
@@ -170,15 +178,12 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getLabSampleId(), result.getLabSampleId());
 		assertEquals(source.getSampleMaterial(), result.getSampleMaterial());
 		assertEquals(source.getSampleMaterialText(), result.getSampleMaterialText());
-		assertEquals(source.getTestLabName(), result.getTestLabName());
-		assertEquals(source.getTestLabExternalId(), result.getTestLabExternalId());
-		assertEquals(source.getTestLabPostalCode(), result.getTestLabPostalCode());
-		assertEquals(source.getTestLabCity(), result.getTestLabCity());
+		assertEquals(source.getLabName(), result.getLabName());
+		assertEquals(source.getLabExternalId(), result.getLabExternalId());
+		assertEquals(source.getLabPostalCode(), result.getLabPostalCode());
+		assertEquals(source.getLabCity(), result.getLabCity());
 		assertEquals(source.getSpecimenCondition(), result.getSpecimenCondition());
-		assertEquals(source.getTestType(), result.getTestType());
 		assertEquals(source.getTestedDisease(), result.getTestedDisease());
-		assertEquals(source.getTestDateTime(), result.getTestDateTime());
-		assertEquals(source.getTestResult(), result.getTestResult());
 		assertEquals(source.getPersonFirstName(), result.getPersonFirstName());
 		assertEquals(source.getPersonLastName(), result.getPersonLastName());
 		assertEquals(source.getPersonSex(), result.getPersonSex());
@@ -190,7 +195,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getPersonStreet(), result.getPersonStreet());
 		assertEquals(source.getPersonHouseNumber(), result.getPersonHouseNumber());
 		assertEquals(source.getLabMessageDetails(), result.getLabMessageDetails());
-		assertEquals(source.getPathogenTest().getUuid(), result.getPathogenTest().getUuid());
+		assertEquals(source.getSampleOverallTestResult(), result.getSampleOverallTestResult());
+		assertEquals(source.getSample().toReference(), result.getSample());
 	}
-
 }

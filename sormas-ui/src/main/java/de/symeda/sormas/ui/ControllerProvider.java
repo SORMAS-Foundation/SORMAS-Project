@@ -31,6 +31,7 @@ import de.symeda.sormas.ui.docgeneration.DocGenerationController;
 import de.symeda.sormas.ui.events.EventController;
 import de.symeda.sormas.ui.events.EventGroupController;
 import de.symeda.sormas.ui.events.EventParticipantsController;
+import de.symeda.sormas.ui.immunization.ImmunizationController;
 import de.symeda.sormas.ui.labmessage.LabMessageController;
 import de.symeda.sormas.ui.person.PersonController;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportController;
@@ -44,6 +45,7 @@ import de.symeda.sormas.ui.therapy.TherapyController;
 import de.symeda.sormas.ui.travelentry.TravelEntryController;
 import de.symeda.sormas.ui.user.UserController;
 import de.symeda.sormas.ui.utils.BaseControllerProvider;
+import de.symeda.sormas.ui.vaccination.VaccinationController;
 import de.symeda.sormas.ui.visit.VisitController;
 
 public class ControllerProvider extends BaseControllerProvider {
@@ -75,6 +77,8 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final SurveillanceReportController surveillanceReportController;
 	private final DocGenerationController docGenerationController;
 	private final TravelEntryController travelEntryController;
+	private final ImmunizationController immunizationController;
+	private final VaccinationController vaccinationController;
 
 	public ControllerProvider() {
 		super();
@@ -106,6 +110,8 @@ public class ControllerProvider extends BaseControllerProvider {
 		surveillanceReportController = new SurveillanceReportController();
 		docGenerationController = new DocGenerationController();
 		travelEntryController = new TravelEntryController();
+		immunizationController = new ImmunizationController();
+		vaccinationController = new VaccinationController();
 	}
 
 	protected static ControllerProvider get() {
@@ -218,5 +224,13 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static TravelEntryController getTravelEntryController() {
 		return get().travelEntryController;
+	}
+
+	public static ImmunizationController getImmunizationController() {
+		return get().immunizationController;
+	}
+
+	public static VaccinationController getVaccinationController() {
+		return get().vaccinationController;
 	}
 }

@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import javax.validation.Valid;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
@@ -61,9 +63,11 @@ public class EpiDataDto extends PseudonymizableDto {
 	private YesNoUnknown areaInfectedAnimals;
 
 	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+	@Valid
 	private List<ExposureDto> exposures = new ArrayList<>();
 
 	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+	@Valid
 	private List<ActivityAsCaseDto> activitiesAsCase = new ArrayList<>();
 
 	public YesNoUnknown getExposureDetailsKnown() {

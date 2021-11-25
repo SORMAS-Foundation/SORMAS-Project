@@ -15,12 +15,19 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+
 import java.io.Serializable;
+
+import javax.validation.constraints.Size;
+
+import de.symeda.sormas.api.i18n.Validations;
 
 public class SormasToSormasOptionsDto implements Serializable {
 
 	public static final String I18N_PREFIX = "SormasToSormasOptions";
 
+	// Fixme this should be renamed
 	public static final String ORGANIZATION = "organization";
 	public static final String HAND_OVER_OWNERSHIP = "handOverOwnership";
 	public static final String PSEUDONYMIZE_PERSONAL_DATA = "pseudonymizePersonalData";
@@ -30,8 +37,10 @@ public class SormasToSormasOptionsDto implements Serializable {
 	public static final String WITH_ASSOCIATED_CONTACTS = "withAssociatedContacts";
 	public static final String WITH_SAMPLES = "withSamples";
 	public static final String WITH_EVENT_PARTICIPANTS = "withEventParticipants";
+	public static final String WITH_IMMUNIZATIONS = "withImmunizations";
 
-	private ServerAccessDataReferenceDto organization;
+	// Fixme this should be renamed but it has strange side effects with the UI
+	private SormasServerDescriptor organization;
 
 	private boolean handOverOwnership;
 
@@ -39,6 +48,7 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	private boolean pseudonymizeSensitiveData;
 
+	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String comment;
 
 	private boolean withAssociatedContacts;
@@ -47,11 +57,14 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	private boolean withEventParticipants;
 
-	public ServerAccessDataReferenceDto getOrganization() {
+	private boolean withImmunizations;
+
+	// FIXME(#6101): This should be renamed as it is the target of the operation
+	public SormasServerDescriptor getOrganization() {
 		return organization;
 	}
 
-	public void setOrganization(ServerAccessDataReferenceDto organization) {
+	public void setOrganization(SormasServerDescriptor organization) {
 		this.organization = organization;
 	}
 
@@ -109,5 +122,13 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	public void setWithEventParticipants(boolean withEventParticipants) {
 		this.withEventParticipants = withEventParticipants;
+	}
+
+	public boolean isWithImmunizations() {
+		return withImmunizations;
+	}
+
+	public void setWithImmunizations(boolean withImmunizations) {
+		this.withImmunizations = withImmunizations;
 	}
 }

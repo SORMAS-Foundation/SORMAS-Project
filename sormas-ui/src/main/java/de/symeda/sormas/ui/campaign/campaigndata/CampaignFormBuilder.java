@@ -49,7 +49,7 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
-import de.symeda.sormas.ui.utils.NumberValidator;
+import de.symeda.sormas.ui.utils.NumberNumericValueValidator;
 import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
 
 public class CampaignFormBuilder {
@@ -220,7 +220,8 @@ public class CampaignFormBuilder {
 			}
 
 			if (type == CampaignFormElementType.NUMBER) {
-				((TextField) field).addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, caption)));
+				((TextField) field)
+					.addValidator(new NumberNumericValueValidator(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, caption)));
 			}
 		}
 

@@ -6,6 +6,7 @@ public enum ExportType {
 	CONTACT,
 	EVENT_PARTICIPANTS,
 	VISIT,
-	SAMPLE;
-
+	SAMPLE,
+	TASK,
+	PERSON
 }

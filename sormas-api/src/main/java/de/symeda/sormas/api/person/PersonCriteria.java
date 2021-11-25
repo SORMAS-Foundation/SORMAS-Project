@@ -1,11 +1,18 @@
 package de.symeda.sormas.api.person;
 
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class PersonCriteria extends BaseCriteria implements Cloneable {
+
+	private static final long serialVersionUID = 122163596976927524L;
+
+	/**
+	 * If nothing explicitly is selected, this {@link PersonAssociation} is selected by default (because there has to be a selection).
+	 */
+	public static final PersonAssociation DEFAULT_ASSOCIATION = PersonAssociation.ALL;
 
 	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
 	public static final String BIRTHDATE_MM = "birthdateMM";
@@ -26,6 +33,11 @@ public class PersonCriteria extends BaseCriteria implements Cloneable {
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
 	private PersonAssociation personAssociation;
+
+	public PersonCriteria() {
+
+		personAssociation = DEFAULT_ASSOCIATION;
+	}
 
 	public Integer getBirthdateYYYY() {
 		return birthdateYYYY;
@@ -101,11 +113,20 @@ public class PersonCriteria extends BaseCriteria implements Cloneable {
 	}
 
 	public void setPersonAssociation(PersonAssociation personAssociation) {
+		validate(personAssociation);
 		this.personAssociation = personAssociation;
 	}
 
 	public PersonCriteria personAssociation(PersonAssociation personAssociation) {
+		validate(personAssociation);
 		this.personAssociation = personAssociation;
 		return this;
+	}
+
+	private void validate(PersonAssociation personAssociation) {
+
+		if (personAssociation == null) {
+			throw new IllegalArgumentException("Define a 'personAssociation', null is not allowed");
+		}
 	}
 }

@@ -25,6 +25,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sample.SampleCriteria;
+import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -38,6 +39,10 @@ public class QuarantineOrderDocumentsComponent extends AbstractDocumentGeneratio
 
 	public static void addComponentToLayout(CustomLayout targetLayout, ContactReferenceDto contact) {
 		addComponentToLayout(targetLayout, contact, DocumentWorkflow.QUARANTINE_ORDER_CONTACT, new SampleCriteria().contact(contact));
+	}
+
+	public static void addComponentToLayout(CustomLayout targetLayout, TravelEntryReferenceDto contact) {
+		addComponentToLayout(targetLayout, contact, DocumentWorkflow.QUARANTINE_ORDER_TRAVEL_ENTRY, null);
 	}
 
 	public static void addComponentToLayout(
@@ -54,8 +59,8 @@ public class QuarantineOrderDocumentsComponent extends AbstractDocumentGeneratio
 
 	public QuarantineOrderDocumentsComponent(ReferenceDto referenceDto, DocumentWorkflow workflow, SampleCriteria sampleCriteria) {
 		super();
-		addDocumentBar(() -> {
-			ControllerProvider.getDocGenerationController().showQuarantineOrderDocumentDialog(referenceDto, workflow, sampleCriteria);
-		}, Captions.DocumentTemplate_QuarantineOrder);
+		addDocumentBar(
+			() -> ControllerProvider.getDocGenerationController().showQuarantineOrderDocumentDialog(referenceDto, workflow, sampleCriteria),
+			Captions.DocumentTemplate_QuarantineOrder);
 	}
 }

@@ -17,7 +17,9 @@ package de.symeda.sormas.api.sormastosormas.sharerequest;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.HasUuid;
@@ -25,14 +27,21 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.FieldConstraints;
+import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
-public class SormasToSormasCasePreview implements HasUuid, Serializable {
+public class SormasToSormasCasePreview extends PseudonymizableDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = -5346989433141136006L;
 	public static final String I18N_PREFIX = "CaseData";
@@ -56,9 +65,10 @@ public class SormasToSormasCasePreview implements HasUuid, Serializable {
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 
-	private String uuid;
 	private Date reportDate;
 	private Disease disease;
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
 	private CaseClassification caseClassification;
@@ -68,24 +78,29 @@ public class SormasToSormasCasePreview implements HasUuid, Serializable {
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	@PersonalData
+	@SensitiveData
 	private CommunityReferenceDto community;
 	private FacilityType facilityType;
+	@PersonalData
+	@SensitiveData
 	private FacilityReferenceDto healthFacility;
+	@PersonalData
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
+	@PersonalData
+	@SensitiveData
 	private PointOfEntryReferenceDto pointOfEntry;
+	@PersonalData
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String pointOfEntryDetails;
 
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
+	@Valid
 	private SormasToSormasPersonPreview person;
-
-	private List<SormasToSormasContactPreview> contacts;
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
 
 	public Date getReportDate() {
 		return reportDate;
@@ -221,13 +236,5 @@ public class SormasToSormasCasePreview implements HasUuid, Serializable {
 
 	public void setPerson(SormasToSormasPersonPreview person) {
 		this.person = person;
-	}
-
-	public List<SormasToSormasContactPreview> getContacts() {
-		return contacts;
-	}
-
-	public void setContacts(List<SormasToSormasContactPreview> contacts) {
-		this.contacts = contacts;
 	}
 }

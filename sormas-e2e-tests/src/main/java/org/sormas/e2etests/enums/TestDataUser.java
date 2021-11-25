@@ -22,20 +22,28 @@ import lombok.Getter;
 
 @Getter
 public enum TestDataUser {
-  NATIONAL_USER("NatUser", "NatUser38118", "National User"),
-  CONTACT_SUPERVISOR("ContSup", "ContSup38118", "Contact Supervisor"),
-  SURVEILLANCE_OFFICER("SurvOff", "SurvOff38118", "Surveillance Officer"),
-  LABORATORY_OFFICER("LabOff", "LabOff38118", "Laboratory Officer"),
-  ADMIN_USER("automation_admin", "DbXC5Yimro9m", "Admin User");
+  NATIONAL_USER("NatUser", "NatUser38118", "National User", "XXFIKA-I653UK-XTLOIT-VWZYKGXY"),
+  CONTACT_SUPERVISOR(
+      "ContSup", "ContSup38118", "Contact Supervisor", "U77AIW-PC5LLO-VHEUOW-K3KZKF6E"),
+  SURVEILLANCE_OFFICER(
+      "SurvOff", "SurvOff38118", "Surveillance Officer", "Q2IYCN-TNYTOY-4OAYCA-DW662MTA"),
+  LABORATORY_OFFICER(
+      "LabOff", "LabOff38118", "Laboratory Officer", "UAAXB6-G6KRR2-YD7IDA-GJV2SM3A"),
+  POINT_OF_ENTRY_SUPERVISOR(
+      "PoeSup", "PoeSup38118", "Point of Entry Supervisor", "SJDRMA-6MGKJ4-I2GYDU-U3HCSE3M"),
+  ADMIN_USER("automation_admin", "DbXC5Yimro9m", "Admin User", "W5QCZW-XLFVFT-E5MK66-O3SUKE7E"),
+  REST_AUTOMATION("RestAuto", "umpQyGMSq4zy", "Rest AUTOMATION", "QLW4AN-TGWLRA-3UQVEM-WCDFCIVM");
 
   private final String username;
   private final String password;
   private final String userRole;
+  private final String uuid;
 
-  TestDataUser(String username, String password, String userRole) {
+  TestDataUser(String username, String password, String userRole, String uuid) {
     this.username = username;
     this.password = password;
     this.userRole = userRole;
+    this.uuid = uuid;
   }
 
   public static Stream<TestDataUser> stream() {

@@ -42,6 +42,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
+
 /**
  * Creates mocks for resources needed in bean test / external services. <br />
  * Use {@link Mailbox#get (String)} to retrieve e-mails sent (receiver address passed).

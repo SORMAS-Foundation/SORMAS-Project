@@ -23,7 +23,7 @@ public class DateFormatHelper {
 	}
 
 	public static String formatBirthdate(Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY) {
-		return PersonHelper.formatBirthdate(birthdateDD, birthdateMM, birthdateYYYY, I18nProperties.getUserLanguage());
+		return DateHelper.formatLocalDate(birthdateDD, birthdateMM, birthdateYYYY, I18nProperties.getUserLanguage());
 	}
 
 	public static String getAgeAndBirthdateString(
@@ -32,7 +32,7 @@ public class DateFormatHelper {
 		Integer birthdateDD,
 		Integer birthdateMM,
 		Integer birthdateYYYY) {
-		return PersonHelper.getAgeAndBirthdateString(age, ageType, birthdateDD, birthdateMM, birthdateYYYY, I18nProperties.getUserLanguage());
+		return PersonHelper.getAgeAndBirthdateString(age, ageType, birthdateDD, birthdateMM, birthdateYYYY);
 	}
 
 	public static String formatDateInterval(Date startDate, Date endDate) {

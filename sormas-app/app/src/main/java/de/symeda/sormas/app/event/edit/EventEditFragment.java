@@ -40,12 +40,13 @@ import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.MedicallyAssociatedTransmissionMode;
 import de.symeda.sormas.api.event.ParenteralTransmissionMode;
 import de.symeda.sormas.api.event.RiskLevel;
+import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -58,8 +59,6 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.component.validation.ValidationHelper;
@@ -92,6 +91,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 	private List<Item> parenteralTransmissionModeList;
 	private List<Item> medicallyAssociatedTransmissionModeList;
 	private List<Item> infectionPathCertaintyList;
+	private List<Item> specificRiskList;
 
 	public static EventEditFragment newInstance(Event activityRootData) {
 		EventEditFragment fragment = newInstanceWithFieldCheckers(
@@ -131,7 +131,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 			contentBinding.eventEvolutionComment.setCaption(String.format(I18nProperties.getCaption(EVOLUTION_COMMENT_WITH_STATUS), statusCaption));
 		});
 
-		contentBinding.eventDisease.addValueChangedListener(f -> updateDiseaseVariantsField(contentBinding));
+		contentBinding.eventDisease.addValueChangedListener(f -> updateCustomizableEnumFields(contentBinding));
 	}
 
 	private void openAddressPopup(final FragmentEventEditLayoutBinding contentBinding) {
@@ -139,7 +139,13 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		final Location locationClone = (Location) location.clone();
 		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, false, null);
 		locationDialog.show();
-		locationDialog.setRequiredFieldsBasedOnCountry();
+		if (DatabaseHelper.getEventDao().hasAnyEventParticipantWithoutJurisdiction(record.getUuid())) {
+			locationDialog.getContentBinding().locationRegion.setRequired(true);
+			locationDialog.getContentBinding().locationDistrict.setRequired(true);
+			locationDialog.getContentBinding().locationCountry.setEnabled(false);
+		} else {
+			locationDialog.setRequiredFieldsBasedOnCountry();
+		}
 		locationDialog.setFacilityFieldsVisible(record.getTypeOfPlace() == TypeOfPlace.FACILITY, true);
 
 		locationDialog.setPositiveCallback(() -> {
@@ -184,10 +190,16 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 			diseaseList.add(DataUtils.toItem(record.getDisease()));
 		}
 		List<DiseaseVariant> diseaseVariants =
-				DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
+			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
 		diseaseVariantList = DataUtils.toItems(diseaseVariants);
 		if (record.getDiseaseVariant() != null && !diseaseVariants.contains(record.getDiseaseVariant())) {
 			diseaseVariantList.add(DataUtils.toItem(record.getDiseaseVariant()));
+		}
+		List<SpecificRisk> specificRisks =
+			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, record.getDisease());
+		specificRiskList = DataUtils.toItems(specificRisks);
+		if (record.getSpecificRisk() != null && !specificRisks.contains(record.getSpecificRisk())) {
+			specificRiskList.add(DataUtils.toItem(record.getSpecificRisk()));
 		}
 
 		eventIdentificationSourceList = DataUtils.getEnumItems(EventIdentificationSource.class, true);
@@ -234,17 +246,18 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.eventParenteralTransmissionMode.initializeSpinner(parenteralTransmissionModeList);
 		contentBinding.eventMedicallyAssociatedTransmissionMode.initializeSpinner(medicallyAssociatedTransmissionModeList);
 		contentBinding.eventInfectionPathCertainty.initializeSpinner(infectionPathCertaintyList);
+		contentBinding.eventSpecificRisk.initializeSpinner(specificRiskList);
 
 		// Initialize ControlDateFields
 		contentBinding.eventReportDateTime.initializeDateField(getFragmentManager());
 
-		contentBinding.eventStartDate.initializeDateField(getFragmentManager());
+		contentBinding.eventStartDate.initializeDateTimeField(getFragmentManager());
 		String startDateCaption = Boolean.TRUE.equals(contentBinding.eventMultiDayEvent.getValue())
 			? I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.START_DATE)
 			: I18nProperties.getCaption(Captions.singleDayEventDate);
 		contentBinding.eventStartDate.setCaption(startDateCaption);
 
-		contentBinding.eventEndDate.initializeDateField(getFragmentManager());
+		contentBinding.eventEndDate.initializeDateTimeField(getFragmentManager());
 
 		contentBinding.eventEventInvestigationStartDate.initializeDateField(getFragmentManager());
 		contentBinding.eventEventInvestigationEndDate.initializeDateField(getFragmentManager());
@@ -287,14 +300,34 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		}
 	}
 
-	private void updateDiseaseVariantsField(FragmentEventEditLayoutBinding contentBinding) {
+	private void updateCustomizableEnumFields(FragmentEventEditLayoutBinding contentBinding) {
+		// Disease variant
+		DiseaseVariant selectedVariant = (DiseaseVariant) contentBinding.eventDiseaseVariant.getValue();
 		List<DiseaseVariant> diseaseVariants =
-				DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
+			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
 		diseaseVariantList.clear();
 		diseaseVariantList.addAll(DataUtils.toItems(diseaseVariants));
 		contentBinding.eventDiseaseVariant.setSpinnerData(diseaseVariantList);
-		contentBinding.eventDiseaseVariant.setValue(null);
+		if (diseaseVariants.contains(selectedVariant)) {
+			contentBinding.eventDiseaseVariant.setValue(selectedVariant);
+		} else {
+			contentBinding.eventDiseaseVariant.setValue(null);
+		}
 		contentBinding.eventDiseaseVariant.setVisibility(diseaseVariants.isEmpty() ? GONE : VISIBLE);
+
+		// Specific risk
+		SpecificRisk selectedRisk = (SpecificRisk) contentBinding.eventSpecificRisk.getValue();
+		List<SpecificRisk> specificRisks =
+			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, record.getDisease());
+		specificRiskList.clear();
+		specificRiskList.addAll(DataUtils.toItems(specificRisks));
+		contentBinding.eventSpecificRisk.setSpinnerData(specificRiskList);
+		if (specificRisks.contains(selectedRisk)) {
+			contentBinding.eventSpecificRisk.setValue(selectedRisk);
+		} else {
+			contentBinding.eventSpecificRisk.setValue(null);
+		}
+		contentBinding.eventSpecificRisk.setVisibility(specificRisks.isEmpty() ? GONE : VISIBLE);
 	}
 
 	@Override

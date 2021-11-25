@@ -203,9 +203,12 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 			switch (visualizationChartType) {
 			case PIE:
 				return null;
+			//$CASES-OMITTED$
 			default:
 				break;
 			}
+			break;
+		//$CASES-OMITTED$
 		default:
 			break;
 		}
@@ -220,9 +223,12 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 			switch (visualizationChartType) {
 			case PIE:
 				return null;
+			//$CASES-OMITTED$
 			default:
 				break;
 			}
+			break;
+		//$CASES-OMITTED$
 		default:
 			break;
 		}

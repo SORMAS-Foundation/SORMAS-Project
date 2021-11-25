@@ -18,10 +18,16 @@ package de.symeda.sormas.api.feature;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface FeatureConfigurationFacade {
@@ -36,9 +42,17 @@ public interface FeatureConfigurationFacade {
 
 	List<FeatureConfigurationIndexDto> getFeatureConfigurations(FeatureConfigurationCriteria criteria, boolean includeInactive);
 
-	void saveFeatureConfigurations(Collection<FeatureConfigurationIndexDto> configurations, FeatureType featureType);
+	Map<Disease, List<FeatureConfigurationIndexDto>> getEnabledFeatureConfigurations(FeatureConfigurationCriteria criteria);
 
-	void saveFeatureConfiguration(FeatureConfigurationIndexDto configuration, FeatureType featureType);
+	Page<FeatureConfigurationIndexDto> getIndexPage(
+		@NotNull FeatureConfigurationCriteria criteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties);
+
+	void saveFeatureConfigurations(@Valid Collection<FeatureConfigurationIndexDto> configurations, FeatureType featureType);
+
+	void saveFeatureConfiguration(@Valid FeatureConfigurationIndexDto configuration, FeatureType featureType);
 
 	void deleteAllFeatureConfigurations(FeatureConfigurationCriteria criteria);
 
@@ -47,6 +61,12 @@ public interface FeatureConfigurationFacade {
 	boolean isFeatureDisabled(FeatureType featureType);
 
 	boolean isFeatureEnabled(FeatureType featureType);
+
+	/**
+	 * Checks whether the property of the specified feature type in the database equals to true.
+	 * If the property is not defined in the database, does the check against the property's default instead.
+	 */
+	boolean isPropertyValueTrue(FeatureType featureType, FeatureTypeProperty property);
 
 	boolean isAnySurveillanceEnabled();
 

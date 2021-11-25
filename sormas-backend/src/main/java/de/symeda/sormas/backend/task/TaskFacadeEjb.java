@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.task;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -50,6 +51,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -57,16 +59,18 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.messaging.MessageType;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.task.TaskExportDto;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskJurisdictionFlagsDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -76,25 +80,33 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.CronService;
+import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.location.LocationJoins;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
+import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -130,6 +142,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	private MessagingService messagingService;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private TravelEntryService travelEntryService;
 
 	public Task fromDto(TaskDto source, boolean checkChangeDate) {
 
@@ -143,6 +157,10 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setAssigneeReply(source.getAssigneeReply());
 		target.setCreatorUser(userService.getByReferenceDto(source.getCreatorUser()));
 		target.setCreatorComment(source.getCreatorComment());
+		if (source.getObserverUsers() != null) {
+			List<User> observerUsers = userService.getByReferenceDtos(source.getObserverUsers());
+			target.setObserverUsers(observerUsers);
+		}
 		target.setPriority(source.getPriority());
 		target.setDueDate(source.getDueDate());
 		target.setSuggestedStart(source.getSuggestedStart());
@@ -167,21 +185,31 @@ public class TaskFacadeEjb implements TaskFacade {
 				target.setCaze(caseService.getByReferenceDto(source.getCaze()));
 				target.setContact(null);
 				target.setEvent(null);
+				target.setTravelEntry(null);
 				break;
 			case CONTACT:
 				target.setCaze(null);
 				target.setContact(contactService.getByReferenceDto(source.getContact()));
 				target.setEvent(null);
+				target.setTravelEntry(null);
 				break;
 			case EVENT:
 				target.setCaze(null);
 				target.setContact(null);
 				target.setEvent(eventService.getByReferenceDto(source.getEvent()));
+				target.setTravelEntry(null);
+				break;
+			case TRAVEL_ENTRY:
+				target.setCaze(null);
+				target.setContact(null);
+				target.setEvent(null);
+				target.setTravelEntry(travelEntryService.getByReferenceDto(source.getTravelEntry()));
 				break;
 			case GENERAL:
 				target.setCaze(null);
 				target.setContact(null);
 				target.setEvent(null);
+				target.setTravelEntry(null);
 				break;
 			default:
 				throw new UnsupportedOperationException(source.getTaskContext() + " is not implemented");
@@ -209,6 +237,9 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setAssigneeReply(source.getAssigneeReply());
 		target.setCreatorUser(UserFacadeEjb.toReferenceDto(source.getCreatorUser()));
 		target.setCreatorComment(source.getCreatorComment());
+		if (source.getObserverUsers() != null) {
+			target.setObserverUsers(source.getObserverUsers().stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toSet()));
+		}
 		target.setPriority(source.getPriority());
 		target.setDueDate(source.getDueDate());
 		target.setSuggestedStart(source.getSuggestedStart());
@@ -220,6 +251,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
 		target.setContact(ContactFacadeEjb.toReferenceDto(source.getContact()));
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
+		target.setTravelEntry(TravelEntryFacadeEjb.toReferenceDto(source.getTravelEntry()));
 
 		target.setClosedLat(source.getClosedLat());
 		target.setClosedLon(source.getClosedLon());
@@ -232,11 +264,23 @@ public class TaskFacadeEjb implements TaskFacade {
 			}
 
 			if (source.getContact() != null) {
-				pseudonymizeContactReference(pseudonymizer, target.getContact(), taskJurisdictionFlagsDto.getContactInJurisdiction(), taskJurisdictionFlagsDto.getContactCaseInJurisdiction());
+				pseudonymizeContactReference(
+					pseudonymizer,
+					target.getContact(),
+					taskJurisdictionFlagsDto.getContactInJurisdiction(),
+					taskJurisdictionFlagsDto.getContactCaseInJurisdiction());
 			}
 
 			if (source.getEvent() != null) {
-				pseudonymizer.pseudonymizeDto(EventReferenceDto.class, target.getEvent(), taskJurisdictionFlagsDto.getEvenInJurisdiction(), null);
+				pseudonymizer.pseudonymizeDto(EventReferenceDto.class, target.getEvent(), taskJurisdictionFlagsDto.getEventInJurisdiction(), null);
+			}
+
+			if (source.getTravelEntry() != null) {
+				pseudonymizer.pseudonymizeDto(
+					TravelEntryReferenceDto.class,
+					target.getTravelEntry(),
+					taskJurisdictionFlagsDto.getTravelEntryInJurisdiction(),
+					null);
 			}
 		});
 
@@ -258,29 +302,30 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		if (ado.getTaskType() == TaskType.CONTACT_FOLLOW_UP && ado.getTaskStatus() == TaskStatus.DONE && ado.getContact() != null) {
-			List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
-				JurisdictionHelper.getContactRegions(ado.getContact()),
-				UserRole.SURVEILLANCE_SUPERVISOR,
-				UserRole.CASE_SUPERVISOR,
-				UserRole.CONTACT_SUPERVISOR);
-			for (User recipient : messageRecipients) {
-				try {
-					messagingService.sendMessage(
-						recipient,
-						MessageSubject.VISIT_COMPLETED,
-						String.format(
-							I18nProperties.getString(MessagingService.CONTENT_VISIT_COMPLETED),
-							DataHelper.getShortUuid(ado.getContact().getUuid()),
-							DataHelper.getShortUuid(ado.getAssigneeUser().getUuid())),
-						MessageType.EMAIL,
-						MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format(
-							"NotificationDeliveryFailedException when trying to notify supervisors about the completion of a follow-up visit. "
-								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-							recipient.getUuid()));
-				}
+			try {
+				messagingService.sendMessages(() -> {
+					final List<User> messageRecipients = new ArrayList<>(userService.getAllByRegionsAndUserRoles(
+						JurisdictionHelper.getContactRegions(ado.getContact()),
+						UserRole.SURVEILLANCE_SUPERVISOR,
+						UserRole.CASE_SUPERVISOR,
+						UserRole.CONTACT_SUPERVISOR));
+					if (ado.getObserverUsers() != null) {
+						messageRecipients.addAll(ado.getObserverUsers());
+					}
+					final Map<User, String> mapToReturn = new HashMap<>();
+					messageRecipients.forEach(
+						user -> mapToReturn.put(
+							user,
+							String.format(
+								I18nProperties.getString(MessageContents.CONTENT_VISIT_COMPLETED),
+								DataHelper.getShortUuid(ado.getContact().getUuid()),
+								DataHelper.getShortUuid(ado.getAssigneeUser().getUuid()))));
+					return mapToReturn;
+				}, MessageSubject.VISIT_COMPLETED, MessageType.EMAIL, MessageType.SMS);
+			} catch (NotificationDeliveryFailedException e) {
+				logger.error(
+					String
+						.format("NotificationDeliveryFailedException when trying to notify supervisors about the completion of a follow-up visit."));
 			}
 		}
 
@@ -361,57 +406,75 @@ public class TaskFacadeEjb implements TaskFacade {
 			.otherwise(
 				cb.selectCase()
 					.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.NAME))
-					.otherwise(joins.getEventRegion().get(District.NAME)));
+					.otherwise(
+						cb.selectCase()
+							.when(cb.isNotNull(joins.getEventRegion()), joins.getEventRegion().get(Region.NAME))
+							.otherwise(joins.getTravelEntryResponsibleRegion().get(Region.NAME))));
 
 		Expression<Object> district = cb.selectCase()
 			.when(cb.isNotNull(joins.getCaseDistrict()), joins.getCaseDistrict().get(District.NAME))
 			.otherwise(
 				cb.selectCase()
 					.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.NAME))
-					.otherwise(joins.getEventDistrict().get(District.NAME)));
+					.otherwise(
+						cb.selectCase()
+							.when(cb.isNotNull(joins.getEventDistrict()), joins.getEventDistrict().get(District.NAME))
+							.otherwise(joins.getTravelEntryResponsibleDistrict().get(District.NAME))));
 
 		Expression<Object> community = cb.selectCase()
 			.when(cb.isNotNull(joins.getCaseCommunity()), joins.getCaseCommunity().get(Community.NAME))
 			.otherwise(
 				cb.selectCase()
 					.when(cb.isNotNull(joins.getContactCommunity()), joins.getContactCommunity().get(Community.NAME))
-					.otherwise(joins.getEventCommunity().get(Community.NAME)));
+					.otherwise(
+						cb.selectCase()
+							.when(cb.isNotNull(joins.getEventCommunity()), joins.getEventCommunity().get(Community.NAME))
+							.otherwise(joins.getTravelEntryResponsibleCommunity().get(Community.NAME))));
 
 		List<Selection<?>> selections = new ArrayList<>(
-				Arrays.asList(
-			task.get(Task.UUID),
-			task.get(Task.TASK_CONTEXT),
-			joins.getCaze().get(Case.UUID),
-			joins.getCasePerson().get(Person.FIRST_NAME),
-			joins.getCasePerson().get(Person.LAST_NAME),
-			joins.getEvent().get(Event.UUID),
-			joins.getEvent().get(Event.EVENT_TITLE),
-			joins.getEvent().get(Event.DISEASE),
-			joins.getEvent().get(Event.DISEASE_DETAILS),
-			joins.getEvent().get(Event.EVENT_STATUS),
-			joins.getEvent().get(Event.EVENT_INVESTIGATION_STATUS),
-			joins.getEvent().get(Event.START_DATE),
-			joins.getContact().get(Contact.UUID),
-			joins.getContactPerson().get(Person.FIRST_NAME),
-			joins.getContactPerson().get(Person.LAST_NAME),
-			joins.getContactCasePerson().get(Person.FIRST_NAME),
-			joins.getContactCasePerson().get(Person.LAST_NAME),
-			task.get(Task.TASK_TYPE),
-			task.get(Task.PRIORITY),
-			task.get(Task.DUE_DATE),
-			task.get(Task.SUGGESTED_START),
-			task.get(Task.TASK_STATUS),
-			joins.getCreator().get(User.UUID),
-			joins.getCreator().get(User.FIRST_NAME),
-			joins.getCreator().get(User.LAST_NAME),
-			task.get(Task.CREATOR_COMMENT),
-			joins.getAssignee().get(User.UUID),
-			joins.getAssignee().get(User.FIRST_NAME),
-			joins.getAssignee().get(User.LAST_NAME),
-			task.get(Task.ASSIGNEE_REPLY),
-			region,
-			district,
-			community));
+			Arrays.asList(
+				task.get(Task.UUID),
+				task.get(Task.TASK_CONTEXT),
+				joins.getCaze().get(Case.UUID),
+				joins.getCasePerson().get(Person.FIRST_NAME),
+				joins.getCasePerson().get(Person.LAST_NAME),
+				joins.getEvent().get(Event.UUID),
+				joins.getEvent().get(Event.EVENT_TITLE),
+				joins.getEvent().get(Event.DISEASE),
+				joins.getEvent().get(Event.DISEASE_DETAILS),
+				joins.getEvent().get(Event.EVENT_STATUS),
+				joins.getEvent().get(Event.EVENT_INVESTIGATION_STATUS),
+				joins.getEvent().get(Event.START_DATE),
+				joins.getContact().get(Contact.UUID),
+				joins.getContactPerson().get(Person.FIRST_NAME),
+				joins.getContactPerson().get(Person.LAST_NAME),
+				joins.getContactCasePerson().get(Person.FIRST_NAME),
+				joins.getContactCasePerson().get(Person.LAST_NAME),
+				joins.getTravelEntry().get(TravelEntry.UUID),
+				joins.getTravelEntry().get(TravelEntry.EXTERNAL_ID),
+				joins.getTravelEntryPerson().get(Person.FIRST_NAME),
+				joins.getTravelEntryPerson().get(Person.LAST_NAME),
+				task.get(Task.TASK_TYPE),
+				task.get(Task.PRIORITY),
+				task.get(Task.DUE_DATE),
+				task.get(Task.SUGGESTED_START),
+				task.get(Task.TASK_STATUS),
+				cb.selectCase()
+					.when(cb.isNotNull(joins.getCaze()), joins.getCaze().get(Case.DISEASE))
+					.when(cb.isNotNull(joins.getContact()), joins.getContact().get(Contact.DISEASE))
+					.when(cb.isNotNull(joins.getEvent()), joins.getEvent().get(Event.DISEASE))
+					.otherwise(joins.getTravelEntry().get(TravelEntry.DISEASE)),
+				joins.getCreator().get(User.UUID),
+				joins.getCreator().get(User.FIRST_NAME),
+				joins.getCreator().get(User.LAST_NAME),
+				task.get(Task.CREATOR_COMMENT),
+				joins.getAssignee().get(User.UUID),
+				joins.getAssignee().get(User.FIRST_NAME),
+				joins.getAssignee().get(User.LAST_NAME),
+				task.get(Task.ASSIGNEE_REPLY),
+				region,
+				district,
+				community));
 
 		selections.addAll(taskService.getJurisdictionSelections(taskQueryContext));
 		cq.multiselect(selections);
@@ -505,28 +568,127 @@ public class TaskFacadeEjb implements TaskFacade {
 
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 			Pseudonymizer emptyValuePseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-			pseudonymizer.pseudonymizeDtoCollection(TaskIndexDto.class, tasks, t -> t.getTaskJurisdictionFlagsDto().getInJurisdiction(), (t, ignored) -> {
-				final TaskJurisdictionFlagsDto taskJurisdictionFlagsDto = t.getTaskJurisdictionFlagsDto();
-				if (t.getCaze() != null) {
-					emptyValuePseudonymizer
-						.pseudonymizeDto(CaseReferenceDto.class, t.getCaze(), taskJurisdictionFlagsDto.getCaseInJurisdiction(), null);
-				}
+			pseudonymizer
+				.pseudonymizeDtoCollection(TaskIndexDto.class, tasks, t -> t.getTaskJurisdictionFlagsDto().getInJurisdiction(), (t, ignored) -> {
+					final TaskJurisdictionFlagsDto taskJurisdictionFlagsDto = t.getTaskJurisdictionFlagsDto();
+					if (t.getCaze() != null) {
+						emptyValuePseudonymizer
+							.pseudonymizeDto(CaseReferenceDto.class, t.getCaze(), taskJurisdictionFlagsDto.getCaseInJurisdiction(), null);
+					}
 
-				if (t.getContact() != null) {
-					pseudonymizeContactReference(emptyValuePseudonymizer, t.getContact(), taskJurisdictionFlagsDto.getContactInJurisdiction(), taskJurisdictionFlagsDto.getContactCaseInJurisdiction());
-				}
+					if (t.getContact() != null) {
+						pseudonymizeContactReference(
+							emptyValuePseudonymizer,
+							t.getContact(),
+							taskJurisdictionFlagsDto.getContactInJurisdiction(),
+							taskJurisdictionFlagsDto.getContactCaseInJurisdiction());
+					}
 
-				if (t.getEvent() != null) {
-					emptyValuePseudonymizer
-						.pseudonymizeDto(EventReferenceDto.class, t.getEvent(), taskJurisdictionFlagsDto.getEvenInJurisdiction(), null);
-				}
-			}, true);
+					if (t.getEvent() != null) {
+						emptyValuePseudonymizer
+							.pseudonymizeDto(EventReferenceDto.class, t.getEvent(), taskJurisdictionFlagsDto.getEventInJurisdiction(), null);
+					}
+
+					if (t.getTravelEntry() != null) {
+						emptyValuePseudonymizer.pseudonymizeDto(
+							TravelEntryReferenceDto.class,
+							t.getTravelEntry(),
+							taskJurisdictionFlagsDto.getTravelEntryInJurisdiction(),
+							null);
+					}
+				}, true);
 		}
 
 		return tasks;
 	}
 
-	private void pseudonymizeContactReference(Pseudonymizer pseudonymizer, ContactReferenceDto contactReference, boolean isContactInJurisdiction, boolean isContactCaseInJurisdiction) {
+	@Override
+	public List<TaskExportDto> getExportList(TaskCriteria criteria, Collection<String> selectedRows, int first, int max) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<TaskExportDto> cq = cb.createQuery(TaskExportDto.class);
+		Root<Task> task = cq.from(Task.class);
+
+		TaskQueryContext<Task> taskQueryContext = new TaskQueryContext<>(cb, cq, task);
+		TaskJoins<Task> joins = (TaskJoins<Task>) taskQueryContext.getJoins();
+		CaseQueryContext<Task> caseQueryContext = new CaseQueryContext<>(cb, cq, joins.getCaze());
+		ContactQueryContext<Task> contactQueryContext = new ContactQueryContext<>(cb, cq, joins.getContact());
+
+		LocationJoins<Person> casePersonAddressJoins = joins.getCasePersonJoins().getAddressJoins();
+		LocationJoins<Person> contactPersonAddressJoins = joins.getContactPersonJoins().getAddressJoins();
+
+		//@formatter:off
+		cq.multiselect(task.get(Task.UUID), task.get(Task.TASK_CONTEXT),
+				joins.getCaze().get(Case.UUID), joins.getContact().get(Contact.UUID), joins.getEvent().get(Event.UUID),
+				task.get(Task.TASK_TYPE), task.get(Task.PRIORITY), task.get(Task.DUE_DATE), task.get(Task.SUGGESTED_START), task.get(Task.TASK_STATUS),
+				joins.getCreator().get(User.UUID), joins.getCreator().get(User.FIRST_NAME), joins.getCreator().get(User.LAST_NAME),
+				task.get(Task.CREATOR_COMMENT),
+				joins.getAssignee().get(User.UUID), joins.getAssignee().get(User.FIRST_NAME), joins.getAssignee().get(User.LAST_NAME),
+				task.get(Task.ASSIGNEE_REPLY),
+				CriteriaBuilderHelper.coalesce(cb, joins.getCaseRegion().get(Region.NAME), joins.getContactRegion().get(Region.NAME), joins.getEventRegion().get(Region.NAME)),
+				CriteriaBuilderHelper.coalesce(cb, joins.getCaseDistrict().get(District.NAME), joins.getContactDistrict().get(District.NAME), joins.getEventDistrict().get(District.NAME)),
+				CriteriaBuilderHelper.coalesce(cb, joins.getCaseCommunity().get(Community.NAME), joins.getContactCommunity().get(Community.NAME), joins.getEventCommunity().get(Community.NAME)),
+				getPersonFieldPath(cb, joins, Person.FIRST_NAME), getPersonFieldPath(cb, joins, Person.LAST_NAME), getPersonFieldPath(cb, joins, Person.SEX),
+				getPersonFieldPath(cb, joins, Person.BIRTHDATE_DD), getPersonFieldPath(cb, joins, Person.BIRTHDATE_MM), getPersonFieldPath(cb, joins, Person.BIRTHDATE_YYYY),
+				CriteriaBuilderHelper.coalesce(cb, casePersonAddressJoins.getRegion().get(Region.NAME), contactPersonAddressJoins.getRegion().get(Region.NAME)),
+				CriteriaBuilderHelper.coalesce(cb, casePersonAddressJoins.getDistrict().get(District.NAME), contactPersonAddressJoins.getDistrict().get(District.NAME)),
+				CriteriaBuilderHelper.coalesce(cb, casePersonAddressJoins.getCommunity().get(Community.NAME), contactPersonAddressJoins.getCommunity().get(Community.NAME)),
+				CriteriaBuilderHelper.coalesce(cb, casePersonAddressJoins.getFacility().get(Facility.NAME), contactPersonAddressJoins.getFacility().get(Facility.NAME)),
+				getPersonAddressFieldPath(cb, joins, Location.FACILITY_DETAILS),
+				getPersonAddressFieldPath(cb, joins, Location.CITY), getPersonAddressFieldPath(cb, joins, Location.STREET), getPersonAddressFieldPath(cb, joins, Location.HOUSE_NUMBER),
+				getPersonAddressFieldPath(cb, joins, Location.POSTAL_CODE),
+				CriteriaBuilderHelper.coalesce(cb, caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY), contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY)),
+				CriteriaBuilderHelper.coalesce(cb, caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_OWNER_SUBQUERY), contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_OWNER_SUBQUERY)),
+				CriteriaBuilderHelper.coalesce(cb, caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_EMAIL_SUBQUERY), contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_EMAIL_SUBQUERY)),
+				CriteriaBuilderHelper.coalesce(cb, caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_OTHER_CONTACT_DETAILS_SUBQUERY), contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_OTHER_CONTACT_DETAILS_SUBQUERY)),
+				JurisdictionHelper.booleanSelector(cb, taskService.inJurisdictionOrOwned(taskQueryContext))
+			);
+		//@formatter:on
+		Predicate filter = null;
+		if (criteria == null || !criteria.hasContextCriteria()) {
+			filter = taskService.createUserFilter(cb, cq, task);
+		} else {
+			filter = CriteriaBuilderHelper.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
+		}
+
+		if (criteria != null) {
+			Predicate criteriaFilter = taskService.buildCriteriaFilter(criteria, cb, task, joins);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		// Distinct is necessary here to avoid duplicate results due to the user role join in taskService.createAssigneeFilter
+		cq.distinct(true);
+
+		cq.orderBy(cb.desc(task.get(Task.DUE_DATE)));
+
+		List<TaskExportDto> tasks = QueryHelper.getResultList(em, cq, first, max);
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(
+			TaskExportDto.class,
+			tasks,
+			TaskExportDto::isInJurisdiction,
+			(t, inJurisdiction) -> pseudonymizer.pseudonymizeDto(BirthDateDto.class, t.getPersonBirthDate(), inJurisdiction, null));
+
+		return tasks;
+	}
+
+	private Expression<String> getPersonFieldPath(CriteriaBuilder cb, TaskJoins<?> joins, String fieldName) {
+		return CriteriaBuilderHelper.coalesce(cb, joins.getCasePerson().get(fieldName), joins.getContactPerson().get(fieldName));
+	}
+
+	private Expression<String> getPersonAddressFieldPath(CriteriaBuilder cb, TaskJoins<?> joins, String fieldName) {
+		return CriteriaBuilderHelper.coalesce(cb, joins.getCasePersonAddress().get(fieldName), joins.getContactPersonAddress().get(fieldName));
+	}
+
+	private void pseudonymizeContactReference(
+		Pseudonymizer pseudonymizer,
+		ContactReferenceDto contactReference,
+		boolean isContactInJurisdiction,
+		boolean isContactCaseInJurisdiction) {
 		pseudonymizer.pseudonymizeDto(ContactReferenceDto.PersonName.class, contactReference.getContactName(), isContactInJurisdiction, null);
 
 		if (contactReference.getCaseName() != null) {
@@ -648,76 +810,90 @@ public class TaskFacadeEjb implements TaskFacade {
 		taskService.delete(task);
 	}
 
+	public List<String> deleteTasks(List<String> tasksUuids) {
+		if (!userService.hasRight(UserRight.TASK_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete tasks.");
+		}
+		List<String> deletedTaskUuids = new ArrayList<>();
+		List<Task> tasksToBeDeleted = taskService.getByUuids(tasksUuids);
+		if (tasksToBeDeleted != null) {
+			tasksToBeDeleted.forEach(taskToBeDeleted -> {
+				taskService.delete(taskToBeDeleted);
+				deletedTaskUuids.add(taskToBeDeleted.getUuid());
+			});
+		}
+		return deletedTaskUuids;
+	}
+
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void sendNewAndDueTaskMessages() {
 
-		Calendar calendar = Calendar.getInstance();
-		Date now = new Date();
+		final Calendar calendar = Calendar.getInstance();
+		final Date now = new Date();
 		calendar.setTime(now);
 		calendar.add(Calendar.MINUTE, CronService.TASK_UPDATE_INTERVAL * -1);
-		Date before = calendar.getTime();
+		final Date before = calendar.getTime();
 
-		List<Task> startingTasks = taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).startDateBetween(before, now), true);
-		for (Task task : startingTasks) {
-			TaskContext context = task.getTaskContext();
-			AbstractDomainObject associatedEntity = context == TaskContext.CASE
-				? task.getCaze()
-				: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
-			if (task.getAssigneeUser() != null) {
-				try {
-					String content = context == TaskContext.GENERAL
-						? String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_START_GENERAL), task.getTaskType().toString())
+		try {
+			messagingService.sendMessages(() -> {
+				final Map<User, String> mapToReturn = new HashMap<>();
+				final List<Task> startingTasks =
+					taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).startDateBetween(before, now), true);
+				for (Task task : startingTasks) {
+					final TaskContext context = task.getTaskContext();
+					final AbstractDomainObject associatedEntity = context == TaskContext.CASE
+						? task.getCaze()
+						: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
+					String message = context == TaskContext.GENERAL
+						? String.format(I18nProperties.getString(MessageContents.CONTENT_TASK_START_GENERAL), task.getTaskType().toString())
 						: String.format(
-							I18nProperties.getString(MessagingService.CONTENT_TASK_START_SPECIFIC),
-							task.getTaskType().toString(),
-							buildAssociatedEntityLinkContent(context, associatedEntity));
-
-					messagingService.sendMessage(
-						userService.getByUuid(task.getAssigneeUser().getUuid()),
-						MessageSubject.TASK_START,
-						content,
-						MessageType.EMAIL,
-						MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format(
-							"EmailDeliveryFailedException when trying to notify a user about a starting task. " + "Failed to send "
-								+ e.getMessageType() + " to user with UUID %s.",
-							task.getAssigneeUser().getUuid()));
+						I18nProperties.getString(MessageContents.CONTENT_TASK_START_SPECIFIC),
+						task.getTaskType().toString(),
+						buildAssociatedEntityLinkContent(context, associatedEntity));
+					if (task.getAssigneeUser() != null) {
+						mapToReturn.put(task.getAssigneeUser(), message);
+					}
+					if (task.getObserverUsers() != null) {
+						for (User observerUser : task.getObserverUsers()) {
+							mapToReturn.put(observerUser, message);
+						}
+					}
 				}
-			}
+				return mapToReturn;
+			}, MessageSubject.TASK_START, MessageType.EMAIL, MessageType.SMS);
+		} catch (NotificationDeliveryFailedException e) {
+			logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a starting task."));
 		}
 
-		List<Task> dueTasks = taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).dueDateBetween(before, now), true);
-		for (Task task : dueTasks) {
-			TaskContext context = task.getTaskContext();
-			AbstractDomainObject associatedEntity = context == TaskContext.CASE
-				? task.getCaze()
-				: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
-			if (task.getAssigneeUser() != null) {
-				try {
-					String content = context == TaskContext.GENERAL
-						? String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString())
+		try {
+			messagingService.sendMessages(() -> {
+				final Map<User, String> mapToReturn = new HashMap<>();
+				final List<Task> dueTasks = taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).dueDateBetween(before, now), true);
+				for (Task task : dueTasks) {
+					final TaskContext context = task.getTaskContext();
+					final AbstractDomainObject associatedEntity = context == TaskContext.CASE
+						? task.getCaze()
+						: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
+					String message = context == TaskContext.GENERAL
+						? String.format(I18nProperties.getString(MessageContents.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString())
 						: String.format(
-							I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_SPECIFIC),
-							task.getTaskType().toString(),
-							buildAssociatedEntityLinkContent(context, associatedEntity));
-
-					messagingService.sendMessage(
-						userService.getByUuid(task.getAssigneeUser().getUuid()),
-						MessageSubject.TASK_DUE,
-						content,
-						MessageType.EMAIL,
-						MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format(
-							"EmailDeliveryFailedException when trying to notify a user about a due task. " + "Failed to send " + e.getMessageType()
-								+ " to user with UUID %s.",
-							task.getAssigneeUser().getUuid()));
+						I18nProperties.getString(MessageContents.CONTENT_TASK_DUE_SPECIFIC),
+						task.getTaskType().toString(),
+						buildAssociatedEntityLinkContent(context, associatedEntity));
+					if (task.getAssigneeUser() != null) {
+						mapToReturn.put(task.getAssigneeUser(), message);
+					}
+					if (task.getObserverUsers() != null) {
+						for (User observerUser : task.getObserverUsers()) {
+							mapToReturn.put(observerUser, message);
+						}
+					}
 				}
-			}
+				return mapToReturn;
+			}, MessageSubject.TASK_START, MessageType.EMAIL, MessageType.SMS);
+		} catch (NotificationDeliveryFailedException e) {
+			logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a due task."));
 		}
 	}
 

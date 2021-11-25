@@ -42,11 +42,11 @@ public abstract class QueryContext<T, ADO extends AbstractDomainObject> {
 		return expression;
 	}
 
-	public Expression<?> getSubqueryExpression(String name) {
+	public <E> Expression<E> getSubqueryExpression(String name) {
 		if (subqueryExpressions.containsKey(name)) {
-			return subqueryExpressions.get(name);
+			return (Expression<E>) subqueryExpressions.get(name);
 		}
-		return createExpression(name);
+		return (Expression<E>) createExpression(name);
 	}
 
 	protected abstract Expression<?> createExpression(String name);

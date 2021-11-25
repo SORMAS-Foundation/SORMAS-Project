@@ -38,7 +38,7 @@ public class I18nConstantGenerator {
 
 	/**
 	 * @param propertiesFileName
-	 *            The properties file to read the contant keys from.
+	 *            The properties file to read the constant keys from.
 	 * @param outputClassName
 	 *            Name of the constants class.
 	 * @param ignoreChildren
@@ -166,7 +166,7 @@ public class I18nConstantGenerator {
 		config.add(new I18nConstantGenerator("captions.properties", "Captions", false));
 		config.add(new I18nConstantGenerator("strings.properties", "Strings", false));
 		config.add(new I18nConstantGenerator("validations.properties", "Validations", false));
-		config.add(new I18nConstantGenerator("countriess.properties", "Countries", false));
+		config.add(new I18nConstantGenerator("countries.properties", "Countries", false));
 		config.add(new I18nConstantGenerator("descriptions.properties", "Descriptions", false));
 
 		return config;

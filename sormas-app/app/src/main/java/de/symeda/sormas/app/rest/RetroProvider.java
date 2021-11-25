@@ -15,12 +15,10 @@
 
 package de.symeda.sormas.app.rest;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.util.Log;
-
-import androidx.fragment.app.FragmentActivity;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -29,26 +27,29 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.util.Log;
+
+import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationAllSymptomsCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationAnyOfSymptomsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationEventClusterCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationExposureCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestNegativeResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestOtherPositiveResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestPositiveResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeBetweenYearsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationVaccinationDateNotInStartDateRangeDto;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -190,7 +191,7 @@ public final class RetroProvider {
 					"ClassificationPathogenTestOtherPositiveResultCriteriaDto")
 				.registerSubtype(ClassificationXOfCriteriaDto.class, "ClassificationXOfCriteriaDto")
 				.registerSubtype(ClassificationEpiDataCriteriaDto.class, "ClassificationEpiDataCriteriaDto")
-				.registerSubtype(ClassificationNotInStartDateRangeCriteriaDto.class, "ClassificationNotInStartDateRangeCriteriaDto")
+				.registerSubtype(ClassificationVaccinationDateNotInStartDateRangeDto.class, "ClassificationVaccinationDateNotInStartDateRangeDto")
 				.registerSubtype(ClassificationSymptomsCriteriaDto.class, "ClassificationSymptomsCriteriaDto")
 				.registerSubtype(ClassificationPathogenTestCriteriaDto.class, "ClassificationPathogenTestCriteriaDto")
 				.registerSubtype(ClassificationExposureCriteriaDto.class, "ClassificationExposureCriteriaDto")
@@ -198,8 +199,8 @@ public final class RetroProvider {
 				.registerSubtype(ClassificationXOfCriteriaDto.ClassificationOneOfCompactCriteriaDto.class, "ClassificationOneOfCompactCriteriaDto")
 				.registerSubtype(ClassificationAllOfCriteriaDto.ClassificationAllOfCompactCriteriaDto.class, "ClassificationAllOfCompactCriteriaDto")
 				.registerSubtype(ClassificationEventClusterCriteriaDto.class, "ClassificationEventClusterCriteriaDto")
-				.registerSubtype(ClassificationAllSymptomsCriteriaDto.class, "ClassificationAllSymptomsCriteriaDto");
-
+				.registerSubtype(ClassificationAllSymptomsCriteriaDto.class, "ClassificationAllSymptomsCriteriaDto")
+				.registerSubtype(ClassificationAnyOfSymptomsCriteriaDto.class, "ClassificationAnyOfSymptomsCriteriaDto");
 
 		return new GsonBuilder().registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context1) -> {
 			if (json.isJsonNull()) {

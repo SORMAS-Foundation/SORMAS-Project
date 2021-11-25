@@ -54,6 +54,7 @@ public class ContactDirectorySteps implements En {
                   + "/sormas-ui/#!contacts/data/"
                   + apiState.getCreatedContact().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CONTACT_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
         });
 
     When(
@@ -64,15 +65,24 @@ public class ContactDirectorySteps implements En {
 
     When(
         "I click on the DETAILED radiobutton from Contact directory",
-        () -> webDriverHelpers.clickOnWebElementBySelector(CONTACT_DIRECTORY_DETAILED_RADIOBUTTON));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_DIRECTORY_DETAILED_RADIOBUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              By.xpath(String.format(RESULTS_GRID_HEADER, "Sex")), 20);
+          webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(GRID_HEADERS, 18);
+        });
 
     When(
-        "I filter by ContactID",
-        () ->
-            webDriverHelpers.fillAndSubmitInWebElement(
-                CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT,
-                dataOperations.getPartialUuidFromAssociatedLink(
-                    apiState.getCreatedContact().getUuid())));
+        "I filter by Contact uuid",
+        () -> {
+          String contactUuid = apiState.getCreatedContact().getUuid();
+          By uuidLocator = By.cssSelector(String.format(CONTACT_RESULTS_UUID_LOCATOR, contactUuid));
+          webDriverHelpers.fillAndSubmitInWebElement(
+              CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, contactUuid);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(uuidLocator);
+          Thread.sleep(5000); // mandatory refresh to have the grid refreshed
+        });
+
     When(
         "^I click on Line Listing button$",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING));
@@ -87,7 +97,7 @@ public class ContactDirectorySteps implements En {
     Then(
         "I check that number of displayed contact results is (\\d+)",
         (Integer number) ->
-            assertHelpers.assertWithPoll15Second(
+            assertHelpers.assertWithPoll20Second(
                 () ->
                     Truth.assertThat(
                             webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS))

@@ -26,12 +26,12 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.share.ExternalShareCriteria;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -51,6 +51,7 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 	public static final String FREE_TEXT_EVENT_GROUPS = "freeTextEventGroups";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
+	public static final String SPECIFIC_RISK = "specificRisk";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String DISTRICT = "district";
 	public static final String REGION = "region";
@@ -63,6 +64,7 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
+	private SpecificRisk specificRisk;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
@@ -102,6 +104,9 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 	private Date actionChangeDateFrom;
 	private Date actionChangeDateTo;
 	private DateFilterOption actionChangeDateFilterOption = DateFilterOption.DATE;
+	private Date actionDateFrom;
+	private Date actionDateTo;
+	private DateFilterOption actionDateFilterOption = DateFilterOption.DATE;
 	private Boolean onlyEntitiesNotSharedWithExternalSurvTool;
 	private Boolean onlyEntitiesSharedWithExternalSurvTool;
 	private Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
@@ -134,6 +139,19 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 
 	public void setRiskLevel(RiskLevel riskLevel) {
 		this.riskLevel = riskLevel;
+	}
+
+	public SpecificRisk getSpecificRisk() {
+		return specificRisk;
+	}
+
+	public EventCriteria specificRisk(SpecificRisk specificRisk) {
+		this.specificRisk = specificRisk;
+		return this;
+	}
+
+	public void setSpecificRisk(SpecificRisk specificRisk) {
+		this.specificRisk = specificRisk;
 	}
 
 	public EventInvestigationStatus getEventInvestigationStatus() {
@@ -441,6 +459,13 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 		return this;
 	}
 
+	public EventCriteria actionDateBetween(Date actionDateFrom, Date actionDateTo, DateFilterOption actionDateFilterOption) {
+		this.actionDateFrom = actionDateFrom;
+		this.actionDateTo = actionDateTo;
+		this.actionDateFilterOption = actionDateFilterOption;
+		return this;
+	}
+
 	public EventCriteria dateBetween(
 		DateType dateType,
 		Date dateFrom,
@@ -454,8 +479,11 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 		case EVENT_SIGNAL_EVOLUTION:
 			eventEvolutionDateBetween(dateFrom, dateTo, dateFilterOption);
 			break;
-		case ACTION:
+		case ACTION_CHANGE:
 			actionChangeDateBetween(dateFrom, dateTo, dateFilterOption);
+			break;
+		case ACTION:
+			actionDateBetween(dateFrom, dateTo, dateFilterOption);
 			break;
 		}
 		return this;
@@ -500,10 +528,50 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 		return actionChangeDateFilterOption;
 	}
 
+	public Date getActionDateFrom() {
+		return actionDateFrom;
+	}
+
+	public void setActionDateFrom(Date actionDateFrom) {
+		this.actionDateFrom = actionDateFrom;
+	}
+
+	public EventCriteria actionDateFrom(Date actionDateFrom) {
+		this.actionDateFrom = actionDateFrom;
+		return this;
+	}
+
+	public Date getActionDateTo() {
+		return actionDateTo;
+	}
+
+	public void setActionDateTo(Date actionDateTo) {
+		this.actionDateTo = actionDateTo;
+	}
+
+	public EventCriteria actionDateTo(Date actionDateTo) {
+		this.actionDateTo = actionDateTo;
+		return this;
+	}
+
+	public void setActionDateFilterOption(DateFilterOption actionDateFilterOption) {
+		this.actionDateFilterOption = actionDateFilterOption;
+	}
+
+	public EventCriteria actionDateFilterOption(DateFilterOption actionDateFilterOption) {
+		this.actionDateFilterOption = actionDateFilterOption;
+		return this;
+	}
+
+	public DateFilterOption getActionDateFilterOption() {
+		return actionDateFilterOption;
+	}
+
 	public enum DateType {
 		EVENT,
 		EVENT_SIGNAL_EVOLUTION,
-		ACTION,
+		ACTION_CHANGE,
+		ACTION
 	}
 
 	public PersonReferenceDto getPerson() {

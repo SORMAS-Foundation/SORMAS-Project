@@ -23,8 +23,6 @@ public class SormasToSormasApiConstants {
 
 	public static final String CASE_REQUEST_ENDPOINT = "/cases/request";
 
-	public static final String CASE_REQUEST_REJECT_ENDPOINT = "/cases/request/reject";
-
 	public static final String CASE_REQUEST_GET_DATA_ENDPOINT = "/cases/request/data";
 
 	public static final String CASE_ENDPOINT = "/cases";
@@ -32,8 +30,6 @@ public class SormasToSormasApiConstants {
 	public static final String CASE_SYNC_ENDPOINT = "/cases/sync";
 
 	public static final String CONTACT_REQUEST_ENDPOINT = "/contacts/request";
-
-	public static final String CONTACT_REQUEST_REJECT_ENDPOINT = "/contacts/request/reject";
 
 	public static final String CONTACT_REQUEST_GET_DATA_ENDPOINT = "/contacts/request/data";
 
@@ -43,8 +39,6 @@ public class SormasToSormasApiConstants {
 
 	public static final String EVENT_REQUEST_ENDPOINT = "/events/request";
 
-	public static final String EVENT_REQUEST_REJECT_ENDPOINT = "/events/request/reject";
-
 	public static final String EVENT_REQUEST_GET_DATA_ENDPOINT = "/events/request/data";
 
 	public static final String EVENT_ENDPOINT = "/events";
@@ -53,8 +47,18 @@ public class SormasToSormasApiConstants {
 
 	public static final String LAB_MESSAGE_ENDPOINT = "/labmessages";
 
+	public static final String REJECT_REQUESTS_ENDPOINT = "/reject-requests";
+
 	public static final String REVOKE_REQUESTS_ENDPOINT = "/revoke-requests";
 
 	public static final String REQUEST_ACCEPTED_ENDPOINT = "/request/accepted";
+
+	public static final String CASE_SHARES_ENDPOINT = "/cases/shares";
+
+	public static final String CONTACT_SHARES_ENDPOINT = "/contacts/shares";
+
+	public static final String EVENT_SHARES_ENDPOINT = "/events/shares";
+
+	public static final String CERT_ENDPOINT = "/cert";
 
 }

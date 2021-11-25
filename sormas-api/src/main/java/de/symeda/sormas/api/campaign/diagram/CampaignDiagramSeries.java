@@ -1,23 +1,34 @@
 package de.symeda.sormas.api.campaign.diagram;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+
 import java.io.Serializable;
 import java.util.Objects;
+
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import de.symeda.sormas.api.AgeGroup;
+import de.symeda.sormas.api.i18n.Validations;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CampaignDiagramSeries implements Serializable {
 
 	private static final long serialVersionUID = 1420672609912364060L;
 
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String fieldId;
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String formId;
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String referenceValue;
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String stack;
 	private AgeGroup populationGroup;
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String caption;
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String color;
 
 	public CampaignDiagramSeries() {

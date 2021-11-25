@@ -39,6 +39,9 @@ public enum DatabaseTable {
 	EVENTGROUPS(DatabaseTableType.SORMAS, EVENTS, "eventgroups"),
 	EVENTPARTICIPANTS(DatabaseTableType.SORMAS, EVENTS, "event_persons_involved"),
 	ACTIONS(DatabaseTableType.SORMAS, EVENTS, "actions"),
+	TRAVEL_ENTRIES(DatabaseTableType.SORMAS, null, "travel_entries"),
+	IMMUNIZATIONS(DatabaseTableType.SORMAS, null, "immunizations"),
+	VACCINATIONS(DatabaseTableType.SORMAS, IMMUNIZATIONS, "vaccinations"),
 	SAMPLES(DatabaseTableType.SORMAS, null, "samples"),
 	SAMPLETESTS(DatabaseTableType.SORMAS, SAMPLES, "sample_tests"),
 	TASKS(DatabaseTableType.SORMAS, null, "tasks"),
@@ -51,7 +54,10 @@ public enum DatabaseTable {
 	DISTRICTS(DatabaseTableType.INFRASTRUCTURE, null, "districts"),
 	COMMUNITIES(DatabaseTableType.INFRASTRUCTURE, null, "communities"),
 	FACILITIES(DatabaseTableType.INFRASTRUCTURE, null, "facilities"),
-	CUSTOMIZABLE_ENUM_VALUES(DatabaseTableType.CONFIGURATION, null, "customizable_enum_values");
+	CUSTOMIZABLE_ENUM_VALUES(DatabaseTableType.CONFIGURATION, null, "customizable_enum_values"),
+
+	USERS(DatabaseTableType.SORMAS, null, "users"),
+	USER_ROLES(DatabaseTableType.SORMAS, USERS, "user_roles");
 
 	private final DatabaseTableType databaseTableType;
 	private final DatabaseTable parentTable;

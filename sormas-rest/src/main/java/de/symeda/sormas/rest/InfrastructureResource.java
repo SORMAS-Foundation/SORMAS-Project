@@ -20,6 +20,6 @@ public class InfrastructureResource {
 	@POST
 	@Path("/sync")
 	public InfrastructureSyncDto getInfrastructureSyncData(InfrastructureChangeDatesDto changeDates) {
-		return FacadeProvider.getInfrastructureFacade().getInfrastructureSyncData(changeDates);
+		return FacadeProvider.getInfrastructureSyncFacade().getInfrastructureSyncData(changeDates);
 	}
 }

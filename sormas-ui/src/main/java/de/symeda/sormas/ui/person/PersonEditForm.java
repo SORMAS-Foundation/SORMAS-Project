@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.ui.person;
 
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
@@ -51,14 +49,18 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.CauseOfDeath;
@@ -69,10 +71,6 @@ import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.CountryReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -274,7 +272,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		DateField deathDate = addField(PersonDto.DEATH_DATE, DateField.class);
 		TextField approximateAgeField = addField(PersonDto.APPROXIMATE_AGE, TextField.class);
-		approximateAgeField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, approximateAgeField.getCaption()));
+		approximateAgeField
+			.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, approximateAgeField.getCaption()));
 		ComboBox approximateAgeTypeField = addField(PersonDto.APPROXIMATE_AGE_TYPE, ComboBox.class);
 		addField(PersonDto.APPROXIMATE_AGE_REFERENCE_DATE, DateField.class);
 
@@ -286,9 +285,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		TextField tfGestationAgeAtBirth = addField(PersonDto.GESTATION_AGE_AT_BIRTH, TextField.class);
 		tfGestationAgeAtBirth
-			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfGestationAgeAtBirth.getCaption()));
+			.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, tfGestationAgeAtBirth.getCaption()));
 		TextField tfBirthWeight = addField(PersonDto.BIRTH_WEIGHT, TextField.class);
-		tfBirthWeight.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfBirthWeight.getCaption()));
+		tfBirthWeight.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, tfBirthWeight.getCaption()));
 
 		AbstractSelect deathPlaceType = addField(PersonDto.DEATH_PLACE_TYPE, ComboBox.class);
 		deathPlaceType.setNullSelectionAllowed(true);
@@ -313,8 +312,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PersonDto.EDUCATION_DETAILS);
 
 		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
-		((ComboBox) addField(PersonDto.BIRTH_COUNTRY)).addItems(countries);
-		((ComboBox) addField(PersonDto.CITIZENSHIP)).addItems(countries);
+		addInfrastructureField(PersonDto.BIRTH_COUNTRY).addItems(countries);
+		addInfrastructureField(PersonDto.CITIZENSHIP).addItems(countries);
 
 		addFields(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID);
 		Field externalId = addField(PersonDto.EXTERNAL_ID);
@@ -352,7 +351,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		// Set requirements that don't need visibility changes and read only status
 
 		setReadOnly(true, PersonDto.APPROXIMATE_AGE_REFERENCE_DATE);
-		setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME);
+		setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.SEX);
 		setVisible(
 			false,
 			PersonDto.OCCUPATION_DETAILS,
@@ -539,7 +538,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		typeField.addValueChangeListener(e -> updateFacilities(facilityField, typeField, communityField, districtField, allowNoneFacility));
 		FieldHelper.updateItems(
 			facilityField,
-			Collections.singletonList(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
+			Collections.singletonList(FacadeProvider.getFacilityFacade().getReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
 
 		facilityField.addValueChangeListener(e -> {
 			updateFacilityDetailsVisibility(detailsField, (FacilityReferenceDto) e.getProperty().getValue());
@@ -580,7 +579,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				// "home or other place" as fallback
 				FieldHelper.updateItems(
 					facilityField,
-					Collections.singletonList(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
+					Collections.singletonList(FacadeProvider.getFacilityFacade().getReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
 			} else {
 				FieldHelper.removeItems(facilityField);
 			}
@@ -708,6 +707,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				PersonDto.BURIAL_DATE,
 				PersonDto.BURIAL_PLACE_DESCRIPTION,
 				PersonDto.BURIAL_CONDUCTOR);
+			getField(PersonDto.DEATH_DATE).setValue(null);
+			getField(PersonDto.BURIAL_DATE).setValue(null);
 			toggleCauseOfDeathFields(false);
 		} else {
 			switch (type) {
@@ -738,6 +739,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					PersonDto.BURIAL_DATE,
 					PersonDto.BURIAL_PLACE_DESCRIPTION,
 					PersonDto.BURIAL_CONDUCTOR);
+				getField(PersonDto.DEATH_DATE).setValue(null);
+				getField(PersonDto.BURIAL_DATE).setValue(null);
 				toggleCauseOfDeathFields(false);
 				break;
 			}

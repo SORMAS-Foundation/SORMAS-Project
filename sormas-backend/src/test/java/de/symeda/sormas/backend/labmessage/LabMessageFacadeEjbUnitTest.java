@@ -16,9 +16,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.backend.sample.PathogenTest;
-import de.symeda.sormas.backend.sample.PathogenTestService;
+import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -44,12 +42,13 @@ public class LabMessageFacadeEjbUnitTest {
 	@Mock
 	private LabMessageService labMessageService;
 	@Mock
-	private PathogenTestService pathogenTestService;
-	@Mock
 	private SystemEventFacadeEjb.SystemEventFacadeEjbLocal systemEventFacade;
 
 	@InjectMocks
 	private LabMessageFacadeEjb sut;
+
+	@InjectMocks
+	private SyncFacadeEjb.SyncFacadeEjbLocal syncFacadeEjb;
 
 	@Mock
 	private CriteriaBuilder criteriaBuilder;
@@ -69,7 +68,8 @@ public class LabMessageFacadeEjbUnitTest {
 	private ArgumentCaptor<List<Order>> orderListArgumentCaptor;
 
 	@Test
-	public void count() {
+	public void testCount() {
+
 		when(em.getCriteriaBuilder()).thenReturn(criteriaBuilder);
 		when(criteriaBuilder.createQuery(Long.class)).thenReturn(longCriteriaQuery);
 		when(longCriteriaQuery.from(LabMessage.class)).thenReturn(labMessage);
@@ -83,7 +83,8 @@ public class LabMessageFacadeEjbUnitTest {
 	}
 
 	@Test
-	public void getIndexList() {
+	public void testGetIndexList() {
+
 		int first = 1;
 		int max = 1;
 
@@ -106,24 +107,22 @@ public class LabMessageFacadeEjbUnitTest {
 	}
 
 	@Test
-	public void save() {
+	public void testSave() {
+
 		LabMessageDto labMessageDto = new LabMessageDto();
 		String testUuid = "Test UUID";
-		PathogenTestDto pathogenTestDto = new PathogenTestDto();
 		labMessageDto.setUuid(testUuid);
-		labMessageDto.setPathogenTest(pathogenTestDto.toReference());
 		LabMessage labMessage = new LabMessage();
 
 		when(labMessageService.getByUuid(testUuid)).thenReturn(labMessage);
-		PathogenTest pathogenTest = new PathogenTest();
-		when(pathogenTestService.getByReferenceDto(labMessageDto.getPathogenTest())).thenReturn(pathogenTest);
 		sut.save(labMessageDto);
 
 		verify(labMessageService).ensurePersisted(labMessage);
 	}
 
 	@Test
-	public void getByUuid() {
+	public void testGetByUuid() {
+
 		String testUuid = "test UUID";
 		LabMessage labMessage = new LabMessage();
 		when(labMessageService.getByUuid(testUuid)).thenReturn(labMessage);
@@ -133,11 +132,12 @@ public class LabMessageFacadeEjbUnitTest {
 
 	@Test
 	public void testInitializeUpdateDateWithNoPreviousSuccess() {
-		assertEquals(sut.findLastUpdateDate(), new Date(0));
+		assertEquals(syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_LAB_MESSAGES), new Date(0));
 	}
 
 	@Test
 	public void testInitializeUpdateDateWithPreviousSuccessAndParseableDetails() {
+
 		SystemEventDto systemEvent = SystemEventDto.build();
 		Date first = new Date(100, 0, 1);
 		Date second = new Date(100, 0, 2);
@@ -146,11 +146,12 @@ public class LabMessageFacadeEjbUnitTest {
 		systemEvent.setAdditionalInfo("Last synchronization date: " + first.getTime());
 		systemEvent.setStartDate(second);
 		when(systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES)).thenReturn(systemEvent);
-		assertEquals(sut.findLastUpdateDate(), first);
+		assertEquals(syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_LAB_MESSAGES), first);
 	}
 
 	@Test
 	public void testInitializeUpdateDateWithPreviousSuccessAndNotParseableDetails() {
+
 		SystemEventDto systemEvent = SystemEventDto.build();
 		Date date = new Date(100, 0, 1);
 		systemEvent.setStatus(SystemEventStatus.SUCCESS);
@@ -158,13 +159,14 @@ public class LabMessageFacadeEjbUnitTest {
 		systemEvent.setAdditionalInfo("The cake is a lie");
 		systemEvent.setStartDate(date);
 		when(systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES)).thenReturn(systemEvent);
-		assertEquals(sut.findLastUpdateDate(), date);
+		assertEquals(syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_LAB_MESSAGES), date);
 	}
 
 	@Test
-	public void initializeFetchEventTest() {
-		SystemEventDto systemEventDto = sut.initializeFetchEvent();
-		assertEquals(systemEventDto.getAdditionalInfo(), null); // must be null for parsing the notification last update date
+	public void testInitializeFetchEventTest() {
+		SystemEventDto systemEventDto = syncFacadeEjb.startSyncFor(SystemEventType.FETCH_LAB_MESSAGES);
+		// must be null for parsing the notification last update date
+		assertEquals(systemEventDto.getAdditionalInfo(), null);
 		assertEquals(systemEventDto.getStatus(), SystemEventStatus.STARTED);
 		assertEquals(systemEventDto.getType(), SystemEventType.FETCH_LAB_MESSAGES);
 	}

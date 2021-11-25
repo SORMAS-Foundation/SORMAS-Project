@@ -18,16 +18,24 @@
 package de.symeda.sormas.api.task;
 
 import java.util.Date;
+import java.util.Set;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Required;
 
 public class TaskDto extends EntityDto {
@@ -54,6 +62,8 @@ public class TaskDto extends EntityDto {
 	public static final String CONTEXT_REFERENCE = "contextReference";
 	public static final String CLOSED_LAT = "closedLat";
 	public static final String CLOSED_LON = "closedLon";
+	public static final String TRAVEL_ENTRY = "travelEntry";
+	public static final String OBSERVER_USERS = "observerUsers";
 
 	@Required
 	private TaskContext taskContext;
@@ -67,6 +77,10 @@ public class TaskDto extends EntityDto {
 	@EmbeddedSensitiveData
 	private ContactReferenceDto contact;
 
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
+	private TravelEntryReferenceDto travelEntry;
+
 	@Required
 	private TaskType taskType;
 	private TaskPriority priority;
@@ -78,12 +92,19 @@ public class TaskDto extends EntityDto {
 	private Date perceivedStart;
 
 	private UserReferenceDto creatorUser;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String creatorComment;
 	@Required
 	private UserReferenceDto assigneeUser;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String assigneeReply;
+	private Set<UserReferenceDto> observerUsers;
 
+	@Min(value = -90, message = Validations.numberTooSmall)
+	@Max(value = 90, message = Validations.numberTooBig)
 	private Double closedLat;
+	@Min(value = -180, message = Validations.numberTooSmall)
+	@Max(value = 180, message = Validations.numberTooBig)
 	private Double closedLon;
 	private Float closedLatLonAccuracy;
 
@@ -107,6 +128,9 @@ public class TaskDto extends EntityDto {
 			task.setEvent((EventReferenceDto) entityRef);
 			break;
 		case GENERAL:
+			break;
+		case TRAVEL_ENTRY:
+			task.setTravelEntry((TravelEntryReferenceDto) entityRef);
 			break;
 		}
 		return task;
@@ -224,6 +248,14 @@ public class TaskDto extends EntityDto {
 		this.assigneeReply = assigneeReply;
 	}
 
+	public Set<UserReferenceDto> getObserverUsers() {
+		return observerUsers;
+	}
+
+	public void setObserverUsers(Set<UserReferenceDto> observerUsers) {
+		this.observerUsers = observerUsers;
+	}
+
 	public TaskPriority getPriority() {
 		return priority;
 	}
@@ -259,6 +291,8 @@ public class TaskDto extends EntityDto {
 			return getEvent();
 		case GENERAL:
 			return null;
+		case TRAVEL_ENTRY:
+			return getTravelEntry();
 		default:
 			throw new IndexOutOfBoundsException(taskContext.toString());
 		}
@@ -270,5 +304,13 @@ public class TaskDto extends EntityDto {
 
 	public void setClosedLatLonAccuracy(Float closedLatLonAccuracy) {
 		this.closedLatLonAccuracy = closedLatLonAccuracy;
+	}
+
+	public TravelEntryReferenceDto getTravelEntry() {
+		return travelEntry;
+	}
+
+	public void setTravelEntry(TravelEntryReferenceDto travelEntry) {
+		this.travelEntry = travelEntry;
 	}
 }

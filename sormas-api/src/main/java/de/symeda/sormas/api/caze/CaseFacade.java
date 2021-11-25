@@ -25,6 +25,9 @@ import java.util.Random;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
@@ -37,11 +40,11 @@ import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
-import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -62,11 +65,21 @@ public interface CaseFacade {
 
 	List<CaseIndexDto> getIndexList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
+	List<CaseSelectionDto> getCaseSelectionList(CaseCriteria caseCriteria);
+
+	List<CaseListEntryDto> getEntriesList(String personUuid, Integer first, Integer max);
+
 	Page<CaseIndexDto> getIndexPage(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	Page<CaseIndexDetailedDto> getIndexDetailedPage(CaseCriteria caseCriteria, Integer offset, Integer max, List<SortProperty> sortProperties);
+	Page<CaseIndexDetailedDto> getIndexDetailedPage(
+		@NotNull CaseCriteria caseCriteria,
+		Integer offset,
+		Integer max,
+		List<SortProperty> sortProperties);
 
 	List<CaseIndexDetailedDto> getIndexDetailedList(CaseCriteria caseCriteria, Integer offset, Integer max, List<SortProperty> sortProperties);
+
+	CaseDataDto postUpdate(String uuid, JsonNode caseDataDtoJson);
 
 	List<CaseExportDto> getExportList(
 		CaseCriteria caseCriteria,
@@ -97,7 +110,7 @@ public interface CaseFacade {
 
 	CaseDataDto getByUuid(String uuid);
 
-	String getUuidByUuidEpidNumberOrExternalId(String searchTerm);
+	String getUuidByUuidEpidNumberOrExternalId(String searchTerm, CaseCriteria caseCriteria);
 
 	List<MapCaseDto> getCasesForMap(
 		RegionReferenceDto regionRef,
@@ -120,6 +133,8 @@ public interface CaseFacade {
 	List<CaseDataDto> getAllCasesOfPerson(String personUuid);
 
 	void deleteCase(String caseUuid) throws ExternalSurveillanceToolException;
+
+	List<String> deleteCases(List<String> caseUuids);
 
 	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) throws ExternalSurveillanceToolException;
 
@@ -147,7 +162,7 @@ public interface CaseFacade {
 
 	void mergeCase(String leadUuid, String otherUuid);
 
-	List<CaseIndexDto> getSimilarCases(CaseSimilarityCriteria criteria);
+	List<CaseSelectionDto> getSimilarCases(CaseSimilarityCriteria criteria);
 
 	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, boolean showDuplicatesWithDifferentRegion);
 
@@ -193,7 +208,7 @@ public interface CaseFacade {
 
 	void saveBulkCase(
 		List<String> caseUuidList,
-		CaseBulkEditData updatedCaseBulkEditData,
+		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
 		boolean classificationChange,
 		boolean investigationStatusChange,
@@ -202,7 +217,7 @@ public interface CaseFacade {
 
 	void saveBulkEditWithFacilities(
 		List<String> caseUuidList,
-		CaseBulkEditData updatedCaseBulkEditData,
+		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
 		boolean classificationChange,
 		boolean investigationStatusChange,
@@ -210,15 +225,15 @@ public interface CaseFacade {
 		boolean surveillanceOfficerChange,
 		Boolean doTransfer);
 
-	List<CasePersonDto> getDuplicates(CasePersonDto casePerson, int reportDateThreshold);
+	List<CasePersonDto> getDuplicates(@Valid CasePersonDto casePerson, int reportDateThreshold);
 
-	List<CasePersonDto> getDuplicates(CasePersonDto casePerson);
+	List<CasePersonDto> getDuplicates(@Valid CasePersonDto casePerson);
 
 	List<CaseDataDto> getByPersonUuids(List<String> personUuids);
 
 	List<CaseDataDto> getByExternalId(String externalId);
 
-	void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
+	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 
 	int updateCompleteness();
 }

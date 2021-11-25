@@ -21,6 +21,11 @@ package org.sormas.e2etests.services.api;
 import com.google.inject.Inject;
 import java.util.Date;
 import java.util.UUID;
+import org.sormas.e2etests.enums.CommunityValues;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.enums.TestDataUser;
 import org.sormas.e2etests.pojo.api.*;
 
 public class CaseApiService {
@@ -30,28 +35,46 @@ public class CaseApiService {
 
   public Case buildGeneratedCase(Person person) {
     return Case.builder()
-        .disease("CORONAVIRUS")
+        .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
         .diseaseDetails("Test Disease")
         .pseudonymized(false)
         .uuid(UUID.randomUUID().toString())
         .reportDate(new Date())
-        .reportingUser(ReportingUser.builder().uuid("QLW4AN-TGWLRA-3UQVEM-WCDFCIVM").build())
-        .district(District.builder().uuid("SZ75BK-5OUMFU-V2DTKG-5BYACHFE").build())
-        .region(Region.builder().uuid("RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY").build())
-        .responsibleDistrict(District.builder().uuid("SZ75BK-5OUMFU-V2DTKG-5BYACHFE").build())
-        .responsibleRegion(Region.builder().uuid("RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY").build())
-        .community(Community.builder().uuid("QWK33J-XYN3DE-5CSXFJ-MMFOKNKM").build())
+        .reportingUser(ReportingUser.builder().uuid(TestDataUser.REST_AUTOMATION.getUuid()).build())
+        .district(
+            District.builder().uuid(DistrictsValues.VoreingestellterLandkreis.getUuid()).build())
+        .region(Region.builder().uuid(RegionsValues.VoreingestellteBundeslander.getUuid()).build())
+        .responsibleDistrict(
+            District.builder().uuid(DistrictsValues.VoreingestellterLandkreis.getUuid()).build())
+        .responsibleRegion(
+            Region.builder().uuid(RegionsValues.VoreingestellteBundeslander.getUuid()).build())
+        .community(
+            Community.builder().uuid(CommunityValues.VoreingestellteGemeinde.getUuid()).build())
         .followUpStatus("FOLLOW_UP")
-        .person(person)
+        .person(
+            Person.builder()
+                .uuid(person.getUuid())
+                .firstName(person.getFirstName())
+                .lastName(person.getLastName())
+                .build())
         .caseClassification("NOT_CLASSIFIED")
         .investigationStatus("PENDING")
         .outcome("NO_OUTCOME")
         .epiData(EpiData.builder().uuid(UUID.randomUUID().toString()).build())
         .hospitalization(Hospitalization.builder().uuid(UUID.randomUUID().toString()).build())
-        .symptoms(Symptoms.builder().uuid(UUID.randomUUID().toString()).build())
+        .symptoms(
+            Symptoms.builder()
+                .uuid(UUID.randomUUID().toString())
+                .pseudonymized(true)
+                .symptomatic(false)
+                .build())
         .therapy(Therapy.builder().uuid(UUID.randomUUID().toString()).build())
         .healthFacility(HealthFacility.builder().uuid("WYPOCQ-IWVWGQ-XU7YCF-OSQJSAD4").build())
-        .maternalHistory(MaternalHistory.builder().uuid(UUID.randomUUID().toString()).build())
+        .maternalHistory(
+            MaternalHistory.builder()
+                .uuid(UUID.randomUUID().toString())
+                .pseudonymized(true)
+                .build())
         .portHealthInfo(PortHealthInfo.builder().uuid(UUID.randomUUID().toString()).build())
         .clinicalCourse(
             ClinicalCourse.builder()
@@ -60,10 +83,27 @@ public class CaseApiService {
                     HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
                 .build())
         .surveillanceOfficer(
-            SurveillanceOfficer.builder().uuid("Q2IYCN-TNYTOY-4OAYCA-DW662MTA").build())
+            SurveillanceOfficer.builder().uuid(TestDataUser.SURVEILLANCE_OFFICER.getUuid()).build())
         .healthFacilityDetails("Details")
         .caseOrigin("IN_COUNTRY")
         .facilityType("HOSPITAL")
+        .pointOfEntryDetails("")
+        .sharedToCountry(false)
+        .nosocomialOutbreak(false)
+        .quarantineOrderedVerbally(false)
+        .quarantineOrderedOfficialDocument(false)
+        .quarantineExtended(false)
+        .quarantineReduced(false)
+        .quarantineOfficialOrderSent(false)
+        .followUpUntil(new Date())
+        .overwriteFollowUpUntil(false)
+        .ownershipHandedOver(false)
+        .notACaseReasonNegativeTest(false)
+        .notACaseReasonPhysicianInformation(false)
+        .notACaseReasonDifferentPathogen(false)
+        .notACaseReasonOther(false)
+        .dontShareWithReportingTool(false)
+        .caseReferenceDefinition("NOT_FULFILLED")
         .build();
   }
 }

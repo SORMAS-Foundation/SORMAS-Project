@@ -30,6 +30,7 @@ import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle.Control;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringSubstitutor;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.ResourceBundle;
@@ -279,6 +280,20 @@ public final class I18nProperties {
 		}
 	}
 
+	public static String getValidationError(String key, Map<String, Object> formatArgs) {
+
+		String result = getInstance(userLanguage.get()).validationProperties.getString(key, null);
+		if (result != null) {
+			return StringSubstitutor.replace(result, formatArgs, "{", "}");
+		} else if (formatArgs.size() > 0) {
+			Object firstFormatArg = formatArgs.get(formatArgs.keySet().iterator().next());
+
+			return firstFormatArg != null ? firstFormatArg.toString() : "";
+		} else {
+			return "";
+		}
+	}
+
 	public static String getPrefixValidationError(String prefix, String key, Object... formatArgs) {
 
 		String result = null;
@@ -312,8 +327,13 @@ public final class I18nProperties {
 
 	public static String getCountryName(String isoCode, String defaultValue) {
 
-		String result = getCountryName(userLanguage.get(), isoCode);
-		return StringUtils.isEmpty(result) ? defaultValue : result;
+		// first, check if the defaultValue actually equals the defaultValue in english language. If not, it has been customized
+		String trueDefaultName = getCountryName(Language.EN, isoCode);
+		if (!StringUtils.isEmpty(trueDefaultName) && !trueDefaultName.equalsIgnoreCase(defaultValue)) {
+			return defaultValue;
+		}
+		String translatedName = getCountryName(userLanguage.get(), isoCode);
+		return StringUtils.isEmpty(translatedName) ? defaultValue : translatedName;
 	}
 
 	public static String getCountryName(Language language, String isoCode) {

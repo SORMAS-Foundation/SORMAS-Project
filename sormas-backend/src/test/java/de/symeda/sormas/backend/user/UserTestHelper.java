@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DefaultUserHelper;
+import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
 
 public class UserTestHelper {
@@ -30,6 +30,7 @@ public class UserTestHelper {
 			u.setSeed(PasswordHelper.createPass(16));
 			u.setPassword(PasswordHelper.encodePassword(PasswordHelper.createPass(12), u.getSeed()));
 			u.setUserRoles(Collections.singleton(UserRole.values()[i % UserRole.values().length]));
+			u.updateJurisdictionLevel();
 			randomUsers.add(u);
 		}
 		return randomUsers;
@@ -45,17 +46,17 @@ public class UserTestHelper {
 	public static Set<User> generateDefaultUsers(boolean generateDefaultAdmin) {
 		Set<User> defaultUsers = new HashSet<>();
 		if (generateDefaultAdmin) {
-			defaultUsers.add(createDefaultUser(UserRole.ADMIN, DefaultUserHelper.ADMIN_USERNAME_AND_PASSWORD));
+			defaultUsers.add(createDefaultUser(UserRole.ADMIN, DefaultEntityHelper.ADMIN_USERNAME_AND_PASSWORD));
 		}
-		defaultUsers.add(createDefaultUser(UserRole.SURVEILLANCE_SUPERVISOR, DefaultUserHelper.SURV_SUP_USERNAME_AND_PASSWORD));
-		defaultUsers.add(createDefaultUser(UserRole.CASE_SUPERVISOR, DefaultUserHelper.CASE_SUP_USERNAME_AND_PASSWORD));
-		defaultUsers.add(createDefaultUser(UserRole.CONTACT_SUPERVISOR, DefaultUserHelper.CONT_SUP_USERNAME_AND_PASSWORD));
-		defaultUsers.add(createDefaultUser(UserRole.POE_SUPERVISOR, DefaultUserHelper.POE_SUP_USERNAME_AND_PASSWORD));
-		defaultUsers.add(createDefaultUser(UserRole.LAB_USER, DefaultUserHelper.LAB_OFF_USERNAME_AND_PASSWORD));
-		defaultUsers.add(createDefaultUser(UserRole.EVENT_OFFICER, DefaultUserHelper.EVE_OFF_USERNAME_AND_PASSWORD));
-		defaultUsers.add(createDefaultUser(UserRole.NATIONAL_USER, DefaultUserHelper.NAT_USER_USERNAME_AND_PASSWORD));
-		defaultUsers.add(createDefaultUser(UserRole.NATIONAL_CLINICIAN, DefaultUserHelper.NAT_CLIN_USERNAME_AND_PASSWORD));
-		defaultUsers.add(createDefaultUser(UserRole.SURVEILLANCE_OFFICER, DefaultUserHelper.SURV_OFF_USERNAME_AND_PASSWORD));
+		defaultUsers.add(createDefaultUser(UserRole.SURVEILLANCE_SUPERVISOR, DefaultEntityHelper.SURV_SUP_USERNAME_AND_PASSWORD));
+		defaultUsers.add(createDefaultUser(UserRole.CASE_SUPERVISOR, DefaultEntityHelper.CASE_SUP_USERNAME_AND_PASSWORD));
+		defaultUsers.add(createDefaultUser(UserRole.CONTACT_SUPERVISOR, DefaultEntityHelper.CONT_SUP_USERNAME_AND_PASSWORD));
+		defaultUsers.add(createDefaultUser(UserRole.POE_SUPERVISOR, DefaultEntityHelper.POE_SUP_USERNAME_AND_PASSWORD));
+		defaultUsers.add(createDefaultUser(UserRole.LAB_USER, DefaultEntityHelper.LAB_OFF_USERNAME_AND_PASSWORD));
+		defaultUsers.add(createDefaultUser(UserRole.EVENT_OFFICER, DefaultEntityHelper.EVE_OFF_USERNAME_AND_PASSWORD));
+		defaultUsers.add(createDefaultUser(UserRole.NATIONAL_USER, DefaultEntityHelper.NAT_USER_USERNAME_AND_PASSWORD));
+		defaultUsers.add(createDefaultUser(UserRole.NATIONAL_CLINICIAN, DefaultEntityHelper.NAT_CLIN_USERNAME_AND_PASSWORD));
+		defaultUsers.add(createDefaultUser(UserRole.SURVEILLANCE_OFFICER, DefaultEntityHelper.SURV_OFF_USERNAME_AND_PASSWORD));
 		return defaultUsers;
 	}
 
@@ -67,6 +68,7 @@ public class UserTestHelper {
 		user.setSeed(PasswordHelper.createPass(16));
 		user.setPassword(PasswordHelper.encodePassword(userpass.getElement1(), user.getSeed()));
 		user.setUserRoles(Collections.singleton(role));
+		user.updateJurisdictionLevel();
 		return user;
 	}
 

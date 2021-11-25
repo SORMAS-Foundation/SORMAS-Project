@@ -41,8 +41,8 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.components.grid.MultiSelectionModelImpl;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
@@ -149,7 +149,9 @@ public class EventParticipantsView extends AbstractEventView {
 
 				ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
 					ExportType.EVENT_PARTICIPANTS,
-					ImportExportUtils.getEventParticipantExportProperties(EventParticipantDownloadUtil::getPropertyCaption),
+					ImportExportUtils.getEventParticipantExportProperties(
+						EventParticipantDownloadUtil::getPropertyCaption,
+						FacadeProvider.getConfigFacade().getCountryLocale()),
 					customExportWindow::close);
 				customExportsLayout.setExportCallback(
 					(exportConfig) -> Page.getCurrent()
@@ -162,6 +164,7 @@ public class EventParticipantsView extends AbstractEventView {
 				customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCustom));
 				customExportWindow.setContent(customExportsLayout);
 				UI.getCurrent().addWindow(customExportWindow);
+				exportPopupButton.setPopupVisible(false);
 			}, ValoTheme.BUTTON_PRIMARY);
 			btnCustomExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
 			btnCustomExport.setWidth(100, Unit.PERCENTAGE);
@@ -187,12 +190,13 @@ public class EventParticipantsView extends AbstractEventView {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
 			List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>();
-			bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEventParticipantsToContacts), VaadinIcons.HAND, mi -> {
-				grid.bulkActionHandler(items -> {
-					EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid());
-					ControllerProvider.getContactController().openLineListingWindow(eventDto, items);
-				}, true);
-			}));
+			bulkActions
+				.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEventParticipantsToContacts), VaadinIcons.HAND, mi -> {
+					grid.bulkActionHandler(items -> {
+						EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid(), false);
+						ControllerProvider.getContactController().openLineListingWindow(eventDto, items);
+					}, true);
+				}));
 			bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
 				grid.bulkActionHandler(items -> {
 					ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, () -> navigateTo(criteria));

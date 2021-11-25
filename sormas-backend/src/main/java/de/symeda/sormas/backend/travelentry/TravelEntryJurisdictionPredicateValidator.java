@@ -5,55 +5,79 @@ import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 
 public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
 	private final TravelEntryJoins<?> joins;
-	private final User currentUser;
 
 	private TravelEntryJurisdictionPredicateValidator(
 		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
 		TravelEntryJoins<?> joins,
-		User currentUser,
+		User user,
 		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
-		super(cb, associatedJurisdictionValidators);
+		super(cb, user, null, associatedJurisdictionValidators);
 		this.joins = joins;
-		this.currentUser = currentUser;
 	}
 
-	public static TravelEntryJurisdictionPredicateValidator of(TravelEntryQueryContext qc, User currentUser) {
+	private TravelEntryJurisdictionPredicateValidator(
+		CriteriaQuery<?> cq,
+		CriteriaBuilder cb,
+		TravelEntryJoins<?> joins,
+		Path userPath,
+		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
+		super(cb, null, userPath, associatedJurisdictionValidators);
+		this.joins = joins;
+	}
+
+	public static TravelEntryJurisdictionPredicateValidator of(TravelEntryQueryContext qc, User user) {
 		return new TravelEntryJurisdictionPredicateValidator(
 			qc.getQuery(),
 			qc.getCriteriaBuilder(),
 			(TravelEntryJoins<?>) qc.getJoins(),
-			currentUser,
+			user,
 			Collections.singletonList(
 				CaseJurisdictionPredicateValidator.of(
 					new CaseQueryContext<>(qc.getCriteriaBuilder(), qc.getQuery(), ((TravelEntryJoins) qc.getJoins()).getResultingCase()),
-					currentUser)));
+					user)));
+	}
+	
+	public static TravelEntryJurisdictionPredicateValidator of(TravelEntryQueryContext qc, Path userPath) {
+		return new TravelEntryJurisdictionPredicateValidator(
+			qc.getQuery(),
+			qc.getCriteriaBuilder(),
+			(TravelEntryJoins<?>) qc.getJoins(),
+			userPath,
+			Collections.singletonList(
+				CaseJurisdictionPredicateValidator.of(
+					new CaseQueryContext<>(qc.getCriteriaBuilder(), qc.getQuery(), ((TravelEntryJoins) qc.getJoins()).getResultingCase()),
+						userPath)));
 	}
 
 	@Override
 	protected Predicate isInJurisdiction() {
-		return isInJurisdictionByJurisdictionLevel(currentUser.getJurisdictionLevel());
+		return super.isInJurisdiction();
 	}
 
 	@Override
 	protected Predicate isInJurisdictionOrOwned() {
-		final Predicate reportedByCurrentUser =
-			cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
+		final Predicate reportedByCurrentUser = cb.and(
+			cb.isNotNull(joins.getRoot().get(TravelEntry.REPORTING_USER)),
+			user != null
+				? cb.equal(joins.getRoot().get(TravelEntry.REPORTING_USER).get(User.ID), user.getId())
+				: cb.equal(joins.getRoot().get(TravelEntry.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
 		return cb.or(reportedByCurrentUser, isInJurisdiction());
 	}
 
@@ -71,21 +95,31 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 	protected Predicate whenRegionalLevel() {
 		return CriteriaBuilderHelper.or(
 			cb,
-			cb.equal(joins.getResponsibleRegion().get(Region.ID), currentUser.getRegion().getId()),
-			cb.equal(joins.getPointOfEntryRegion().get(Region.ID), currentUser.getRegion().getId()));
+			user != null
+				? cb.equal(joins.getRoot().get(TravelEntry.RESPONSIBLE_REGION).get(Region.ID), user.getRegion().getId())
+				: cb.equal(joins.getRoot().get(TravelEntry.RESPONSIBLE_REGION).get(Region.ID), userPath.get(User.REGION).get(Region.ID)),
+			user != null
+				? cb.equal(joins.getRoot().get(TravelEntry.POINT_OF_ENTRY_REGION).get(Region.ID), user.getRegion().getId())
+				: cb.equal(joins.getRoot().get(TravelEntry.POINT_OF_ENTRY_REGION).get(Region.ID), userPath.get(User.REGION).get(Region.ID)));
 	}
 
 	@Override
 	protected Predicate whenDistrictLevel() {
 		return CriteriaBuilderHelper.or(
 			cb,
-			cb.equal(joins.getResponsibleDistrict().get(District.ID), currentUser.getDistrict().getId()),
-			cb.equal(joins.getPointOfEntryDistrict().get(District.ID), currentUser.getDistrict().getId()));
+			user != null
+				? cb.equal(joins.getRoot().get(TravelEntry.RESPONSIBLE_DISTRICT).get(District.ID), user.getDistrict().getId())
+				: cb.equal(joins.getRoot().get(TravelEntry.RESPONSIBLE_DISTRICT).get(District.ID), userPath.get(User.DISTRICT).get(District.ID)),
+			user != null
+				? cb.equal(joins.getRoot().get(TravelEntry.POINT_OF_ENTRY_DISTRICT).get(District.ID), user.getDistrict().getId())
+				: cb.equal(joins.getRoot().get(TravelEntry.POINT_OF_ENTRY_DISTRICT).get(District.ID), userPath.get(User.DISTRICT).get(District.ID)));
 	}
 
 	@Override
 	protected Predicate whenCommunityLevel() {
-		return cb.equal(joins.getResponsibleCommunity().get(Community.ID), currentUser.getCommunity().getId());
+		return user != null
+			? cb.equal(joins.getRoot().get(TravelEntry.RESPONSIBLE_COMMUNITY).get(Community.ID), user.getCommunity().getId())
+			: cb.equal(joins.getRoot().get(TravelEntry.RESPONSIBLE_COMMUNITY).get(Community.ID), userPath.get(User.COMMUNITY).get(Community.ID));
 	}
 
 	@Override
@@ -95,7 +129,9 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 
 	@Override
 	protected Predicate whenPointOfEntryLevel() {
-		return cb.equal(joins.getPointOfEntry().get(PointOfEntry.ID), currentUser.getPointOfEntry().getId());
+		return user != null
+			? cb.equal(joins.getRoot().get(TravelEntry.POINT_OF_ENTRY).get(PointOfEntry.ID), user.getPointOfEntry().getId())
+			: cb.equal(joins.getRoot().get(TravelEntry.POINT_OF_ENTRY).get(PointOfEntry.ID), userPath.get(User.POINT_OF_ENTRY).get(PointOfEntry.ID));
 	}
 
 	@Override

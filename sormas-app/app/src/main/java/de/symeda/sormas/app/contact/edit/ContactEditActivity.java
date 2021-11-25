@@ -26,6 +26,8 @@ import android.view.Menu;
 
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
@@ -34,6 +36,7 @@ import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -44,6 +47,8 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.epidata.EpidemiologicalDataEditFragment;
+import de.symeda.sormas.app.immunization.edit.ImmunizationNewActivity;
+import de.symeda.sormas.app.immunization.vaccination.VaccinationNewActivity;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.task.edit.TaskNewActivity;
 import de.symeda.sormas.app.util.Bundler;
@@ -86,6 +91,14 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 		if (DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.VIEW_TAB_CONTACTS_FOLLOW_UP_VISITS)) {
 			menuItems.set(ContactSection.VISITS.ordinal(), null);
 		}
+		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			|| DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			menuItems.set(ContactSection.IMMUNIZATIONS.ordinal(), null);
+		}
+		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			|| !DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			menuItems.set(ContactSection.VACCINATIONS.ordinal(), null);
+		}
 		return menuItems;
 	}
 
@@ -113,6 +126,12 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 			break;
 		case EPIDEMIOLOGICAL_DATA:
 			fragment = EpidemiologicalDataEditFragment.newInstance(activityRootData);
+			break;
+		case IMMUNIZATIONS:
+			fragment = ContactEditImmunizationListFragment.newInstance(activityRootData);
+			break;
+		case VACCINATIONS:
+			fragment = ContactEditVaccinationListFragment.newInstance(activityRootData);
 			break;
 		default:
 			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
@@ -189,6 +208,12 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 			break;
 		case TASKS:
 			TaskNewActivity.startActivityFromContact(getContext(), getRootUuid());
+			break;
+		case IMMUNIZATIONS:
+			ImmunizationNewActivity.startActivityFromContact(getContext(), getRootUuid());
+			break;
+		case VACCINATIONS:
+			VaccinationNewActivity.startActivityFromContact(getContext(), getRootUuid());
 			break;
 		default:
 			throw new IllegalArgumentException(activeSection.toString());

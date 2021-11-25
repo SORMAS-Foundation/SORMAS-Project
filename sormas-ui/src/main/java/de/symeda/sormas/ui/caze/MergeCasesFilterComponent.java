@@ -25,8 +25,8 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -109,11 +109,11 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		firstRowLayout.addComponent(cbDisease);
 
 		tfSearch = new TextField();
-		tfSearch.setId(CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE);
+		tfSearch.setId(CaseCriteria.CASE_LIKE);
 		tfSearch.setWidth(200, Unit.PIXELS);
 		CssStyles.style(tfSearch, CssStyles.FORCE_CAPTION);
 		tfSearch.setPlaceholder(I18nProperties.getString(Strings.promptCasesSearchField));
-		binder.bind(tfSearch, CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE);
+		binder.bind(tfSearch, CaseCriteria.CASE_LIKE);
 		firstRowLayout.addComponent(tfSearch);
 
 		eventSearch = new TextField();
