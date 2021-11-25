@@ -1,26 +1,31 @@
 package de.symeda.sormas.ui.labmessage;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import org.junit.Test;
+
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
-import org.junit.Test;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.ui.AbstractBeanTest;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-public class LabMessageControllerTest {
+public class LabMessageMapperTest extends AbstractBeanTest {
 
 	@Test
 	public void testHomogenousTestResultTypesInWithNoTestReport() {
-		LabMessageController sut = new LabMessageController();
 		LabMessageDto labMessageDto = LabMessageDto.build();
+		LabMessageMapper mapper = LabMessageMapper.forLabMessage(labMessageDto);
 
-		assertFalse(sut.homogenousTestResultTypesIn(labMessageDto));
+		SampleDto sample = new SampleDto();
+		mapper.mapToSample(sample);
+
+		assertNull(sample.getPathogenTestResult());
 	}
 
 	@Test
 	public void testHomogenousTestResultTypesInWithHomogenousTestReports() {
-		LabMessageController sut = new LabMessageController();
 		LabMessageDto labMessage = LabMessageDto.build();
 
 		TestReportDto testReport1 = TestReportDto.build();
@@ -31,12 +36,16 @@ public class LabMessageControllerTest {
 		testReport2.setTestResult(PathogenTestResultType.POSITIVE);
 		labMessage.addTestReport(testReport2);
 
-		assertTrue(sut.homogenousTestResultTypesIn(labMessage));
+		LabMessageMapper mapper = LabMessageMapper.forLabMessage(labMessage);
+
+		SampleDto sample = new SampleDto();
+		mapper.mapToSample(sample);
+
+		assertEquals(sample.getPathogenTestResult(), PathogenTestResultType.POSITIVE);
 	}
 
 	@Test
 	public void testHomogenousTestResultTypesInWithInhomogeneousTestReports() {
-		LabMessageController sut = new LabMessageController();
 		LabMessageDto labMessage = LabMessageDto.build();
 
 		TestReportDto testReport1 = TestReportDto.build();
@@ -51,6 +60,11 @@ public class LabMessageControllerTest {
 		testReport3.setTestResult(PathogenTestResultType.NEGATIVE);
 		labMessage.addTestReport(testReport3);
 
-		assertFalse(sut.homogenousTestResultTypesIn(labMessage));
+		LabMessageMapper mapper = LabMessageMapper.forLabMessage(labMessage);
+
+		SampleDto sample = new SampleDto();
+		mapper.mapToSample(sample);
+
+		assertNull(sample.getPathogenTestResult());
 	}
 }

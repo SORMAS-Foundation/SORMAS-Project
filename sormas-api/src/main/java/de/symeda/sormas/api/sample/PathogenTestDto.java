@@ -349,4 +349,9 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public void setPreliminary(Boolean preliminary) {
 		this.preliminary = preliminary;
 	}
+
+	@Override
+	public PathogenTestDto clone() throws CloneNotSupportedException {
+		return (PathogenTestDto) super.clone();
+	}
 }

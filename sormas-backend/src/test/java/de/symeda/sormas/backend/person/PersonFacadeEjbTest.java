@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,12 +30,15 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
+import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonExportDto;
@@ -50,6 +52,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -838,5 +841,27 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		List<PersonExportDto> exportByName = getPersonFacade().getExportList(nameCriteria, 0, 100);
 		assertThat(exportByName, hasSize(1));
 		assertThat(exportByName.get(0).getUuid(), is(casePerson.getUuid()));
+	}
+
+	@Test
+	public void testGetPersonByContext() {
+		RDCF rdcf = creator.createRDCF();
+		UserReferenceDto userRef = creator.createUser(rdcf, UserRole.REST_EXTERNAL_VISITS_USER).toReference();
+
+		PersonDto casePerson = creator.createPerson();
+		CaseDataDto caze = creator.createCase(userRef, casePerson.toReference(), rdcf);
+
+		assertThat(getPersonFacade().getByContext(PersonContext.CASE, caze.getUuid()), equalTo(casePerson));
+
+		PersonDto contactPerson = creator.createPerson();
+		ContactDto contact = creator.createContact(userRef, contactPerson.toReference());
+
+		assertThat(getPersonFacade().getByContext(PersonContext.CONTACT, contact.getUuid()), equalTo(contactPerson));
+
+		PersonDto eventParticipantPerson = creator.createPerson();
+		EventParticipantDto eventParticipant =
+			creator.createEventParticipant(creator.createEvent(userRef).toReference(), eventParticipantPerson, userRef);
+
+		assertThat(getPersonFacade().getByContext(PersonContext.EVENT_PARTICIPANT, eventParticipant.getUuid()), equalTo(eventParticipantPerson));
 	}
 }

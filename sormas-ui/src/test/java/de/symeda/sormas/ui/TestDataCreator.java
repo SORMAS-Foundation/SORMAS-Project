@@ -55,13 +55,17 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.report.WeeklyReportDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -72,7 +76,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
 
 public class TestDataCreator {
 
@@ -676,6 +679,29 @@ public class TestDataCreator {
 		campaignForm = FacadeProvider.getCampaignFormMetaFacade().saveCampaignFormMeta(campaignForm);
 
 		return campaignForm;
+	}
+
+	public LabMessageDto createLabMessage(Consumer<LabMessageDto> config) {
+		LabMessageDto labMessage = LabMessageDto.build();
+
+		config.accept(labMessage);
+
+		labMessage = FacadeProvider.getLabMessageFacade().save(labMessage);
+
+		return labMessage;
+	}
+
+	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, UserReferenceDto user, Consumer<PathogenTestDto> config) {
+		PathogenTestDto pathogenTest = PathogenTestDto.build(sample, user);
+		pathogenTest.setTestDateTime(new Date());
+		pathogenTest.setTestResultVerified(true);
+		pathogenTest.setTestType(PathogenTestType.RAPID_TEST);
+
+		config.accept(pathogenTest);
+
+		pathogenTest = FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
+
+		return pathogenTest;
 	}
 
 	public static class RDCF {

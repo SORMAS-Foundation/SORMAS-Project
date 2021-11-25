@@ -32,12 +32,12 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class SampleDto extends PseudonymizableDto implements SormasToSormasShareableDto {
@@ -541,5 +541,10 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasShare
 
 	public SampleReferenceDto toReference() {
 		return new SampleReferenceDto(getUuid());
+	}
+
+	@Override
+	public SampleDto clone() throws CloneNotSupportedException {
+		return (SampleDto) super.clone();
 	}
 }
