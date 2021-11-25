@@ -475,6 +475,7 @@ public interface Strings {
 	String headingEventGroupData = "headingEventGroupData";
 	String headingEventGroupLinkEventIssue = "headingEventGroupLinkEventIssue";
 	String headingEventGroupUnlinkEventIssue = "headingEventGroupUnlinkEventIssue";
+	String headingEventJurisdictionUpdated = "headingEventJurisdictionUpdated";
 	String headingEventNotDeleted = "headingEventNotDeleted";
 	String headingEventParticipantResponsibleJurisdictionUpdated = "headingEventParticipantResponsibleJurisdictionUpdated";
 	String headingEventParticipantsDeleted = "headingEventParticipantsDeleted";
@@ -962,6 +963,7 @@ public interface Strings {
 	String messageEventGroupCreated = "messageEventGroupCreated";
 	String messageEventGroupDearchived = "messageEventGroupDearchived";
 	String messageEventGroupSaved = "messageEventGroupSaved";
+	String messageEventJurisdictionUpdated = "messageEventJurisdictionUpdated";
 	String messageEventLinkedAsSubordinate = "messageEventLinkedAsSubordinate";
 	String messageEventLinkedAsSuperordinate = "messageEventLinkedAsSuperordinate";
 	String messageEventLinkedToGroup = "messageEventLinkedToGroup";

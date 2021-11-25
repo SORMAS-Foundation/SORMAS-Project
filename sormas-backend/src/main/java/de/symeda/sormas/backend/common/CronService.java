@@ -177,8 +177,7 @@ public class CronService {
 
 	@Schedule(hour = "1", minute = "40", second = "0", persistent = false)
 	public void updateImmunizationStatuses() {
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.IMMUNIZATION_STATUS_AUTOMATION)
-			&& !featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.IMMUNIZATION_STATUS_AUTOMATION)) {
 			immunizationFacade.updateImmunizationStatuses();
 		}
 	}

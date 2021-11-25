@@ -44,6 +44,12 @@ public abstract class SormasToSormasDtoValidator<DTO extends SormasToSormasShare
 		infraValidator.validateCountry(person.getBirthCountry(), Captions.Person_birthCountry, validationErrors, person::setBirthCountry);
 		infraValidator.validateCountry(person.getCitizenship(), Captions.Person_citizenship, validationErrors, person::setCitizenship);
 
+		infraValidator
+			.validateRegion(person.getPlaceOfBirthRegion(), Captions.Person_placeOfBirthRegion, validationErrors, person::setPlaceOfBirthRegion);
+		infraValidator
+				.validateDistrict(person.getPlaceOfBirthDistrict(), Captions.Person_placeOfBirthDistrict, validationErrors, person::setPlaceOfBirthDistrict);
+		infraValidator
+				.validateCommunity(person.getPlaceOfBirthCommunity(), Captions.Person_placeOfBirthCommunity, validationErrors, person::setPlaceOfBirthCommunity);
 		return validationErrors;
 	}
 
@@ -58,7 +64,7 @@ public abstract class SormasToSormasDtoValidator<DTO extends SormasToSormasShare
 		infraValidator.validateSubcontinent(location.getSubcontinent(), groupNameTag, validationErrors, location::setSubcontinent);
 		infraValidator.validateCountry(location.getCountry(), groupNameTag, validationErrors, location::setCountry);
 		infraValidator.validateRegion(location.getRegion(), groupNameTag, validationErrors, location::setRegion);
-		infraValidator.validateDistrit(location.getDistrict(), groupNameTag, validationErrors, location::setDistrict);
+		infraValidator.validateDistrict(location.getDistrict(), groupNameTag, validationErrors, location::setDistrict);
 		infraValidator.validateCommunity(location.getCommunity(), groupNameTag, validationErrors, location::setCommunity);
 		infraValidator.validateFacility(
 			location.getFacility(),
@@ -75,7 +81,7 @@ public abstract class SormasToSormasDtoValidator<DTO extends SormasToSormasShare
 	protected void validatePreviousHospitalization(ValidationErrors validationErrors, PreviousHospitalizationDto ph) {
 		final String groupNameTag = Captions.CaseHospitalization_previousHospitalizations;
 		infraValidator.validateRegion(ph.getRegion(), groupNameTag, validationErrors, ph::setRegion);
-		infraValidator.validateDistrit(ph.getDistrict(), groupNameTag, validationErrors, ph::setDistrict);
+		infraValidator.validateDistrict(ph.getDistrict(), groupNameTag, validationErrors, ph::setDistrict);
 		infraValidator.validateCommunity(ph.getCommunity(), groupNameTag, validationErrors, ph::setCommunity);
 		infraValidator
 			.validateFacility(ph.getHealthFacility(), FacilityType.HOSPITAL, ph.getHealthFacilityDetails(), groupNameTag, validationErrors, f -> {
@@ -88,7 +94,7 @@ public abstract class SormasToSormasDtoValidator<DTO extends SormasToSormasShare
 	protected void validateMaternalHistory(ValidationErrors validationErrors, MaternalHistoryDto mh) {
 		final String groupNameTag = Captions.MaternalHistory_rashExposure;
 		infraValidator.validateRegion(mh.getRashExposureRegion(), groupNameTag, validationErrors, mh::setRashExposureRegion);
-		infraValidator.validateDistrit(mh.getRashExposureDistrict(), groupNameTag, validationErrors, mh::setRashExposureDistrict);
+		infraValidator.validateDistrict(mh.getRashExposureDistrict(), groupNameTag, validationErrors, mh::setRashExposureDistrict);
 		infraValidator.validateCommunity(mh.getRashExposureCommunity(), groupNameTag, validationErrors, mh::setRashExposureCommunity);
 	}
 
