@@ -35,7 +35,7 @@ public class SormasToSormasEventParticipantDtoValidator
 
 		final String groupNameTag = Captions.EventParticipant;
 		infraValidator.validateRegion(ep.getRegion(), groupNameTag, validationErrors, ep::setRegion);
-		infraValidator.validateDistrit(ep.getDistrict(), groupNameTag, validationErrors, ep::setDistrict);
+		infraValidator.validateDistrict(ep.getDistrict(), groupNameTag, validationErrors, ep::setDistrict);
 
 		return validationErrors;
 	}
