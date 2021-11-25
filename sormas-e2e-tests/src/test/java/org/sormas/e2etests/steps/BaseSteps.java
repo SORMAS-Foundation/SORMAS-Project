@@ -28,11 +28,14 @@ import customreport.reportbuilder.CustomReportBuilder;
 import io.qameta.allure.listener.StepLifecycleListener;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.Duration;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.sormas.e2etests.steps.web.application.NavBarSteps;
 import org.sormas.e2etests.ui.DriverManager;
 import recorders.StepsLogger;
 
@@ -41,6 +44,7 @@ public class BaseSteps implements StepLifecycleListener {
 
   public static RemoteWebDriver driver;
   private final DriverManager driverManager;
+  private final String textFilePath = "customReports/data/results.txt";
 
   @Inject
   public BaseSteps(DriverManager driverManager) {
@@ -77,15 +81,24 @@ public class BaseSteps implements StepLifecycleListener {
     log.info("Finished test: " + scenario.getName());
   }
 
-  @After(value = "@PagesMeasurements")
-  public void afterPageLoadTests(Scenario scenario) {
-    String testName = scenario.getName().replace("Check", "").replace("loading time", "");
-    log.info(scenario.getName() + " done, adding page meassurement result into TableDataManager");
-    TableDataManager.addRowEntity(testName, NavBarSteps.elapsedTime);
+  @Before(value = "@PagesMeasurements")
+  public void createJsonDataFile() {
+    FileWriter file;
+    try {
+      File resultsText = new File(textFilePath);
+      if (!resultsText.exists()) {
+        file = new FileWriter(textFilePath);
+        file.flush();
+      }
+    } catch (IOException e) {
+      log.warn("Unable to create test results text file: " + e.getMessage());
+    }
   }
 
+  @SneakyThrows
   @After(value = "@PublishCustomReport")
   public void generateMeasurementsReport() {
+    TableDataManager.convertData();
     log.info("Creating Chart for UI Meassurements report");
     ReportChartBuilder.buildChartForData(TableDataManager.getTableRowsDataList());
     log.info("Generating Sormas Custom report");

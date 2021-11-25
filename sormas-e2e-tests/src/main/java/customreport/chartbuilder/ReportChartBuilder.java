@@ -19,7 +19,7 @@ public abstract class ReportChartBuilder {
   public static void buildChartForData(List<TableRowObject> data) {
     DefaultCategoryDataset dataset = new DefaultCategoryDataset();
     for (TableRowObject entry : data) {
-      String page = entry.getTestName().replace("page", "").trim();
+      String page = entry.getTestName();
       dataset.addValue(Double.valueOf(entry.getCurrentTime()), page, page);
     }
     JFreeChart barChart =
@@ -34,7 +34,7 @@ public abstract class ReportChartBuilder {
             false);
     barChart.getPlot().setBackgroundPaint(Color.WHITE);
     int width = 1300;
-    int height = 1000;
+    int height = 800;
     File BarChart = new File("customReports/images/BarChart.jpeg");
     ChartUtils.saveChartAsJPEG(BarChart, barChart, width, height);
   }
