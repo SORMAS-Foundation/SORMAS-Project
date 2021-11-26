@@ -65,7 +65,7 @@ public class CreateNewCaseSteps implements En {
           fillDateOfReport(caze.getDateOfReport());
           fillPlaceDescription(caze.getPlaceDescription());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
