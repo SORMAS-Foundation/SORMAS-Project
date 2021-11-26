@@ -47,6 +47,7 @@ import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;

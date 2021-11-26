@@ -42,6 +42,7 @@ import javax.persistence.criteria.Subquery;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.vaccination.Vaccination;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -530,23 +531,14 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			immunizationService.getByPersonAndDisease(eventParticipant.getPerson().getUuid(), eventParticipant.getEvent().getDisease(), true);
 		Event event = eventParticipant.getEvent();
 
-		long validVaccinations = eventParticipantImmunizations.stream()
-			.flatMap(immunization -> immunization.getVaccinations().stream().filter(vaccination -> isVaccinationRelevant(event, vaccination)))
-			.count();
+		boolean hasValidVaccinations = eventParticipantImmunizations.stream()
+			.anyMatch(
+				immunization -> immunization.getVaccinations()
+					.stream()
+					.anyMatch(vaccination -> VaccinationService.isVaccinationRelevant(event, vaccination)));
 
-		if (validVaccinations > 0) {
+		if (hasValidVaccinations) {
 			eventParticipant.setVaccinationStatus(VaccinationStatus.VACCINATED);
 		}
-
-	}
-
-	private boolean isVaccinationRelevant(Event event, Vaccination vaccination) {
-		return vaccination.getVaccinationDate() != null
-			? event.getStartDate() != null
-				? vaccination.getVaccinationDate().before(event.getStartDate())
-				: event.getEndDate() != null
-					? vaccination.getVaccinationDate().before(event.getEndDate())
-					: vaccination.getVaccinationDate().before(event.getReportDateTime())
-			: true;
 	}
 }

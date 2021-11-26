@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.vaccination;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,9 +33,12 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.person.Person;
 
@@ -85,4 +89,57 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 			return em.createQuery(cq).getResultList();
 		}
 	}
+
+	public static boolean isVaccinationRelevant(Contact contact, Vaccination vaccination) {
+		if (vaccination.getVaccinationDate() != null) {
+			return checkVaccinationRelevanceForContact(vaccination.getVaccinationDate(), contact);
+		} else {
+			return checkVaccinationRelevanceForContact(vaccination.getReportDate(), contact);
+		}
+	}
+
+	private static boolean checkVaccinationRelevanceForContact(Date vaccinationRelevantDate, Contact contact) {
+		if (contact.getLastContactDate() != null) {
+			return vaccinationRelevantDate.before(contact.getLastContactDate());
+		} else {
+			return vaccinationRelevantDate.before(contact.getReportDateTime());
+		}
+	}
+
+	public static boolean isVaccinationRelevant(Case caze, Vaccination vaccination) {
+		if (vaccination.getVaccinationDate() != null) {
+			return isVaccinationRelevanceForCase(vaccination.getVaccinationDate(), caze);
+		} else {
+			return isVaccinationRelevanceForCase(vaccination.getReportDate(), caze);
+		}
+	}
+
+	public static boolean isVaccinationRelevanceForCase(Date vaccinationRelevantDate, Case caze) {
+		if (caze.getSymptoms().getOnsetDate() != null) {
+			return vaccinationRelevantDate.before(caze.getSymptoms().getOnsetDate());
+		} else {
+			return vaccinationRelevantDate.before(caze.getReportDate());
+		}
+	}
+
+	public static boolean isVaccinationRelevant(Event event, Vaccination vaccination) {
+		if (vaccination.getVaccinationDate() != null) {
+			return isVaccinationRelevantForEventParticipant(vaccination.getVaccinationDate(), event);
+		} else {
+			return isVaccinationRelevantForEventParticipant(vaccination.getReportDate(), event);
+		}
+	}
+
+	public static boolean isVaccinationRelevantForEventParticipant(Date vaccinationRelevantDate, Event event) {
+		if (event.getStartDate() != null) {
+			return vaccinationRelevantDate.before(event.getStartDate());
+		} else {
+			if (event.getEndDate() != null) {
+				return vaccinationRelevantDate.before(event.getEndDate());
+			} else {
+				return vaccinationRelevantDate.before(event.getReportDateTime());
+			}
+		}
+	}
+
 }

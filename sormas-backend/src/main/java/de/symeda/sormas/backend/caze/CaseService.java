@@ -52,6 +52,7 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -1775,21 +1776,15 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	public void updateVaccinationStatuses(Case caze) {
 		List<Immunization> casePersonImmunizations = immunizationService.getByPersonAndDisease(caze.getPerson().getUuid(), caze.getDisease(), true);
 
-		long validVaccinations = casePersonImmunizations.stream()
-			.flatMap(immunization -> immunization.getVaccinations().stream().filter(vaccination -> isVaccinationRelevant(caze, vaccination)))
-			.count();
+		boolean hasValidVaccinations = casePersonImmunizations.stream()
+			.anyMatch(
+				immunization -> immunization.getVaccinations()
+					.stream()
+					.anyMatch(vaccination -> VaccinationService.isVaccinationRelevant(caze, vaccination)));
 
-		if (validVaccinations > 0) {
+		if (hasValidVaccinations) {
 			caze.setVaccinationStatus(VaccinationStatus.VACCINATED);
 		}
-	}
-
-	public Boolean isVaccinationRelevant(Case caze, Vaccination vaccination) {
-		return vaccination.getVaccinationDate() != null
-			? caze.getSymptoms().getOnsetDate() != null
-				? vaccination.getVaccinationDate().before(caze.getSymptoms().getOnsetDate())
-				: vaccination.getVaccinationDate().before(caze.getReportDate())
-			: true;
 	}
 
 	private float calculateCompleteness(Case caze) {

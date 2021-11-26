@@ -47,6 +47,7 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -1473,21 +1474,15 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		List<Immunization> contactPersonImmunizations =
 			immunizationService.getByPersonAndDisease(contact.getPerson().getUuid(), contact.getDisease(), true);
 
-		long validVaccinations = contactPersonImmunizations.stream()
-			.flatMap(immunization -> immunization.getVaccinations().stream().filter(vaccination -> isVaccinationRelevant(contact, vaccination)))
-			.count();
+		boolean hasValidVaccinations = contactPersonImmunizations.stream()
+			.anyMatch(
+				immunization -> immunization.getVaccinations()
+					.stream()
+					.anyMatch(vaccination -> VaccinationService.isVaccinationRelevant(contact, vaccination)));
 
-		if (validVaccinations > 0) {
+		if (hasValidVaccinations) {
 			contact.setVaccinationStatus(VaccinationStatus.VACCINATED);
 		}
-	}
-
-	public boolean isVaccinationRelevant(Contact contact, Vaccination vaccination) {
-		return vaccination.getVaccinationDate() != null
-			? contact.getLastContactDate() != null
-				? vaccination.getVaccinationDate().before(contact.getLastContactDate())
-				: vaccination.getVaccinationDate().before(contact.getReportDateTime())
-			: true;
 	}
 
 	public List<ContactListEntryDto> getEntriesList(Long personId, Integer first, Integer max) {
