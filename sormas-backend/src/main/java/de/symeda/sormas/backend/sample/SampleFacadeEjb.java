@@ -50,9 +50,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.backend.event.EventService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,6 +106,7 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
+import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -1210,9 +1208,13 @@ public class SampleFacadeEjb implements SampleFacade {
 			contactFacade.onContactChanged(ContactFacadeEjbLocal.toDto(newSample.getAssociatedContact()), syncShares);
 		}
 
-		if (newSample.getAssociatedEventParticipant() != null) {
-			eventParticipantFacade
-				.onEventParticipantChanged(EventFacadeEjbLocal.toDto(newSample.getAssociatedEventParticipant().getEvent()), syncShares);
+		EventParticipant associatedEventParticipant = newSample.getAssociatedEventParticipant();
+		if (associatedEventParticipant != null) {
+			eventParticipantFacade.onEventParticipantChanged(
+				EventFacadeEjbLocal.toDto(associatedEventParticipant.getEvent()),
+				EventParticipantFacadeEjbLocal.toDto(associatedEventParticipant),
+				associatedEventParticipant,
+				syncShares);
 		}
 	}
 

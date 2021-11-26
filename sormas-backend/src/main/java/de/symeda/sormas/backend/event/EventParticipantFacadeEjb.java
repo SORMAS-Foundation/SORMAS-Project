@@ -99,6 +99,7 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
+import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.importexport.ExportHelper;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -160,6 +161,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private ImmunizationService immunizationService;
 
 	@Override
 	public List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid) {
@@ -279,12 +282,21 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			notifyEventResponsibleUsersOfCommonEventParticipant(entity, event);
 		}
 
-		onEventParticipantChanged(EventFacadeEjbLocal.toDto(entity.getEvent()), internal);
+		onEventParticipantChanged(EventFacadeEjbLocal.toDto(entity.getEvent()), existingDto, entity, internal);
 
 		return convertToDto(entity, pseudonymizer);
 	}
 
-	public void onEventParticipantChanged(EventDto event, boolean syncShares) {
+	public void onEventParticipantChanged(
+		EventDto event,
+		EventParticipantDto existingEventParticipant,
+		EventParticipant newEventParticipant,
+		boolean syncShares) {
+
+		if (existingEventParticipant == null) {
+			updateVaccinationStatus(newEventParticipant);
+		}
+
 		eventFacade.onEventChange(event, syncShares);
 	}
 
@@ -1063,5 +1075,22 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		List<EventParticipant> resultList = em.createQuery(cq).getResultList();
 		return resultList.stream().map(EventParticipantFacadeEjb::toDto).collect(Collectors.toList());
+	}
+
+	public void updateVaccinationStatus(EventParticipant eventParticipant) {
+		eventParticipantService.updateVaccinationStatuses(eventParticipant);
+
+//		Event event = eventParticipant.getEvent();
+//
+//		if (event.getDisease() != null) {
+//			Person person = personService.getByUuid(eventParticipant.getPerson().getUuid());
+//			List<Immunization> casePersonImmunizations =
+//				immunizationService.getByPersonAndDisease(eventParticipant.getPerson().getUuid(), event.getDisease(), true);
+//			casePersonImmunizations.forEach(
+//				immunization -> immunization.getVaccinations()
+//					.forEach(
+//						vaccination -> eventParticipantService
+//							.updateVaccinationStatuses(person.getId(), event.getDisease(), vaccination.getVaccinationDate())));
+//		}
 	}
 }

@@ -39,6 +39,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.backend.immunization.ImmunizationService;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.vaccination.Vaccination;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -72,6 +75,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	private SampleService sampleService;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
+	@EJB
+	private ImmunizationService immunizationService;
 
 	public EventParticipantService() {
 		super(EventParticipant.class);
@@ -514,5 +519,34 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		cu.where(cb.and(cb.equal(root.get(EventParticipant.PERSON), personId), cb.isNotNull(eventSq.getSelection())));
 
 		em.createQuery(cu).executeUpdate();
+	}
+
+	// keep both updateVaccinationStatuses logic from EventParticipantService in sync
+	public void updateVaccinationStatuses(EventParticipant eventParticipant) {
+		if (eventParticipant.getEvent().getDisease() == null) {
+			return;
+		}
+		List<Immunization> eventParticipantImmunizations =
+			immunizationService.getByPersonAndDisease(eventParticipant.getPerson().getUuid(), eventParticipant.getEvent().getDisease(), true);
+		Event event = eventParticipant.getEvent();
+
+		long validVaccinations = eventParticipantImmunizations.stream()
+			.flatMap(immunization -> immunization.getVaccinations().stream().filter(vaccination -> isVaccinationRelevant(event, vaccination)))
+			.count();
+
+		if (validVaccinations > 0) {
+			eventParticipant.setVaccinationStatus(VaccinationStatus.VACCINATED);
+		}
+
+	}
+
+	private boolean isVaccinationRelevant(Event event, Vaccination vaccination) {
+		return vaccination.getVaccinationDate() != null
+			? event.getStartDate() != null
+				? vaccination.getVaccinationDate().before(event.getStartDate())
+				: event.getEndDate() != null
+					? vaccination.getVaccinationDate().before(event.getEndDate())
+					: vaccination.getVaccinationDate().before(event.getReportDateTime())
+			: true;
 	}
 }
