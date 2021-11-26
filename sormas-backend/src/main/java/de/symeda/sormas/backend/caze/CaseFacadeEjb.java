@@ -1943,6 +1943,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (existingCase != null && existingCase.getQuarantineTo() != null && !existingCase.getQuarantineTo().equals(newCase.getQuarantineTo())) {
 			newCase.setPreviousQuarantineTo(existingCase.getQuarantineTo());
 		}
+
+		if (existingCase == null) {
+			updateVaccinationStatus(newCase);
+		}
 	}
 
 	public boolean evaluateFulfilledCondition(CaseDataDto newCase, CaseClassification caseClassification) {
@@ -2065,6 +2069,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		IterableHelper.executeBatched(getCompletenessCheckCaseList, 10, caseCompletionBatch -> caseService.updateCompleteness(caseCompletionBatch));
 
 		return getCompletenessCheckCaseList.size();
+	}
+
+	private void updateVaccinationStatus(Case caze) {
+		caseService.updateVaccinationStatuses(caze);
 	}
 
 	private List<String> getCompletenessCheckNeededCaseList() {

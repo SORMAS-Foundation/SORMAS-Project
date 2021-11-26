@@ -1082,7 +1082,12 @@ public class PersonFacadeEjb implements PersonFacade {
 			// Call onEventParticipantChange once for every event participant
 			// Attention: this may lead to infinite recursion when not properly implemented
 			for (EventParticipant personEventParticipant : personEventParticipants) {
-				eventParticipantFacade.onEventParticipantChanged(EventFacadeEjbLocal.toDto(personEventParticipant.getEvent()), syncShares);
+
+				eventParticipantFacade.onEventParticipantChanged(
+					EventFacadeEjbLocal.toDto(personEventParticipant.getEvent()),
+					EventParticipantFacadeEjbLocal.toDto(personEventParticipant),
+					personEventParticipant,
+					syncShares);
 			}
 
 			// get the updated personCases
