@@ -3022,49 +3022,90 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				+ caseInfo[10] + ", " + caseInfo[11] + ", 0, 1, 0);";
 			getDao(Immunization.class).executeRaw(immunizationInsertQuery);
 
-			cloneHealthConditions(caseInfo[25]);
-			Vaccine vaccineName;
-			boolean isAstraZenecaCombination = caseInfo[13].equals("ASTRA_ZENECA_COMIRNATY") || caseInfo[13].equals("ASTRA_ZENECA_MRNA_1273");
-			if (caseInfo[13] != null) {
-				vaccineName = isAstraZenecaCombination ? Vaccine.OXFORD_ASTRA_ZENECA : Vaccine.valueOf((String) caseInfo[13]);
-			} else {
-				vaccineName = (caseInfo[15] != null ? Vaccine.OTHER : null);
-			}
-			String otherVaccineName = vaccineName == Vaccine.OTHER && caseInfo[15] == null ? (String) caseInfo[14] : (String) caseInfo[15];
-			VaccineManufacturer vaccineManufacturer = ("ASTRA_ZENECA_COMIRNATY".equals(caseInfo[13]) || "ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13]))
-				? VaccineManufacturer.ASTRA_ZENECA
-				: (caseInfo[16] != null ? VaccineManufacturer.valueOf((String) caseInfo[16]) : null);
+			if (caseInfo[12] == null || ((String) caseInfo[12]).isEmpty()) {
+				if (caseInfo[10] != null || caseInfo[11] == null) {
+					cloneHealthConditions(caseInfo[25]);
+					Vaccine vaccineName = caseInfo[13] != null
+						? (caseInfo[13].equals("ASTRA_ZENECA_COMIRNATY") || caseInfo[13].equals("ASTRA_ZENECA_MRNA_1273"))
+							? Vaccine.OXFORD_ASTRA_ZENECA
+							: Vaccine.valueOf((String) caseInfo[13])
+						: (caseInfo[15] != null ? Vaccine.OTHER : null);
+					String otherVaccineName = vaccineName == Vaccine.OTHER && caseInfo[15] == null ? (String) caseInfo[14] : (String) caseInfo[15];
+					VaccineManufacturer vaccineManufacturer =
+						("ASTRA_ZENECA_COMIRNATY".equals(caseInfo[13]) || "ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13]))
+							? VaccineManufacturer.ASTRA_ZENECA
+							: (caseInfo[16] != null ? VaccineManufacturer.valueOf((String) caseInfo[16]) : null);
+					insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, caseInfo[10]);
+				}
 
-			int vaccinationDoses;
-			try {
-				vaccinationDoses = new Integer((String) caseInfo[12]);
-			} catch (NumberFormatException e) {
-				vaccinationDoses = 1;
-			}
-
-			if (vaccinationDoses == 1) {
-				insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, caseInfo[11] != null ? caseInfo[11] : caseInfo[10]);
-			} else if (vaccinationDoses == 2) {
-				insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, caseInfo[10]);
-				insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, caseInfo[11]);
-			} else {
-				for (int i = 1; i <= vaccinationDoses; i++) {
-					if (i == 1) {
-						insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, caseInfo[10]);
-					} else if (i == vaccinationDoses) {
-						insertVaccination(
-							caseInfo,
-							isAstraZenecaCombination ? Vaccine.COMIRNATY : vaccineName,
-							otherVaccineName,
-							vaccineManufacturer,
-							caseInfo[11]);
+				// Last vaccination
+				if (caseInfo[11] != null || ("ASTRA_ZENECA_COMIRNATY".equals(caseInfo[13]) || "ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13]))) {
+					cloneHealthConditions(caseInfo[25]);
+					Vaccine vaccineName = caseInfo[13] != null
+						? (caseInfo[13].equals("ASTRA_ZENECA_COMIRNATY")
+							? Vaccine.COMIRNATY
+							: (caseInfo[13].equals("ASTRA_ZENECA_MRNA_1273")) ? Vaccine.MRNA_1273 : Vaccine.valueOf((String) caseInfo[13]))
+						: Vaccine.OTHER;
+					String otherVaccineName = vaccineName == Vaccine.OTHER ? (String) caseInfo[14] : (String) caseInfo[15];
+					VaccineManufacturer vaccineManufacturer = "ASTRA_ZENECA_COMIRNATY".equals(caseInfo[13])
+						? VaccineManufacturer.BIONTECH_PFIZER
+						: ("ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13]))
+							? VaccineManufacturer.MODERNA
+							: VaccineManufacturer.valueOf((String) caseInfo[16]);
+					insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, caseInfo[11]);
+				} else {
+					cloneHealthConditions(caseInfo[25]);
+					int vaccinationDoses;
+					Vaccine vaccineName;
+					boolean isAstraZenecaCombination = caseInfo[13].equals("ASTRA_ZENECA_COMIRNATY") || caseInfo[13].equals("ASTRA_ZENECA_MRNA_1273");
+					if (caseInfo[13] != null) {
+						vaccineName = isAstraZenecaCombination ? Vaccine.OXFORD_ASTRA_ZENECA : Vaccine.valueOf((String) caseInfo[13]);
 					} else {
+						vaccineName = (caseInfo[15] != null ? Vaccine.OTHER : null);
+					}
+					String otherVaccineName = vaccineName == Vaccine.OTHER && caseInfo[15] == null ? (String) caseInfo[14] : (String) caseInfo[15];
+					VaccineManufacturer vaccineManufacturer =
+						("ASTRA_ZENECA_COMIRNATY".equals(caseInfo[13]) || "ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13]))
+							? VaccineManufacturer.ASTRA_ZENECA
+							: (caseInfo[16] != null ? VaccineManufacturer.valueOf((String) caseInfo[16]) : null);
+
+					try {
+
+						vaccinationDoses = new Integer((String) caseInfo[12]);
+					} catch (NumberFormatException e) {
+						vaccinationDoses = 1;
+					}
+
+					if (vaccinationDoses == 1) {
 						insertVaccination(
 							caseInfo,
-							isAstraZenecaCombination ? Vaccine.COMIRNATY : vaccineName,
+							vaccineName,
 							otherVaccineName,
 							vaccineManufacturer,
-							null);
+							caseInfo[11] != null ? caseInfo[11] : caseInfo[10]);
+					} else if (vaccinationDoses == 2) {
+						insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, caseInfo[10]);
+						insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, caseInfo[11]);
+					} else {
+						for (int i = 1; i <= vaccinationDoses; i++) {
+							if (i == 1) {
+								insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, caseInfo[10]);
+							} else if (i == vaccinationDoses) {
+								insertVaccination(
+									caseInfo,
+									isAstraZenecaCombination ? Vaccine.COMIRNATY : vaccineName,
+									otherVaccineName,
+									vaccineManufacturer,
+									caseInfo[11]);
+							} else {
+								insertVaccination(
+									caseInfo,
+									isAstraZenecaCombination ? Vaccine.COMIRNATY : vaccineName,
+									otherVaccineName,
+									vaccineManufacturer,
+									null);
+							}
+						}
 					}
 				}
 			}
