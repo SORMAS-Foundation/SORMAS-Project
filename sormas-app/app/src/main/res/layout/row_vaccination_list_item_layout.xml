@@ -102,7 +102,7 @@
                         android:maxLines="1"
                         android:ellipsize="end"
                         app:value="@{data.vaccineName}"
-                        app:defaultValue='@{@string/value_task_type_unknown}'
+                        app:defaultValue='@{@string/value_vaccine_name_unknown}'
                         />
 
                     <TextView
@@ -118,7 +118,7 @@
                         android:maxLines="1"
                         android:ellipsize="end"
                         app:value="@{data.vaccineManufacturer}"
-                        app:defaultValue='@{@string/value_person_unknown}'
+                        app:defaultValue='@{@string/value_vaccine_manufacturer_unknown}'
                         />
 
                 </LinearLayout>

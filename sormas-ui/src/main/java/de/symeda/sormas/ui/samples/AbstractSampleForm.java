@@ -71,16 +71,18 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 	protected static final String ADDITIONAL_TESTING_READ_HEADLINE_LOC = "additionalTestingReadHeadlineLoc";
 	protected static final String REQUESTED_PATHOGEN_TESTS_READ_LOC = "requestedPathogenTestsReadLoc";
 	protected static final String REQUESTED_ADDITIONAL_TESTS_READ_LOC = "requestedAdditionalTestsReadLoc";
+	protected static final String REPORT_INFO_LABEL_LOC = "reportInfoLabelLoc";
+	protected static final String REFERRED_FROM_BUTTON_LOC = "referredFromButtonLoc";
 
 	//@formatter:off
     protected static final String SAMPLE_COMMON_HTML_LAYOUT =
-            fluidRowLocs(SampleDto.UUID, SampleDto.REPORTING_USER) +
+            fluidRowLocs(SampleDto.UUID, REPORT_INFO_LABEL_LOC) +
                     fluidRowLocs(SampleDto.SAMPLE_PURPOSE) +
                     fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL) +
                     fluidRowLocs("", SampleDto.SAMPLE_MATERIAL_TEXT) +
                     fluidRowLocs(SampleDto.SAMPLING_REASON, SampleDto.SAMPLING_REASON_DETAILS) +
                     fluidRowLocs(SampleDto.SAMPLE_SOURCE, "") +
-                    fluidRowLocs(SampleDto.FIELD_SAMPLE_ID, "") +
+                    fluidRowLocs(SampleDto.FIELD_SAMPLE_ID, REFERRED_FROM_BUTTON_LOC) +
                     fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS) +
 
                     locCss(VSPACE_TOP_3, SampleDto.PATHOGEN_TESTING_REQUESTED) +
@@ -239,25 +241,8 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		}
 		Label reportInfoLabel = new Label(reportInfoText.toString());
 		reportInfoLabel.setEnabled(false);
-		getContent().addComponent(reportInfoLabel);
+		getContent().addComponent(reportInfoLabel, REPORT_INFO_LABEL_LOC);
 
-		SampleReferenceDto referredFromRef = FacadeProvider.getSampleFacade().getReferredFrom(getValue().getUuid());
-		if (referredFromRef != null) {
-			SampleDto referredFrom = FacadeProvider.getSampleFacade().getSampleByUuid(referredFromRef.getUuid());
-			FacilityReferenceDto referredFromLab = referredFrom.getLab();
-			String referredButtonCaption = referredFromLab == null
-				? I18nProperties.getCaption(Captions.sampleReferredFromInternal) + " ("
-					+ DateFormatHelper.formatLocalDateTime(referredFrom.getSampleDateTime()) + ")"
-				: I18nProperties.getCaption(Captions.sampleReferredFrom) + " " + referredFromLab.toString();
-			Button referredButton = ButtonHelper.createButton(
-				"referredFrom",
-				referredButtonCaption,
-				event -> ControllerProvider.getSampleController().navigateToData(referredFrom.getUuid()),
-				ValoTheme.BUTTON_LINK,
-				VSPACE_NONE);
-
-			getContent().addComponent(referredButton);
-		}
 	}
 
 	protected void updateLabDetailsVisibility(TextField labDetails, Property.ValueChangeEvent event) {

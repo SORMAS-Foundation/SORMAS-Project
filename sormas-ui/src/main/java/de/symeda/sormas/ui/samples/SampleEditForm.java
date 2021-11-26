@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 
@@ -53,6 +54,8 @@ public class SampleEditForm extends AbstractSampleForm {
 
 	private List<PathogenTestReferenceDto> testsToBeRemovedOnCommit;
 
+	private Label laboratorySampleHeadingLabel;
+
 	public SampleEditForm(boolean isPseudonymized, Disease disease) {
 		super(SampleDto.class, SampleDto.I18N_PREFIX, disease, UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
 		testsToBeRemovedOnCommit = new ArrayList();
@@ -61,7 +64,7 @@ public class SampleEditForm extends AbstractSampleForm {
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
-		Label laboratorySampleHeadingLabel = new Label(I18nProperties.getString(Strings.headingLaboratorySample));
+		laboratorySampleHeadingLabel = new Label(I18nProperties.getString(Strings.headingLaboratorySample));
 		laboratorySampleHeadingLabel.addStyleName(H3);
 		getContent().addComponent(laboratorySampleHeadingLabel, LABORATORY_SAMPLE_HEADING_LOC);
 
@@ -113,6 +116,10 @@ public class SampleEditForm extends AbstractSampleForm {
 		}
 	}
 
+	public void addReferredFromButton(Button button) {
+		getContent().addComponent(button, REFERRED_FROM_BUTTON_LOC);
+	}
+
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
@@ -120,5 +127,10 @@ public class SampleEditForm extends AbstractSampleForm {
 
 	public List<PathogenTestReferenceDto> getTestsToBeRemovedOnCommit() {
 		return testsToBeRemovedOnCommit;
+	}
+
+	@Override
+	public void setHeading(String heading) {
+		laboratorySampleHeadingLabel.setValue(heading);
 	}
 }
