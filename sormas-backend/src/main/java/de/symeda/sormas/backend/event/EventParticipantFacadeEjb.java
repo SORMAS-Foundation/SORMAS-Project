@@ -1079,18 +1079,5 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 	public void updateVaccinationStatus(EventParticipant eventParticipant) {
 		eventParticipantService.updateVaccinationStatuses(eventParticipant);
-
-//		Event event = eventParticipant.getEvent();
-//
-//		if (event.getDisease() != null) {
-//			Person person = personService.getByUuid(eventParticipant.getPerson().getUuid());
-//			List<Immunization> casePersonImmunizations =
-//				immunizationService.getByPersonAndDisease(eventParticipant.getPerson().getUuid(), event.getDisease(), true);
-//			casePersonImmunizations.forEach(
-//				immunization -> immunization.getVaccinations()
-//					.forEach(
-//						vaccination -> eventParticipantService
-//							.updateVaccinationStatuses(person.getId(), event.getDisease(), vaccination.getVaccinationDate())));
-//		}
 	}
 }

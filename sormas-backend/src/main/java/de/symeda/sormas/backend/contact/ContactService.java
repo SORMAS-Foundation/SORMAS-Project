@@ -1468,6 +1468,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		em.createQuery(cu).executeUpdate();
 	}
 
+	// keep both updateVaccinationStatuses logic from ContactService in sync
 	public void updateVaccinationStatuses(Contact contact) {
 		List<Immunization> contactPersonImmunizations =
 			immunizationService.getByPersonAndDisease(contact.getPerson().getUuid(), contact.getDisease(), true);
