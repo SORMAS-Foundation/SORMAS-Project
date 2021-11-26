@@ -114,7 +114,7 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 		}
 	}
 
-	public static boolean isVaccinationRelevanceForCase(Date vaccinationRelevantDate, Case caze) {
+	private static boolean isVaccinationRelevanceForCase(Date vaccinationRelevantDate, Case caze) {
 		if (caze.getSymptoms().getOnsetDate() != null) {
 			return vaccinationRelevantDate.before(caze.getSymptoms().getOnsetDate());
 		} else {
@@ -130,7 +130,7 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 		}
 	}
 
-	public static boolean isVaccinationRelevantForEventParticipant(Date vaccinationRelevantDate, Event event) {
+	private static boolean isVaccinationRelevantForEventParticipant(Date vaccinationRelevantDate, Event event) {
 		if (event.getStartDate() != null) {
 			return vaccinationRelevantDate.before(event.getStartDate());
 		} else {
