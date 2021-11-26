@@ -189,6 +189,7 @@ public class NavBarSteps implements En {
           } catch (Exception exception) {
             elapsedTime = "22";
           }
+          log.info("Collecting test results");
           TableDataManager.addRowEntity(page + " page", elapsedTime);
         });
   }

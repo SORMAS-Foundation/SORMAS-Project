@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.Duration;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -82,22 +81,23 @@ public class BaseSteps implements StepLifecycleListener {
   }
 
   @Before(value = "@PagesMeasurements")
-  public void createJsonDataFile() {
+  public void createResultsDataFile() {
     FileWriter file;
     try {
       File resultsText = new File(textFilePath);
       if (!resultsText.exists()) {
+        log.info("Creating results.txt file to store execution results.");
         file = new FileWriter(textFilePath);
         file.flush();
       }
     } catch (IOException e) {
-      log.warn("Unable to create test results text file: " + e.getMessage());
+      log.warn("Unable to create test results text file: " + e.getStackTrace());
     }
   }
 
-  @SneakyThrows
   @After(value = "@PublishCustomReport")
   public void generateMeasurementsReport() {
+    log.info("Parsing results collected in results.txt and converting them into Row Objects");
     TableDataManager.convertData();
     log.info("Creating Chart for UI Meassurements report");
     ReportChartBuilder.buildChartForData(TableDataManager.getTableRowsDataList());

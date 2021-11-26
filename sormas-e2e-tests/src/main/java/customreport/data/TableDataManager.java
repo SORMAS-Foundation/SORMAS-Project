@@ -41,7 +41,7 @@ public abstract class TableDataManager {
       }
       myReader.close();
     } catch (FileNotFoundException e) {
-      log.error("Unable to read results text file " + e.getMessage());
+      log.error("Unable to read results text file " + e.getStackTrace());
     }
     List<String> dataList = Arrays.asList(stringBuilder.toString().split("/"));
     for (String result : dataList) {
