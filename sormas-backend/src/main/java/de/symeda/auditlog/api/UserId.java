@@ -38,4 +38,6 @@ public final class UserId implements Serializable {
 	public String getName() {
 		return name;
 	}
+
 }
+
