@@ -28,8 +28,11 @@ echo "Deleting custom report"
 rm -rf ./customReports/customReport.html
 eho "Deleting BarChart image"
 rm -rf ./customReports/images/BarChart.jpeg
-eho "Deleting old text results file"
-rm -rf ./customReports/data/results.txt
+#eho "Deleting old text results file"
+#rm -rf ./customReports/data/results.txt
+
+cat /dev/null > ./customReports/data/results.txt
+
 echo "Executing gradle clean..."
 ./gradlew clean goJF
 echo "Starting all BDD tests under @PagesMeasurements tag..."

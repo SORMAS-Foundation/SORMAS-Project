@@ -28,9 +28,6 @@ import customreport.reportbuilder.CustomReportBuilder;
 import io.qameta.allure.listener.StepLifecycleListener;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
@@ -82,17 +79,17 @@ public class BaseSteps implements StepLifecycleListener {
 
   @Before(value = "@PagesMeasurements")
   public void createResultsDataFile() {
-    FileWriter file;
-    try {
-      File resultsText = new File(textFilePath);
-      if (!resultsText.exists()) {
-        log.info("Creating results.txt file to store execution results.");
-        file = new FileWriter(textFilePath);
-        file.flush();
-      }
-    } catch (IOException e) {
-      log.warn("Unable to create test results text file: " + e.getStackTrace());
-    }
+    //    FileWriter file;
+    //    try {
+    //      File resultsText = new File(textFilePath);
+    //      if (!resultsText.exists()) {
+    //        log.info("Creating results.txt file to store execution results.");
+    //        file = new FileWriter(textFilePath);
+    //        file.flush();
+    //      }
+    //    } catch (IOException e) {
+    //      log.warn("Unable to create test results text file: " + e.getStackTrace());
+    //    }
   }
 
   @After(value = "@PublishCustomReport")
