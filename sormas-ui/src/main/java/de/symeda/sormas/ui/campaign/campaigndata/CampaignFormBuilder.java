@@ -18,10 +18,12 @@ package de.symeda.sormas.ui.campaign.campaigndata;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Sets;
@@ -65,6 +67,8 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.NumberNumericValueValidator;
 import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
+
+import de.symeda.sormas.ui.utils.TestPojo;
 
 public class CampaignFormBuilder {
 
@@ -381,19 +385,33 @@ public class CampaignFormBuilder {
 				((TextArea) field).setValue(value != null ? value.toString() : null);
 				break;
 		case RADIO:
-			//((RadioButtonGroup) field).setValue(Sets.newHashSet(value));
+			((OptionGroup) field).select(Sets.newHashSet(value).toString().replace("[", "").replace("]", ""));
 			break;
 		case RADIOBASIC:
-			//((RadioButtonGroup) field).setValue(Sets.newHashSet(value));
+			((OptionGroup) field).select(Sets.newHashSet(value).toString().replace("[", "").replace("]", ""));
 			break;
 		case CHECKBOX:
-			((OptionGroup) field).setValue(Sets.newHashSet(value));
+			String dcs = value.toString().replace("[", "").replace("]", "").replaceAll(", ", ",");
+			String strArray[] = dcs.split(",");
+			for (int i = 0; i < strArray.length; i++) {
+				((OptionGroup) field).select(strArray[i]);
+			}
 			break;
 		case CHECKBOXBASIC:
-		//	((OptionGroup) field).setValue(Sets.newHashSet(value));
+			String dcxs = value.toString().replace("[", "").replace("]", "").replaceAll(", ", ",");
+			String strArraxy[] = dcxs.split(",");
+			for (int i = 0; i < strArraxy.length; i++) {
+				((OptionGroup) field).select(strArraxy[i]);
+			}
 			break;
 		case DROPDOWN:
-			((ComboBox) field).setValue(Sets.newHashSet(value));
+			String dcxsq = value.toString().replace("[", "").replace("]", "").replaceAll(", ", ",");
+			String strArraxyq[] = dcxsq.split(",");
+			for (int i = 0; i < strArraxyq.length; i++) {
+				((ComboBox) field).select(strArraxyq[i]);
+			}
+			
+			
 			break;
 		default:
 			throw new IllegalArgumentException(type.toString());
@@ -482,4 +500,6 @@ public class CampaignFormBuilder {
 	public Map<String, Field<?>> getFields() {
 		return fields;
 	}
+	
+	
 }

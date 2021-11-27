@@ -90,6 +90,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 				List<String> data = campaignFormElementOptions.getOptionsListValues();
  
 				field.addItems(data);
+				field.setNullSelectionAllowed(false);
 				
 
 				if (swt) { 
@@ -142,7 +143,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			
 				CampaignFormElementOptions campaignFormElementOptions = new CampaignFormElementOptions();
 				List<String> data = campaignFormElementOptions.getOptionsListValues();
-				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>  "+data);
+				//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>  "+data);
 				select.addItems(data);
 				CssStyles.style(select, ValoTheme.OPTIONGROUP_HORIZONTAL);
 				field = (T) select;
