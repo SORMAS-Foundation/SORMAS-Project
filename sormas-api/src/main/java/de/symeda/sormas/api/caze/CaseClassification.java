@@ -34,7 +34,8 @@ public enum CaseClassification
 	CONFIRMED(6),
 	CONFIRMED_NO_SYMPTOMS(4),
 	CONFIRMED_UNKNOWN_SYMPTOMS(5),
-	NO_CASE(0);
+	NO_CASE(0),
+	NOT_EXAMINATED(-1);
 
 	/**
 	 * Severity of the case classification; confirmed has the highest severity in terms of the classification process

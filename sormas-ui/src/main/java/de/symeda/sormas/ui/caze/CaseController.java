@@ -130,12 +130,15 @@ import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CaseController {
 
 	public CaseController() {
 
 	}
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void registerViews(Navigator navigator) {
 
