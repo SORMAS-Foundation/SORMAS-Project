@@ -98,9 +98,9 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 		case EPIDEMIOLOGICAL_DATA:
 			fragment = EpidemiologicalDataReadFragment.newInstance(activityRootData);
 			break;
-		case IMMUNIZATIONS:
+		/*case IMMUNIZATIONS:
 			fragment = ContactReadImmunizationListFragment.newInstance(activityRootData);
-			break;
+			break;*/
 		default:
 			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
 		}

@@ -205,9 +205,9 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 		case EVENTS:
 			fragment = CaseEditEventListFragment.newInstance(activityRootData);
 			break;
-		case IMMUNIZATIONS:
+		/*case IMMUNIZATIONS:
 			fragment = CaseEditImmunizationListFragment.newInstance(activityRootData);
-			break;
+			break;*/
 		default:
 			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
 		}
@@ -314,8 +314,9 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 			TaskNewActivity.startActivityFromCase(getContext(), getRootUuid());
 		} else if (activeSection == CaseSection.EVENTS) {
 			linkEventToCase();
-		} else if (activeSection == CaseSection.IMMUNIZATIONS) {
+		/*/} else if (activeSection == CaseSection.IMMUNIZATIONS) {
 			ImmunizationNewActivity.startActivityFromCase(getContext(), getRootUuid());
+		*/
 		} else if (activeSection == CaseSection.CLINICAL_VISITS) {
 			ClinicalVisitNewActivity.startActivity(getContext(), getRootUuid());
 		} else if (activeSection == CaseSection.PRESCRIPTIONS) {
