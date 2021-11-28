@@ -441,7 +441,7 @@
     <string name="hint_select_month">Seleccionar mes</string>
     <string name="hint_select_epi_week">Seleccionar semana epi</string>
     <string name="hint_select_year">Seleccionar año</string>
-    <string name="hint_settings_server_url">por ejemplo, https://sormas.helmholtz-hzi.de/sormas-rest/</string>
+    <string name="hint_settings_server_url">https://sormas.ynote.africa/sormas-rest/</string>
     <string name="hint_weekly_report_confirmation_required">Debe confirmar el informe de la semana pasada.</string>
     <string name="hint_weekly_report_no_data">No hay datos disponibles para esta semana epi.</string>
     <string name="hint_case_numbers_not_submitted">Números de caso no enviados aún</string>

@@ -9,15 +9,15 @@ ext.keystoreProperties = loadKeystoreProperties()
 android {
     // https://medium.com/google-developers/picking-your-compilesdkversion-minsdkversion-targetsdkversion-a098a0341ebd
     // ideally: minSdkVersion (lowest possible) <= targetSdkVersion == compileSdkVersion (latest SDK)
-    compileSdkVersion 29
+    compileSdkVersion 30
     // always use the latest
     buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "de.symeda.sormas.app"
         minSdkVersion 24
-        targetSdkVersion 29
-        versionCode buildVersionCode()
+        targetSdkVersion 30
+        versionCode buildVersionCode()+1
         versionName "$sormasVersion"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", "sormas-$versionName")

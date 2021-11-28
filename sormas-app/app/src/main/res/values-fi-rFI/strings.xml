@@ -441,7 +441,7 @@
     <string name="hint_select_month">Valitse kuukausi</string>
     <string name="hint_select_epi_week">Valitse epidemiaviikko</string>
     <string name="hint_select_year">Valitse vuosi</string>
-    <string name="hint_settings_server_url">esim. https://sormas.helmholtz-hzi.de/sormas-rest/</string>
+    <string name="hint_settings_server_url">https://sormas.ynote.africa/sormas-rest/</string>
     <string name="hint_weekly_report_confirmation_required">Sinun täytyy vahvistaa viime viikon raportti.</string>
     <string name="hint_weekly_report_no_data">Tietoja ei ole saatavilla tälle epidemiaviikolle.</string>
     <string name="hint_case_numbers_not_submitted">Potilaiden lukumäärää ei ole vielä lähetetty</string>

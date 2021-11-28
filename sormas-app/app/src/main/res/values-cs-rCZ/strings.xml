@@ -441,7 +441,7 @@
     <string name="hint_select_month">Vybrat měsíc</string>
     <string name="hint_select_epi_week">Vyberte týden Epi</string>
     <string name="hint_select_year">Vybrat rok</string>
-    <string name="hint_settings_server_url">např. https://sormas.helmholtz-hzi.de/sormas-rest/</string>
+    <string name="hint_settings_server_url">https://sormas.ynote.africa/sormas-rest/</string>
     <string name="hint_weekly_report_confirmation_required">Musíte potvrdit zprávu za minulý týden.</string>
     <string name="hint_weekly_report_no_data">Pro tento týden epi nejsou k dispozici žádná data.</string>
     <string name="hint_case_numbers_not_submitted">Čísla případů ještě nebyla odeslána</string>

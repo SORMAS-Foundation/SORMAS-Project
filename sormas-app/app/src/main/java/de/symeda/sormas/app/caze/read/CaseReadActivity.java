@@ -158,9 +158,9 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 		case EVENTS:
 			fragment = CaseReadEventListFragment.newInstance(activityRootData);
 			break;
-		case IMMUNIZATIONS:
+		/*case IMMUNIZATIONS:
 			fragment = CaseReadImmunizationListFragment.newInstance(activityRootData);
-			break;
+			break;*/
 		case PRESCRIPTIONS:
 			fragment = CaseReadPrescriptionListFragment.newInstance(activityRootData);
 			break;

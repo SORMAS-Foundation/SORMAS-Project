@@ -54,6 +54,7 @@
                 android:id="@+id/settings_server_url"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@string/hint_settings_server_url"
                 app:caption="@string/caption_settings_server_url"
                 app:hint="@string/hint_settings_server_url"/>
 
