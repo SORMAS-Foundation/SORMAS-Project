@@ -55,14 +55,10 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PersonController {
 
 	private PersonFacade personFacade = FacadeProvider.getPersonFacade();
-
-	private final Logger LOGGER = LoggerFactory.getLogger(PersonController.class);
 
 	public PersonController() {
 	}
@@ -195,7 +191,6 @@ public class PersonController {
 	}
 
 	private void savePerson(PersonDto personDto) {
-		LOGGER.debug("Saving...{} ", personDto);
 		DataHelper.Pair<CaseClassification, PersonDto> saveResult = personFacade.savePersonWithoutNotifyingExternalJournal(personDto);
 
 		ExternalJournalSyncResponseDto responseDto = FacadeProvider.getExternalJournalFacade().notifyExternalJournal(saveResult.getElement1());

@@ -2845,10 +2845,9 @@ public class CaseFacadeEjb implements CaseFacade {
 	private void createActiveSearchForOtherCasesTask(Case caze) {
 
 		Task task = new Task();
-		task.setTaskStatus(TaskStatus.NOT_EXECUTABLE);
+		task.setTaskStatus(TaskStatus.PENDING);
 		task.setTaskContext(TaskContext.CASE);
 		task.setCaze(caze);
-		logger.info("Le le {}", caze);
 		task.setTaskType(TaskType.ACTIVE_SEARCH_FOR_OTHER_CASES);
 		task.setSuggestedStart(TaskHelper.getDefaultSuggestedStart());
 		task.setDueDate(TaskHelper.getDefaultDueDate());

@@ -117,7 +117,7 @@ public class ReportsView extends AbstractView {
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
-		gridLayout.setSpacing(true);
+		gridLayout.setSpacing(false);
 		gridLayout.setSizeFull();
 		gridLayout.setExpandRatio(grid, 4);
 		personFacade = FacadeProvider.getPersonFacade();
