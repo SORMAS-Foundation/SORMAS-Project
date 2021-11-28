@@ -62,7 +62,10 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolExc
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -489,7 +492,6 @@ public class EventController {
 			EventParticipantDto eventParticipant =
 				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
 			eventParticipant.setResultingCase(caseRef);
-			eventParticipant.setVaccinationStatus(caseDataDto.getVaccinationStatus());
 			FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
 			Notification notification =
 				new Notification(I18nProperties.getString(Strings.messagePersonAlreadyEventParticipant), "", Type.HUMANIZED_MESSAGE);
@@ -504,7 +506,6 @@ public class EventController {
 		final PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
 		final EventParticipantDto eventParticipantDto =
 			new EventParticipantDto().buildFromCase(caseRef, personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
-		eventParticipantDto.setVaccinationStatus(caseDataDto.getVaccinationStatus());
 		ControllerProvider.getEventParticipantController().createEventParticipant(eventReferenceDto, r -> {
 		}, eventParticipantDto);
 		return false;
@@ -737,12 +738,28 @@ public class EventController {
 		editView.addCommitListener(() -> {
 			if (!eventEditForm.getFieldGroup().isModified()) {
 				EventDto eventDto = eventEditForm.getValue();
-				eventDto = FacadeProvider.getEventFacade().saveEvent(eventDto);
-				Notification.show(I18nProperties.getString(Strings.messageEventSaved), Type.WARNING_MESSAGE);
-				SormasUI.refreshView();
 
-				if (saveCallback != null) {
-					saveCallback.accept(eventDto.getEventStatus());
+				final UserDto user = UserProvider.getCurrent().getUser();
+				final RegionReferenceDto userRegion = user.getRegion();
+				final DistrictReferenceDto userDistrict = user.getDistrict();
+				final RegionReferenceDto epEventRegion = eventDto.getEventLocation().getRegion();
+				final DistrictReferenceDto epEventDistrict = eventDto.getEventLocation().getDistrict();
+				final Boolean eventOutsideJurisdiction = (userRegion != null && !userRegion.equals(epEventRegion) || userDistrict != null && !userDistrict.equals(epEventDistrict));
+
+				if (eventOutsideJurisdiction) {
+					VaadinUiUtil.showConfirmationPopup(
+							I18nProperties.getString(Strings.headingEventJurisdictionUpdated),
+							new Label(I18nProperties.getString(Strings.messageEventJurisdictionUpdated)),
+							I18nProperties.getString(Strings.yes),
+							I18nProperties.getString(Strings.no),
+							500,
+							confirmed -> {
+								if (confirmed) {
+									saveEvent(saveCallback, eventDto);
+								}
+							});
+				} else {
+					saveEvent(saveCallback, eventDto);
 				}
 			}
 		});
@@ -782,6 +799,16 @@ public class EventController {
 		}
 
 		return editView;
+	}
+
+	private void saveEvent(Consumer<EventStatus> saveCallback, EventDto eventDto) {
+		eventDto = FacadeProvider.getEventFacade().saveEvent(eventDto);
+		Notification.show(I18nProperties.getString(Strings.messageEventSaved), Type.WARNING_MESSAGE);
+		SormasUI.refreshView();
+
+		if (saveCallback != null) {
+			saveCallback.accept(eventDto.getEventStatus());
+		}
 	}
 
 	public void showBulkEventDataEditComponent(Collection<EventIndexDto> selectedEvents) {

@@ -23,7 +23,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 
 		addValueChangeListener(e -> {
 			defaultValueChangeListener();
-			final NullableOptionGroup samplePurposeField = (NullableOptionGroup) getField(SampleDto.SAMPLE_PURPOSE);
+			final NullableOptionGroup samplePurposeField = getField(SampleDto.SAMPLE_PURPOSE);
 			samplePurposeField.setValue(SamplePurpose.EXTERNAL);
 		});
 	}

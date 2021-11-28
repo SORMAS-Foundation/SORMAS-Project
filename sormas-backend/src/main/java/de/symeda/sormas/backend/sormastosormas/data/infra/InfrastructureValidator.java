@@ -200,7 +200,7 @@ public class InfrastructureValidator {
 		validateInfra(region, groupNameTag, validationErrors, regionFacade, Validations.sormasToSormasRegion, onNoErrors);
 	}
 
-	public void validateDistrit(
+	public void validateDistrict(
 		DistrictReferenceDto district,
 		String groupNameTag,
 		ValidationErrors validationErrors,

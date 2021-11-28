@@ -157,6 +157,7 @@ public class EditContactsSteps implements En {
     Then(
         "I check the linked contact information is correctly displayed",
         () -> {
+          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(By.xpath("//tr"));
           String contactId = webDriverHelpers.getValueFromTableRowUsingTheHeader("Contact ID", 1);
           String contactDisease =
               (webDriverHelpers.getValueFromTableRowUsingTheHeader("Disease", 1).equals("COVID-19"))
