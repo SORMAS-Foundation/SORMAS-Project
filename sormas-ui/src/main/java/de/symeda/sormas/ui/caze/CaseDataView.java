@@ -183,6 +183,7 @@ public class CaseDataView extends AbstractCaseView {
 				layout.addComponent(
 					new SideComponentLayout(
 						new VaccinationListComponent(
+							getCaseRef(),
 							criteria,
 							caze.getResponsibleRegion(),
 							caze.getResponsibleDistrict(),

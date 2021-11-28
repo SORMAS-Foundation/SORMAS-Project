@@ -1132,6 +1132,9 @@ public interface Strings {
 	String messageUserSyncFailedFull = "messageUserSyncFailedFull";
 	String messageUserSyncPartiallySuccessful = "messageUserSyncPartiallySuccessful";
 	String messageUserSyncSuccessful = "messageUserSyncSuccessful";
+	String messageVaccinationNotRelevantForCase = "messageVaccinationNotRelevantForCase";
+	String messageVaccinationNotRelevantForContact = "messageVaccinationNotRelevantForContact";
+	String messageVaccinationNotRelevantForEventParticipant = "messageVaccinationNotRelevantForEventParticipant";
 	String messageVisitsDeleted = "messageVisitsDeleted";
 	String messageWrongFileType = "messageWrongFileType";
 	String messageWrongTemplateFileType = "messageWrongTemplateFileType";
