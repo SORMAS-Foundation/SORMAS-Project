@@ -19,12 +19,12 @@ package de.symeda.sormas.ui.reports;
 
 import java.util.Date;
 import java.util.List;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -32,7 +32,21 @@ import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.Grid;
-
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import com.vaadin.server.Sizeable;
+import com.vaadin.ui.TextField;
+import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import de.symeda.sormas.ui.CreateSpecificCasesLayout;
+import de.symeda.sormas.api.infrastructure.district.DistrictFacade;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -45,12 +59,43 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import com.vaadin.ui.ComboBox;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import java.text.SimpleDateFormat;
+import com.vaadin.ui.Notification;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
+import de.symeda.sormas.api.caze.CaseOrigin;
+import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import com.vaadin.ui.Notification.Type;
 
 public class ReportsView extends AbstractView {
 
 	private static final long serialVersionUID = -226852255434803180L;
 
 	public static final String VIEW_NAME = "reports";
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	private CaseDataDto caseDataDto;
+
+	private PersonDto personDto;
+
+	private final PersonFacade personFacade;
+
+	private final CaseFacade caseFacade;
+
+	private final PointOfEntryFacade pointOfEntryFacade;
+
+	private final DistrictFacade districtFacade;
 
 	private Grid grid;
 	private VerticalLayout gridLayout;
@@ -72,11 +117,173 @@ public class ReportsView extends AbstractView {
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
-		gridLayout.setSpacing(false);
+		gridLayout.setSpacing(true);
 		gridLayout.setSizeFull();
-		gridLayout.setExpandRatio(grid, 1);
+		gridLayout.setExpandRatio(grid, 4);
+		personFacade = FacadeProvider.getPersonFacade();
+		caseFacade = FacadeProvider.getCaseFacade();
+		pointOfEntryFacade = FacadeProvider.getPointOfEntryFacade();
+		districtFacade = FacadeProvider.getDistrictFacade();
 
 		addComponent(gridLayout);
+
+		Button createReportButton = ButtonHelper.createIconButton(
+				Captions.reportNewReport,
+				VaadinIcons.PLUS_CIRCLE,
+				e -> CaseReportWindow(),
+				ValoTheme.BUTTON_PRIMARY);
+
+			addHeaderComponent(createReportButton);
+		}
+
+	public void CaseReportWindow() {
+		Window window = VaadinUiUtil.createPopupWindow();
+		window.setWidth((700), Sizeable.Unit.PIXELS);
+		window.setCaption(I18nProperties.getCaption(Captions.reportNewReport));
+		CreateSpecificCasesLayout layout = buildReportLayout(window);
+		window.setContent(layout);
+		UI.getCurrent().addWindow(window);
+	}
+	
+	private CreateSpecificCasesLayout buildReportLayout(Window window) throws ValidationRuntimeException {
+
+		String confirmCaption = I18nProperties.getCaption(
+			Captions.saveNewReport);
+
+		DateField date = new DateField("Date");
+		ComboBox pointofentries = new ComboBox<PointOfEntryReferenceDto>(I18nProperties.getCaption(Captions.pointOfEntry));
+		TextField people = new TextField(I18nProperties.getCaption(Captions.reportNumberpeople));
+		TextField examinatedpeople = new TextField(I18nProperties.getCaption(Captions.reportNumberTestedpassenger));
+		
+		final UserDto currentUser = UserProvider.getCurrent().getUser();
+		Runnable confirmCallback = () -> {
+			int nomberOfPeople = 0;
+			int Tested_nomberPeople = 0;
+			PointOfEntryReferenceDto PointOfEntry = (PointOfEntryReferenceDto) pointofentries.getValue();
+			
+			try {
+				DateHelper.parseDate(date.getValue().toString(), new SimpleDateFormat("dd/MM/yyyy"));
+			} catch (Exception e) {
+				throw new ValidationRuntimeException(
+					I18nProperties.getString(Strings.messageDateError)
+				);
+			}
+
+			if(pointofentries.getValue() == null) {
+				throw new ValidationRuntimeException(
+					I18nProperties.getString(Strings.NoEntryPointError));
+			}
+			
+			try {
+				nomberOfPeople = Integer.parseInt(people.getValue());
+			} catch (Exception e) {
+				throw new ValidationRuntimeException(
+					I18nProperties.getString(Strings.BadPeopleNumberError));
+			}
+
+			if (nomberOfPeople <= 0){
+				throw  new ValidationRuntimeException(
+					I18nProperties.getString(Strings.NegativePeopleNumberError));
+			}
+
+			try {
+				Tested_nomberPeople = Integer.parseInt(examinatedpeople.getValue());
+			} catch (Exception e) {
+				throw new ValidationRuntimeException(
+					I18nProperties.getString(Strings.BadTestedPeopleNumberError));
+			}
+
+			if (Tested_nomberPeople < 0){
+				throw  new ValidationRuntimeException(
+					I18nProperties.getString(Strings.NegativeExaminatedPeopleNumberError));
+			}
+
+			int numberOfNotExCase = nomberOfPeople - Tested_nomberPeople;
+
+			if (numberOfNotExCase < 0){
+				throw new ValidationRuntimeException(I18nProperties.getString(
+					Strings.DiffPeopleNumberError));
+			}
+			
+			DistrictReferenceDto activeDistrict = null;
+			RegionReferenceDto Region = null;
+			if (currentUser.getDistrict() != null){
+				logger.info("Le district de lutilisateur correspond a {} et la region {}", currentUser.getDistrict(), currentUser.getRegion());
+				activeDistrict = currentUser.getDistrict();
+				// Si dans le formulaire d'utilisateur l'on a renseigné le
+				// district alors la région a étée renseignée au préalabre
+				Region = currentUser.getRegion();
+			}else{
+				logger.info("Recherche via la liste des distrcits");
+				List<String> allDistrcits = districtFacade.getAllUuids();
+				logger.info("Liste des districts {}", allDistrcits);
+				boolean found = false;
+				for (String TheDistrict : allDistrcits){
+					if (found == true){
+						break;
+					}
+					List<PointOfEntryReferenceDto> PointOfEntries = pointOfEntryFacade.getAllActiveByDistrict(TheDistrict, false);
+					for (PointOfEntryReferenceDto pntofentry : PointOfEntries){
+						logger.info("Comparaison de {} et {}", PointOfEntry, pntofentry);
+						if(PointOfEntry.equals(pntofentry)){
+							logger.info("Point trouve : {} pour le district {}", pntofentry, TheDistrict);
+							activeDistrict = districtFacade.getByUuid(TheDistrict).toReference();
+							Region = districtFacade.getByUuid(TheDistrict).getRegion();
+							logger.info("La region {} a te mise a jour par la meme occasion", Region);
+							found = true;
+							break;
+						}
+					}
+				}
+			}
+			
+			int i;
+			int CountnumberOfExCase = 0;
+			int CountnumberOfNotExCase = 0;
+			for (i=0; i < nomberOfPeople; i++) {
+				// importResult = caseImportFacade.DirectSaveCaseData(
+				// values, entityClasses, entityProperties, entityPropertyPaths, false);
+				personDto = new PersonDto();
+				personDto.setFirstName("EMPTY_FIRST_FAME");
+				personDto.setLastName("EMPTY_LAST_AME");
+				personDto.setSex(Sex.UNKNOWN);
+				PersonDto createdPerson = personFacade.savePerson(personDto);
+				logger.debug("Personne cree {} ", createdPerson.getUuid());
+
+				caseDataDto = new CaseDataDto();
+				caseDataDto.setDisease(Disease.UNDEFINED);
+				caseDataDto.setDiseaseDetails(Disease.UNDEFINED.getName());
+				caseDataDto.setPerson(createdPerson.toReference());
+				if (CountnumberOfNotExCase < numberOfNotExCase){
+					caseDataDto.setCaseClassification(CaseClassification.NOT_EXAMINATED);
+					CountnumberOfNotExCase++;
+				}else{
+					caseDataDto.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+					CountnumberOfExCase++;
+				}
+				caseDataDto.setReportDate(DateHelper.parseDate(date.getValue().toString(), new SimpleDateFormat("dd/MM/yyyy")));
+				caseDataDto.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
+				caseDataDto.setPointOfEntry(PointOfEntry);
+				caseDataDto.setResponsibleDistrict(activeDistrict);
+				caseDataDto.setResponsibleRegion(Region);
+				caseDataDto.setReportingUser(currentUser.toReference());
+				caseDataDto.setInvestigationStatus(InvestigationStatus.PENDING);
+				caseDataDto.setOutcome(CaseOutcome.NO_OUTCOME);
+				
+				CaseDataDto createdcase = caseFacade.saveCase(caseDataDto);
+				logger.debug("Cas cree {}", createdcase.getUuid());
+			}
+			logger.debug("Creation des cas terminee. {} cas non examines"+
+			" crees et {} cas examine crees.", CountnumberOfNotExCase, CountnumberOfExCase);
+			
+			Notification.show(I18nProperties.getString(Strings.messageCaseAutoSaved), Type.WARNING_MESSAGE);
+			SormasUI.refreshView();
+		};
+
+		return new CreateSpecificCasesLayout(
+			confirmCallback, window::close, date, 
+			pointofentries, people, 
+			examinatedpeople, confirmCaption);
 	}
 
 	public HorizontalLayout createFilterBar() {
