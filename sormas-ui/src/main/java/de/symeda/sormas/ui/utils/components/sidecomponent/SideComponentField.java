@@ -8,7 +8,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 public class SideComponentField extends HorizontalLayout {
 
-	private final VerticalLayout mainLayout;
+	protected final VerticalLayout mainLayout;
 
 	public SideComponentField() {
 		setMargin(false);
