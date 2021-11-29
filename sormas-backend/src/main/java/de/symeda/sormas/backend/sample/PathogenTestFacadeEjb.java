@@ -259,7 +259,11 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		// update event participant if necessary
 		EventParticipant associatedEventParticipant = pathogenTest.getSample().getAssociatedEventParticipant();
 		if (associatedEventParticipant != null) {
-			eventParticipantFacade.onEventParticipantChanged(EventFacadeEjbLocal.toDto(associatedEventParticipant.getEvent()), syncShares);
+			eventParticipantFacade.onEventParticipantChanged(
+				EventFacadeEjbLocal.toDto(associatedEventParticipant.getEvent()),
+				EventParticipantFacadeEjbLocal.toDto(associatedEventParticipant),
+				associatedEventParticipant,
+				syncShares);
 		}
 	}
 
@@ -391,6 +395,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setViaLims(source.isViaLims());
 		target.setExternalId(source.getExternalId());
 		target.setExternalOrderId(source.getExternalOrderId());
+		target.setPreliminary(source.getPreliminary());
 
 		return target;
 	}
@@ -446,6 +451,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setViaLims(source.isViaLims());
 		target.setExternalId(source.getExternalId());
 		target.setExternalOrderId(source.getExternalOrderId());
+		target.setPreliminary(source.getPreliminary());
 
 		return target;
 	}

@@ -26,6 +26,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
@@ -140,7 +142,7 @@ public class CaseListCriteriaBuilder {
 		cq.multiselect(selectionList);
 		cq.distinct(true);
 
-		if (sortProperties != null && sortProperties.size() > 0) {
+		if (!CollectionUtils.isEmpty(sortProperties)) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				order.addAll(
@@ -247,6 +249,8 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.VACCINATION_STATUS:
 		case CaseIndexDto.DISEASE_VARIANT:
 			return Collections.singletonList(caze.get(sortProperty.propertyName));
+		case CaseIndexDto.PERSON_UUID:
+			return Collections.singletonList(joins.getPerson().get(Person.UUID));
 		case CaseIndexDto.PERSON_FIRST_NAME:
 			return Collections.singletonList(joins.getPerson().get(Person.FIRST_NAME));
 		case CaseIndexDto.PERSON_LAST_NAME:

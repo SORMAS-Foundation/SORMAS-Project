@@ -42,12 +42,11 @@ import de.symeda.sormas.ui.utils.PaginationList;
 public class TaskList extends PaginationList<TaskIndexDto> {
 
 	private final TaskCriteria taskCriteria = new TaskCriteria();
-	private final TaskContext context;
+	private final Label noTasksLabel;
 
 	public TaskList(TaskContext context, ReferenceDto entityRef) {
 
 		super(5);
-		this.context = context;
 		switch (context) {
 		case CASE:
 			taskCriteria.caze((CaseReferenceDto) entityRef);
@@ -64,6 +63,7 @@ public class TaskList extends PaginationList<TaskIndexDto> {
 		default:
 			throw new IndexOutOfBoundsException(context.toString());
 		}
+		noTasksLabel = new Label(String.format(I18nProperties.getCaption(Captions.taskNoTasks), context.toString().toLowerCase()));
 	}
 
 	@Override
@@ -74,8 +74,8 @@ public class TaskList extends PaginationList<TaskIndexDto> {
 		if (!tasks.isEmpty()) {
 			showPage(1);
 		} else {
+			listLayout.removeAllComponents();
 			updatePaginationLayout();
-			Label noTasksLabel = new Label(String.format(I18nProperties.getCaption(Captions.taskNoTasks), context.toString()));
 			listLayout.addComponent(noTasksLabel);
 		}
 	}

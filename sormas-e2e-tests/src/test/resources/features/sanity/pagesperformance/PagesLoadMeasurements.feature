@@ -1,4 +1,4 @@
-@UI @PagesMeasurements
+@UI @PagesMeasurements @PublishCustomReport
 Feature: Pages loading time
 
   Scenario: Check Tasks page loading time
@@ -41,7 +41,6 @@ Feature: Pages loading time
     And I click on the Immunizations button from navbar
     Then I wait for "Immunizations" page to load and calculate elapsed time
 
-  @PublishCustomReport
   Scenario: Check Surveillance Dashboard page loading time
     Given I log in with National User
     And I click on the Dashboard button from navbar and access Surveillance Dashboard

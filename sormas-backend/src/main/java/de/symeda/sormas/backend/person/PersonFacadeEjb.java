@@ -91,6 +91,7 @@ import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
+import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonExportDto;
@@ -113,6 +114,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
@@ -527,13 +529,13 @@ public class PersonFacadeEjb implements PersonFacade {
 			> 1) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.personMultiplePrimaryEmailAddresses));
 		}
-		if (StringUtils.isNotBlank(source.getEmailAddress()) && !source.getEmailAddress().matches(DataHelper.getEmailValidationRegex())) {
+		if (!DataHelper.isValidEmailAddress(source.getEmailAddress())) {
 			throw new ValidationRuntimeException(
 				I18nProperties.getValidationError(
 					Validations.validEmailAddress,
 					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.EMAIL_ADDRESS)));
 		}
-		if (StringUtils.isNotBlank(source.getPhone()) && source.getPhone().matches(DataHelper.getPhoneNumberValidationRegex())) {
+		if (!DataHelper.isValidPhoneNumber(source.getPhone())) {
 			throw new ValidationRuntimeException(
 				I18nProperties
 					.getValidationError(Validations.validPhoneNumber, I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PHONE)));
@@ -576,15 +578,13 @@ public class PersonFacadeEjb implements PersonFacade {
 				source.getAddress().getContactPersonPhone()) && source.getAddress().getFacilityType() == null) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importPersonContactDetailsWithoutFacilityType));
 			}
-			if (StringUtils.isNotBlank(source.getAddress().getContactPersonEmail())
-				&& !source.getAddress().getContactPersonEmail().matches(DataHelper.getEmailValidationRegex())) {
+			if (!DataHelper.isValidEmailAddress(source.getAddress().getContactPersonEmail())) {
 				throw new ValidationRuntimeException(
 					I18nProperties.getValidationError(
 						Validations.validEmailAddress,
 						I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_EMAIL)));
 			}
-			if (StringUtils.isNotBlank(source.getAddress().getContactPersonPhone())
-				&& source.getAddress().getContactPersonPhone().matches(DataHelper.getPhoneNumberValidationRegex())) {
+			if (!DataHelper.isValidPhoneNumber(source.getAddress().getContactPersonPhone())) {
 				throw new ValidationRuntimeException(
 					I18nProperties.getValidationError(
 						Validations.validPhoneNumber,
@@ -1082,7 +1082,12 @@ public class PersonFacadeEjb implements PersonFacade {
 			// Call onEventParticipantChange once for every event participant
 			// Attention: this may lead to infinite recursion when not properly implemented
 			for (EventParticipant personEventParticipant : personEventParticipants) {
-				eventParticipantFacade.onEventParticipantChanged(EventFacadeEjbLocal.toDto(personEventParticipant.getEvent()), syncShares);
+
+				eventParticipantFacade.onEventParticipantChanged(
+					EventFacadeEjbLocal.toDto(personEventParticipant.getEvent()),
+					EventParticipantFacadeEjbLocal.toDto(personEventParticipant),
+					personEventParticipant,
+					syncShares);
 			}
 
 			// get the updated personCases
@@ -1671,6 +1676,40 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 		DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
 		savePerson(leadPerson);
+	}
+
+	@Override
+	public PersonDto getByContext(PersonContext context, String contextUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Person> cq = cb.createQuery(Person.class);
+		Root<Person> root = cq.from(Person.class);
+
+		PersonJoins<Person> joins = new PersonJoins<>(root);
+
+		Join<Person, ?> contextJoin;
+		switch (context) {
+		case CASE: {
+			contextJoin = joins.getCaze();
+			break;
+		}
+		case CONTACT: {
+			contextJoin = joins.getContact();
+			break;
+		}
+		case EVENT_PARTICIPANT: {
+			contextJoin = joins.getEventParticipant();
+			break;
+		}
+		default: {
+			throw new RuntimeException("Not implemented yet for " + context.name());
+		}
+		}
+
+		cq.where(cb.equal(contextJoin.get(AbstractDomainObject.UUID), contextUuid));
+
+		Person person = em.createQuery(cq).getSingleResult();
+
+		return convertToDto(person, Pseudonymizer.getDefault(userService::hasRight), personService.inJurisdictionOrOwned(person));
 	}
 
 	@LocalBean

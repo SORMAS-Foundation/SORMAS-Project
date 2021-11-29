@@ -20,11 +20,15 @@ import java.util.List;
 import android.content.Context;
 import android.view.Menu;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.vaccination.Vaccination;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 
@@ -46,6 +50,10 @@ public class VaccinationReadActivity extends BaseReadActivity<Vaccination> {
 	@Override
 	public List<PageMenuItem> getPageMenuData() {
 		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(VaccinationSection.values(), getContext());
+		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			|| DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			menuItems.set(VaccinationSection.HEALTH_CONDITIONS.ordinal(), null);
+		}
 		return menuItems;
 	}
 

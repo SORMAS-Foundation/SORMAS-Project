@@ -91,6 +91,8 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.exposure.ExposureService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
+import de.symeda.sormas.backend.immunization.ImmunizationService;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -110,6 +112,7 @@ import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 
@@ -141,6 +144,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private ExternalJournalService externalJournalService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private ImmunizationService immunizationService;
 
 	public ContactService() {
 		super(Contact.class);
@@ -1359,7 +1364,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Root<Contact> root = cq.from(Contact.class);
 		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new ContactQueryContext(cb, cq, root), user)));
 		cq.where(cb.equal(root.get(Contact.UUID), contact.getUuid()));
-		return em.createQuery(cq).getSingleResult();
+		return em.createQuery(cq).getResultStream().anyMatch(isInJurisdiction -> isInJurisdiction);
 	}
 
 	public ContactJurisdictionFlagsDto inJurisdictionOrOwned(Contact contact) {
@@ -1461,6 +1466,21 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			CriteriaBuilderHelper.and(cb, cb.equal(root.get(Contact.PERSON), personId), cb.equal(root.get(Contact.DISEASE), disease), datePredicate));
 
 		em.createQuery(cu).executeUpdate();
+	}
+
+	public void updateVaccinationStatuses(Contact contact) {
+		List<Immunization> contactPersonImmunizations =
+			immunizationService.getByPersonAndDisease(contact.getPerson().getUuid(), contact.getDisease(), true);
+
+		boolean hasValidVaccinations = contactPersonImmunizations.stream()
+			.anyMatch(
+				immunization -> immunization.getVaccinations()
+					.stream()
+					.anyMatch(vaccination -> VaccinationService.isVaccinationRelevant(contact, vaccination)));
+
+		if (hasValidVaccinations) {
+			contact.setVaccinationStatus(VaccinationStatus.VACCINATED);
+		}
 	}
 
 	public List<ContactListEntryDto> getEntriesList(Long personId, Integer first, Integer max) {

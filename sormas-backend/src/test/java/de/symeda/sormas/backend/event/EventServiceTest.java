@@ -69,7 +69,7 @@ public class EventServiceTest extends AbstractBeanTest {
 		creator.createEventParticipant(event.toReference(), person1, "", nationalUser.toReference(), e -> {
 			e.setRegion(rdcf.region);
 			e.setDistrict(rdcf.district);
-		});
+		}, null);
 		assertFalse(getEventService().hasAnyEventParticipantWithoutJurisdiction(event.getUuid()));
 
 		PersonDto person2 = creator.createPerson();

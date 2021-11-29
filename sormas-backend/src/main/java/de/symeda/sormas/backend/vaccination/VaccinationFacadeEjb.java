@@ -29,7 +29,11 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
@@ -45,9 +49,12 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.vaccination.VaccinationFacade;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
@@ -219,7 +226,77 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 	@Override
 	public List<VaccinationListEntryDto> getEntriesList(VaccinationListCriteria criteria, Integer first, Integer max) {
-		return vaccinationService.getEntriesList(criteria, first, max);
+		List<Vaccination> vaccinationsList = vaccinationService.getVaccinationsByCriteria(criteria, first, max);
+		List<VaccinationListEntryDto> entriesList =
+			vaccinationsList.stream().map((v) -> toVaccinationListEntryDto(v, true, "")).collect(Collectors.toList());
+		return entriesList;
+	}
+
+	private VaccinationListEntryDto toVaccinationListEntryDto(Vaccination vaccination, boolean relevant, String message) {
+		VaccinationListEntryDto dto = new VaccinationListEntryDto();
+		dto.setUuid(vaccination.getUuid());
+		dto.setDisease(vaccination.getImmunization().getDisease());
+		dto.setVaccinationDate(vaccination.getVaccinationDate());
+		dto.setVaccineName(vaccination.getVaccineName());
+		dto.setOtherVaccineName(vaccination.getOtherVaccineName());
+
+		dto.setRelevant(relevant);
+		dto.setNonRelevantMessage(message);
+		return dto;
+	}
+
+	@Override
+	public List<VaccinationListEntryDto> getEntriesListWithRelevance(
+		CaseReferenceDto caseReferenceDto,
+		VaccinationListCriteria criteria,
+		Integer first,
+		Integer max) {
+		List<Vaccination> vaccinationsList = vaccinationService.getVaccinationsByCriteria(criteria, first, max);
+		Case caze = caseService.getByReferenceDto(caseReferenceDto);
+
+		return vaccinationsList.stream()
+			.map(
+				v -> toVaccinationListEntryDto(
+					v,
+					VaccinationService.isVaccinationRelevant(caze, v),
+					I18nProperties.getString(Strings.messageVaccinationNotRelevantForCase)))
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<VaccinationListEntryDto> getEntriesListWithRelevance(
+		ContactReferenceDto contactReferenceDto,
+		VaccinationListCriteria criteria,
+		Integer first,
+		Integer max) {
+		List<Vaccination> vaccinationsList = vaccinationService.getVaccinationsByCriteria(criteria, first, max);
+		Contact contact = contactService.getByReferenceDto(contactReferenceDto);
+
+		return vaccinationsList.stream()
+			.map(
+				v -> toVaccinationListEntryDto(
+					v,
+					VaccinationService.isVaccinationRelevant(contact, v),
+					I18nProperties.getString(Strings.messageVaccinationNotRelevantForContact)))
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<VaccinationListEntryDto> getEntriesListWithRelevance(
+		EventParticipantReferenceDto eventParticipantReferenceDto,
+		VaccinationListCriteria criteria,
+		Integer first,
+		Integer max) {
+		List<Vaccination> vaccinationsList = vaccinationService.getVaccinationsByCriteria(criteria, first, max);
+		EventParticipant eventParticipant = eventParticipantService.getByReferenceDto(eventParticipantReferenceDto);
+
+		return vaccinationsList.stream()
+			.map(
+				v -> toVaccinationListEntryDto(
+					v,
+					VaccinationService.isVaccinationRelevant(eventParticipant.getEvent(), v),
+					I18nProperties.getString(Strings.messageVaccinationNotRelevantForEventParticipant)))
+			.collect(Collectors.toList());
 	}
 
 	public VaccinationDto convertToDto(Vaccination source, Pseudonymizer pseudonymizer) {
@@ -266,7 +343,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 	}
 
-	protected void updateVaccinationStatuses(Date newVaccinationDate, Date currentVaccinationDate, Long personId, Disease disease) {
+	public void updateVaccinationStatuses(Date newVaccinationDate, Date currentVaccinationDate, Long personId, Disease disease) {
 
 		if (currentVaccinationDate == null || newVaccinationDate != currentVaccinationDate) {
 			caseService.updateVaccinationStatuses(personId, disease, newVaccinationDate);

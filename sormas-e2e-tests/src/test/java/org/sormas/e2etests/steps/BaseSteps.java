@@ -32,7 +32,6 @@ import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.sormas.e2etests.steps.web.application.NavBarSteps;
 import org.sormas.e2etests.ui.DriverManager;
 import recorders.StepsLogger;
 
@@ -41,6 +40,7 @@ public class BaseSteps implements StepLifecycleListener {
 
   public static RemoteWebDriver driver;
   private final DriverManager driverManager;
+  private final String textFilePath = "customReports/data/results.txt";
 
   @Inject
   public BaseSteps(DriverManager driverManager) {
@@ -77,15 +77,25 @@ public class BaseSteps implements StepLifecycleListener {
     log.info("Finished test: " + scenario.getName());
   }
 
-  @After(value = "@PagesMeasurements")
-  public void afterPageLoadTests(Scenario scenario) {
-    String testName = scenario.getName().replace("Check", "").replace("loading time", "");
-    log.info(scenario.getName() + " done, adding page meassurement result into TableDataManager");
-    TableDataManager.addRowEntity(testName, NavBarSteps.elapsedTime);
+  @Before(value = "@PagesMeasurements")
+  public void createResultsDataFile() {
+    //    FileWriter file;
+    //    try {
+    //      File resultsText = new File(textFilePath);
+    //      if (!resultsText.exists()) {
+    //        log.info("Creating results.txt file to store execution results.");
+    //        file = new FileWriter(textFilePath);
+    //        file.flush();
+    //      }
+    //    } catch (IOException e) {
+    //      log.warn("Unable to create test results text file: " + e.getStackTrace());
+    //    }
   }
 
   @After(value = "@PublishCustomReport")
   public void generateMeasurementsReport() {
+    log.info("Parsing results collected in results.txt and converting them into Row Objects");
+    TableDataManager.convertData();
     log.info("Creating Chart for UI Meassurements report");
     ReportChartBuilder.buildChartForData(TableDataManager.getTableRowsDataList());
     log.info("Generating Sormas Custom report");

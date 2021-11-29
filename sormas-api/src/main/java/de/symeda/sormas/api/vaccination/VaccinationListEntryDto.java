@@ -31,21 +31,8 @@ public class VaccinationListEntryDto extends PseudonymizableIndexDto implements 
 	private String otherVaccineName;
 	private Date vaccinationDate;
 	private Disease disease;
-
-	public VaccinationListEntryDto(
-		String uuid,
-		Vaccine vaccineName,
-		String otherVaccineName,
-		Date vaccinationDate,
-		Disease disease,
-		Date changeDate) {
-
-		this.uuid = uuid;
-		this.vaccineName = vaccineName;
-		this.otherVaccineName = otherVaccineName;
-		this.vaccinationDate = vaccinationDate;
-		this.disease = disease;
-	}
+	private boolean isRelevant;
+	private String nonRelevantMessage;
 
 	public String getUuid() {
 		return uuid;
@@ -87,4 +74,19 @@ public class VaccinationListEntryDto extends PseudonymizableIndexDto implements 
 		this.disease = disease;
 	}
 
+	public boolean isRelevant() {
+		return isRelevant;
+	}
+
+	public void setRelevant(boolean relevant) {
+		isRelevant = relevant;
+	}
+
+	public String getNonRelevantMessage() {
+		return nonRelevantMessage;
+	}
+
+	public void setNonRelevantMessage(String nonRelevantMessage) {
+		this.nonRelevantMessage = nonRelevantMessage;
+	}
 }

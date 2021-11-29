@@ -1,12 +1,16 @@
 package de.symeda.sormas.api.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 import org.junit.Test;
@@ -166,5 +170,18 @@ public class DataHelperTest {
 
 		Date parsedNoTime = DateHelper.parseDateTimeWithException("21/4/2021", Language.DE.getDateTimeFormat());
 		assertEquals(parsedNoTime, DateHelper.parseDate("4/21/2021", new SimpleDateFormat("M/dd/yyy")));
+	}
+
+	@Test
+	public void testEqualsTimeStampAndDate() {
+		LocalDateTime localDateTime = LocalDateTime.of(2021, 11, 25, 11, 22);
+		long time = localDateTime.toEpochSecond(ZoneOffset.UTC);
+
+		assertTrue(DataHelper.equal(new Date(time), new Timestamp(time)));
+		assertTrue(DataHelper.equal(new Timestamp(time), new Date(time)));
+		assertFalse(DataHelper.equal(new Timestamp(time), null));
+		assertFalse(DataHelper.equal(null, new Date(time)));
+		assertFalse(DataHelper.equal("notdate", new Date(time)));
+		assertFalse(DataHelper.equal(new Date(time), "notdate"));
 	}
 }

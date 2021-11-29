@@ -73,9 +73,7 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantQueryContext;
 import de.symeda.sormas.backend.event.EventParticipantService;
-import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
@@ -453,30 +451,45 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 		if (criteria.getRegion() != null) {
 			Expression<Object> regionExpression = cb.selectCase()
-				.when(cb.isNotNull(joins.getCaseRegion()), joins.getCaseRegion().get(Region.UUID))
+				.when(cb.isNotNull(joins.getCaseRegion()), joins.getCaseRegion().get(AbstractDomainObject.UUID))
 				.otherwise(
 					cb.selectCase()
-						.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.UUID))
+						.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(AbstractDomainObject.UUID))
 						.otherwise(
 							cb.selectCase()
-								.when(cb.isNotNull(joins.getContactCaseRegion()), joins.getContactCaseRegion().get(Region.UUID))
-								.otherwise(joins.getEventRegion().get(Region.UUID))));
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(regionExpression, criteria.getRegion().getUuid()));
+								.when(cb.isNotNull(joins.getContactCaseRegion()), joins.getContactCaseRegion().get(AbstractDomainObject.UUID))
+								.otherwise(joins.getEventRegion().get(AbstractDomainObject.UUID))));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(
+					cb.and(
+						cb.isNotNull(joins.getCaze()),
+						cb.equal(joins.getCaseResponsibleRegion().get(AbstractDomainObject.UUID), criteria.getRegion().getUuid())),
+					cb.equal(regionExpression, criteria.getRegion().getUuid())));
 		}
 		if (criteria.getDistrict() != null) {
 			Expression<Object> districtExpression = cb.selectCase()
-				.when(cb.isNotNull(joins.getCaseDistrict()), joins.getCaseDistrict().get(District.UUID))
+				.when(cb.isNotNull(joins.getCaseDistrict()), joins.getCaseDistrict().get(AbstractDomainObject.UUID))
 				.otherwise(
 					cb.selectCase()
-						.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.UUID))
+						.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(AbstractDomainObject.UUID))
 						.otherwise(
 							cb.selectCase()
-								.when(cb.isNotNull(joins.getContactCaseDistrict()), joins.getContactCaseDistrict().get(District.UUID))
-								.otherwise(joins.getEventDistrict().get(District.UUID))));
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(districtExpression, criteria.getDistrict().getUuid()));
+								.when(cb.isNotNull(joins.getContactCaseDistrict()), joins.getContactCaseDistrict().get(AbstractDomainObject.UUID))
+								.otherwise(joins.getEventDistrict().get(AbstractDomainObject.UUID))));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(
+					cb.and(
+						cb.isNotNull(joins.getCaze()),
+						cb.equal(joins.getCaseResponsibleDistrict().get(AbstractDomainObject.UUID), criteria.getDistrict().getUuid())),
+					cb.equal(districtExpression, criteria.getDistrict().getUuid())));
 		}
 		if (criteria.getLaboratory() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getLab().get(Facility.UUID), criteria.getLaboratory().getUuid()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getLab().get(AbstractDomainObject.UUID), criteria.getLaboratory().getUuid()));
 		}
 		if (criteria.getShipped() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sample.get(Sample.SHIPPED), criteria.getShipped()));
