@@ -15,26 +15,12 @@
 
 package de.symeda.sormas.app.backend.common;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
-import android.util.Log;
-
-import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
-import org.apache.commons.lang3.StringUtils;
-
 import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +29,21 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.VaccinationStatus;
@@ -2992,13 +2993,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 
 		// Retrieve the latest case of each person for each disease
+		Comparator<Object[]> comparator = (c1, c2) -> new Date((Long) c1[9]).compareTo(new Date((Long) c2[9]));
 		List<Object[]> filteredCaseInfo = new ArrayList<>();
 		Map<Disease, List<Object[]>> caseInfoByDisease = caseInfoList.stream().collect(Collectors.groupingBy(c -> Disease.valueOf((String) c[2])));
 		caseInfoByDisease.keySet().forEach(d -> {
 			filteredCaseInfo.addAll(
 				caseInfoByDisease.get(d)
 					.stream()
-					.sorted((c1, c2) -> new Date((Long) c1[9]).compareTo(new Date((Long) c2[9])))
+					.sorted(comparator)
 					.collect(
 						Collectors.collectingAndThen(
 							Collectors.toMap(
@@ -3006,6 +3008,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 								Function.identity(),
 								(c1, c2) -> new Date((Long) c1[9]).after(new Date((Long) c2[9])) ? c1 : c2),
 							r -> new ArrayList<>(r.values()))));
+		});
+
+		filteredCaseInfo.forEach(objects -> {
+			if (objects[10] == null) {
+				caseInfoByDisease.get(objects[2]).stream().sorted(comparator.reversed()).findFirst().ifPresent(earliestObject -> {
+					if (earliestObject[12] != null
+						&& objects[12] != null
+						&& new Integer((String) earliestObject[12]) <= new Integer((String) objects[12])) {
+						objects[10] = earliestObject[10] == null ? earliestObject[4] : earliestObject[10];
+					}
+				});
+			}
 		});
 
 		// Create immunizations and vaccinations for each case
@@ -3025,91 +3039,62 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			if (caseInfo[12] == null || ((String) caseInfo[12]).isEmpty()) {
 				if (caseInfo[10] != null || caseInfo[11] == null) {
 					cloneHealthConditions(caseInfo[25]);
-					Vaccine vaccineName = caseInfo[13] != null
-						? (caseInfo[13].equals("ASTRA_ZENECA_COMIRNATY") || caseInfo[13].equals("ASTRA_ZENECA_MRNA_1273"))
-							? Vaccine.OXFORD_ASTRA_ZENECA
-							: Vaccine.valueOf((String) caseInfo[13])
-						: (caseInfo[15] != null ? Vaccine.OTHER : null);
-					String otherVaccineName = vaccineName == Vaccine.OTHER && caseInfo[15] == null ? (String) caseInfo[14] : (String) caseInfo[15];
-					VaccineManufacturer vaccineManufacturer =
-						("ASTRA_ZENECA_COMIRNATY".equals(caseInfo[13]) || "ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13]))
-							? VaccineManufacturer.ASTRA_ZENECA
-							: (caseInfo[16] != null ? VaccineManufacturer.valueOf((String) caseInfo[16]) : null);
-					insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, caseInfo[10]);
+					insertFirstVaccination(caseInfo, caseInfo[10]);
 				}
 
 				// Last vaccination
 				if (caseInfo[11] != null || ("ASTRA_ZENECA_COMIRNATY".equals(caseInfo[13]) || "ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13]))) {
 					cloneHealthConditions(caseInfo[25]);
-					Vaccine vaccineName = caseInfo[13] != null
-						? (caseInfo[13].equals("ASTRA_ZENECA_COMIRNATY")
-							? Vaccine.COMIRNATY
-							: (caseInfo[13].equals("ASTRA_ZENECA_MRNA_1273")) ? Vaccine.MRNA_1273 : Vaccine.valueOf((String) caseInfo[13]))
-						: Vaccine.OTHER;
-					String otherVaccineName = vaccineName == Vaccine.OTHER ? (String) caseInfo[14] : (String) caseInfo[15];
-					VaccineManufacturer vaccineManufacturer = "ASTRA_ZENECA_COMIRNATY".equals(caseInfo[13])
-						? VaccineManufacturer.BIONTECH_PFIZER
-						: ("ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13]))
-							? VaccineManufacturer.MODERNA
-							: VaccineManufacturer.valueOf((String) caseInfo[16]);
-					insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, caseInfo[11]);
-				} else {
-					cloneHealthConditions(caseInfo[25]);
-					int vaccinationDoses;
-					Vaccine vaccineName;
-					boolean isAstraZenecaCombination = caseInfo[13].equals("ASTRA_ZENECA_COMIRNATY") || caseInfo[13].equals("ASTRA_ZENECA_MRNA_1273");
-					if (caseInfo[13] != null) {
-						vaccineName = isAstraZenecaCombination ? Vaccine.OXFORD_ASTRA_ZENECA : Vaccine.valueOf((String) caseInfo[13]);
-					} else {
-						vaccineName = (caseInfo[15] != null ? Vaccine.OTHER : null);
-					}
-					String otherVaccineName = vaccineName == Vaccine.OTHER && caseInfo[15] == null ? (String) caseInfo[14] : (String) caseInfo[15];
-					VaccineManufacturer vaccineManufacturer =
-						("ASTRA_ZENECA_COMIRNATY".equals(caseInfo[13]) || "ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13]))
-							? VaccineManufacturer.ASTRA_ZENECA
-							: (caseInfo[16] != null ? VaccineManufacturer.valueOf((String) caseInfo[16]) : null);
+					insertVaccination(caseInfo, caseInfo[11]);
+				}
+			} else {
+				cloneHealthConditions(caseInfo[25]);
+				int vaccinationDoses;
 
-					try {
+				try {
 
-						vaccinationDoses = new Integer((String) caseInfo[12]);
-					} catch (NumberFormatException e) {
-						vaccinationDoses = 1;
-					}
+					vaccinationDoses = new Integer((String) caseInfo[12]);
+				} catch (NumberFormatException e) {
+					vaccinationDoses = 1;
+				}
 
-					if (vaccinationDoses == 1) {
-						insertVaccination(
-							caseInfo,
-							vaccineName,
-							otherVaccineName,
-							vaccineManufacturer,
-							caseInfo[11] != null ? caseInfo[11] : caseInfo[10]);
-					} else if (vaccinationDoses == 2) {
-						insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, caseInfo[10]);
-						insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, caseInfo[11]);
-					} else {
-						for (int i = 1; i <= vaccinationDoses; i++) {
-							if (i == 1) {
-								insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, caseInfo[10]);
-							} else if (i == vaccinationDoses) {
-								insertVaccination(
-									caseInfo,
-									isAstraZenecaCombination ? Vaccine.COMIRNATY : vaccineName,
-									otherVaccineName,
-									vaccineManufacturer,
-									caseInfo[11]);
-							} else {
-								insertVaccination(
-									caseInfo,
-									isAstraZenecaCombination ? Vaccine.COMIRNATY : vaccineName,
-									otherVaccineName,
-									vaccineManufacturer,
-									null);
-							}
-						}
+				if (vaccinationDoses == 1) {
+					insertFirstVaccination(caseInfo, caseInfo[11] != null ? caseInfo[11] : caseInfo[10]);
+				} else if (vaccinationDoses >= 2) {
+					insertFirstVaccination(caseInfo, caseInfo[10]);
+					for (int i = 2; i <= vaccinationDoses - 1; i++) {
+						insertVaccination(caseInfo, null);
 					}
+					insertVaccination(caseInfo, caseInfo[11]);
 				}
 			}
 		}
+	}
+
+		private void insertVaccination(Object[] caseInfo, Object vaccinationDate) throws SQLException {
+			Vaccine vaccineName = caseInfo[13] != null
+				? (caseInfo[13].equals("ASTRA_ZENECA_COMIRNATY")
+					? Vaccine.COMIRNATY
+					: (caseInfo[13].equals("ASTRA_ZENECA_MRNA_1273")) ? Vaccine.MRNA_1273 : Vaccine.valueOf((String) caseInfo[13]))
+				: Vaccine.OTHER;
+			String otherVaccineName = vaccineName == Vaccine.OTHER ? (String) caseInfo[14] : (String) caseInfo[15];
+			VaccineManufacturer vaccineManufacturer = "ASTRA_ZENECA_COMIRNATY".equals(caseInfo[13])
+				? VaccineManufacturer.BIONTECH_PFIZER
+				: ("ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13])) ? VaccineManufacturer.MODERNA : VaccineManufacturer.valueOf((String) caseInfo[16]);
+			insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, vaccinationDate);
+		}
+
+	private void insertFirstVaccination(Object[] caseInfo, Object vaccinationDate) throws SQLException {
+		Vaccine vaccineName = caseInfo[13] != null
+			? (caseInfo[13].equals("ASTRA_ZENECA_COMIRNATY") || caseInfo[13].equals("ASTRA_ZENECA_MRNA_1273"))
+				? Vaccine.OXFORD_ASTRA_ZENECA
+				: Vaccine.valueOf((String) caseInfo[13])
+			: (caseInfo[15] != null ? Vaccine.OTHER : null);
+		String otherVaccineName = vaccineName == Vaccine.OTHER && caseInfo[15] == null ? (String) caseInfo[14] : (String) caseInfo[15];
+		VaccineManufacturer vaccineManufacturer = ("ASTRA_ZENECA_COMIRNATY".equals(caseInfo[13]) || "ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13]))
+			? VaccineManufacturer.ASTRA_ZENECA
+			: (caseInfo[16] != null ? VaccineManufacturer.valueOf((String) caseInfo[16]) : null);
+		insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, vaccinationDate);
 	}
 
 	private void cloneHealthConditions(Object healthConditionsId) throws SQLException {
