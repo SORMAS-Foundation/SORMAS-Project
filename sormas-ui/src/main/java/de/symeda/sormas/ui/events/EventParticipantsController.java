@@ -122,7 +122,7 @@ public class EventParticipantsController {
 
 										Notification
 											.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
-										ControllerProvider.getEventParticipantController().createEventParticipant(savedDto.getUuid(), doneConsumer);
+										createEventParticipant(savedDto.getUuid(), doneConsumer);
 									}
 								}
 							},
@@ -130,7 +130,7 @@ public class EventParticipantsController {
 				} else {
 					EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
 					Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
-					ControllerProvider.getEventParticipantController().createEventParticipant(savedDto.getUuid(), doneConsumer);
+					createEventParticipant(savedDto.getUuid(), doneConsumer);
 				}
 			}
 		});
@@ -148,7 +148,7 @@ public class EventParticipantsController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
-	public void createEventParticipant(String eventParticipantUuid, Consumer<EventParticipantReferenceDto> doneConsumer) {
+	private void createEventParticipant(String eventParticipantUuid, Consumer<EventParticipantReferenceDto> doneConsumer) {
 
 		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
 		EventParticipantEditForm editForm = new EventParticipantEditForm(
