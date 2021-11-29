@@ -24,6 +24,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
+
 import androidx.annotation.NonNull;
 
 import de.symeda.sormas.api.event.EventStatus;
@@ -142,7 +143,7 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 		EventParticipantSection activeSection = EventParticipantSection.fromOrdinal(getActivePage().getPosition());
 
 		if (activeSection == EventParticipantSection.IMMUNIZATIONS) {
-			ImmunizationNewActivity.startActivityFromCase(getContext(), getRootUuid());
+			ImmunizationNewActivity.startActivityFromEventParticipant(getContext(), getRootUuid());
 		} else if (activeSection == EventParticipantSection.VACCINATIONS) {
 			VaccinationNewActivity.startActivityFromEventParticipant(getContext(), getRootUuid());
 		}
