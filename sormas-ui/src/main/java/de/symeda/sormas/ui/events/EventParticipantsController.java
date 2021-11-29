@@ -78,7 +78,7 @@ public class EventParticipantsController {
 		EventReferenceDto eventRef,
 		Consumer<EventParticipantReferenceDto> doneConsumer,
 		EventParticipantDto eventParticipant,
-		boolean shouldShowResult) {
+		boolean navigateOnCommit) {
 
 		EventParticipantCreateForm createForm =
 			new EventParticipantCreateForm(!FacadeProvider.getEventFacade().hasRegionAndDistrict(eventRef.getUuid()));
@@ -129,7 +129,7 @@ public class EventParticipantsController {
 
 										Notification
 											.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
-										if (shouldShowResult) {
+										if (navigateOnCommit) {
 											navigateToData(savedDto.getUuid());
 										} else {
 											SormasUI.refreshView();
@@ -141,7 +141,7 @@ public class EventParticipantsController {
 				} else {
 					EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
 					Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
-					if (shouldShowResult) {
+					if (navigateOnCommit) {
 						navigateToData(savedDto.getUuid());
 					} else {
 						SormasUI.refreshView();
