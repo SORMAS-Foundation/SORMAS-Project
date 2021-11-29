@@ -28,7 +28,6 @@ import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.data.Validator;
 
@@ -122,7 +121,7 @@ public class EventParticipantsController {
 
 										Notification
 											.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
-										createEventParticipant(savedDto.getUuid(), doneConsumer);
+										navigateToData(savedDto.getUuid());
 									}
 								}
 							},
@@ -130,7 +129,7 @@ public class EventParticipantsController {
 				} else {
 					EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
 					Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
-					createEventParticipant(savedDto.getUuid(), doneConsumer);
+					navigateToData(savedDto.getUuid());
 				}
 			}
 		});
@@ -146,30 +145,6 @@ public class EventParticipantsController {
 	public void navigateToData(String eventParticipantUuid) {
 		final String navigationState = EventParticipantDataView.VIEW_NAME + "/" + eventParticipantUuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
-	}
-
-	private void createEventParticipant(String eventParticipantUuid, Consumer<EventParticipantReferenceDto> doneConsumer) {
-
-		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
-		EventParticipantEditForm editForm = new EventParticipantEditForm(
-			FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false),
-			false,
-			eventParticipant.getPerson().isPseudonymized());
-		editForm.setValue(eventParticipant);
-
-		CommitDiscardWrapperComponent<EventParticipantEditForm> createView = createEventParticipantEditCommitWrapper(editForm, doneConsumer);
-
-		Window window = VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingEditEventParticipant));
-		// form is too big for typical screens
-		window.setHeight(80, Unit.PERCENTAGE);
-
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
-			createView.addDeleteListener(() -> {
-				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(editForm.getValue().toReference());
-				UI.getCurrent().removeWindow(window);
-				SormasUI.refreshView();
-			}, I18nProperties.getCaption(EventParticipantDto.I18N_PREFIX));
-		}
 	}
 
 	public void deleteAllSelectedItems(Collection<EventParticipantIndexDto> selectedRows, Runnable callback) {
