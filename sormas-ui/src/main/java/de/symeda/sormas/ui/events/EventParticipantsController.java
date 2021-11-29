@@ -64,13 +64,21 @@ public class EventParticipantsController {
 
 	public EventParticipantDto createEventParticipant(EventReferenceDto eventRef, Consumer<EventParticipantReferenceDto> doneConsumer) {
 		final EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef, UserProvider.getCurrent().getUserReference());
-		return createEventParticipant(eventRef, doneConsumer, eventParticipant);
+		return createEventParticipant(eventRef, doneConsumer, eventParticipant, true);
 	}
 
 	public EventParticipantDto createEventParticipant(
 		EventReferenceDto eventRef,
 		Consumer<EventParticipantReferenceDto> doneConsumer,
 		EventParticipantDto eventParticipant) {
+		return createEventParticipant(eventRef, doneConsumer, eventParticipant, false);
+	}
+
+	public EventParticipantDto createEventParticipant(
+		EventReferenceDto eventRef,
+		Consumer<EventParticipantReferenceDto> doneConsumer,
+		EventParticipantDto eventParticipant,
+		boolean shouldShowResult) {
 
 		EventParticipantCreateForm createForm =
 			new EventParticipantCreateForm(!FacadeProvider.getEventFacade().hasRegionAndDistrict(eventRef.getUuid()));
@@ -121,7 +129,11 @@ public class EventParticipantsController {
 
 										Notification
 											.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
-										navigateToData(savedDto.getUuid());
+										if (shouldShowResult) {
+											navigateToData(savedDto.getUuid());
+										} else {
+											SormasUI.refreshView();
+										}
 									}
 								}
 							},
@@ -129,7 +141,11 @@ public class EventParticipantsController {
 				} else {
 					EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
 					Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
-					navigateToData(savedDto.getUuid());
+					if (shouldShowResult) {
+						navigateToData(savedDto.getUuid());
+					} else {
+						SormasUI.refreshView();
+					}
 				}
 			}
 		});
