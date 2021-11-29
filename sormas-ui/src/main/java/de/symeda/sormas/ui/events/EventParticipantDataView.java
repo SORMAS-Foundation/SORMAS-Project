@@ -204,6 +204,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 				layout.addComponent(
 					new SideComponentLayout(
 						new VaccinationListComponent(
+							getReference(),
 							criteria,
 							eventParticipant.getRegion() != null ? eventParticipant.getRegion() : event.getEventLocation().getRegion(),
 							eventParticipant.getDistrict() != null ? eventParticipant.getDistrict() : event.getEventLocation().getDistrict(),

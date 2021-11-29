@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.vaccination.list;
 
+import com.vaadin.shared.ui.ContentMode;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -47,6 +48,7 @@ public class VaccinationListEntry extends SideComponentField {
 		this.vaccination = vaccination;
 
 		buildLayout(showDisease);
+		mainLayout.setEnabled(vaccination.isRelevant());
 	}
 
 	private void buildLayout(boolean showDisease) {
@@ -70,6 +72,11 @@ public class VaccinationListEntry extends SideComponentField {
 		uuidDateLayout.setComponentAlignment(dateLabel, Alignment.MIDDLE_RIGHT);
 		addComponentToField(uuidDateLayout);
 
+		HorizontalLayout vaccineNameAndInfoLayout = new HorizontalLayout();
+		vaccineNameAndInfoLayout.setMargin(false);
+		vaccineNameAndInfoLayout.setSpacing(true);
+		vaccineNameAndInfoLayout.setWidthFull();
+
 		String vaccine = vaccination.getVaccineName() != null
 			? (vaccination.getVaccineName() == Vaccine.OTHER ? vaccination.getOtherVaccineName() : vaccination.getVaccineName().toString())
 			: null;
@@ -77,8 +84,17 @@ public class VaccinationListEntry extends SideComponentField {
 			StringUtils.isNotBlank(vaccine)
 				? I18nProperties.getPrefixCaption(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINE_NAME) + SEPARATOR + vaccine
 				: I18nProperties.getString(Strings.labelNoVaccineName));
-		vaccineLabel.setWidthFull();
-		addComponentToField(vaccineLabel);
+		vaccineNameAndInfoLayout.addComponent(vaccineLabel);
+		vaccineNameAndInfoLayout.setComponentAlignment(vaccineLabel, Alignment.MIDDLE_LEFT);
+
+		if (!vaccination.isRelevant()) {
+			Label vaccinationNotRelevantInfo = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+			vaccinationNotRelevantInfo.setDescription(vaccination.getNonRelevantMessage());
+			vaccineNameAndInfoLayout.addComponent(vaccinationNotRelevantInfo);
+			vaccineNameAndInfoLayout.setComponentAlignment(vaccinationNotRelevantInfo, Alignment.MIDDLE_RIGHT);
+		}
+
+		addComponentToField(vaccineNameAndInfoLayout);
 
 		if (showDisease) {
 			Label diseaseLabel = new Label(vaccination.getDisease().toString());
