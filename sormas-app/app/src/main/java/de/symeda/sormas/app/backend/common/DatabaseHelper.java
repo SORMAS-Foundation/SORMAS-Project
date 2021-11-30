@@ -2901,6 +2901,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 328:
 				currentVersion = 328;
+				// Recreate immunization table because unique constraint was not taking snapshot into account
 				getDao(Immunization.class).executeRaw("ALTER TABLE immunization RENAME TO tmp_immunization;");
 				getDao(Immunization.class).executeRaw(
 					"CREATE TABLE immunization (additionalDetails VARCHAR, "
@@ -3045,6 +3046,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							r -> new ArrayList<>(r.values()))));
 		});
 
+		// Replace vaccination date with the first vaccination date of the earliest entity with vaccination info
 		filteredCaseInfo.forEach(objects -> {
 			if (objects[10] == null) {
 				caseInfoByDisease.get(Disease.valueOf((String) objects[2]))
