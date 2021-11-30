@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.vaccination;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,26 +80,28 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 	}
 
 	public static boolean isVaccinationRelevant(Case caze, Vaccination vaccination) {
-		Date vaccinationRelevantDate = vaccination.getVaccinationDate() != null ? vaccination.getVaccinationDate() : vaccination.getReportDate();
-		return caze.getSymptoms().getOnsetDate() != null
-			? vaccinationRelevantDate.before(caze.getSymptoms().getOnsetDate())
-			: vaccinationRelevantDate.before(caze.getReportDate());
+		return vaccination.getVaccinationDate() == null
+			|| (caze.getSymptoms().getOnsetDate() != null
+				? vaccination.getVaccinationDate().before(caze.getSymptoms().getOnsetDate())
+				: vaccination.getVaccinationDate().before(caze.getReportDate()));
 	}
 
 	public static boolean isVaccinationRelevant(Contact contact, Vaccination vaccination) {
-		Date vaccinationRelevantDate = vaccination.getVaccinationDate() != null ? vaccination.getVaccinationDate() : vaccination.getReportDate();
-		return contact.getLastContactDate() != null
-			? vaccinationRelevantDate.before(contact.getLastContactDate())
-			: vaccinationRelevantDate.before(contact.getReportDateTime());
+		return vaccination.getVaccinationDate() == null
+			|| (contact.getLastContactDate() != null
+				? vaccination.getVaccinationDate().before(contact.getLastContactDate())
+				: vaccination.getVaccinationDate().before(contact.getReportDateTime()));
 	}
 
 	public static boolean isVaccinationRelevant(Event event, Vaccination vaccination) {
-		Date vaccinationRelevantDate = vaccination.getVaccinationDate() != null ? vaccination.getVaccinationDate() : vaccination.getReportDate();
+		if (vaccination.getVaccinationDate() == null) {
+			return true;
+		}
 		if (event.getStartDate() != null) {
-			return vaccinationRelevantDate.before(event.getStartDate());
+			return vaccination.getVaccinationDate().before(event.getStartDate());
 		}
 		return event.getEndDate() != null
-			? vaccinationRelevantDate.before(event.getEndDate())
-			: vaccinationRelevantDate.before(event.getReportDateTime());
+			? vaccination.getVaccinationDate().before(event.getEndDate())
+			: vaccination.getVaccinationDate().before(event.getReportDateTime());
 	}
 }
