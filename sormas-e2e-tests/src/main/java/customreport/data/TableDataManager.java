@@ -67,7 +67,7 @@ public abstract class TableDataManager {
     String tableRowHtmlWithWarning =
         "<tr>\n"
             + "    <td> test-name-placeholder </td>\n"
-            + "    <td style=\"color:red\"> time-placeholder </td> </tr>";
+            + "    <td> <font color=\"red\"> time-placeholder </font> </td> </tr>";
     for (TableRowObject tableRowObject : tableRowsDataList) {
       try {
         Double time = Double.parseDouble(tableRowObject.getCurrentTime());
