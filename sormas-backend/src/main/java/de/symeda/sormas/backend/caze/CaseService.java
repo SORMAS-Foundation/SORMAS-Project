@@ -455,7 +455,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, root, new CaseUserFilterCriteria()));
 		}
 
-		filter = cb.and(
+		filter = CriteriaBuilderHelper.and(
+			cb,
 			filter,
 			cb.or(
 				cb.equal(cb.lower(root.get(Case.UUID)), searchTerm.toLowerCase()),
