@@ -2977,7 +2977,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 		for (Object[] caseInfo : caseInfoList) {
 			formatRawResultString(caseInfo, 3, true);
-			formatRawResultString(caseInfo, 12, true);
 			formatRawResultString(caseInfo, 14, true);
 			formatRawResultString(caseInfo, 15, true);
 			formatRawResultString(caseInfo, 17, true);
@@ -2992,6 +2991,16 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			formatRawResultDate(caseInfo, 9);
 			formatRawResultDate(caseInfo, 10);
 			formatRawResultDate(caseInfo, 11);
+
+			if (DataHelper.isNullOrEmpty((String) caseInfo[12])) {
+				Array.set(caseInfo, 12, null);
+			} else {
+				try {
+					Array.set(caseInfo, 12, new Integer((String) caseInfo[12]));
+				} catch (NumberFormatException e) {
+					Array.set(caseInfo, 12, 1);
+				}
+			}
 		}
 
 		// Retrieve the latest case of each person for each disease
@@ -3014,13 +3023,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 		filteredCaseInfo.forEach(objects -> {
 			if (objects[10] == null) {
-				caseInfoByDisease.get(objects[2]).stream().sorted(comparator.reversed()).findFirst().ifPresent(earliestObject -> {
-					if (earliestObject[12] != null
-						&& objects[12] != null
-						&& new Integer((String) earliestObject[12]) <= new Integer((String) objects[12])) {
-						objects[10] = earliestObject[10] == null ? earliestObject[4] : earliestObject[10];
-					}
-				});
+				caseInfoByDisease.get(Disease.valueOf((String) objects[2]))
+					.stream()
+					.sorted(comparator.reversed())
+					.findFirst()
+					.ifPresent(earliestObject -> {
+						if (earliestObject[12] != null && objects[12] != null && (int) earliestObject[12] <= (int) objects[12]) {
+							objects[10] = earliestObject[10] == null ? earliestObject[4] : earliestObject[10];
+						}
+					});
 			}
 		});
 
@@ -3038,7 +3049,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				+ caseInfo[10] + ", " + caseInfo[11] + ", " + caseInfo[12] + ", 0, 1, 0);";
 			getDao(Immunization.class).executeRaw(immunizationInsertQuery);
 
-			if (caseInfo[12] == null || ((String) caseInfo[12]).isEmpty()) {
+			if (caseInfo[12] == null) {
+				// No vaccination doses specified
 				if (caseInfo[10] != null || caseInfo[11] == null) {
 					cloneHealthConditions(caseInfo[25]);
 					insertFirstVaccination(caseInfo, caseInfo[10]);
@@ -3050,23 +3062,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					insertVaccination(caseInfo, caseInfo[11]);
 				}
 			} else {
-				cloneHealthConditions(caseInfo[25]);
-				int vaccinationDoses;
-
-				try {
-
-					vaccinationDoses = new Integer((String) caseInfo[12]);
-				} catch (NumberFormatException e) {
-					vaccinationDoses = 1;
-				}
+				// Vaccination doses specified
+				int vaccinationDoses = (int) caseInfo[12];
 
 				if (vaccinationDoses == 1) {
+					cloneHealthConditions(caseInfo[25]);
 					insertFirstVaccination(caseInfo, caseInfo[11] != null ? caseInfo[11] : caseInfo[10]);
-				} else if (vaccinationDoses >= 2) {
+				} else {
+					cloneHealthConditions(caseInfo[25]);
 					insertFirstVaccination(caseInfo, caseInfo[10]);
 					for (int i = 2; i <= vaccinationDoses - 1; i++) {
+						cloneHealthConditions(caseInfo[25]);
 						insertVaccination(caseInfo, null);
 					}
+					cloneHealthConditions(caseInfo[25]);
 					insertVaccination(caseInfo, caseInfo[11]);
 				}
 			}
