@@ -51,7 +51,8 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 	private UserService userService;
 
 	public CampaignFormMeta fromDto(@NotNull CampaignFormMetaDto source, boolean checkChangeDate) {
-		CampaignFormMeta target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), CampaignFormMeta::new, checkChangeDate);
+		CampaignFormMeta target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()),
+				CampaignFormMeta::new, checkChangeDate);
 
 		target.setFormId(source.getFormId());
 		target.setFormName(source.getFormName());
@@ -80,7 +81,8 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 	}
 
 	@Override
-	public CampaignFormMetaDto saveCampaignFormMeta(@Valid CampaignFormMetaDto campaignFormMetaDto) throws ValidationRuntimeException {
+	public CampaignFormMetaDto saveCampaignFormMeta(@Valid CampaignFormMetaDto campaignFormMetaDto)
+			throws ValidationRuntimeException {
 		validateAndClean(campaignFormMetaDto);
 
 		CampaignFormMeta campaignFormMeta = fromDto(campaignFormMetaDto, true);
@@ -89,17 +91,19 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 	}
 
 	@Override
-	public CampaignFormMetaDto buildCampaignFormMetaFromJson(String formId, String languageCode, String schemaDefinitionJson, String translationsJson)
-		throws IOException {
+	public CampaignFormMetaDto buildCampaignFormMetaFromJson(String formId, String languageCode,
+			String schemaDefinitionJson, String translationsJson) throws IOException {
 		CampaignFormMetaDto campaignForm = new CampaignFormMetaDto();
 		campaignForm.setFormId(formId);
 		campaignForm.setLanguageCode(languageCode);
 		ObjectMapper mapper = new ObjectMapper();
 		if (StringUtils.isNotBlank(schemaDefinitionJson)) {
-			campaignForm.setCampaignFormElements(Arrays.asList(mapper.readValue(schemaDefinitionJson, CampaignFormElement[].class)));
+			campaignForm.setCampaignFormElements(
+					Arrays.asList(mapper.readValue(schemaDefinitionJson, CampaignFormElement[].class)));
 		}
 		if (StringUtils.isNotBlank(translationsJson)) {
-			campaignForm.setCampaignFormTranslations(Arrays.asList(mapper.readValue(translationsJson, CampaignFormTranslations[].class)));
+			campaignForm.setCampaignFormTranslations(
+					Arrays.asList(mapper.readValue(translationsJson, CampaignFormTranslations[].class)));
 		}
 
 		return campaignForm;
@@ -107,11 +111,8 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 
 	@Override
 	public List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferences() {
-		return service.getAll()
-			.stream()
-			.map(CampaignFormMetaFacadeEjb::toReferenceDto)
-			.sorted(Comparator.comparing(ReferenceDto::toString))
-			.collect(Collectors.toList());
+		return service.getAll().stream().map(CampaignFormMetaFacadeEjb::toReferenceDto)
+				.sorted(Comparator.comparing(ReferenceDto::toString)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -132,7 +133,8 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 
 	@Override
 	public List<CampaignFormMetaDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(campaignFormMeta -> toDto(campaignFormMeta)).collect(Collectors.toList());
+		return service.getByUuids(uuids).stream().map(campaignFormMeta -> toDto(campaignFormMeta))
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -151,9 +153,8 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 			} catch (ValidationRuntimeException e) {
 				throw new ValidationRuntimeException(form.getFormId() + ": " + e.getMessage());
 			} catch (Exception e) {
-				throw new ValidationRuntimeException(
-					form.getFormId() + ": "
-						+ I18nProperties.getValidationError(Validations.campaignFormMetaValidationUnexpectedError, e.getMessage()));
+				throw new ValidationRuntimeException(form.getFormId() + ": " + I18nProperties
+						.getValidationError(Validations.campaignFormMetaValidationUnexpectedError, e.getMessage()));
 			}
 		}
 	}
@@ -164,52 +165,55 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 			return;
 		}
 
-		// Throw an exception when the schema definition contains an element without an ID or type
-		campaignFormMetaDto.getCampaignFormElements()
-			.stream()
-			.filter(e -> StringUtils.isBlank(e.getId()) || StringUtils.isBlank(e.getType()))
-			.findFirst()
-			.ifPresent(e -> {
-				if (StringUtils.isBlank(e.getId())) {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignFormElementIdRequired));
-				} else {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignFormElementTypeRequired, e.getId()));
-				}
-			});
+		// Throw an exception when the schema definition contains an element without an
+		// ID or type
+		campaignFormMetaDto.getCampaignFormElements().stream()
+				.filter(e -> StringUtils.isBlank(e.getId()) || StringUtils.isBlank(e.getType())).findFirst()
+				.ifPresent(e -> {
+					if (StringUtils.isBlank(e.getId())) {
+						throw new ValidationRuntimeException(
+								I18nProperties.getValidationError(Validations.campaignFormElementIdRequired));
+					} else {
+						throw new ValidationRuntimeException(I18nProperties
+								.getValidationError(Validations.campaignFormElementTypeRequired, e.getId()));
+					}
+				});
 
-		// Throw an exception when the schema definition contains the same ID more than once
+		// Throw an exception when the schema definition contains the same ID more than
+		// once
 		campaignFormMetaDto.getCampaignFormElements().forEach(e -> {
 			if (Collections.frequency(campaignFormMetaDto.getCampaignFormElements(), e) > 1) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignFormElementDuplicateId, e.getId()));
+				throw new ValidationRuntimeException(
+						I18nProperties.getValidationError(Validations.campaignFormElementDuplicateId, e.getId()));
 			}
 		});
 
-		// Throw an error if any translation does not have a language code or contains an element without an ID or caption
+		// Throw an error if any translation does not have a language code or contains
+		// an element without an ID or caption
 		if (CollectionUtils.isNotEmpty(campaignFormMetaDto.getCampaignFormTranslations())) {
 			campaignFormMetaDto.getCampaignFormTranslations().forEach(cft -> {
 				if (StringUtils.isBlank(cft.getLanguageCode())) {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignFormTranslationLanguageCodeRequired));
+					throw new ValidationRuntimeException(
+							I18nProperties.getValidationError(Validations.campaignFormTranslationLanguageCodeRequired));
 				}
 
-				cft.getTranslations()
-					.stream()
-					.filter(t -> StringUtils.isBlank(t.getElementId()) || StringUtils.isBlank(t.getCaption()))
-					.findFirst()
-					.ifPresent(e -> {
-						if (StringUtils.isBlank(e.getElementId())) {
-							throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignFormTranslationIdRequired));
-						} else {
-							throw new ValidationRuntimeException(
-								I18nProperties
-									.getValidationError(Validations.campaignFormTranslationCaptionRequired, e.getElementId(), cft.getLanguageCode()));
-						}
-					});
+				cft.getTranslations().stream()
+						.filter(t -> StringUtils.isBlank(t.getElementId()) || StringUtils.isBlank(t.getCaption()))
+						.findFirst().ifPresent(e -> {
+							if (StringUtils.isBlank(e.getElementId())) {
+								throw new ValidationRuntimeException(I18nProperties
+										.getValidationError(Validations.campaignFormTranslationIdRequired));
+							} else {
+								throw new ValidationRuntimeException(I18nProperties.getValidationError(
+										Validations.campaignFormTranslationCaptionRequired, e.getElementId(),
+										cft.getLanguageCode()));
+							}
+						});
 			});
 		}
 
-		Map<String, String> idsAndTypes = campaignFormMetaDto.getCampaignFormElements()
-			.stream()
-			.collect(Collectors.toMap(CampaignFormElement::getId, CampaignFormElement::getType));
+		Map<String, String> idsAndTypes = campaignFormMetaDto.getCampaignFormElements().stream()
+				.collect(Collectors.toMap(CampaignFormElement::getId, CampaignFormElement::getType));
 
 		for (CampaignFormElement element : campaignFormMetaDto.getCampaignFormElements()) {
 			// Clean the element caption from all HTML tags that are not explicitly allowed
@@ -222,21 +226,24 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 			// Validate form elements
 			validateCampaignFormElementType(element.getId(), element.getType());
 			validateCampaignFormElementStyles(element.getId(), element.getStyles());
-			if (StringUtils.isNotBlank(element.getDependingOn()) && ArrayUtils.isEmpty(element.getDependingOnValues())) {
-				throw new ValidationRuntimeException(
-					I18nProperties.getValidationError(Validations.campaignFormDependingOnValuesMissing, element.getId()));
+			if (StringUtils.isNotBlank(element.getDependingOn())
+					&& ArrayUtils.isEmpty(element.getDependingOnValues())) {
+				throw new ValidationRuntimeException(I18nProperties
+						.getValidationError(Validations.campaignFormDependingOnValuesMissing, element.getId()));
 			}
-			validateCampaignFormMetaDependency(element.getId(), element.getDependingOn(), element.getDependingOnValues(), idsAndTypes);
+			validateCampaignFormMetaDependency(element.getId(), element.getDependingOn(),
+					element.getDependingOnValues(), idsAndTypes);
 		}
 
-		// Validate element IDs used in translations and clean HTML used in translation captions
+		// Validate element IDs used in translations and clean HTML used in translation
+		// captions
 		if (CollectionUtils.isNotEmpty(campaignFormMetaDto.getCampaignFormTranslations())) {
 			for (CampaignFormTranslations translations : campaignFormMetaDto.getCampaignFormTranslations()) {
 				translations.getTranslations().forEach(e -> {
 					if (idsAndTypes.get(e.getElementId()) == null) {
 						throw new ValidationRuntimeException(
-							I18nProperties
-								.getValidationError(Validations.campaignFormTranslationIdInvalid, e.getElementId(), translations.getLanguageCode()));
+								I18nProperties.getValidationError(Validations.campaignFormTranslationIdInvalid,
+										e.getElementId(), translations.getLanguageCode()));
 					}
 
 					if (StringUtils.isNotBlank(e.getCaption())) {
@@ -251,7 +258,8 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 
 	private void validateCampaignFormElementType(String id, String type) throws ValidationRuntimeException {
 		if (!StringUtils.equalsAny(type, CampaignFormElement.VALID_TYPES)) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignFormUnsupportedType, type, id));
+			throw new ValidationRuntimeException(
+					I18nProperties.getValidationError(Validations.campaignFormUnsupportedType, type, id));
 		}
 	}
 
@@ -262,32 +270,31 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 
 		for (String style : styles) {
 			if (!StringUtils.equalsAny(style, CampaignFormElement.VALID_STYLES)) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignFormUnsupportedStyle, style, id));
+				throw new ValidationRuntimeException(
+						I18nProperties.getValidationError(Validations.campaignFormUnsupportedStyle, style, id));
 			}
 		}
 	}
 
-	private void validateCampaignFormMetaDependency(String id, String dependingOn, String[] dependingOnValues, Map<String, String> otherElements)
-		throws ValidationRuntimeException {
+	private void validateCampaignFormMetaDependency(String id, String dependingOn, String[] dependingOnValues,
+			Map<String, String> otherElements) throws ValidationRuntimeException {
 		if (StringUtils.isBlank(dependingOn)) {
 			return;
 		}
 
 		// Schema must contain an element with an ID matching the dependingOn attribute
 		if (!otherElements.containsKey(dependingOn)) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignFormDependingOnNotFound, dependingOn, id));
+			throw new ValidationRuntimeException(
+					I18nProperties.getValidationError(Validations.campaignFormDependingOnNotFound, dependingOn, id));
 		}
 
-		// The element referenced by the dependingOn attribute must be of a type that is compatible with the dependingOnValues.
+		// The element referenced by the dependingOn attribute must be of a type that is
+		// compatible with the dependingOnValues.
 		for (String dependingOnValue : dependingOnValues) {
 			if (!isValueValidForType(otherElements.get(dependingOn), dependingOnValue)) {
 				throw new ValidationRuntimeException(
-					I18nProperties.getValidationError(
-						Validations.campaignFormUnsupportedDependingOnValue,
-						dependingOnValue,
-						id,
-						otherElements.get(dependingOn),
-						dependingOn));
+						I18nProperties.getValidationError(Validations.campaignFormUnsupportedDependingOnValue,
+								dependingOnValue, id, otherElements.get(dependingOn), dependingOn));
 			}
 		}
 	}
@@ -300,12 +307,28 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 				return false;
 			}
 		}
+		
+		if (type.equals(CampaignFormElementType.DECIMAL.toString())) {
+			try {
+				System.out.println(">>>>>>>>>>>>>>>>>>> " +CampaignFormElementType.DECIMAL.toString());
+				if (value.contains(".")) {
+					if (value.length() - value.indexOf(".") - 1 == 2) {
+
+					} else {
+						return false;
+					}
+				} else {
+					return false;
+				}
+
+			} catch (NumberFormatException e) {
+				return false;
+			}
+		}
 
 		if (type.equals(CampaignFormElementType.YES_NO.toString())) {
 			return StringUtils.equalsAnyIgnoreCase(value, CampaignFormElementType.YES_NO.getAllowedValues());
 		}
-		
-		
 
 		return true;
 	}

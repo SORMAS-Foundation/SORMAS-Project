@@ -532,18 +532,30 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					.append("' as fieldId, jsonMeta->>'")
 					.append(CampaignFormElement.CAPTION)
 					.append("' as fieldCaption,")
-					.append("CASE WHEN (jsonMeta ->> '")
+					.append("CASE WHEN ")
+					.append("((jsonMeta ->> '")
 					.append(CampaignFormElement.TYPE)
 					.append("') = '")
-					.append(CampaignFormElementType.NUMBER.toString())
-					.append("' THEN sum(cast_to_int(jsonData->>'")
+					.append(CampaignFormElementType.NUMBER.toString()+"') OR")
+					
+					.append("((jsonMeta ->> '")
+					.append(CampaignFormElement.TYPE)
+					.append("') = '")
+					.append(CampaignFormElementType.DECIMAL.toString()+"') OR")
+					
+					.append("((jsonMeta ->> '")
+					.append(CampaignFormElement.TYPE)
+					.append("') = '")
+					.append(CampaignFormElementType.RANGE.toString()+"')")
+					
+					.append("THEN sum(cast_to_int(jsonData->>'")
 					.append(CampaignFormDataEntry.VALUE)
 					.append("', 0)) ELSE sum(CASE WHEN(jsonData->>'")
 					.append(CampaignFormDataEntry.VALUE)
 					.append("') = '")
 					.append(series.getReferenceValue())
 					.append("' THEN 1 ELSE 0 END) END as sumValue,");
-			} else {
+							} else {
 				selectBuilder.append(", null as fieldId, null as fieldCaption, count(formId) as sumValue,");
 			}
 
@@ -674,7 +686,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			}
 
 			groupByBuilder.append(jurisdictionGrouping);
-
+			
 			//@formatter:off
 			Query seriesDataQuery = em.createNativeQuery(
 					selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME + joinBuilder + whereBuilder + groupByBuilder);

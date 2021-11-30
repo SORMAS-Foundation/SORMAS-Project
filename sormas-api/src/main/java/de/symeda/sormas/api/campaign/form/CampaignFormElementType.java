@@ -12,7 +12,12 @@ public enum CampaignFormElementType {
 	RADIO,
 	CHECKBOXBASIC,
 	RADIOBASIC,
-	TEXTBOX;
+	TEXTBOX,
+	
+	DATE,
+	DECIMAL,
+	RANGE,
+	ARRAY;
 	
 
 	private final String[] allowedValues;

@@ -70,12 +70,14 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 				exportLayout.setWidth(250, Unit.PIXELS);
 			}
 
-			PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
+			PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD,
+					exportLayout);
 			addHeaderComponent(exportPopupButton);
 			{
-				StreamResource streamResource =
-					GridExportStreamResource.createStreamResource(grid, ExportEntityName.CAMPAIGN_STATISTICS, EDIT_BTN_ID);
-				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
+				StreamResource streamResource = GridExportStreamResource.createStreamResource(grid,
+						ExportEntityName.CAMPAIGN_STATISTICS, EDIT_BTN_ID);
+				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export,
+						Strings.infoBasicExport);
 			}
 		}
 
@@ -120,8 +122,8 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 
 		importanceFilterSwitcher.addValueChangeListener(e -> {
 			grid.reload();
-			createFormMetaChangedCallback()
-				.accept((CampaignFormMetaReferenceDto) filterForm.getField(CampaignStatisticsCriteria.CAMPAIGN_FORM_META).getValue());
+			createFormMetaChangedCallback().accept((CampaignFormMetaReferenceDto) filterForm
+					.getField(CampaignStatisticsCriteria.CAMPAIGN_FORM_META).getValue());
 		});
 
 		mainLayout.addComponent(grid);
@@ -170,15 +172,14 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 			grid.removeAllColumns();
 			grid.addDefaultColumns();
 			if (formMetaReference != null) {
-				CampaignFormMetaDto formMeta = FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetaByUuid(formMetaReference.getUuid());
+				CampaignFormMetaDto formMeta = FacadeProvider.getCampaignFormMetaFacade()
+						.getCampaignFormMetaByUuid(formMetaReference.getUuid());
 				Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
 				CampaignFormTranslations translations = null;
 				if (userLanguage != null) {
-					translations = formMeta.getCampaignFormTranslations()
-						.stream()
-						.filter(t -> t.getLanguageCode().equals(userLanguage.getLocale().toString()))
-						.findFirst()
-						.orElse(null);
+					translations = formMeta.getCampaignFormTranslations().stream()
+							.filter(t -> t.getLanguageCode().equals(userLanguage.getLocale().toString())).findFirst()
+							.orElse(null);
 				}
 				final boolean onlyImportantFormElements = importanceFilterSwitcher.isImportantSelected();
 				final List<CampaignFormElement> campaignFormElements = formMeta.getCampaignFormElements();
@@ -188,15 +189,18 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 						if (type != null) {
 							CampaignFormElementType campaignFormElementType = CampaignFormElementType.fromString(type);
 							if (campaignFormElementType == CampaignFormElementType.NUMBER
-									|| campaignFormElementType == CampaignFormElementType.YES_NO || campaignFormElementType == CampaignFormElementType.RADIO) {
+									|| campaignFormElementType == CampaignFormElementType.DECIMAL
+									|| campaignFormElementType == CampaignFormElementType.RANGE
+									|| campaignFormElementType == CampaignFormElementType.RADIOBASIC
+									|| campaignFormElementType == CampaignFormElementType.CHECKBOX
+									|| campaignFormElementType == CampaignFormElementType.CHECKBOXBASIC
+									|| campaignFormElementType == CampaignFormElementType.RADIO
+									|| campaignFormElementType == CampaignFormElementType.YES_NO) {
 								String caption = null;
 								if (translations != null) {
-									caption = translations.getTranslations()
-										.stream()
-										.filter(t -> t.getElementId().equals(element.getId()))
-										.map(TranslationElement::getCaption)
-										.findFirst()
-										.orElse(null);
+									caption = translations.getTranslations().stream()
+											.filter(t -> t.getElementId().equals(element.getId()))
+											.map(TranslationElement::getCaption).findFirst().orElse(null);
 								}
 								if (caption == null) {
 									caption = element.getCaption();

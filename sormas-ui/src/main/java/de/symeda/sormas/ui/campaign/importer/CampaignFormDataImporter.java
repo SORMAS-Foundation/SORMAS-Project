@@ -152,6 +152,8 @@ public class CampaignFormDataImporter extends DataImporter {
 	private boolean isEntryValid(CampaignFormElement definition, CampaignFormDataEntry entry) {
 		if (definition.getType().equalsIgnoreCase(CampaignFormElementType.NUMBER.toString())) {
 			return NumberUtils.isParsable(entry.getValue().toString());
+		} else if (definition.getType().equalsIgnoreCase(CampaignFormElementType.DECIMAL.toString()) || definition.getType().equalsIgnoreCase(CampaignFormElementType.RANGE.toString())) {
+			return NumberUtils.isParsable(entry.getValue().toString());
 		} else if (definition.getType().equalsIgnoreCase(CampaignFormElementType.TEXT.toString())) {
 			return !entry.getValue().toString().matches("[0-9]+");
 		} else if (definition.getType().equalsIgnoreCase(CampaignFormElementType.YES_NO.toString())) {

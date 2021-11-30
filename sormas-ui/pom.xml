@@ -121,7 +121,7 @@
 		<dependency>
 			<groupId>org.glassfish</groupId>
 			<artifactId>javax.el</artifactId>
-		</dependency>
+		</dependency> 
 
 		<dependency>
 			<groupId>org.glassfish.corba</groupId>
@@ -140,7 +140,7 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
-		</dependency>
+		</dependency> 
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>

@@ -270,6 +270,8 @@ public class CampaignStatisticsService {
 	}
 
 	private String buildJsonSelectExpression() {
+		System.out.println(">>>>>>>>>>>>>>>>>>> xxxxxxxxxxxxxxxxxxxxx");
+		
 		StringBuilder jsonQueryExpression = new StringBuilder();
 		jsonQueryExpression.append(", jsonData->>'")
 			.append(CampaignFormElement.ID)

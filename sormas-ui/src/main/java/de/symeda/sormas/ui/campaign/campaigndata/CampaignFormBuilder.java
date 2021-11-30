@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.Size;
+
 import com.google.common.collect.Sets;
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.Styles;
@@ -33,6 +35,7 @@ import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.CheckBoxGroup;
+import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.CustomField;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -56,6 +59,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -79,6 +83,7 @@ public class CampaignFormBuilder {
 	private Map<String, String> userTranslations = null;
 	Map<String, Field<?>> fields;
 	private List<String> optionsValues;
+	private List<String> constraints;
 
 	public CampaignFormBuilder(List<CampaignFormElement> formElements, List<CampaignFormDataEntry> formValues,
 			GridLayout campaignFormLayout, List<CampaignFormTranslations> translations) {
@@ -122,46 +127,41 @@ public class CampaignFormBuilder {
 				ListIterator<String> lstItems = optionsValues.listIterator();
 				int i = 1;
 				/*
-				while (lstItems.hasNext()) {
-					switch (i) {
-					case 1:
-						campaignFormElementOptions.setOpt1(lstItems.next());
-						break;
-					case 2:
-						campaignFormElementOptions.setOpt2(lstItems.next());
-						break;
-					case 3:
-						campaignFormElementOptions.setOpt3(lstItems.next());
-						break;
-					case 4:
-						campaignFormElementOptions.setOpt4(lstItems.next());
-						break;
-					case 5:
-						campaignFormElementOptions.setOpt5(lstItems.next());
-						break;
-					case 6:
-						campaignFormElementOptions.setOpt6(lstItems.next());
-						break;
-					case 7:
-						campaignFormElementOptions.setOpt7(lstItems.next());
-						break;
-					case 8:
-						campaignFormElementOptions.setOpt8(lstItems.next());
-						break;
-					case 9:
-						campaignFormElementOptions.setOpt9(lstItems.next());
-						break;
-					case 10:
-						campaignFormElementOptions.setOpt10(lstItems.next());
-						break;
-
-					}
-					i++;
-				}*/
+				 * while (lstItems.hasNext()) { switch (i) { case 1:
+				 * campaignFormElementOptions.setOpt1(lstItems.next()); break; case 2:
+				 * campaignFormElementOptions.setOpt2(lstItems.next()); break; case 3:
+				 * campaignFormElementOptions.setOpt3(lstItems.next()); break; case 4:
+				 * campaignFormElementOptions.setOpt4(lstItems.next()); break; case 5:
+				 * campaignFormElementOptions.setOpt5(lstItems.next()); break; case 6:
+				 * campaignFormElementOptions.setOpt6(lstItems.next()); break; case 7:
+				 * campaignFormElementOptions.setOpt7(lstItems.next()); break; case 8:
+				 * campaignFormElementOptions.setOpt8(lstItems.next()); break; case 9:
+				 * campaignFormElementOptions.setOpt9(lstItems.next()); break; case 10:
+				 * campaignFormElementOptions.setOpt10(lstItems.next()); break;
+				 * 
+				 * } i++; }
+				 */
 
 				campaignFormElementOptions.setOptionsListValues(optionsValues);
 			} else {
 				optionsValues = new ArrayList<>();
+			}
+
+			if (formElement.getConstraints() != null) {
+				CampaignFormElementOptions campaignFormElementOptions = new CampaignFormElementOptions();
+				constraints = (List) Arrays.stream(formElement.getConstraints()).collect(Collectors.toList());
+				ListIterator<String> lstItemsx = constraints.listIterator();
+				int i = 1;
+
+				while (lstItemsx.hasNext()) {
+					String lss = lstItemsx.next().toString();
+					if (lss.toLowerCase().contains("max")) {
+						campaignFormElementOptions.setMax(Integer.parseInt(lss.substring(lss.lastIndexOf("=") + 1)));
+					} else if (lss.toLowerCase().contains("min")) {
+						campaignFormElementOptions.setMin(Integer.parseInt(lss.substring(lss.lastIndexOf("=") + 1)));
+					}
+				}
+
 			}
 
 			String dependingOnId = formElement.getDependingOn();
@@ -216,7 +216,7 @@ public class CampaignFormBuilder {
 
 				Field<?> field = createField(formElement.getId(), formElement.getCaption(), type, styles,
 						optionsValues);
-				
+
 				setFieldValue(field, type, value, optionsValues);
 				field.setId(formElement.getId());
 				field.setCaption(get18nCaption(formElement.getId(), formElement.getCaption()));
@@ -250,28 +250,43 @@ public class CampaignFormBuilder {
 		T field;
 		if (type == CampaignFormElementType.YES_NO) {
 			field = fieldFactory.createField(Boolean.class, (Class<T>) NullableOptionGroup.class);
-		} else if (type == CampaignFormElementType.TEXT || type == CampaignFormElementType.NUMBER) {
+		} else if (type == CampaignFormElementType.TEXT || type == CampaignFormElementType.NUMBER
+				|| type == CampaignFormElementType.DECIMAL || type == CampaignFormElementType.RANGE) {
 			field = fieldFactory.createField(String.class, (Class<T>) TextField.class);
 		} else if (type == CampaignFormElementType.TEXTBOX) {
 			field = fieldFactory.createField(String.class, (Class<T>) TextArea.class);
-			
+
 		} else if (type == CampaignFormElementType.RADIO) {
 			field = fieldFactory.createField(CampaignFormElementEnumOptions.class, (Class<T>) RadioBasicGroup.class);
-			
+
 		} else if (type == CampaignFormElementType.RADIOBASIC) {
-			field = fieldFactory.createField(CampaignFormElementEnumOptions.class, (Class<T>) BasicRadioGroupHelper.class);
-			
+			field = fieldFactory.createField(CampaignFormElementEnumOptions.class,
+					(Class<T>) BasicRadioGroupHelper.class);
+
 		} else if (type == CampaignFormElementType.DROPDOWN) {
 			field = fieldFactory.createField(CampaignFormElementOptions.class, (Class<T>) ComboBox.class);
-			
+
 		} else if (type == CampaignFormElementType.CHECKBOX) {
-			//Flash class is only use as a placeholder
+			// Flash class is only use as a placeholder
 			field = fieldFactory.createField(CampaignFormElementEnumOptions.class, (Class<T>) CheckboxBasicGroup.class);
-			
-		}else if (type == CampaignFormElementType.CHECKBOXBASIC) {
-			//Flash class is only use as a placeholder
-			field = fieldFactory.createField(CampaignFormElementEnumOptions.class, (Class<T>) BasicCheckboxHelper.class);
-			
+
+		} else if (type == CampaignFormElementType.CHECKBOXBASIC) {
+			// Flash class is only use as a placeholder
+			field = fieldFactory.createField(CampaignFormElementEnumOptions.class,
+					(Class<T>) BasicCheckboxHelper.class);
+
+		} else if (type == CampaignFormElementType.DATE) {
+			// Flash class is only use as a placeholder
+			field = fieldFactory.createField(CampaignFormElementEnumOptions.class, (Class<T>) DateField.class);
+
+		} else if (type == CampaignFormElementType.ARRAY) {
+			// Flash class is only use as a placeholder
+			field = fieldFactory.createField(CampaignFormElementEnumOptions.class, (Class<T>) DateField.class);
+
+		} else if (type == CampaignFormElementType.RANGE) {
+			// Flash class is only use as a placeholder
+			field = fieldFactory.createField(CampaignFormElementEnumOptions.class, (Class<T>) DateField.class);
+
 		} else {
 			field = null;
 		}
@@ -282,15 +297,14 @@ public class CampaignFormBuilder {
 
 	private <T extends AbstractComponent> void prepareComponent(T field, String fieldId, String caption,
 			CampaignFormElementType type, List<CampaignFormElementStyle> styles) {
+		CampaignFormElementOptions constrainsVal = new CampaignFormElementOptions();
+
 		Styles cssStyles = Page.getCurrent().getStyles();
 
 		if (type == CampaignFormElementType.LABEL) {
 			((Label) field).setContentMode(ContentMode.HTML);
-		} else if (type == CampaignFormElementType.YES_NO 
-				|| type == CampaignFormElementType.CHECKBOX
-				|| type == CampaignFormElementType.RADIO 
-					//	|| type == CampaignFormElementType.CHECKBOXBASIC
-					//	|| type == CampaignFormElementType.RADIOBASIC
+		} else if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX
+				|| type == CampaignFormElementType.RADIO || type == CampaignFormElementType.DATE
 				|| type == CampaignFormElementType.DROPDOWN) {
 			if (!styles.contains(CampaignFormElementStyle.INLINE)) {
 				CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE,
@@ -298,7 +312,9 @@ public class CampaignFormBuilder {
 			}
 			CssStyles.style(field, CssStyles.OPTIONGROUP_GRID_LAYOUT);
 		} else if (type == CampaignFormElementType.TEXT || type == CampaignFormElementType.TEXTBOX
-				|| type == CampaignFormElementType.NUMBER) {
+				|| type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL
+				|| type == CampaignFormElementType.ARRAY || type == CampaignFormElementType.RANGE
+				|| type == CampaignFormElementType.DATE) {
 			if (styles.contains(CampaignFormElementStyle.ROW)) {
 				CssStyles.style(field, CssStyles.TEXTFIELD_ROW, CssStyles.TEXTFIELD_CAPTION_INLINE);
 			}
@@ -307,8 +323,21 @@ public class CampaignFormBuilder {
 				((TextField) field).addValidator(new NumberNumericValueValidator(
 						I18nProperties.getValidationError(Validations.onlyNumbersAllowed, caption)));
 			}
+			if (type == CampaignFormElementType.DECIMAL) {
+				((TextField) field).addValidator(new NumberNumericValueValidator(
+						I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, caption), null, null,
+						true));
+			}
+
+			if (type == CampaignFormElementType.RANGE) {
+				((TextField) field)
+						.addValidator(
+								new NumberNumericValueValidator(
+										I18nProperties.getValidationError(Validations.numberNotInRange)+" i.e " + constrainsVal.getMin()
+												+ " and " + constrainsVal.getMax(),
+										constrainsVal.getMin(), constrainsVal.getMax()));
+			}
 			// TODO: ADD VALIDATOR TYPE TEXTBOX, LIMITING ALLOWED TEXT/CHAR
-		
 
 		}
 
@@ -323,11 +352,12 @@ public class CampaignFormBuilder {
 				|| type == CampaignFormElementType.RADIO && !styles.contains(CampaignFormElementStyle.INLINE)
 				|| type == CampaignFormElementType.CHECKBOX && !styles.contains(CampaignFormElementStyle.INLINE)
 				|| type == CampaignFormElementType.DROPDOWN && !styles.contains(CampaignFormElementStyle.INLINE)
-						|| type == CampaignFormElementType.CHECKBOXBASIC && !styles.contains(CampaignFormElementStyle.INLINE)
-						|| type == CampaignFormElementType.RADIOBASIC && !styles.contains(CampaignFormElementStyle.INLINE)
-						|| type == CampaignFormElementType.TEXTBOX && !styles.contains(CampaignFormElementStyle.INLINE)
-				|| (type == CampaignFormElementType.TEXT || type == CampaignFormElementType.NUMBER && styles.contains(CampaignFormElementStyle.ROW))
-				){
+				|| type == CampaignFormElementType.CHECKBOXBASIC && !styles.contains(CampaignFormElementStyle.INLINE)
+				|| type == CampaignFormElementType.RADIOBASIC && !styles.contains(CampaignFormElementStyle.INLINE)
+				|| type == CampaignFormElementType.TEXTBOX && !styles.contains(CampaignFormElementStyle.INLINE)
+				|| (type == CampaignFormElementType.TEXT || type == CampaignFormElementType.DATE
+						|| type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL
+						|| type == CampaignFormElementType.RANGE) && styles.contains(CampaignFormElementStyle.ROW)) {
 			return 12;
 		}
 
@@ -352,11 +382,13 @@ public class CampaignFormBuilder {
 
 		if (type == CampaignFormElementType.YES_NO && styles.contains(CampaignFormElementStyle.INLINE)
 				|| type == CampaignFormElementType.RADIO && styles.contains(CampaignFormElementStyle.INLINE)
-						|| type == CampaignFormElementType.RADIOBASIC && styles.contains(CampaignFormElementStyle.INLINE)
-						|| type == CampaignFormElementType.CHECKBOX && styles.contains(CampaignFormElementStyle.INLINE)
-								|| type == CampaignFormElementType.CHECKBOXBASIC && styles.contains(CampaignFormElementStyle.INLINE)
-								|| type == CampaignFormElementType.DROPDOWN && styles.contains(CampaignFormElementStyle.INLINE)
-				|| (type == CampaignFormElementType.TEXT || type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.TEXTBOX)
+				|| type == CampaignFormElementType.RADIOBASIC && styles.contains(CampaignFormElementStyle.INLINE)
+				|| type == CampaignFormElementType.CHECKBOX && styles.contains(CampaignFormElementStyle.INLINE)
+				|| type == CampaignFormElementType.CHECKBOXBASIC && styles.contains(CampaignFormElementStyle.INLINE)
+				|| type == CampaignFormElementType.DROPDOWN && styles.contains(CampaignFormElementStyle.INLINE)
+				|| (type == CampaignFormElementType.TEXT || type == CampaignFormElementType.NUMBER
+						|| type == CampaignFormElementType.DECIMAL || type == CampaignFormElementType.RANGE
+						|| type == CampaignFormElementType.DATE || type == CampaignFormElementType.TEXTBOX)
 						&& !styles.contains(CampaignFormElementStyle.ROW)
 				|| type == CampaignFormElementType.LABEL || type == CampaignFormElementType.SECTION) {
 			return 100f;
@@ -379,11 +411,16 @@ public class CampaignFormBuilder {
 			break;
 		case TEXT:
 		case NUMBER:
+		case DECIMAL:
+		case RANGE:
 			((TextField) field).setValue(value != null ? value.toString() : null);
 			break;
 		case TEXTBOX:
-				((TextArea) field).setValue(value != null ? value.toString() : null);
-				break;
+			((TextArea) field).setValue(value != null ? value.toString() : null);
+			break;
+		case DATE:
+			// ((TextArea) field).setValue(value != null ? value.toString() : null);
+			break;
 		case RADIO:
 			((OptionGroup) field).select(Sets.newHashSet(value).toString().replace("[", "").replace("]", ""));
 			break;
@@ -391,27 +428,32 @@ public class CampaignFormBuilder {
 			((OptionGroup) field).select(Sets.newHashSet(value).toString().replace("[", "").replace("]", ""));
 			break;
 		case CHECKBOX:
-			String dcs = value.toString().replace("[", "").replace("]", "").replaceAll(", ", ",");
-			String strArray[] = dcs.split(",");
-			for (int i = 0; i < strArray.length; i++) {
-				((OptionGroup) field).select(strArray[i]);
+			if (value != null) {
+				String dcs = value.toString().replace("[", "").replace("]", "").replaceAll(", ", ",");
+				String strArray[] = dcs.split(",");
+				for (int i = 0; i < strArray.length; i++) {
+					((OptionGroup) field).select(strArray[i]);
+				}
 			}
 			break;
 		case CHECKBOXBASIC:
-			String dcxs = value.toString().replace("[", "").replace("]", "").replaceAll(", ", ",");
-			String strArraxy[] = dcxs.split(",");
-			for (int i = 0; i < strArraxy.length; i++) {
-				((OptionGroup) field).select(strArraxy[i]);
+			if (value != null) {
+				String dcxs = value.toString().replace("[", "").replace("]", "").replaceAll(", ", ",");
+				String strArraxy[] = dcxs.split(",");
+				for (int i = 0; i < strArraxy.length; i++) {
+					((OptionGroup) field).select(strArraxy[i]);
+				}
 			}
 			break;
 		case DROPDOWN:
-			String dcxsq = value.toString().replace("[", "").replace("]", "").replaceAll(", ", ",");
-			String strArraxyq[] = dcxsq.split(",");
-			for (int i = 0; i < strArraxyq.length; i++) {
-				((ComboBox) field).select(strArraxyq[i]);
+			if (value != null) {
+				String dcxsq = value.toString().replace("[", "").replace("]", "").replaceAll(", ", ",");
+				String strArraxyq[] = dcxsq.split(",");
+				for (int i = 0; i < strArraxyq.length; i++) {
+					((ComboBox) field).select(strArraxyq[i]);
+				}
 			}
-			
-			
+
 			break;
 		default:
 			throw new IllegalArgumentException(type.toString());
@@ -500,6 +542,5 @@ public class CampaignFormBuilder {
 	public Map<String, Field<?>> getFields() {
 		return fields;
 	}
-	
-	
+
 }

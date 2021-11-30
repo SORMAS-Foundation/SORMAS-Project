@@ -14,12 +14,30 @@ public static String opt8 = null;
 public static String opt9 = null;
 public static String opt10 = null;
 
+public static Integer max = null;
+public static Integer min = null;
+
 	
 	
 
 
 
 
+public static Integer getMax() {
+	return max;
+}
+
+public static void setMax(Integer max) {
+	CampaignFormElementOptions.max = max;
+}
+
+public static Integer getMin() {
+	return min;
+}
+
+public static void setMin(Integer min) {
+	CampaignFormElementOptions.min = min;
+}
 
 public static String getOpt1() {
 	return opt1;
@@ -101,7 +119,7 @@ public void setOpt10(String opt10) {
 	CampaignFormElementOptions.opt10 = opt10;
 }
 
-	//List Methods
+	//List Methods constraints
 	public static List<String> optionsListValues;
 	
 	
@@ -113,6 +131,21 @@ public void setOpt10(String opt10) {
 		this.optionsListValues = optionsListValues;
 	}
 
+	
+	//List Methods constraints
+		public static List<String> constraintsListValues;
+		
+		
+		public static  List<String> getConstraintsListValues() {
+			return constraintsListValues;
+		}
+
+		public void setConstraintsListValues(List<String> constraintsListValues) {
+			this.constraintsListValues = constraintsListValues;
+		}
+
+		
+		
 	@Override
 	public String toString() {
 		return "CampaignFormElementOptions [getOptionsListValues()=" + getOptionsListValues() + "]";
