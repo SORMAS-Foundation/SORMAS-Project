@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.event;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -26,31 +25,42 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
-import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
+import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
 public class ReceivedEventProcessor
-	extends ReceivedDataProcessor<Event, EventDto, SormasToSormasEventDto, SormasToSormasEventPreview, Event, EventService> {
-
-	@EJB
-	private Sormas2SormasDataValidator dataValidator;
+	extends
+	ReceivedDataProcessor<Event, EventDto, SormasToSormasEventDto, SormasToSormasEventPreview, Event, EventService, SormasToSormasEventDtoValidator> {
 
 	public ReceivedEventProcessor() {
 	}
 
 	@Inject
-	protected ReceivedEventProcessor(EventService service) {
-		super(service);
+	protected ReceivedEventProcessor(
+		EventService service,
+		UserService userService,
+		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade,
+		SormasToSormasEventDtoValidator validator) {
+		super(service, userService, configFacade, validator);
 	}
 
 	@Override
 	public void handleReceivedData(SormasToSormasEventDto sharedData, Event existingData) {
-		dataValidator.handleIgnoredProperties(sharedData.getEntity(), EventFacadeEjb.toDto(existingData));
+		handleIgnoredProperties(sharedData.getEntity(), EventFacadeEjb.toDto(existingData));
+
+		EventDto event = sharedData.getEntity();
+		updateReportingUser(event, existingData);
+		if (existingData == null || existingData.getResponsibleUser() == null) {
+			event.setResponsibleUser(userService.getCurrentUser().toReference());
+		} else {
+			event.setResponsibleUser(existingData.getResponsibleUser().toReference());
+		}
 	}
 
 	@Override
@@ -61,17 +71,5 @@ public class ReceivedEventProcessor
 			Event.SORMAS_TO_SORMAS_SHARES,
 			Captions.Event,
 			Validations.sormasToSormasEventExists);
-	}
-
-	@Override
-	public ValidationErrors validate(SormasToSormasEventDto sharedData, Event existingData) {
-		return dataValidator.validateEventData(sharedData.getEntity(), existingData);
-	}
-
-	@Override
-	public ValidationErrors validatePreview(SormasToSormasEventPreview preview) {
-		ValidationErrors eventValidationErrors = new ValidationErrors();
-		dataValidator.validateLocation(preview.getEventLocation(), Captions.Event, eventValidationErrors);
-		return eventValidationErrors;
 	}
 }

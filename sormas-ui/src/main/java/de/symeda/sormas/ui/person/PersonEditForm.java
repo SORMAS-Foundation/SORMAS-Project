@@ -105,6 +105,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private final Label addressesHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESSES));
 	private final Label contactInformationHeader = new Label(I18nProperties.getString(Strings.headingContactInformation));
 
+	private Label personInformationHeadingLabel;
 	private TextField firstNameField;
 	private TextField lastNameField;
 	private Disease disease;
@@ -222,7 +223,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	@Override
 	protected void addFields() {
 
-		Label personInformationHeadingLabel = new Label(I18nProperties.getString(Strings.headingPersonInformation));
+		personInformationHeadingLabel = new Label(I18nProperties.getString(Strings.headingPersonInformation));
 		personInformationHeadingLabel.addStyleName(H3);
 		getContent().addComponent(personInformationHeadingLabel, PERSON_INFORMATION_HEADING_LOC);
 
@@ -707,6 +708,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				PersonDto.BURIAL_DATE,
 				PersonDto.BURIAL_PLACE_DESCRIPTION,
 				PersonDto.BURIAL_CONDUCTOR);
+			getField(PersonDto.DEATH_DATE).setValue(null);
+			getField(PersonDto.BURIAL_DATE).setValue(null);
 			toggleCauseOfDeathFields(false);
 		} else {
 			switch (type) {
@@ -737,6 +740,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					PersonDto.BURIAL_DATE,
 					PersonDto.BURIAL_PLACE_DESCRIPTION,
 					PersonDto.BURIAL_CONDUCTOR);
+				getField(PersonDto.DEATH_DATE).setValue(null);
+				getField(PersonDto.BURIAL_DATE).setValue(null);
 				toggleCauseOfDeathFields(false);
 				break;
 			}
@@ -864,5 +869,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		field.addValueChangeListener(e -> fireValueChange(false));
 
 		return super.addFieldToLayout(layout, propertyId, field);
+	}
+
+	public void setHeading(String heading) {
+		personInformationHeadingLabel.setValue(heading);
 	}
 }

@@ -23,6 +23,8 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDateType;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
@@ -32,6 +34,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.immunization.joins.DirectoryImmunizationJoins;
@@ -39,7 +42,10 @@ import de.symeda.sormas.backend.immunization.transformers.ImmunizationIndexDtoRe
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonJoins;
+import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.person.PersonQueryContext;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -53,6 +59,10 @@ public class DirectoryImmunizationService extends AbstractCoreAdoService<Directo
 
 	@EJB
 	private UserService userService;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private PersonService personService;
 
 	public DirectoryImmunizationService() {
 		super(DirectoryImmunization.class);
@@ -316,6 +326,21 @@ public class DirectoryImmunizationService extends AbstractCoreAdoService<Directo
 
 	private Predicate createUserFilter(DirectoryImmunizationQueryContext<DirectoryImmunization> qc) {
 		final User currentUser = userService.getCurrentUser();
-		return DirectoryImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
+
+		if (!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			return DirectoryImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
+		} else {
+			return CriteriaBuilderHelper.or(
+				qc.getCriteriaBuilder(),
+				qc.getCriteriaBuilder().equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
+				PersonJurisdictionPredicateValidator
+					.of(
+						qc.getQuery(),
+						qc.getCriteriaBuilder(),
+						new PersonJoins<>(((DirectoryImmunizationJoins<DirectoryImmunization>) qc.getJoins()).getPerson()),
+						currentUser,
+						false)
+					.inJurisdictionOrOwned());
+		}
 	}
 }

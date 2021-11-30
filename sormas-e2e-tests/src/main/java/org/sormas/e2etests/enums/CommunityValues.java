@@ -20,17 +20,14 @@ package org.sormas.e2etests.enums;
 import lombok.Getter;
 
 @Getter
-public enum CommunityUUIDs {
-  VoreingestellteGemeinde("QWK33J-XYN3DE-5CSXFJ-MMFOKNKM");
+public enum CommunityValues {
+  VoreingestellteGemeinde("Voreingestellte Gemeinde", "QWK33J-XYN3DE-5CSXFJ-MMFOKNKM");
 
+  private final String name;
   private final String uuid;
 
-  CommunityUUIDs(String uuid) {
+  CommunityValues(String name, String uuid) {
+    this.name = name;
     this.uuid = uuid;
-  }
-
-  @Override
-  public String toString() {
-    return this.uuid;
   }
 }

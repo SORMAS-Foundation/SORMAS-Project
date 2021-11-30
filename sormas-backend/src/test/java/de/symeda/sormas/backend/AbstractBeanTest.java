@@ -23,6 +23,18 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.backend.labmessage.LabMessageService;
+import de.symeda.sormas.backend.sormastosormas.entities.caze.ReceivedCaseProcessor;
+import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.entities.contact.ReceivedContactProcessor;
+import de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.entities.event.ReceivedEventProcessor;
+import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.entities.eventparticipant.SormasToSormasEventParticipantDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.entities.immunization.ReceivedImmunizationProcessor;
+import de.symeda.sormas.backend.sormastosormas.entities.immunization.SormasToSormasImmunizationDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.entities.sample.ReceivedSampleProcessor;
+import de.symeda.sormas.backend.sormastosormas.entities.sample.SormasToSormasSampleDtoValidator;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -77,7 +89,7 @@ import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.share.ExternalShareInfoFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptionFacade;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
+import de.symeda.sormas.api.sormastosormas.labmessage.SormasToSormasLabMessageFacade;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
@@ -174,7 +186,6 @@ import de.symeda.sormas.backend.share.ExternalShareInfoFacadeEjb.ExternalShareIn
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
@@ -564,6 +575,10 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(LabMessageFacadeEjbLocal.class);
 	}
 
+	public LabMessageService getLabMessageService() {
+		return getBean(LabMessageService.class);
+	}
+
 	public SormasToSormasLabMessageFacade getSormasToSormasLabMessageFacade() {
 		return getBean(SormasToSormasLabMessageFacadeEjbLocal.class);
 	}
@@ -592,14 +607,32 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(CustomizableEnumValueService.class);
 	}
 
-	public CustomizableEnumFacade getCustomizableEnumFacade() { return getBean(CustomizableEnumFacadeEjb.class); }
+	public CustomizableEnumFacade getCustomizableEnumFacade() {
+		return getBean(CustomizableEnumFacadeEjb.class);
+	}
 
 	public ShareDataBuilderHelper getShareDataBuilderHelper() {
 		return getBean(ShareDataBuilderHelper.class);
 	}
 
-	public Sormas2SormasDataValidator getSormas2SormasDataValidator() {
-		return getBean(Sormas2SormasDataValidator.class);
+	public ReceivedCaseProcessor getReceivedCaseProcessor() {
+		return getBean(ReceivedCaseProcessor.class);
+	}
+
+	public ReceivedContactProcessor getReceivedContactProcessor() {
+		return getBean(ReceivedContactProcessor.class);
+	}
+
+	public ReceivedEventProcessor getReceivedEventProcessor() {
+		return getBean(ReceivedEventProcessor.class);
+	}
+
+	public ReceivedImmunizationProcessor getReceivedImmunizationProcessor() {
+		return getBean(ReceivedImmunizationProcessor.class);
+	}
+
+	public ReceivedSampleProcessor getReceivedSampleProcessor() {
+		return getBean(ReceivedSampleProcessor.class);
 	}
 
 	protected UserDto useSurveillanceOfficerLogin(TestDataCreator.RDCF rdcf) {
@@ -717,5 +750,29 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public AreaFacade getAreaFacade() {
 		return getBean(AreaFacadeEjbLocal.class);
+	}
+
+	public SormasToSormasCaseDtoValidator getSormasToSormasCaseDtoValidator() {
+		return getBean(SormasToSormasCaseDtoValidator.class);
+	}
+
+	public SormasToSormasContactDtoValidator getSormasToSormasContactDtoValidator() {
+		return getBean(SormasToSormasContactDtoValidator.class);
+	}
+
+	public SormasToSormasEventDtoValidator getSormasToSormasEventDtoValidator() {
+		return getBean(SormasToSormasEventDtoValidator.class);
+	}
+
+	public SormasToSormasEventParticipantDtoValidator getSormasToSormasEventParticipantDtoValidator() {
+		return getBean(SormasToSormasEventParticipantDtoValidator.class);
+	}
+
+	public SormasToSormasImmunizationDtoValidator getSormasToSormasImmunizationDtoValidator() {
+		return getBean(SormasToSormasImmunizationDtoValidator.class);
+	}
+
+	public SormasToSormasSampleDtoValidator getSormasToSormasSampleDtoValidator() {
+		return getBean(SormasToSormasSampleDtoValidator.class);
 	}
 }

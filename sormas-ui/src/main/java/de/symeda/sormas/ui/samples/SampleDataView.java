@@ -15,6 +15,7 @@
 package de.symeda.sormas.ui.samples;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.vaadin.shared.ui.MarginInfo;
@@ -132,8 +133,21 @@ public class SampleDataView extends AbstractSampleView {
 			layout.addComponent(eventParticipantInfoLayout, EVENT_PARTICIPANT_LOC);
 		}
 
-		editComponent =
-			ControllerProvider.getSampleController().getSampleEditComponent(getSampleRef().getUuid(), sampleDto.isPseudonymized(), disease);
+		SampleController sampleController = ControllerProvider.getSampleController();
+		editComponent = sampleController.getSampleEditComponent(getSampleRef().getUuid(), sampleDto.isPseudonymized(), disease, true);
+
+		Consumer<Disease> createReferral = (relatedDisease) -> {
+			// save changes before referral creation
+			editComponent.commit();
+			SampleDto committedSample = editComponent.getWrappedComponent().getValue();
+			sampleController.createReferral(committedSample, relatedDisease);
+		};
+		Consumer<SampleDto> openReferredSample = referredSample -> sampleController.navigateToData(referredSample.getUuid());
+		sampleController.addReferOrLinkToOtherLabButton(editComponent, disease, createReferral, openReferredSample);
+
+		Consumer<SampleDto> navigate = targetSampleDto -> sampleController.navigateToData(targetSampleDto.getUuid());
+		sampleController.addReferredFromButton(editComponent, navigate);
+
 		editComponent.setMargin(new MarginInfo(false, false, true, false));
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);

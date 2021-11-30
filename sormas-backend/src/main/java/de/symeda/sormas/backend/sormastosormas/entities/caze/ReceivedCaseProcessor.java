@@ -15,7 +15,8 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.caze;
 
-import javax.ejb.EJB;
+import java.util.Optional;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -23,35 +24,48 @@ import javax.inject.Inject;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
+import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
 public class ReceivedCaseProcessor
-	extends ReceivedDataProcessor<Case, CaseDataDto, SormasToSormasCaseDto, SormasToSormasCasePreview, Case, CaseService> {
-
-	@EJB
-	private Sormas2SormasDataValidator dataValidator;
+	extends
+	ReceivedDataProcessor<Case, CaseDataDto, SormasToSormasCaseDto, SormasToSormasCasePreview, Case, CaseService, SormasToSormasCaseDtoValidator> {
 
 	public ReceivedCaseProcessor() {
 	}
 
 	@Inject
-	protected ReceivedCaseProcessor(CaseService service) {
-		super(service);
+	protected ReceivedCaseProcessor(
+		CaseService service,
+		UserService userService,
+		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade,
+		SormasToSormasCaseDtoValidator validator) {
+		super(service, userService, configFacade, validator);
 	}
 
 	@Override
 	public void handleReceivedData(SormasToSormasCaseDto sharedData, Case existingCase) {
-		dataValidator.handleIgnoredProperties(sharedData.getEntity(), CaseFacadeEjb.toDto(existingCase));
-		dataValidator.handleIgnoredProperties(sharedData.getPerson(), dataValidator.getExitingPerson(existingCase));
+		handleIgnoredProperties(sharedData.getEntity(), CaseFacadeEjb.toDto(existingCase));
+
+		handleIgnoredProperties(
+			sharedData.getPerson(),
+			Optional.ofNullable(existingCase).map(c -> PersonFacadeEjb.toDto(c.getPerson())).orElse(null));
+
+		CaseDataDto caze = sharedData.getEntity();
+		PersonDto person = sharedData.getPerson();
+		caze.setPerson(person.toReference());
+		updateReportingUser(caze, existingCase);
 	}
 
 	@Override
@@ -62,17 +76,5 @@ public class ReceivedCaseProcessor
 			Case.SORMAS_TO_SORMAS_SHARES,
 			Captions.CaseData,
 			Validations.sormasToSormasCaseExists);
-	}
-
-	@Override
-	public ValidationErrors validate(SormasToSormasCaseDto sharedData, Case existingData) {
-		return dataValidator.validateCaseData(sharedData.getEntity(), sharedData.getPerson(), existingData);
-	}
-
-	@Override
-	public ValidationErrors validatePreview(SormasToSormasCasePreview preview) {
-		ValidationErrors validationErrors = dataValidator.validateCasePreview(preview);
-		validationErrors.addAll(dataValidator.validatePersonPreview(preview.getPerson()));
-		return validationErrors;
 	}
 }

@@ -22,7 +22,7 @@ import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.util.Calendar;
 import java.util.UUID;
-import org.sormas.e2etests.enums.CommunityUUIDs;
+import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
@@ -62,7 +62,7 @@ public class ImmunizationApiService {
             ImmunizationManagementStatusValues.getRandomImmunizationManagementStatus())
         .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getUuid())
         .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getUuid())
-        .responsibleCommunity(CommunityUUIDs.VoreingestellteGemeinde.toString())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getUuid())
         .build();
   }
 }

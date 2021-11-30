@@ -34,26 +34,14 @@ import static org.mockito.Mockito.when;
 public class TestReportServiceUnitTest extends AbstractBeanTest {
 
 	@Mock
-	private EntityManager em;
-	@Mock
 	private CriteriaBuilder cb;
-	@Mock
-	private CriteriaQuery<TestReport> cq;
 	@Mock
 	private Root<TestReport> testReportRoot;
 	@Mock
 	private Predicate predicate;
-	@Mock
-	private Join testReportJoin;
-	@Mock
-	private TypedQuery typedQuery;
-	@Mock
-	private Path path;
-	@InjectMocks
-	private TestReportService sut;
 
 	@Test
-	public void createDefaultFilter() {
+	public void testCreateDefaultFilter() {
 
 		TestReportService sut = new TestReportService();
 
@@ -62,54 +50,5 @@ public class TestReportServiceUnitTest extends AbstractBeanTest {
 		Predicate result = sut.createDefaultFilter(cb, testReportRoot);
 
 		assertEquals(predicate, result);
-	}
-
-	@Test
-	public void getByPathogenTestUuids() {
-
-		LabMessageDto labMessage = creator.createLabMessage(null);
-		PathogenTestReferenceDto pathogenTest = new PathogenTestReferenceDto("UUID");
-		TestReportDto report = creator.createTestReport(pathogenTest, labMessage.toReference());
-
-		ArrayList expectedResult = new ArrayList();
-		expectedResult.add(report);
-
-		ArrayList uuidList = new ArrayList();
-		uuidList.add(pathogenTest.getUuid());
-
-		when(em.getCriteriaBuilder()).thenReturn(cb);
-		when(cb.createQuery(TestReport.class)).thenReturn(cq);
-		when(cq.from(TestReport.class)).thenReturn(testReportRoot);
-		when(testReportRoot.join(TestReport.PATHOGEN_TEST, JoinType.LEFT)).thenReturn(testReportJoin);
-		when(testReportJoin.get(AbstractDomainObject.UUID)).thenReturn(path);
-		when(em.createQuery(cq)).thenReturn(typedQuery);
-		when(typedQuery.getResultList()).thenReturn(expectedResult);
-
-		List<TestReport> result = sut.getByPathogenTestUuidsBatched(uuidList, false);
-		assertEquals(expectedResult, result);
-
-	}
-
-	@Test
-	public void getByPathogenTestUuid() {
-
-		LabMessageDto labMessage = creator.createLabMessage(null);
-		PathogenTestReferenceDto pathogenTest = new PathogenTestReferenceDto("UUID");
-		TestReportDto report = creator.createTestReport(pathogenTest, labMessage.toReference());
-
-		ArrayList expectedResult = new ArrayList();
-		expectedResult.add(report);
-
-		when(em.getCriteriaBuilder()).thenReturn(cb);
-		when(cb.createQuery(TestReport.class)).thenReturn(cq);
-		when(cq.from(TestReport.class)).thenReturn(testReportRoot);
-		when(testReportRoot.join(TestReport.PATHOGEN_TEST, JoinType.LEFT)).thenReturn(testReportJoin);
-		when(testReportJoin.get(AbstractDomainObject.UUID)).thenReturn(path);
-		when(em.createQuery(cq)).thenReturn(typedQuery);
-		when(typedQuery.getResultList()).thenReturn(expectedResult);
-
-		List<TestReport> result = sut.getByPathogenTestUuid(pathogenTest.getUuid(), false);
-		assertEquals(expectedResult, result);
-
 	}
 }

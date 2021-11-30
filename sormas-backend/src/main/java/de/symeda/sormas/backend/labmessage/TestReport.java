@@ -5,7 +5,6 @@ import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAUL
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,7 +12,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -21,7 +19,6 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.backend.common.CoreAdo;
-import de.symeda.sormas.backend.sample.PathogenTest;
 
 @Entity(name = TestReport.TABLE_NAME)
 @Audited
@@ -41,7 +38,6 @@ public class TestReport extends CoreAdo {
 	public static final String TEST_RESULT = "testResult";
 	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
 	public static final String TEST_RESULT_TEXT = "testResultText";
-	public static final String PATHOGEN_TEST = "pathogenTest";
 
 	private LabMessage labMessage;
 	private String testLabName;
@@ -57,8 +53,7 @@ public class TestReport extends CoreAdo {
 	private String typingId;
 	private String externalId;
 	private String externalOrderId;
-
-	private PathogenTest pathogenTest;
+	private Boolean preliminary;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
@@ -151,15 +146,6 @@ public class TestReport extends CoreAdo {
 		this.testResultText = testResultText;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	public PathogenTest getPathogenTest() {
-		return pathogenTest;
-	}
-
-	public void setPathogenTest(PathogenTest pathogenTest) {
-		this.pathogenTest = pathogenTest;
-	}
-
 	public String getTypingId() {
 		return typingId;
 	}
@@ -184,5 +170,14 @@ public class TestReport extends CoreAdo {
 
 	public void setExternalOrderId(String externalOrderId) {
 		this.externalOrderId = externalOrderId;
+	}
+
+	@Column
+	public Boolean getPreliminary() {
+		return preliminary;
+	}
+
+	public void setPreliminary(Boolean preliminary) {
+		this.preliminary = preliminary;
 	}
 }

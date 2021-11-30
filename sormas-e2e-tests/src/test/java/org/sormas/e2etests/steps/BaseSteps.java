@@ -32,7 +32,6 @@ import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.sormas.e2etests.steps.web.application.NavBarSteps;
 import org.sormas.e2etests.ui.DriverManager;
 import recorders.StepsLogger;
 
@@ -41,6 +40,7 @@ public class BaseSteps implements StepLifecycleListener {
 
   public static RemoteWebDriver driver;
   private final DriverManager driverManager;
+  private final String textFilePath = "customReports/data/results.txt";
 
   @Inject
   public BaseSteps(DriverManager driverManager) {
@@ -60,6 +60,7 @@ public class BaseSteps implements StepLifecycleListener {
       options.timeouts().setScriptTimeout(Duration.ofMinutes(2));
       options.timeouts().pageLoadTimeout(Duration.ofMinutes(2));
       log.info("Browser's resolution: " + driver.manage().window().getSize().toString());
+      log.info("Starting test: " + scenario.getName());
     }
   }
 
@@ -73,17 +74,13 @@ public class BaseSteps implements StepLifecycleListener {
     if (isNonApiScenario(scenario)) {
       driverManager.releaseRemoteWebDriver(scenario.getName());
     }
-  }
-
-  @After(value = "@PagesMeasurements")
-  public void afterPageLoadTests(Scenario scenario) {
-    String testName = scenario.getName().replace("Check", "").replace("loading time", "");
-    log.info(scenario.getName() + " done, adding page meassurement result into TableDataManager");
-    TableDataManager.addRowEntity(testName, NavBarSteps.elapsedTime);
+    log.info("Finished test: " + scenario.getName());
   }
 
   @After(value = "@PublishCustomReport")
   public void generateMeasurementsReport() {
+    log.info("Parsing results collected in results.txt and converting them into Row Objects");
+    TableDataManager.convertData();
     log.info("Creating Chart for UI Meassurements report");
     ReportChartBuilder.buildChartForData(TableDataManager.getTableRowsDataList());
     log.info("Generating Sormas Custom report");

@@ -6,7 +6,6 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -24,7 +23,6 @@ public class TestReportDto extends EntityDto {
 	public static final String TEST_TYPE = "testType";
 	public static final String TEST_DATE_TIME = "testDateTime";
 	public static final String TEST_RESULT = "testResult";
-	public static final String PATHOGEN_TEST = "pathogenTest";
 
 	@Required
 	private LabMessageReferenceDto labMessage;
@@ -49,8 +47,7 @@ public class TestReportDto extends EntityDto {
 	private String externalId;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalOrderId;
-
-	private PathogenTestReferenceDto pathogenTest;
+	private Boolean preliminary;
 
 	public LabMessageReferenceDto getLabMessage() {
 		return labMessage;
@@ -138,14 +135,6 @@ public class TestReportDto extends EntityDto {
 		return testResult;
 	}
 
-	public PathogenTestReferenceDto getPathogenTest() {
-		return pathogenTest;
-	}
-
-	public void setPathogenTest(PathogenTestReferenceDto pathogenTest) {
-		this.pathogenTest = pathogenTest;
-	}
-
 	public String getTypingId() {
 		return typingId;
 	}
@@ -168,5 +157,13 @@ public class TestReportDto extends EntityDto {
 
 	public void setExternalOrderId(String externalOrderId) {
 		this.externalOrderId = externalOrderId;
+	}
+
+	public Boolean getPreliminary() {
+		return preliminary;
+	}
+
+	public void setPreliminary(Boolean preliminary) {
+		this.preliminary = preliminary;
 	}
 }

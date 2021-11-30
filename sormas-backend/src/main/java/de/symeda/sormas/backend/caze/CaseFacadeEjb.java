@@ -1102,7 +1102,7 @@ public class CaseFacadeEjb implements CaseFacade {
 						List<Immunization> filteredImmunizations =
 							caseImmunizations.stream().filter(i -> i.getDisease() == exportDto.getDisease()).collect(Collectors.toList());
 						if (!filteredImmunizations.isEmpty()) {
-							filteredImmunizations.sort(Comparator.comparing(ImmunizationEntityHelper::getDateForComparison));
+							filteredImmunizations.sort(Comparator.comparing(i -> ImmunizationEntityHelper.getDateForComparison(i, false)));
 							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 							exportDto.setNumberOfDoses(numberOfDoses != null ? String.valueOf(numberOfDoses) : "");
@@ -1942,6 +1942,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		// This logic should be consistent with CaseDataForm.onQuarantineEndChange 
 		if (existingCase != null && existingCase.getQuarantineTo() != null && !existingCase.getQuarantineTo().equals(newCase.getQuarantineTo())) {
 			newCase.setPreviousQuarantineTo(existingCase.getQuarantineTo());
+		}
+
+		if (existingCase == null) {
+			caseService.updateVaccinationStatuses(newCase);
 		}
 	}
 

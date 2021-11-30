@@ -5911,34 +5911,6 @@ UPDATE exposures SET watersource = epidata.watersource, watersourcedetails = epi
 UPDATE exposures SET description = 'Automatic epi data migration based on selected kinds of exposure. This exposure may be merged with another exposure of the activity type Animal Contact.' WHERE exposuretype = 'ANIMAL_CONTACT' AND typeofanimal IS NULL;
 
 UPDATE epidata SET contactwithsourcecaseknown = 'YES' WHERE directcontactconfirmedcase = 'YES' OR directcontactprobablecase = 'YES' OR closecontactprobablecase = 'YES' OR contactwithsourcerespiratorycase = 'YES';
-
--- TODO - Add this to a future version after the migration has been done on a production system;
-/*ALTER TABLE epidata DROP COLUMN rodents, DROP COLUMN bats, DROP COLUMN primates, DROP COLUMN swine, DROP COLUMN birds, DROP COLUMN eatingrawanimals, DROP COLUMN sickdeadanimals,
-    DROP COLUMN sickdeadanimalsdetails, DROP COLUMN sickdeadanimalsdate, DROP COLUMN sickdeadanimalslocation, DROP COLUMN cattle, DROP COLUMN otheranimals, DROP COLUMN otheranimalsdetails,
-    DROP COLUMN watersource, DROP COLUMN watersourceother, DROP COLUMN waterbody, DROP COLUMN waterbodydetails, DROP COLUMN tickbite, DROP COLUMN burialattended, DROP COLUMN gatheringattended,
-    DROP COLUMN traveled, DROP COLUMN dateoflastexposure, DROP COLUMN placeoflastexposure, DROP COLUMN animalcondition, DROP COLUMN fleabite, DROP COLUMN directcontactconfirmedcase,
-    DROP COLUMN directcontactprobablecase, DROP COLUMN closecontactprobablecase, DROP COLUMN areaconfirmedcases, DROP COLUMN processingconfirmedcasefluidunsafe, DROP COLUMN percutaneouscaseblood,
-    DROP COLUMN directcontactdeadunsafe, DROP COLUMN processingsuspectedcasesampleunsafe, DROP COLUMN eatingrawanimalsininfectedarea, DROP COLUMN eatingrawanimalsdetails,
-    DROP COLUMN kindofexposurebite, DROP COLUMN kindofexposuretouch, DROP COLUMN kindofexposurescratch, DROP COLUMN kindofexposurelick, DROP COLUMN kindofexposureother,
-    DROP COLUMN kindofexposuredetails, DROP COLUMN animalvaccinationstatus, DROP COLUMN dogs, DROP COLUMN cats, DROP COLUMN canidae, DROP COLUMN rabbits, DROP COLUMN prophylaxisstatus,
-    DROP COLUMN dateofprophylaxis, DROP COLUMN visitedhealthfacility, DROP COLUMN contactwithsourcerespiratorycase, DROP COLUMN visitedanimalmarket, DROP COLUMN camels, DROP COLUMN snakes;*/
-/*ALTER TABLE epidata_history DROP COLUMN rodents, DROP COLUMN bats, DROP COLUMN primates, DROP COLUMN swine, DROP COLUMN birds, DROP COLUMN eatingrawanimals, DROP COLUMN sickdeadanimals,
-    DROP COLUMN sickdeadanimalsdetails, DROP COLUMN sickdeadanimalsdate, DROP COLUMN sickdeadanimalslocation, DROP COLUMN cattle, DROP COLUMN otheranimals, DROP COLUMN otheranimalsdetails,
-    DROP COLUMN watersource, DROP COLUMN watersourceother, DROP COLUMN waterbody, DROP COLUMN waterbodydetails, DROP COLUMN tickbite, DROP COLUMN burialattended, DROP COLUMN gatheringattended,
-    DROP COLUMN traveled, DROP COLUMN dateoflastexposure, DROP COLUMN placeoflastexposure, DROP COLUMN animalcondition, DROP COLUMN fleabite, DROP COLUMN directcontactconfirmedcase,
-    DROP COLUMN directcontactprobablecase, DROP COLUMN closecontactprobablecase, DROP COLUMN areaconfirmedcases, DROP COLUMN processingconfirmedcasefluidunsafe, DROP COLUMN percutaneouscaseblood,
-    DROP COLUMN directcontactdeadunsafe, DROP COLUMN processingsuspectedcasesampleunsafe, DROP COLUMN eatingrawanimalsininfectedarea, DROP COLUMN eatingrawanimalsdetails,
-    DROP COLUMN kindofexposurebite, DROP COLUMN kindofexposuretouch, DROP COLUMN kindofexposurescratch, DROP COLUMN kindofexposurelick, DROP COLUMN kindofexposureother,
-    DROP COLUMN kindofexposuredetails, DROP COLUMN animalvaccinationstatus, DROP COLUMN dogs, DROP COLUMN cats, DROP COLUMN canidae, DROP COLUMN rabbits, DROP COLUMN prophylaxisstatus,
-    DROP COLUMN dateofprophylaxis, DROP COLUMN visitedhealthfacility, DROP COLUMN contactwithsourcerespiratorycase, DROP COLUMN visitedanimalmarket, DROP COLUMN camels, DROP COLUMN snakes;
-
-DROP TABLE epidataburial;
-DROP TABLE epidatagathering;
-DROP TABLE epidatatravel;
-DROP TABLE epidataburial_history;
-DROP TABLE epidatagathering_history;
-DROP TABLE epidatatravel_history;*/
-
 UPDATE epidata SET exposuredetailsknown = 'YES' FROM exposures WHERE (exposuredetailsknown IS NULL OR exposuredetailsknown != 'YES') AND exposures.epidata_id = epidata.id;
 
 UPDATE epidata SET changedate = now();
@@ -7959,14 +7931,14 @@ CREATE TEMP TABLE tmp_vaccinated_entities AS
         CASE
             WHEN
                 /* Valid numbers of doses are 1 to 10 */
-                cases.vaccinationdoses ~ '^(10|[1-9])$'
-            THEN
+                    cases.vaccinationdoses ~ '^(10|[1-9])$'
+                THEN
                 CAST(cases.vaccinationdoses AS int)
             WHEN
                 /* If the number of doses is neither valid nor empty, we assume 1 dose */
                 (cases.vaccinationdoses IS NOT NULL AND cases.vaccinationdoses != '')
-            THEN
-            	1
+                THEN
+                1
             ELSE
                 null
             END
@@ -7974,8 +7946,8 @@ CREATE TEMP TABLE tmp_vaccinated_entities AS
         /* If the number of doses is not valid, save the value as vaccinationdoses_details */
         CASE
             WHEN
-                cases.vaccinationdoses ~ '^(10|[1-9])$'
-            THEN
+                    cases.vaccinationdoses ~ '^(10|[1-9])$'
+                THEN
                 null
             ELSE
                 cases.vaccinationdoses
@@ -7992,7 +7964,7 @@ CREATE TEMP TABLE tmp_vaccinated_entities AS
             AS vaccinename,
         CASE
             WHEN
-                cases.vaccinename = 'OTHER'
+                    cases.vaccinename = 'OTHER'
                 THEN
                 cases.othervaccinename
             ELSE
@@ -8044,28 +8016,28 @@ UNION
         CASE
             WHEN
                 /* Valid numbers of doses are 1 to 10 */
-                vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
-            THEN
+                    vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+                THEN
                 CAST(vaccinationinfo.vaccinationdoses AS int)
             WHEN
                 /* If the number of doses is neither valid nor empty, we assume 1 dose */
                 (vaccinationinfo.vaccinationdoses IS NOT NULL AND vaccinationinfo.vaccinationdoses != '')
-            THEN
-            	1
+                THEN
+                1
             ELSE
                 null
             END
-            AS vaccinationdoses,
+                  AS vaccinationdoses,
         /* If the number of doses is not valid, save the value as vaccinationdoses_details */
         CASE
             WHEN
-                vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
-            THEN
+                    vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+                THEN
                 null
             ELSE
                 vaccinationinfo.vaccinationdoses
             END
-            AS vaccinationdoses_details,
+                  AS vaccinationdoses_details,
         vaccinationinfo.vaccinename AS vaccinename, vaccinationinfo.othervaccinename AS othervaccinename, vaccinationinfo.vaccinemanufacturer,
         vaccinationinfo.othervaccinemanufacturer, vaccinationinfo.vaccinationinfosource, vaccinationinfo.vaccineinn, vaccinationinfo.vaccinebatchnumber,
         vaccinationinfo.vaccineuniicode, vaccinationinfo.vaccineatccode, null AS pregnant, null AS trimester, contact.healthconditions_id AS healthconditions_id,
@@ -8103,14 +8075,14 @@ UNION
         CASE
             WHEN
                 /* Valid numbers of doses are 1 to 10 */
-                vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
-            THEN
+                    vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+                THEN
                 CAST(vaccinationinfo.vaccinationdoses AS int)
             WHEN
                 /* If the number of doses is neither valid nor empty, we assume 1 dose */
                 (vaccinationinfo.vaccinationdoses IS NOT NULL AND vaccinationinfo.vaccinationdoses != '')
-            THEN
-            	1
+                THEN
+                1
             ELSE
                 null
             END
@@ -8118,8 +8090,8 @@ UNION
         /* If the number of doses is not valid, save the value as vaccinationdoses_details */
         CASE
             WHEN
-                vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
-            THEN
+                    vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+                THEN
                 null
             ELSE
                 vaccinationinfo.vaccinationdoses
@@ -8148,6 +8120,100 @@ SELECT DISTINCT ON (person_id, disease) person_id,
                                         nextval('entity_seq') AS immunization_id, relevancedate
 FROM tmp_vaccinated_entities
 ORDER BY person_id, disease, relevancedate DESC;
+
+DROP TABLE IF EXISTS tmp_earliest_vaccinated_entities;
+CREATE TEMP TABLE tmp_earliest_vaccinated_entities AS
+(
+    SELECT DISTINCT ON (person.id, cases.disease) person.id                  AS person_id,
+                                                  cases.disease,
+                                                  coalesce(cases.firstvaccinationdate, symptoms.onsetdate,
+                                                           cases.reportdate) AS relevancedate
+    FROM person
+             LEFT JOIN cases ON cases.person_id = person.id
+             LEFT JOIN symptoms ON cases.symptoms_id = symptoms.id
+    WHERE cases.vaccination = 'VACCINATED'
+      AND cases.deleted = false
+      AND EXISTS (SELECT * from tmp_vaccinated_persons
+           WHERE tmp_vaccinated_persons.person_id = person_id
+             AND tmp_vaccinated_persons.disease = cases.disease
+             AND tmp_vaccinated_persons.firstvaccinationdate IS NULL)
+      AND cases.vaccinationdoses ~ '^(10|[1-9])$'
+      AND EXISTS (SELECT * from tmp_vaccinated_persons
+           WHERE tmp_vaccinated_persons.person_id = person_id
+             AND tmp_vaccinated_persons.disease = cases.disease
+             AND tmp_vaccinated_persons.vaccinationdoses >= CAST(cases.vaccinationdoses AS int))
+    ORDER BY person.id, cases.disease, relevancedate ASC
+)
+UNION
+(
+    SELECT DISTINCT ON (person.id, contact.disease) person.id                                                 AS person_id,
+                                                    contact.disease,
+                                                    coalesce(vaccinationinfo.firstvaccinationdate,
+                                                             contact.lastcontactdate,
+                                                             contact.reportdatetime)                          AS relevancedate
+    FROM person
+             LEFT JOIN contact ON contact.person_id = person.id
+             LEFT JOIN vaccinationinfo ON contact.vaccinationinfo_id = vaccinationinfo.id
+    WHERE vaccinationinfo.vaccination = 'VACCINATED'
+      AND contact.deleted = false
+      AND EXISTS (SELECT * from tmp_vaccinated_persons
+           WHERE tmp_vaccinated_persons.person_id = person_id
+             AND tmp_vaccinated_persons.disease = contact.disease
+             AND tmp_vaccinated_persons.firstvaccinationdate IS NULL)
+      AND vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+      AND EXISTS (SELECT * from tmp_vaccinated_persons
+                  WHERE tmp_vaccinated_persons.person_id = person_id
+                    AND tmp_vaccinated_persons.disease = contact.disease
+                    AND tmp_vaccinated_persons.vaccinationdoses >= CAST(vaccinationinfo.vaccinationdoses AS int))
+    ORDER BY person.id, contact.disease, relevancedate ASC
+)
+UNION
+(
+    SELECT DISTINCT ON (person.id, events.disease) person.id                                       AS person_id,
+                                                   events.disease,
+                                                   coalesce(vaccinationinfo.firstvaccinationdate, events.startdate,
+                                                            events.enddate, events.reportdatetime) AS relevancedate
+    FROM person
+             LEFT JOIN eventparticipant ON eventparticipant.person_id = person.id
+             LEFT JOIN events ON eventparticipant.event_id = events.id
+             LEFT JOIN vaccinationinfo ON eventparticipant.vaccinationinfo_id = vaccinationinfo.id
+    WHERE vaccinationinfo.vaccination = 'VACCINATED'
+      AND eventparticipant.deleted = false
+      AND EXISTS (SELECT *
+           from tmp_vaccinated_persons
+           WHERE tmp_vaccinated_persons.person_id = person_id
+             AND tmp_vaccinated_persons.disease = events.disease
+             AND tmp_vaccinated_persons.firstvaccinationdate IS NULL)
+      AND vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+      AND EXISTS (SELECT * from tmp_vaccinated_persons
+                  WHERE tmp_vaccinated_persons.person_id = person_id
+                    AND tmp_vaccinated_persons.disease = events.disease
+                    AND tmp_vaccinated_persons.vaccinationdoses >= CAST(vaccinationinfo.vaccinationdoses AS int))
+    ORDER BY person.id, events.disease, relevancedate ASC
+);
+
+DROP TABLE IF EXISTS tmp_earliest_vaccinated_persons;
+CREATE TEMP TABLE tmp_earliest_vaccinated_persons AS
+SELECT DISTINCT ON (person_id, disease) person_id, disease, relevancedate
+FROM tmp_earliest_vaccinated_entities
+ORDER BY person_id, disease, relevancedate ASC;
+
+/* set earliest date  */
+DO
+$$
+    DECLARE
+        rec RECORD;
+    BEGIN
+        FOR rec IN SELECT * FROM tmp_earliest_vaccinated_persons
+            LOOP
+                UPDATE tmp_vaccinated_persons
+                SET firstvaccinationdate = rec.relevancedate
+                WHERE tmp_vaccinated_persons.person_id = rec.person_id
+                  AND tmp_vaccinated_persons.disease = rec.disease
+                  AND firstvaccinationdate IS NULL;
+            end loop;
+    END;
+$$ LANGUAGE plpgsql;
 
 /* Step 2: Create a new immunization entity for each person-disease combination */
 ALTER TABLE immunization ADD COLUMN numberofdoses_details varchar(255);
@@ -8226,17 +8292,138 @@ DO $$
         FOR rec IN SELECT * FROM tmp_vaccinated_persons
             LOOP
                 IF (
-                        rec.firstvaccinationdate IS NOT NULL OR
-                        (
-                            rec.firstvaccinationdate IS NULL AND
-                            rec.lastvaccinationdate IS NULL
+                    rec.vaccinationdoses IS NULL
+                    )
+                THEN
+                    IF (
+                            rec.firstvaccinationdate IS NOT NULL OR
+                            (
+                                    rec.firstvaccinationdate IS NULL AND
+                                    rec.lastvaccinationdate IS NULL
+                                )
                         )
+                    THEN
+                        PERFORM create_vaccination(
+                                rec.immunization_id,
+                                CASE
+                                    WHEN rec.healthconditions_id IS NOT NULL
+                                        THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id))
+                                    ELSE (SELECT * FROM create_healthconditions()) END,
+                                rec.reportdate, rec.reportinguser_id, coalesce(rec.firstvaccinationdate, rec.relevancedate),
+                                CASE
+                                    WHEN
+                                                rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
+                                                rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                        THEN
+                                        'OXFORD_ASTRA_ZENECA'
+                                    ELSE
+                                        rec.vaccinename
+                                    END,
+                                rec.othervaccinename,
+                                CASE
+                                    WHEN
+                                                rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
+                                                rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                        THEN
+                                        'ASTRA_ZENECA'
+                                    ELSE
+                                        rec.vaccinemanufacturer
+                                    END,
+                                rec.othervaccinemanufacturer, rec.vaccineinn, rec.vaccinebatchnumber,
+                                rec.vaccineuniicode, rec.vaccineatccode, rec.vaccinationinfosource,
+                                rec.pregnant, rec.trimester
+                            );
+                    END IF;
+
+                    IF (
+                            rec.lastvaccinationdate IS NOT NULL OR
+                            rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
+                            rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                        )
+                    THEN
+                        PERFORM create_vaccination(
+                                rec.immunization_id,
+                                CASE
+                                    WHEN rec.healthconditions_id IS NOT NULL
+                                        THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id))
+                                    ELSE (SELECT * FROM create_healthconditions()) END,
+                                rec.reportdate, rec.reportinguser_id, coalesce(rec.lastvaccinationdate, rec.relevancedate),
+                                CASE
+                                    WHEN
+                                            rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY'
+                                        THEN
+                                        'COMIRNATY'
+                                    WHEN
+                                            rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                        THEN
+                                        'MRNA_1273'
+                                    ELSE
+                                        rec.vaccinename
+                                    END,
+                                rec.othervaccinename,
+                                CASE
+                                    WHEN
+                                            rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY'
+                                        THEN
+                                        'BIONTECH_PFIZER'
+                                    WHEN
+                                            rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                        THEN
+                                        'MODERNA'
+                                    ELSE
+                                        rec.vaccinemanufacturer
+                                    END,
+                                rec.othervaccinemanufacturer, rec.vaccineinn, rec.vaccinebatchnumber,
+                                rec.vaccineuniicode, rec.vaccineatccode, rec.vaccinationinfosource,
+                                rec.pregnant, rec.trimester
+                            );
+                    END IF;
+                END IF;
+
+                IF (
+                        rec.vaccinationdoses = 1
+                    )
+                THEN
+                    PERFORM create_vaccination(
+                            rec.immunization_id,
+                            CASE
+                                WHEN rec.healthconditions_id IS NOT NULL
+                                    THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id))
+                                ELSE (SELECT * FROM create_healthconditions()) END,
+                            rec.reportdate, rec.reportinguser_id, coalesce(rec.lastvaccinationdate, rec.firstvaccinationdate, rec.relevancedate),
+                            CASE
+                                WHEN
+                                        rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
+                                        rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                    THEN
+                                    'OXFORD_ASTRA_ZENECA'
+                                ELSE
+                                    rec.vaccinename
+                                END,
+                            rec.othervaccinename,
+                            CASE
+                                WHEN
+                                        rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
+                                        rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                    THEN
+                                    'ASTRA_ZENECA'
+                                ELSE
+                                    rec.vaccinemanufacturer
+                                END,
+                            rec.othervaccinemanufacturer, rec.vaccineinn, rec.vaccinebatchnumber,
+                            rec.vaccineuniicode, rec.vaccineatccode, rec.vaccinationinfosource,
+                            rec.pregnant, rec.trimester
+                        );
+                END IF;
+
+                IF (
+                        rec.vaccinationdoses >= 2
                     )
                 THEN
                     PERFORM create_vaccination(
                             rec.immunization_id,
                             CASE WHEN rec.healthconditions_id IS NOT NULL THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id)) ELSE (SELECT * FROM create_healthconditions()) END,
-                            rec.reportdate, rec.reportinguser_id, rec.firstvaccinationdate,
+                            rec.reportdate, rec.reportinguser_id, coalesce(rec.firstvaccinationdate, rec.relevancedate),
                             CASE
                                 WHEN
                                             rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
@@ -8258,14 +8445,44 @@ DO $$
                             rec.vaccineuniicode, rec.vaccineatccode, rec.vaccinationinfosource,
                             rec.pregnant, rec.trimester
                         );
-                END IF;
-
-                IF (
-                        rec.lastvaccinationdate IS NOT NULL OR
-                        rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
-                        rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
-                    )
-                THEN
+                    BEGIN
+                        FOR vaccCounter IN 2 .. rec.vaccinationdoses - 1
+                            LOOP
+                                PERFORM create_vaccination(
+                                        rec.immunization_id,
+                                        CASE WHEN rec.healthconditions_id IS NOT NULL THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id)) ELSE (SELECT * FROM create_healthconditions()) END,
+                                        rec.reportdate, rec.reportinguser_id, null,
+                                        CASE
+                                            WHEN
+                                                    rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY'
+                                                THEN
+                                                'COMIRNATY'
+                                            WHEN
+                                                    rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                                THEN
+                                                'MRNA_1273'
+                                            ELSE
+                                                rec.vaccinename
+                                            END,
+                                        rec.othervaccinename,
+                                        CASE
+                                            WHEN
+                                                    rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY'
+                                                THEN
+                                                'BIONTECH_PFIZER'
+                                            WHEN
+                                                    rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                                THEN
+                                                'MODERNA'
+                                            ELSE
+                                                rec.vaccinemanufacturer
+                                            END,
+                                        rec.othervaccinemanufacturer, rec.vaccineinn, rec.vaccinebatchnumber,
+                                        rec.vaccineuniicode, rec.vaccineatccode, rec.vaccinationinfosource,
+                                        rec.pregnant, rec.trimester
+                                    );
+                            END LOOP;
+                    END;
                     PERFORM create_vaccination(
                             rec.immunization_id,
                             CASE WHEN rec.healthconditions_id IS NOT NULL THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id)) ELSE (SELECT * FROM create_healthconditions()) END,
@@ -8306,6 +8523,8 @@ $$ LANGUAGE plpgsql;
 
 DROP TABLE IF EXISTS tmp_vaccinated_entities;
 DROP TABLE IF EXISTS tmp_vaccinated_persons;
+DROP TABLE IF EXISTS tmp_earliest_vaccinated_entities;
+DROP TABLE IF EXISTS tmp_earliest_vaccinated_persons;
 DROP FUNCTION IF EXISTS clone_healthconditions(bigint);
 DROP FUNCTION IF EXISTS create_healthconditions();
 DROP FUNCTION IF EXISTS create_vaccination(bigint, bigint, timestamp, bigint, timestamp, varchar(255), text, varchar(255), text, text, text, text, text, varchar(255), varchar(255), varchar(255));
@@ -8347,6 +8566,7 @@ UPDATE exportconfiguration SET propertiesstring = replace(propertiesstring, 'vac
 
 UPDATE featureconfiguration SET enabled = true, changedate = now() WHERE featuretype = 'IMMUNIZATION_MANAGEMENT';
 UPDATE featureconfiguration SET enabled = true, changedate = now() WHERE featuretype = 'IMMUNIZATION_STATUS_AUTOMATION';
+
 /* End of vaccination refactoring */
 
 INSERT INTO schema_version (version_number, comment) VALUES (406, 'Vaccination refactoring #5909');
@@ -8810,9 +9030,120 @@ ALTER TABLE cases_history ALTER COLUMN externalData TYPE json USING externalData
 
 INSERT INTO schema_version (version_number, comment) VALUES (424, 'Allow to store external data for a case #7068');
 
+-- 2021-11-03 Change case external data from json to jsonb #7068
 ALTER TABLE cases ALTER COLUMN externalData set DATA TYPE jsonb using externalData::jsonb;
 ALTER TABLE cases_history ALTER COLUMN externalData set DATA TYPE jsonb using externalData::jsonb;
 
 INSERT INTO schema_version (version_number, comment) VALUES (425, 'Change case externalData from JSON to JSONB #7068');
+
+-- 2021-11-09 [DEMIS2SORMAS] Handle New Profile: Process multiple test reports #5899
+/*
+change reference from
+  test report references pathogen test
+  to
+  lab message references sample
+ */
+
+ALTER TABLE labmessage
+    ADD COLUMN sample_id bigint;
+ALTER TABLE labmessage_history
+    ADD COLUMN sample_id bigint;
+
+ALTER TABLE labmessage
+    ADD CONSTRAINT fk_labmessage_sample_id FOREIGN KEY (sample_id) REFERENCES samples (id);
+
+UPDATE labmessage
+SET sample_id = p.sample_id FROM
+testreport AS t
+INNER JOIN pathogentest AS p
+ON t.pathogentest_id = p.id
+WHERE labmessage.id = t.labmessage_id;
+
+/*
+ Make lab message a CoreAdo
+ */
+
+ALTER TABLE labmessage ADD COLUMN deleted boolean DEFAULT false;
+ALTER TABLE labmessage_history ADD COLUMN deleted boolean;
+
+/*
+ Delete obsolete columns
+ */
+ALTER TABLE testreport DROP COLUMN pathogentest_id;
+ALTER TABLE testreport_history DROP COLUMN pathogentest_id;
+
+ALTER TABLE labmessage DROP COLUMN pathogentest_id;
+ALTER TABLE labmessage_history DROP COLUMN pathogentest_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (426, '[DEMIS2SORMAS] Handle New Profile: Process multiple test reports #5899');
+
+-- 2021-11-05 Add properties to feature configurations #7111
+ALTER TABLE featureconfiguration ADD COLUMN properties text;
+ALTER TABLE featureconfiguration_history ADD COLUMN properties text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (427, 'Add properties to feature configurations #7111');
+
+-- 2021-11-04 Add observers to tasks #7021
+CREATE TABLE task_observer(
+    task_id bigint not null,
+    user_id bigint not null,
+
+    sys_period tstzrange not null,
+    PRIMARY KEY (task_id, user_id)
+);
+
+ALTER TABLE task_observer OWNER TO sormas_user;
+ALTER TABLE task_observer ADD CONSTRAINT fk_task_observer_task_id FOREIGN KEY (task_id) REFERENCES task (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE task_observer ADD CONSTRAINT fk_task_observer_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+CREATE TABLE task_observer_history (LIKE task_observer);
+ALTER TABLE task_observer_history OWNER TO sormas_user;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON task_observer
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'task_observer_history', true);
+
+INSERT INTO schema_version (version_number, comment) VALUES (428, 'Add observers to tasks #7021');
+
+-- 2021-11-18 Drop unused epi data columns and tables #7301
+ALTER TABLE epidata DROP COLUMN IF EXISTS rodents, DROP COLUMN IF EXISTS bats, DROP COLUMN IF EXISTS primates, DROP COLUMN IF EXISTS swine, DROP COLUMN IF EXISTS birds, DROP COLUMN IF EXISTS eatingrawanimals, DROP COLUMN IF EXISTS sickdeadanimals,
+                    DROP COLUMN IF EXISTS sickdeadanimalsdetails, DROP COLUMN IF EXISTS sickdeadanimalsdate, DROP COLUMN IF EXISTS sickdeadanimalslocation, DROP COLUMN IF EXISTS cattle, DROP COLUMN IF EXISTS otheranimals, DROP COLUMN IF EXISTS otheranimalsdetails,
+                    DROP COLUMN IF EXISTS watersource, DROP COLUMN IF EXISTS watersourceother, DROP COLUMN IF EXISTS waterbody, DROP COLUMN IF EXISTS waterbodydetails, DROP COLUMN IF EXISTS tickbite, DROP COLUMN IF EXISTS burialattended, DROP COLUMN IF EXISTS gatheringattended,
+                    DROP COLUMN IF EXISTS traveled, DROP COLUMN IF EXISTS dateoflastexposure, DROP COLUMN IF EXISTS placeoflastexposure, DROP COLUMN IF EXISTS animalcondition, DROP COLUMN IF EXISTS fleabite, DROP COLUMN IF EXISTS directcontactconfirmedcase,
+                    DROP COLUMN IF EXISTS directcontactprobablecase, DROP COLUMN IF EXISTS closecontactprobablecase, DROP COLUMN IF EXISTS areaconfirmedcases, DROP COLUMN IF EXISTS processingconfirmedcasefluidunsafe, DROP COLUMN IF EXISTS percutaneouscaseblood,
+                    DROP COLUMN IF EXISTS directcontactdeadunsafe, DROP COLUMN IF EXISTS processingsuspectedcasesampleunsafe, DROP COLUMN IF EXISTS eatingrawanimalsininfectedarea, DROP COLUMN IF EXISTS eatingrawanimalsdetails,
+                    DROP COLUMN IF EXISTS kindofexposurebite, DROP COLUMN IF EXISTS kindofexposuretouch, DROP COLUMN IF EXISTS kindofexposurescratch, DROP COLUMN IF EXISTS kindofexposurelick, DROP COLUMN IF EXISTS kindofexposureother,
+                    DROP COLUMN IF EXISTS kindofexposuredetails, DROP COLUMN IF EXISTS animalvaccinationstatus, DROP COLUMN IF EXISTS dogs, DROP COLUMN IF EXISTS cats, DROP COLUMN IF EXISTS canidae, DROP COLUMN IF EXISTS rabbits, DROP COLUMN IF EXISTS prophylaxisstatus,
+                    DROP COLUMN IF EXISTS dateofprophylaxis, DROP COLUMN IF EXISTS visitedhealthfacility, DROP COLUMN IF EXISTS contactwithsourcerespiratorycase, DROP COLUMN IF EXISTS visitedanimalmarket, DROP COLUMN IF EXISTS camels, DROP COLUMN IF EXISTS snakes;
+ALTER TABLE epidata_history DROP COLUMN IF EXISTS rodents, DROP COLUMN IF EXISTS bats, DROP COLUMN IF EXISTS primates, DROP COLUMN IF EXISTS swine, DROP COLUMN IF EXISTS birds, DROP COLUMN IF EXISTS eatingrawanimals, DROP COLUMN IF EXISTS sickdeadanimals,
+                            DROP COLUMN IF EXISTS sickdeadanimalsdetails, DROP COLUMN IF EXISTS sickdeadanimalsdate, DROP COLUMN IF EXISTS sickdeadanimalslocation, DROP COLUMN IF EXISTS cattle, DROP COLUMN IF EXISTS otheranimals, DROP COLUMN IF EXISTS otheranimalsdetails,
+                            DROP COLUMN IF EXISTS watersource, DROP COLUMN IF EXISTS watersourceother, DROP COLUMN IF EXISTS waterbody, DROP COLUMN IF EXISTS waterbodydetails, DROP COLUMN IF EXISTS tickbite, DROP COLUMN IF EXISTS burialattended, DROP COLUMN IF EXISTS gatheringattended,
+                            DROP COLUMN IF EXISTS traveled, DROP COLUMN IF EXISTS dateoflastexposure, DROP COLUMN IF EXISTS placeoflastexposure, DROP COLUMN IF EXISTS animalcondition, DROP COLUMN IF EXISTS fleabite, DROP COLUMN IF EXISTS directcontactconfirmedcase,
+                            DROP COLUMN IF EXISTS directcontactprobablecase, DROP COLUMN IF EXISTS closecontactprobablecase, DROP COLUMN IF EXISTS areaconfirmedcases, DROP COLUMN IF EXISTS processingconfirmedcasefluidunsafe, DROP COLUMN IF EXISTS percutaneouscaseblood,
+                            DROP COLUMN IF EXISTS directcontactdeadunsafe, DROP COLUMN IF EXISTS processingsuspectedcasesampleunsafe, DROP COLUMN IF EXISTS eatingrawanimalsininfectedarea, DROP COLUMN IF EXISTS eatingrawanimalsdetails,
+                            DROP COLUMN IF EXISTS kindofexposurebite, DROP COLUMN IF EXISTS kindofexposuretouch, DROP COLUMN IF EXISTS kindofexposurescratch, DROP COLUMN IF EXISTS kindofexposurelick, DROP COLUMN IF EXISTS kindofexposureother,
+                            DROP COLUMN IF EXISTS kindofexposuredetails, DROP COLUMN IF EXISTS animalvaccinationstatus, DROP COLUMN IF EXISTS dogs, DROP COLUMN IF EXISTS cats, DROP COLUMN IF EXISTS canidae, DROP COLUMN IF EXISTS rabbits, DROP COLUMN IF EXISTS prophylaxisstatus,
+                            DROP COLUMN IF EXISTS dateofprophylaxis, DROP COLUMN IF EXISTS visitedhealthfacility, DROP COLUMN IF EXISTS contactwithsourcerespiratorycase, DROP COLUMN IF EXISTS visitedanimalmarket, DROP COLUMN IF EXISTS camels, DROP COLUMN IF EXISTS snakes;
+
+DROP TABLE IF EXISTS epidataburial;
+DROP TABLE IF EXISTS epidatagathering;
+DROP TABLE IF EXISTS epidatatravel;
+DROP TABLE IF EXISTS epidataburial_history;
+DROP TABLE IF EXISTS epidatagathering_history;
+DROP TABLE IF EXISTS epidatatravel_history;
+
+INSERT INTO schema_version (version_number, comment) VALUES (429, 'Drop unused epi data columns and tables #7301');
+
+-- 2021-11-04 [DEMIS2SORMAS] Handle New Profile: DiagnosticReport.conclusionCode #5159
+ALTER TABLE labmessage ADD COLUMN sampleoveralltestresult varchar(255);
+ALTER TABLE labmessage_history ADD COLUMN sampleoveralltestresult varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (430, '[DEMIS2SORMAS] Handle New Profile: DiagnosticReport.conclusionCode #5159');
+
+-- 2021-11-04 [DEMIS2SORMAS] Handle New Profile: Preliminary Test Results #5551
+ALTER TABLE pathogentest ADD COLUMN preliminary boolean;
+ALTER TABLE pathogentest_history ADD COLUMN preliminary boolean;
+ALTER TABLE testreport ADD COLUMN preliminary boolean;
+ALTER TABLE testreport_history ADD COLUMN preliminary boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (431, '[DEMIS2SORMAS] Handle New Profile: Preliminary Test Results #5551');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

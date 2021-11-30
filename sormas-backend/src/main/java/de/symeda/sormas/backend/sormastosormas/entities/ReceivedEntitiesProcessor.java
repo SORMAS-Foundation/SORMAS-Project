@@ -16,20 +16,23 @@
 package de.symeda.sormas.backend.sormastosormas.entities;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
+import de.symeda.sormas.api.utils.DataHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
@@ -37,7 +40,6 @@ import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantD
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.sormastosormas.ValidationHelper;
-import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.ReceivedCaseProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.contact.ReceivedContactProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.event.ReceivedEventProcessor;
@@ -48,10 +50,8 @@ import de.symeda.sormas.backend.sormastosormas.share.ShareRequestData;
 
 @Stateless
 @LocalBean
-public class ReceivedDataProcessor {
+public class ReceivedEntitiesProcessor {
 
-	@EJB
-	private Sormas2SormasDataValidator dataValidator;
 	@EJB
 	private ReceivedCaseProcessor caseProcessor;
 	@EJB
@@ -69,7 +69,11 @@ public class ReceivedDataProcessor {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 
 		SormasToSormasOriginInfoDto originInfo = receivedData.getOriginInfo();
-		ValidationErrors originInfoErrors = dataValidator.validateOriginInfo(originInfo, Captions.sormasToSormasOriginInfo);
+
+		originInfo.setUuid(DataHelper.createUuid());
+		originInfo.setChangeDate(new Date());
+
+		ValidationErrors originInfoErrors = validateOriginInfo(originInfo, Captions.sormasToSormasOriginInfo);
 		if (originInfoErrors.hasError()) {
 			validationErrors.add(originInfoErrors);
 		}
@@ -131,7 +135,7 @@ public class ReceivedDataProcessor {
 			});
 		}
 
-		List<SormasToSormasEntityDto<ImmunizationDto>> immunizations = receivedData.getImmunizations();
+		List<SormasToSormasImmunizationDto> immunizations = receivedData.getImmunizations();
 		if (CollectionUtils.isNotEmpty(immunizations)) {
 			immunizations.forEach(s -> {
 				ValidationErrors immunizationErrors =
@@ -151,7 +155,11 @@ public class ReceivedDataProcessor {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 
 		SormasToSormasOriginInfoDto originInfo = shareData.getOriginInfo();
-		ValidationErrors originInfoErrors = dataValidator.validateOriginInfo(originInfo, Captions.sormasToSormasOriginInfo);
+
+		originInfo.setUuid(DataHelper.createUuid());
+		originInfo.setChangeDate(new Date());
+
+		ValidationErrors originInfoErrors = validateOriginInfo(originInfo, Captions.sormasToSormasOriginInfo);
 		if (originInfoErrors.hasError()) {
 			validationErrors.add(new ValidationErrors(new ValidationErrorGroup(Captions.sormasToSormasOriginInfo), originInfoErrors));
 		}
@@ -184,6 +192,29 @@ public class ReceivedDataProcessor {
 				validationErrors.add(new ValidationErrors(ValidationHelper.buildEventParticipantValidationGroupName(ep), eventParticipantErrors));
 			}
 		});
+
+		return validationErrors;
+	}
+
+	private ValidationErrors validateOriginInfo(SormasToSormasOriginInfoDto originInfo, String validationGroupCaption) {
+		if (originInfo == null) {
+			return ValidationErrors
+					.create(new ValidationErrorGroup(validationGroupCaption), new ValidationErrorMessage(Validations.sormasToSormasShareInfoMissing));
+		}
+
+		ValidationErrors validationErrors = new ValidationErrors();
+
+		if (originInfo.getOrganizationId() == null) {
+			validationErrors.add(
+					new ValidationErrorGroup(Captions.CaseData_sormasToSormasOriginInfo),
+					new ValidationErrorMessage(Validations.sormasToSormasOrganizationIdMissing));
+		}
+
+		if (DataHelper.isNullOrEmpty(originInfo.getSenderName())) {
+			validationErrors.add(
+					new ValidationErrorGroup(Captions.CaseData_sormasToSormasOriginInfo),
+					new ValidationErrorMessage(Validations.sormasToSormasSenderNameMissing));
+		}
 
 		return validationErrors;
 	}

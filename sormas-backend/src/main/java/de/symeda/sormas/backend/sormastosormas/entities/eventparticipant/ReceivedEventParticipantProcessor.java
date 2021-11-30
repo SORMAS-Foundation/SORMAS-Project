@@ -15,7 +15,8 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.eventparticipant;
 
-import javax.ejb.EJB;
+import java.util.Optional;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -26,31 +27,36 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
-import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
+import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
 public class ReceivedEventParticipantProcessor
 	extends
-	ReceivedDataProcessor<EventParticipant, EventParticipantDto, SormasToSormasEventParticipantDto, SormasToSormasEventParticipantPreview, EventParticipant, EventParticipantService> {
-
-	@EJB
-	private Sormas2SormasDataValidator dataValidator;
+	ReceivedDataProcessor<EventParticipant, EventParticipantDto, SormasToSormasEventParticipantDto, SormasToSormasEventParticipantPreview, EventParticipant, EventParticipantService, SormasToSormasEventParticipantDtoValidator> {
 
 	public ReceivedEventParticipantProcessor() {
 	}
 
 	@Inject
-	protected ReceivedEventParticipantProcessor(EventParticipantService service) {
-		super(service);
+	protected ReceivedEventParticipantProcessor(
+		EventParticipantService service,
+		UserService userService,
+		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade,
+		SormasToSormasEventParticipantDtoValidator validator) {
+		super(service, userService, configFacade, validator);
 	}
 
 	@Override
 	public void handleReceivedData(SormasToSormasEventParticipantDto sharedData, EventParticipant existingData) {
-		dataValidator.handleIgnoredProperties(sharedData.getEntity().getPerson(), dataValidator.getExistingPerson(existingData));
+		handleIgnoredProperties(
+			sharedData.getEntity().getPerson(),
+			Optional.ofNullable(existingData).map(c -> PersonFacadeEjb.toDto(c.getPerson())).orElse(null));
 	}
 
 	@Override
@@ -63,13 +69,4 @@ public class ReceivedEventParticipantProcessor
 			Validations.sormasToSormasEventParticipantExists);
 	}
 
-	@Override
-	public ValidationErrors validate(SormasToSormasEventParticipantDto sharedData, EventParticipant existingData) {
-		return dataValidator.validateEventParticipant(sharedData.getEntity());
-	}
-
-	@Override
-	public ValidationErrors validatePreview(SormasToSormasEventParticipantPreview preview) {
-		return dataValidator.validatePersonPreview(preview.getPerson());
-	}
 }

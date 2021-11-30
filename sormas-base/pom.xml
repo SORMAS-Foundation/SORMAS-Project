@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.65.1</version>
+	<version>1.66.0</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -37,6 +37,7 @@
 		<resteasy.version>3.15.1.Final</resteasy.version>
 		<xdocreport.version>2.0.2</xdocreport.version>
 		<docx4j.version>8.3.1</docx4j.version>
+		<archunit.version>0.22.0</archunit.version>
 
 		<!-- Attention: Compile dependencies with versions are maintained redundantly in sormas-app/app/build.gradle -->
 
@@ -845,6 +846,20 @@
 				<version>2.27.2</version>
 				<scope>test</scope>
 			</dependency>
+
+			<dependency>
+				<groupId>com.tngtech.archunit</groupId>
+				<artifactId>archunit</artifactId>
+				<version>${archunit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.tngtech.archunit</groupId>
+				<artifactId>archunit-junit4</artifactId>
+				<version>${archunit.version}</version>
+				<scope>test</scope>
+			</dependency>
+
 			<!-- *** Test dependencies END *** -->
 
 			<dependency>

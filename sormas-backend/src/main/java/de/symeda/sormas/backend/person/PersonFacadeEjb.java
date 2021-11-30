@@ -77,6 +77,7 @@ import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -90,6 +91,7 @@ import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
+import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonExportDto;
@@ -97,7 +99,6 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonIndexDto;
-import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -113,6 +114,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
@@ -218,14 +220,14 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public List<PersonNameDto> getMatchingNameDtos(UserReferenceDto userRef, PersonSimilarityCriteria criteria) {
+	public List<SimilarPersonDto> getSimilarPersonDtos(UserReferenceDto userRef, PersonSimilarityCriteria criteria) {
 
 		User user = userService.getByReferenceDto(userRef);
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return new ArrayList<>(personService.getMatchingNameDtos(criteria, null));
+		return personService.getSimilarPersonDtos(criteria, null);
 	}
 
 	@Override
@@ -236,17 +238,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			return false;
 		}
 
-		return personService.getMatchingNameDtos(criteria, 1).size() > 0;
-	}
-
-	@Override
-	public List<SimilarPersonDto> getSimilarPersonsByUuids(List<String> personUuids) {
-		List<Person> persons = personService.getByUuids(personUuids);
-		if (persons == null) {
-			return new ArrayList<>();
-		} else {
-			return persons.stream().map(PersonFacadeEjb::toSimilarPersonDto).collect(Collectors.toList());
-		}
+		return personService.getSimilarPersonDtos(criteria, 1).size() > 0;
 	}
 
 	@Override
@@ -838,44 +830,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		return true;
 	}
 
-	public static SimilarPersonDto toSimilarPersonDto(Person entity) {
-
-		Integer approximateAge = entity.getApproximateAge();
-		ApproximateAgeType approximateAgeType = entity.getApproximateAgeType();
-		if (entity.getBirthdateYYYY() != null) {
-			Pair<Integer, ApproximateAgeType> pair = ApproximateAgeHelper
-				.getApproximateAge(entity.getBirthdateYYYY(), entity.getBirthdateMM(), entity.getBirthdateDD(), entity.getDeathDate());
-			approximateAge = pair.getElement0();
-			approximateAgeType = pair.getElement1();
-		}
-
-		SimilarPersonDto similarPersonDto = new SimilarPersonDto();
-		similarPersonDto.setUuid(entity.getUuid());
-		similarPersonDto.setFirstName(entity.getFirstName());
-		similarPersonDto.setLastName(entity.getLastName());
-		similarPersonDto.setNickname(entity.getNickname());
-		similarPersonDto.setAgeAndBirthDate(
-			PersonHelper.getAgeAndBirthdateString(
-				approximateAge,
-				approximateAgeType,
-				entity.getBirthdateDD(),
-				entity.getBirthdateMM(),
-				entity.getBirthdateYYYY()));
-		similarPersonDto.setSex(entity.getSex());
-		similarPersonDto.setPresentCondition(entity.getPresentCondition());
-		similarPersonDto.setPhone(entity.getPhone());
-		similarPersonDto.setDistrictName(entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null);
-		similarPersonDto.setCommunityName(entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null);
-		similarPersonDto.setPostalCode(entity.getAddress().getPostalCode());
-		similarPersonDto.setCity(entity.getAddress().getCity());
-		similarPersonDto.setStreet(entity.getAddress().getStreet());
-		similarPersonDto.setHouseNumber(entity.getAddress().getHouseNumber());
-		similarPersonDto.setNationalHealthId(entity.getNationalHealthId());
-		similarPersonDto.setPassportNumber(entity.getPassportNumber());
-
-		return similarPersonDto;
-	}
-
 	public static PersonDto toDto(Person source) {
 
 		if (source == null) {
@@ -998,9 +952,12 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (nullSafeCriteria.getPersonAssociation() == PersonAssociation.ALL) {
 			// Fetch Person.id per association and find the distinct count.
 			Set<Long> distinctPersonIds = new HashSet<>();
+			boolean immunizationModuleReduced =
+				featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED);
 			Arrays.stream(PersonAssociation.getSingleAssociations())
+				.filter(e -> !(immunizationModuleReduced && e == PersonAssociation.IMMUNIZATION))
 				.map(e -> getPersonIds(SerializationUtils.clone(nullSafeCriteria).personAssociation(e)))
-				.forEach(e -> distinctPersonIds.addAll(e));
+				.forEach(distinctPersonIds::addAll);
 			count = distinctPersonIds.size();
 		} else {
 			// Directly fetch the count for the only required association
@@ -1125,7 +1082,12 @@ public class PersonFacadeEjb implements PersonFacade {
 			// Call onEventParticipantChange once for every event participant
 			// Attention: this may lead to infinite recursion when not properly implemented
 			for (EventParticipant personEventParticipant : personEventParticipants) {
-				eventParticipantFacade.onEventParticipantChanged(EventFacadeEjbLocal.toDto(personEventParticipant.getEvent()), syncShares);
+
+				eventParticipantFacade.onEventParticipantChanged(
+					EventFacadeEjbLocal.toDto(personEventParticipant.getEvent()),
+					EventParticipantFacadeEjbLocal.toDto(personEventParticipant),
+					personEventParticipant,
+					syncShares);
 			}
 
 			// get the updated personCases
@@ -1714,6 +1676,40 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 		DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
 		savePerson(leadPerson);
+	}
+
+	@Override
+	public PersonDto getByContext(PersonContext context, String contextUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Person> cq = cb.createQuery(Person.class);
+		Root<Person> root = cq.from(Person.class);
+
+		PersonJoins<Person> joins = new PersonJoins<>(root);
+
+		Join<Person, ?> contextJoin;
+		switch (context) {
+		case CASE: {
+			contextJoin = joins.getCaze();
+			break;
+		}
+		case CONTACT: {
+			contextJoin = joins.getContact();
+			break;
+		}
+		case EVENT_PARTICIPANT: {
+			contextJoin = joins.getEventParticipant();
+			break;
+		}
+		default: {
+			throw new RuntimeException("Not implemented yet for " + context.name());
+		}
+		}
+
+		cq.where(cb.equal(contextJoin.get(AbstractDomainObject.UUID), contextUuid));
+
+		Person person = em.createQuery(cq).getSingleResult();
+
+		return convertToDto(person, Pseudonymizer.getDefault(userService::hasRight), personService.inJurisdictionOrOwned(person));
 	}
 
 	@LocalBean

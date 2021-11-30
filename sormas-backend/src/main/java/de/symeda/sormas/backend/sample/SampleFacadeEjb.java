@@ -106,6 +106,7 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
+import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -160,6 +161,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	private CaseService caseService;
 	@EJB
 	private ContactService contactService;
+	@EJB
+	private EventService eventService;
 	@EJB
 	private EventParticipantService eventParticipantService;
 	@EJB
@@ -302,6 +305,26 @@ public class SampleFacadeEjb implements SampleFacade {
 			.stream()
 			.map(s -> convertToDto(s, pseudonymizer))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<SampleDto> getByLabSampleId(String labSampleId) {
+		if (labSampleId == null) {
+			return new ArrayList();
+		}
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
+		final Root<Sample> sampleRoot = cq.from(Sample.class);
+
+		Predicate filter = CriteriaBuilderHelper.and(
+			cb,
+			sampleService.createUserFilter(cb, cq, sampleRoot),
+			sampleService.createDefaultFilter(cb, sampleRoot),
+			cb.equal(sampleRoot.get(Sample.LAB_SAMPLE_ID), labSampleId));
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultList().stream().distinct().map(sample -> toDto(sample)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -1185,9 +1208,13 @@ public class SampleFacadeEjb implements SampleFacade {
 			contactFacade.onContactChanged(ContactFacadeEjbLocal.toDto(newSample.getAssociatedContact()), syncShares);
 		}
 
-		if (newSample.getAssociatedEventParticipant() != null) {
-			eventParticipantFacade
-				.onEventParticipantChanged(EventFacadeEjbLocal.toDto(newSample.getAssociatedEventParticipant().getEvent()), syncShares);
+		EventParticipant associatedEventParticipant = newSample.getAssociatedEventParticipant();
+		if (associatedEventParticipant != null) {
+			eventParticipantFacade.onEventParticipantChanged(
+				EventFacadeEjbLocal.toDto(associatedEventParticipant.getEvent()),
+				EventParticipantFacadeEjbLocal.toDto(associatedEventParticipant),
+				associatedEventParticipant,
+				syncShares);
 		}
 	}
 
@@ -1215,4 +1242,5 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return sampleService.isSampleEditAllowed(sample);
 	}
+
 }

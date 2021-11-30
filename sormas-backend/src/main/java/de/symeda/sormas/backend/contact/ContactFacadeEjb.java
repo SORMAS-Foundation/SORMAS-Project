@@ -407,6 +407,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	public void onContactChanged(ContactDto existingContact, Contact contact, boolean syncShares) {
+
+		if (existingContact == null) {
+			contactService.updateVaccinationStatuses(contact);
+		}
+
 		onContactChanged(toDto(contact), syncShares);
 
 		// This logic should be consistent with ContactDataForm.onContactChanged
@@ -794,7 +799,7 @@ public class ContactFacadeEjb implements ContactFacade {
 						List<Immunization> filteredImmunizations =
 							contactImmunizations.stream().filter(i -> i.getDisease() == exportContact.getDisease()).collect(Collectors.toList());
 						if (filteredImmunizations.size() > 0) {
-							filteredImmunizations.sort(Comparator.comparing(ImmunizationEntityHelper::getDateForComparison));
+							filteredImmunizations.sort(Comparator.comparing(i -> ImmunizationEntityHelper.getDateForComparison(i, false)));
 							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 							exportContact.setNumberOfDoses(numberOfDoses != null ? String.valueOf(numberOfDoses) : "");

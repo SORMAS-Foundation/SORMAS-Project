@@ -79,6 +79,7 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -398,7 +399,9 @@ public class EventFacadeEjb implements EventFacade {
 
 		if (eventCriteria != null) {
 			if (eventCriteria.getUserFilterIncluded()) {
-				filter = eventService.createUserFilter(cb, cq, event);
+				EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
+				eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
+				filter = eventService.createUserFilter(cb, cq, event, eventUserFilterCriteria);
 			}
 
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, eventQueryContext);
@@ -611,8 +614,10 @@ public class EventFacadeEjb implements EventFacade {
 			}
 		}
 
-		return indexList;
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(EventIndexDto.class, indexList, EventIndexDto::getInJurisdictionOrOwned, (c, isInJurisdiction) -> {});
 
+		return indexList;
 	}
 
 	@Override
@@ -1303,6 +1308,16 @@ public class EventFacadeEjb implements EventFacade {
 		});
 
 		return subordinateEventUuids;
+	}
+
+	@Override
+	public boolean hasRegionAndDistrict(String eventUuid) {
+		return eventService.hasRegionAndDistrict(eventUuid);
+	}
+
+	@Override
+	public boolean hasAnyEventParticipantWithoutJurisdiction(String eventUuid) {
+		return eventService.hasAnyEventParticipantWithoutJurisdiction(eventUuid);
 	}
 
 	@LocalBean

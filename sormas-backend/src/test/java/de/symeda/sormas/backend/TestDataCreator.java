@@ -96,7 +96,6 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -463,6 +462,34 @@ public class TestDataCreator {
 		return beanTest.getImmunizationFacade().save(immunization);
 	}
 
+	public ImmunizationDto createImmunization(Disease disease, PersonReferenceDto person, UserReferenceDto reportingUser, RDCF rdcf) {
+
+		return createImmunization(disease, person, reportingUser, rdcf, null);
+	}
+
+	public ImmunizationDto createImmunization(
+		Disease disease,
+		PersonReferenceDto person,
+		UserReferenceDto reportingUser,
+		RDCF rdcf,
+		Consumer<ImmunizationDto> extraConfig) {
+
+		ImmunizationDto immunization = createImmunizationDto(
+			disease,
+			person,
+			reportingUser,
+			ImmunizationStatus.PENDING,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.ONGOING,
+			rdcf);
+
+		if (extraConfig != null) {
+			extraConfig.accept(immunization);
+		}
+
+		return beanTest.getImmunizationFacade().save(immunization);
+	}
+
 	@NotNull
 	public ImmunizationDto createImmunizationDto(
 		Disease disease,
@@ -494,6 +521,10 @@ public class TestDataCreator {
 		HealthConditionsDto healthConditions) {
 
 		return createVaccination(reportingUser, immunization, healthConditions, new Date(), null, null);
+	}
+
+	public VaccinationDto createVaccination(UserReferenceDto reportingUser, ImmunizationReferenceDto immunization) {
+		return createVaccination(reportingUser, immunization, new HealthConditionsDto());
 	}
 
 	@NotNull
@@ -792,6 +823,16 @@ public class TestDataCreator {
 			null);
 	}
 
+	public EventDto createEvent(UserReferenceDto reportingUser, Disease disease, Consumer<EventDto> customConfig) {
+
+		return createEvent(EventStatus.SIGNAL, EventInvestigationStatus.PENDING, "title", "description", reportingUser, (event) -> {
+			event.setReportDateTime(new Date());
+			event.setReportingUser(reportingUser);
+			event.setDisease(disease);
+			customConfig.accept(event);
+		});
+	}
+
 	public EventDto createEvent(UserReferenceDto reportingUser, Date eventDate) {
 
 		return createEvent(
@@ -866,7 +907,7 @@ public class TestDataCreator {
 	}
 
 	public EventParticipantDto createEventParticipant(EventReferenceDto event, PersonDto eventPerson, UserReferenceDto reportingUser) {
-		return createEventParticipant(event, eventPerson, "Description", reportingUser, null);
+		return createEventParticipant(event, eventPerson, "Description", reportingUser, null, null);
 	}
 
 	public EventParticipantDto createEventParticipant(
@@ -874,7 +915,7 @@ public class TestDataCreator {
 		PersonDto eventPerson,
 		String involvementDescription,
 		UserReferenceDto reportingUser) {
-		return createEventParticipant(event, eventPerson, involvementDescription, reportingUser, null);
+		return createEventParticipant(event, eventPerson, involvementDescription, reportingUser, null, null);
 	}
 
 	public EventParticipantDto createEventParticipant(
@@ -882,7 +923,17 @@ public class TestDataCreator {
 		PersonDto eventPerson,
 		String involvementDescription,
 		UserReferenceDto reportingUser,
-		Consumer<EventParticipantDto> customSettings) {
+		RDCF rdcf) {
+		return createEventParticipant(event, eventPerson, involvementDescription, reportingUser, null, rdcf);
+	}
+
+	public EventParticipantDto createEventParticipant(
+		EventReferenceDto event,
+		PersonDto eventPerson,
+		String involvementDescription,
+		UserReferenceDto reportingUser,
+		Consumer<EventParticipantDto> customSettings,
+		RDCF rdcf) {
 
 		EventParticipantDto eventParticipant = EventParticipantDto.build(event, reportingUser);
 		eventParticipant.setPerson(eventPerson);
@@ -890,6 +941,10 @@ public class TestDataCreator {
 
 		if (customSettings != null) {
 			customSettings.accept(eventParticipant);
+		}
+		if (rdcf != null) {
+			eventParticipant.setRegion(rdcf.region);
+			eventParticipant.setDistrict(rdcf.district);
 		}
 
 		eventParticipant = beanTest.getEventParticipantFacade().saveEventParticipant(eventParticipant);
@@ -1617,9 +1672,8 @@ public class TestDataCreator {
 		return labMessage;
 	}
 
-	public TestReportDto createTestReport(PathogenTestReferenceDto pathogenTest, LabMessageReferenceDto labMessage) {
+	public TestReportDto createTestReport(LabMessageReferenceDto labMessage) {
 		TestReportDto testReport = TestReportDto.build();
-		testReport.setPathogenTest(pathogenTest);
 		testReport.setLabMessage(labMessage);
 
 		beanTest.getTestReportFacade().saveTestReport(testReport);

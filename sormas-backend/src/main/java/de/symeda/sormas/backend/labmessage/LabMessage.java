@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -19,13 +20,15 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.sample.Sample;
 
 @Entity(name = "labmessage")
 @Audited
-public class LabMessage extends AbstractDomainObject {
+public class LabMessage extends CoreAdo {
 
 	public static final String TABLE_NAME = "labmessage";
 
@@ -56,6 +59,8 @@ public class LabMessage extends AbstractDomainObject {
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String STATUS = "status";
 	public static final String REPORT_ID = "reportId";
+	public static final String SAMPLE_OVERALL_TEST_RESULT = "sampleOverallTestResult";
+	public static final String SAMPLE = "sample";
 
 	private Disease testedDisease;
 	private Date messageDateTime;
@@ -87,6 +92,8 @@ public class LabMessage extends AbstractDomainObject {
 	private String labMessageDetails;
 	//Lab messages related to each other should have the same reportId
 	private String reportId;
+	private PathogenTestResultType sampleOverallTestResult;
+	private Sample sample;
 
 	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
 
@@ -341,5 +348,23 @@ public class LabMessage extends AbstractDomainObject {
 
 	public void setReportId(String reportId) {
 		this.reportId = reportId;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public PathogenTestResultType getSampleOverallTestResult() {
+		return sampleOverallTestResult;
+	}
+
+	public void setSampleOverallTestResult(PathogenTestResultType sampleOverallTestResult) {
+		this.sampleOverallTestResult = sampleOverallTestResult;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Sample getSample() {
+		return sample;
+	}
+
+	public void setSample(Sample sample) {
+		this.sample = sample;
 	}
 }

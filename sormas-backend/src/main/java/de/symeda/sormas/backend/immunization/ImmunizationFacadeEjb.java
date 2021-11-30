@@ -43,6 +43,8 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -74,6 +76,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventParticipantService;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
@@ -153,6 +156,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	private SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal sormasToSormasContactFacade;
 	@EJB
 	private SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacadeEjbLocal;
+	@EJB
+	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public static ImmunizationReferenceDto toReferenceDto(Immunization entity) {
 		if (entity == null) {
@@ -302,10 +307,27 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		validate(dto);
 
 		Immunization immunization = fillOrBuildEntity(dto, existingImmunization, checkChangeDate);
-		immunizationService.updateImmunizationStatusBasedOnVaccinations(immunization);
-		immunizationService.ensurePersisted(immunization);
 
-		updateVaccinationStatuses(immunization, existingDto);
+		immunizationService.updateImmunizationStatusBasedOnVaccinations(immunization);
+
+		immunization.getVaccinations().forEach(vaccination -> {
+			VaccinationDto existingVaccination = null;
+			if (existingDto != null) {
+				existingVaccination = existingDto.getVaccinations()
+					.stream()
+					.filter(vaccinationDto -> vaccination.getUuid().equals(vaccinationDto.getUuid()))
+					.findAny()
+					.orElse(null);
+			}
+			Date existingVaccinationDate = existingVaccination != null ? existingVaccination.getVaccinationDate() : null;
+			vaccinationFacade.updateVaccinationStatuses(
+				vaccination.getVaccinationDate(),
+				existingVaccinationDate,
+				immunization.getPersonId(),
+				immunization.getDisease());
+		});
+
+		immunizationService.ensurePersisted(immunization);
 
 		if (existingImmunization != null && internal && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(existingImmunization);
@@ -575,32 +597,6 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	@Override
 	public List<ImmunizationDto> getByPersonUuids(List<String> uuids) {
 		return immunizationService.getByPersonUuids(uuids).stream().map(ImmunizationFacadeEjb::toDto).collect(Collectors.toList());
-	}
-
-	protected void updateVaccinationStatuses(Immunization updatedImmunization, ImmunizationDto currentImmunization) {
-		if ((updatedImmunization.getMeansOfImmunization() == MeansOfImmunization.VACCINATION
-			|| updatedImmunization.getMeansOfImmunization() == MeansOfImmunization.VACCINATION_RECOVERY)
-			&& (currentImmunization == null && updatedImmunization.getImmunizationStatus() == ImmunizationStatus.ACQUIRED)
-			|| (currentImmunization != null
-				&& updatedImmunization.getImmunizationStatus() == ImmunizationStatus.ACQUIRED
-				&& currentImmunization.getImmunizationStatus() != ImmunizationStatus.ACQUIRED
-				&& updatedImmunization.getValidFrom() != null)) {
-			caseService.updateVaccinationStatuses(
-				updatedImmunization.getPerson().getId(),
-				updatedImmunization.getDisease(),
-				updatedImmunization.getValidFrom(),
-				updatedImmunization.getValidUntil());
-			contactService.updateVaccinationStatuses(
-				updatedImmunization.getPerson().getId(),
-				updatedImmunization.getDisease(),
-				updatedImmunization.getValidFrom(),
-				updatedImmunization.getValidUntil());
-			eventParticipantService.updateVaccinationStatuses(
-				updatedImmunization.getPerson().getId(),
-				updatedImmunization.getDisease(),
-				updatedImmunization.getValidFrom(),
-				updatedImmunization.getValidUntil());
-		}
 	}
 
 	public void syncSharesAsync(Immunization immunization) {

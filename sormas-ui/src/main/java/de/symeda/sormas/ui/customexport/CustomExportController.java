@@ -47,7 +47,8 @@ public class CustomExportController {
 		Window customExportWindow = VaadinUiUtil.createPopupWindow();
 		ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
 			ExportType.CONTACT,
-			ImportExportUtils.getContactExportProperties(ContactDownloadUtil::getPropertyCaption),
+			ImportExportUtils
+				.getContactExportProperties(ContactDownloadUtil::getPropertyCaption, FacadeProvider.getConfigFacade().getCountryLocale()),
 			customExportWindow::close);
 		customExportsLayout.setExportCallback(
 			exportConfig -> Page.getCurrent()
@@ -62,7 +63,7 @@ public class CustomExportController {
 		Window customExportWindow = VaadinUiUtil.createPopupWindow();
 		ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
 			ExportType.TASK,
-			ImportExportUtils.getTaskExportProperties(TaskDownloadUtil::getPropertyCaption),
+			ImportExportUtils.getTaskExportProperties(TaskDownloadUtil::getPropertyCaption, FacadeProvider.getConfigFacade().getCountryLocale()),
 			customExportWindow::close);
 		customExportsLayout.setExportCallback(
 			exportConfig -> Page.getCurrent().open(TaskDownloadUtil.createTaskExportResource(taskCriteria, selectedRows, exportConfig), null, true));
@@ -76,7 +77,7 @@ public class CustomExportController {
 		Window customExportWindow = VaadinUiUtil.createPopupWindow();
 		ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
 			ExportType.PERSON,
-			ImportExportUtils.getPersonExportProperties(PersonDownloadUtil::getPropertyCaption),
+			ImportExportUtils.getPersonExportProperties(PersonDownloadUtil::getPropertyCaption, FacadeProvider.getConfigFacade().getCountryLocale()),
 			customExportWindow::close);
 		customExportsLayout.setExportCallback(
 			exportConfig -> Page.getCurrent().open(PersonDownloadUtil.createPersonExportResource(personCriteria, exportConfig), null, true));
@@ -89,22 +90,23 @@ public class CustomExportController {
 	public void openEditExportConfigurationWindow(
 		ExportConfigurationsGrid grid,
 		ExportConfigurationDto config,
-		List<ExportPropertyMetaInfo> availableProperties) {
+		List<ExportPropertyMetaInfo> availableProperties,
+		String caption) {
 
-		Window newExportWindow = VaadinUiUtil.createPopupWindow();
+		Window exportWindow = VaadinUiUtil.createPopupWindow();
 		ExportConfigurationEditLayout editLayout = new ExportConfigurationEditLayout(config, availableProperties, (exportConfiguration) -> {
 			FacadeProvider.getExportFacade().saveExportConfiguration(exportConfiguration);
-			newExportWindow.close();
+			exportWindow.close();
 			new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationSaved), Notification.Type.WARNING_MESSAGE, false)
 				.show(Page.getCurrent());
 			grid.reload(false);
 		}, () -> {
-			newExportWindow.close();
+			exportWindow.close();
 			grid.reload(false);
 		});
-		newExportWindow.setWidth(1024, Sizeable.Unit.PIXELS);
-		newExportWindow.setCaption(I18nProperties.getCaption(Captions.exportNewExportConfiguration));
-		newExportWindow.setContent(editLayout);
-		UI.getCurrent().addWindow(newExportWindow);
+		exportWindow.setWidth(1024, Sizeable.Unit.PIXELS);
+		exportWindow.setCaption(caption);
+		exportWindow.setContent(editLayout);
+		UI.getCurrent().addWindow(exportWindow);
 	}
 }

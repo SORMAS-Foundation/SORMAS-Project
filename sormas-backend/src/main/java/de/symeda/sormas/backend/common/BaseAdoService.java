@@ -18,6 +18,8 @@
 package de.symeda.sormas.backend.common;
 
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -220,6 +222,17 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		} else {
 			return null;
 		}
+	}
+
+	public List<ADO> getByReferenceDtos(Collection<? extends ReferenceDto> dtos) {
+		if (dtos == null || dtos.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<String> uuids = dtos.stream()
+			.map(ReferenceDto::getUuid)
+			.collect(Collectors.toList());
+		return getByUuids(uuids);
 	}
 
 	@Override

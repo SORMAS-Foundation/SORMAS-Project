@@ -35,7 +35,7 @@ import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
+import de.symeda.sormas.api.sormastosormas.labmessage.SormasToSormasLabMessageFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
@@ -46,7 +46,6 @@ import de.symeda.sormas.backend.labmessage.LabMessage;
 import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb.LabMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.labmessage.LabMessageService;
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 
 @Stateless(name = "SormasToSormasLabMessageFacade")
@@ -62,8 +61,6 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 	private SormasToSormasRestClient sormasToSormasRestClient;
 	@EJB
 	private SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb;
-	@EJB
-	private Sormas2SormasDataValidator dataValidator;
 
 	@Override
 	public void sendLabMessages(List<String> uuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
@@ -85,7 +82,7 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 		List<LabMessageDto> labMessagesToSave = new ArrayList<>(sharedLabMessages.length);
 
 		for (LabMessageDto labMessage : sharedLabMessages) {
-			ValidationErrors errors = dataValidator.validateSharedLabMessage(labMessage);
+			ValidationErrors errors = validateSharedLabMessage(labMessage);
 			if (errors.hasError()) {
 				errors.setGroup(buildLabMessageValidationGroupName(labMessage));
 				validationErrors.add(errors);
@@ -94,13 +91,21 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 			labMessagesToSave.add(labMessage);
 		}
 
-		if (validationErrors.size() > 0) {
+		if (!validationErrors.isEmpty()) {
 			throw new SormasToSormasValidationException(validationErrors);
 		}
 
 		for (LabMessageDto labMessage : labMessagesToSave) {
 			handleValidationError(() -> labMessageFacade.save(labMessage), Captions.LabMessage, buildLabMessageValidationGroupName(labMessage));
 		}
+	}
+
+	private ValidationErrors validateSharedLabMessage(LabMessageDto labMessage) throws ValidationRuntimeException {
+		ValidationErrors errors = new ValidationErrors();
+		if (labMessageFacade.exists(labMessage.getUuid())) {
+			errors.add(new ValidationErrorGroup(Captions.LabMessage), new ValidationErrorMessage(Validations.sormasToSormasLabMessageExists));
+		}
+		return errors;
 	}
 
 	@LocalBean

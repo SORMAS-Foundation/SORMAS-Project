@@ -69,6 +69,8 @@ public class EditContactsSteps implements En {
           LAST_CREATED_CASE_CONTACTS_TAB_URL =
               environmentUrl + "/sormas-ui/#!cases/contacts/" + apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_CONTACTS_TAB_URL);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_CONTACT_BUTTON);
         });
 
     Then(
@@ -155,6 +157,7 @@ public class EditContactsSteps implements En {
     Then(
         "I check the linked contact information is correctly displayed",
         () -> {
+          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(By.xpath("//tr"));
           String contactId = webDriverHelpers.getValueFromTableRowUsingTheHeader("Contact ID", 1);
           String contactDisease =
               (webDriverHelpers.getValueFromTableRowUsingTheHeader("Disease", 1).equals("COVID-19"))
@@ -314,12 +317,12 @@ public class EditContactsSteps implements En {
 
   public Contact getContactInformation() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
-    String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
-    String[] contactInfos = contactInfo.split(" ");
-    LocalDate localDate = LocalDate.parse(contactInfos[3].replace(")", ""), formatter);
+    String contactData = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
+    String[] contactInfo = contactData.split(" ");
+    LocalDate localDate = LocalDate.parse(contactInfo[3].replace(")", ""), formatter);
     return Contact.builder()
-        .firstName(contactInfos[0])
-        .lastName(contactInfos[1])
+        .firstName(contactInfo[0])
+        .lastName(contactInfo[1])
         .dateOfBirth(localDate)
         .build();
   }
