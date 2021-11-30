@@ -8222,11 +8222,11 @@ ALTER TABLE immunization_history ADD COLUMN numberofdoses_details varchar(255);
 INSERT INTO immunization
 (
     id, uuid, disease, diseasedetails, person_id, reportdate, reportinguser_id, immunizationstatus, meansofimmunization, immunizationmanagementstatus, responsibleregion_id,
-    responsibledistrict_id, responsiblecommunity_id, startdate, enddate, numberofdoses_details, changedate, creationdate
+    responsibledistrict_id, responsiblecommunity_id, startdate, enddate, numberofdoses, numberofdoses_details, changedate, creationdate
 )
 SELECT
     immunization_id, generate_base32_uuid(), disease, diseasedetails, person_id, reportdate, reportinguser_id, 'ACQUIRED', 'VACCINATION', 'COMPLETED',
-    responsibleregion_id, responsibledistrict_id, responsiblecommunity_id, firstvaccinationdate, lastvaccinationdate, vaccinationdoses_details, now(), now()
+    responsibleregion_id, responsibledistrict_id, responsiblecommunity_id, firstvaccinationdate, lastvaccinationdate, vaccinationdoses, vaccinationdoses_details, now(), now()
 FROM tmp_vaccinated_persons;
 
 /* Step 3: Create a new vaccination entity for each immunization start and date (or for each immunization without a start or end date) */

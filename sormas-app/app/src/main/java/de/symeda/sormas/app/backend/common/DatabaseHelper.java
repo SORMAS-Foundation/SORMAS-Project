@@ -2890,8 +2890,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 326:
 				currentVersion = 326;
-				getDao(EventParticipant.class).executeRaw("ALTER TABLE eventParticipants ADD COLUMN responsibleRegion_id BIGINT REFERENCES region(id);");
-				getDao(EventParticipant.class).executeRaw("ALTER TABLE eventParticipants ADD COLUMN responsibleDistrict_id BIGINT REFERENCES district(id);");
+				getDao(EventParticipant.class)
+					.executeRaw("ALTER TABLE eventParticipants ADD COLUMN responsibleRegion_id BIGINT REFERENCES region(id);");
+				getDao(EventParticipant.class)
+					.executeRaw("ALTER TABLE eventParticipants ADD COLUMN responsibleDistrict_id BIGINT REFERENCES district(id);");
 
 			case 327:
 				currentVersion = 327;
@@ -3027,13 +3029,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			// Create immunization
 			String immunizationInsertQuery = "INSERT INTO immunization(uuid, changeDate, localChangeDate, creationDate, person_id,"
 				+ "disease, diseaseDetails, reportDate, reportingUser_id, immunizationStatus, meansOfImmunization, immunizationManagementStatus,"
-				+ "responsibleRegion_id, responsibleDistrict_id, responsibleCommunity_id, startDate, endDate, pseudonymized,"
+				+ "responsibleRegion_id, responsibleDistrict_id, responsibleCommunity_id, startDate, endDate, numberOfDoses, pseudonymized,"
 				+ "modified, snapshot) VALUES ('" + DataHelper.createUuid()
 				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
 				+ "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), " + caseInfo[1] + ", '" + caseInfo[2] + "', " + caseInfo[3] + ", "
 				+ caseInfo[4] + ", " + caseInfo[5] + ", '" + ImmunizationStatus.ACQUIRED.name() + "', '" + MeansOfImmunization.VACCINATION.name()
 				+ "', '" + ImmunizationManagementStatus.COMPLETED.name() + "', " + caseInfo[6] + ", " + caseInfo[7] + ", " + caseInfo[8] + ", "
-				+ caseInfo[10] + ", " + caseInfo[11] + ", 0, 1, 0);";
+				+ caseInfo[10] + ", " + caseInfo[11] + ", " + caseInfo[12] + ", 0, 1, 0);";
 			getDao(Immunization.class).executeRaw(immunizationInsertQuery);
 
 			if (caseInfo[12] == null || ((String) caseInfo[12]).isEmpty()) {
@@ -3071,18 +3073,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
-		private void insertVaccination(Object[] caseInfo, Object vaccinationDate) throws SQLException {
-			Vaccine vaccineName = caseInfo[13] != null
-				? (caseInfo[13].equals("ASTRA_ZENECA_COMIRNATY")
-					? Vaccine.COMIRNATY
-					: (caseInfo[13].equals("ASTRA_ZENECA_MRNA_1273")) ? Vaccine.MRNA_1273 : Vaccine.valueOf((String) caseInfo[13]))
-				: Vaccine.OTHER;
-			String otherVaccineName = vaccineName == Vaccine.OTHER ? (String) caseInfo[14] : (String) caseInfo[15];
-			VaccineManufacturer vaccineManufacturer = "ASTRA_ZENECA_COMIRNATY".equals(caseInfo[13])
-				? VaccineManufacturer.BIONTECH_PFIZER
-				: ("ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13])) ? VaccineManufacturer.MODERNA : VaccineManufacturer.valueOf((String) caseInfo[16]);
-			insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, vaccinationDate);
-		}
+	private void insertVaccination(Object[] caseInfo, Object vaccinationDate) throws SQLException {
+		Vaccine vaccineName = caseInfo[13] != null
+			? (caseInfo[13].equals("ASTRA_ZENECA_COMIRNATY")
+				? Vaccine.COMIRNATY
+				: (caseInfo[13].equals("ASTRA_ZENECA_MRNA_1273")) ? Vaccine.MRNA_1273 : Vaccine.valueOf((String) caseInfo[13]))
+			: Vaccine.OTHER;
+		String otherVaccineName = vaccineName == Vaccine.OTHER ? (String) caseInfo[14] : (String) caseInfo[15];
+		VaccineManufacturer vaccineManufacturer = "ASTRA_ZENECA_COMIRNATY".equals(caseInfo[13])
+			? VaccineManufacturer.BIONTECH_PFIZER
+			: ("ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13])) ? VaccineManufacturer.MODERNA : VaccineManufacturer.valueOf((String) caseInfo[16]);
+		insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, vaccinationDate);
+	}
 
 	private void insertFirstVaccination(Object[] caseInfo, Object vaccinationDate) throws SQLException {
 		Vaccine vaccineName = caseInfo[13] != null
