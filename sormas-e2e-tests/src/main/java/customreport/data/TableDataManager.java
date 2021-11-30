@@ -63,13 +63,31 @@ public abstract class TableDataManager {
     String tableRowHtml =
         "<tr>\n"
             + "    <td> test-name-placeholder </td>\n"
-            + "    <td id=\"loadingTime\"> time-placeholder <img src=\"images/warn.jpg\" id=\"warn\" style=\"padding-left: 20px;width:40px;height:20px;visibility:hidden\"> </td>\n"
-            + "  </tr>";
+            + "    <td id=\"loadingTime\"> time-placeholder </td> </tr>";
+    String tableRowHtmlWithWarning =
+        "<tr>\n"
+            + "    <td> test-name-placeholder </td>\n"
+            + "    <td style=\"color:red\"> time-placeholder </td> </tr>";
     for (TableRowObject tableRowObject : tableRowsDataList) {
-      htmlCode.append(
-          tableRowHtml
-              .replace("test-name-placeholder", tableRowObject.getTestName())
-              .replace("time-placeholder", tableRowObject.getCurrentTime()));
+      try {
+        Double time = Double.parseDouble(tableRowObject.getCurrentTime());
+        if (time < 10) {
+          htmlCode.append(
+              tableRowHtml
+                  .replace("test-name-placeholder", tableRowObject.getTestName())
+                  .replace("time-placeholder", tableRowObject.getCurrentTime()));
+        } else {
+          htmlCode.append(
+              tableRowHtmlWithWarning
+                  .replace("test-name-placeholder", tableRowObject.getTestName())
+                  .replace("time-placeholder", tableRowObject.getCurrentTime()));
+        }
+      } catch (NumberFormatException e) {
+        htmlCode.append(
+            tableRowHtmlWithWarning
+                .replace("test-name-placeholder", tableRowObject.getTestName())
+                .replace("time-placeholder", tableRowObject.getCurrentTime()));
+      }
     }
     return htmlCode.toString();
   }
