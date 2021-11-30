@@ -7931,14 +7931,14 @@ CREATE TEMP TABLE tmp_vaccinated_entities AS
         CASE
             WHEN
                 /* Valid numbers of doses are 1 to 10 */
-                cases.vaccinationdoses ~ '^(10|[1-9])$'
-            THEN
+                    cases.vaccinationdoses ~ '^(10|[1-9])$'
+                THEN
                 CAST(cases.vaccinationdoses AS int)
             WHEN
                 /* If the number of doses is neither valid nor empty, we assume 1 dose */
                 (cases.vaccinationdoses IS NOT NULL AND cases.vaccinationdoses != '')
-            THEN
-            	1
+                THEN
+                1
             ELSE
                 null
             END
@@ -7946,8 +7946,8 @@ CREATE TEMP TABLE tmp_vaccinated_entities AS
         /* If the number of doses is not valid, save the value as vaccinationdoses_details */
         CASE
             WHEN
-                cases.vaccinationdoses ~ '^(10|[1-9])$'
-            THEN
+                    cases.vaccinationdoses ~ '^(10|[1-9])$'
+                THEN
                 null
             ELSE
                 cases.vaccinationdoses
@@ -7964,7 +7964,7 @@ CREATE TEMP TABLE tmp_vaccinated_entities AS
             AS vaccinename,
         CASE
             WHEN
-                cases.vaccinename = 'OTHER'
+                    cases.vaccinename = 'OTHER'
                 THEN
                 cases.othervaccinename
             ELSE
@@ -8016,28 +8016,28 @@ UNION
         CASE
             WHEN
                 /* Valid numbers of doses are 1 to 10 */
-                vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
-            THEN
+                    vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+                THEN
                 CAST(vaccinationinfo.vaccinationdoses AS int)
             WHEN
                 /* If the number of doses is neither valid nor empty, we assume 1 dose */
                 (vaccinationinfo.vaccinationdoses IS NOT NULL AND vaccinationinfo.vaccinationdoses != '')
-            THEN
-            	1
+                THEN
+                1
             ELSE
                 null
             END
-            AS vaccinationdoses,
+                  AS vaccinationdoses,
         /* If the number of doses is not valid, save the value as vaccinationdoses_details */
         CASE
             WHEN
-                vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
-            THEN
+                    vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+                THEN
                 null
             ELSE
                 vaccinationinfo.vaccinationdoses
             END
-            AS vaccinationdoses_details,
+                  AS vaccinationdoses_details,
         vaccinationinfo.vaccinename AS vaccinename, vaccinationinfo.othervaccinename AS othervaccinename, vaccinationinfo.vaccinemanufacturer,
         vaccinationinfo.othervaccinemanufacturer, vaccinationinfo.vaccinationinfosource, vaccinationinfo.vaccineinn, vaccinationinfo.vaccinebatchnumber,
         vaccinationinfo.vaccineuniicode, vaccinationinfo.vaccineatccode, null AS pregnant, null AS trimester, contact.healthconditions_id AS healthconditions_id,
@@ -8075,14 +8075,14 @@ UNION
         CASE
             WHEN
                 /* Valid numbers of doses are 1 to 10 */
-                vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
-            THEN
+                    vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+                THEN
                 CAST(vaccinationinfo.vaccinationdoses AS int)
             WHEN
                 /* If the number of doses is neither valid nor empty, we assume 1 dose */
                 (vaccinationinfo.vaccinationdoses IS NOT NULL AND vaccinationinfo.vaccinationdoses != '')
-            THEN
-            	1
+                THEN
+                1
             ELSE
                 null
             END
@@ -8090,8 +8090,8 @@ UNION
         /* If the number of doses is not valid, save the value as vaccinationdoses_details */
         CASE
             WHEN
-                vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
-            THEN
+                    vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+                THEN
                 null
             ELSE
                 vaccinationinfo.vaccinationdoses
@@ -8120,6 +8120,100 @@ SELECT DISTINCT ON (person_id, disease) person_id,
                                         nextval('entity_seq') AS immunization_id, relevancedate
 FROM tmp_vaccinated_entities
 ORDER BY person_id, disease, relevancedate DESC;
+
+DROP TABLE IF EXISTS tmp_earliest_vaccinated_entities;
+CREATE TEMP TABLE tmp_earliest_vaccinated_entities AS
+(
+    SELECT DISTINCT ON (person.id, cases.disease) person.id                  AS person_id,
+                                                  cases.disease,
+                                                  coalesce(cases.firstvaccinationdate, symptoms.onsetdate,
+                                                           cases.reportdate) AS relevancedate
+    FROM person
+             LEFT JOIN cases ON cases.person_id = person.id
+             LEFT JOIN symptoms ON cases.symptoms_id = symptoms.id
+    WHERE cases.vaccination = 'VACCINATED'
+      AND cases.deleted = false
+      AND EXISTS (SELECT * from tmp_vaccinated_persons
+           WHERE tmp_vaccinated_persons.person_id = person_id
+             AND tmp_vaccinated_persons.disease = cases.disease
+             AND tmp_vaccinated_persons.firstvaccinationdate IS NULL)
+      AND cases.vaccinationdoses ~ '^(10|[1-9])$'
+      AND EXISTS (SELECT * from tmp_vaccinated_persons
+           WHERE tmp_vaccinated_persons.person_id = person_id
+             AND tmp_vaccinated_persons.disease = cases.disease
+             AND tmp_vaccinated_persons.vaccinationdoses >= CAST(cases.vaccinationdoses AS int))
+    ORDER BY person.id, cases.disease, relevancedate ASC
+)
+UNION
+(
+    SELECT DISTINCT ON (person.id, contact.disease) person.id                                                 AS person_id,
+                                                    contact.disease,
+                                                    coalesce(vaccinationinfo.firstvaccinationdate,
+                                                             contact.lastcontactdate,
+                                                             contact.reportdatetime)                          AS relevancedate
+    FROM person
+             LEFT JOIN contact ON contact.person_id = person.id
+             LEFT JOIN vaccinationinfo ON contact.vaccinationinfo_id = vaccinationinfo.id
+    WHERE vaccinationinfo.vaccination = 'VACCINATED'
+      AND contact.deleted = false
+      AND EXISTS (SELECT * from tmp_vaccinated_persons
+           WHERE tmp_vaccinated_persons.person_id = person_id
+             AND tmp_vaccinated_persons.disease = contact.disease
+             AND tmp_vaccinated_persons.firstvaccinationdate IS NULL)
+      AND vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+      AND EXISTS (SELECT * from tmp_vaccinated_persons
+                  WHERE tmp_vaccinated_persons.person_id = person_id
+                    AND tmp_vaccinated_persons.disease = contact.disease
+                    AND tmp_vaccinated_persons.vaccinationdoses >= CAST(vaccinationinfo.vaccinationdoses AS int))
+    ORDER BY person.id, contact.disease, relevancedate ASC
+)
+UNION
+(
+    SELECT DISTINCT ON (person.id, events.disease) person.id                                       AS person_id,
+                                                   events.disease,
+                                                   coalesce(vaccinationinfo.firstvaccinationdate, events.startdate,
+                                                            events.enddate, events.reportdatetime) AS relevancedate
+    FROM person
+             LEFT JOIN eventparticipant ON eventparticipant.person_id = person.id
+             LEFT JOIN events ON eventparticipant.event_id = events.id
+             LEFT JOIN vaccinationinfo ON eventparticipant.vaccinationinfo_id = vaccinationinfo.id
+    WHERE vaccinationinfo.vaccination = 'VACCINATED'
+      AND eventparticipant.deleted = false
+      AND EXISTS (SELECT *
+           from tmp_vaccinated_persons
+           WHERE tmp_vaccinated_persons.person_id = person_id
+             AND tmp_vaccinated_persons.disease = events.disease
+             AND tmp_vaccinated_persons.firstvaccinationdate IS NULL)
+      AND vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
+      AND EXISTS (SELECT * from tmp_vaccinated_persons
+                  WHERE tmp_vaccinated_persons.person_id = person_id
+                    AND tmp_vaccinated_persons.disease = events.disease
+                    AND tmp_vaccinated_persons.vaccinationdoses >= CAST(vaccinationinfo.vaccinationdoses AS int))
+    ORDER BY person.id, events.disease, relevancedate ASC
+);
+
+DROP TABLE IF EXISTS tmp_earliest_vaccinated_persons;
+CREATE TEMP TABLE tmp_earliest_vaccinated_persons AS
+SELECT DISTINCT ON (person_id, disease) person_id, disease, relevancedate
+FROM tmp_earliest_vaccinated_entities
+ORDER BY person_id, disease, relevancedate ASC;
+
+/* set earliest date  */
+DO
+$$
+    DECLARE
+        rec RECORD;
+    BEGIN
+        FOR rec IN SELECT * FROM tmp_earliest_vaccinated_persons
+            LOOP
+                UPDATE tmp_vaccinated_persons
+                SET firstvaccinationdate = rec.relevancedate
+                WHERE tmp_vaccinated_persons.person_id = rec.person_id
+                  AND tmp_vaccinated_persons.disease = rec.disease
+                  AND firstvaccinationdate IS NULL;
+            end loop;
+    END;
+$$ LANGUAGE plpgsql;
 
 /* Step 2: Create a new immunization entity for each person-disease combination */
 ALTER TABLE immunization ADD COLUMN numberofdoses_details varchar(255);
@@ -8198,17 +8292,138 @@ DO $$
         FOR rec IN SELECT * FROM tmp_vaccinated_persons
             LOOP
                 IF (
-                        rec.firstvaccinationdate IS NOT NULL OR
-                        (
-                            rec.firstvaccinationdate IS NULL AND
-                            rec.lastvaccinationdate IS NULL
+                    rec.vaccinationdoses IS NULL
+                    )
+                THEN
+                    IF (
+                            rec.firstvaccinationdate IS NOT NULL OR
+                            (
+                                    rec.firstvaccinationdate IS NULL AND
+                                    rec.lastvaccinationdate IS NULL
+                                )
                         )
+                    THEN
+                        PERFORM create_vaccination(
+                                rec.immunization_id,
+                                CASE
+                                    WHEN rec.healthconditions_id IS NOT NULL
+                                        THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id))
+                                    ELSE (SELECT * FROM create_healthconditions()) END,
+                                rec.reportdate, rec.reportinguser_id, coalesce(rec.firstvaccinationdate, rec.relevancedate),
+                                CASE
+                                    WHEN
+                                                rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
+                                                rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                        THEN
+                                        'OXFORD_ASTRA_ZENECA'
+                                    ELSE
+                                        rec.vaccinename
+                                    END,
+                                rec.othervaccinename,
+                                CASE
+                                    WHEN
+                                                rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
+                                                rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                        THEN
+                                        'ASTRA_ZENECA'
+                                    ELSE
+                                        rec.vaccinemanufacturer
+                                    END,
+                                rec.othervaccinemanufacturer, rec.vaccineinn, rec.vaccinebatchnumber,
+                                rec.vaccineuniicode, rec.vaccineatccode, rec.vaccinationinfosource,
+                                rec.pregnant, rec.trimester
+                            );
+                    END IF;
+
+                    IF (
+                            rec.lastvaccinationdate IS NOT NULL OR
+                            rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
+                            rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                        )
+                    THEN
+                        PERFORM create_vaccination(
+                                rec.immunization_id,
+                                CASE
+                                    WHEN rec.healthconditions_id IS NOT NULL
+                                        THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id))
+                                    ELSE (SELECT * FROM create_healthconditions()) END,
+                                rec.reportdate, rec.reportinguser_id, coalesce(rec.lastvaccinationdate, rec.relevancedate),
+                                CASE
+                                    WHEN
+                                            rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY'
+                                        THEN
+                                        'COMIRNATY'
+                                    WHEN
+                                            rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                        THEN
+                                        'MRNA_1273'
+                                    ELSE
+                                        rec.vaccinename
+                                    END,
+                                rec.othervaccinename,
+                                CASE
+                                    WHEN
+                                            rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY'
+                                        THEN
+                                        'BIONTECH_PFIZER'
+                                    WHEN
+                                            rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                        THEN
+                                        'MODERNA'
+                                    ELSE
+                                        rec.vaccinemanufacturer
+                                    END,
+                                rec.othervaccinemanufacturer, rec.vaccineinn, rec.vaccinebatchnumber,
+                                rec.vaccineuniicode, rec.vaccineatccode, rec.vaccinationinfosource,
+                                rec.pregnant, rec.trimester
+                            );
+                    END IF;
+                END IF;
+
+                IF (
+                        rec.vaccinationdoses = 1
+                    )
+                THEN
+                    PERFORM create_vaccination(
+                            rec.immunization_id,
+                            CASE
+                                WHEN rec.healthconditions_id IS NOT NULL
+                                    THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id))
+                                ELSE (SELECT * FROM create_healthconditions()) END,
+                            rec.reportdate, rec.reportinguser_id, coalesce(rec.lastvaccinationdate, rec.firstvaccinationdate, rec.relevancedate),
+                            CASE
+                                WHEN
+                                        rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
+                                        rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                    THEN
+                                    'OXFORD_ASTRA_ZENECA'
+                                ELSE
+                                    rec.vaccinename
+                                END,
+                            rec.othervaccinename,
+                            CASE
+                                WHEN
+                                        rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
+                                        rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                    THEN
+                                    'ASTRA_ZENECA'
+                                ELSE
+                                    rec.vaccinemanufacturer
+                                END,
+                            rec.othervaccinemanufacturer, rec.vaccineinn, rec.vaccinebatchnumber,
+                            rec.vaccineuniicode, rec.vaccineatccode, rec.vaccinationinfosource,
+                            rec.pregnant, rec.trimester
+                        );
+                END IF;
+
+                IF (
+                        rec.vaccinationdoses >= 2
                     )
                 THEN
                     PERFORM create_vaccination(
                             rec.immunization_id,
                             CASE WHEN rec.healthconditions_id IS NOT NULL THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id)) ELSE (SELECT * FROM create_healthconditions()) END,
-                            rec.reportdate, rec.reportinguser_id, rec.firstvaccinationdate,
+                            rec.reportdate, rec.reportinguser_id, coalesce(rec.firstvaccinationdate, rec.relevancedate),
                             CASE
                                 WHEN
                                             rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
@@ -8230,14 +8445,44 @@ DO $$
                             rec.vaccineuniicode, rec.vaccineatccode, rec.vaccinationinfosource,
                             rec.pregnant, rec.trimester
                         );
-                END IF;
-
-                IF (
-                        rec.lastvaccinationdate IS NOT NULL OR
-                        rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
-                        rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
-                    )
-                THEN
+                    BEGIN
+                        FOR vaccCounter IN 2 .. rec.vaccinationdoses - 1
+                            LOOP
+                                PERFORM create_vaccination(
+                                        rec.immunization_id,
+                                        CASE WHEN rec.healthconditions_id IS NOT NULL THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id)) ELSE (SELECT * FROM create_healthconditions()) END,
+                                        rec.reportdate, rec.reportinguser_id, null,
+                                        CASE
+                                            WHEN
+                                                    rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY'
+                                                THEN
+                                                'COMIRNATY'
+                                            WHEN
+                                                    rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                                THEN
+                                                'MRNA_1273'
+                                            ELSE
+                                                rec.vaccinename
+                                            END,
+                                        rec.othervaccinename,
+                                        CASE
+                                            WHEN
+                                                    rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY'
+                                                THEN
+                                                'BIONTECH_PFIZER'
+                                            WHEN
+                                                    rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                                THEN
+                                                'MODERNA'
+                                            ELSE
+                                                rec.vaccinemanufacturer
+                                            END,
+                                        rec.othervaccinemanufacturer, rec.vaccineinn, rec.vaccinebatchnumber,
+                                        rec.vaccineuniicode, rec.vaccineatccode, rec.vaccinationinfosource,
+                                        rec.pregnant, rec.trimester
+                                    );
+                            END LOOP;
+                    END;
                     PERFORM create_vaccination(
                             rec.immunization_id,
                             CASE WHEN rec.healthconditions_id IS NOT NULL THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id)) ELSE (SELECT * FROM create_healthconditions()) END,
@@ -8278,6 +8523,8 @@ $$ LANGUAGE plpgsql;
 
 DROP TABLE IF EXISTS tmp_vaccinated_entities;
 DROP TABLE IF EXISTS tmp_vaccinated_persons;
+DROP TABLE IF EXISTS tmp_earliest_vaccinated_entities;
+DROP TABLE IF EXISTS tmp_earliest_vaccinated_persons;
 DROP FUNCTION IF EXISTS clone_healthconditions(bigint);
 DROP FUNCTION IF EXISTS create_healthconditions();
 DROP FUNCTION IF EXISTS create_vaccination(bigint, bigint, timestamp, bigint, timestamp, varchar(255), text, varchar(255), text, text, text, text, text, varchar(255), varchar(255), varchar(255));
@@ -8319,6 +8566,7 @@ UPDATE exportconfiguration SET propertiesstring = replace(propertiesstring, 'vac
 
 UPDATE featureconfiguration SET enabled = true, changedate = now() WHERE featuretype = 'IMMUNIZATION_MANAGEMENT';
 UPDATE featureconfiguration SET enabled = true, changedate = now() WHERE featuretype = 'IMMUNIZATION_STATUS_AUTOMATION';
+
 /* End of vaccination refactoring */
 
 INSERT INTO schema_version (version_number, comment) VALUES (406, 'Vaccination refactoring #5909');
