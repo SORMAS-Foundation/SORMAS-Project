@@ -29,6 +29,7 @@ import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.GENERAL_SEARCH_INPUT;
 
 import cucumber.api.java8.En;
+import customreport.data.TableDataManager;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import javax.inject.Inject;
@@ -186,8 +187,10 @@ public class NavBarSteps implements En {
             String totalTime = new SimpleDateFormat("s:SS").format(diff).replace(":", ".");
             elapsedTime = totalTime;
           } catch (Exception exception) {
-            elapsedTime = "22";
+            elapsedTime = "Couldn't load page under 20s";
           }
+          log.info("Collecting test results");
+          TableDataManager.addRowEntity(page + " page", elapsedTime);
         });
   }
 }

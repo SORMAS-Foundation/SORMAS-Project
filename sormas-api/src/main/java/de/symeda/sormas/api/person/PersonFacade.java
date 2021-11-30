@@ -100,4 +100,6 @@ public interface PersonFacade {
 	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 
 	void mergePerson(PersonDto leadPerson, PersonDto otherPerson);
+
+	PersonDto getByContext(PersonContext context, String contextUuid);
 }

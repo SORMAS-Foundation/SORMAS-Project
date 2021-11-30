@@ -17,9 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_4;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,6 +30,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -62,8 +65,11 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 	private static final long serialVersionUID = -1218707278398543154L;
 
+	private static final String PATHOGEN_TEST_HEADING_LOC = "pathogenTestHeadingLoc";
+
 	//@formatter:off
-	private static final String HTML_LAYOUT = 
+	private static final String HTML_LAYOUT =
+			loc(PATHOGEN_TEST_HEADING_LOC) +
 			fluidRowLocs(PathogenTestDto.REPORT_DATE, PathogenTestDto.VIA_LIMS) +
 			fluidRowLocs(PathogenTestDto.EXTERNAL_ID, PathogenTestDto.EXTERNAL_ORDER_ID) +
 			fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.TEST_TYPE_TEXT) +
@@ -84,6 +90,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	private final SampleDto sample;
 	private final int caseSampleCount;
 	private final boolean create;
+
+	private Label pathogenTestHeadingLabel;
 
 	public PathogenTestForm(SampleDto sample, boolean create, int caseSampleCount, boolean isPseudonymized) {
 		super(
@@ -109,6 +117,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		if (sample == null) {
 			return;
 		}
+
+		pathogenTestHeadingLabel = new Label();
+		pathogenTestHeadingLabel.addStyleName(H3);
+		getContent().addComponent(pathogenTestHeadingLabel, PATHOGEN_TEST_HEADING_LOC);
 
 		addDateField(PathogenTestDto.REPORT_DATE, DateField.class, 0);
 		addField(PathogenTestDto.VIA_LIMS);
@@ -283,5 +295,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
+	}
+
+	@Override
+	public void setHeading(String heading) {
+		pathogenTestHeadingLabel.setValue(heading);
 	}
 }

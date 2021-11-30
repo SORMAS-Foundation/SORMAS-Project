@@ -258,6 +258,7 @@ public class ContactDataView extends AbstractContactView {
 				layout.addComponent(
 					new SideComponentLayout(
 						new VaccinationListComponent(
+							getContactRef(),
 							criteria,
 							contactDto.getRegion() != null ? contactDto.getRegion() : caseDto.getResponsibleRegion(),
 							contactDto.getDistrict() != null ? contactDto.getDistrict() : caseDto.getResponsibleDistrict(),
