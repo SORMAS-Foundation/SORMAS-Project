@@ -179,7 +179,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 				ep.setRegion(rdcf.region);
 				ep.setDistrict(rdcf.district);
 				ep.setVaccinationStatus(VaccinationStatus.VACCINATED);
-			});
+			}, null);
 
 		SampleDto sample =
 			creator.createSample(eventParticipant.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
@@ -406,7 +406,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 			person,
 			"Involved",
 			officer,
-			(p) -> p.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo()));
+			(p) -> p.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo()), null);
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setHandOverOwnership(true);
@@ -529,7 +529,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 			originInfo.setWithEventParticipants(true);
 
 			ep.setSormasToSormasOriginInfo(originInfo);
-		});
+		}, null);
 
 		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
 			getUserService().getByUuid(officer.getUuid()),
@@ -614,7 +614,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 			creator.createPerson(),
 			"Involved",
 			officer,
-			(ep) -> ep.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo()));
+			(ep) -> ep.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo()), null);
 
 		EventParticipantDto newEventParticipant = createEventParticipantDto(event.toReference(), UserDto.build().toReference(), rdcf.centralRdcf);
 
@@ -672,7 +672,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 			creator.createPerson(),
 			"Involved",
 			officer,
-			(ep) -> ep.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo()));
+			(ep) -> ep.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo()), null);
 
 		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
 			getUserService().getByUuid(officer.getUuid()),

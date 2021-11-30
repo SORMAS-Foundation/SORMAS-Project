@@ -39,6 +39,10 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.backend.immunization.ImmunizationService;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.vaccination.Vaccination;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -72,6 +76,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	private SampleService sampleService;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
+	@EJB
+	private ImmunizationService immunizationService;
 
 	public EventParticipantService() {
 		super(EventParticipant.class);
@@ -509,9 +515,30 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 				.and(cb, cb.equal(eventSqRoot, root.get(EventParticipant.EVENT)), cb.equal(eventSqRoot.get(Event.DISEASE), disease), datePredicate));
 
 		cu.set(root.get(EventParticipant.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
+		cu.set(root.get(AbstractDomainObject.CHANGE_DATE), new Date());
 
 		cu.where(cb.and(cb.equal(root.get(EventParticipant.PERSON), personId), cb.isNotNull(eventSq.getSelection())));
 
 		em.createQuery(cu).executeUpdate();
+	}
+
+	// keep both updateVaccinationStatuses logic from EventParticipantService in sync
+	public void updateVaccinationStatuses(EventParticipant eventParticipant) {
+		if (eventParticipant.getEvent().getDisease() == null) {
+			return;
+		}
+		List<Immunization> eventParticipantImmunizations =
+			immunizationService.getByPersonAndDisease(eventParticipant.getPerson().getUuid(), eventParticipant.getEvent().getDisease(), true);
+		Event event = eventParticipant.getEvent();
+
+		boolean hasValidVaccinations = eventParticipantImmunizations.stream()
+			.anyMatch(
+				immunization -> immunization.getVaccinations()
+					.stream()
+					.anyMatch(vaccination -> VaccinationService.isVaccinationRelevant(event, vaccination)));
+
+		if (hasValidVaccinations) {
+			eventParticipant.setVaccinationStatus(VaccinationStatus.VACCINATED);
+		}
 	}
 }

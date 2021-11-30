@@ -117,6 +117,7 @@ public interface Validations {
 	String infrastructureDataLocked = "infrastructureDataLocked";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	String labMessageAlreadyProcessedError = "labMessageAlreadyProcessedError";
+	String labMessageCorrectionsMade = "labMessageCorrectionsMade";
 	String labMessagePdfConversionError = "labMessagePdfConversionError";
 	String nameOrAnyOtherFieldShouldBeFilled = "nameOrAnyOtherFieldShouldBeFilled";
 	String noAddressCommunityInAddressDistrict = "noAddressCommunityInAddressDistrict";

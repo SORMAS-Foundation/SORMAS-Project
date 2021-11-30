@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -53,6 +54,9 @@ import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.Sex;
 
 public final class DataHelper {
+
+	public static final String VALID_EMAIL_REGEX = "^([a-zA-Z0-9_\\.\\-+])+@[a-zA-Z0-9-.]+\\.[a-zA-Z0-9-]{2,}$";
+	public static final String NOT_A_VALID_PHONE_NUMBER_REGEX = ".*[a-zA-Z].*";
 
 	private DataHelper() {
 		// Hide Utility Class Constructor
@@ -93,6 +97,12 @@ public final class DataHelper {
 		}
 		if (b instanceof String) {
 			equal = equal || (a == null && ((String) b).isEmpty());
+		}
+
+		if (a instanceof Timestamp && b instanceof Date) {
+			equal = equal || a.equals(new Timestamp(((Date) b).getTime()));
+		} else if (a instanceof Date && b instanceof Timestamp) {
+			equal = equal || new Timestamp(((Date) a).getTime()).equals(b);
 		}
 
 		return equal;
@@ -441,11 +451,11 @@ public final class DataHelper {
 		return StringUtils.join(notEmptyValues, separator);
 	}
 
-	public static String getEmailValidationRegex() {
-		return "^([a-zA-Z0-9_\\.\\-+])+@[a-zA-Z0-9-.]+\\.[a-zA-Z0-9-]{2,}$";
+	public static boolean isValidPhoneNumber(String phoneNumber) {
+		return StringUtils.isBlank(phoneNumber) || !phoneNumber.matches(NOT_A_VALID_PHONE_NUMBER_REGEX);
 	}
 
-	public static String getPhoneNumberValidationRegex() {
-		return ".*[a-zA-Z].*";
+	public static boolean isValidEmailAddress(String emailAddress) {
+		return StringUtils.isBlank(emailAddress) || emailAddress.matches(VALID_EMAIL_REGEX);
 	}
 }

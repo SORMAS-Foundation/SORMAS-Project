@@ -671,7 +671,11 @@ public class EventsView extends AbstractView {
 		ExportConfigurationDto config = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference(), null);
 		boolean eventGroupFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_GROUPS);
 		config.setProperties(
-			ImportExportUtils.getEventExportProperties(EventDownloadUtil::getPropertyCaption, eventGroupFeatureEnabled)
+			ImportExportUtils
+				.getEventExportProperties(
+					EventDownloadUtil::getPropertyCaption,
+					eventGroupFeatureEnabled,
+					FacadeProvider.getConfigFacade().getCountryLocale())
 				.stream()
 				.map(ExportPropertyMetaInfo::getPropertyId)
 				.collect(Collectors.toSet()));

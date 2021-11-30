@@ -29,20 +29,32 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
+import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.vaccination.VaccinationFacade;
+import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
+import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
@@ -99,15 +111,19 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	@Override
-	public VaccinationDto create(
+	public VaccinationDto createWithImmunization(
 		VaccinationDto dto,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
 		PersonReferenceDto person,
 		Disease disease) {
 
+		if (dto.getImmunization() != null) {
+			throw new IllegalArgumentException("VaccinationDto already has an immunization assigned");
+		}
+
 		if (dto.getUuid() != null && vaccinationService.getByUuid(dto.getUuid()) != null) {
-			throw new IllegalArgumentException("DTO already has a UUID");
+			throw new IllegalArgumentException("VaccinationDto already has a UUID");
 		}
 
 		validate(dto, true);
@@ -123,6 +139,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			immunizationDto.setResponsibleDistrict(district);
 			immunizationDto.setReportingUser(userService.getCurrentUser().toReference());
 			immunizationDto.setMeansOfImmunization(MeansOfImmunization.VACCINATION);
+			immunizationDto.setImmunizationStatus(ImmunizationStatus.ACQUIRED);
+			immunizationDto.setImmunizationManagementStatus(ImmunizationManagementStatus.COMPLETED);
 			immunizationFacade.save(immunizationDto);
 
 			Immunization immunization = immunizationService.getByUuid(immunizationDto.getUuid());
@@ -142,7 +160,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 	private boolean addImmunizationToVaccination(Vaccination vaccination, String personUuid, Disease disease) {
 
-		List<Immunization> immunizations = immunizationService.getByPersonAndDisease(personUuid, disease);
+		List<Immunization> immunizations = immunizationService.getByPersonAndDisease(personUuid, disease, true);
 
 		if (immunizations.isEmpty()) {
 			return false;
@@ -202,8 +220,83 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	@Override
 	public List<VaccinationDto> getAllVaccinations(String personUuid, Disease disease) {
 
-		List<Immunization> immunizations = immunizationService.getByPersonAndDisease(personUuid, disease);
+		List<Immunization> immunizations = immunizationService.getByPersonAndDisease(personUuid, disease, false);
 		return immunizations.stream().flatMap(i -> i.getVaccinations().stream()).map(VaccinationFacadeEjb::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<VaccinationListEntryDto> getEntriesList(VaccinationListCriteria criteria, Integer first, Integer max) {
+		List<Vaccination> vaccinationsList = vaccinationService.getVaccinationsByCriteria(criteria, first, max);
+		List<VaccinationListEntryDto> entriesList =
+			vaccinationsList.stream().map((v) -> toVaccinationListEntryDto(v, true, "")).collect(Collectors.toList());
+		return entriesList;
+	}
+
+	private VaccinationListEntryDto toVaccinationListEntryDto(Vaccination vaccination, boolean relevant, String message) {
+		VaccinationListEntryDto dto = new VaccinationListEntryDto();
+		dto.setUuid(vaccination.getUuid());
+		dto.setDisease(vaccination.getImmunization().getDisease());
+		dto.setVaccinationDate(vaccination.getVaccinationDate());
+		dto.setVaccineName(vaccination.getVaccineName());
+		dto.setOtherVaccineName(vaccination.getOtherVaccineName());
+
+		dto.setRelevant(relevant);
+		dto.setNonRelevantMessage(message);
+		return dto;
+	}
+
+	@Override
+	public List<VaccinationListEntryDto> getEntriesListWithRelevance(
+		CaseReferenceDto caseReferenceDto,
+		VaccinationListCriteria criteria,
+		Integer first,
+		Integer max) {
+		List<Vaccination> vaccinationsList = vaccinationService.getVaccinationsByCriteria(criteria, first, max);
+		Case caze = caseService.getByReferenceDto(caseReferenceDto);
+
+		return vaccinationsList.stream()
+			.map(
+				v -> toVaccinationListEntryDto(
+					v,
+					VaccinationService.isVaccinationRelevant(caze, v),
+					I18nProperties.getString(Strings.messageVaccinationNotRelevantForCase)))
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<VaccinationListEntryDto> getEntriesListWithRelevance(
+		ContactReferenceDto contactReferenceDto,
+		VaccinationListCriteria criteria,
+		Integer first,
+		Integer max) {
+		List<Vaccination> vaccinationsList = vaccinationService.getVaccinationsByCriteria(criteria, first, max);
+		Contact contact = contactService.getByReferenceDto(contactReferenceDto);
+
+		return vaccinationsList.stream()
+			.map(
+				v -> toVaccinationListEntryDto(
+					v,
+					VaccinationService.isVaccinationRelevant(contact, v),
+					I18nProperties.getString(Strings.messageVaccinationNotRelevantForContact)))
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<VaccinationListEntryDto> getEntriesListWithRelevance(
+		EventParticipantReferenceDto eventParticipantReferenceDto,
+		VaccinationListCriteria criteria,
+		Integer first,
+		Integer max) {
+		List<Vaccination> vaccinationsList = vaccinationService.getVaccinationsByCriteria(criteria, first, max);
+		EventParticipant eventParticipant = eventParticipantService.getByReferenceDto(eventParticipantReferenceDto);
+
+		return vaccinationsList.stream()
+			.map(
+				v -> toVaccinationListEntryDto(
+					v,
+					VaccinationService.isVaccinationRelevant(eventParticipant.getEvent(), v),
+					I18nProperties.getString(Strings.messageVaccinationNotRelevantForEventParticipant)))
+			.collect(Collectors.toList());
 	}
 
 	public VaccinationDto convertToDto(Vaccination source, Pseudonymizer pseudonymizer) {
@@ -250,13 +343,35 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 	}
 
-	protected void updateVaccinationStatuses(Date newVaccinationDate, Date currentVaccinationDate, Long personId, Disease disease) {
+	public void updateVaccinationStatuses(Date newVaccinationDate, Date currentVaccinationDate, Long personId, Disease disease) {
 
 		if (currentVaccinationDate == null || newVaccinationDate != currentVaccinationDate) {
 			caseService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
 			contactService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
 			eventParticipantService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
 		}
+	}
+
+	@Override
+	public void deleteWithImmunization(String uuid) {
+
+		if (!userService.hasRight(UserRight.IMMUNIZATION_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete vaccinations");
+		}
+
+		Vaccination vaccination = vaccinationService.getByUuid(uuid);
+		Immunization immunization = vaccination.getImmunization();
+		immunization.getVaccinations().remove(vaccination);
+		immunizationService.ensurePersisted(immunization);
+
+		if (immunization.getVaccinations().isEmpty()) {
+			immunizationService.delete(immunization);
+		}
+	}
+
+	@Override
+	public VaccinationDto getByUuid(String uuid) {
+		return toDto(vaccinationService.getByUuid(uuid));
 	}
 
 	@Override

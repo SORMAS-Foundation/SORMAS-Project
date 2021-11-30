@@ -113,12 +113,8 @@ public class EditPersonSteps implements En {
     Then(
         "I click on save button from Edit Person page",
         () -> {
-          webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
-          // Workaround created until #5535 is fixed
-          baseSteps.getDriver().navigate().refresh();
-          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
           previousCreatedPerson = collectedPerson;
         });
 

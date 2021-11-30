@@ -83,4 +83,8 @@ public class BindingViewHolder<T extends AbstractDomainObject, V extends ViewDat
 		this.data = data;
 		this.binding.setVariable(BR.data, data);
 	}
+
+	public T getData() {
+		return data;
+	}
 }

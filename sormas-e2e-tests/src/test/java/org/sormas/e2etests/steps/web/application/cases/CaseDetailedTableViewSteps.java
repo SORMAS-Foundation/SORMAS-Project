@@ -183,6 +183,7 @@ public class CaseDetailedTableViewSteps implements En {
     HashMap<String, Integer> headerHashmap = new HashMap<>();
     webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CASE_DETAILED_COLUMN_HEADERS);
     webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(CASE_DETAILED_COLUMN_HEADERS);
+    webDriverHelpers.scrollToElementUntilIsVisible(CASE_DETAILED_COLUMN_HEADERS);
     baseSteps
         .getDriver()
         .findElements(CASE_DETAILED_COLUMN_HEADERS)

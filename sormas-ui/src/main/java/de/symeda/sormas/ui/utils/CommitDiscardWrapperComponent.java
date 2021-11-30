@@ -346,8 +346,9 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	}
 
 	/**
-	 * Durch das Aufrufen dieser Methode wird ein Button zum Speichern erzeugt, aber nicht eingefügt.
-	 * Das passiert in setWrappedComponent().
+	 * 
+	 * Calling this method creates a save button. The button will not be added, though.
+	 * This happens in setWrappedComponent().
 	 * 
 	 * @return
 	 */
@@ -368,8 +369,9 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	}
 
 	/**
-	 * Durch das Aufrufen dieser Methode wird ein Button zum Verwerfen erzeugt aber nicht eingefügt.
-	 * Das passiert in setWrappedComponent().
+	 * 
+	 * Calling this method creates a discard button. The button will not be added, though.
+	 * This happens in setWrappedComponent().
 	 * 
 	 * @return
 	 */
@@ -648,8 +650,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	}
 
 	/**
-	 * Fügt einen Listener zum Abbrechen hinzu.
-	 * Blendet den Abbrechen-Button aber nicht ein.
+	 * 
+	 * Adds a discard listener , but does not show it.
 	 * 
 	 * @param listener
 	 */

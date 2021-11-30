@@ -58,6 +58,8 @@ public interface Captions {
 	String actionDeselectAndContinue = "actionDeselectAndContinue";
 	String actionDisable = "actionDisable";
 	String actionDiscard = "actionDiscard";
+	String actionDiscardAllAndContinue = "actionDiscardAllAndContinue";
+	String actionDiscardAndContinue = "actionDiscardAndContinue";
 	String actionDiscardChanges = "actionDiscardChanges";
 	String actionDismiss = "actionDismiss";
 	String actionEnable = "actionEnable";
@@ -90,6 +92,7 @@ public interface Captions {
 	String actionResetEnumCache = "actionResetEnumCache";
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
+	String actionSaveAndContinue = "actionSaveAndContinue";
 	String actionSaveAndOpenHospitalization = "actionSaveAndOpenHospitalization";
 	String actionSaveChanges = "actionSaveChanges";
 	String actionSearch = "actionSearch";
@@ -1375,15 +1378,17 @@ public interface Captions {
 	String LabMessage_personPostalCode = "LabMessage.personPostalCode";
 	String LabMessage_personSex = "LabMessage.personSex";
 	String LabMessage_personStreet = "LabMessage.personStreet";
-	String labMessage_reportId = "labMessage.reportId";
+	String LabMessage_reportId = "LabMessage.reportId";
 	String LabMessage_sampleDateTime = "LabMessage.sampleDateTime";
 	String LabMessage_sampleMaterial = "LabMessage.sampleMaterial";
+	String LabMessage_sampleOverallTestResult = "LabMessage.sampleOverallTestResult";
 	String LabMessage_sampleReceivedDate = "LabMessage.sampleReceivedDate";
 	String LabMessage_specimenCondition = "LabMessage.specimenCondition";
 	String LabMessage_status = "LabMessage.status";
 	String LabMessage_testedDisease = "LabMessage.testedDisease";
 	String labMessageFetch = "labMessageFetch";
 	String labMessageForwardedMessageFound = "labMessageForwardedMessageFound";
+	String labMessageNoDisease = "labMessageNoDisease";
 	String labMessageNoNewMessages = "labMessageNoNewMessages";
 	String labMessageProcess = "labMessageProcess";
 	String labMessageRelatedEntriesFound = "labMessageRelatedEntriesFound";
@@ -1512,6 +1517,7 @@ public interface Captions {
 	String PathogenTest_lab = "PathogenTest.lab";
 	String PathogenTest_labDetails = "PathogenTest.labDetails";
 	String PathogenTest_pcrTestSpecification = "PathogenTest.pcrTestSpecification";
+	String PathogenTest_preliminary = "PathogenTest.preliminary";
 	String PathogenTest_reportDate = "PathogenTest.reportDate";
 	String PathogenTest_serotype = "PathogenTest.serotype";
 	String PathogenTest_testDateTime = "PathogenTest.testDateTime";
@@ -2308,6 +2314,9 @@ public interface Captions {
 	String Vaccination_vaccineName = "Vaccination.vaccineName";
 	String Vaccination_vaccineType = "Vaccination.vaccineType";
 	String Vaccination_vaccineUniiCode = "Vaccination.vaccineUniiCode";
+	String vaccinationNewVaccination = "vaccinationNewVaccination";
+	String vaccinationNoVaccinationsForPerson = "vaccinationNoVaccinationsForPerson";
+	String vaccinationNoVaccinationsForPersonAndDisease = "vaccinationNoVaccinationsForPersonAndDisease";
 	String View_actions = "View.actions";
 	String View_aggregatereports = "View.aggregatereports";
 	String View_aggregatereports_sub = "View.aggregatereports.sub";

@@ -308,9 +308,24 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 		Immunization immunization = fillOrBuildEntity(dto, existingImmunization, checkChangeDate);
 
-		if (!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-			immunizationService.updateImmunizationStatusBasedOnVaccinations(immunization);
-		}
+		immunizationService.updateImmunizationStatusBasedOnVaccinations(immunization);
+
+		immunization.getVaccinations().forEach(vaccination -> {
+			VaccinationDto existingVaccination = null;
+			if (existingDto != null) {
+				existingVaccination = existingDto.getVaccinations()
+					.stream()
+					.filter(vaccinationDto -> vaccination.getUuid().equals(vaccinationDto.getUuid()))
+					.findAny()
+					.orElse(null);
+			}
+			Date existingVaccinationDate = existingVaccination != null ? existingVaccination.getVaccinationDate() : null;
+			vaccinationFacade.updateVaccinationStatuses(
+				vaccination.getVaccinationDate(),
+				existingVaccinationDate,
+				immunization.getPersonId(),
+				immunization.getDisease());
+		});
 
 		immunizationService.ensurePersisted(immunization);
 

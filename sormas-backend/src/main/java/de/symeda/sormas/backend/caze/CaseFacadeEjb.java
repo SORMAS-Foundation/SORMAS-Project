@@ -1943,6 +1943,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (existingCase != null && existingCase.getQuarantineTo() != null && !existingCase.getQuarantineTo().equals(newCase.getQuarantineTo())) {
 			newCase.setPreviousQuarantineTo(existingCase.getQuarantineTo());
 		}
+
+		if (existingCase == null) {
+			caseService.updateVaccinationStatuses(newCase);
+		}
 	}
 
 	public boolean evaluateFulfilledCondition(CaseDataDto newCase, CaseClassification caseClassification) {

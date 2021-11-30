@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.api.person;
 
 import java.util.ArrayList;
@@ -24,6 +22,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -554,7 +553,7 @@ public class PersonDto extends PseudonymizableDto {
 			return primaryPhone;
 		} else {
 			List<String> allPhones = getAllPhoneNumbers();
-			if (allPhones.size() == 0) {
+			if (CollectionUtils.isEmpty(allPhones)) {
 				return "";
 			} else if (allPhones.size() > 1) {
 				throw new SeveralNonPrimaryContactDetailsException("Too many results found, none of which is marked primary.");
@@ -565,7 +564,7 @@ public class PersonDto extends PseudonymizableDto {
 	}
 
 	@JsonIgnore
-	public ArrayList<String> getAllPhoneNumbers() {
+	public List<String> getAllPhoneNumbers() {
 		ArrayList<String> result = new ArrayList<>();
 		for (PersonContactDetailDto pcd : getPersonContactDetails()) {
 			if (pcd.getPersonContactDetailType() == PersonContactDetailType.PHONE) {
@@ -619,7 +618,7 @@ public class PersonDto extends PseudonymizableDto {
 			return primaryEmail;
 		} else {
 			List<String> allEmails = getAllEmailAddresses();
-			if (allEmails.size() == 0) {
+			if (CollectionUtils.isEmpty(allEmails)) {
 				return "";
 			} else if (allEmails.size() > 1) {
 				throw new SeveralNonPrimaryContactDetailsException("Too many results found, none of which is marked primary.");
@@ -630,7 +629,7 @@ public class PersonDto extends PseudonymizableDto {
 	}
 
 	@JsonIgnore
-	public ArrayList<String> getAllEmailAddresses() {
+	public List<String> getAllEmailAddresses() {
 		ArrayList<String> result = new ArrayList<>();
 		for (PersonContactDetailDto pcd : getPersonContactDetails()) {
 			if (pcd.getPersonContactDetailType() == PersonContactDetailType.EMAIL) {
@@ -875,6 +874,10 @@ public class PersonDto extends PseudonymizableDto {
 		this.addresses = addresses;
 	}
 
+	public void addAddress(LocationDto address) {
+		addresses.add(address);
+	}
+
 	@ImportIgnore
 	public List<PersonContactDetailDto> getPersonContactDetails() {
 		return personContactDetails;
@@ -968,5 +971,25 @@ public class PersonDto extends PseudonymizableDto {
 
 	public PersonReferenceDto toReference() {
 		return new PersonReferenceDto(getUuid(), firstName, lastName);
+	}
+
+	@Override
+	public PersonDto clone() throws CloneNotSupportedException {
+		PersonDto clone = (PersonDto) super.clone();
+		clone.setAddress((LocationDto) getAddress().clone());
+
+		List<LocationDto> addressesClone = new ArrayList<>();
+		for (LocationDto locationDto : getAddresses()) {
+			addressesClone.add((LocationDto) locationDto.clone());
+		}
+		clone.setAddresses(addressesClone);
+
+		List<PersonContactDetailDto> contactDetailsClone = new ArrayList<>();
+		for (PersonContactDetailDto personContactDetailDto : getPersonContactDetails()) {
+			contactDetailsClone.add((PersonContactDetailDto) personContactDetailDto.clone());
+		}
+		clone.setPersonContactDetails(contactDetailsClone);
+
+		return clone;
 	}
 }

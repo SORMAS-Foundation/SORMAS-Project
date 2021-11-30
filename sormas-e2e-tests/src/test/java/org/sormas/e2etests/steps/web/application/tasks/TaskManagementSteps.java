@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -98,7 +99,7 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(GENERAL_SEARCH_INPUT);
           webDriverHelpers.fillAndSubmitInWebElement(
               GENERAL_SEARCH_INPUT, apiState.getCreatedContact().getUuid());
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
+          TimeUnit.SECONDS.sleep(20);
         });
 
     When(
@@ -195,6 +196,7 @@ public class TaskManagementSteps implements En {
                 indexWithData.put(atomicInt.getAndIncrement(), dataText.getText());
               });
           tableDataList.add(indexWithData);
+          webDriverHelpers.scrollToElementUntilIsVisible(TABLE_DATA);
         });
     List<Map<String, String>> tableObjects = new ArrayList<>();
     tableDataList.forEach(
@@ -216,6 +218,7 @@ public class TaskManagementSteps implements En {
     HashMap<String, Integer> headerHashmap = new HashMap<>();
     webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(COLUMN_HEADERS_TEXT);
     webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(COLUMN_HEADERS_TEXT);
+    webDriverHelpers.scrollToElementUntilIsVisible(COLUMN_HEADERS_TEXT);
     baseSteps
         .getDriver()
         .findElements(COLUMN_HEADERS_TEXT)
@@ -224,6 +227,7 @@ public class TaskManagementSteps implements En {
               webDriverHelpers.scrollToElementUntilIsVisible(webElement);
               headerHashmap.put(webElement.getText(), atomicInt.getAndIncrement());
             });
+    webDriverHelpers.scrollToElementUntilIsVisible(COLUMN_HEADERS_TEXT);
     return headerHashmap;
   }
 

@@ -20,17 +20,15 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfTwoCol;
 
 import java.util.Collections;
-import java.util.Date;
-
-import com.vaadin.v7.data.util.converter.Converter;
-import com.vaadin.v7.ui.DateField;
 
 import com.vaadin.v7.ui.Field;
-import de.symeda.sormas.api.caze.CaseDataDto;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -52,8 +50,13 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 		+ fluidRowLocs(VaccinationDto.PREGNANT, VaccinationDto.TRIMESTER)
 		+ fluidRowLocs(VaccinationDto.HEALTH_CONDITIONS);
 
-	public VaccinationEditForm(boolean create, FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
-		super(VaccinationDto.class, VaccinationDto.I18N_PREFIX, false, fieldVisibilityCheckers, fieldAccessCheckers);
+	public VaccinationEditForm(boolean create, Disease disease, UiFieldAccessCheckers fieldAccessCheckers) {
+		super(
+			VaccinationDto.class,
+			VaccinationDto.I18N_PREFIX,
+			false,
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()).andWithDisease(disease),
+			fieldAccessCheckers);
 
 		setWidth(800, Unit.PIXELS);
 
@@ -93,8 +96,6 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 		addField(VaccinationDto.VACCINE_UNII_CODE);
 		addField(VaccinationDto.VACCINE_BATCH_NUMBER);
 		addField(VaccinationDto.VACCINE_ATC_CODE);
-		addField(VaccinationDto.PREGNANT);
-		addField(VaccinationDto.TRIMESTER);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
@@ -110,9 +111,18 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 			Collections.singletonList(VaccineManufacturer.OTHER),
 			true);
 
-		FieldHelper
-			.setVisibleWhen(getFieldGroup(), VaccinationDto.TRIMESTER, VaccinationDto.PREGNANT, Collections.singletonList(YesNoUnknown.YES), true);
+		if (!FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			addField(VaccinationDto.PREGNANT);
+			addField(VaccinationDto.TRIMESTER);
+			addField(VaccinationDto.HEALTH_CONDITIONS, HealthConditionsForm.class).setCaption(null);
 
-		addField(VaccinationDto.HEALTH_CONDITIONS, HealthConditionsForm.class).setCaption(null);
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				VaccinationDto.TRIMESTER,
+				VaccinationDto.PREGNANT,
+				Collections.singletonList(YesNoUnknown.YES),
+				true);
+		}
+
 	}
 }
