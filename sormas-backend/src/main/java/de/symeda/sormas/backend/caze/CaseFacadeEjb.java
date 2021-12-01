@@ -2825,9 +2825,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private void createInvestigationTask(Case caze) {
 
-		if (StringUtils.isBlank(caze.getPerson().getFathersName())){
-			return;
-		}
 		Task task = new Task();
 		task.setTaskStatus(TaskStatus.PENDING);
 		task.setTaskContext(TaskContext.CASE);

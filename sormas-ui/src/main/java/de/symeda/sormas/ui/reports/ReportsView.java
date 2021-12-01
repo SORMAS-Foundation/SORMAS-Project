@@ -19,12 +19,12 @@ package de.symeda.sormas.ui.reports;
 
 import java.util.Date;
 import java.util.List;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -32,21 +32,7 @@ import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.Grid;
-import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import com.vaadin.server.Sizeable;
-import com.vaadin.ui.TextField;
-import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import de.symeda.sormas.ui.CreateSpecificCasesLayout;
-import de.symeda.sormas.api.infrastructure.district.DistrictFacade;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -59,43 +45,12 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import com.vaadin.ui.ComboBox;
-import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import java.text.SimpleDateFormat;
-import com.vaadin.ui.Notification;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.person.PersonFacade;
-import de.symeda.sormas.api.caze.CaseFacade;
-import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
-import de.symeda.sormas.api.caze.CaseOrigin;
-import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import com.vaadin.ui.Notification.Type;
 
 public class ReportsView extends AbstractView {
 
 	private static final long serialVersionUID = -226852255434803180L;
 
 	public static final String VIEW_NAME = "reports";
-
-	private final Logger logger = LoggerFactory.getLogger(getClass());
-
-	private CaseDataDto caseDataDto;
-
-	private PersonDto personDto;
-
-	private final PersonFacade personFacade;
-
-	private final CaseFacade caseFacade;
-
-	private final PointOfEntryFacade pointOfEntryFacade;
-
-	private final DistrictFacade districtFacade;
 
 	private Grid grid;
 	private VerticalLayout gridLayout;
@@ -119,11 +74,7 @@ public class ReportsView extends AbstractView {
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
 		gridLayout.setSizeFull();
-		gridLayout.setExpandRatio(grid, 4);
-		personFacade = FacadeProvider.getPersonFacade();
-		caseFacade = FacadeProvider.getCaseFacade();
-		pointOfEntryFacade = FacadeProvider.getPointOfEntryFacade();
-		districtFacade = FacadeProvider.getDistrictFacade();
+		gridLayout.setExpandRatio(grid, 1);
 
 		addComponent(gridLayout);
 
