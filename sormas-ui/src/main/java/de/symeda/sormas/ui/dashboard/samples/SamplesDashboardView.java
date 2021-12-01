@@ -31,7 +31,7 @@ public class SamplesDashboardView extends AbstractDashboardView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/samples";
 
 	protected CountsTileViewLayout countsTileViewLayout;
-	protected SampleFilterLayout filterLayout;
+	protected DashboardSampleFilterLayout filterLayout;
 	protected DashboardDataProvider dashboardDataProvider;
 
 	public SamplesDashboardView() {
@@ -45,7 +45,7 @@ public class SamplesDashboardView extends AbstractDashboardView {
 			dashboardDataProvider.setDisease(FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease());
 		}
 
-		filterLayout = new SampleFilterLayout(this, dashboardDataProvider);
+		filterLayout = new DashboardSampleFilterLayout(this, dashboardDataProvider);
 		dashboardLayout.addComponent(filterLayout);
 
 		dashboardSwitcher.setValue(DashboardType.SAMPLES);
