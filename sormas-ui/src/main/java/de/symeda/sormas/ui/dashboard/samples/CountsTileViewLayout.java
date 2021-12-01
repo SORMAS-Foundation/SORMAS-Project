@@ -82,7 +82,7 @@ public class CountsTileViewLayout extends CssLayout {
 
 		HorizontalLayout totalHorizontalLayout = new HorizontalLayout();
 		totalHorizontalLayout.setWidth(500, Unit.PIXELS);
-		totalHorizontalLayout.addComponent(createCountRow(totalCol, sampleCount, previousSampleCount, Captions.Sample_name));
+		totalHorizontalLayout.addComponent(createCountRow(totalCol, sampleCount, previousSampleCount, Captions.SampleSamples));
 		addComponent(totalHorizontalLayout);
 
 		HorizontalLayout conditionHorizontalLayout = new HorizontalLayout();
@@ -96,7 +96,7 @@ public class CountsTileViewLayout extends CssLayout {
 
 		HorizontalLayout shipmentHorizontalLayout = new HorizontalLayout();
 		shipmentHorizontalLayout.setWidth(100, Unit.PERCENTAGE);
-		shipmentHorizontalLayout.addComponent(createCountRow(shipmentCol, sampleCount, previousSampleCount, Captions.Sample_shipment));
+		shipmentHorizontalLayout.addComponent(createCountRow(shipmentCol, sampleCount, previousSampleCount, Captions.SampleShipmentStatus));
 		addComponent(shipmentHorizontalLayout);
 	}
 
