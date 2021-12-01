@@ -17,10 +17,10 @@ import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.dashboard.components.DashboardFilterLayout;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class SampleFilterLayout extends DashboardFilterLayout{
+public class DashboardSampleFilterLayout extends DashboardFilterLayout{
 	private ComboBox diseaseFilter;
 
-	public SampleFilterLayout(AbstractDashboardView dashboardView, DashboardDataProvider dashboardDataProvider) {
+	public DashboardSampleFilterLayout(AbstractDashboardView dashboardView, DashboardDataProvider dashboardDataProvider) {
 		super(dashboardView, dashboardDataProvider);
 		setStyleName(CssStyles.D_FLEX, true);
 		setStyleName(CssStyles.FLEX_WRAP, true);
