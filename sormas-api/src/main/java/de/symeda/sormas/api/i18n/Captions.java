@@ -1662,7 +1662,8 @@ public interface Captions {
 	String Sample_labDetails = "Sample.labDetails";
 	String Sample_labSampleID = "Sample.labSampleID";
 	String Sample_labUser = "Sample.labUser";
-	String Sample_name = "Sample.name";
+	String SampleShipmentStatus = "sampleShipmentStatus";
+	String SampleSamples = "sampleSamples";
 	String Sample_noTestPossibleReason = "Sample.noTestPossibleReason";
 	String Sample_otherLab = "Sample.otherLab";
 	String Sample_pathogenTestCount = "Sample.pathogenTestCount";
@@ -1688,7 +1689,6 @@ public interface Captions {
 	String Sample_sampleSource = "Sample.sampleSource";
 	String Sample_samplingReason = "Sample.samplingReason";
 	String Sample_samplingReasonDetails = "Sample.samplingReasonDetails";
-	String Sample_shipment = "Sample.shipment";
 	String Sample_shipmentDate = "Sample.shipmentDate";
 	String Sample_shipmentDetails = "Sample.shipmentDetails";
 	String Sample_shipped = "Sample.shipped";
