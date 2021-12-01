@@ -134,6 +134,9 @@ public class ReportsView extends AbstractView {
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createReportButton);
+			if (!UserProvider.getCurrent().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+				createReportButton.setEnabled(false);
+			}
 		}
 
 	public void CaseReportWindow() {
@@ -245,7 +248,7 @@ public class ReportsView extends AbstractView {
 				// values, entityClasses, entityProperties, entityPropertyPaths, false);
 				personDto = new PersonDto();
 				personDto.setFirstName("EMPTY_FIRST_FAME");
-				personDto.setLastName("EMPTY_LAST_AME");
+				personDto.setLastName("EMPTY_LAST_NAME");
 				personDto.setSex(Sex.UNKNOWN);
 				PersonDto createdPerson = personFacade.savePerson(personDto);
 				logger.debug("Personne cree {} ", createdPerson.getUuid());
@@ -274,15 +277,17 @@ public class ReportsView extends AbstractView {
 				logger.debug("Cas cree {}", createdcase.getUuid());
 			}
 			logger.debug("Creation des cas terminee. {} cas non examines"+
-			" crees et {} cas examine crees.", CountnumberOfNotExCase, CountnumberOfExCase);
+			" crees et {} cas examine crees.",
+			CountnumberOfNotExCase, CountnumberOfExCase);
 			
 			Notification.show(I18nProperties.getString(Strings.messageCaseAutoSaved), Type.WARNING_MESSAGE);
 			SormasUI.refreshView();
+			UI.getCurrent().removeWindow(window);
 		};
 
 		return new CreateSpecificCasesLayout(
-			confirmCallback, window::close, date, 
-			pointofentries, people, 
+			confirmCallback, window::close, date,
+			pointofentries, people,
 			examinatedpeople, confirmCaption);
 	}
 
@@ -306,7 +311,9 @@ public class ReportsView extends AbstractView {
 		yearFilter.setCaption(I18nProperties.getString(Strings.year));
 		yearFilter.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		yearFilter.addValueChangeListener(e -> {
-			updateEpiWeeks((int) e.getProperty().getValue(), (int) epiWeekFilter.getValue());
+			updateEpiWeeks(
+				(int) e.getProperty().getValue(),
+				(int) epiWeekFilter.getValue());
 			reloadGrid();
 		});
 		filterLayout.addComponent(yearFilter);
@@ -324,7 +331,10 @@ public class ReportsView extends AbstractView {
 
 		Button lastWeekButton = ButtonHelper.createButton(
 			Captions.dashboardLastWeek,
-			String.format(I18nProperties.getCaption(Captions.dashboardLastWeek), DateHelper.getPreviousEpiWeek(new Date()).toString()),
+			String.format(
+				I18nProperties.getCaption(
+					Captions.dashboardLastWeek),
+					DateHelper.getPreviousEpiWeek(new Date()).toString()),
 			e -> {
 				EpiWeek epiWeek = DateHelper.getPreviousEpiWeek(new Date());
 				yearFilter.select(epiWeek.getYear());
@@ -335,7 +345,9 @@ public class ReportsView extends AbstractView {
 		filterLayout.addComponent(lastWeekButton);
 
 		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
-		infoLabel.setDescription(I18nProperties.getString(Strings.infoWeeklyReportsView), ContentMode.HTML);
+		infoLabel.setDescription(
+			I18nProperties.getString(Strings.infoWeeklyReportsView),
+			ContentMode.HTML);
 		infoLabel.setSizeUndefined();
 		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
 		filterLayout.addComponent(infoLabel);

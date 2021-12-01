@@ -86,11 +86,11 @@ public class CreateSpecificCasesLayout extends VerticalLayout {
 		firstLayout.setMargin(false);
 
 		
-		repDate.setWidth(60, Unit.PERCENTAGE);
+		repDate.setWidth(80, Unit.PERCENTAGE);
 		repDate.setRequiredIndicatorVisible(true);
 		firstLayout.addComponent(repDate);
 
-		pointOfEntry.setWidth(60, Unit.PERCENTAGE);
+		pointOfEntry.setWidth(80, Unit.PERCENTAGE);
 		pointOfEntry.setRequiredIndicatorVisible(true);
 		HorizontalLayout secondLayout = new HorizontalLayout();
 		secondLayout.setMargin(false);
@@ -103,9 +103,9 @@ public class CreateSpecificCasesLayout extends VerticalLayout {
 
 	private HorizontalLayout buildSecondLayout(TextField peolple, TextField examinatedpeople) {
 		HorizontalLayout tirhtLayout = new HorizontalLayout();
-		tirhtLayout.setMargin(false);
+		tirhtLayout.setMargin(true);
 
-		peolple.setWidth(60, Unit.PERCENTAGE);
+		peolple.setWidth(170, Unit.PERCENTAGE);
 		peolple.setRequiredIndicatorVisible(true);
 		tirhtLayout.addComponent(peolple);
 
