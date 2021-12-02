@@ -18,6 +18,8 @@
 package de.symeda.sormas.backend.contact;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -40,6 +42,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
@@ -1449,17 +1452,45 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	 */
 	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
 
+		LocalDate localVaccinationDate = vaccinationDate != null ? vaccinationDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate() : null;
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Contact> cu = cb.createCriteriaUpdate(Contact.class);
 		Root<Contact> root = cu.from(Contact.class);
+		Path<Date> lastContactDatePath = root.get(Contact.LAST_CONTACT_DATE);
+		Expression<Integer> lastContactDateYear = cb.function(ModelConstants.FUNCTION_YEAR, Integer.class, lastContactDatePath);
+		Expression<Integer> lastContactDateMonth = cb.function(ModelConstants.FUNCTION_MONTH, Integer.class, lastContactDatePath);
+		Expression<Integer> lastContactDateDay = cb.function(ModelConstants.FUNCTION_DAY, Integer.class, lastContactDatePath);
+		Path<Date> reportDatePath = root.get(Contact.REPORT_DATE_TIME);
+		Expression<Integer> reportDateYear = cb.function(ModelConstants.FUNCTION_YEAR, Integer.class, reportDatePath);
+		Expression<Integer> reportDateMonth = cb.function(ModelConstants.FUNCTION_MONTH, Integer.class, reportDatePath);
+		Expression<Integer> reportDateDay = cb.function(ModelConstants.FUNCTION_DAY, Integer.class, reportDatePath);
 
 		cu.set(root.get(Contact.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
 		cu.set(root.get(AbstractDomainObject.CHANGE_DATE), new Date());
 
 		Predicate datePredicate = vaccinationDate != null
 			? cb.or(
-				cb.greaterThanOrEqualTo(root.get(Contact.LAST_CONTACT_DATE), vaccinationDate),
-				cb.and(cb.isNull(root.get(Contact.LAST_CONTACT_DATE)), cb.greaterThanOrEqualTo(root.get(Contact.REPORT_DATE_TIME), vaccinationDate)))
+				cb.or(
+					cb.greaterThan(lastContactDateYear, localVaccinationDate.getYear()),
+					cb.and(
+						cb.equal(lastContactDateYear, localVaccinationDate.getYear()),
+						cb.greaterThan(lastContactDateMonth, localVaccinationDate.getMonthValue())),
+					cb.and(
+						cb.equal(lastContactDateYear, localVaccinationDate.getYear()),
+						cb.equal(lastContactDateMonth, localVaccinationDate.getMonthValue()),
+						cb.greaterThan(lastContactDateDay, localVaccinationDate.getDayOfMonth()))),
+				cb.and(
+					cb.isNull(root.get(Contact.LAST_CONTACT_DATE)),
+					cb.or(
+						cb.greaterThan(reportDateYear, localVaccinationDate.getYear()),
+						cb.and(
+							cb.equal(reportDateYear, localVaccinationDate.getYear()),
+							cb.greaterThan(reportDateMonth, localVaccinationDate.getMonthValue())),
+						cb.and(
+							cb.equal(reportDateYear, localVaccinationDate.getYear()),
+							cb.equal(reportDateMonth, localVaccinationDate.getMonthValue()),
+							cb.greaterThan(reportDateDay, localVaccinationDate.getDayOfMonth())))))
 			: null;
 
 		cu.where(
