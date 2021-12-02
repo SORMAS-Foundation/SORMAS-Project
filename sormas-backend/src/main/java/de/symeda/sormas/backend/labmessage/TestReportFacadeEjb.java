@@ -1,19 +1,19 @@
 package de.symeda.sormas.backend.labmessage;
 
-import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
-import de.symeda.sormas.api.labmessage.TestReportDto;
-import de.symeda.sormas.api.labmessage.TestReportFacade;
-import de.symeda.sormas.backend.sample.PathogenTestService;
-import de.symeda.sormas.backend.util.DtoHelper;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+
+import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
+import de.symeda.sormas.api.labmessage.TestReportDto;
+import de.symeda.sormas.api.labmessage.TestReportFacade;
+import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "TestReportFacade")
 public class TestReportFacadeEjb implements TestReportFacade {
@@ -23,9 +23,6 @@ public class TestReportFacadeEjb implements TestReportFacade {
 
 	@EJB
 	private TestReportService testReportService;
-
-	@EJB
-	private PathogenTestService pathogenTestService;
 
 	@Override
 	public TestReportDto getByUuid(String uuid) {
@@ -38,7 +35,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		return saveTestReport(dto, true);
 	}
 
-	public TestReportDto saveTestReport(TestReportDto dto, boolean checkChangeDate) {
+	public TestReportDto saveTestReport(@Valid TestReportDto dto, boolean checkChangeDate) {
 
 		TestReport testReport = fromDto(dto, checkChangeDate);
 
@@ -76,9 +73,9 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTestResultVerified(source.isTestResultVerified());
 		target.setTestResultText(source.getTestResultText());
 		target.setTypingId(source.getTypingId());
-		if (source.getPathogenTest() != null) {
-			target.setPathogenTest(source.getPathogenTest().toReference());
-		}
+		target.setExternalId(source.getExternalId());
+		target.setExternalOrderId(source.getExternalOrderId());
+		target.setPreliminary(source.getPreliminary());
 
 		return target;
 	}
@@ -97,7 +94,9 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTestResultVerified(source.isTestResultVerified());
 		target.setTestResultText(source.getTestResultText());
 		target.setTypingId(source.getTypingId());
-		target.setPathogenTest(pathogenTestService.getByReferenceDto(source.getPathogenTest()));
+		target.setExternalId(source.getExternalId());
+		target.setExternalOrderId(source.getExternalOrderId());
+		target.setPreliminary(source.getPreliminary());
 
 		return target;
 	}

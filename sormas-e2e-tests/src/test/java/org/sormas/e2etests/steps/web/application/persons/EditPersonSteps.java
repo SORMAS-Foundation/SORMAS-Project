@@ -27,6 +27,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import javax.inject.Inject;
+import javax.inject.Named;
+import org.openqa.selenium.ElementClickInterceptedException;
 import org.sormas.e2etests.comparators.PersonComparator;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Person;
@@ -47,7 +49,8 @@ public class EditPersonSteps implements En {
       WebDriverHelpers webDriverHelpers,
       PersonService personService,
       BaseSteps baseSteps,
-      PersonComparator personComparator) {
+      PersonComparator personComparator,
+      @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -110,12 +113,8 @@ public class EditPersonSteps implements En {
     Then(
         "I click on save button from Edit Person page",
         () -> {
-          webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(PERSON_DATA_SAVED_POPUP);
-          // Workaround created until #5535 is fixed
-          baseSteps.getDriver().navigate().refresh();
-          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
           previousCreatedPerson = collectedPerson;
         });
 
@@ -127,10 +126,23 @@ public class EditPersonSteps implements En {
           final String eventUuid = EditEventSteps.event.getUuid();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(eventUuid));
         });
+
+    When(
+        "I navigate via URL to last Person created from edit Event page",
+        () -> {
+          final String personUuid = EditEventSteps.person.getUuid();
+          webDriverHelpers.accessWebSite(
+              environmentUrl + "/sormas-ui/#!persons/data/" + personUuid);
+        });
   }
 
   private void fillFirstName(String firstName) {
-    webDriverHelpers.clearAndFillInWebElement(FIRST_NAME_INPUT, firstName);
+    try {
+      webDriverHelpers.clearAndFillInWebElement(FIRST_NAME_INPUT, firstName);
+    } catch (ElementClickInterceptedException elementClickInterceptedException) {
+      webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+      webDriverHelpers.clearAndFillInWebElement(FIRST_NAME_INPUT, firstName);
+    }
   }
 
   private void fillLastName(String lastName) {
@@ -334,6 +346,7 @@ public class EditPersonSteps implements En {
 
   public Person getPersonInformation() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USER_INFORMATION, 60);
     String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
     String uuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
     String[] personInfos = contactInfo.split(" ");

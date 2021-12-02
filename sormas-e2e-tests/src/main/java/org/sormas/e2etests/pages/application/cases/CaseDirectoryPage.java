@@ -22,10 +22,11 @@ import org.openqa.selenium.By;
 
 public class CaseDirectoryPage {
   public static final By NEW_CASE_BUTTON = By.cssSelector("div#caseNewCase");
+  public static final By TOTAL_CASES_COUNTER = By.cssSelector(".badge");
   public static final By CASE_DIRECTORY_DETAILED_RADIOBUTTON =
-      By.cssSelector("div#casesViewSwitcher span:nth-child(2) > label");
+      By.cssSelector("#casesViewSwitcher span:nth-child(2)");
   public static final By CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT =
-      By.cssSelector("input#nameUuidEpidNumberLike");
+      By.cssSelector("input#caseLike");
   public static final By CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON =
       By.cssSelector("div#actionApplyFilters");
   public static final By CASE_DETAILED_TABLE_DATA = By.tagName("td");
@@ -34,8 +35,9 @@ public class CaseDirectoryPage {
   public static final By CASE_DETAILED_TABLE_ROWS =
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By FIRST_CASE_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
-  public static final By NAME_UUID_EPID_NUMBER_LIKE_INPUT =
-      By.cssSelector("input#nameUuidEpidNumberLike");
+  public static final By NAME_UUID_EPID_NUMBER_LIKE_INPUT = By.cssSelector("input#caseLike");
+  public static final By PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT =
+      By.cssSelector("#personLike");
   public static final By CASE_OUTCOME_FILTER_COMBOBOX =
       By.cssSelector("[id='outcome'] [class='v-filterselect-button']");
   public static final By CASE_CLASSIFICATION_FILTER_COMBOBOX =
@@ -47,18 +49,19 @@ public class CaseDirectoryPage {
   public static final String CASE_RESULTS_UUID_LOCATOR = "[title = '%s']";
   public static final By CASE_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
   public static final By LINE_LISTING_BUTTON = By.id("lineListing");
+  public static final By GRID_HEADERS = By.xpath("//thead//tr//th");
   public static final By GRID_RESULTS_DISEASE =
       By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(5)");
   public static final By GRID_RESULTS_FIRST_NAME =
-      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(10)");
-  public static final By GRID_RESULTS_LAST_NAME =
       By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(11)");
-  public static final By GRID_RESULTS_DISTRICT =
+  public static final By GRID_RESULTS_LAST_NAME =
       By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(12)");
-  public static final By GRID_RESULTS_HEALTH_FACILITY =
+  public static final By GRID_RESULTS_DISTRICT =
       By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(13)");
-  public static final By GRID_RESULTS_DATE_OF_REPORT =
-      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(15)");
+  public static final By GRID_RESULTS_HEALTH_FACILITY =
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(14)");
   public static final By CASE_CLASSIFICATION_COLUMNS =
       By.cssSelector("[role=rowgroup] tr>td:nth-child(7)");
+  public static final String RESULTS_GRID_HEADER = "//div[contains(text(), '%s')]";
+  // TODO refactor the other headers based on the last one added
 }

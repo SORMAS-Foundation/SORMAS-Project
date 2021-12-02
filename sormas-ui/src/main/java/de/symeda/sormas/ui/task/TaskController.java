@@ -28,6 +28,7 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -53,9 +54,9 @@ public class TaskController {
 
 	}
 
-	public void create(TaskContext context, ReferenceDto entityRef, Runnable callback) {
+	public void create(TaskContext context, ReferenceDto entityRef, Disease disease, Runnable callback) {
 
-		TaskEditForm createForm = new TaskEditForm(true, false);
+		TaskEditForm createForm = new TaskEditForm(true, false, disease);
 		createForm.setValue(createNewTask(context, entityRef));
 		final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(
 			createForm,
@@ -77,9 +78,9 @@ public class TaskController {
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewTask));
 	}
 
-	public void createSampleCollectionTask(TaskContext context, ReferenceDto entityRef, SampleDto sample) {
+	public void createSampleCollectionTask(TaskContext context, ReferenceDto entityRef, SampleDto sample, Disease disease) {
 
-		TaskEditForm createForm = new TaskEditForm(true, false);
+		TaskEditForm createForm = new TaskEditForm(true, false, disease);
 		TaskDto taskDto = createNewTask(context, entityRef);
 		taskDto.setTaskType(TaskType.SAMPLE_COLLECTION);
 		taskDto.setCreatorComment(sample.getNoTestPossibleReason());
@@ -104,12 +105,12 @@ public class TaskController {
 		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingCreateNewTask));
 	}
 
-	public void edit(TaskIndexDto dto, Runnable callback, boolean editedFromTaskGrid) {
+	public void edit(TaskIndexDto dto, Runnable callback, boolean editedFromTaskGrid, Disease disease) {
 
 		// get fresh data
 		TaskDto newDto = FacadeProvider.getTaskFacade().getByUuid(dto.getUuid());
 
-		TaskEditForm form = new TaskEditForm(false, editedFromTaskGrid);
+		TaskEditForm form = new TaskEditForm(false, editedFromTaskGrid, disease);
 		form.setValue(newDto);
 		final CommitDiscardWrapperComponent<TaskEditForm> editView =
 			new CommitDiscardWrapperComponent<TaskEditForm>(form, UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT), form.getFieldGroup());

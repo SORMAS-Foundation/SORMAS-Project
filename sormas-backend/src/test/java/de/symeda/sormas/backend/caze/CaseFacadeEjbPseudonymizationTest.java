@@ -23,7 +23,6 @@ import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
-import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -46,21 +45,20 @@ import de.symeda.sormas.api.caze.CaseFollowUpDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.infrastructure.area.AreaType;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -73,6 +71,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	private PointOfEntryDto rdcf2NewPointOfEntry;
 	private UserDto user1;
 	private UserDto user2;
+	private UserDto observerUser;
 
 	@Override
 	public void init() {
@@ -90,7 +89,9 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		rdcf2NewFacility = creator.createFacility("New facility", rdcf2.region, rdcf2.district, rdcf2NewCommunity.toReference());
 		rdcf2NewPointOfEntry = creator.createPointOfEntry("New point of entry", rdcf2.region, rdcf2.district);
 
-		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
+		observerUser = creator.createUser(null, null, null, null, "National", "Observer", UserRole.NATIONAL_OBSERVER);
+
+		loginWith(user2);
 	}
 
 	@Test
@@ -236,10 +237,13 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testUpdateCaseOutsideJurisdiction() {
+	public void testUpdatePseudonymizedCase() {
 
 		CaseDataDto caze = createCase(rdcf1, user1);
-		updateCase(caze, user2);
+
+		loginWith(observerUser);
+
+		updateCase(caze, observerUser);
 		assertPseudonymizedDataNotUpdated(caze, rdcf1, user1);
 	}
 

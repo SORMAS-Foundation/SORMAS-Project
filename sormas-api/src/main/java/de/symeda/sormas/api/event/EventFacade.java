@@ -57,6 +57,8 @@ public interface EventFacade {
 
 	void deleteEvent(String eventUuid) throws ExternalSurveillanceToolException;
 
+	List<String> deleteEvents(List<String> eventUuids);
+
 	long count(EventCriteria eventCriteria);
 
 	List<EventIndexDto> getIndexList(EventCriteria eventCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
@@ -97,5 +99,11 @@ public interface EventFacade {
 
 	Set<RegionReferenceDto> getAllRegionsRelatedToEventUuids(List<String> uuids);
 
-	void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
+	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
+
+	List<String> getSubordinateEventUuids(List<String> uuids);
+
+	boolean hasRegionAndDistrict(String eventUuid);
+
+	boolean hasAnyEventParticipantWithoutJurisdiction(String eventUuid);
 }

@@ -1,7 +1,13 @@
 package de.symeda.sormas.api.campaign.diagram;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+
 import java.io.Serializable;
 import java.util.Objects;
+
+import javax.validation.constraints.Size;
+
+import de.symeda.sormas.api.i18n.Validations;
 
 public class CampaignDashboardElement implements Serializable {
 
@@ -14,8 +20,11 @@ public class CampaignDashboardElement implements Serializable {
 	public static final String WIDTH = "width";
 	public static final String HEIGHT = "height";
 
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diagramId;
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String tabId;
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String subTabId;
 	private Integer order;
 	private Integer width;

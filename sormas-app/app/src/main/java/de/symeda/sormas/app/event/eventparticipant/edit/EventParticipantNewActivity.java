@@ -15,9 +15,6 @@
 
 package de.symeda.sormas.app.event.eventparticipant.edit;
 
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
-
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -39,9 +36,13 @@ import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.event.eventparticipant.EventParticipantSection;
 import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class EventParticipantNewActivity extends BaseEditActivity<EventParticipant> {
 
@@ -81,6 +82,8 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
 		Person person = DatabaseHelper.getPersonDao().build();
 		EventParticipant eventParticipant = DatabaseHelper.getEventParticipantDao().build();
 		eventParticipant.setPerson(person);
+		Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
+		eventParticipant.setEvent(event);
 		return eventParticipant;
 	}
 
@@ -154,7 +157,8 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
 						hidePreloader();
 						super.onPostExecute(taskResult);
 						if (taskResult.getResultStatus().isSuccess()) {
-							EventParticipantEditActivity.startActivity(getContext(), getRootUuid(), eventUuid);
+							EventParticipantEditActivity
+								.startActivity(getContext(), getRootUuid(), eventUuid, EventParticipantSection.EVENT_PARTICIPANT_INFO);
 						}
 						saveTask = null;
 					}

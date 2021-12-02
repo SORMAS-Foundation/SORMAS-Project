@@ -19,10 +19,14 @@ package de.symeda.sormas.api.infrastructure.community;
 
 import java.util.Date;
 
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class CommunityDto extends EntityDto {
 
@@ -36,11 +40,13 @@ public class CommunityDto extends EntityDto {
 	public static final String DISTRICT = "district";
 	public static final String EXTERNAL_ID = "externalID";
 
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
 	private Float growthRate;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private boolean archived;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
 
 	public CommunityDto(

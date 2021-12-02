@@ -1,14 +1,16 @@
 package de.symeda.sormas.api.labmessage;
 
-import de.symeda.sormas.api.Disease;
+import java.util.Date;
+
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Required;
-
-import java.util.Date;
 
 public class TestReportDto extends EntityDto {
 
@@ -21,23 +23,31 @@ public class TestReportDto extends EntityDto {
 	public static final String TEST_TYPE = "testType";
 	public static final String TEST_DATE_TIME = "testDateTime";
 	public static final String TEST_RESULT = "testResult";
-	public static final String PATHOGEN_TEST = "pathogenTest";
 
 	@Required
 	private LabMessageReferenceDto labMessage;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String testLabName;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String testLabExternalId;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String testLabPostalCode;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String testLabCity;
 
 	private PathogenTestType testType;
 	private Date testDateTime;
 	private PathogenTestResultType testResult;
 	private Boolean testResultVerified;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String testResultText;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String typingId;
-
-	private PathogenTestReferenceDto pathogenTest;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String externalId;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String externalOrderId;
+	private Boolean preliminary;
 
 	public LabMessageReferenceDto getLabMessage() {
 		return labMessage;
@@ -125,19 +135,35 @@ public class TestReportDto extends EntityDto {
 		return testResult;
 	}
 
-	public PathogenTestReferenceDto getPathogenTest() {
-		return pathogenTest;
-	}
-
-	public void setPathogenTest(PathogenTestReferenceDto pathogenTest) {
-		this.pathogenTest = pathogenTest;
-	}
-
 	public String getTypingId() {
 		return typingId;
 	}
 
 	public void setTypingId(String typingId) {
 		this.typingId = typingId;
+	}
+
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
+	public String getExternalOrderId() {
+		return externalOrderId;
+	}
+
+	public void setExternalOrderId(String externalOrderId) {
+		this.externalOrderId = externalOrderId;
+	}
+
+	public Boolean getPreliminary() {
+		return preliminary;
+	}
+
+	public void setPreliminary(Boolean preliminary) {
+		this.preliminary = preliminary;
 	}
 }

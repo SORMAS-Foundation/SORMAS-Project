@@ -43,7 +43,7 @@ public interface VisitFacade {
 
 	void validate(VisitDto dto);
 
-	ExternalVisitDto saveExternalVisit(ExternalVisitDto dto);
+	ExternalVisitDto saveExternalVisit(@Valid ExternalVisitDto dto);
 
 	List<String> getAllActiveUuids();
 

@@ -22,6 +22,8 @@ import static org.hamcrest.Matchers.is;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.user.UserReferenceDto;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -138,6 +140,19 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 		List<CaseIndexDto> indexList = getCaseFacade().getIndexList(new CaseCriteria(), 0, 100, null);
 		assertThat(indexList, hasSize(1));
 		assertThat(indexList.get(0).getUuid(), is(visibleCase.getUuid()));
+	}
+
+	@Test
+	public void testGetUsersHavingJurisdictionOverCase() {
+		loginWith(nationalUser);
+
+		CaseDataDto caze = createCase(rdcf1, districtUser1);
+
+		List<UserReferenceDto> usersHavingCaseInJurisdiction = getUserFacade().getUsersHavingCaseInJurisdiction(caze.toReference());
+		Assert.assertNotNull(usersHavingCaseInJurisdiction);
+		Assert.assertEquals(3, usersHavingCaseInJurisdiction.size()); // contains also admin as test admin user is also national user
+		Assert.assertTrue(usersHavingCaseInJurisdiction.contains(nationalUser));
+		Assert.assertTrue(usersHavingCaseInJurisdiction.contains(districtUser1));
 	}
 
 	@Test

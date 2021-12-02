@@ -1,15 +1,35 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.ui.caze.importer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URISyntaxException;
-import java.util.Collections;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,9 +38,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.ui.UI;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -81,6 +105,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		assertEquals("ABC-DEF-GHI-19-5", getCaseFacade().getAllActiveCasesAfter(null).get(0).getEpidNumber());
 
 		// Similarity: pick
+		List<SimilarPersonDto> persons = FacadeProvider.getPersonFacade().getSimilarPersonDtos(user.toReference(), new PersonSimilarityCriteria());
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").toURI());
 		caseImporter = new CaseImporterExtension(csvFile, true, user) {
 
@@ -91,11 +116,15 @@ public class CaseImporterTest extends AbstractBeanTest {
 				BiFunction<SimilarPersonDto, ImportSimilarityResultOption, T> createSimilarityResult,
 				String infoText,
 				UI currentUI) {
-				resultConsumer.accept(
-					(T) new CaseImportSimilarityResult(
-						getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(getPersonFacade().getAllUuids().get(0))).get(0),
-						null,
-						ImportSimilarityResultOption.PICK));
+
+				List<SimilarPersonDto> entries = new ArrayList<>();
+				for (SimilarPersonDto person : persons) {
+					if (PersonHelper
+						.areNamesSimilar(newPerson.getFirstName(), newPerson.getLastName(), person.getFirstName(), person.getLastName(), null)) {
+						entries.add(person);
+					}
+				}
+				resultConsumer.accept((T) new CaseImportSimilarityResult(entries.get(0), null, ImportSimilarityResultOption.PICK));
 			}
 
 			@Override
@@ -140,11 +169,15 @@ public class CaseImporterTest extends AbstractBeanTest {
 				BiFunction<SimilarPersonDto, ImportSimilarityResultOption, T> createSimilarityResult,
 				String infoText,
 				UI currentUI) {
-				resultConsumer.accept(
-					(T) new CaseImportSimilarityResult(
-						getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(getPersonFacade().getAllUuids().get(0))).get(0),
-						null,
-						ImportSimilarityResultOption.PICK));
+
+				List<SimilarPersonDto> entries = new ArrayList<>();
+				for (SimilarPersonDto person : persons) {
+					if (PersonHelper
+						.areNamesSimilar(newPerson.getFirstName(), newPerson.getLastName(), person.getFirstName(), person.getLastName(), null)) {
+						entries.add(person);
+					}
+				}
+				resultConsumer.accept((T) new CaseImportSimilarityResult(entries.get(0), null, ImportSimilarityResultOption.PICK));
 			}
 
 			@Override
@@ -169,11 +202,15 @@ public class CaseImporterTest extends AbstractBeanTest {
 				BiFunction<SimilarPersonDto, ImportSimilarityResultOption, T> createSimilarityResult,
 				String infoText,
 				UI currentUI) {
-				resultConsumer.accept(
-					(T) new CaseImportSimilarityResult(
-						getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(getPersonFacade().getAllUuids().get(0))).get(0),
-						null,
-						ImportSimilarityResultOption.PICK));
+
+				List<SimilarPersonDto> entries = new ArrayList<>();
+				for (SimilarPersonDto person : persons) {
+					if (PersonHelper
+						.areNamesSimilar(newPerson.getFirstName(), newPerson.getLastName(), person.getFirstName(), person.getLastName(), null)) {
+						entries.add(person);
+					}
+				}
+				resultConsumer.accept((T) new CaseImportSimilarityResult(entries.get(0), null, ImportSimilarityResultOption.PICK));
 			}
 
 			@Override
@@ -246,13 +283,71 @@ public class CaseImporterTest extends AbstractBeanTest {
 		assertEquals(10, getCaseFacade().count(null));
 	}
 
+	@Test
+	public void testImportWithInvalidCsvContent()
+		throws InterruptedException, InvalidColumnException, CsvValidationException, IOException, URISyntaxException {
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		// csv with missing header
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_case_import_test_one_data_line_missing_header.csv").toURI());
+		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, true, user);
+		ImportResultStatus importResult = caseImporter.runImport();
+
+		assertEquals(ImportResultStatus.CANCELED_WITH_ERRORS, importResult);
+
+		// csv with wrong separator
+		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_success.csv").toURI());
+		caseImporter = new CaseImporterExtension(csvFile, true, user, ValueSeparator.SEMICOLON);
+		importResult = caseImporter.runImport();
+
+		assertEquals(ImportResultStatus.CANCELED_WITH_ERRORS, importResult);
+
+	}
+
+	@Test
+	public void testImportAddressTypes()
+		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
+
+		TestDataCreator creator = new TestDataCreator();
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Saarland", "RV Saarbrücken", "Kleinblittersdorf", "Winterberg");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		// import of 3 cases with different address types
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_case_import_address_type.csv").toURI());
+		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, true, user);
+		ImportResultStatus importResult = caseImporter.runImport();
+
+		PersonDto casePerson1 = getPersonFacade().getPersonByUuid(getCaseFacade().getByExternalId("SL-DEF-GHI-19-1").get(0).getPerson().getUuid());
+		PersonDto casePerson2 = getPersonFacade().getPersonByUuid(getCaseFacade().getByExternalId("SL-DEF-GHI-19-2").get(0).getPerson().getUuid());
+		PersonDto casePerson3 = getPersonFacade().getPersonByUuid(getCaseFacade().getByExternalId("SL-DEF-GHI-19-3").get(0).getPerson().getUuid());
+
+		assertTrue(CollectionUtils.isEmpty(casePerson1.getAddresses()));
+		assertEquals("131", casePerson1.getAddress().getHouseNumber());
+
+		assertTrue(CollectionUtils.isEmpty(casePerson2.getAddresses()));
+		assertEquals("132", casePerson2.getAddress().getHouseNumber());
+
+		assertTrue(casePerson3.getAddress().checkIsEmptyLocation());
+		assertEquals(1, casePerson3.getAddresses().size());
+		assertEquals("133", casePerson3.getAddresses().get(0).getHouseNumber());
+	}
+
 	public static class CaseImporterExtension extends CaseImporter {
 
-		public StringBuilder stringBuilder = new StringBuilder("");
+		public StringBuilder stringBuilder = new StringBuilder();
 		private StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
 
-		public CaseImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
-			super(inputFile, hasEntityClassRow, currentUser);
+		public CaseImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) throws IOException {
+			this(inputFile, hasEntityClassRow, currentUser, ValueSeparator.DEFAULT);
+		}
+
+		public CaseImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator valueSeparator)
+			throws IOException {
+			super(inputFile, hasEntityClassRow, currentUser, valueSeparator);
 		}
 
 		@Override
@@ -273,6 +368,11 @@ public class CaseImporterTest extends AbstractBeanTest {
 		@Override
 		protected Writer createErrorReportWriter() {
 			return writer;
+		}
+
+		@Override
+		protected Path getErrorReportFolderPath() {
+			return Paths.get(System.getProperty("java.io.tmpdir"));
 		}
 	}
 }

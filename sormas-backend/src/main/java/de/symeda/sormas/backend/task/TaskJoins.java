@@ -32,6 +32,7 @@ import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 import de.symeda.sormas.utils.CaseJoins;
@@ -80,6 +81,11 @@ public class TaskJoins<T> extends AbstractDomainObjectJoins<T, Task> {
 	private final CaseJoins<Task> caseJoins;
 	private final PersonJoins<Contact> contactPersonJoins;
 	private final PersonJoins<Case> casePersonJoins;
+	private Join<Task, TravelEntry> travelEntry;
+	private Join<TravelEntry, Region> travelEntryResponsibleRegion;
+	private Join<TravelEntry, District> travelEntryResponsibleDistrict;
+	private Join<TravelEntry, Community> travelEntryResponsibleCommunity;
+	private Join<TravelEntry, Person> travelEntryPerson;
 
 	public TaskJoins(From<T, Task> root) {
 		super(root);
@@ -115,6 +121,61 @@ public class TaskJoins<T> extends AbstractDomainObjectJoins<T, Task> {
 
 	private void setEvent(Join<Task, Event> event) {
 		this.event = event;
+	}
+
+	public Join<Task, TravelEntry> getTravelEntry() {
+		return getOrCreate(travelEntry, Task.TRAVEL_ENTRY, JoinType.LEFT, this::setTravelEntry);
+	}
+
+	private void setTravelEntry(Join<Task, TravelEntry> travelEntry) {
+		this.travelEntry = travelEntry;
+	}
+
+	public Join<TravelEntry, Region> getTravelEntryResponsibleRegion() {
+		return getOrCreate(
+			travelEntryResponsibleRegion,
+			TravelEntry.RESPONSIBLE_REGION,
+			JoinType.LEFT,
+			getTravelEntry(),
+			this::setTravelEntryResponsibleRegion);
+	}
+
+	public void setTravelEntryResponsibleRegion(Join<TravelEntry, Region> travelEntryResponsibleRegion) {
+		this.travelEntryResponsibleRegion = travelEntryResponsibleRegion;
+	}
+
+	public Join<TravelEntry, District> getTravelEntryResponsibleDistrict() {
+		return getOrCreate(
+			travelEntryResponsibleDistrict,
+			TravelEntry.RESPONSIBLE_DISTRICT,
+			JoinType.LEFT,
+			getTravelEntry(),
+			this::setTravelEntryResponsibleDistrict);
+	}
+
+	public void setTravelEntryResponsibleDistrict(Join<TravelEntry, District> travelEntryResponsibleDistrict) {
+		this.travelEntryResponsibleDistrict = travelEntryResponsibleDistrict;
+	}
+
+	public Join<TravelEntry, Community> getTravelEntryResponsibleCommunity() {
+		return getOrCreate(
+			travelEntryResponsibleCommunity,
+			TravelEntry.RESPONSIBLE_COMMUNITY,
+			JoinType.LEFT,
+			getTravelEntry(),
+			this::setTravelEntryResponsibleCommunity);
+	}
+
+	public void setTravelEntryResponsibleCommunity(Join<TravelEntry, Community> travelEntryResponsibleCommunity) {
+		this.travelEntryResponsibleCommunity = travelEntryResponsibleCommunity;
+	}
+
+	public Join<TravelEntry, Person> getTravelEntryPerson() {
+		return getOrCreate(travelEntryPerson, TravelEntry.PERSON, JoinType.LEFT, getTravelEntry(), this::setTravelEntryPerson);
+	}
+
+	public void setTravelEntryPerson(Join<TravelEntry, Person> travelEntryPerson) {
+		this.travelEntryPerson = travelEntryPerson;
 	}
 
 	public Join<Event, User> getEventReportingUser() {

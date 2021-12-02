@@ -64,8 +64,6 @@ public class ImmunizationsView extends AbstractView {
 		applyingCriteria = true;
 
 		filterFormLayout.setValue(criteria);
-		boolean shouldShowGrid = criteria.getDisease() != null;
-		immunizationDataLayout.toggleView(shouldShowGrid);
 
 		applyingCriteria = false;
 	}
@@ -78,14 +76,9 @@ public class ImmunizationsView extends AbstractView {
 			navigateTo(null, true);
 		});
 
-		filterFormLayout.addApplyHandler(clickEvent -> {
-			ImmunizationCriteria filterFormValue = filterFormLayout.getValue();
-			boolean shouldShowGrid = filterFormValue.getDisease() != null;
-			immunizationDataLayout.toggleView(shouldShowGrid);
 
-			if (shouldShowGrid) {
-				immunizationDataLayout.refreshGrid();
-			}
+		filterFormLayout.addApplyHandler(clickEvent -> {
+			immunizationDataLayout.refreshGrid();
 		});
 
 		return filterFormLayout;

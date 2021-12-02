@@ -24,6 +24,7 @@ import android.view.View;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -100,7 +101,16 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
 	protected void prepareFragmentData() {
 		record = getActivityRootData();
 
-		taskTypeList = DataUtils.toItems(TaskType.getTaskTypes(record.getTaskContext()), true);
+		taskTypeList = DataUtils.toItems(
+			TaskType.getTaskTypes(record.getTaskContext()),
+			true,
+			FieldVisibilityCheckers.withDisease(
+				record.getCaze() != null
+					? record.getCaze().getDisease()
+					: record.getContact() != null
+						? record.getContact().getDisease()
+						: record.getEvent() != null ? record.getEvent().getDisease() : null),
+			TaskType.class);
 		priorityList = DataUtils.getEnumItems(TaskPriority.class, true);
 		assigneeList = DataUtils.toItems(DatabaseHelper.getUserDao().getAllInJurisdiction(), true);
 	}

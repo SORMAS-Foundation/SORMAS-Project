@@ -96,6 +96,7 @@ public class PreviousHospitalizationDialog extends FormDialog {
 		contentBinding.casePreviousHospitalizationDischargeDate.initializeDateField(getFragmentManager());
 		contentBinding.casePreviousHospitalizationIntensiveCareUnitStart.initializeDateField(getFragmentManager());
 		contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd.initializeDateField(getFragmentManager());
+		contentBinding.casePreviousHospitalizationIsolationDate.initializeDateField(getFragmentManager());
 
 		if (data.getId() == null) {
 			setLiveValidationDisabled(true);

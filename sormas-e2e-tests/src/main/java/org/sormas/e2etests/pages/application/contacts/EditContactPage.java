@@ -21,7 +21,7 @@ package org.sormas.e2etests.pages.application.contacts;
 import org.openqa.selenium.By;
 
 public class EditContactPage {
-  public static final By UUID_INPUT = By.id("uuid");
+  public static final By UUID_INPUT = By.cssSelector("#uuid");
   public static final By USER_INFORMATION =
       By.cssSelector(".v-slot.v-slot-h2.v-slot-vspace-top-none.v-slot-primary");
   public static final By REPORT_DATE = By.cssSelector("#reportDateTime input");
@@ -79,7 +79,7 @@ public class EditContactPage {
       By.cssSelector("#cardiovascularDiseaseIncludingHypertension label");
   public static final By ADDITIONAL_RELEVANT_PRE_CONDITIONS_TEXT = By.id("otherConditions");
   public static final By VACCINATION_STATUS_COMBOBOX =
-      By.cssSelector(".v-verticallayout [location='vaccinationInfo'] [role='combobox'] div");
+      By.cssSelector(".v-verticallayout [location='vaccinationStatus'] [role='combobox'] div");
   public static final By IMMUNOSUPPRESSIVE_THERAPY_OPTIONS =
       By.cssSelector("#immunosuppressiveTherapyBasicDisease label");
   public static final By CARE_OVER_60_OPTIONS = By.cssSelector("#careForPeopleOver60 label");
@@ -116,5 +116,5 @@ public class EditContactPage {
           "//span[contains(text(), 'Case classification')]/ancestor::div[@class='v-caption']/following-sibling::div");
   public static final By REMOVE_CASE_CTA_LINK = By.id("contactRemoveCase");
   public static final By CASE_CHANGE_POPUP_SUCCESS_MESSAGE =
-      By.xpath("//p[text()='The source case of the contact has been changed']");
+      By.xpath("//*[contains(text(),'The source case of the contact has been changed')]");
 }

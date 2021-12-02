@@ -17,7 +17,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
 @Stateless
 @LocalBean
-public class ContinentService extends AbstractInfrastructureAdoService<Continent> {
+public class ContinentService extends AbstractInfrastructureAdoService<Continent, ContinentCriteria> {
 
 	public ContinentService() {
 		super(Continent.class);
@@ -47,6 +47,7 @@ public class ContinentService extends AbstractInfrastructureAdoService<Continent
 		return null;
 	}
 
+	@Override
 	public Predicate buildCriteriaFilter(ContinentCriteria criteria, CriteriaBuilder cb, Root<Continent> from) {
 
 		Predicate filter = null;
@@ -60,18 +61,7 @@ public class ContinentService extends AbstractInfrastructureAdoService<Continent
 	}
 
 	public List<Continent> getByExternalId(String externalId, boolean includeArchived) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Continent> cq = cb.createQuery(getElementClass());
-		Root<Continent> from = cq.from(getElementClass());
-
-		Predicate filter = CriteriaBuilderHelper.ilikePrecise(cb, from.get(Continent.EXTERNAL_ID), externalId.trim());
-		if (!includeArchived) {
-			filter = cb.and(filter, createBasicFilter(cb, from));
-		}
-
-		cq.where(filter);
-
-		return em.createQuery(cq).getResultList();
+		return getByExternalId(externalId, Continent.EXTERNAL_ID, includeArchived);
 	}
 
 }

@@ -32,6 +32,8 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -82,7 +84,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 			SampleEditFragment.class,
 			null,
 			activityRootData,
-			FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode()),
+			FieldVisibilityCheckers.withDisease(getDiseaseOfAssociatedEntity(activityRootData)).andWithCountry(ConfigProvider.getServerCountryCode()),
 			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
@@ -116,7 +118,8 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 		}
 
 		// Most recent additional tests layout
-		if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+		if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
+			&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.ADDITIONAL_TESTS)) {
 			if (!record.isReceived()
 				|| record.getSpecimenCondition() != SpecimenCondition.ADEQUATE
 				|| !record.getAdditionalTestingRequested()
@@ -153,7 +156,8 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 		record = getActivityRootData();
 		if (record.getId() != null) {
 			mostRecentTest = DatabaseHelper.getSampleTestDao().queryMostRecentBySample(record);
-			if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+			if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
+				&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.ADDITIONAL_TESTS)) {
 				mostRecentAdditionalTests = DatabaseHelper.getAdditionalTestDao().queryMostRecentBySample(record);
 			}
 		}
@@ -163,7 +167,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 			referredSample = null;
 		}
 
-		sampleMaterialList = DataUtils.getEnumItems(SampleMaterial.class, true);
+		sampleMaterialList = DataUtils.getEnumItems(SampleMaterial.class, true, getFieldVisibilityCheckers());
 		sampleSourceList = DataUtils.getEnumItems(SampleSource.class, true);
 		labList = DatabaseHelper.getFacilityDao().getActiveLaboratories(true);
 		samplePurposeList = DataUtils.getEnumItems(SamplePurpose.class, true);
@@ -175,7 +179,8 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 				requestedPathogenTests.add(pathogenTest.toString());
 			}
 		}
-		if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+		if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
+			&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.ADDITIONAL_TESTS)) {
 			requestedAdditionalTests.clear();
 			for (AdditionalTestType additionalTest : record.getRequestedAdditionalTests()) {
 				requestedAdditionalTests.add(additionalTest.toString());
@@ -298,7 +303,8 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 				contentBinding.sampleRequestedOtherPathogenTests.setVisibility(GONE);
 			}
 
-			if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+			if (ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
+				&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.ADDITIONAL_TESTS)) {
 				if (!requestedAdditionalTests.isEmpty()) {
 					contentBinding.sampleRequestedAdditionalTestsTags.setTags(requestedAdditionalTests);
 					if (StringUtils.isEmpty(record.getRequestedOtherAdditionalTests())) {
@@ -319,7 +325,8 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 			contentBinding.sampleRequestedAdditionalTestsTags.setVisibility(GONE);
 		}
 
-		if (!ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+		if (!ConfigProvider.hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
+			&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.ADDITIONAL_TESTS)) {
 			contentBinding.additionalTestingLayout.setVisibility(GONE);
 		}
 	}
@@ -337,6 +344,18 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 			}
 		} else {
 			super.onActivityResult(requestCode, resultCode, data);
+		}
+	}
+
+	protected static Disease getDiseaseOfAssociatedEntity(Sample sample) {
+		if (sample.getAssociatedCase() != null) {
+			return sample.getAssociatedCase().getDisease();
+		} else if (sample.getAssociatedContact() != null) {
+			return sample.getAssociatedContact().getDisease();
+		} else if (sample.getAssociatedEventParticipant() != null) {
+			return sample.getAssociatedEventParticipant().getEvent().getDisease();
+		} else {
+			return null;
 		}
 	}
 }

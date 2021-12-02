@@ -16,180 +16,68 @@
 package de.symeda.sormas.backend.sormastosormas.entities.caze;
 
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
-
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
-import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
-import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersisterHelper;
-import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersisterHelper.ReturnedAssociatedEntityCallback;
-import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 
 @Stateless
 @LocalBean
-public class ProcessedCaseDataPersister implements ProcessedDataPersister<ProcessedCaseData> {
+public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataDto, SormasToSormasCaseDto, Case> {
 
 	@EJB
 	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 	@EJB
-	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
-	@EJB
-	private ProcessedDataPersisterHelper dataPersisterHelper;
-	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
-	@EJB
-	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
 	@Override
-	@Transactional(rollbackOn = {
-		Exception.class })
-	public void persistSharedData(ProcessedCaseData processedData) throws SormasToSormasValidationException {
-		persistProcessedData(
-			processedData,
-			null,
-			dataPersisterHelper::sharedAssociatedEntityCallback,
-			dataPersisterHelper::sharedAssociatedEntityCallback,
-			true);
+	protected SormasToSormasShareInfoService getShareInfoService() {
+		return shareInfoService;
 	}
 
 	@Override
-	@Transactional(rollbackOn = {
-		Exception.class })
-	public void persistReturnedData(ProcessedCaseData processedData, SormasToSormasOriginInfoDto originInfo)
-		throws SormasToSormasValidationException {
-
-		ReturnedAssociatedEntityCallback callback = dataPersisterHelper.createReturnedAssociatedEntityCallback(originInfo);
-
-		persistProcessedData(processedData, (caze) -> {
-			SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(caze.getUuid(), originInfo.getOrganizationId());
-			shareInfo.setOwnershipHandedOver(false);
-			shareInfoService.persist(shareInfo);
-		}, (caze, contact) -> {
-			callback.apply(contact, shareInfoService::getByContactAndOrganization);
-		}, (caze, sample) -> {
-			callback.apply(sample, shareInfoService::getBySampleAndOrganization);
-		}, false);
+	protected void persistSharedData(SormasToSormasCaseDto processedData, Case existingEntity) throws SormasToSormasValidationException {
+		persistProcessedData(processedData, existingEntity == null);
 	}
 
 	@Override
-	@Transactional(rollbackOn = {
-		Exception.class })
-	public void persistSyncData(ProcessedCaseData processedData, ShareTreeCriteria shareTreeCriteria) throws SormasToSormasValidationException {
-		SormasToSormasOriginInfoDto originInfo = processedData.getOriginInfo();
-		ProcessedDataPersisterHelper.SyncedAssociatedEntityCallback associatedEntityCallback =
-			new ProcessedDataPersisterHelper.SyncedAssociatedEntityCallback(originInfo, originInfoFacade);
-
-		persistProcessedData(processedData, (caze) -> {
-			SormasToSormasOriginInfoDto caseOriginInfo = caze.getSormasToSormasOriginInfo();
-			if (caseOriginInfo != null) {
-				caseOriginInfo.setOwnershipHandedOver(originInfo.isOwnershipHandedOver());
-
-				originInfoFacade.saveOriginInfo(caseOriginInfo);
-			} else {
-				SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(caze.getUuid(), originInfo.getOrganizationId());
-
-				shareInfo.setOwnershipHandedOver(!originInfo.isOwnershipHandedOver());
-
-				shareInfoService.ensurePersisted(shareInfo);
-			}
-		}, (caze, contact) -> {
-			associatedEntityCallback.apply(contact, shareInfoService::getByEventParticipantAndOrganization);
-		}, (caze, sample) -> {
-			associatedEntityCallback.apply(sample, shareInfoService::getBySampleAndOrganization);
-		}, false);
-
-		caseFacade.syncSharesAsync(shareTreeCriteria);
+	protected SormasToSormasShareInfo getShareInfoByEntityAndOrganization(CaseDataDto entity, String organizationId) {
+		return shareInfoService.getByCaseAndOrganization(entity.getUuid(), organizationId);
 	}
 
-	private void persistProcessedData(
-		ProcessedCaseData caseData,
-		Consumer<CaseDataDto> afterSaveCase,
-		BiConsumer<CaseDataDto, ContactDto> beforeSaveContact,
-		BiConsumer<CaseDataDto, SampleDto> beforeSaveSample,
-		boolean isCreate)
-		throws SormasToSormasValidationException {
+	private void persistProcessedData(SormasToSormasCaseDto caseData, boolean isCreate) throws SormasToSormasValidationException {
 		CaseDataDto caze = caseData.getEntity();
 
-		final CaseDataDto savedCase;
 		if (isCreate) {
 			// save person first during creation
 			handleValidationError(
-				() -> personFacade.savePerson(caseData.getPerson(), false, false),
+				() -> personFacade.savePerson(caseData.getPerson(), false, false, false),
 				Captions.Person,
 				buildCaseValidationGroupName(caze));
-			savedCase =
-				handleValidationError(() -> caseFacade.saveCase(caze, true, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
+
+			handleValidationError(() -> caseFacade.saveCase(caze, true, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
 		} else {
 			//save case first during update
-			savedCase =
-				handleValidationError(() -> caseFacade.saveCase(caze, true, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
+
+			handleValidationError(() -> caseFacade.saveCase(caze, true, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
 			handleValidationError(
-				() -> personFacade.savePerson(caseData.getPerson(), false, false),
+				() -> personFacade.savePerson(caseData.getPerson(), false, false, false),
 				Captions.Person,
 				buildCaseValidationGroupName(caze));
-		}
-
-		if (afterSaveCase != null) {
-			afterSaveCase.accept(savedCase);
-		}
-
-		if (caseData.getAssociatedContacts() != null) {
-			for (SormasToSormasCaseDto.AssociatedContactDto associatedContact : caseData.getAssociatedContacts()) {
-				ContactDto contact = associatedContact.getContact();
-
-				if (beforeSaveContact != null) {
-					beforeSaveContact.accept(savedCase, contact);
-				}
-
-				if (isCreate || !contactFacade.exists(contact.getUuid())) {
-					// save person first during creation
-					handleValidationError(
-						() -> personFacade.savePerson(associatedContact.getPerson(), false, false),
-						Captions.Person,
-						buildContactValidationGroupName(contact));
-					handleValidationError(
-						() -> contactFacade.saveContact(contact, true, true, false, false),
-						Captions.Contact,
-						buildContactValidationGroupName(contact));
-				} else {
-					//save contact first during update
-					handleValidationError(
-						() -> contactFacade.saveContact(contact, true, true, false, false),
-						Captions.Contact,
-						buildContactValidationGroupName(contact));
-					handleValidationError(
-						() -> personFacade.savePerson(associatedContact.getPerson(), false, false),
-						Captions.Person,
-						buildContactValidationGroupName(contact));
-
-				}
-			}
-		}
-
-		if (caseData.getSamples() != null) {
-			dataPersisterHelper.persistSamples(caseData.getSamples(), beforeSaveSample != null ? (s) -> beforeSaveSample.accept(savedCase, s) : null);
 		}
 	}
 }

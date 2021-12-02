@@ -104,4 +104,11 @@ public class TaskResource extends EntityDtoResource {
 	public List<String> getArchivedUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getTaskFacade().getArchivedUuidsSince(new Date(since));
 	}
+
+	@POST
+	@Path("/delete")
+	public List<String> delete(List<String> uuids) {
+		return FacadeProvider.getTaskFacade().deleteTasks(uuids);
+	}
+
 }

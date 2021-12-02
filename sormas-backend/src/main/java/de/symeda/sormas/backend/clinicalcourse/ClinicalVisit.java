@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 
@@ -83,7 +83,7 @@ public class ClinicalVisit extends AbstractDomainObject {
 		this.visitDateTime = visitDateTime;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getVisitRemarks() {
 		return visitRemarks;
 	}
@@ -92,7 +92,7 @@ public class ClinicalVisit extends AbstractDomainObject {
 		this.visitRemarks = visitRemarks;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getVisitingPerson() {
 		return visitingPerson;
 	}

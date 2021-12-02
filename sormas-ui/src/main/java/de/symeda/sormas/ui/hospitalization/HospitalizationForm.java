@@ -18,9 +18,6 @@
 package de.symeda.sormas.ui.hospitalization;
 
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLocCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
@@ -38,12 +35,10 @@ import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -51,6 +46,9 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -70,18 +68,13 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 	private static final long serialVersionUID = 1L;
 
 	private static final String HOSPITALIZATION_HEADING_LOC = "hospitalizationHeadingLoc";
+	private static final String PREVIOUS_HOSPITALIZATIONS_HEADING_LOC = "previousHospitalizationsHeadingLoc";
 	private static final String HEALTH_FACILITY = Captions.CaseHospitalization_healthFacility;
-	private final CaseDataDto caze;
-	private final ViewMode viewMode;
-
-	private NullableOptionGroup intensiveCareUnit;
-	private DateField intensiveCareUnitStart;
-	private DateField intensiveCareUnitEnd;
-
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			loc(HOSPITALIZATION_HEADING_LOC) +
-			fluidRowLocs(HEALTH_FACILITY, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY) +
+			fluidRowLocs(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY) +
+			fluidRowLocs(HEALTH_FACILITY) +
 			fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE, HospitalizationDto.LEFT_AGAINST_ADVICE, "") +
 			fluidRowLocs(HospitalizationDto.HOSPITALIZATION_REASON, HospitalizationDto.OTHER_HOSPITALIZATION_REASON) +
 					fluidRowLocs(3, HospitalizationDto.INTENSIVE_CARE_UNIT, 3,
@@ -89,10 +82,15 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 							3,
 							HospitalizationDto.INTENSIVE_CARE_UNIT_END)
 					+ fluidRowLocs(HospitalizationDto.ISOLATED, HospitalizationDto.ISOLATION_DATE, "")
-					+
-			fluidRow(
-					fluidColumnLocCss(VSPACE_TOP_3, 6, 0, HospitalizationDto.HOSPITALIZED_PREVIOUSLY)) +
+					+ fluidRowLocs(HospitalizationDto.DESCRIPTION) +
+			loc(PREVIOUS_HOSPITALIZATIONS_HEADING_LOC) +
+			fluidRowLocs(HospitalizationDto.HOSPITALIZED_PREVIOUSLY) +
 			fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS);
+	private final CaseDataDto caze;
+	private final ViewMode viewMode;
+	private NullableOptionGroup intensiveCareUnit;
+	private DateField intensiveCareUnitStart;
+	private DateField intensiveCareUnitEnd;
 	//@formatter:on
 
 	public HospitalizationForm(CaseDataDto caze, ViewMode viewMode, boolean isPseudonymized) {
@@ -108,6 +106,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		addFields();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
 
@@ -118,6 +117,10 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		Label hospitalizationHeadingLabel = new Label(I18nProperties.getString(Strings.headingHospitalization));
 		hospitalizationHeadingLabel.addStyleName(H3);
 		getContent().addComponent(hospitalizationHeadingLabel, HOSPITALIZATION_HEADING_LOC);
+
+		Label previousHospitalizationsHeadingLabel = new Label(I18nProperties.getString(Strings.headingPreviousHospitalizations));
+		previousHospitalizationsHeadingLabel.addStyleName(H3);
+		getContent().addComponent(previousHospitalizationsHeadingLabel, PREVIOUS_HOSPITALIZATIONS_HEADING_LOC);
 
 		TextField facilityField = addCustomField(HEALTH_FACILITY, FacilityReferenceDto.class, TextField.class);
 		FacilityReferenceDto healthFacility = caze.getHealthFacility();
@@ -136,6 +139,8 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		FieldHelper
 			.setVisibleWhen(intensiveCareUnit, Arrays.asList(intensiveCareUnitStart, intensiveCareUnitEnd), Arrays.asList(YesNoUnknown.YES), true);
 		final Field isolationDateField = addField(HospitalizationDto.ISOLATION_DATE);
+		final TextArea descriptionField = addField(HospitalizationDto.DESCRIPTION, TextArea.class);
+		descriptionField.setRows(4);
 		final NullableOptionGroup isolatedField = addField(HospitalizationDto.ISOLATED, NullableOptionGroup.class);
 		final NullableOptionGroup leftAgainstAdviceField = addField(HospitalizationDto.LEFT_AGAINST_ADVICE, NullableOptionGroup.class);
 
@@ -146,22 +151,23 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		PreviousHospitalizationsField previousHospitalizationsField =
 			addField(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS, PreviousHospitalizationsField.class);
 
-		if (!FacilityType.HOSPITAL.equals(caze.getFacilityType())) {
-			FieldHelper.setEnabled(
-				false,
+		FieldHelper.setEnabledWhen(
+			admittedToHealthFacilityField,
+			Arrays.asList(YesNoUnknown.YES, YesNoUnknown.NO, YesNoUnknown.UNKNOWN),
+			Arrays.asList(
 				facilityField,
-				admittedToHealthFacilityField,
 				admissionDateField,
 				dischargeDateField,
 				intensiveCareUnit,
 				intensiveCareUnitStart,
 				intensiveCareUnitEnd,
 				isolationDateField,
+				descriptionField,
 				isolatedField,
 				leftAgainstAdviceField,
 				hospitalizationReason,
-				otherHospitalizationReason);
-		}
+				otherHospitalizationReason),
+			false);
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();

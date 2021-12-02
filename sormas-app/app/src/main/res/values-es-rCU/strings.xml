@@ -68,6 +68,7 @@
     <string name="action_markAllAsRead">Marcar todo como leído</string>
     <string name="action_new">Nuevo</string>
     <string name="action_new_case">Nuevo caso</string>
+    <string name="action_new_immunization">Nueva inmunización</string>
     <string name="action_new_campaign_form_data">Nuevos datos de formulario de campaña</string>
     <string name="action_new_contact">Nuevo contacto</string>
     <string name="action_new_event">Nuevo evento</string>
@@ -79,6 +80,8 @@
     <string name="action_open_prescription">Abrir prescripción</string>
     <string name="action_open_resulting_case">Abrir caso resultante</string>
     <string name="action_open_source_case">Abrir caso de origen</string>
+    <string name="action_open_linked_case">Abrir caso vinculado</string>
+    <string name="action_link_case">Vincular caso</string>
     <string name="action_open_syncLog">Conflictos de sincronización</string>
     <string name="action_options">Opciones</string>
     <string name="action_pick_gps">Elija el GPS actual para la dirección</string>
@@ -116,6 +119,8 @@
     <string name="action_kex_lbds">Intercambio de claves LBDS</string>
     <string name="action_sync_person_lbds">Sincronizar personas LBDS</string>
     <string name="action_sync_case_lbds">Sincronizar casos LBDS</string>
+    <string name="action_save_vaccination">Guardar vacunación</string>
+    <string name="action_edit_vaccination">Editar vacunación</string>
     <string name="caption_address">Dirección</string>
     <string name="caption_age">Edad</string>
     <string name="caption_attended_by">Atendido por</string>
@@ -132,6 +137,8 @@
     <string name="caption_case_samples">Muestras del caso</string>
     <string name="caption_case_tasks">Tareas del caso</string>
     <string name="caption_case_events">Eventos de caso</string>
+    <string name="caption_case_immunizations">Inmunizaciones de casos</string>
+    <string name="caption_case_vaccinations">Vacunaciones de casos</string>
     <string name="caption_case_treatments">Tratamientos</string>
     <string name="caption_case_similarity_create">Crear un nuevo caso</string>
     <string name="caption_changed_data_lost">Los datos modificados se perdieron durante la re-sincronización.</string>
@@ -147,6 +154,8 @@
     <string name="caption_contact_tasks">Tareas del contacto</string>
     <string name="caption_contact_epidemiological_data">Información epidemiológica</string>
     <string name="caption_contact_visits">Información de seguimiento</string>
+    <string name="caption_contact_immunizations">Inmunizaciones de contactos</string>
+    <string name="caption_contact_vaccinations">Vacunaciones de contactos</string>
     <string name="caption_converted_to_case">Convertido en caso</string>
     <string name="caption_date_of_birth">Fecha de nacimiento (año / mes / día)</string>
     <string name="caption_date_of_sampling">Fecha de muestreo</string>
@@ -159,6 +168,8 @@
     <string name="caption_event_period">Fecha del evento</string>
     <string name="caption_event_information">Información del evento</string>
     <string name="caption_event_participants">Personas involucradas</string>
+    <string name="caption_event_participant_immunizations">Inmunizaciones de participantes de eventos</string>
+    <string name="caption_event_participant_vaccinations">Vacunaciones de participantes de evento</string>
     <string name="caption_event_tasks">Tareas del evento</string>
     <string name="caption_executed_by">Ejecutado por</string>
     <string name="caption_facility_or_home">Lugar de estancia</string>
@@ -231,6 +242,20 @@
     <string name="caption_year">Año</string>
     <string name="caption_latest_submission">Último envío: %1$s</string>
     <string name="caption_settings_debug_url_lbds">URL de depuración de servidor LBDS</string>
+    <string name="caption_immunization_information">Detalles de inmunización</string>
+    <string name="caption_immunization_vaccinations">Vacunaciones</string>
+    <string name="caption_vaccination_information">Información de vacunación</string>
+    <string name="caption_new_immunization">Nueva inmunización</string>
+    <string name="caption_overwrite_immunization_management_status">Sobrescribir el estado de gestión de inmunización</string>
+    <string name="caption_searchCase">Buscar caso</string>
+    <string name="caption_aggregate_new_cases">Nuevos casos</string>
+    <string name="caption_aggregate_lab_confirmations">Confirmaciones de laboratorio</string>
+    <string name="caption_aggregate_deaths">Muertes</string>
+    <string name="caption_aggregate_new_cases_abbr">C</string>
+    <string name="caption_aggregate_lab_confirmations_abbr">L</string>
+    <string name="caption_aggregate_deaths_abbr">D</string>
+    <string name="caption_start_date_existing">Fecha inicial existente</string>
+    <string name="caption_end_date_existing">Fecha final existente</string>
     <string name="confirmation_action">¿Está seguro de que quiere hacer esto?</string>
     <string name="confirmation_delete">¿Está seguro de que desea eliminar este registro?</string>
     <string name="confirmation_pick_gps">¿Se encuentra en este lugar ahora?</string>
@@ -306,6 +331,7 @@
     <string name="heading_events_list">Listado de eventos</string>
     <string name="heading_existing_persons">Personas existentes</string>
     <string name="heading_existing_cases">Casos existentes</string>
+    <string name="heading_existing_immunizations">Inmunizaciones existentes</string>
     <string name="heading_existing_events">Eventos existentes</string>
     <string name="heading_gathering">Reunión</string>
     <string name="heading_gps_activation">Activar GPS</string>
@@ -327,6 +353,7 @@
     <string name="heading_person_contact_detail">Datos de contacto de la persona</string>
     <string name="heading_pick_or_create_person">Elegir o crear una persona</string>
     <string name="heading_pick_or_create_case">Elegir o crear un caso</string>
+    <string name="heading_pick_or_create_immunization">Elegir o crear una inmunización</string>
     <string name="heading_pick_or_create_event">Elegir o crear un evento</string>
     <string name="heading_prescription">Prescripción</string>
     <string name="heading_prescription_edit">Editar prescripción</string>
@@ -341,6 +368,10 @@
     <string name="heading_sample_read">Leer muestra</string>
     <string name="heading_sample_summary">Resumen de la muestra</string>
     <string name="heading_samples_list">Listado de muestras</string>
+    <string name="heading_immunization_edit">Editar inmunización</string>
+    <string name="heading_immunization_new">Nueva inmunización</string>
+    <string name="heading_immunization_read">Leer inmunización</string>
+    <string name="heading_immunizations_list">Listado de inmunizaciones</string>
     <string name="heading_pathogen_test_edit">Editar prueba de patógeno</string>
     <string name="heading_pathogen_test_new">Nueva prueba de patógeno</string>
     <string name="heading_pathogen_test_read">Leer prueba de patógeno</string>
@@ -381,6 +412,10 @@
     <string name="heading_campaign_form_data_summary">Resumen de datos de campaña</string>
     <string name="heading_campaign_form_meta_select">Seleccionar formulario de campaña</string>
     <string name="heading_case_place_of_stay">Lugar de estancia</string>
+    <string name="heading_vaccination">Vacunación</string>
+    <string name="heading_vaccination_edit">Editar vacunación</string>
+    <string name="heading_vaccination_new">Nueva vacunación</string>
+    <string name="heading_search_for_case">Buscar caso específico</string>
     <string name="hint_add_to_empty_list">Añada una nueva entrada pulsando el símbolo \"+\" en la parte superior derecha.</string>
     <string name="hint_clear">Limpiar</string>
     <string name="hint_create_pin">Por favor, elija un PIN de cuatro dígitos que utilizará para autenticarse cada vez que abra la aplicación SORMAS.</string>
@@ -445,12 +480,14 @@
     <string name="info_case_creation_mark_check_box">Este caso es un <b>nuevo caso</b> y <b>no un duplicado</b> de uno de los casos anteriores</string>
     <string name="info_event_creation_mark_check_box">Este evento es un <b>nuevo evento</b> y <b>no un duplicado</b> de uno de los eventos anteriores</string>
     <string name="info_pick_campaign_form_meta">¡Por favor, seleccione el formulario de campaña para el cual desea ingresar datos!</string>
+    <string name="info_immunization_override_mark_check_box">Anular inmunización existente&gt;</string>
     <string name="main_menu_cases">Casos</string>
     <string name="main_menu_contacts">Contactos</string>
     <string name="main_menu_dashboard">Tablero de control</string>
     <string name="main_menu_events">Eventos</string>
     <string name="main_menu_reports">Informes</string>
     <string name="main_menu_samples">Muestras</string>
+    <string name="main_menu_immunizations">Inmunizaciones</string>
     <string name="main_menu_settings">Ajustes</string>
     <string name="main_menu_tasks">Tareas</string>
     <string name="main_menu_aggregate_reports">mSERS</string>
@@ -514,6 +551,7 @@
     <string name="tag_row_item_select_or_create_person">seleccionar o crear persona</string>
     <string name="tag_row_item_select_or_create_event">seleccionarFilaOCrearEvento</string>
     <string name="tag_row_item_case_pick_or_create">elegir o crear persona</string>
+    <string name="tag_row_item_immunization_pick_or_create">rowItemImmunizationPickOrcreatePerson</string>
     <string name="time_future_almost_two_years">dentro de casi dos años</string>
     <string name="time_future_one_day">mañana</string>
     <string name="time_future_one_hour">en alrededor de una hora</string>
@@ -607,4 +645,7 @@
     <string name="scan_field_sample_id">Escanear id de muestra de campo</string>
     <string name="caption_facility_type_group">Categoría de instalación</string>
     <string name="caption_facility_type">Tipo de instalación</string>
+    <string name="value_vaccine_date_unknown">Fecha de vacunación N/A</string>
+    <string name="value_vaccine_name_unknown">Vacuna N/A</string>
+    <string name="value_vaccine_manufacturer_unknown">Fabricante N/A</string>
 </resources>

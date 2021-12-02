@@ -15,15 +15,53 @@
 
 package de.symeda.sormas.backend.sormastosormas.data.processed;
 
-import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
+import javax.transaction.Transactional;
+
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 
-public interface ProcessedDataPersister<P> {
+public abstract class ProcessedDataPersister<T extends SormasToSormasShareableDto, S extends de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto<T>, E extends SormasToSormasShareable> {
 
-	void persistSharedData(P processedData) throws SormasToSormasValidationException;
+	protected abstract SormasToSormasShareInfoService getShareInfoService();
 
-	void persistReturnedData(P processedData, SormasToSormasOriginInfoDto originInfo) throws SormasToSormasValidationException;
+	@Transactional(rollbackOn = {
+		Exception.class })
+	public void persistSharedData(S processedData, SormasToSormasOriginInfoDto originInfo, E existingEntity)
+		throws SormasToSormasValidationException {
+		// create or update origin info
+		if (existingEntity == null || existingEntity.getSormasToSormasOriginInfo() != null) {
+			processedData.getEntity().setSormasToSormasOriginInfo(originInfo);
+		}
 
-	void persistSyncData(P processedData, ShareTreeCriteria shareTreeCriteria) throws SormasToSormasValidationException;
+		// update existing share shares
+		if (originInfo.isOwnershipHandedOver() && existingEntity != null && !existingEntity.getSormasToSormasShares().isEmpty()) {
+			existingEntity.getSormasToSormasShares().forEach(s -> {
+				s.setOwnershipHandedOver(false);
+				getShareInfoService().ensurePersisted(s);
+			});
+		}
+
+		persistSharedData(processedData, existingEntity);
+	}
+
+	protected abstract void persistSharedData(S processedData, E existingEntity) throws SormasToSormasValidationException;
+
+	@Transactional(rollbackOn = {
+		Exception.class })
+	public void persistSyncData(S processedData, SormasToSormasOriginInfoDto originInfo, E existingEntity) throws SormasToSormasValidationException {
+		T entity = processedData.getEntity();
+		SormasToSormasShareInfo shareInfo = getShareInfoByEntityAndOrganization(entity, originInfo.getOrganizationId());
+
+		if (shareInfo == null) {
+			entity.setSormasToSormasOriginInfo(originInfo);
+		}
+
+		persistSharedData(processedData, existingEntity);
+	}
+
+	protected abstract SormasToSormasShareInfo getShareInfoByEntityAndOrganization(T entity, String organizationId);
 }

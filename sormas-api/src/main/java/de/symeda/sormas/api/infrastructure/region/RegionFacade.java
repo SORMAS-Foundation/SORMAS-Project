@@ -18,17 +18,16 @@
 package de.symeda.sormas.api.infrastructure.region;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.infrastructure.GeoLocationFacade;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
-public interface RegionFacade {
+public interface RegionFacade extends GeoLocationFacade<RegionDto, RegionIndexDto, RegionReferenceDto, RegionCriteria> {
 
 	List<RegionReferenceDto> getAllActiveByServerCountry();
 
@@ -38,39 +37,14 @@ public interface RegionFacade {
 
 	List<RegionReferenceDto> getAllActiveAsReference();
 
-	List<RegionDto> getAllAfter(Date date);
-
-	List<RegionIndexDto> getIndexList(RegionCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
-
 	Page<RegionIndexDto> getIndexPage(RegionCriteria regionCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
-	long count(RegionCriteria criteria);
-
-	RegionDto getRegionByUuid(String uuid);
-
-	RegionReferenceDto getRegionReferenceByUuid(String uuid);
 
 	RegionReferenceDto getRegionReferenceById(int id);
 
-	List<String> getAllUuids();
-
-	List<RegionDto> getByUuids(List<String> uuids);
-
-	void saveRegion(RegionDto dto) throws ValidationRuntimeException;
-
-	void saveRegion(RegionDto dto, boolean allowMerge) throws ValidationRuntimeException;
-
-	List<RegionReferenceDto> getReferencesByName(String name, boolean includeArchivedEntities);
-
 	List<RegionDto> getByName(String name, boolean includeArchivedEntities);
 
-	List<RegionReferenceDto> getByExternalId(String id, boolean includeArchivedEntities);
-
 	List<String> getNamesByIds(List<Long> regionIds);
-
-	void archive(String regionUuid);
-
-	void dearchive(String regionUuid);
 
 	boolean isUsedInOtherInfrastructureData(Collection<String> regionUuids);
 }

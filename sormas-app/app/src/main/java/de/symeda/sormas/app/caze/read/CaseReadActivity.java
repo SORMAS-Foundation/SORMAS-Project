@@ -25,6 +25,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -92,6 +93,14 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 		if (caze != null && caze.isUnreferredPortHealthCase()) {
 			menuItems.set(CaseSection.SAMPLES.ordinal(), null);
 		}
+		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			|| DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			menuItems.set(CaseSection.IMMUNIZATIONS.ordinal(), null);
+		}
+		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			|| !DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			menuItems.set(CaseSection.VACCINATIONS.ordinal(), null);
+		}
 		if (caze != null && caze.isUnreferredPortHealthCase()) {
 			menuItems.set(CaseSection.EVENTS.ordinal(), null);
 		}
@@ -100,14 +109,18 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 			|| (caze != null && !DiseaseConfigurationCache.getInstance().hasFollowUp(caze.getDisease()))) {
 			menuItems.set(CaseSection.CONTACTS.ordinal(), null);
 		}
-		if (caze != null && (caze.getDisease() == Disease.CONGENITAL_RUBELLA
-			|| DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.VIEW_TAB_CASES_EPIDEMIOLOGICAL_DATA))) {
+		if (caze != null
+			&& (caze.getDisease() == Disease.CONGENITAL_RUBELLA
+				|| DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.VIEW_TAB_CASES_EPIDEMIOLOGICAL_DATA))) {
 			menuItems.set(CaseSection.EPIDEMIOLOGICAL_DATA.ordinal(), null);
 		}
 		if (caze != null && (caze.getCaseOrigin() != CaseOrigin.POINT_OF_ENTRY || !ConfigProvider.hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW))) {
 			menuItems.set(CaseSection.PORT_HEALTH_INFO.ordinal(), null);
 		}
-		if (caze != null && (caze.isUnreferredPortHealthCase() || UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles()) || DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.VIEW_TAB_CASES_HOSPITALIZATION))) {
+		if (caze != null
+			&& (caze.isUnreferredPortHealthCase()
+				|| UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())
+				|| DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.VIEW_TAB_CASES_HOSPITALIZATION))) {
 			menuItems.set(CaseSection.HOSPITALIZATION.ordinal(), null);
 		}
 		if (caze != null && caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
@@ -154,6 +167,12 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 			break;
 		case EVENTS:
 			fragment = CaseReadEventListFragment.newInstance(activityRootData);
+			break;
+		case IMMUNIZATIONS:
+			fragment = CaseReadImmunizationListFragment.newInstance(activityRootData);
+			break;
+		case VACCINATIONS:
+			fragment = CaseReadVaccinationListFragment.newInstance(activityRootData);
 			break;
 		case PRESCRIPTIONS:
 			fragment = CaseReadPrescriptionListFragment.newInstance(activityRootData);

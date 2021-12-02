@@ -15,14 +15,23 @@
 
 package de.symeda.sormas.api.customizableenum;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
+
 import java.io.Serializable;
 import java.util.Objects;
+
+import javax.validation.constraints.Size;
+
+import de.symeda.sormas.api.i18n.Validations;
 
 public class CustomizableEnumTranslation implements Serializable {
 
 	private static final long serialVersionUID = 1031723613185793585L;
 
+	@Size(max = CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String languageCode;
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String value;
 
 	public String getLanguageCode() {

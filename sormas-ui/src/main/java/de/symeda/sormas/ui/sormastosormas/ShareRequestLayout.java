@@ -30,6 +30,7 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePrevie
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class ShareRequestLayout extends VerticalLayout {
 
@@ -50,8 +51,8 @@ public class ShareRequestLayout extends VerticalLayout {
 			ContactsPreviewGrid contactsGrid = addContactsGrid(Collections.emptyList());
 			casesGrid.getSelectionModel().addSelectionListener(event -> {
 				event.getFirstSelectedItem().ifPresent(casePreview -> {
-					if (casePreview.getContacts() != null) {
-						contactsGrid.setItems(casePreview.getContacts());
+					if (shareRequest.getContacts() != null) {
+						contactsGrid.setItems(shareRequest.getContacts().stream().filter(c -> DataHelper.isSame(c.getCaze(), casePreview)));
 					}
 				});
 			});
@@ -81,8 +82,9 @@ public class ShareRequestLayout extends VerticalLayout {
 
 			eventsGrid.getSelectionModel().addSelectionListener(event -> {
 				event.getFirstSelectedItem().ifPresent(eventPreview -> {
-					if (eventPreview.getEventParticipants() != null) {
-						eventParticipantsGrid.setItems(eventPreview.getEventParticipants());
+					if (shareRequest.getEventParticipants() != null) {
+						eventParticipantsGrid
+							.setItems(shareRequest.getEventParticipants().stream().filter(ep -> DataHelper.isSame(ep.getEvent(), eventPreview)));
 					}
 				});
 			});

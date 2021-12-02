@@ -22,7 +22,10 @@ import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.util.UUID;
+import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.pojo.web.Case;
 
 public class CaseService {
@@ -39,9 +42,9 @@ public class CaseService {
         .dateOfReport(LocalDate.now().minusDays(1))
         .externalId(UUID.randomUUID().toString())
         .disease("COVID-19")
-        .responsibleRegion("Voreingestellte Bundesl\u00E4nder")
-        .responsibleDistrict("Voreingestellter Landkreis")
-        .responsibleCommunity("Voreingestellte Gemeinde")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
         .placeOfStay("HOME")
         .placeDescription(faker.address().streetAddressNumber())
         .firstName(faker.name().firstName())
@@ -71,16 +74,14 @@ public class CaseService {
         .disease("COVID-19")
         .reinfection("NO")
         .outcomeOfCase("RECOVERED")
-        .reportingDistrict("Voreingestellter Landkreis")
+        .reportingDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
         .caseIdentificationSource("Suspicion report")
-        .region("Voreingestellte Bundesländer")
-        .district("Voreingestellter Landkreis")
-        .community("Voreingestellte Gemeinde")
-        .responsibleJurisdiction(
-            "Responsible jurisdiction of this case differs from its place of stay")
-        .responsibleDistrict("Voreingestellter Landkreis")
-        .responsibleCommunity("Voreingestellte Gemeinde")
-        .responsibleRegion("Voreingestellte Bundesländer")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .community(CommunityValues.VoreingestellteGemeinde.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .prohibitionToWork("NO")
         .homeBasedQuarantinePossible("NO")
         .quarantine("None")
@@ -102,13 +103,13 @@ public class CaseService {
 
   public Case buildCaseForLineListingFeature() {
     return Case.builder()
-        .disease(DiseasesValues.MONKEYPOX.getDiseaseName())
+        .disease(DiseasesValues.MONKEYPOX.getDiseaseCaption())
         .region("Voreingestellte")
-        .district("Voreingestellter Landkreis")
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
         .facilityCategory("Accommodation")
         .facilityType("Other Accommodation")
         .dateOfReport(LocalDate.now().minusDays(1))
-        .community("Voreingestellte Gemeinde")
+        .community(CommunityValues.VoreingestellteGemeinde.getName())
         .placeDescription(faker.address().streetAddressNumber()) // used for Facility Name
         .firstName(faker.name().firstName())
         .lastName(faker.name().lastName() + LocalDate.now())

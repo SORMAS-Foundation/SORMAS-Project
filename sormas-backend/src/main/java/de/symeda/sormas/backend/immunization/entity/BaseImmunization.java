@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.immunization.entity;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,6 +19,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -33,11 +34,14 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.vaccination.VaccinationEntity;
+import de.symeda.sormas.backend.vaccination.Vaccination;
 
 @MappedSuperclass
-public class BaseImmunization extends CoreAdo {
+public class BaseImmunization extends CoreAdo implements SormasToSormasShareable {
 
 	private Disease disease;
 	private String diseaseDetails;
@@ -62,6 +66,7 @@ public class BaseImmunization extends CoreAdo {
 	private Date startDate;
 	private Date endDate;
 	private Integer numberOfDoses;
+	private String numberOfDosesDetails;
 	private YesNoUnknown previousInfection;
 
 	private Date lastInfectionDate;
@@ -77,9 +82,12 @@ public class BaseImmunization extends CoreAdo {
 
 	private Country country;
 
-	private List<VaccinationEntity> vaccinations = new ArrayList<>();
+	private List<Vaccination> vaccinations = new ArrayList<>();
 
 	private Long personId;
+
+	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
+	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 
 	@Enumerated(EnumType.STRING)
 	public Disease getDisease() {
@@ -90,7 +98,7 @@ public class BaseImmunization extends CoreAdo {
 		this.disease = disease;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
@@ -156,7 +164,7 @@ public class BaseImmunization extends CoreAdo {
 		this.immunizationStatus = immunizationStatus;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalId() {
 		return externalId;
 	}
@@ -210,7 +218,7 @@ public class BaseImmunization extends CoreAdo {
 		this.healthFacility = healthFacility;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getHealthFacilityDetails() {
 		return healthFacilityDetails;
 	}
@@ -244,6 +252,15 @@ public class BaseImmunization extends CoreAdo {
 
 	public void setNumberOfDoses(Integer numberOfDoses) {
 		this.numberOfDoses = numberOfDoses;
+	}
+
+	@Column(name = "numberofdoses_details")
+	public String getNumberOfDosesDetails() {
+		return numberOfDosesDetails;
+	}
+
+	public void setNumberOfDosesDetails(String numberOfDosesDetails) {
+		this.numberOfDosesDetails = numberOfDosesDetails;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -354,12 +371,34 @@ public class BaseImmunization extends CoreAdo {
 		this.country = country;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = VaccinationEntity.IMMUNIZATION, fetch = FetchType.EAGER)
-	public List<VaccinationEntity> getVaccinations() {
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = Vaccination.IMMUNIZATION, fetch = FetchType.EAGER)
+	public List<Vaccination> getVaccinations() {
 		return vaccinations;
 	}
 
-	public void setVaccinations(List<VaccinationEntity> vaccinations) {
+	public void setVaccinations(List<Vaccination> vaccinations) {
 		this.vaccinations = vaccinations;
+	}
+
+	@Override
+	@ManyToOne(cascade = CascadeType.ALL)
+	@AuditedIgnore
+	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
+
+	@Override
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo originInfo) {
+		this.sormasToSormasOriginInfo = originInfo;
+	}
+
+	@OneToMany(mappedBy = SormasToSormasShareInfo.IMMUNIZATION, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
+		return sormasToSormasShares;
+	}
+
+	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
+		this.sormasToSormasShares = sormasToSormasShares;
 	}
 }

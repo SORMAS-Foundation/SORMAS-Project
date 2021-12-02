@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.ui.immunization.components.form;
 
 import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
@@ -10,18 +25,17 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.Label;
-import com.vaadin.v7.data.util.converter.StringToIntegerConverter;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
@@ -42,6 +56,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -49,8 +64,10 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
+import de.symeda.sormas.ui.utils.NumberValidator;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
 public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> {
@@ -65,7 +82,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		+ fluidRowLocs(ImmunizationDto.DISEASE, ImmunizationDto.DISEASE_DETAILS)
 		+ fluidRowLocs(ImmunizationDto.MEANS_OF_IMMUNIZATION, ImmunizationDto.MEANS_OF_IMMUNIZATION_DETAILS)
 		+ fluidRowLocs(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS)
-		+ fluidRowLocs(ImmunizationDto.MANAGEMENT_STATUS, ImmunizationDto.IMMUNIZATION_STATUS)
+		+ fluidRowLocs(ImmunizationDto.IMMUNIZATION_MANAGEMENT_STATUS, ImmunizationDto.IMMUNIZATION_STATUS)
 		+ fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
 		+ fluidRowLocs(ImmunizationDto.RESPONSIBLE_REGION, ImmunizationDto.RESPONSIBLE_DISTRICT, ImmunizationDto.RESPONSIBLE_COMMUNITY)
 		+ fluidRowLocs(FACILITY_TYPE_GROUP_LOC, ImmunizationDto.FACILITY_TYPE)
@@ -83,12 +100,20 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 	//@formatter:on
 
 	private ComboBox birthDateDay;
+	private final PersonReferenceDto personDto;
+	private final Disease disease;
 
 	public ImmunizationCreationForm() {
+		this(null, null);
+	}
+
+	public ImmunizationCreationForm(PersonReferenceDto personDto, Disease disease) {
 		super(
 			ImmunizationDto.class,
 			ImmunizationDto.I18N_PREFIX,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
+		this.personDto = personDto;
+		this.disease = disease;
 		setWidth(720, Unit.PIXELS);
 		hideValidationUntilNextCommit();
 	}
@@ -98,6 +123,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		return HTML_LAYOUT;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
 		addField(ImmunizationDto.REPORT_DATE, DateField.class);
@@ -105,7 +131,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		TextField externalIdField = addField(ImmunizationDto.EXTERNAL_ID, TextField.class);
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
-		addDiseaseField(ImmunizationDto.DISEASE, false);
+		addDiseaseField(ImmunizationDto.DISEASE, false, true);
 		addField(ImmunizationDto.DISEASE_DETAILS, TextField.class);
 
 		ComboBox meansOfImmunizationField = addField(ImmunizationDto.MEANS_OF_IMMUNIZATION, ComboBox.class);
@@ -114,9 +140,11 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		CheckBox overwriteImmunizationManagementStatus = addCustomField(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS, Boolean.class, CheckBox.class);
 		overwriteImmunizationManagementStatus.addStyleName(VSPACE_3);
 
-		ComboBox managementStatusField = addCustomField(ImmunizationDto.MANAGEMENT_STATUS, ImmunizationManagementStatus.class, ComboBox.class);
+		ComboBox managementStatusField =
+			addCustomField(ImmunizationDto.IMMUNIZATION_MANAGEMENT_STATUS, ImmunizationManagementStatus.class, ComboBox.class);
 		managementStatusField.setValue(ImmunizationManagementStatus.SCHEDULED);
 		managementStatusField.setEnabled(false);
+		managementStatusField.setNullSelectionAllowed(false);
 
 		ComboBox immunizationStatusField = addCustomField(ImmunizationDto.IMMUNIZATION_STATUS, ImmunizationStatus.class, ComboBox.class);
 		immunizationStatusField.setValue(ImmunizationStatus.PENDING);
@@ -126,11 +154,11 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		jurisdictionHeadingLabel.addStyleName(H3);
 		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
 
-		ComboBox responsibleRegion = addField(ImmunizationDto.RESPONSIBLE_REGION);
+		ComboBox responsibleRegion = addInfrastructureField(ImmunizationDto.RESPONSIBLE_REGION);
 		responsibleRegion.setRequired(true);
-		ComboBox responsibleDistrictCombo = addField(ImmunizationDto.RESPONSIBLE_DISTRICT);
+		ComboBox responsibleDistrictCombo = addInfrastructureField(ImmunizationDto.RESPONSIBLE_DISTRICT);
 		responsibleDistrictCombo.setRequired(true);
-		ComboBox responsibleCommunityCombo = addField(ImmunizationDto.RESPONSIBLE_COMMUNITY);
+		ComboBox responsibleCommunityCombo = addInfrastructureField(ImmunizationDto.RESPONSIBLE_COMMUNITY);
 		responsibleCommunityCombo.setNullSelectionAllowed(true);
 		responsibleCommunityCombo.addStyleName(SOFT_REQUIRED);
 
@@ -152,14 +180,16 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		TextField facilityDetails = addField(ImmunizationDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		facilityDetails.setVisible(false);
 
-		addField(ImmunizationDto.START_DATE, DateField.class);
-		addDateField(ImmunizationDto.END_DATE, DateField.class, -1);
+		DateField startDate = addField(ImmunizationDto.START_DATE, DateField.class);
+		DateField endDate = addDateField(ImmunizationDto.END_DATE, DateField.class, -1);
+		DateComparisonValidator.addStartEndValidators(startDate, endDate);
 
-		addDateField(ImmunizationDto.VALID_FROM, DateField.class, -1);
-		addDateField(ImmunizationDto.VALID_UNTIL, DateField.class, -1);
+		DateField validFrom = addDateField(ImmunizationDto.VALID_FROM, DateField.class, -1);
+		DateField validUntil = addDateField(ImmunizationDto.VALID_UNTIL, DateField.class, -1);
+		DateComparisonValidator.addStartEndValidators(validFrom, validUntil);
 
-		TextField numberOfDosesField = addField(ImmunizationDto.NUMBER_OF_DOSES, TextField.class);
-		numberOfDosesField.setConverter(new StringToIntegerConverter());
+		Field numberOfDosesField = addField(ImmunizationDto.NUMBER_OF_DOSES);
+		numberOfDosesField.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10, false));
 		numberOfDosesField.setVisible(false);
 
 		addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
@@ -229,27 +259,19 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
 
-		setRequired(
-			true,
-			ImmunizationDto.REPORT_DATE,
-			ImmunizationDto.DISEASE,
-			ImmunizationDto.MEANS_OF_IMMUNIZATION,
-			FACILITY_TYPE_GROUP_LOC,
-			ImmunizationDto.FACILITY_TYPE,
-			ImmunizationDto.HEALTH_FACILITY,
-			ImmunizationDto.START_DATE,
-			PersonDto.FIRST_NAME,
-			PersonDto.LAST_NAME,
-			PersonDto.SEX);
+		setRequired(true, ImmunizationDto.REPORT_DATE, ImmunizationDto.MEANS_OF_IMMUNIZATION);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			Arrays.asList(ImmunizationDto.DISEASE_DETAILS),
+			Collections.singletonList(ImmunizationDto.DISEASE_DETAILS),
 			ImmunizationDto.DISEASE,
-			Arrays.asList(Disease.OTHER),
+			Collections.singletonList(Disease.OTHER),
 			true);
-		FieldHelper
-			.setRequiredWhen(getFieldGroup(), ImmunizationDto.DISEASE, Arrays.asList(ImmunizationDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
+		FieldHelper.setRequiredWhen(
+			getFieldGroup(),
+			ImmunizationDto.DISEASE,
+			Collections.singletonList(ImmunizationDto.DISEASE_DETAILS),
+			Collections.singletonList(Disease.OTHER));
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
@@ -363,6 +385,45 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 			updateFacilityFields(facilityCombo, facilityDetails);
 			this.getValue().setFacilityType((FacilityType) facilityType.getValue());
 		});
+
+		addValueChangeListener(e -> {
+			if (disease != null) {
+				setVisible(false, ImmunizationDto.DISEASE, ImmunizationDto.DISEASE_DETAILS);
+				setReadOnly(false, ImmunizationDto.DISEASE, ImmunizationDto.DISEASE_DETAILS);
+			} else {
+				setRequired(true, ImmunizationDto.DISEASE);
+			}
+			if (personDto != null) {
+				setVisible(
+					false,
+					PersonDto.FIRST_NAME,
+					PersonDto.LAST_NAME,
+					PersonDto.SEX,
+					PersonDto.NATIONAL_HEALTH_ID,
+					PersonDto.PASSPORT_NUMBER,
+					PersonDto.BIRTH_DATE_DD,
+					PersonDto.BIRTH_DATE_MM,
+					PersonDto.BIRTH_DATE_YYYY,
+					PersonDto.PRESENT_CONDITION,
+					PersonDto.PHONE,
+					PersonDto.EMAIL_ADDRESS);
+				setReadOnly(
+					false,
+					PersonDto.FIRST_NAME,
+					PersonDto.LAST_NAME,
+					PersonDto.SEX,
+					PersonDto.NATIONAL_HEALTH_ID,
+					PersonDto.PASSPORT_NUMBER,
+					PersonDto.BIRTH_DATE_DD,
+					PersonDto.BIRTH_DATE_MM,
+					PersonDto.BIRTH_DATE_YYYY,
+					PersonDto.PRESENT_CONDITION,
+					PersonDto.PHONE,
+					PersonDto.EMAIL_ADDRESS);
+			} else {
+				setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.SEX);
+			}
+		});
 	}
 
 	private void setItemCaptionsForMonths(AbstractSelect months) {
@@ -447,7 +508,8 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 	@Override
 	public ImmunizationDto getValue() {
 		ImmunizationDto immunizationDto = super.getValue();
-		immunizationDto.setImmunizationManagementStatus((ImmunizationManagementStatus) getField(ImmunizationDto.MANAGEMENT_STATUS).getValue());
+		immunizationDto
+			.setImmunizationManagementStatus((ImmunizationManagementStatus) getField(ImmunizationDto.IMMUNIZATION_MANAGEMENT_STATUS).getValue());
 		immunizationDto.setImmunizationStatus((ImmunizationStatus) getField(ImmunizationDto.IMMUNIZATION_STATUS).getValue());
 		return immunizationDto;
 	}

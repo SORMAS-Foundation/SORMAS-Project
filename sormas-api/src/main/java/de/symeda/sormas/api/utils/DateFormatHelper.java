@@ -16,6 +16,10 @@ public class DateFormatHelper {
 		return DateHelper.formatLocalDate(date, I18nProperties.getUserLanguage());
 	}
 
+	public static String formatDate(Integer dateDD, Integer dateMM, Integer dateYYYY) {
+		return DateHelper.formatLocalDate(dateDD, dateMM, dateYYYY, I18nProperties.getUserLanguage());
+	}
+
 	public static String getDateFormatPattern() {
 		return DateHelper.getLocalDatePattern(I18nProperties.getUserLanguage());
 	}

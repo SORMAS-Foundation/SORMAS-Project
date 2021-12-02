@@ -17,13 +17,21 @@ package de.symeda.sormas.api.sormastosormas.sharerequest;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.FieldConstraints;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
-public class SormasToSormasEventPreview implements HasUuid, Serializable {
+public class SormasToSormasEventPreview extends PseudonymizableDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = -8084434633554426724L;
 
@@ -37,23 +45,21 @@ public class SormasToSormasEventPreview implements HasUuid, Serializable {
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String EVENT_LOCATION = "eventLocation";
 
-	private String uuid;
 	private Date reportDateTime;
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String eventTitle;
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String eventDesc;
 	private Disease disease;
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
+	@Valid
 	private LocationDto eventLocation;
-
-	private List<SormasToSormasEventParticipantPreview> eventParticipants;
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
 
 	public Date getReportDateTime() {
 		return reportDateTime;
@@ -101,13 +107,5 @@ public class SormasToSormasEventPreview implements HasUuid, Serializable {
 
 	public void setEventLocation(LocationDto eventLocation) {
 		this.eventLocation = eventLocation;
-	}
-
-	public List<SormasToSormasEventParticipantPreview> getEventParticipants() {
-		return eventParticipants;
-	}
-
-	public void setEventParticipants(List<SormasToSormasEventParticipantPreview> eventParticipants) {
-		this.eventParticipants = eventParticipants;
 	}
 }

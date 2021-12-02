@@ -18,6 +18,8 @@
 package de.symeda.sormas.backend.sample;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -675,5 +677,44 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		List<SampleDto> eventParticipantSimilarSamples = getSampleFacade().getSimilarSamples(eventParticipantSampleCriteria);
 		MatcherAssert.assertThat(eventParticipantSimilarSamples, hasSize(1));
 		MatcherAssert.assertThat(eventParticipantSimilarSamples.get(0).getUuid(), is(eventParticipantSample.getUuid()));
+	}
+
+	@Test
+	public void testGetByLabSampleId() {
+
+		String labSampleId = "1234";
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER);
+		CaseDataDto caze = creator.createCase(officer.toReference(), creator.createPerson().toReference(), rdcf);
+
+		SampleDto sample = creator.createSample(caze.toReference(), officer.toReference(), rdcf.facility, (s) -> {
+			s.setLabSampleID(labSampleId);
+		});
+
+		//create noise
+		creator.createSample(caze.toReference(), officer.toReference(), rdcf.facility, (s) -> {
+			s.setLabSampleID("some-other-id");
+		});
+
+		List<SampleDto> result = getSampleFacade().getByLabSampleId(null);
+		assertTrue(result.isEmpty());
+
+		result = getSampleFacade().getByLabSampleId(labSampleId);
+		MatcherAssert.assertThat(result, hasSize(1));
+		MatcherAssert.assertThat(result, contains(equalTo(sample)));
+
+		SampleDto sample2 = creator.createSample(caze.toReference(), officer.toReference(), rdcf.facility, (s) -> {
+			s.setLabSampleID(labSampleId);
+		});
+
+		result = getSampleFacade().getByLabSampleId(labSampleId);
+		MatcherAssert.assertThat(result, hasSize(2));
+		MatcherAssert.assertThat(result, containsInAnyOrder(equalTo(sample), equalTo(sample2)));
+
+		getSampleFacade().deleteSample(sample2.toReference());
+
+		result = getSampleFacade().getByLabSampleId(labSampleId);
+		MatcherAssert.assertThat(result, hasSize(1));
+		MatcherAssert.assertThat(result, contains(equalTo(sample)));
 	}
 }

@@ -1,8 +1,12 @@
 package de.symeda.sormas.api.infrastructure.subcontinent;
 
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class SubcontinentDto extends EntityDto {
 
@@ -11,7 +15,9 @@ public class SubcontinentDto extends EntityDto {
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String CONTINENT = "continent";
 
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String defaultName;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String externalId;
 	private boolean archived;
 	private ContinentReferenceDto continent;

@@ -17,9 +17,15 @@ package de.symeda.sormas.api.sormastosormas.sharerequest;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.HasUuid;
+import javax.validation.Valid;
 
-public class SormasToSormasEventParticipantPreview implements HasUuid, Serializable {
+import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+
+public class SormasToSormasEventParticipantPreview extends PseudonymizableDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = 430061021316700295L;
 
@@ -27,17 +33,12 @@ public class SormasToSormasEventParticipantPreview implements HasUuid, Serializa
 
 	public static final String UUID = "uuid";
 
-	private String uuid;
-
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
+	@Valid
 	private SormasToSormasPersonPreview person;
 
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
+	private EventReferenceDto event;
 
 	public SormasToSormasPersonPreview getPerson() {
 		return person;
@@ -45,5 +46,13 @@ public class SormasToSormasEventParticipantPreview implements HasUuid, Serializa
 
 	public void setPerson(SormasToSormasPersonPreview person) {
 		this.person = person;
+	}
+
+	public EventReferenceDto getEvent() {
+		return event;
+	}
+
+	public void setEvent(EventReferenceDto event) {
+		this.event = event;
 	}
 }

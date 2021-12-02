@@ -58,10 +58,10 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -144,7 +144,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		}
 
 		addField(ContactDto.REPORT_DATE_TIME, DateField.class);
-		ComboBox cbDisease = addDiseaseField(ContactDto.DISEASE, false);
+		ComboBox cbDisease = addDiseaseField(ContactDto.DISEASE, false, true);
 		addField(ContactDto.DISEASE_DETAILS, TextField.class);
 		TextField firstName = addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		TextField lastName = addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
@@ -282,7 +282,6 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 						removeCaseButton.setVisible(true);
 						chooseCaseButton.setCaption(I18nProperties.getCaption(Captions.contactChangeCase));
 
-						cbDisease.setValue(selectedCase.getDisease());
 						getValue().setCaze(this.selectedCase);
 						updateFieldVisibilitiesByCase(true);
 					}

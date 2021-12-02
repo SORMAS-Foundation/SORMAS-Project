@@ -17,9 +17,16 @@ package de.symeda.sormas.api.caze;
 
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
@@ -34,16 +41,20 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
-import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
@@ -51,20 +62,20 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
-public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEntityDto {
+public class CaseDataDto extends PseudonymizableDto implements SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = 5007131477733638086L;
 
@@ -87,6 +98,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String DENGUE_FEVER_TYPE = "dengueFeverType";
 	public static final String RABIES_TYPE = "rabiesType";
@@ -115,22 +127,10 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	public static final String MATERNAL_HISTORY = "maternalHistory";
 	public static final String PORT_HEALTH_INFO = "portHealthInfo";
 	public static final String PREGNANT = "pregnant";
-	public static final String VACCINATION = "vaccination";
-	public static final String VACCINATION_DOSES = "vaccinationDoses";
-	public static final String VACCINATION_INFO_SOURCE = "vaccinationInfoSource";
-	public static final String FIRST_VACCINATION_DATE = "firstVaccinationDate";
-	public static final String LAST_VACCINATION_DATE = "lastVaccinationDate";
-	public static final String VACCINE_NAME = "vaccineName";
-	public static final String OTHER_VACCINE_NAME = "otherVaccineName";
-	public static final String VACCINE_MANUFACTURER = "vaccineManufacturer";
-	public static final String OTHER_VACCINE_MANUFACTURER = "otherVaccineManufacturer";
-	public static final String VACCINE_INN = "vaccineInn";
-	public static final String VACCINE_BATCH_NUMBER = "vaccineBatchNumber";
-	public static final String VACCINE_UNII_CODE = "vaccineUniiCode";
-	public static final String VACCINE_ATC_CODE = "vaccineAtcCode";
-	public static final String VACCINE = "vaccine";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String SMALLPOX_VACCINATION_RECEIVED = "smallpoxVaccinationReceived";
+	public static final String SMALLPOX_LAST_VACCINATION_DATE = "smallpoxLastVaccinationDate";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -207,6 +207,10 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
 	public static final String DONT_SHARE_WITH_REPORTING_TOOL = "dontShareWithReportingTool";
 	public static final String CASE_REFERENCE_DEFINITION = "caseReferenceDefinition";
+	public static final String PREVIOUS_QUARANTINE_TO = "previousQuarantineTo";
+	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
+
+	public static final String EXTERNAL_DATA = "externalData";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -215,7 +219,11 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
 	@Outbreaks
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
+	@Outbreaks
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String diseaseVariantDetails;
 	@Diseases({
 		Disease.PLAGUE })
 	@Outbreaks
@@ -235,6 +243,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	@HideForCountries(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String epidNumber;
 	@Outbreaks
 	@Required
@@ -259,6 +268,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private Date classificationDate;
 	@Outbreaks
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String classificationComment;
 
 	private YesNoUnknown clinicalConfirmation;
@@ -276,9 +286,12 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private Date outcomeDate;
 	private YesNoUnknown sequelae;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String sequelaeDetails;
 
+	@Required
 	private RegionReferenceDto responsibleRegion;
+	@Required
 	private DistrictReferenceDto responsibleDistrict;
 	@Outbreaks
 	@PersonalData
@@ -306,6 +319,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	@Outbreaks
 	@PersonalData
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
 	private YesNoUnknown pregnant;
 	@Diseases({
@@ -321,150 +335,27 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		Disease.CORONAVIRUS,
 		Disease.OTHER })
 	@Outbreaks
-	private Vaccination vaccination;
-	@Diseases({
-		Disease.AFP,
-		Disease.GUINEA_WORM,
-		Disease.MEASLES,
-		Disease.POLIO,
-		Disease.CSM,
-		Disease.YELLOW_FEVER,
-		Disease.RABIES,
-		Disease.UNSPECIFIED_VHF,
-		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
-		Disease.OTHER })
-	@Outbreaks
-	private String vaccinationDoses;
-	@Diseases({
-		Disease.AFP,
-		Disease.GUINEA_WORM,
-		Disease.MEASLES,
-		Disease.POLIO,
-		Disease.YELLOW_FEVER,
-		Disease.CSM,
-		Disease.MONKEYPOX,
-		Disease.UNSPECIFIED_VHF,
-		Disease.RABIES,
-		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
-		Disease.OTHER })
-	@Outbreaks
-	private Date firstVaccinationDate;
-	@Diseases({
-		Disease.AFP,
-		Disease.GUINEA_WORM,
-		Disease.MEASLES,
-		Disease.POLIO,
-		Disease.YELLOW_FEVER,
-		Disease.CSM,
-		Disease.MONKEYPOX,
-		Disease.UNSPECIFIED_VHF,
-		Disease.RABIES,
-		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
-		Disease.OTHER })
-	@Outbreaks
-	private Date lastVaccinationDate;
-	@Diseases({
-		Disease.AFP,
-		Disease.GUINEA_WORM,
-		Disease.MEASLES,
-		Disease.POLIO,
-		Disease.YELLOW_FEVER,
-		Disease.CSM,
-		Disease.RABIES,
-		Disease.UNSPECIFIED_VHF,
-		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
-		Disease.OTHER })
-	private VaccinationInfoSource vaccinationInfoSource;
-	@Diseases({
-		Disease.CORONAVIRUS })
-	private Vaccine vaccineName;
-	@Diseases({
-		Disease.CORONAVIRUS })
-	private String otherVaccineName;
-	@Diseases({
-		Disease.CORONAVIRUS, })
-	private VaccineManufacturer vaccineManufacturer;
-	@Diseases({
-		Disease.CORONAVIRUS, })
-	private String otherVaccineManufacturer;
-	@Diseases({
-		Disease.AFP,
-		Disease.GUINEA_WORM,
-		Disease.MEASLES,
-		Disease.POLIO,
-		Disease.YELLOW_FEVER,
-		Disease.CSM,
-		Disease.RABIES,
-		Disease.UNSPECIFIED_VHF,
-		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
-		Disease.OTHER })
-	private String vaccineInn;
-	@Diseases({
-		Disease.AFP,
-		Disease.GUINEA_WORM,
-		Disease.MEASLES,
-		Disease.POLIO,
-		Disease.YELLOW_FEVER,
-		Disease.CSM,
-		Disease.RABIES,
-		Disease.UNSPECIFIED_VHF,
-		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
-		Disease.OTHER })
-	private String vaccineBatchNumber;
-	@Diseases({
-		Disease.AFP,
-		Disease.GUINEA_WORM,
-		Disease.MEASLES,
-		Disease.POLIO,
-		Disease.YELLOW_FEVER,
-		Disease.CSM,
-		Disease.RABIES,
-		Disease.UNSPECIFIED_VHF,
-		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
-		Disease.OTHER })
-	private String vaccineUniiCode;
-	@Diseases({
-		Disease.AFP,
-		Disease.GUINEA_WORM,
-		Disease.MEASLES,
-		Disease.POLIO,
-		Disease.YELLOW_FEVER,
-		Disease.CSM,
-		Disease.RABIES,
-		Disease.UNSPECIFIED_VHF,
-		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
-		Disease.OTHER })
-	private String vaccineAtcCode;
-	@Diseases({
-		Disease.AFP,
-		Disease.GUINEA_WORM,
-		Disease.POLIO,
-		Disease.RABIES,
-		Disease.OTHER })
-	@Outbreaks
-	private String vaccine;
+	private VaccinationStatus vaccinationStatus;
 	@Diseases({
 		Disease.MONKEYPOX })
 	private YesNoUnknown smallpoxVaccinationScar;
 	@Diseases({
 		Disease.MONKEYPOX })
 	private YesNoUnknown smallpoxVaccinationReceived;
+	@Diseases({
+		Disease.MONKEYPOX })
+	private Date smallpoxLastVaccinationDate;
 	@Outbreaks
 	@SensitiveData
 	private UserReferenceDto surveillanceOfficer;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String clinicianName;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String clinicianPhone;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String clinicianEmail;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
@@ -472,25 +363,38 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String notifyingClinicDetails;
 	@Deprecated
 	@SensitiveData
 	private UserReferenceDto caseOfficer;
 	@SensitiveData
 	@Pseudonymizer(LatitudePseudonymizer.class)
+	@Min(value = -90, message = Validations.numberTooSmall)
+	@Max(value = 90, message = Validations.numberTooBig)
 	private Double reportLat;
 	@SensitiveData
 	@Pseudonymizer(LongitudePseudonymizer.class)
+	@Min(value = -180, message = Validations.numberTooSmall)
+	@Max(value = 180, message = Validations.numberTooBig)
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
+	@Valid
 	private HospitalizationDto hospitalization;
+	@Valid
 	private SymptomsDto symptoms;
+	@Valid
 	private EpiDataDto epiData;
+	@Valid
 	private TherapyDto therapy;
+	@Valid
 	private ClinicalCourseDto clinicalCourse;
+	@Valid
 	private MaternalHistoryDto maternalHistory;
+	@Size(max = 32, message = Validations.textTooLong)
 	private String creationVersion;
 	@SensitiveData
+	@Valid
 	private PortHealthInfoDto portHealthInfo;
 	private CaseOrigin caseOrigin;
 	@PersonalData(mandatoryField = true)
@@ -498,14 +402,23 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private PointOfEntryReferenceDto pointOfEntry;
 	@PersonalData
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String pointOfEntryDetails;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String additionalDetails;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalToken;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String internalToken;
 	private boolean sharedToCountry;
 	@HideForCountriesExcept
@@ -514,10 +427,12 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private InfectionSetting infectionSetting;
 	private QuarantineType quarantine;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String quarantineHelpNeeded;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
@@ -539,11 +454,13 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private YesNoUnknown quarantineHomePossible;
 	@HideForCountriesExcept
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String quarantineHomePossibleComment;
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@HideForCountriesExcept
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String quarantineHomeSupplyEnsuredComment;
 	private boolean quarantineExtended;
 	private boolean quarantineReduced;
@@ -558,9 +475,11 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
 	private FollowUpStatus followUpStatus;
+	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String followUpComment;
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
+	@Valid
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
 	private boolean ownershipHandedOver;
 
@@ -576,11 +495,13 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private QuarantineReason quarantineReasonBeforeIsolation;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String quarantineReasonBeforeIsolationDetails;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	private EndOfIsolationReason endOfIsolationReason;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String endOfIsolationReasonDetails;
 
 	@HideForCountriesExcept
@@ -615,6 +536,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private boolean notACaseReasonOther;
 
 	@HideForCountriesExcept
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String notACaseReasonDetails;
 	private Date followUpStatusChangeDate;
 	private UserReferenceDto followUpStatusChangeUser;
@@ -623,6 +545,13 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 
 	@HideForCountriesExcept
 	private CaseReferenceDefinition caseReferenceDefinition;
+
+	private Date previousQuarantineTo;
+	@SensitiveData
+	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	private String quarantineChangeComment;
+
+	private Map<String, String> externalData;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, null);
@@ -710,8 +639,6 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		caseData.setResponsibleRegion(travelEntry.getResponsibleRegion());
 		caseData.setResponsibleDistrict(travelEntry.getResponsibleDistrict());
 		caseData.setResponsibleCommunity(travelEntry.getResponsibleCommunity());
-		caseData.setRegion(travelEntry.getPointOfEntryRegion());
-		caseData.setDistrict(travelEntry.getPointOfEntryDistrict());
 		caseData.setPointOfEntry(travelEntry.getPointOfEntry());
 		caseData.setPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
 		caseData.setReportDate(travelEntry.getReportDate());
@@ -858,6 +785,14 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	public PlagueType getPlagueType() {
@@ -1094,92 +1029,12 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		this.pregnant = pregnant;
 	}
 
-	public Vaccination getVaccination() {
-		return vaccination;
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
 	}
 
-	public void setVaccination(Vaccination vaccination) {
-		this.vaccination = vaccination;
-	}
-
-	public String getVaccinationDoses() {
-		return vaccinationDoses;
-	}
-
-	public void setVaccinationDoses(String vaccinationDoses) {
-		this.vaccinationDoses = vaccinationDoses;
-	}
-
-	public VaccinationInfoSource getVaccinationInfoSource() {
-		return vaccinationInfoSource;
-	}
-
-	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
-		this.vaccinationInfoSource = vaccinationInfoSource;
-	}
-
-	public Vaccine getVaccineName() {
-		return vaccineName;
-	}
-
-	public void setVaccineName(Vaccine vaccineName) {
-		this.vaccineName = vaccineName;
-	}
-
-	public String getOtherVaccineName() {
-		return otherVaccineName;
-	}
-
-	public void setOtherVaccineName(String otherVaccineName) {
-		this.otherVaccineName = otherVaccineName;
-	}
-
-	public VaccineManufacturer getVaccineManufacturer() {
-		return vaccineManufacturer;
-	}
-
-	public void setVaccineManufacturer(VaccineManufacturer vaccineManufacturer) {
-		this.vaccineManufacturer = vaccineManufacturer;
-	}
-
-	public String getOtherVaccineManufacturer() {
-		return otherVaccineManufacturer;
-	}
-
-	public void setOtherVaccineManufacturer(String otherVaccineManufacturer) {
-		this.otherVaccineManufacturer = otherVaccineManufacturer;
-	}
-
-	public String getVaccineInn() {
-		return vaccineInn;
-	}
-
-	public void setVaccineInn(String vaccineInn) {
-		this.vaccineInn = vaccineInn;
-	}
-
-	public String getVaccineBatchNumber() {
-		return vaccineBatchNumber;
-	}
-
-	public void setVaccineBatchNumber(String vaccineBatchNumber) {
-		this.vaccineBatchNumber = vaccineBatchNumber;
-	}
-
-	public String getVaccineUniiCode() {
-		return vaccineUniiCode;
-	}
-
-	public void setVaccineUniiCode(String vaccineUniiCode) {
-		this.vaccineUniiCode = vaccineUniiCode;
-	}
-
-	public String getVaccineAtcCode() {
-		return vaccineAtcCode;
-	}
-
-	public void setVaccineAtcCode(String vaccineAtcCode) {
-		this.vaccineAtcCode = vaccineAtcCode;
+	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
+		this.vaccinationStatus = vaccinationStatus;
 	}
 
 	public YesNoUnknown getSmallpoxVaccinationScar() {
@@ -1198,28 +1053,12 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		this.smallpoxVaccinationReceived = smallpoxVaccinationReceived;
 	}
 
-	public Date getFirstVaccinationDate() {
-		return firstVaccinationDate;
+	public Date getSmallpoxLastVaccinationDate() {
+		return smallpoxLastVaccinationDate;
 	}
 
-	public void setFirstVaccinationDate(Date firstVaccinationDate) {
-		this.firstVaccinationDate = firstVaccinationDate;
-	}
-
-	public Date getLastVaccinationDate() {
-		return lastVaccinationDate;
-	}
-
-	public void setLastVaccinationDate(Date lastVaccinationDate) {
-		this.lastVaccinationDate = lastVaccinationDate;
-	}
-
-	public String getVaccine() {
-		return vaccine;
-	}
-
-	public void setVaccine(String vaccine) {
-		this.vaccine = vaccine;
+	public void setSmallpoxLastVaccinationDate(Date smallpoxLastVaccinationDate) {
+		this.smallpoxLastVaccinationDate = smallpoxLastVaccinationDate;
 	}
 
 	public String getEpidNumber() {
@@ -1789,5 +1628,29 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 
 	public void setCaseReferenceDefinition(CaseReferenceDefinition caseReferenceDefinition) {
 		this.caseReferenceDefinition = caseReferenceDefinition;
+	}
+
+	public Date getPreviousQuarantineTo() {
+		return previousQuarantineTo;
+	}
+
+	public void setPreviousQuarantineTo(Date previousQuarantineTo) {
+		this.previousQuarantineTo = previousQuarantineTo;
+	}
+
+	public String getQuarantineChangeComment() {
+		return quarantineChangeComment;
+	}
+
+	public void setQuarantineChangeComment(String quarantineChangeComment) {
+		this.quarantineChangeComment = quarantineChangeComment;
+	}
+
+	public Map<String, String> getExternalData() {
+		return externalData;
+	}
+
+	public void setExternalData(Map<String, String> externalData) {
+		this.externalData = externalData;
 	}
 }

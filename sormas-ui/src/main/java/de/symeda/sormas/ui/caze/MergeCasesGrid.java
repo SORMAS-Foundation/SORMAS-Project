@@ -71,8 +71,7 @@ public class MergeCasesGrid extends AbstractMergeGrid<CaseIndexDto, CaseCriteria
 					value.getAgeType(),
 					value.getDateOfBirthDD(),
 					value.getDateOfBirthMM(),
-					value.getDateOfBirthYYYY(),
-					I18nProperties.getUserLanguage()),
+					value.getDateOfBirthYYYY()),
 			new TextRenderer());
 	}
 

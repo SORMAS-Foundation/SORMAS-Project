@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.caze.classification;
 
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
@@ -26,7 +27,7 @@ public class ClassificationPathogenTestNegativeResultCriteriaDto extends Classif
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests, List<EventDto> events) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests, List<EventDto> events, Date lastVaccinationDate) {
 
 		for (PathogenTestDto pathogenTest : pathogenTests) {
 			if (pathogenTest.getTestResult() == PathogenTestResultType.NEGATIVE) {

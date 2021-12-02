@@ -1,8 +1,8 @@
 package de.symeda.sormas.api.infrastructure.area;
 
-import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 
-public class AreaReferenceDto extends ReferenceDto {
+public class AreaReferenceDto extends InfrastructureDataReferenceDto {
 
 	private static final long serialVersionUID = -6241927331721175673L;
 
@@ -17,6 +17,10 @@ public class AreaReferenceDto extends ReferenceDto {
 	public AreaReferenceDto(String uuid, String caption) {
 		setUuid(uuid);
 		setCaption(caption);
+	}
+
+	public AreaReferenceDto(String uuid, String caption, String externalId) {
+		super(uuid, caption, externalId);
 	}
 
 }

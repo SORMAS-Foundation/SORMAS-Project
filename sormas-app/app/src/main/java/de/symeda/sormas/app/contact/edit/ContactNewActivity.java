@@ -28,6 +28,7 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
@@ -52,6 +53,7 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.NavigationHelper;
 
 public class ContactNewActivity extends BaseEditActivity<Contact> {
@@ -97,6 +99,11 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 			_contact.setCaseUuid(caseUuid);
 			_contact.setDisease(contactCase.getDisease());
 			_contact.setDiseaseDetails(contactCase.getDiseaseDetails());
+		} else {
+			Disease defaultDisease = DiseaseConfigurationCache.getInstance().getDefaultDisease();
+			if (defaultDisease != null) {
+				_contact.setDisease(defaultDisease);
+			}
 		}
 
 		_contact.setPerson(_person);

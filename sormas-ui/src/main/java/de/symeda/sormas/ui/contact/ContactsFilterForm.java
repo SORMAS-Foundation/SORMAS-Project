@@ -37,9 +37,9 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -73,7 +73,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		ContactCriteria.REPORTING_USER_ROLE,
 		ContactCriteria.FOLLOW_UP_UNTIL_TO,
 		ContactCriteria.SYMPTOM_JOURNAL_STATUS,
-		ContactCriteria.VACCINATION,
+		ContactCriteria.VACCINATION_STATUS,
 		ContactCriteria.RELATION_TO_CASE,
 		ContactCriteria.BIRTHDATE_YYYY,
 		ContactCriteria.BIRTHDATE_MM,
@@ -112,7 +112,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			ContactIndexDto.CASE_CLASSIFICATION,
 			ContactIndexDto.CONTACT_CATEGORY,
 			ContactIndexDto.FOLLOW_UP_STATUS,
-			ContactCriteria.NAME_UUID_CASE_LIKE,
+			ContactCriteria.CONTACT_OR_CASE_LIKE,
+			ContactCriteria.PERSON_LIKE,
 			ContactCriteria.EVENT_LIKE };
 	}
 
@@ -142,8 +143,13 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
 		TextField searchField = addField(
 			FieldConfiguration
-				.withCaptionAndPixelSized(ContactCriteria.NAME_UUID_CASE_LIKE, I18nProperties.getString(Strings.promptContactsSearchField), 200));
+				.withCaptionAndPixelSized(ContactCriteria.CONTACT_OR_CASE_LIKE, I18nProperties.getString(Strings.promptContactsSearchField), 200));
 		searchField.setNullRepresentation("");
+
+		TextField personLikeField = addField(
+			FieldConfiguration
+				.withCaptionAndPixelSized(ContactCriteria.PERSON_LIKE, I18nProperties.getString(Strings.promptRelatedPersonLikeField), 200));
+		personLikeField.setNullRepresentation("");
 
 		TextField eventSearchField = addField(
 			FieldConfiguration
@@ -213,10 +219,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SYMPTOM_JOURNAL_STATUS),
 					240));
 		}
-		addField(
-			moreFiltersContainer,
-			FieldConfiguration
-				.withCaptionAndPixelSized(ContactCriteria.VACCINATION, I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus), 140));
+		addField(moreFiltersContainer, FieldConfiguration.pixelSized(ContactCriteria.VACCINATION_STATUS, 140));
 
 		addField(
 			moreFiltersContainer,
@@ -556,7 +559,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	}
 
 	public void setSearchFieldEnabled(boolean enabled) {
-		this.getField(ContactCriteria.NAME_UUID_CASE_LIKE).setEnabled(enabled);
+		this.getField(ContactCriteria.CONTACT_OR_CASE_LIKE).setEnabled(enabled);
 		this.getField(ContactCriteria.EVENT_LIKE).setEnabled(enabled);
 	}
 

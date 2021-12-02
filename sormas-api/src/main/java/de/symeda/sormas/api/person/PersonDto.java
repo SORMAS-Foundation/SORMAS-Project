@@ -1,25 +1,29 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.api.person;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,17 +31,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
@@ -117,11 +125,13 @@ public class PersonDto extends PseudonymizableDto {
 	@Required
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String firstName;
 	@Outbreaks
 	@Required
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String lastName;
 	@HideForCountriesExcept
 	@PersonalData
@@ -129,26 +139,33 @@ public class PersonDto extends PseudonymizableDto {
 	private Salutation salutation;
 	@PersonalData
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherSalutation;
 	@PersonalData
 	@SensitiveData
 	@HideForCountriesExcept
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String birthName;
 	@PersonalData
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String nickname;
 	@PersonalData
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String mothersName;
 	@PersonalData
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String mothersMaidenName;
 	@PersonalData
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String fathersName;
 	@PersonalData
 	@SensitiveData
 	@HideForCountriesExcept
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String namesOfGuardians;
 	@Outbreaks
 	@Required
@@ -193,6 +210,7 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.CONGENITAL_RUBELLA })
 	@HideForCountries
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String placeOfBirthFacilityDetails;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
@@ -209,6 +227,7 @@ public class PersonDto extends PseudonymizableDto {
 	private CauseOfDeath causeOfDeath;
 	private Disease causeOfDeathDisease;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String causeOfDeathDetails;
 	@Diseases({
 		Disease.AFP,
@@ -230,6 +249,7 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String deathPlaceDescription;
 	@Diseases({
 		Disease.AFP,
@@ -253,6 +273,7 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String burialPlaceDescription;
 	@Diseases({
 		Disease.AFP,
@@ -267,23 +288,30 @@ public class PersonDto extends PseudonymizableDto {
 	private BurialConductor burialConductor;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
+	@Valid
 	private LocationDto address;
 
 	private EducationType educationType;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String educationDetails;
 
 	private OccupationType occupationType;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String occupationDetails;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private ArmedForcesRelationType armedForcesRelationType;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String passportNumber;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String nationalHealthId;
+	@Valid
 	private List<LocationDto> addresses = new ArrayList<>();
+	@Valid
 	private List<PersonContactDetailDto> personContactDetails = new ArrayList<>();
 
 	@Diseases(Disease.CORONAVIRUS)
@@ -296,9 +324,15 @@ public class PersonDto extends PseudonymizableDto {
 	private SymptomJournalStatus symptomJournalStatus;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalId;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalToken;
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String internalToken;
 
 	@HideForCountriesExcept
@@ -308,6 +342,8 @@ public class PersonDto extends PseudonymizableDto {
 	@SensitiveData
 	private CountryReferenceDto citizenship;
 	@SensitiveData
+	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String additionalDetails;
 
 	@SuppressWarnings("serial")
@@ -513,11 +549,11 @@ public class PersonDto extends PseudonymizableDto {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public String getPhone(boolean onlyPrimary) throws SeveralNonPrimaryContactDetailsException {
 		String primaryPhone = getPhone();
-		if (onlyPrimary || !(primaryPhone.equals(""))) {
+		if (onlyPrimary || StringUtils.isNotBlank(primaryPhone)) {
 			return primaryPhone;
 		} else {
 			List<String> allPhones = getAllPhoneNumbers();
-			if (allPhones.size() == 0) {
+			if (CollectionUtils.isEmpty(allPhones)) {
 				return "";
 			} else if (allPhones.size() > 1) {
 				throw new SeveralNonPrimaryContactDetailsException("Too many results found, none of which is marked primary.");
@@ -528,7 +564,7 @@ public class PersonDto extends PseudonymizableDto {
 	}
 
 	@JsonIgnore
-	public ArrayList<String> getAllPhoneNumbers() {
+	public List<String> getAllPhoneNumbers() {
 		ArrayList<String> result = new ArrayList<>();
 		for (PersonContactDetailDto pcd : getPersonContactDetails()) {
 			if (pcd.getPersonContactDetailType() == PersonContactDetailType.PHONE) {
@@ -578,11 +614,11 @@ public class PersonDto extends PseudonymizableDto {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public String getEmailAddress(boolean onlyPrimary) throws SeveralNonPrimaryContactDetailsException {
 		String primaryEmail = getEmailAddress();
-		if (onlyPrimary || !(primaryEmail.equals(""))) {
+		if (onlyPrimary || StringUtils.isNotBlank(primaryEmail)) {
 			return primaryEmail;
 		} else {
 			List<String> allEmails = getAllEmailAddresses();
-			if (allEmails.size() == 0) {
+			if (CollectionUtils.isEmpty(allEmails)) {
 				return "";
 			} else if (allEmails.size() > 1) {
 				throw new SeveralNonPrimaryContactDetailsException("Too many results found, none of which is marked primary.");
@@ -593,7 +629,7 @@ public class PersonDto extends PseudonymizableDto {
 	}
 
 	@JsonIgnore
-	public ArrayList<String> getAllEmailAddresses() {
+	public List<String> getAllEmailAddresses() {
 		ArrayList<String> result = new ArrayList<>();
 		for (PersonContactDetailDto pcd : getPersonContactDetails()) {
 			if (pcd.getPersonContactDetailType() == PersonContactDetailType.EMAIL) {
@@ -838,6 +874,10 @@ public class PersonDto extends PseudonymizableDto {
 		this.addresses = addresses;
 	}
 
+	public void addAddress(LocationDto address) {
+		addresses.add(address);
+	}
+
 	@ImportIgnore
 	public List<PersonContactDetailDto> getPersonContactDetails() {
 		return personContactDetails;
@@ -931,5 +971,25 @@ public class PersonDto extends PseudonymizableDto {
 
 	public PersonReferenceDto toReference() {
 		return new PersonReferenceDto(getUuid(), firstName, lastName);
+	}
+
+	@Override
+	public PersonDto clone() throws CloneNotSupportedException {
+		PersonDto clone = (PersonDto) super.clone();
+		clone.setAddress((LocationDto) getAddress().clone());
+
+		List<LocationDto> addressesClone = new ArrayList<>();
+		for (LocationDto locationDto : getAddresses()) {
+			addressesClone.add((LocationDto) locationDto.clone());
+		}
+		clone.setAddresses(addressesClone);
+
+		List<PersonContactDetailDto> contactDetailsClone = new ArrayList<>();
+		for (PersonContactDetailDto personContactDetailDto : getPersonContactDetails()) {
+			contactDetailsClone.add((PersonContactDetailDto) personContactDetailDto.clone());
+		}
+		clone.setPersonContactDetails(contactDetailsClone);
+
+		return clone;
 	}
 }

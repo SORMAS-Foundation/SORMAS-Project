@@ -209,11 +209,8 @@ public class LineListingLayout extends VerticalLayout {
 		ContactLineLayout newLine = new ContactLineLayout(lines.size());
 		ContactLineLayoutDto newLineDto = new ContactLineLayoutDto();
 
-		if (!lines.isEmpty()) {
-			ContactLineLayoutDto lastLineDto = lines.get(lines.size() - 1).getBean();
-			newLineDto.setLineField(lastLineDto.getLineField());
-		} else {
-			newLineDto.setLineField(new ContactLineFieldDto());
+		newLineDto.setLineField(new ContactLineFieldDto());
+		if (lines.isEmpty()) {
 			newLine.enableDelete(false);
 		}
 

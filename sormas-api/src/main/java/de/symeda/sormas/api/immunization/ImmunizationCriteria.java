@@ -40,7 +40,7 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_DD = "birthdateDD";
 	public static final String MEANS_OF_IMMUNIZATION = "meansOfImmunization";
-	public static final String MANAGEMENT_STATUS = "managementStatus";
+	public static final String IMMUNIZATION_MANAGEMENT_STATUS = "immunizationManagementStatus";
 	public static final String IMMUNIZATION_STATUS = "immunizationStatus";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
@@ -56,7 +56,7 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 	private Integer birthdateMM;
 	private Integer birthdateDD;
 	private MeansOfImmunization meansOfImmunization;
-	private ImmunizationManagementStatus managementStatus;
+	private ImmunizationManagementStatus immunizationManagementStatus;
 	private ImmunizationStatus immunizationStatus;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -121,12 +121,12 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 		this.meansOfImmunization = meansOfImmunization;
 	}
 
-	public ImmunizationManagementStatus getManagementStatus() {
-		return managementStatus;
+	public ImmunizationManagementStatus getImmunizationManagementStatus() {
+		return immunizationManagementStatus;
 	}
 
-	public void setManagementStatus(ImmunizationManagementStatus managementStatus) {
-		this.managementStatus = managementStatus;
+	public void setImmunizationManagementStatus(ImmunizationManagementStatus immunizationManagementStatus) {
+		this.immunizationManagementStatus = immunizationManagementStatus;
 	}
 
 	public ImmunizationStatus getImmunizationStatus() {

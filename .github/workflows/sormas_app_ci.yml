@@ -1,0 +1,116 @@
+# This workflow will test the sormas-app project with Gradle and running the AVD emulator
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle and https://github.com/ReactiveCircus/android-emulator-runner
+
+name: Java CI with Gradle
+
+env:
+  JAVA: 11
+  PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') || github.event.pull_request.head.repo.full_name == github.repository }}
+
+on:
+  push:
+    branches: [ development, master ]
+    paths:
+      - 'sormas-app/**'
+      - 'sormas-api/**'
+  pull_request:
+    branches: [ development ]
+    paths:
+      - 'sormas-app/**'
+      - 'sormas-api/**'
+
+jobs:
+  test:
+    name: android app test
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        # Even though we are using macos machines which should be faster thanks to hardware accelerations (explanation here https://github.com/ReactiveCircus/android-emulator-runner/issues/46)
+        # The memory footprint of newer android versions (>= 29) and the limitations of the GitHub provided machines is usually resulting in timeout when starting the emulator
+        api-level: [24, 25, 26, 27, 28]
+
+    steps:
+      - name: Checkout repository (with token)
+        # Check if PR results from the repository: if yes, we have access to the secrets.
+        # The token is only needed for privileged actions from within the repo, so no need
+        # to make it available on 3rd party PRs
+        if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.SORMAS_VITAGROUP_TOKEN }}
+
+      - name: Checkout repository (without token)
+        # Check if PR results from a fork: if yes, we cannot access the token.
+        # The token is only needed for privileged actions from within the repo, so no need
+        # to make it available on 3rd party PRs
+        if: ${{ !fromJSON(env.PRIVILEGED_RUN) }}
+        uses: actions/checkout@v2
+
+      - name: Set up JDK ${{ env.JAVA }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ env.JAVA }}
+
+      - name: Cache Maven packages
+        # Check if PR results from the repository: if yes, it is safe to cache dependencies.
+        # This is to keep us safe from cache poisoning through 3rd party PRs.
+        if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
+        # FIXME(@JonasCir) #3733 remove '**/*.pom' once serverlib pom is renamed
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-java-${{ env.JAVA }}-m2-${{ hashFiles('**/pom.xml', '**/*.pom') }}
+          restore-keys: ${{ runner.os }}-java-${{ env.JAVA }}-m2
+
+      - name: Run mvn install
+        working-directory: ./sormas-base
+        run: mvn install -pl :sormas-api -am -DskipTests=true
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        # Check if PR results from the repository: if yes, it is safe to cache dependencies.
+        # This is to keep us safe from cache poisoning through 3rd party PRs.
+        if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Run unit tests
+        working-directory: ./sormas-app
+        run: ./gradlew :app:clean :app:assembleDebug :app:test
+
+      - name: AVD cache
+        # Check if PR results from the repository: if yes, it is safe to cache dependencies.
+        # This is to keep us safe from cache poisoning through 3rd party PRs.
+        if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
+        uses: actions/cache@v2
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ matrix.api-level }}
+      
+      - name: Create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          script: echo "Generated AVD snapshot for caching."
+
+      - name: Run integration tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          working-directory: ./sormas-app
+          script: ./gradlew connectedAndroidTest

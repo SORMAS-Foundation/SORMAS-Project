@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.infrastructure.pointofentry;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -48,7 +48,7 @@ public class PointOfEntry extends InfrastructureAdo {
 		this.pointOfEntryType = pointOfEntryType;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getName() {
 		return name;
 	}
@@ -99,7 +99,7 @@ public class PointOfEntry extends InfrastructureAdo {
 		this.active = active;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalID() {
 		return externalID;
 	}

@@ -1,5 +1,7 @@
 package de.symeda.sormas.api.clinicalcourse;
 
+import javax.validation.Valid;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
@@ -11,6 +13,7 @@ public class ClinicalCourseDto extends EntityDto {
 
 	public static final String HEALTH_CONDITIONS = "healthConditions";
 
+	@Valid
 	private HealthConditionsDto healthConditions;
 
 	public static ClinicalCourseDto build() {

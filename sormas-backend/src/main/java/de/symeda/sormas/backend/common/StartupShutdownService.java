@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend.common;
 
 import java.io.IOException;
@@ -44,8 +41,12 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.security.RunAs;
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.enterprise.event.Event;
@@ -53,6 +54,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import de.symeda.sormas.backend.infrastructure.central.CentralInfraSyncFacade;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +73,7 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DefaultUserHelper;
+import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
@@ -112,11 +114,11 @@ public class StartupShutdownService {
 	static final String AUDIT_SCHEMA = "sql/sormas_audit_schema.sql";
 	private static final Pattern SQL_COMMENT_PATTERN = Pattern.compile("^\\s*(--.*)?");
 	//@formatter:off
-	private static final Pattern SCHEMA_VERSION_SQL_PATTERN = Pattern.compile(
-			"^\\s*INSERT\\s+INTO\\s+schema_version\\s*" + 
-			"\\(\\s*version_number\\s*,[^)]+\\)\\s*" +
-			"VALUES\\s*\\(\\s*([0-9]+)\\s*,.+");
-	//@formatter:on
+    private static final Pattern SCHEMA_VERSION_SQL_PATTERN = Pattern.compile(
+            "^\\s*INSERT\\s+INTO\\s+schema_version\\s*" +
+                    "\\(\\s*version_number\\s*,[^)]+\\)\\s*" +
+                    "VALUES\\s*\\(\\s*([0-9]+)\\s*,.+");
+    //@formatter:on
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -155,6 +157,10 @@ public class StartupShutdownService {
 	private CountryService countryService;
 	@EJB
 	private SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb;
+	@EJB
+	private CentralInfraSyncFacade centralInfraSync;
+	@EJB
+	private UpdateQueryTransactionWrapper updateQueryTransactionWrapper;
 
 	@Inject
 	private Event<UserUpdateEvent> userUpdateEvent;
@@ -182,10 +188,10 @@ public class StartupShutdownService {
 		checkDatabaseConfig(em);
 
 		logger.info("Initiating automatic database update of main database...");
-		updateDatabase(em, SORMAS_SCHEMA);
+		updateDatabase(UpdateQueryTransactionWrapper.TargetDb.SORMAS, em, SORMAS_SCHEMA);
 
 		logger.info("Initiating automatic database update of audit database...");
-		updateDatabase(emAudit, AUDIT_SCHEMA);
+		updateDatabase(UpdateQueryTransactionWrapper.TargetDb.AUDIT, emAudit, AUDIT_SCHEMA);
 
 		I18nProperties.setDefaultLanguage(Language.fromLocaleString(configFacade.getCountryLocale()));
 
@@ -216,6 +222,8 @@ public class StartupShutdownService {
 
 		configFacade.validateAppUrls();
 		configFacade.validateExternalUrls();
+
+		centralInfraSync.syncAll();
 	}
 
 	private void createDefaultInfrastructureData() {
@@ -229,10 +237,10 @@ public class StartupShutdownService {
 		Region region = null;
 		if (regionService.count() == 0) {
 			region = new Region();
-			region.setUuid(DataHelper.createUuid());
+			region.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.REGION.ordinal()));
 			region.setName(I18nProperties.getCaption(Captions.defaultRegion, "Default Region"));
 			region.setEpidCode("DEF-REG");
-			region.setDistricts(new ArrayList<District>());
+			region.setDistricts(new ArrayList<>());
 			regionService.ensurePersisted(region);
 		}
 
@@ -240,14 +248,14 @@ public class StartupShutdownService {
 		District district = null;
 		if (districtService.count() == 0) {
 			district = new District();
-			district.setUuid(DataHelper.createUuid());
+			district.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.DISTRICT.ordinal()));
 			district.setName(I18nProperties.getCaption(Captions.defaultDistrict, "Default District"));
 			if (region == null) {
 				region = regionService.getAll().get(0);
 			}
 			district.setRegion(region);
 			district.setEpidCode("DIS");
-			district.setCommunities(new ArrayList<Community>());
+			district.setCommunities(new ArrayList<>());
 			districtService.ensurePersisted(district);
 			region.getDistricts().add(district);
 		}
@@ -256,7 +264,7 @@ public class StartupShutdownService {
 		Community community = null;
 		if (communityService.count() == 0) {
 			community = new Community();
-			community.setUuid(DataHelper.createUuid());
+			community.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.COMMUNITY.ordinal()));
 			community.setName(I18nProperties.getCaption(Captions.defaultCommunity, "Default Community"));
 			if (district == null) {
 				district = districtService.getAll().get(0);
@@ -337,13 +345,14 @@ public class StartupShutdownService {
 
 			// Create Admin
 			//@formatter:off
-			createAndPersistDefaultUser(
-					UserRole.ADMIN,
-					"ad",
-					"min",
-					DefaultUserHelper.ADMIN_USERNAME_AND_PASSWORD,
-					u -> {});
-			//@formatter:on
+            createAndPersistDefaultUser(
+                    UserRole.ADMIN,
+                    "ad",
+                    "min",
+                    DefaultEntityHelper.ADMIN_USERNAME_AND_PASSWORD,
+                    u -> {
+                    });
+            //@formatter:on
 
 			if (!configFacade.isCreateDefaultEntities()) {
 				// return if isCreateDefaultEntities() is false
@@ -351,13 +360,14 @@ public class StartupShutdownService {
 				return;
 			}
 
-			Region region = regionService.getAll().get(0);
+			Region region =
+				regionService.getByUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.REGION.ordinal()));
 			District district = region.getDistricts().get(0);
 			Community community = district.getCommunities().get(0);
 			List<Facility> healthFacilities = facilityService.getActiveFacilitiesByCommunityAndType(community, FacilityType.HOSPITAL, false, false);
-			Facility facility = healthFacilities.size() > 0 ? healthFacilities.get(0) : null;
+			Facility facility = !healthFacilities.isEmpty() ? healthFacilities.get(0) : null;
 			List<Facility> laboratories = facilityService.getAllActiveLaboratories(false);
-			Facility laboratory = laboratories.size() > 0 ? laboratories.get(0) : null;
+			Facility laboratory = !laboratories.isEmpty() ? laboratories.get(0) : null;
 			PointOfEntry pointOfEntry = pointOfEntryService.getAllActive().get(0);
 
 			logger.info("Create default users");
@@ -367,7 +377,7 @@ public class StartupShutdownService {
 				UserRole.SURVEILLANCE_SUPERVISOR,
 				"Surveillance",
 				"Supervisor",
-				DefaultUserHelper.SURV_SUP_USERNAME_AND_PASSWORD,
+				DefaultEntityHelper.SURV_SUP_USERNAME_AND_PASSWORD,
 				u -> u.setRegion(region));
 
 			// Create Case Supervisor
@@ -375,7 +385,7 @@ public class StartupShutdownService {
 				UserRole.CASE_SUPERVISOR,
 				"Case",
 				"Supervisor",
-				DefaultUserHelper.CASE_SUP_USERNAME_AND_PASSWORD,
+				DefaultEntityHelper.CASE_SUP_USERNAME_AND_PASSWORD,
 				u -> u.setRegion(region));
 
 			// Create Contact Supervisor
@@ -383,7 +393,7 @@ public class StartupShutdownService {
 				UserRole.CONTACT_SUPERVISOR,
 				"Contact",
 				"Supervisor",
-				DefaultUserHelper.CONT_SUP_USERNAME_AND_PASSWORD,
+				DefaultEntityHelper.CONT_SUP_USERNAME_AND_PASSWORD,
 				u -> u.setRegion(region));
 
 			// Create Point of Entry Supervisor
@@ -391,7 +401,7 @@ public class StartupShutdownService {
 				UserRole.POE_SUPERVISOR,
 				"Point of Entry",
 				"Supervisor",
-				DefaultUserHelper.POE_SUP_USERNAME_AND_PASSWORD,
+				DefaultEntityHelper.POE_SUP_USERNAME_AND_PASSWORD,
 				u -> u.setRegion(region));
 
 			// Create Laboratory Officer
@@ -399,7 +409,7 @@ public class StartupShutdownService {
 				UserRole.LAB_USER,
 				"Laboratory",
 				"Officer",
-				DefaultUserHelper.LAB_OFF_USERNAME_AND_PASSWORD,
+				DefaultEntityHelper.LAB_OFF_USERNAME_AND_PASSWORD,
 				u -> u.setLaboratory(laboratory));
 
 			// Create Event Officer
@@ -407,86 +417,88 @@ public class StartupShutdownService {
 				UserRole.EVENT_OFFICER,
 				"Event",
 				"Officer",
-				DefaultUserHelper.EVE_OFF_USERNAME_AND_PASSWORD,
+				DefaultEntityHelper.EVE_OFF_USERNAME_AND_PASSWORD,
 				u -> u.setRegion(region));
 
 			// Create National User
 			//@formatter:off
-			createAndPersistDefaultUser(
-					UserRole.NATIONAL_USER,
-					"National",
-					"User",
-					DefaultUserHelper.NAT_USER_USERNAME_AND_PASSWORD,
-					u -> {});
-			//@formatter:on
+            createAndPersistDefaultUser(
+                    UserRole.NATIONAL_USER,
+                    "National",
+                    "User",
+                    DefaultEntityHelper.NAT_USER_USERNAME_AND_PASSWORD,
+                    u -> {
+                    });
+            //@formatter:on
 
 			// Create National Clinician
 			//@formatter:off
-			createAndPersistDefaultUser(
-					UserRole.NATIONAL_CLINICIAN,
-					"National",
-					"Clinician",
-					DefaultUserHelper.NAT_CLIN_USERNAME_AND_PASSWORD,
-					u -> {});
-			//@formatter:on
+            createAndPersistDefaultUser(
+                    UserRole.NATIONAL_CLINICIAN,
+                    "National",
+                    "Clinician",
+                    DefaultEntityHelper.NAT_CLIN_USERNAME_AND_PASSWORD,
+                    u -> {
+                    });
+            //@formatter:on
 
 			// Create Surveillance Officer
 			//@formatter:off
-			User surveillanceOfficer = createAndPersistDefaultUser(
-				UserRole.SURVEILLANCE_OFFICER,
-				"Surveillance",
-				"Officer",
-				DefaultUserHelper.SURV_OFF_USERNAME_AND_PASSWORD,
-				u -> {
-					u.setRegion(region);
-					u.setDistrict(district);
-				});
-			//@formatter:on
+            User surveillanceOfficer = createAndPersistDefaultUser(
+                    UserRole.SURVEILLANCE_OFFICER,
+                    "Surveillance",
+                    "Officer",
+                    DefaultEntityHelper.SURV_OFF_USERNAME_AND_PASSWORD,
+                    u -> {
+                        u.setRegion(region);
+                        u.setDistrict(district);
+                    });
+            //@formatter:on
 
 			// Create Hospital Informant
 			//@formatter:off
-			createAndPersistDefaultUser(
-					UserRole.HOSPITAL_INFORMANT,
-					"Hospital",
-					"Informant",
-					DefaultUserHelper.HOSP_INF_USERNAME_AND_PASSWORD,
-					u -> {
-						u.setRegion(region);
-						u.setDistrict(district);
-						u.setHealthFacility(facility);
-						u.setAssociatedOfficer(surveillanceOfficer);
-					});
-			//@formatter:on
+            createAndPersistDefaultUser(
+                    UserRole.HOSPITAL_INFORMANT,
+                    "Hospital",
+                    "Informant",
+                    DefaultEntityHelper.HOSP_INF_USERNAME_AND_PASSWORD,
+                    u -> {
+                        u.setRegion(region);
+                        u.setDistrict(district);
+                        u.setHealthFacility(facility);
+                        u.setAssociatedOfficer(surveillanceOfficer);
+                    });
+            //@formatter:on
 
 			// Create Community Officer
 			//@formatter:off
-			createAndPersistDefaultUser(
-					UserRole.COMMUNITY_OFFICER,
-					"Community",
-					"Officer",
-					DefaultUserHelper.COMM_OFF_USERNAME_AND_PASSWORD,
-					u -> {
-						u.setRegion(region);
-						u.setDistrict(district);
-						u.setCommunity(community);
-					});
-			//@formatter:on
+            createAndPersistDefaultUser(
+                    UserRole.COMMUNITY_OFFICER,
+                    "Community",
+                    "Officer",
+                    DefaultEntityHelper.COMM_OFF_USERNAME_AND_PASSWORD,
+                    u -> {
+                        u.setRegion(region);
+                        u.setDistrict(district);
+                        u.setCommunity(community);
+                    });
+            //@formatter:on
 
 			// Create Poe Informant
 			//@formatter:off
-			createAndPersistDefaultUser(
-					UserRole.POE_INFORMANT,
-					"Poe",
-					"Informant",
-					DefaultUserHelper.POE_INF_USERNAME_AND_PASSWORD,
-					u -> {
-						u.setUserName("PoeInf");
-						u.setRegion(region);
-						u.setDistrict(district);
-						u.setPointOfEntry(pointOfEntry);
-						u.setAssociatedOfficer(surveillanceOfficer);
-					});
-			//@formatter:on
+            createAndPersistDefaultUser(
+                    UserRole.POE_INFORMANT,
+                    "Poe",
+                    "Informant",
+                    DefaultEntityHelper.POE_INF_USERNAME_AND_PASSWORD,
+                    u -> {
+                        u.setUserName("PoeInf");
+                        u.setRegion(region);
+                        u.setDistrict(district);
+                        u.setPointOfEntry(pointOfEntry);
+                        u.setAssociatedOfficer(surveillanceOfficer);
+                    });
+            //@formatter:on
 
 		}
 	}
@@ -503,7 +515,6 @@ public class StartupShutdownService {
 		userService.persist(user);
 		userUpdateEvent.fire(new UserUpdateEvent(user));
 		return user;
-
 	}
 
 	private void createOrUpdateSormasToSormasUser() {
@@ -515,7 +526,7 @@ public class StartupShutdownService {
 
 			createOrUpdateDefaultUser(
 				Collections.singleton(UserRole.SORMAS_TO_SORMAS_CLIENT),
-				DefaultUserHelper.SORMAS_TO_SORMAS_USER_NAME,
+				DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME,
 				new String(pwd),
 				"Sormas to Sormas",
 				"Client");
@@ -674,7 +685,7 @@ public class StartupShutdownService {
 		return versionBegin.matches(versionRegexp);
 	}
 
-	private void updateDatabase(EntityManager entityManager, String schemaFileName) {
+	private void updateDatabase(UpdateQueryTransactionWrapper.TargetDb db, EntityManager entityManager, String schemaFileName) {
 
 		logger.info("Starting automatic database update...");
 
@@ -717,7 +728,7 @@ public class StartupShutdownService {
 				// Perform the current update when the INSERT INTO schema_version statement is reached
 				if (schemaLineVersion != null) {
 					logger.info("Updating database to version {}...", schemaLineVersion);
-					entityManager.createNativeQuery(nextUpdateBuilder.toString()).executeUpdate();
+					updateQueryTransactionWrapper.executeUpdate(db, nextUpdateBuilder.toString());
 					nextUpdateBuilder.setLength(0);
 				}
 			}
@@ -878,5 +889,35 @@ public class StartupShutdownService {
 	@PreDestroy
 	public void shutdown() {
 
+	}
+
+	@LocalBean
+	@Stateless
+	public static class UpdateQueryTransactionWrapper {
+
+		enum TargetDb {
+			SORMAS,
+			AUDIT
+		}
+
+		@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+		private EntityManager em;
+		@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME_AUDITLOG)
+		private EntityManager emAudit;
+
+		/**
+		 * Executes the passed SQL update in a new JTA transaction.
+		 */
+		@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+		public int executeUpdate(TargetDb db, String sqlStatement) {
+			switch (db) {
+			case SORMAS:
+				return em.createNativeQuery(sqlStatement).executeUpdate();
+			case AUDIT:
+				return emAudit.createNativeQuery(sqlStatement).executeUpdate();
+			default:
+				throw new IllegalStateException("Unexpected value: " + db);
+			}
+		}
 	}
 }
