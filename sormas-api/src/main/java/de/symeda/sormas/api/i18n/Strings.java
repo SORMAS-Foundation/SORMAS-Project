@@ -16,6 +16,8 @@ public interface Strings {
 	String and = "and";
 	String at = "at";
 	String average = "average";
+	String BadPeopleNumberError = "BadPeopleNumberError";
+	String BadTestedPeopleNumberError = "BadTestedPeopleNumberError";
 	String between = "between";
 	String bpm = "bpm";
 	String by = "by";
@@ -169,6 +171,7 @@ public interface Strings {
 	String DefaultPassword_ownUserIntroduction = "DefaultPassword.ownUserIntroduction";
 	String DefaultPassword_ownUserNewPasswordSetHints = "DefaultPassword.ownUserNewPasswordSetHints";
 	String DefaultPassword_unchanged = "DefaultPassword.unchanged";
+	String DiffPeopleNumberError = "DiffPeopleNumberError";
 	String DiseaseNetworkDiagram_Classification_HEALTHY = "DiseaseNetworkDiagram.Classification.HEALTHY";
 	String DiseaseNetworkDiagram_heading = "DiseaseNetworkDiagram.heading";
 	String DiseaseNetworkDiagram_highRisk = "DiseaseNetworkDiagram.highRisk";
@@ -847,6 +850,7 @@ public interface Strings {
 	String messageCampaignFormSaved = "messageCampaignFormSaved";
 	String messageCampaignSaved = "messageCampaignSaved";
 	String messageCaseArchived = "messageCaseArchived";
+	String messageCaseAutoSaved = "messageCaseAutoSaved";
 	String messageCaseCreated = "messageCaseCreated";
 	String messageCaseDearchived = "messageCaseDearchived";
 	String messageCaseDuplicateDeleted = "messageCaseDuplicateDeleted";
@@ -917,6 +921,7 @@ public interface Strings {
 	String messageCountryDearchivingNotPossible = "messageCountryDearchivingNotPossible";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
+	String messageDateError = "messageDateError";
 	String messageDeleteImmunizationVaccinations = "messageDeleteImmunizationVaccinations";
 	String messageDeletionUnsupportedByExternalJournalWarning = "messageDeletionUnsupportedByExternalJournalWarning";
 	String messageDistrictArchived = "messageDistrictArchived";
@@ -1113,7 +1118,10 @@ public interface Strings {
 	String mmhg = "mmhg";
 	String month = "month";
 	String nameOf = "nameOf";
+	String NegativeExaminatedPeopleNumberError = "NegativeExaminatedPeopleNumberError";
+	String NegativePeopleNumberError = "NegativePeopleNumberError";
 	String no = "no";
+	String NoEntryPointError = "NoEntryPointError";
 	String none = "none";
 	String notAnswered = "notAnswered";
 	String notificationCaseClassificationChanged = "notificationCaseClassificationChanged";
