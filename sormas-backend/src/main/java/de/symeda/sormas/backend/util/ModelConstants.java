@@ -22,6 +22,9 @@ public interface ModelConstants {
 	String PERSISTENCE_UNIT_NAME = "SormasPU";
 	String PERSISTENCE_UNIT_NAME_AUDITLOG = "auditlogPU";
 	String HINT_HIBERNATE_READ_ONLY = "org.hibernate.readOnly";
+	String FUNCTION_YEAR = "year";
+	String FUNCTION_MONTH = "month";
+	String FUNCTION_DAY = "day";
 
 	/**
 	 * Hard limit how much parameter can be allowed in a query.<br />

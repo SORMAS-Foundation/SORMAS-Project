@@ -319,24 +319,38 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		getVaccinationFacade().createWithImmunization(vaccination1, rdcf1.region, rdcf1.district, person1.toReference(), Disease.EVD);
 
 		assertNull(getCaseFacade().getByUuid(case11.getUuid()).getVaccinationStatus());
-		assertThat(getCaseFacade().getByUuid(case12.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
+		assertNull(getCaseFacade().getByUuid(case12.getUuid()).getVaccinationStatus());
 		assertNull(getCaseFacade().getByUuid(case2.getUuid()).getVaccinationStatus());
 		assertNull(getCaseFacade().getByUuid(case3.getUuid()).getVaccinationStatus());
 		assertNull(getContactFacade().getContactByUuid(contact11.getUuid()).getVaccinationStatus());
-		assertThat(getContactFacade().getContactByUuid(contact12.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
+		assertNull(getContactFacade().getContactByUuid(contact12.getUuid()).getVaccinationStatus());
 		assertNull(getContactFacade().getContactByUuid(contact2.getUuid()).getVaccinationStatus());
 		assertNull(getContactFacade().getContactByUuid(contact3.getUuid()).getVaccinationStatus());
 		assertNull(getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus());
 		assertNull(getEventParticipantFacade().getByUuid(ep112.getUuid()).getVaccinationStatus());
 		assertNull(getEventParticipantFacade().getByUuid(ep121.getUuid()).getVaccinationStatus());
 		assertNull(getEventParticipantFacade().getByUuid(ep131.getUuid()).getVaccinationStatus());
-		assertThat(getEventParticipantFacade().getByUuid(ep141.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
+		assertNull(getEventParticipantFacade().getByUuid(ep141.getUuid()).getVaccinationStatus());
 		assertNull(getEventParticipantFacade().getByUuid(ep21.getUuid()).getVaccinationStatus());
 
-		// Create a vaccination with vaccination date = today - 11 days
+		// Create a vaccination with vaccination date = yesterday
 		VaccinationDto vaccination2 = VaccinationDto.build(nationalUser.toReference());
-		vaccination2.setVaccinationDate(DateHelper.subtractDays(today, 11));
+		vaccination2.setVaccinationDate(DateHelper.subtractDays(today, 1));
 		getVaccinationFacade().createWithImmunization(vaccination2, rdcf1.region, rdcf1.district, person1.toReference(), Disease.EVD);
+
+		assertNull(getCaseFacade().getByUuid(case11.getUuid()).getVaccinationStatus());
+		assertThat(getCaseFacade().getByUuid(case12.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
+		assertNull(getContactFacade().getContactByUuid(contact11.getUuid()).getVaccinationStatus());
+		assertThat(getContactFacade().getContactByUuid(contact12.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
+		assertNull(getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus());
+		assertNull(getEventParticipantFacade().getByUuid(ep121.getUuid()).getVaccinationStatus());
+		assertNull(getEventParticipantFacade().getByUuid(ep131.getUuid()).getVaccinationStatus());
+		assertThat(getEventParticipantFacade().getByUuid(ep141.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
+
+		// Create a vaccination with vaccination date = today - 11 days
+		VaccinationDto vaccination3 = VaccinationDto.build(nationalUser.toReference());
+		vaccination3.setVaccinationDate(DateHelper.subtractDays(today, 11));
+		getVaccinationFacade().createWithImmunization(vaccination3, rdcf1.region, rdcf1.district, person1.toReference(), Disease.EVD);
 
 		assertThat(getCaseFacade().getByUuid(case11.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
 		assertThat(getContactFacade().getContactByUuid(contact11.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
@@ -345,8 +359,8 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		assertThat(getEventParticipantFacade().getByUuid(ep131.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
 
 		// Create a vaccination with no vaccination date
-		VaccinationDto vaccination3 = VaccinationDto.build(nationalUser.toReference());
-		getVaccinationFacade().createWithImmunization(vaccination3, rdcf1.region, rdcf1.district, person1.toReference(), Disease.EVD);
+		VaccinationDto vaccination4 = VaccinationDto.build(nationalUser.toReference());
+		getVaccinationFacade().createWithImmunization(vaccination4, rdcf1.region, rdcf1.district, person1.toReference(), Disease.EVD);
 
 		assertThat(getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
 	}
