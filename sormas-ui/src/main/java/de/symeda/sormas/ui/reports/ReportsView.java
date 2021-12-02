@@ -77,6 +77,169 @@ public class ReportsView extends AbstractView {
 		gridLayout.setExpandRatio(grid, 1);
 
 		addComponent(gridLayout);
+
+		Button createReportButton = ButtonHelper.createIconButton(
+				Captions.reportNewReport,
+				VaadinIcons.PLUS_CIRCLE,
+				e -> CaseReportWindow(),
+				ValoTheme.BUTTON_PRIMARY);
+
+			addHeaderComponent(createReportButton);
+			if (!UserProvider.getCurrent().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+				createReportButton.setEnabled(false);
+			}
+		}
+
+	public void CaseReportWindow() {
+		Window window = VaadinUiUtil.createPopupWindow();
+		window.setWidth((700), Sizeable.Unit.PIXELS);
+		window.setCaption(I18nProperties.getCaption(Captions.reportNewReport));
+		CreateSpecificCasesLayout layout = buildReportLayout(window);
+		window.setContent(layout);
+		UI.getCurrent().addWindow(window);
+	}
+	
+	private CreateSpecificCasesLayout buildReportLayout(Window window) throws ValidationRuntimeException {
+
+		String confirmCaption = I18nProperties.getCaption(
+			Captions.saveNewReport);
+
+		DateField date = new DateField("Date");
+		ComboBox pointofentries = new ComboBox<PointOfEntryReferenceDto>(I18nProperties.getCaption(Captions.pointOfEntry));
+		TextField people = new TextField(I18nProperties.getCaption(Captions.reportNumberpeople));
+		TextField examinatedpeople = new TextField(I18nProperties.getCaption(Captions.reportNumberTestedpassenger));
+		
+		final UserDto currentUser = UserProvider.getCurrent().getUser();
+		Runnable confirmCallback = () -> {
+			int nomberOfPeople = 0;
+			int Tested_nomberPeople = 0;
+			PointOfEntryReferenceDto PointOfEntry = (PointOfEntryReferenceDto) pointofentries.getValue();
+			
+			try {
+				DateHelper.parseDate(date.getValue().toString(), new SimpleDateFormat("dd/MM/yyyy"));
+			} catch (Exception e) {
+				throw new ValidationRuntimeException(
+					I18nProperties.getString(Strings.messageDateError)
+				);
+			}
+
+			if(pointofentries.getValue() == null) {
+				throw new ValidationRuntimeException(
+					I18nProperties.getString(Strings.NoEntryPointError));
+			}
+			
+			try {
+				nomberOfPeople = Integer.parseInt(people.getValue());
+			} catch (Exception e) {
+				throw new ValidationRuntimeException(
+					I18nProperties.getString(Strings.BadPeopleNumberError));
+			}
+
+			if (nomberOfPeople <= 0){
+				throw  new ValidationRuntimeException(
+					I18nProperties.getString(Strings.NegativePeopleNumberError));
+			}
+
+			try {
+				Tested_nomberPeople = Integer.parseInt(examinatedpeople.getValue());
+			} catch (Exception e) {
+				throw new ValidationRuntimeException(
+					I18nProperties.getString(Strings.BadTestedPeopleNumberError));
+			}
+
+			if (Tested_nomberPeople < 0){
+				throw  new ValidationRuntimeException(
+					I18nProperties.getString(Strings.NegativeExaminatedPeopleNumberError));
+			}
+
+			int numberOfNotExCase = nomberOfPeople - Tested_nomberPeople;
+
+			if (numberOfNotExCase < 0){
+				throw new ValidationRuntimeException(I18nProperties.getString(
+					Strings.DiffPeopleNumberError));
+			}
+			
+			DistrictReferenceDto activeDistrict = null;
+			RegionReferenceDto Region = null;
+			if (currentUser.getDistrict() != null){
+				logger.info("Le district de lutilisateur correspond a {} et la region {}", currentUser.getDistrict(), currentUser.getRegion());
+				activeDistrict = currentUser.getDistrict();
+				// Si dans le formulaire d'utilisateur l'on a renseigné le
+				// district alors la région a étée renseignée au préalabre
+				Region = currentUser.getRegion();
+			}else{
+				logger.info("Recherche via la liste des distrcits");
+				List<String> allDistrcits = districtFacade.getAllUuids();
+				logger.info("Liste des districts {}", allDistrcits);
+				boolean found = false;
+				for (String TheDistrict : allDistrcits){
+					if (found == true){
+						break;
+					}
+					List<PointOfEntryReferenceDto> PointOfEntries = pointOfEntryFacade.getAllActiveByDistrict(TheDistrict, false);
+					for (PointOfEntryReferenceDto pntofentry : PointOfEntries){
+						logger.info("Comparaison de {} et {}", PointOfEntry, pntofentry);
+						if(PointOfEntry.equals(pntofentry)){
+							logger.info("Point trouve : {} pour le district {}", pntofentry, TheDistrict);
+							activeDistrict = districtFacade.getByUuid(TheDistrict).toReference();
+							Region = districtFacade.getByUuid(TheDistrict).getRegion();
+							logger.info("La region {} a te mise a jour par la meme occasion", Region);
+							found = true;
+							break;
+						}
+					}
+				}
+			}
+			
+			int i;
+			int CountnumberOfExCase = 0;
+			int CountnumberOfNotExCase = 0;
+			for (i=0; i < nomberOfPeople; i++) {
+				// importResult = caseImportFacade.DirectSaveCaseData(
+				// values, entityClasses, entityProperties, entityPropertyPaths, false);
+				personDto = new PersonDto();
+				personDto.setFirstName("EMPTY_FIRST_FAME");
+				personDto.setLastName("EMPTY_LAST_NAME");
+				personDto.setSex(Sex.UNKNOWN);
+				PersonDto createdPerson = personFacade.savePerson(personDto);
+				logger.debug("Personne cree {} ", createdPerson.getUuid());
+
+				caseDataDto = new CaseDataDto();
+				caseDataDto.setDisease(Disease.UNDEFINED);
+				caseDataDto.setDiseaseDetails(Disease.UNDEFINED.getName());
+				caseDataDto.setPerson(createdPerson.toReference());
+				if (CountnumberOfNotExCase < numberOfNotExCase){
+					caseDataDto.setCaseClassification(CaseClassification.NOT_EXAMINATED);
+					CountnumberOfNotExCase++;
+				}else{
+					caseDataDto.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+					CountnumberOfExCase++;
+				}
+				caseDataDto.setReportDate(DateHelper.parseDate(date.getValue().toString(), new SimpleDateFormat("dd/MM/yyyy")));
+				caseDataDto.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
+				caseDataDto.setPointOfEntry(PointOfEntry);
+				caseDataDto.setResponsibleDistrict(activeDistrict);
+				caseDataDto.setResponsibleRegion(Region);
+				caseDataDto.setReportingUser(currentUser.toReference());
+				caseDataDto.setInvestigationStatus(InvestigationStatus.PENDING);
+				caseDataDto.setOutcome(CaseOutcome.NO_OUTCOME);
+				
+				CaseDataDto createdcase = caseFacade.saveCase(caseDataDto);
+				logger.debug("Cas cree {}", createdcase.getUuid());
+			}
+			logger.debug("Creation des cas terminee. {} cas non examines"+
+			" crees et {} cas examine crees.",
+			CountnumberOfNotExCase, CountnumberOfExCase);
+			
+			Notification.show(I18nProperties.getString(Strings.messageCaseAutoSaved), Type.WARNING_MESSAGE);
+			SormasUI.refreshView();
+			UI.getCurrent().removeWindow(window);
+		};
+
+		return new CreateSpecificCasesLayout(
+			confirmCallback, window::close, date,
+			pointofentries, people,
+			examinatedpeople, confirmCaption);
 	}
 
 	public HorizontalLayout createFilterBar() {
@@ -99,7 +262,9 @@ public class ReportsView extends AbstractView {
 		yearFilter.setCaption(I18nProperties.getString(Strings.year));
 		yearFilter.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		yearFilter.addValueChangeListener(e -> {
-			updateEpiWeeks((int) e.getProperty().getValue(), (int) epiWeekFilter.getValue());
+			updateEpiWeeks(
+				(int) e.getProperty().getValue(),
+				(int) epiWeekFilter.getValue());
 			reloadGrid();
 		});
 		filterLayout.addComponent(yearFilter);
@@ -117,7 +282,10 @@ public class ReportsView extends AbstractView {
 
 		Button lastWeekButton = ButtonHelper.createButton(
 			Captions.dashboardLastWeek,
-			String.format(I18nProperties.getCaption(Captions.dashboardLastWeek), DateHelper.getPreviousEpiWeek(new Date()).toString()),
+			String.format(
+				I18nProperties.getCaption(
+					Captions.dashboardLastWeek),
+					DateHelper.getPreviousEpiWeek(new Date()).toString()),
 			e -> {
 				EpiWeek epiWeek = DateHelper.getPreviousEpiWeek(new Date());
 				yearFilter.select(epiWeek.getYear());
@@ -128,7 +296,9 @@ public class ReportsView extends AbstractView {
 		filterLayout.addComponent(lastWeekButton);
 
 		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
-		infoLabel.setDescription(I18nProperties.getString(Strings.infoWeeklyReportsView), ContentMode.HTML);
+		infoLabel.setDescription(
+			I18nProperties.getString(Strings.infoWeeklyReportsView),
+			ContentMode.HTML);
 		infoLabel.setSizeUndefined();
 		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
 		filterLayout.addComponent(infoLabel);

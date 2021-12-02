@@ -417,6 +417,15 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		validate(source);
 
+		if (source.getFirstName().equals("EMPTY_FIRST_FAME")){
+			source.setFirstName(" ");
+			logger.debug("Updated the person firestname to empty value.....");
+		}
+		if (source.getLastName().equals("EMPTY_LAST_NAME")){
+			source.setLastName(" ");
+			logger.debug("Updated the person lastname to empty value.....");
+		}
+
 		if (existingPerson != null && existingPerson.isEnrolledInExternalJournal()) {
 			if (source.isEnrolledInExternalJournal()) {
 				externalJournalService.validateExternalJournalPerson(source);
