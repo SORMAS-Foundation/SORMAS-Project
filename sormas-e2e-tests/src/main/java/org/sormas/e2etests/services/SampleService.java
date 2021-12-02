@@ -72,7 +72,7 @@ public class SampleService {
         .purposeOfTheSample("EXTERNAL LAB TESTING")
         .dateOfCollection(LocalDate.now().minusDays(15))
         .timeOfCollection(LocalTime.of(15, 15))
-        .sampleType("Stool")
+        .sampleType("Sera")
         .reasonForSample("Screening")
         .sampleID(faker.number().randomNumber(8, false))
         .laboratory("Other facility")

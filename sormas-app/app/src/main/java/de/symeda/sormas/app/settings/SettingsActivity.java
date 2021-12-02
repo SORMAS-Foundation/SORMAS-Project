@@ -133,6 +133,7 @@ public class SettingsActivity extends BaseLandingActivity {
 			case Activity.RESULT_OK:
 			case Activity.RESULT_CANCELED:
 			case Activity.RESULT_FIRST_USER:
+				finishAndRemoveTask();
 				break;
 			// Everything else probably is an error
 			default:

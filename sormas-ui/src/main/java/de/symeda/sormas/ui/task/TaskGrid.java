@@ -72,7 +72,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 			setCriteria(criteria);
 		}
 
-		addEditColumn(e -> ControllerProvider.getTaskController().edit(e, this::reload, true));
+		addEditColumn(e -> ControllerProvider.getTaskController().edit(e, this::reload, true, e.getDisease()));
 
 		setStyleGenerator(item -> {
 			if (item != null && item.getTaskStatus() != null) {
@@ -191,6 +191,9 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 			return;
 		case EVENT:
 			ControllerProvider.getEventController().navigateToData(task.getEvent().getUuid());
+			return;
+		case TRAVEL_ENTRY:
+			ControllerProvider.getTravelEntryController().navigateToTravelEntry(task.getTravelEntry().getUuid());
 			return;
 		case GENERAL:
 			return;

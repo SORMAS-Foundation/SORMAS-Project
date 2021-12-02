@@ -23,6 +23,7 @@ import com.opencsv.exceptions.CsvValidationException;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.ui.importer.DataImporter;
 import de.symeda.sormas.ui.importer.InfrastructureImporter;
@@ -40,7 +41,12 @@ public class ImportDefaultSubcontinentsLayout extends AbstractImportDefaultCsvLa
 
 	@Override
 	protected void doImport(File importFile) throws IOException, CsvValidationException {
-		DataImporter importer = new InfrastructureImporter(importFile, currentUser, InfrastructureType.SUBCONTINENT, isAllowOverwrite());
+		DataImporter importer = new InfrastructureImporter(
+			importFile,
+			currentUser,
+			InfrastructureType.SUBCONTINENT,
+			isAllowOverwrite(),
+			(ValueSeparator) separator.getValue());
 		importer.setCsvSeparator(',');
 		importer.startImport(this::extendDownloadErrorReportButton, currentUI, false);
 	}

@@ -36,8 +36,8 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.outbreak.OutbreakDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -184,7 +184,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 
 		for (OutbreakDto outbreak : activeOutbreaks) {
 			DistrictReferenceDto outbreakDistrict = outbreak.getDistrict();
-			RegionReferenceDto outbreakRegion = FacadeProvider.getDistrictFacade().getDistrictByUuid(outbreakDistrict.getUuid()).getRegion();
+			RegionReferenceDto outbreakRegion = FacadeProvider.getDistrictFacade().getByUuid(outbreakDistrict.getUuid()).getRegion();
 			Disease outbreakDisease = outbreak.getDisease();
 
 			// Only show the Outbreak if its Disease is active on the system

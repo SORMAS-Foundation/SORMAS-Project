@@ -27,6 +27,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportEntities;
 import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportFacade;
@@ -42,9 +43,9 @@ public class TravelEntryImporter extends DataImporter {
 	private UI currentUI;
 	private final TravelEntryImportFacade importFacade;
 
-	public TravelEntryImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
+	public TravelEntryImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator csvSeparator) throws IOException {
 
-		super(inputFile, hasEntityClassRow, currentUser);
+		super(inputFile, hasEntityClassRow, currentUser, csvSeparator);
 		importFacade = FacadeProvider.getTravelEntryImportFacade();
 	}
 

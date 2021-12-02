@@ -25,7 +25,8 @@ If you plan to work on the Android App as well, you will also need the **Java 8 
 - Download and install the latest [IntelliJ IDEA Ultimate](https://www.jetbrains.com/lp/intellij-frameworks/); (newer than version of 2020-04-15 to enable debugging, see <https://youtrack.jetbrains.com/issue/IDEA-216528>)
 - Set the project SDK to the installed JDK
 - *Optional:* Clone the SORMAS-Project repository if you haven't done so already
-- Open the project in IntelliJ; make sure that under `File -> Project Structure -> Modules` all modules EXCEPT sormas-app are recognized; if not, add the missing modules with the `+` button
+- Open the project in IntelliJ. Make sure the project is recognized by IntelliJ as a `maven project`; if not, right-click the `pom.xml` file in sormas-base and select `Add as maven project`.
+- Make sure that under `File -> Project Structure -> Modules` all modules EXCEPT sormas-app are recognized; if not, add the missing modules with the `+` button
 - Navigate to `File -> Settings -> Plugins` and make sure that Glassfish & Ant integrations are enabled
 - Install the [Vaadin 6-8 plugin](https://plugins.jetbrains.com/plugin/13199-vaadin-6-8); the commercial Vaadin Designer is not needed
 - Make a copy of `sormas-base/build.properties.example`, rename it to `build.properties` and set `glassfish.domain.root` to the location of the SORMAS domain inside your Payara installation
@@ -37,13 +38,16 @@ If you plan to work on the Android App as well, you will also need the **Java 8 
   - Enter `http://localhost:6080/sormas-ui` into the `URL` field
   - Make sure that the correct JRE is specified (your Java 11 JDK)
   - Enter the path to the SORMAS domain and the credentials that you've specified when setting up the server
-  - Open the `Deployment` tab and add the artifacts `sormas-ear`, `sormas-rest` and `sormas-ui`
+  - Open the `Deployment` tab and add the artifacts `sormas-ear`, `sormas-rest` and `sormas-ui` (make sure to respect this order as there are dependencies between artifacts at startup)
   - Open the `Logs` tab and add a new log file pointing to the `logs/server.log` file in your SORMAS domain
   - Open the `Startup/Connection` tab and make sure that `Pass environment variables` is NOT checked; ignore warnings about the debug configuration not being correct
   - Open the `config/domain.xml` file in your domain directory and make sure that the `java-config` node contains the following code: `<java-config classpath-suffix="" debug-enabled="true" debug-options="-agentlib:jdwp=transport=dt_socket,address=6009,server=n,suspend=y" ...`
 - Open the Ant window, click on the `+` icon and select the `sormas-base/build.xml` file
 - Execute the `install` and `deploy-serverlibs` Ant scripts
 - Set the default working directory for run configurations by navigating to `Run -> Edit Configurations -> Templates -> Application` and setting `Working directory` to `$MODULE_WORKING_DIR$`
+
+#### Known issues
+- The first time you build the project in IntelliJ, you have to switch the java compiler to "Eclipse" to workarround a dependency resolution problem in sormas-api.
 
 ### Eclipse
 - Download and install the latest [Eclipse IDE for Enterprise Java and Web Developers](https://www.eclipse.org/downloads/packages)
@@ -58,7 +62,7 @@ If you plan to work on the Android App as well, you will also need the **Java 8 
 - Either run `mvn install` on the `sormas-base` project or execute the `install [default]` Ant script (this needs a Maven installation on your system with the M2_HOME variable set)
 - Execute the `deploy-serverlibs` Ant script
 - Highlight all Eclipse projects and choose `Maven -> Update Project` from the right-click menu; perform the update for all projects
-- Start the Glassfish server and deploy `sormas-ear`, `sormas-rest` and `sormas-ui` by dragging the respective projects onto it, or use the `Add and Remove...` function by right-clicking on the server
+- Start the Glassfish server and deploy `sormas-ear`, `sormas-rest` and `sormas-ui` by dragging the respective projects onto it, or use the `Add and Remove...` function by right-clicking on the server (make sure to respect this order as there are depdendencies between artifacts at startup)
 - Open your browser and type in `http://localhost:6080/sormas-ui` to test whether the server and IDE have been set up correctly
 
 ### Android Studio

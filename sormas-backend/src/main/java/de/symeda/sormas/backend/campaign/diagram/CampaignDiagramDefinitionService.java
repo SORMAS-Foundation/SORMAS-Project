@@ -27,7 +27,7 @@ public class CampaignDiagramDefinitionService extends AdoServiceWithUserFilter<C
 	}
 
 	public boolean diagramExists(@NotNull String diagramId) {
-		return exists((cb, root) -> cb.equal(root.get(CampaignDiagramDefinition.DIAGRAM_ID), diagramId));
+		return exists((cb, root, cq) -> cb.equal(root.get(CampaignDiagramDefinition.DIAGRAM_ID), diagramId));
 	}
 
 	public CampaignDiagramDefinition getByDiagramId(@NotNull String diagramId) {

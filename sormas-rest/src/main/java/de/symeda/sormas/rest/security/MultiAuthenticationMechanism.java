@@ -35,7 +35,7 @@ import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DefaultUserHelper;
+import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.rest.security.config.KeycloakConfigResolver;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -89,6 +89,7 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 	public AuthenticationStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext context)
 		throws AuthenticationException {
 		if (request.getPathInfo().startsWith(SormasToSormasApiConstants.RESOURCE_PATH)) {
+			// S2S auth will be handled by S2SAuthFilter
 			return validateRequestS2S(context);
 		}
 		return authenticationMechanism.validateRequest(request, response, context);
@@ -108,7 +109,7 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 	private AuthenticationStatus validateRequestS2S(HttpMessageContext context) {
 
 		return context.notifyContainerAboutLogin(
-			() -> DefaultUserHelper.SORMAS_TO_SORMAS_USER_NAME,
+			() -> DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME,
 			new HashSet<>(Collections.singletonList(UserRole.SORMAS_TO_SORMAS_CLIENT.name())));
 	}
 }

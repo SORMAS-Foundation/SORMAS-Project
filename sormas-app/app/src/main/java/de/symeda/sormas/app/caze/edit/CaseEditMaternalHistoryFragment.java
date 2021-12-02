@@ -28,6 +28,7 @@ import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentCaseEditMaternalHistoryLayoutBinding;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 
 public class CaseEditMaternalHistoryFragment extends BaseEditFragment<FragmentCaseEditMaternalHistoryLayoutBinding, MaternalHistory, Case> {
 
@@ -86,7 +87,7 @@ public class CaseEditMaternalHistoryFragment extends BaseEditFragment<FragmentCa
 		List<Item> initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
 		List<Item> initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getRashExposureRegion());
 		List<Item> initialCommunities = InfrastructureDaoHelper.loadCommunities(record.getRashExposureDistrict());
-		InfrastructureDaoHelper.initializeRegionFields(
+		InfrastructureFieldsDependencyHandler.instance.initializeRegionFields(
 			contentBinding.maternalHistoryRashExposureRegion,
 			initialRegions,
 			record.getRashExposureRegion(),

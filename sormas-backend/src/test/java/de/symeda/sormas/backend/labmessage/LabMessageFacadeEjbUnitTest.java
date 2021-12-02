@@ -16,6 +16,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -27,13 +28,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
-import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.sample.PathogenTest;
-import de.symeda.sormas.backend.sample.PathogenTestService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -48,6 +46,9 @@ public class LabMessageFacadeEjbUnitTest {
 
 	@InjectMocks
 	private LabMessageFacadeEjb sut;
+
+	@InjectMocks
+	private SyncFacadeEjb.SyncFacadeEjbLocal syncFacadeEjb;
 
 	@Mock
 	private CriteriaBuilder criteriaBuilder;
@@ -131,8 +132,7 @@ public class LabMessageFacadeEjbUnitTest {
 
 	@Test
 	public void testInitializeUpdateDateWithNoPreviousSuccess() {
-
-		assertEquals(sut.findLastUpdateDate(), new Date(0));
+		assertEquals(syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_LAB_MESSAGES), new Date(0));
 	}
 
 	@Test
@@ -146,7 +146,7 @@ public class LabMessageFacadeEjbUnitTest {
 		systemEvent.setAdditionalInfo("Last synchronization date: " + first.getTime());
 		systemEvent.setStartDate(second);
 		when(systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES)).thenReturn(systemEvent);
-		assertEquals(sut.findLastUpdateDate(), first);
+		assertEquals(syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_LAB_MESSAGES), first);
 	}
 
 	@Test
@@ -159,13 +159,12 @@ public class LabMessageFacadeEjbUnitTest {
 		systemEvent.setAdditionalInfo("The cake is a lie");
 		systemEvent.setStartDate(date);
 		when(systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES)).thenReturn(systemEvent);
-		assertEquals(sut.findLastUpdateDate(), date);
+		assertEquals(syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_LAB_MESSAGES), date);
 	}
 
 	@Test
 	public void testInitializeFetchEventTest() {
-
-		SystemEventDto systemEventDto = sut.initializeFetchEvent();
+		SystemEventDto systemEventDto = syncFacadeEjb.startSyncFor(SystemEventType.FETCH_LAB_MESSAGES);
 		// must be null for parsing the notification last update date
 		assertEquals(systemEventDto.getAdditionalInfo(), null);
 		assertEquals(systemEventDto.getStatus(), SystemEventStatus.STARTED);

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 @Remote
 public interface UserRoleConfigFacade {
@@ -37,7 +38,7 @@ public interface UserRoleConfigFacade {
 
 	UserRoleConfigDto getByUuid(String uuid);
 
-	UserRoleConfigDto saveUserRoleConfig(UserRoleConfigDto dto);
+	UserRoleConfigDto saveUserRoleConfig(@Valid UserRoleConfigDto dto);
 
 	void deleteUserRoleConfig(UserRoleConfigDto dto);
 

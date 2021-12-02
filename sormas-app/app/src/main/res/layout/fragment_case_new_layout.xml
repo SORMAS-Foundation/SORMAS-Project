@@ -27,6 +27,7 @@
         <import type="de.symeda.sormas.api.event.TypeOfPlace" />
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
         <import type="de.symeda.sormas.api.i18n.Strings" />
+        <import type="de.symeda.sormas.api.disease.DiseaseVariant" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case" />
         <variable name="caseOriginClass" type="Class" />
@@ -105,6 +106,14 @@
                 app:value="@={data.diseaseVariant}"
                 style="@style/ControlSingleColumnStyle" />
 
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/caseData_diseaseVariantDetails"
+                app:value="@={data.diseaseVariantDetails}"
+                app:customizableEnumField="@{caseDataDiseaseVariant}"
+                app:customizableEnumProperty="@{DiseaseVariant.HAS_DETAILS}"
+                app:customizableEnumValue="@{Boolean.TRUE}"
+                style="@style/ControlSingleColumnStyle" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -116,14 +125,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/caseData_responsibleRegion"
                     app:value="@={data.responsibleRegion}"
                     app:required="true"
                     app:userEditRight="@{UserRight.CASE_TRANSFER}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/caseData_responsibleDistrict"
                     app:value="@={data.responsibleDistrict}"
                     app:required="true"
@@ -132,7 +141,7 @@
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                 android:id="@+id/caseData_responsibleCommunity"
                 app:value="@={data.responsibleCommunity}"
                 app:userEditRight="@{UserRight.CASE_TRANSFER}"
@@ -154,7 +163,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/caseData_region"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:value="@={data.region}"
@@ -162,7 +171,7 @@
                     app:dependencyParentField="@{caseDataDifferentPlaceOfStayJurisdiction}"
                     app:dependencyParentValue="@{true}"/>
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/caseData_district"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:value="@={data.district}"
@@ -172,7 +181,7 @@
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                 android:id="@+id/caseData_community"
                 style="@style/ControlSingleColumnStyle"
                 app:softRequired="true"
@@ -204,7 +213,7 @@
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                 android:id="@+id/caseData_healthFacility"
                 style="@style/ControlSingleColumnStyle"
                 app:dependencyParentField="@{facilityOrHome}"
@@ -218,7 +227,7 @@
                 app:required="true"
                 app:value="@={data.healthFacilityDetails}" />
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                 android:id="@+id/caseData_pointOfEntry"
                 style="@style/ControlSingleColumnStyle"
                 app:required="true"

@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.map;
 
-import de.symeda.sormas.api.region.GeoLatLon;
+import de.symeda.sormas.api.geo.GeoLatLon;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 

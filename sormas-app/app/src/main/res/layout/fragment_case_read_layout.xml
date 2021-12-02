@@ -28,7 +28,7 @@
         <import type="android.view.View" />
         <import type="de.symeda.sormas.api.caze.CaseIdentificationSource" />
         <import type="de.symeda.sormas.api.caze.CaseOutcome" />
-        <import type="de.symeda.sormas.api.caze.Vaccination" />
+        <import type="de.symeda.sormas.api.caze.VaccinationStatus" />
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
         <import type="de.symeda.sormas.api.Disease" />
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
@@ -38,6 +38,7 @@
         <import type="de.symeda.sormas.api.caze.CaseConfirmationBasis" />
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
         <import type="de.symeda.sormas.api.i18n.Strings" />
+        <import type="de.symeda.sormas.api.disease.DiseaseVariant" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case" />
         <variable name="singleClassification" type="de.symeda.sormas.api.caze.CaseConfirmationBasis" />
@@ -246,6 +247,14 @@
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/caseData_diseaseVariant"
                     app:value="@{data.diseaseVariant}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_diseaseVariantDetails"
+                    app:value="@{data.diseaseVariantDetails}"
+                    app:customizableEnumField="@{caseDataDiseaseVariant}"
+                    app:customizableEnumProperty="@{DiseaseVariant.HAS_DETAILS}"
+                    app:customizableEnumValue="@{Boolean.TRUE}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
@@ -711,29 +720,9 @@
                     app:value="@{data.trimester}"
                     style="@style/ControlSingleColumnStyle" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_vaccination"
-                        app:value="@{data.vaccination}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_vaccinationDoses"
-                        app:value="@{data.vaccinationDoses}"
-                        app:dependencyParentField="@{caseDataVaccination}"
-                        app:dependencyParentValue="@{Vaccination.VACCINATED}"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
-                </LinearLayout>
-
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseData_vaccine"
-                    app:value="@{data.vaccine}"
-                    app:dependencyParentField="@{caseDataVaccination}"
-                    app:dependencyParentValue="@{Vaccination.VACCINATED}"
+                    android:id="@+id/caseData_vaccinationStatus"
+                    app:value="@{data.vaccinationStatus}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
@@ -741,95 +730,12 @@
                     app:value="@{data.smallpoxVaccinationReceived}"
                     style="@style/ControlSingleColumnStyle" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_firstVaccinationDate"
-                        app:value="@{data.lastVaccinationDate}"
-                        app:dependencyParentField="@{caseDataVaccination}"
-                        app:dependencyParentValue="@{Vaccination.VACCINATED}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_lastVaccinationDate"
-                        app:value="@{data.lastVaccinationDate}"
-                        app:dependencyParentField="@{caseDataVaccination}"
-                        app:dependencyParentValue="@{Vaccination.VACCINATED}"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
-
-                </LinearLayout>
-
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/caseData_vaccinationInfoSource"
-                    app:value="@{data.vaccinationInfoSource}"
-                    app:dependencyParentField="@{caseDataVaccination}"
-                    app:dependencyParentValue="@{Vaccination.VACCINATED}"
+                    android:id="@+id/caseData_smallpoxLastVaccinationDate"
+                    app:value="@{data.smallpoxLastVaccinationDate}"
+                    app:dependencyParentField="@{caseDataSmallpoxVaccinationReceived}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
                     style="@style/ControlSingleColumnStyle" />
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_vaccineName"
-                        app:value="@{data.vaccineName}"
-                        app:appendValue="@{data.otherVaccineName}"
-                        app:dependencyParentField="@{caseDataVaccination}"
-                        app:dependencyParentValue="@{Vaccination.VACCINATED}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_vaccineManufacturer"
-                        app:value="@{data.vaccineManufacturer}"
-                        app:appendValue="@{data.otherVaccineManufacturer}"
-                        app:dependencyParentField="@{caseDataVaccination}"
-                        app:dependencyParentValue="@{Vaccination.VACCINATED}"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_vaccineInn"
-                        app:value="@{data.vaccineInn}"
-                        app:dependencyParentField="@{caseDataVaccination}"
-                        app:dependencyParentValue="@{Vaccination.VACCINATED}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_vaccineBatchNumber"
-                        app:value="@{data.vaccineBatchNumber}"
-                        app:dependencyParentField="@{caseDataVaccination}"
-                        app:dependencyParentValue="@{Vaccination.VACCINATED}"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_vaccineUniiCode"
-                        app:value="@{data.vaccineUniiCode}"
-                        app:dependencyParentField="@{caseDataVaccination}"
-                        app:dependencyParentValue="@{Vaccination.VACCINATED}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_vaccineAtcCode"
-                        app:value="@{data.vaccineAtcCode}"
-                        app:dependencyParentField="@{caseDataVaccination}"
-                        app:dependencyParentValue="@{Vaccination.VACCINATED}"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
-                </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/caseData_smallpoxVaccinationScar"

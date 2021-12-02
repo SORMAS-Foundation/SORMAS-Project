@@ -36,6 +36,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonContactDetail;
@@ -72,6 +73,15 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 	}
 
 	public static PersonReadFragment newInstance(Contact activityRootData) {
+		return newInstanceWithFieldCheckers(
+			PersonReadFragment.class,
+			null,
+			activityRootData,
+			FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+	}
+
+	public static PersonReadFragment newInstance(Immunization activityRootData) {
 		return newInstanceWithFieldCheckers(
 			PersonReadFragment.class,
 			null,
@@ -129,6 +139,9 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 			rootData = ado;
 		} else if (ado instanceof Contact) {
 			record = ((Contact) ado).getPerson();
+			rootData = ado;
+		} else if (ado instanceof Immunization) {
+			record = ((Immunization) ado).getPerson();
 			rootData = ado;
 		} else {
 			throw new UnsupportedOperationException(

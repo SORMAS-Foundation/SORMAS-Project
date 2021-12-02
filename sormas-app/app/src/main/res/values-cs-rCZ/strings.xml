@@ -68,6 +68,7 @@
     <string name="action_markAllAsRead">Označit vše jako přečtené</string>
     <string name="action_new">Nové</string>
     <string name="action_new_case">Nový případ</string>
+    <string name="action_new_immunization">Nová imunizace</string>
     <string name="action_new_campaign_form_data">Nová data formuláře kampaně</string>
     <string name="action_new_contact">Nový kontakt</string>
     <string name="action_new_event">Nová udalost</string>
@@ -79,6 +80,8 @@
     <string name="action_open_prescription">Otevřít předpis</string>
     <string name="action_open_resulting_case">Otevřít výsledný případ</string>
     <string name="action_open_source_case">Otevřít zdroj případu</string>
+    <string name="action_open_linked_case">Otevřít propojený případ</string>
+    <string name="action_link_case">Propojený Případ</string>
     <string name="action_open_syncLog">Konflikty synchronizace</string>
     <string name="action_options">Možnosti</string>
     <string name="action_pick_gps">Vybrat aktuální GPS pro adresu</string>
@@ -116,6 +119,8 @@
     <string name="action_kex_lbds">LBDS Key Exchange</string>
     <string name="action_sync_person_lbds">LBDS Sync Persons</string>
     <string name="action_sync_case_lbds">LBDS Sync Cases</string>
+    <string name="action_save_vaccination">Uložit vakcínu</string>
+    <string name="action_edit_vaccination">Upravit vakcínu</string>
     <string name="caption_address">Adresa</string>
     <string name="caption_age">Věk</string>
     <string name="caption_attended_by">Zúčastnil se</string>
@@ -132,6 +137,8 @@
     <string name="caption_case_samples">Vzorky případu</string>
     <string name="caption_case_tasks">Úkoly případu</string>
     <string name="caption_case_events">Události případu</string>
+    <string name="caption_case_immunizations">Imunizace případu</string>
+    <string name="caption_case_vaccinations">Očkování případů</string>
     <string name="caption_case_treatments">Léčba</string>
     <string name="caption_case_similarity_create">Vytvořit nový případ</string>
     <string name="caption_changed_data_lost">Změněná data ztracená při opětovné synchronizaci.</string>
@@ -147,6 +154,8 @@
     <string name="caption_contact_tasks">Kontaktní úkoly</string>
     <string name="caption_contact_epidemiological_data">Epidemiologické informace</string>
     <string name="caption_contact_visits">Následné informace</string>
+    <string name="caption_contact_immunizations">Imunizace kontaktu</string>
+    <string name="caption_contact_vaccinations">Očkování kontaktu</string>
     <string name="caption_converted_to_case">Převedeno na Případ</string>
     <string name="caption_date_of_birth">Datum narození (rok / měsíc / den)</string>
     <string name="caption_date_of_sampling">Datum odběru vzorků</string>
@@ -159,6 +168,8 @@
     <string name="caption_event_period">Datum události</string>
     <string name="caption_event_information">Informace o události</string>
     <string name="caption_event_participants">Zapojené osoby</string>
+    <string name="caption_event_participant_immunizations">Immunizace účastníků akce</string>
+    <string name="caption_event_participant_vaccinations">Vakcíny účastníka události</string>
     <string name="caption_event_tasks">Úkoly událostí</string>
     <string name="caption_executed_by">Provedl</string>
     <string name="caption_facility_or_home">Místo pobytu</string>
@@ -230,7 +241,21 @@
     <string name="caption_visit_time">Čas návštěvy</string>
     <string name="caption_year">Rok</string>
     <string name="caption_latest_submission">Poslední příspěvek: %1$s</string>
-    <string name="caption_settings_debug_url_lbds">LBDS Server Debug URL</string>
+    <string name="caption_settings_debug_url_lbds">URL pro ladění LBDS serveru</string>
+    <string name="caption_immunization_information">Detaily imunizace</string>
+    <string name="caption_immunization_vaccinations">Očkování</string>
+    <string name="caption_vaccination_information">Informace o očkování</string>
+    <string name="caption_new_immunization">Nová imunizace</string>
+    <string name="caption_overwrite_immunization_management_status">Přepsání stavu správy imunizace</string>
+    <string name="caption_searchCase">Hledat případ</string>
+    <string name="caption_aggregate_new_cases">Nové případy</string>
+    <string name="caption_aggregate_lab_confirmations">Potvrzení laboratoře</string>
+    <string name="caption_aggregate_deaths">Úmrtí</string>
+    <string name="caption_aggregate_new_cases_abbr">C</string>
+    <string name="caption_aggregate_lab_confirmations_abbr">L</string>
+    <string name="caption_aggregate_deaths_abbr">D</string>
+    <string name="caption_start_date_existing">Stávající počáteční datum</string>
+    <string name="caption_end_date_existing">Stávající datum ukončení</string>
     <string name="confirmation_action">Opravdu to chcete udělat?</string>
     <string name="confirmation_delete">Opravdu chcete vymazat tento záznam?</string>
     <string name="confirmation_pick_gps">Jste právě na tomto místě?</string>
@@ -306,6 +331,7 @@
     <string name="heading_events_list">Výpis událostí</string>
     <string name="heading_existing_persons">Stávající osoby</string>
     <string name="heading_existing_cases">Existující případy</string>
+    <string name="heading_existing_immunizations">Stávající imunizace</string>
     <string name="heading_existing_events">Existující události</string>
     <string name="heading_gathering">Shromažďování</string>
     <string name="heading_gps_activation">Zapnout GPS</string>
@@ -327,6 +353,7 @@
     <string name="heading_person_contact_detail">Kontaktní údaje osoby</string>
     <string name="heading_pick_or_create_person">Vyberte nebo vytvořte osobu</string>
     <string name="heading_pick_or_create_case">Vyberte nebo vytvořte případ</string>
+    <string name="heading_pick_or_create_immunization">Vyberte nebo vytvořte imunizaci</string>
     <string name="heading_pick_or_create_event">Vyberte nebo vytvořte případ</string>
     <string name="heading_prescription">Předpis</string>
     <string name="heading_prescription_edit">Upravit předpis</string>
@@ -341,6 +368,10 @@
     <string name="heading_sample_read">Číst vzorek</string>
     <string name="heading_sample_summary">Shrnutí vzorku</string>
     <string name="heading_samples_list">Seznam vzorků</string>
+    <string name="heading_immunization_edit">Upravit imunizaci</string>
+    <string name="heading_immunization_new">Nová imunizace</string>
+    <string name="heading_immunization_read">Číst imunizaci</string>
+    <string name="heading_immunizations_list">Seznam imunizace</string>
     <string name="heading_pathogen_test_edit">Upravit test patogenu</string>
     <string name="heading_pathogen_test_new">Nový test patogenu</string>
     <string name="heading_pathogen_test_read">Číst test patogenu</string>
@@ -381,6 +412,10 @@
     <string name="heading_campaign_form_data_summary">Shrnutí dat kampaně</string>
     <string name="heading_campaign_form_meta_select">Vybrat formulář kampaně</string>
     <string name="heading_case_place_of_stay">Místo pobytu</string>
+    <string name="heading_vaccination">Očkování</string>
+    <string name="heading_vaccination_edit">Upravit očkování</string>
+    <string name="heading_vaccination_new">Nové očkování</string>
+    <string name="heading_search_for_case">Hledat konkrétní případ</string>
     <string name="hint_add_to_empty_list">Přidejte nový záznam stisknutím symbolu \"+\" v pravém horním rohu.</string>
     <string name="hint_clear">Vymazat</string>
     <string name="hint_create_pin">Vyberte si prosím čtyřmístný PIN kód, který budete používat k ověření při každém otevření aplikace SORMAS.</string>
@@ -425,10 +460,10 @@
     <string name="info_create_event">Pokud <b>nemůžete</b> najít událost v seznamu výše, klikněte na tlačítko \"Vytvořit\".</string>
     <string name="info_epidemiological_info">Uveďte, zda je během inkubační doby nebo nemoci pro pacienta relevantní.</string>
     <string name="info_initial_synchronization">Počáteční synchronizace se serverem SORMAS.\nStahování dat infrastruktury bude trvat několik minut.</string>
-    <string name="info_lbds_key_exchange_started">LBDS Sync: Key Exchange started</string>
-    <string name="info_lbds_key_exchange_successful">LBDS Sync: Key Exchange successful</string>
-    <string name="info_lbds_no_case_to_transfer">LBDS Sync. No case to transfer</string>
-    <string name="info_lbds_no_person_to_transfer">LBDS Sync. No person to transfer</string>
+    <string name="info_lbds_key_exchange_started">LBDS synchronizace: Výměna klíčů spuštěna</string>
+    <string name="info_lbds_key_exchange_successful">LBDS synchronizace: Výměna klíčů byla úspěšná</string>
+    <string name="info_lbds_no_case_to_transfer">LBDS Synchronizace Žádný případ k převodu</string>
+    <string name="info_lbds_no_person_to_transfer">LBDS Synchronizace Žádná osoba k převodu</string>
     <string name="info_no_additional_test">Na tomto vzorku dosud nebyly provedeny žádné další zkoušky</string>
     <string name="info_no_sample_test">Vzorek ještě nebyl testován</string>
     <string name="info_pick_person">Prohlédněte si prosím tento seznam osob. <b>Pokud se domníváte, že jste zadali osobní údaje, patří jedné z těchto osob,</b> vyberte tuto osobu klepnutím na ni a poté klikněte na tlačítko „Select“ níže.</string>
@@ -445,12 +480,14 @@
     <string name="info_case_creation_mark_check_box">Tento případ je <b>nový případ</b> a <b>není duplicitní</b> jednoho z výše uvedených případů</string>
     <string name="info_event_creation_mark_check_box">Tato událost je <b>nová událost</b> a <b>není duplicitní</b> jedné z výše uvedených událostí</string>
     <string name="info_pick_campaign_form_meta">Vyberte prosím formulář kampaně, pro který chcete vložit data!</string>
+    <string name="info_immunization_override_mark_check_box">Přepsat existující imunizaci&gt;</string>
     <string name="main_menu_cases">Případy</string>
     <string name="main_menu_contacts">Kontakty</string>
     <string name="main_menu_dashboard">Ovládací panel</string>
     <string name="main_menu_events">Události</string>
     <string name="main_menu_reports">Zprávy</string>
     <string name="main_menu_samples">Vzorky</string>
+    <string name="main_menu_immunizations">Imunizace</string>
     <string name="main_menu_settings">Nastavení</string>
     <string name="main_menu_tasks">Úkoly</string>
     <string name="main_menu_aggregate_reports">mSERS</string>
@@ -514,6 +551,7 @@
     <string name="tag_row_item_select_or_create_person">rowItemSelectOrCreatePerson</string>
     <string name="tag_row_item_select_or_create_event">rowItemSelectOrCreateEvent</string>
     <string name="tag_row_item_case_pick_or_create">rowItemPickOrCreatePerson</string>
+    <string name="tag_row_item_immunization_pick_or_create">rowItemImmunizationPickOrCreatePerson</string>
     <string name="time_future_almost_two_years">během téměř dvou let</string>
     <string name="time_future_one_day">zítra</string>
     <string name="time_future_one_hour">do přibližně hodiny</string>
@@ -555,6 +593,7 @@
     <string name="validation_visit_date_time_after_followup">Návštěva nemůže být delší než 30 dní po skončení následného období.</string>
     <string name="validation_visit_date_time_before_contact_date">Návštěva nemůže být delší než 30 dní před posledním kontaktním datem.</string>
     <string name="validation_visit_date_time_before_report_date">Návštěva nemůže být delší než 30 dní před datem hlášení kontaktu.</string>
+    <string name="value_unknown">Neznámý</string>
     <string name="value_age_unknown">Věk N/A</string>
     <string name="value_blood_pressure_unknown">Krevní tlak N/A</string>
     <string name="value_case_uuid_unknown">ID případu N/A</string>
@@ -606,4 +645,7 @@
     <string name="scan_field_sample_id">Skenovat pole Id vzorku</string>
     <string name="caption_facility_type_group">Kategorie zařízení</string>
     <string name="caption_facility_type">Typ zařízení</string>
+    <string name="value_vaccine_date_unknown">Datum očkování N/A</string>
+    <string name="value_vaccine_name_unknown">Očkovací látka N/A</string>
+    <string name="value_vaccine_manufacturer_unknown">Výrobce N/A</string>
 </resources>

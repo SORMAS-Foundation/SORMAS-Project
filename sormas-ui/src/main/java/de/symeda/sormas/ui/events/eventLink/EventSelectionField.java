@@ -24,12 +24,10 @@ import java.util.Date;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -294,23 +292,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 				criteria.eventDateBetween(fromDate, toDate, EventCriteriaDateType.EVENT_DATE, dateFilterOption);
 
 			} else {
-				if (dateFilterOption == DateFilterOption.DATE) {
-					Notification notification = new Notification(
-						I18nProperties.getString(Strings.headingMissingDateFilter),
-						I18nProperties.getString(Strings.messageMissingDateFilter),
-						Notification.Type.WARNING_MESSAGE,
-						false);
-					notification.setDelayMsec(-1);
-					notification.show(Page.getCurrent());
-				} else {
-					Notification notification = new Notification(
-						I18nProperties.getString(Strings.headingMissingEpiWeekFilter),
-						I18nProperties.getString(Strings.messageMissingEpiWeekFilter),
-						Notification.Type.WARNING_MESSAGE,
-						false);
-					notification.setDelayMsec(-1);
-					notification.show(Page.getCurrent());
-				}
+				weekAndDateFilter.setNotificationsForMissingFilters();
 			}
 			eventGrid.setCriteria(criteria);
 			eventGrid.getSelectedItems();

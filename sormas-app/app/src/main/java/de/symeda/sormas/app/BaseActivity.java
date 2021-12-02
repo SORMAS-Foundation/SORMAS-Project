@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -305,6 +306,8 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 					NavigationHelper.goToEvents(getContext());
 				} else if (id == R.id.menu_item_samples) {
 					NavigationHelper.goToSamples(getContext());
+				} else if (id == R.id.menu_item_immunizations) {
+					NavigationHelper.goToImmunizations(getContext());
 				} else if (id == R.id.menu_item_campaigns) {
 					NavigationHelper.goToCampaigns(getContext());
 				} else if (id == R.id.menu_item_reports) {
@@ -407,6 +410,7 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 			MenuItem contactMenu = menuNav.findItem(R.id.menu_item_contacts);
 			MenuItem eventMenu = menuNav.findItem(R.id.menu_item_events);
 			MenuItem sampleMenu = menuNav.findItem(R.id.menu_item_samples);
+			MenuItem immunizationMenu = menuNav.findItem(R.id.menu_item_immunizations);
 			MenuItem reportMenu = menuNav.findItem(R.id.menu_item_reports);
 			MenuItem campaignMenu = menuNav.findItem(R.id.menu_item_campaigns);
 
@@ -433,6 +437,13 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 				sampleMenu.setVisible(
 					ConfigProvider.hasUserRight(UserRight.SAMPLE_VIEW)
 						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.SAMPLES_LAB));
+
+			if (immunizationMenu != null)
+				immunizationMenu.setVisible(
+					ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+						&& !DatabaseHelper.getFeatureConfigurationDao()
+							.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED));
 
 			if (eventMenu != null)
 				eventMenu.setVisible(

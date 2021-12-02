@@ -26,7 +26,8 @@ public enum TaskContext {
 	CASE(FeatureType.TASK_GENERATION_CASE_SURVEILLANCE, "cases", Strings.notificationTaskAssociatedCaseLink),
 	CONTACT(FeatureType.TASK_GENERATION_CONTACT_TRACING, "contacts", Strings.notificationTaskAssociatedContactLink),
 	EVENT(FeatureType.TASK_GENERATION_EVENT_SURVEILLANCE, "events", Strings.notificationTaskAssociatedEventLink),
-	GENERAL(FeatureType.TASK_GENERATION_GENERAL, null, null);
+	GENERAL(FeatureType.TASK_GENERATION_GENERAL, null, null),
+	TRAVEL_ENTRY(FeatureType.TRAVEL_ENTRIES, "travelEntries", Strings.notificationTaskAssociatedTravelEntryLink);
 
 	private final FeatureType featureType;
 	private final String urlPattern;

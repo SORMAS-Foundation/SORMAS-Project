@@ -23,13 +23,12 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE
 
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
-import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.common.*;
-import org.sormas.e2etests.enums.CaseClasification;
 import org.sormas.e2etests.enums.CaseOutcome;
-import org.sormas.e2etests.enums.Disease;
+import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -64,7 +63,12 @@ public class CaseDirectorySteps implements En {
                 NAME_UUID_EPID_NUMBER_LIKE_INPUT, EditCaseSteps.aCase.getUuid()));
     When(
         "I click on the DETAILED button from Case directory",
-        () -> webDriverHelpers.clickOnWebElementBySelector(CASE_DIRECTORY_DETAILED_RADIOBUTTON));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CASE_DIRECTORY_DETAILED_RADIOBUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              By.xpath(String.format(RESULTS_GRID_HEADER, "Sex")), 20);
+          webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(GRID_HEADERS, 41);
+        });
 
     When(
         "I filter by CaseID on Case directory page",
@@ -75,6 +79,7 @@ public class CaseDirectorySteps implements En {
               CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
           webDriverHelpers.clickOnWebElementBySelector(
               CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // needed for table refresh
         });
 
     When(
@@ -83,109 +88,93 @@ public class CaseDirectorySteps implements En {
           String caseUUID = apiState.getCreatedCase().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);
           By caseLocator = By.cssSelector(String.format(CASE_RESULTS_UUID_LOCATOR, caseUUID));
+          assertHelpers.assertWithPoll20Second(
+              () -> Truth.assertThat(webDriverHelpers.isElementVisibleWithTimeout(caseLocator, 5)));
           webDriverHelpers.clickOnWebElementBySelector(caseLocator);
         });
 
     Then(
         "I check that number of displayed cas" + "es results is {int}",
         (Integer number) ->
-            assertHelpers.assertWithPoll15Second(
+            assertHelpers.assertWithPoll20Second(
                 () ->
                     Truth.assertThat(webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS))
                         .isEqualTo(number)));
 
     When(
-        "^I search for cases created with the API",
+        "^I search for cases created with the API using Person's name",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CASE_RESET_FILTERS_BUTTON);
           int maximumNumberOfRows = 23;
           webDriverHelpers.waitUntilAListOfElementsIsPresent(
               CASE_GRID_RESULTS_ROWS, maximumNumberOfRows);
           webDriverHelpers.fillAndSubmitInWebElement(
-              NAME_UUID_EPID_NUMBER_LIKE_INPUT, apiState.getEditPerson().getFirstName());
+              PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
+              apiState.getLastCreatedPerson().getFirstName()
+                  + " "
+                  + apiState.getLastCreatedPerson().getLastName());
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilAListOfElementsIsPresent(
               NAME_UUID_EPID_NUMBER_LIKE_INPUT, apiState.getCreatedCases().size());
           Truth.assertThat(apiState.getCreatedCases().size())
-              .isEqualTo(webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS));
+              .isEqualTo(
+                  Integer.parseInt(
+                      webDriverHelpers.getTextFromPresentWebElement(TOTAL_CASES_COUNTER)));
         });
 
     Then(
-        "^I check the displayed Case Outcome filter dropdown",
-        () ->
-            Arrays.stream(CaseOutcome.values())
-                .forEach(
-                    outcome -> {
-                      webDriverHelpers.selectFromCombobox(
-                          CASE_OUTCOME_FILTER_COMBOBOX, outcome.getOutcome());
-                      webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
-                      webDriverHelpers.waitUntilAListOfElementsHasText(
-                          CASE_GRID_RESULTS_ROWS, outcome.getOutcome());
-                      assertHelpers.assertWithPoll15Second(
-                          () ->
-                              Truth.assertThat(
-                                      apiState.getCreatedCases().stream()
-                                          .filter(
-                                              sample ->
-                                                  sample
-                                                      .getOutcome()
-                                                      .contentEquals(outcome.toString()))
-                                          .count())
-                                  .isEqualTo(
-                                      webDriverHelpers.getNumberOfElements(
-                                          CASE_GRID_RESULTS_ROWS)));
-                    }));
+        "I apply Outcome of case filter {string}",
+        (String outcomeFilterOption) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_OUTCOME_FILTER_COMBOBOX, CaseOutcome.getValueFor(outcomeFilterOption));
+          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+        });
+
+    And(
+        "I check that all displayed cases have {string} in grid Case Classification column",
+        (String expectedValue) -> {
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              CASE_GRID_RESULTS_ROWS, CaseOutcome.getValueFor(expectedValue));
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Truth.assertThat(
+                          apiState.getCreatedCases().stream()
+                              .filter(sample -> sample.getOutcome().contentEquals("NO_OUTCOME"))
+                              .count())
+                      .isEqualTo(
+                          Integer.valueOf(
+                              webDriverHelpers.getTextFromPresentWebElement(TOTAL_CASES_COUNTER))));
+        });
+    // TODO refactor method to use a specific outcome once the other fix is done
 
     Then(
-        "^I check the displayed Case Classification filter dropdown",
-        () ->
-            Arrays.stream(CaseClasification.values())
-                .forEach(
-                    clasification -> {
-                      webDriverHelpers.selectFromCombobox(
-                          CASE_CLASSIFICATION_FILTER_COMBOBOX, clasification.getClassification());
-                      webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
-                      webDriverHelpers.waitUntilAListOfElementsHasText(
-                          CASE_GRID_RESULTS_ROWS, clasification.getClassification());
-                      assertHelpers.assertWithPoll15Second(
-                          () ->
-                              Truth.assertThat(
-                                      apiState.getCreatedCases().stream()
-                                          .filter(
-                                              sample ->
-                                                  sample
-                                                      .getCaseClassification()
-                                                      .contentEquals(clasification.toString()))
-                                          .count())
-                                  .isEqualTo(
-                                      webDriverHelpers.getNumberOfElements(
-                                          CASE_GRID_RESULTS_ROWS)));
-                    }));
+        "I apply Disease filter {string}",
+        (String diseaseFilterOption) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_DISEASE_FILTER_COMBOBOX, DiseasesValues.getCaptionFor(diseaseFilterOption));
+          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+        });
 
     Then(
-        "^I check the displayed Disease filter dropdown",
-        () ->
-            Arrays.stream(Disease.values())
-                .forEach(
-                    aDisease -> {
-                      webDriverHelpers.selectFromCombobox(
-                          CASE_DISEASE_FILTER_COMBOBOX, aDisease.getDisease());
-                      webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
-                      webDriverHelpers.waitUntilAListOfElementsHasText(
-                          CASE_GRID_RESULTS_ROWS, aDisease.getDisease());
-                      assertHelpers.assertWithPoll15Second(
-                          () ->
-                              Truth.assertThat(
-                                      apiState.getCreatedCases().stream()
-                                          .filter(
-                                              sample ->
-                                                  sample
-                                                      .getDisease()
-                                                      .contentEquals(aDisease.toString()))
-                                          .count())
-                                  .isEqualTo(
-                                      webDriverHelpers.getNumberOfElements(
-                                          CASE_GRID_RESULTS_ROWS)));
-                    }));
+        "I check that all displayed cases have {string} in grid Disease column",
+        (String expectedValue) -> {
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              CASE_GRID_RESULTS_ROWS, DiseasesValues.getCaptionFor(expectedValue));
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Truth.assertThat(
+                          apiState.getCreatedCases().stream()
+                              .filter(
+                                  sample ->
+                                      sample
+                                          .getDisease()
+                                          .contentEquals(
+                                              DiseasesValues.CORONAVIRUS.getDiseaseName()))
+                              .count())
+                      .isEqualTo(
+                          Integer.valueOf(
+                              webDriverHelpers.getTextFromPresentWebElement(TOTAL_CASES_COUNTER))));
+        });
   }
 }

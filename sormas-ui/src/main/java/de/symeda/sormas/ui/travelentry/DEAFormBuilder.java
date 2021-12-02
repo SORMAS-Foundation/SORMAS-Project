@@ -23,7 +23,7 @@ public class DEAFormBuilder {
 
 	public DEAFormBuilder(List<DeaContentEntry> deaContentEntries, Boolean isCreate) {
 		this.deaContentEntries = deaContentEntries;
-		this.gridLayout = new GridLayout(2, deaContentEntries.size() / 2);
+		this.gridLayout = new GridLayout(2, deaContentEntries.size() > 1 ? deaContentEntries.size() / 2 : 1);
 		this.gridLayout.setWidthFull();
 		this.gridLayout.setSpacing(true);
 		CssStyles.style(this.gridLayout, CssStyles.VSPACE_3);

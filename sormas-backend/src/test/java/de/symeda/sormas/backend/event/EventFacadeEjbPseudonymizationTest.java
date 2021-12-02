@@ -43,6 +43,7 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	private TestDataCreator.RDCF rdcf2;
 	private UserDto user1;
 	private UserDto user2;
+	private UserDto observerUser;
 
 	@Override
 	public void init() {
@@ -57,6 +58,8 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		user2 = creator
 			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
 
+		observerUser = creator.createUser(null, null, null, null, "National", "Observer", UserRole.NATIONAL_OBSERVER);
+
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
 
@@ -64,27 +67,30 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testEventInJurisdiction() {
 		EventDto event = createEvent(user2, rdcf2);
 
-		assertNotPseudonymized(getEventFacade().getEventByUuid(event.getUuid()));
+		assertNotPseudonymized(getEventFacade().getEventByUuid(event.getUuid(), false));
 	}
 
 	@Test
 	public void testEventOutsideJurisdiction() {
 		EventDto event = createEvent(user1, rdcf1);
 
-		assertPseudonymized(getEventFacade().getEventByUuid(event.getUuid()));
+		assertPseudonymized(getEventFacade().getEventByUuid(event.getUuid(), false));
 	}
 
 	@Test
-	public void testUpdateOutsideJurisdiction() {
-		EventDto event = createEvent(user1, rdcf1);
+	public void testUpdatePseudonymizedEvent() {
+		EventDto event = createEvent(user2, rdcf2);
 
+		loginWith(observerUser);
+
+		event.setConnectionNumber("updated");
 		event.setResponsibleUser(null);
-
 		getEventFacade().saveEvent(event);
 
 		Event savedEvent = getEventService().getByUuid(event.getUuid());
 
-		assertThat(savedEvent.getResponsibleUser().getUuid(), is(user1.getUuid()));
+		assertThat(savedEvent.getConnectionNumber(), is("Connect No."));
+		assertThat(savedEvent.getResponsibleUser().getUuid(), is(user2.getUuid()));
 	}
 
 	@Test
@@ -114,6 +120,7 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	private EventDto createEvent(UserDto user, TestDataCreator.RDCF rdcf) {
 		return creator.createEvent(EventStatus.SIGNAL, EventInvestigationStatus.PENDING, "Test title", "Test Description", user.toReference(), e -> {
 			e.setResponsibleUser(user.toReference());
+			e.setConnectionNumber("Connect No.");
 		});
 	}
 

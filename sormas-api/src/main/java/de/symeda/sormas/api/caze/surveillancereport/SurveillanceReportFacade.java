@@ -18,11 +18,12 @@ package de.symeda.sormas.api.caze.surveillancereport;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 @Remote
 public interface SurveillanceReportFacade {
 
-	SurveillanceReportDto saveSurveillanceReport(SurveillanceReportDto dto);
+	SurveillanceReportDto saveSurveillanceReport(@Valid SurveillanceReportDto dto);
 
 	void deleteSurveillanceReport(String surveillanceReportUuid);
 

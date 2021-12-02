@@ -28,6 +28,7 @@ public class NavBarPage {
   public static final By PERSONS_BUTTON = By.cssSelector("div#persons");
   public static final By DASHBOARD_BUTTON = By.cssSelector("div#dashboard");
   public static final By SAMPLE_BUTTON = By.cssSelector("[id='samples']");
+  public static final By IMMUNIZATIONS_BUTTON = By.cssSelector("#immunizations");
   public static final By USERS_BUTTON = By.cssSelector("div#users");
   public static final By CONFIRM_NAVIGATION = By.cssSelector(("[id=actionConfirm]"));
 }

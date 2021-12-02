@@ -52,13 +52,10 @@ public class CaseFollowUpGrid extends FilteredGrid<CaseFollowUpDto, CaseCriteria
 	private final List<Date> dates = new ArrayList<>();
 
 	@SuppressWarnings("unchecked")
-	public <V extends View> CaseFollowUpGrid(CaseCriteria criteria, Date referenceDate, int interval, Class<V> viewClass) {
+	public <V extends View> CaseFollowUpGrid(CaseCriteria criteria, Class<V> viewClass) {
 
 		super(CaseFollowUpDto.class);
 		setSizeFull();
-
-		Date fromDate = DateHelper.subtractDays(referenceDate, interval - 1);
-		criteria.followUpUntilFrom(DateHelper.getStartOfDay(fromDate));
 
 		setColumns(
 			FollowUpDto.UUID,
@@ -68,7 +65,7 @@ public class CaseFollowUpGrid extends FilteredGrid<CaseFollowUpDto, CaseCriteria
 			FollowUpDto.FOLLOW_UP_UNTIL,
 			FollowUpDto.SYMPTOM_JOURNAL_STATUS);
 
-		setVisitColumns(referenceDate, interval, criteria);
+		setVisitColumns(criteria);
 
 		((Column<CaseFollowUpDto, String>) getColumn(CaseFollowUpDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<CaseFollowUpDto, Date>) getColumn(CaseFollowUpDto.REPORT_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
@@ -85,7 +82,9 @@ public class CaseFollowUpGrid extends FilteredGrid<CaseFollowUpDto, CaseCriteria
 		});
 	}
 
-	public void setVisitColumns(Date referenceDate, int interval, CaseCriteria criteria) {
+	public void setVisitColumns(CaseCriteria criteria) {
+		Date referenceDate = criteria.getFollowUpVisitsTo();
+		int interval = criteria.getFollowUpVisitsInterval();
 
 		setDataProvider(referenceDate, interval - 1);
 		setCriteria(criteria);

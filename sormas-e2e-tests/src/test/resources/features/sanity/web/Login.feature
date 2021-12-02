@@ -2,16 +2,18 @@
 Feature: Login with different type of users
 
   @issue=5402
-  Scenario Outline: Login with <userType> user
+  Scenario Outline: Login with <user> user
     Given I navigate to SORMAS login page
-     When I fill the username with <username>
-      And I fill the password with <password>
-      And I click on the Log In button
-     Then I am logged in with name <userType>
+    Then I log in as a <user>
+    Then I am logged in with name <user>
 
     Examples:
-      | userType                  | username | password     |
-      | National User             | NatUser  | NatUser38118 |
-      | Contact Supervisor        | ContSup  | ContSup38118 |
-      | Laboratory Officer        | LabOff   | LabOff38118  |
-      | Point of Entry Supervisor | PoeSup   | PoeSup38118  |
+      | user                      |
+      | National User             |
+      | Contact Supervisor        |
+      | Laboratory Officer        |
+      | Point of Entry Supervisor |
+      | Surveillance Officer      |
+
+
+

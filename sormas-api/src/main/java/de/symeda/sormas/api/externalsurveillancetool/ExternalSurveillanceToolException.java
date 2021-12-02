@@ -19,7 +19,18 @@ public class ExternalSurveillanceToolException extends Exception {
 
 	private static final long serialVersionUID = -3526487657644154163L;
 
-	public ExternalSurveillanceToolException(String messageTag) {
-		super(messageTag);
+	private String errorCode;
+
+	public ExternalSurveillanceToolException(String message) {
+		super(message);
+	}
+
+	public ExternalSurveillanceToolException(String message, String errorCode) {
+		this(message);
+		this.errorCode = errorCode;
+	}
+
+	public String getErrorCode() {
+		return errorCode;
 	}
 }

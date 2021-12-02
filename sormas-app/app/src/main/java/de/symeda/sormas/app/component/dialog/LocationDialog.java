@@ -31,11 +31,11 @@ import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
 import de.symeda.sormas.api.CountryHelper;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.location.AreaType;
+import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -54,6 +54,7 @@ import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 import de.symeda.sormas.app.util.LocationService;
 
 public class LocationDialog extends FormDialog {
@@ -129,7 +130,7 @@ public class LocationDialog extends FormDialog {
 			}
 		}
 
-		InfrastructureDaoHelper.initializeFacilityFields(
+		InfrastructureFieldsDependencyHandler.instance.initializeFacilityFields(
 			data,
 			this.contentBinding.locationContinent,
 			initialContinents,

@@ -39,17 +39,19 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -79,8 +81,14 @@ public class EventParticipantImporter extends DataImporter {
 	private final EventReferenceDto event;
 	private UI currentUI;
 
-	public EventParticipantImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, EventReferenceDto event) {
-		super(inputFile, hasEntityClassRow, currentUser);
+	public EventParticipantImporter(
+		File inputFile,
+		boolean hasEntityClassRow,
+		UserDto currentUser,
+		EventReferenceDto event,
+		ValueSeparator csvSeparator)
+		throws IOException {
+		super(inputFile, hasEntityClassRow, currentUser, csvSeparator);
 		this.event = event;
 
 		personFacade = FacadeProvider.getPersonFacade();
@@ -153,6 +161,9 @@ public class EventParticipantImporter extends DataImporter {
 
 		PersonDto newPerson = newPersonTemp;
 
+		// Sanitize non-HOME address
+		PersonHelper.sanitizeNonHomeAddress(newPerson);
+
 		// If the eventparticipant still does not have any import errors, search for persons similar to the eventparticipant person in the database and,
 		// if there are any, display a window to resolve the conflict to the user
 		if (!eventParticipantHasImportError) {
@@ -224,7 +235,8 @@ public class EventParticipantImporter extends DataImporter {
 				} else {
 					// Workaround: Reset the change date to avoid OutdatedEntityExceptions
 					newPerson.setChangeDate(new Date());
-					PersonDto savedPerson = personFacade.savePerson(newPerson);
+					boolean skipPersonValidation = ImportSimilarityResultOption.PICK.equals(resultOption);
+					final PersonDto savedPerson = personFacade.savePerson(newPerson, skipPersonValidation);
 					newEventParticipant.setPerson(savedPerson);
 					newEventParticipant.setChangeDate(new Date());
 					eventParticipantFacade.saveEventParticipant(newEventParticipant);
@@ -354,6 +366,11 @@ public class EventParticipantImporter extends DataImporter {
 				LOGGER.error("Unexpected error when trying to import an eventparticipant: " + e.getMessage(), e);
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importCasesUnexpectedError));
 			}
+		}
+
+		ImportLineResultDto<EventParticipantDto> constraintErrors = validateConstraints(eventParticipant);
+		if (constraintErrors.isError()) {
+			throw new ImportErrorException(constraintErrors.getMessage());
 		}
 	}
 

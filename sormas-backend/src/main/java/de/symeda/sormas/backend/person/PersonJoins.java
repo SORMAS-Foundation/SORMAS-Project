@@ -26,9 +26,10 @@ import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.immunization.Immunization;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationJoins;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
@@ -41,6 +42,8 @@ public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 	private Join<Person, Immunization> immunization;
 	private Join<Person, TravelEntry> travelEntry;
 	private Join<Person, Location> address;
+	private Join<Person, Country> birthCountry;
+	private Join<Person, Country> citizenship;
 
 	private final LocationJoins<Person> addressJoins;
 
@@ -116,5 +119,21 @@ public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 
 	private void setAddress(Join<Person, Location> address) {
 		this.address = address;
+	}
+
+	public Join<Person, Country> getBirthCountry() {
+		return getOrCreate(birthCountry, Person.BIRTH_COUNTRY, JoinType.LEFT, this::setBirthCountry);
+	}
+
+	private void setBirthCountry(Join<Person, Country> birthCountry) {
+		this.birthCountry = birthCountry;
+	}
+
+	public Join<Person, Country> getCitizenship() {
+		return getOrCreate(citizenship, Person.CITIZENSHIP, JoinType.LEFT, this::setCitizenship);
+	}
+
+	private void setCitizenship(Join<Person, Country> citizenship) {
+		this.citizenship = citizenship;
 	}
 }

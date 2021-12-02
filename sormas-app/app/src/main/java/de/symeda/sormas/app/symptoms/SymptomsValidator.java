@@ -25,30 +25,23 @@ import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.symptoms.SymptomState;
-import de.symeda.sormas.app.R;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.databinding.FragmentSymptomsEditLayoutBinding;
-import de.symeda.sormas.app.util.ResultCallback;
 
 final class SymptomsValidator {
 
 	static void initializeSymptomsValidation(final FragmentSymptomsEditLayoutBinding contentBinding, final AbstractDomainObject ado) {
-		ResultCallback<Boolean> temperatureCallback = () -> {
-			if (contentBinding.symptomsFever.getVisibility() == View.VISIBLE) {
-				if (contentBinding.symptomsTemperature.getValue() != null && (Float) contentBinding.symptomsTemperature.getValue() >= 38.0f) {
-					if (contentBinding.symptomsFever.getValue() != SymptomState.YES) {
-						contentBinding.symptomsFever.enableErrorState(R.string.validation_symptoms_fever);
-						return true;
-					}
-				}
-			}
-
-			return false;
-		};
-
-		contentBinding.symptomsTemperature.setValidationCallback(temperatureCallback);
-		contentBinding.symptomsFever.setValidationCallback(temperatureCallback);
+		if (contentBinding.symptomsFever.getVisibility() == View.VISIBLE) {
+			contentBinding.symptomsTemperature.addValueChangedListener(
+				field -> toggleFeverComponentError(contentBinding, (Float) field.getValue(), (SymptomState) contentBinding.symptomsFever.getValue()));
+			contentBinding.symptomsFever.addValueChangedListener(
+				field -> toggleFeverComponentError(
+					contentBinding,
+					(Float) contentBinding.symptomsTemperature.getValue(),
+					(SymptomState) field.getValue()));
+		}
 
 		if (ado instanceof Case) {
 			contentBinding.symptomsOnsetDate.addValueChangedListener(field -> {
@@ -66,4 +59,24 @@ final class SymptomsValidator {
 			});
 		}
 	}
+
+	private static void toggleFeverComponentError(
+		final FragmentSymptomsEditLayoutBinding contentBinding,
+		Float temperatureValue,
+		SymptomState feverValue) {
+		if (temperatureValue != null && temperatureValue >= 38.0f && feverValue != SymptomState.YES) {
+			contentBinding.symptomsFever.enableWarningState(
+				I18nProperties.getValidationError(
+					Validations.feverTemperatureAboveThreshold,
+					I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.FEVER)));
+		} else if (temperatureValue != null && temperatureValue < 38.0f && feverValue != SymptomState.NO) {
+			contentBinding.symptomsFever.enableWarningState(
+				I18nProperties.getValidationError(
+					Validations.feverTemperatureBelowThreshold,
+					I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.FEVER)));
+		} else {
+			contentBinding.symptomsFever.disableWarningState();
+		}
+	}
+
 }

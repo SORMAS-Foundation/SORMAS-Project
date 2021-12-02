@@ -42,6 +42,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -73,6 +74,7 @@ import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.events.EventGroupDataView;
 import de.symeda.sormas.ui.events.EventParticipantDataView;
 import de.symeda.sormas.ui.events.EventsView;
+import de.symeda.sormas.ui.immunization.ImmunizationsView;
 import de.symeda.sormas.ui.labmessage.LabMessagesView;
 import de.symeda.sormas.ui.person.PersonsView;
 import de.symeda.sormas.ui.reports.ReportsView;
@@ -184,7 +186,18 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples), VaadinIcons.DATABASE);
 		}
 
-		if (permitted(UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS)
+		if (permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)
+			&& !FacadeProvider.getFeatureConfigurationFacade()
+				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			ControllerProvider.getImmunizationController().registerViews(navigator);
+			menu.addView(
+				ImmunizationsView.class,
+				ImmunizationsView.VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuImmunizations),
+				VaadinIcons.HEALTH_CARD);
+		}
+
+		if (permitted(FeatureType.TRAVEL_ENTRIES, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS)
 			&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			ControllerProvider.getTravelEntryController().registerViews(navigator);
 			menu.addView(
@@ -320,7 +333,8 @@ public class MainScreen extends HorizontalLayout {
 				SubcontinentsView.VIEW_NAME,
 				CountriesView.VIEW_NAME,
 				LabMessagesView.VIEW_NAME,
-				TravelEntriesView.VIEW_NAME));
+				TravelEntriesView.VIEW_NAME,
+				ImmunizationsView.VIEW_NAME));
 
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
 			views.add(SurveillanceDashboardView.VIEW_NAME);

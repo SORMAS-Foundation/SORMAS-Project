@@ -21,7 +21,7 @@ package de.symeda.sormas.app.backend.region;
 import java.util.List;
 
 import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.region.AreaDto;
+import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;

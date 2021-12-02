@@ -28,7 +28,6 @@ import java.util.function.Function;
 
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.Month;
 import de.symeda.sormas.api.MonthOfYear;
@@ -36,12 +35,16 @@ import de.symeda.sormas.api.Quarter;
 import de.symeda.sormas.api.QuarterOfYear;
 import de.symeda.sormas.api.Year;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
+import de.symeda.sormas.api.infrastructure.district.DistrictFacade;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -207,18 +210,25 @@ public final class StatisticsHelper {
 		return ageIntervalList;
 	}
 
-	public static List<StatisticsGroupingKey> getTimeGroupingKeys(StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
+	/**
+	 *
+	 * @param attribute
+	 * @param subAttribute
+	 * @param caseFacade Needed for StatisticsCaseAttribute.ONSET_TIME, REPORT_TIME, OUTCOME_TIME
+	 * @return
+	 */
+	public static List<StatisticsGroupingKey> getTimeGroupingKeys(StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute, CaseFacade caseFacade) {
 
 		Date oldestCaseDate = null;
 		switch (attribute) {
 		case ONSET_TIME:
-			oldestCaseDate = FacadeProvider.getCaseFacade().getOldestCaseOnsetDate();
+			oldestCaseDate = caseFacade.getOldestCaseOnsetDate();
 			break;
 		case REPORT_TIME:
-			oldestCaseDate = FacadeProvider.getCaseFacade().getOldestCaseReportDate();
+			oldestCaseDate = caseFacade.getOldestCaseReportDate();
 			break;
 		case OUTCOME_TIME:
-			oldestCaseDate = FacadeProvider.getCaseFacade().getOldestCaseOutcomeDate();
+			oldestCaseDate = caseFacade.getOldestCaseOutcomeDate();
 			break;
 		default:
 			return new ArrayList<>();
@@ -276,8 +286,18 @@ public final class StatisticsHelper {
 		}
 	}
 
+	/**
+	 *
+	 * @param attribute
+	 * @param subAttribute
+	 * @param diseaseConfigurationFacade Needed for StatisticsCaseAttribute.DISEASE
+	 * @param caseFacade Needed for StatisticsCaseAttribute.ONSET_TIME, REPORT_TIME, OUTCOME_TIME
+	 * @param regionFacade Needed for StatisticsCaseSubAttribute.REGION
+	 * @param districtFacade Needed for StatisticsCaseSubAttribute.DISTRICT
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
-	public static List<StatisticsGroupingKey> getAttributeGroupingKeys(StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
+	public static List<StatisticsGroupingKey> getAttributeGroupingKeys(StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute, DiseaseConfigurationFacade diseaseConfigurationFacade, CaseFacade caseFacade, RegionFacade regionFacade, DistrictFacade districtFacade) {
 
 		if (subAttribute != null) {
 			switch (subAttribute) {
@@ -288,13 +308,11 @@ public final class StatisticsHelper {
 			case QUARTER_OF_YEAR:
 			case MONTH_OF_YEAR:
 			case EPI_WEEK_OF_YEAR:
-				return StatisticsHelper.getTimeGroupingKeys(attribute, subAttribute);
+				return StatisticsHelper.getTimeGroupingKeys(attribute, subAttribute, caseFacade);
 			case REGION:
-				return (List<StatisticsGroupingKey>) (List<? extends StatisticsGroupingKey>) FacadeProvider.getRegionFacade()
-					.getAllActiveByServerCountry();
+				return (List<StatisticsGroupingKey>) (List<? extends StatisticsGroupingKey>) regionFacade.getAllActiveByServerCountry();
 			case DISTRICT:
-				return (List<StatisticsGroupingKey>) (List<? extends StatisticsGroupingKey>) FacadeProvider.getDistrictFacade()
-					.getAllActiveAsReference();
+				return (List<StatisticsGroupingKey>) (List<? extends StatisticsGroupingKey>) districtFacade.getAllActiveAsReference();
 			case COMMUNITY:
 			case FACILITY:
 				return new ArrayList<>();
@@ -306,7 +324,7 @@ public final class StatisticsHelper {
 			case SEX:
 				return toGroupingKeys(Sex.values());
 			case DISEASE:
-				return toGroupingKeys(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
+				return toGroupingKeys(diseaseConfigurationFacade.getAllDiseases(true, true, true));
 			case CLASSIFICATION:
 				return toGroupingKeys(CaseClassification.values());
 			case OUTCOME:

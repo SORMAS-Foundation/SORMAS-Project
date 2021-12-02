@@ -39,8 +39,8 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
@@ -171,7 +171,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
                     districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), false) : null);
         });
 
-        ComboBox laboratory = addField(UserDto.LABORATORY, ComboBox.class);
+        ComboBox laboratory = addInfrastructureField(UserDto.LABORATORY);
         laboratory.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false));
 
         region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());

@@ -5,6 +5,9 @@ import static org.sormas.e2etests.enums.YesNoUnknownOptions.YES;
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
+import org.sormas.e2etests.enums.CommunityValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.pojo.web.PreviousHospitalization;
 
 public class PreviousHospitalizationService {
@@ -19,18 +22,18 @@ public class PreviousHospitalizationService {
     return PreviousHospitalization.builder()
         .dateOfVisitOrAdmission(LocalDate.now().minusDays(10))
         .dateOfDischargeOrTransfer(LocalDate.now().minusDays(5))
-        .region("Voreingestellte Bundesl\u00E4nder")
-        .district("Voreingestellter Landkreis")
-        .community("Voreingestellte Gemeinde")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .community(CommunityValues.VoreingestellteGemeinde.getName())
         .hospital("Other facility")
         .isolation(YES.toString())
-        .facilityNameDescription(faker.book().title())
+        .facilityNameDescription(faker.beer().name())
         .reasonForHospitalization("Other reason")
         .specifyReason(faker.book().title())
         .stayInTheIntensiveCareUnit(YES.toString())
         .startOfStayDate(LocalDate.now().minusDays(9))
         .endOfStayDate(LocalDate.now().minusDays(7))
-        .description(faker.book().title())
+        .description(faker.cat().breed() + " " + faker.color().name())
         .build();
   }
 }

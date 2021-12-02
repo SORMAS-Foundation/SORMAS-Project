@@ -66,6 +66,7 @@ public class PreviousHospitalizationDtoHelper extends AdoDtoHelper<PreviousHospi
 	@Override
 	public void fillInnerFromDto(PreviousHospitalization a, PreviousHospitalizationDto b) {
 		// hospitalization is set by calling method
+		a.setAdmittedToHealthFacility(b.getAdmittedToHealthFacility());
 		if (b.getRegion() != null) {
 			a.setRegion(DatabaseHelper.getRegionDao().queryUuid(b.getRegion().getUuid()));
 		} else {
@@ -92,6 +93,7 @@ public class PreviousHospitalizationDtoHelper extends AdoDtoHelper<PreviousHospi
 
 		a.setHealthFacilityDetails(b.getHealthFacilityDetails());
 		a.setIsolated(b.getIsolated());
+		a.setIsolationDate(b.getIsolationDate());
 		a.setAdmissionDate(b.getAdmissionDate());
 		a.setDischargeDate(b.getDischargeDate());
 		a.setDescription(b.getDescription());
@@ -106,6 +108,8 @@ public class PreviousHospitalizationDtoHelper extends AdoDtoHelper<PreviousHospi
 
 	@Override
 	public void fillInnerFromAdo(PreviousHospitalizationDto a, PreviousHospitalization b) {
+
+		a.setAdmittedToHealthFacility(b.getAdmittedToHealthFacility());
 
 		if (b.getRegion() != null) {
 			Region region = DatabaseHelper.getRegionDao().queryForId(b.getRegion().getId());
@@ -137,6 +141,7 @@ public class PreviousHospitalizationDtoHelper extends AdoDtoHelper<PreviousHospi
 
 		a.setHealthFacilityDetails(b.getHealthFacilityDetails());
 		a.setIsolated(b.getIsolated());
+		a.setIsolationDate(b.getIsolationDate());
 		a.setAdmissionDate(b.getAdmissionDate());
 		a.setDischargeDate(b.getDischargeDate());
 		a.setDescription(b.getDescription());

@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.outbreak;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,17 +30,20 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
@@ -66,6 +70,44 @@ public class OutbreakService extends AdoServiceWithUserFilter<Outbreak> {
 		}
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public List<Outbreak> queryByCriteria(OutbreakCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Outbreak> cq = cb.createQuery(getElementClass());
+		Root<Outbreak> outbreak = cq.from(getElementClass());
+
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case Outbreak.DISEASE:
+				case Outbreak.DISTRICT:
+				case Outbreak.START_DATE:
+					expression = outbreak.get(sortProperty.propertyName);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.asc(outbreak.get(Outbreak.DISEASE)));
+		}
+
+		Predicate filter = createUserFilter(cb, cq, outbreak);
+		filter = CriteriaBuilderHelper.and(cb, filter, buildCriteriaFilter(criteria, cb, outbreak));
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.select(outbreak);
+
+		return QueryHelper.getResultList(em, cq, first, max);
+
 	}
 
 	public List<String> queryUuidByCriteria(OutbreakCriteria criteria, User user, String orderProperty, boolean asc) {
@@ -122,7 +164,8 @@ public class OutbreakService extends AdoServiceWithUserFilter<Outbreak> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Outbreak.DISEASE), criteria.getDisease()));
 		}
 		if (criteria.getDistrict() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(Outbreak.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(Outbreak.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
 		}
 		if (criteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper.and(
@@ -142,7 +185,8 @@ public class OutbreakService extends AdoServiceWithUserFilter<Outbreak> {
 			filter = CriteriaBuilderHelper.and(cb, filter, activeFilter);
 		}
 		if (criteria.getReportedDateFrom() != null || criteria.getReportedDateTo() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.between(from.get(Outbreak.REPORT_DATE), criteria.getReportedDateFrom(), criteria.getReportedDateTo()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.between(from.get(Outbreak.REPORT_DATE), criteria.getReportedDateFrom(), criteria.getReportedDateTo()));
 		}
 
 		return filter;

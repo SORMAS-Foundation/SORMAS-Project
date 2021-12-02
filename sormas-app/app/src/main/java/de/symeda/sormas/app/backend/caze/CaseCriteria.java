@@ -23,6 +23,7 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Region;
 
 public class CaseCriteria implements Serializable {
@@ -37,6 +38,7 @@ public class CaseCriteria implements Serializable {
 	private CaseOrigin caseOrigin;
 	private Region responsibleRegion;
 	private Region region;
+	private Person person;
 
 	public CaseCriteria setTextFilter(String textFilter) {
 		this.textFilter = textFilter;
@@ -126,5 +128,13 @@ public class CaseCriteria implements Serializable {
 	public CaseCriteria setRegion(Region region) {
 		this.region = region;
 		return this;
+	}
+
+	public Person getPerson() {
+		return person;
+	}
+
+	public void setPerson(Person person) {
+		this.person = person;
 	}
 }

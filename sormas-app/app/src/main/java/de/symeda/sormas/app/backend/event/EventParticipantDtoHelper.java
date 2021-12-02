@@ -25,6 +25,10 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
+import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfoDtoHelper;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
@@ -34,8 +38,6 @@ import retrofit2.Call;
 public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, EventParticipantDto> {
 
 	private PersonDtoHelper personHelper = new PersonDtoHelper();
-	// TODO [vaccination info] integrate vaccination info
-//	private VaccinationInfoDtoHelper vaccinationInfoDtoHelper = new VaccinationInfoDtoHelper();
 
 	private SormasToSormasOriginInfoDtoHelper sormasToSormasOriginInfoDtoHelper = new SormasToSormasOriginInfoDtoHelper();
 
@@ -84,14 +86,14 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 			target.setPerson(null);
 		}
 
+		target.setResponsibleRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
+		target.setResponsibleDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
 		target.setInvolvementDescription(source.getInvolvementDescription());
 		target.setResultingCaseUuid(source.getResultingCase() != null ? source.getResultingCase().getUuid() : null);
-
-		// TODO [vaccination info] integrate vaccination info
-//		target.setVaccinationInfo(vaccinationInfoDtoHelper.fillOrCreateFromDto(target.getVaccinationInfo(), source.getVaccinationInfo()));
+		target.setVaccinationStatus(source.getVaccinationStatus());
 
 		target.setSormasToSormasOriginInfo(
-				sormasToSormasOriginInfoDtoHelper.fillOrCreateFromDto(target.getSormasToSormasOriginInfo(), source.getSormasToSormasOriginInfo()));
+			sormasToSormasOriginInfoDtoHelper.fillOrCreateFromDto(target.getSormasToSormasOriginInfo(), source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
 
 		target.setPseudonymized(source.isPseudonymized());
@@ -120,6 +122,20 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 			target.setPerson(null);
 		}
 
+		if (source.getResponsibleRegion() != null) {
+			Region region = DatabaseHelper.getRegionDao().queryForId(source.getResponsibleRegion().getId());
+			target.setRegion(RegionDtoHelper.toReferenceDto(region));
+		} else {
+			target.setRegion(null);
+		}
+
+		if (source.getResponsibleDistrict() != null) {
+			District district = DatabaseHelper.getDistrictDao().queryForId(source.getResponsibleDistrict().getId());
+			target.setDistrict(DistrictDtoHelper.toReferenceDto(district));
+		} else {
+			target.setDistrict(null);
+		}
+
 		// Resulting case is never set to null from within the app because it
 		if (source.getResultingCaseUuid() != null) {
 			target.setResultingCase(new CaseReferenceDto(source.getResultingCaseUuid()));
@@ -128,18 +144,12 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 		}
 
 		target.setInvolvementDescription(source.getInvolvementDescription());
-
-		// TODO [vaccination info] integrate vaccination info
-//		if (source.getVaccinationInfo() != null) {
-//			target.setVaccinationInfo(vaccinationInfoDtoHelper.adoToDto(source.getVaccinationInfo()));
-//		} else {
-//			target.setVaccinationInfo(null);
-//		}
+		target.setVaccinationStatus(source.getVaccinationStatus());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoDtoHelper.adoToDto(source.getSormasToSormasOriginInfo()));
 		}
-		
+
 		target.setPseudonymized(source.isPseudonymized());
 	}
 

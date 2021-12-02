@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -30,11 +31,12 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.region.DistrictCriteria;
-import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.DistrictIndexDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictCriteria;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictIndexDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
@@ -47,7 +49,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @RolesAllowed({
 	"USER",
 	"REST_USER" })
-public class DistrictResource {
+public class DistrictResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
@@ -58,8 +60,14 @@ public class DistrictResource {
 	@POST
 	@Path("/query")
 	public List<DistrictDto> getByUuids(List<String> uuids) {
-
 		List<DistrictDto> result = FacadeProvider.getDistrictFacade().getByUuids(uuids);
+		return result;
+	}
+
+	@POST
+	@Path("/push")
+	public List<PushResult> postDistricts(@Valid List<DistrictDto> dtos) {
+		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getDistrictFacade()::save);
 		return result;
 	}
 

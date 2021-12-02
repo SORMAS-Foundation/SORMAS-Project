@@ -15,24 +15,34 @@
 
 package de.symeda.sormas.api.caze;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.utils.HideForCountriesExcept;
+import de.symeda.sormas.api.utils.Diseases;
 
 public enum VaccineManufacturer {
 
+	@Diseases(value = {
+		Disease.CORONAVIRUS })
 	BIONTECH_PFIZER,
+	@Diseases(value = {
+		Disease.CORONAVIRUS })
 	MODERNA,
+	@Diseases(value = {
+		Disease.CORONAVIRUS })
 	ASTRA_ZENECA,
+	@Diseases(value = {
+		Disease.CORONAVIRUS })
 	JOHNSON_JOHNSON,
+	@Diseases(value = {
+		Disease.CORONAVIRUS })
 	NOVAVAX,
+	@Diseases(value = {
+		Disease.CORONAVIRUS })
 	SANOFI_GSK,
-	@HideForCountriesExcept
-	ASTRA_ZENECA_BIONTECH_PFIZER,
-	@HideForCountriesExcept
-	ASTRA_ZENECA_MODERNA,
 	UNKNOWN,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

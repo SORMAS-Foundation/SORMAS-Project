@@ -15,8 +15,11 @@
 
 package de.symeda.sormas.app.person.edit;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.databinding.ObservableArrayList;
+import androidx.databinding.ObservableList;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -24,16 +27,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.databinding.ObservableArrayList;
-import androidx.databinding.ObservableList;
-
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
@@ -62,6 +59,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonContactDetail;
@@ -77,6 +75,10 @@ import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayoutBinding, Person, PseudonymizableAdo> {
 
@@ -101,6 +103,16 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 	}
 
 	public static PersonEditFragment newInstance(Contact activityRootData) {
+
+		return newInstanceWithFieldCheckers(
+			PersonEditFragment.class,
+			null,
+			activityRootData,
+			FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+	}
+
+	public static PersonEditFragment newInstance(Immunization activityRootData) {
 
 		return newInstanceWithFieldCheckers(
 			PersonEditFragment.class,
@@ -151,7 +163,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			contentBinding.personCauseOfDeathDetails);
 		initializeOccupationDetailsFieldVisibility(contentBinding.personOccupationType, contentBinding.personOccupationDetails);
 
-		InfrastructureDaoHelper.initializeFacilityFields(
+		InfrastructureFieldsDependencyHandler.instance.initializeFacilityFields(
 			record,
 			contentBinding.personPlaceOfBirthRegion,
 			initialPlaceOfBirthRegions,
@@ -532,6 +544,9 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			rootData = ado;
 		} else if (ado instanceof Contact) {
 			record = ((Contact) ado).getPerson();
+			rootData = ado;
+		} else if (ado instanceof Immunization) {
+			record = ((Immunization) ado).getPerson();
 			rootData = ado;
 		} else {
 			throw new UnsupportedOperationException(

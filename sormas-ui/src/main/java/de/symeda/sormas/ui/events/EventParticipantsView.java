@@ -149,7 +149,9 @@ public class EventParticipantsView extends AbstractEventView {
 
 				ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
 					ExportType.EVENT_PARTICIPANTS,
-					ImportExportUtils.getEventParticipantExportProperties(EventParticipantDownloadUtil::getPropertyCaption),
+					ImportExportUtils.getEventParticipantExportProperties(
+						EventParticipantDownloadUtil::getPropertyCaption,
+						FacadeProvider.getConfigFacade().getCountryLocale()),
 					customExportWindow::close);
 				customExportsLayout.setExportCallback(
 					(exportConfig) -> Page.getCurrent()
@@ -191,7 +193,7 @@ public class EventParticipantsView extends AbstractEventView {
 			bulkActions
 				.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEventParticipantsToContacts), VaadinIcons.HAND, mi -> {
 					grid.bulkActionHandler(items -> {
-						EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid());
+						EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid(), false);
 						ControllerProvider.getContactController().openLineListingWindow(eventDto, items);
 					}, true);
 				}));

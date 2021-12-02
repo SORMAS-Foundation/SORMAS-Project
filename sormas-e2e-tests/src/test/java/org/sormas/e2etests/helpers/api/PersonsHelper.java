@@ -17,7 +17,7 @@
  */
 package org.sormas.e2etests.helpers.api;
 
-import static org.sormas.e2etests.constants.api.Endpoints.PERSONS_PATH;
+import static org.sormas.e2etests.constants.api.Endpoints.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.Method;
@@ -47,12 +47,15 @@ public class PersonsHelper {
 
   public void getAllPersonUuid() {
     restAssuredClient.sendRequest(
-        Request.builder().method(Method.GET).path(PERSONS_PATH + "uuids").build());
+        Request.builder().method(Method.GET).path(PERSONS_PATH + UUIDS_PATH).build());
+    int totalPersons =
+        apiState.getResponse().getBody().asString().replaceAll("\"", "").split(",").length;
+    System.out.println("Total persons: " + totalPersons);
   }
 
   public Response getPersonBasedOnUUID(String personUUID) {
     restAssuredClient.sendRequest(
-        Request.builder().method(Method.GET).path(PERSONS_PATH + "personUUID").build());
+        Request.builder().method(Method.GET).path(PERSONS_PATH + personUUID).build());
     return apiState.getResponse();
   }
 
@@ -65,13 +68,20 @@ public class PersonsHelper {
         Request.builder()
             .method(Method.POST)
             .body(out.toString())
-            .path(PERSONS_PATH + "push")
+            .path(PERSONS_PATH + POST_PATH)
             .build());
   }
 
-  public void pushPerson(String specificPath, String jsonBody) {
-    final String json = jsonBody;
+  @SneakyThrows
+  public void createMultiplePersons(List<Person> personList) {
+    final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    List<Person> personBody = personList;
+    objectMapper.writeValue(out, personBody);
     restAssuredClient.sendRequest(
-        Request.builder().method(Method.POST).path(PERSONS_PATH + specificPath).body(json).build());
+        Request.builder()
+            .method(Method.POST)
+            .body(out.toString())
+            .path(PERSONS_PATH + POST_PATH)
+            .build());
   }
 }

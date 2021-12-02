@@ -21,7 +21,6 @@ package org.sormas.e2etests.steps.web.application.contacts;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
 
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -105,7 +104,9 @@ public class EditContactSteps implements En {
         "I check the edited data is correctly displayed on Edit Contact page after editing",
         () -> {
           aContact = collectContactDataAfterEdit();
-          Truth.assertThat(editedContact).isEqualTo(aContact);
+          SoftAssertions softly = new SoftAssertions();
+          softly.assertThat(editedContact).isEqualTo(aContact);
+          softly.assertAll();
         });
 
     When(
@@ -171,10 +172,10 @@ public class EditContactSteps implements En {
           selectImmunosuppressiveTherapy(editedContact.getImmunosuppressiveTherapy());
           selectActiveInCare(editedContact.getActiveInCare());
           clickCancelFollowUpButton();
-          selectOverwriteFollowUp(editedContact.getOverwriteFollowUp());
-          fillFollowUpStatusComment(editedContact.getFollowUpStatusComment());
-          // commented code until issue=5634 is fixed
+          // TODO enable it back once 6803 is fixed
+          // selectOverwriteFollowUp(editedContact.getOverwriteFollowUp());
           // fillDateOfFollowUpUntil(editedContact.getDateOfFollowUpUntil());
+          fillFollowUpStatusComment(editedContact.getFollowUpStatusComment());
           selectResponsibleContactOfficer(editedContact.getResponsibleContactOfficer());
           fillGeneralComment(editedContact.getGeneralComment());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_EDIT_BUTTON);
@@ -345,7 +346,6 @@ public class EditContactSteps implements En {
     webDriverHelpers.clickWebElementByText(OVERWRITE_FOLLOW_UP_LABEL, text);
   }
 
-  // not used until issue=5634 is fixed
   public void fillDateOfFollowUpUntil(LocalDate date) {
     webDriverHelpers.clearAndFillInWebElement(FOLLOW_UP_UNTIL_DATE, formatter.format(date));
   }
@@ -413,21 +413,16 @@ public class EditContactSteps implements En {
     String classification =
         webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CLASSIFICATION_OPTIONS);
     LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
-    LocalDate parsedDateOfFirst =
-        LocalDate.parse(webDriverHelpers.getValueFromWebElement(FIRST_DAY_CONTACT_DATE), formatter);
-    // commented code until issue=5634 is fixed
-    // LocalDate parsedDateOfFollowUp =
-    //    LocalDate.parse(webDriverHelpers.getValueFromWebElement(FOLLOW_UP_UNTIL_DATE), formatter);
-    String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
-    LocalDate parsedLastDateOfContact = LocalDate.parse(collectedLastDateOfContact, formatter);
+    // TODO enable it back once 6803 is fixed
+    //    LocalDate parsedDateOfFollowUp =
+    //        LocalDate.parse(webDriverHelpers.getValueFromWebElement(FOLLOW_UP_UNTIL_DATE),
+    // formatter);
     String identificationSource =
         webDriverHelpers.getValueFromWebElement(IDENTIFICATION_SOURCE_INPUT);
 
     return Contact.builder()
         .classification(classification)
         .multiDay(webDriverHelpers.getTextFromLabelIfCheckboxIsChecked(MULTI_DAY_CONTACT_CHECKBOX))
-        .dateOfFirstContact(parsedDateOfFirst)
-        .dateOfLastContact(parsedLastDateOfContact)
         .diseaseOfSourceCase(webDriverHelpers.getValueFromCombobox(DISEASE_COMBOBOX))
         .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
         .externalToken(webDriverHelpers.getValueFromWebElement(EXTERNAL_TOKEN_INPUT))
@@ -484,15 +479,22 @@ public class EditContactSteps implements En {
                 IMMUNOSUPPRESSIVE_THERAPY_OPTIONS))
         .activeInCare(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CARE_OVER_60_OPTIONS))
-        .overwriteFollowUp(
-            webDriverHelpers.getTextFromLabelIfCheckboxIsChecked(OVERWRITE_FOLLOW_UP_CHECKBOX))
-        //  commented code until issue=5634 is fixed
-        // .dateOfFollowUpUntil(parsedDateOfFollowUp)
+        // TODO enable it back once 6803 is fixed
+        //            .overwriteFollowUp(
+        //
+        // webDriverHelpers.getTextFromLabelIfCheckboxIsChecked(OVERWRITE_FOLLOW_UP_CHECKBOX))
+        //        .dateOfFollowUpUntil(parsedDateOfFollowUp)
         .cancelFollowUp(isFollowUpNotVisible())
         .followUpStatusComment(webDriverHelpers.getValueFromWebElement(FOLLOW_UP_STATUS_TEXT))
         .responsibleContactOfficer(
             webDriverHelpers.getValueFromCombobox(RESPONSIBLE_STATUS_OFFICER_COMBOBOX))
         .generalComment(webDriverHelpers.getValueFromWebElement(GENERAL_COMMENT_TEXT))
+        /**
+         * The following fields are set from existent contact because due to app problems we
+         * couldn't scrap them from UI
+         */
+        .dateOfLastContact(editedContact.getDateOfLastContact())
+        .dateOfFirstContact(editedContact.getDateOfFirstContact())
         .build();
   }
 

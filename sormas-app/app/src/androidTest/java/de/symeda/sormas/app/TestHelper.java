@@ -20,12 +20,13 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 
-import android.test.RenamingDelegatingContext;
+import android.content.Context;
 import android.util.Log;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.platform.app.InstrumentationRegistry;
 
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -50,21 +51,25 @@ public class TestHelper {
 	public static final String USER_UUID = "0123456789";
 	public static final String SECOND_USER_UUID = "0987654321";
 	public static final String INFORMANT_USER_UUID = "0192837465";
+	public static final String TEST_DATABASE_NAME = "test_sormas.db";
 
 	public static void initTestEnvironment(boolean setInformantAsActiveUser) {
 		// Initialize a testing context to not operate on the actual database
-		RenamingDelegatingContext context = new RenamingDelegatingContext(InstrumentationRegistry.getTargetContext(), "test_");
-		// Make sure that no database/user is still set from the last run
-		context.deleteDatabase(DatabaseHelper.DATABASE_NAME);
-		ConfigProvider.clearUserLogin();
+		Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+
 		// Initialize the testing database
-		DatabaseHelper.init(context);
+		DatabaseHelper.init(context, TEST_DATABASE_NAME);
+		// Make sure that no database/user is still set from the last run
+		DatabaseHelper.clearTables(true);
+		DatabaseHelper.clearConfigTable();
+		ConfigProvider.clearUserLogin();
 		ConfigProvider.init(context);
 
 		ConfigProvider.setServerRestUrl("http://this-is-a-test-url-that-hopefully-doesnt-exist.com");
 
 		try {
 			insertInfrastructureData();
+			insertOtherAndNoneFacilities();
 			insertUsers(setInformantAsActiveUser);
 		} catch (SQLException e) {
 			Log.e(TestHelper.class.getSimpleName(), "Could not init test environment: " + e.getMessage());
@@ -188,6 +193,7 @@ public class TestHelper {
 		facility.setName("Facility");
 		facility.setPublicOwnership(false);
 		facility.setUuid(FACILITY_UUID);
+		facility.setType(FacilityType.HOSPITAL);
 		facility.setRegion(region);
 		facility.setDistrict(district);
 		facility.setCommunity(community);
@@ -209,5 +215,23 @@ public class TestHelper {
 		secondFacility.setLatitude(12.9327697753906D);
 		secondFacility.setLongitude(10.03450965881348D);
 		DatabaseHelper.getFacilityDao().create(secondFacility);
+	}
+
+	private static void insertOtherAndNoneFacilities() throws SQLException {
+		Facility otherFacility = new Facility();
+		otherFacility.setCreationDate(new Date());
+		otherFacility.setChangeDate(new Date());
+		otherFacility.setName("Other Facility");
+		otherFacility.setPublicOwnership(false);
+		otherFacility.setUuid(FacilityDto.OTHER_FACILITY_UUID);
+		DatabaseHelper.getFacilityDao().create(otherFacility);
+
+		Facility noneFacility = new Facility();
+		noneFacility.setCreationDate(new Date());
+		noneFacility.setChangeDate(new Date());
+		noneFacility.setName("None Facility");
+		noneFacility.setPublicOwnership(false);
+		noneFacility.setUuid(FacilityDto.NONE_FACILITY_UUID);
+		DatabaseHelper.getFacilityDao().create(noneFacility);
 	}
 }

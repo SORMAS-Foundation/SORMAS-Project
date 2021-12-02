@@ -32,14 +32,14 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.region.AreaDto;
-import de.symeda.sormas.api.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.area.AreaDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.region.Country;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 
 public class ImportParserServiceTest extends AbstractBeanTest {
 
@@ -166,7 +166,7 @@ public class ImportParserServiceTest extends AbstractBeanTest {
 	public void testParseAreaFieldValue() throws IntrospectionException, ImportErrorException {
 		AreaDto area = AreaDto.build();
 		area.setName("Test Area");
-		getAreaFacade().saveArea(area);
+		getAreaFacade().save(area);
 
 		Object parsed = getImportParserService().parseValue(
 			new PropertyDescriptor(RegionDto.AREA, RegionDto.class),

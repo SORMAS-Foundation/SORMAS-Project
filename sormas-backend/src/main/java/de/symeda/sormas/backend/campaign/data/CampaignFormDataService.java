@@ -41,9 +41,9 @@ import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -99,7 +99,7 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 
 		Predicate filter = null;
 
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
 		if (jurisdictionLevel != JurisdictionLevel.NATION) {
 			switch (jurisdictionLevel) {
 			case REGION:
