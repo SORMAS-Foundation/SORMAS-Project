@@ -23,9 +23,9 @@ import org.openqa.selenium.By;
 public class EditCasePage {
   public static final By FOLLOW_UP_BUTTON = By.cssSelector("[id='tab-cases-visits'] a");
   public static final By SYMPTOMS_BUTTON = By.cssSelector("[id='tab-cases-symptoms']");
-  public static final By REGION_INPUT = By.cssSelector("#region input");
-  public static final By DISTRICT_INPUT = By.cssSelector("#district input");
-  public static final By COMMUNITY_INPUT = By.cssSelector("#community input");
+  public static final By REGION_INPUT = By.cssSelector("#responsibleRegion input");
+  public static final By DISTRICT_INPUT = By.cssSelector("#responsibleDistrict input");
+  public static final By COMMUNITY_INPUT = By.cssSelector("#responsibleCommunity input");
   public static final By PLACE_OF_STAY_SELECTED_VALUE =
       By.cssSelector("#facilityOrHome input[checked] + label");
   public static final By PLACE_DESCRIPTION_INPUT = By.cssSelector("#healthFacilityDetails");
@@ -34,7 +34,6 @@ public class EditCasePage {
   public static final By DISEASE_INPUT = By.cssSelector("#disease input");
   public static final By USER_INFORMATION =
       By.cssSelector(".v-slot-view-header .v-slot-primary div");
-  public static final By CASE_SAVED_MESSAGE = By.xpath("//*[contains(text(),'Case saved')]");
   public static final By CASE_PERSON_TAB = By.cssSelector("div#tab-cases-person");
   public static final By NEW_TASK_BUTTON = By.cssSelector("div#taskNewTask");
   public static final By EDIT_TASK_BUTTON = By.cssSelector("div[id*='edit-task']");
@@ -62,11 +61,9 @@ public class EditCasePage {
       By.cssSelector("#caseIdentificationSource div");
   public static final By PLACE_OF_STAY_OPTIONS =
       By.cssSelector("[location='facilityOrHomeLoc'] label");
-  public static final By REGION_COMBOBOX = By.cssSelector("#region div");
-  public static final By DISTRICT_COMBOBOX = By.cssSelector("#district div");
-  public static final By COMMUNITY_COMBOBOX = By.cssSelector("#community div");
-  public static final By RESPONSIBLE_JURISDICTION_OPTIONS =
-      By.cssSelector("#differentJurisdiction label");
+  public static final By REGION_COMBOBOX = By.cssSelector("#responsibleRegion div");
+  public static final By DISTRICT_COMBOBOX = By.cssSelector("#responsibleDistrict div");
+  public static final By COMMUNITY_COMBOBOX = By.cssSelector("#responsibleCommunity div");
   public static final By RESPONSIBLE_REGION_COMBOBOX = By.cssSelector("#responsibleRegion div");
   public static final By RESPONSIBLE_DISTRICT_COMBOBOX = By.cssSelector("#responsibleDistrict div");
   public static final By RESPONSIBLE_COMMUNITY_COMBOBOX =
@@ -82,7 +79,7 @@ public class EditCasePage {
   public static final By BLOOD_ORGAN_TISSUE_DONATION_IN_THE_LAST_6_MONTHS_OPTIONS =
       By.cssSelector("#bloodOrganOrTissueDonated label");
   public static final By VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX =
-      By.cssSelector("#vaccination div");
+      By.cssSelector("#vaccinationStatus div");
   public static final By RESPONSIBLE_SURVEILLANCE_OFFICER_COMBOBOX =
       By.cssSelector("#surveillanceOfficer div");
   public static final By DATE_RECEIVED_AT_DISTRICT_LEVEL_INPUT =
@@ -95,4 +92,5 @@ public class EditCasePage {
   public static final By SAVE_BUTTON = By.id("commit");
   public static final By DELETE_BUTTON = By.id("delete");
   public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
+  public static final By CASE_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
 }

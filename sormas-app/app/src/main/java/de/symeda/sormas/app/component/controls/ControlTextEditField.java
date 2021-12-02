@@ -35,7 +35,7 @@ import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
 
-import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.VisualState;
@@ -224,8 +224,9 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 				singleLine = a.getBoolean(R.styleable.ControlTextEditField_singleLine, true);
 				maxLines = a.getInt(R.styleable.ControlTextEditField_maxLines, 1);
 				textArea = a.getBoolean(R.styleable.ControlTextEditField_textArea, false);
-				maxLength =
-					a.getInt(R.styleable.ControlTextEditField_maxLength, textArea ? EntityDto.COLUMN_LENGTH_BIG : EntityDto.COLUMN_LENGTH_DEFAULT);
+				maxLength = a.getInt(
+					R.styleable.ControlTextEditField_maxLength,
+					textArea ? FieldConstraints.CHARACTER_LIMIT_BIG : FieldConstraints.CHARACTER_LIMIT_DEFAULT);
 				inputType = a.getInt(R.styleable.ControlTextEditField_inputType, InputType.TYPE_CLASS_TEXT);
 			} finally {
 				a.recycle();

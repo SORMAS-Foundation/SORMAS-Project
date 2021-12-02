@@ -28,7 +28,9 @@ public enum ContactSection
 	PERSON_INFO(R.string.caption_person_information, R.drawable.ic_person_black_24dp),
 	EPIDEMIOLOGICAL_DATA(R.string.caption_contact_epidemiological_data, R.drawable.ic_pets_black_24dp),
 	VISITS(R.string.caption_contact_visits, R.drawable.ic_recent_actors_black_24dp),
-	TASKS(R.string.caption_contact_tasks, R.drawable.ic_drawer_user_task_blue_24dp);
+	TASKS(R.string.caption_contact_tasks, R.drawable.ic_drawer_user_task_blue_24dp),
+	IMMUNIZATIONS(R.string.caption_contact_immunizations, R.drawable.ic_drawer_immunization_24dp),
+	VACCINATIONS(R.string.caption_contact_vaccinations, R.drawable.ic_drawer_vaccines_24);
 
 	private int friendlyNameResourceId;
 	private int iconResourceId;

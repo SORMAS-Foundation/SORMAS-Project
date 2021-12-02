@@ -4,9 +4,7 @@ import java.util.Locale;
 
 import com.vaadin.v7.data.util.converter.Converter;
 
-import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
 
 public class AgeAndBirthDateDtoConverterV7 implements Converter<String, AgeAndBirthDateDto> {
@@ -25,15 +23,12 @@ public class AgeAndBirthDateDtoConverterV7 implements Converter<String, AgeAndBi
 			return "";
 		}
 
-		Language userLanguage = I18nProperties.getUserLanguage();
-
 		return PersonHelper.getAgeAndBirthdateString(
 			value.getAge(),
 			value.getAgeType(),
 			value.getDateOfBirthDD(),
 			value.getDateOfBirthMM(),
-			value.getDateOfBirthYYYY(),
-			userLanguage);
+			value.getDateOfBirthYYYY());
 	}
 
 	@Override

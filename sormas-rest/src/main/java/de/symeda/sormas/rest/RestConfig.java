@@ -1,26 +1,32 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.rest;
 
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
 import javax.ws.rs.ApplicationPath;
 
+import de.symeda.sormas.api.AuthProvider;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.rest.externaljournal.ExternalVisitsResource;
+import de.symeda.sormas.rest.security.KeycloakFilter;
 import de.symeda.sormas.rest.swagger.AttributeConverter;
 import de.symeda.sormas.rest.swagger.SormasSwaggerExtensions;
 import io.swagger.v3.core.converter.ModelConverters;
@@ -37,6 +43,10 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
 import de.symeda.sormas.rest.swagger.SwaggerConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.EnumSet;
 
 /**
  * @see <a href="https://jersey.github.io/documentation/latest/index.html">Jersey documentation</a>
@@ -79,4 +89,25 @@ public class RestConfig extends ResourceConfig {
 		openApiResource.setOpenApiConfiguration(openAPIConfiguration);
 		register(openApiResource);
 	}
+
+	@WebListener
+	public static class FilterStartupListener implements ServletContextListener {
+
+		private final Logger logger = LoggerFactory.getLogger(getClass());
+
+		@Override
+		public void contextInitialized(ServletContextEvent sce) {
+			ServletContext ctx = sce.getServletContext();
+			String authenticationProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
+			if (authenticationProvider.equalsIgnoreCase(AuthProvider.KEYCLOAK)) {
+				FilterRegistration.Dynamic filterRegistration = ctx.addFilter("KeycloakFilter", KeycloakFilter.class);
+				filterRegistration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+				filterRegistration.setAsyncSupported(true);
+				logger.debug("Keycloak filter enabled");
+			} else {
+				logger.debug("Keycloak filter disabled");
+			}
+		}
+	}
+
 }

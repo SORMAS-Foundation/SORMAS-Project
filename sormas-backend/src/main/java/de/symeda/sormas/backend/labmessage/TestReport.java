@@ -1,12 +1,10 @@
 package de.symeda.sormas.backend.labmessage;
 
-import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.backend.common.CoreAdo;
-import de.symeda.sormas.backend.sample.PathogenTest;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
-import javax.persistence.CascadeType;
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -14,13 +12,13 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import java.util.Date;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.backend.common.CoreAdo;
 
 @Entity(name = TestReport.TABLE_NAME)
 @Audited
@@ -40,7 +38,6 @@ public class TestReport extends CoreAdo {
 	public static final String TEST_RESULT = "testResult";
 	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
 	public static final String TEST_RESULT_TEXT = "testResultText";
-	public static final String PATHOGEN_TEST = "pathogenTest";
 
 	private LabMessage labMessage;
 	private String testLabName;
@@ -53,8 +50,10 @@ public class TestReport extends CoreAdo {
 	private PathogenTestResultType testResult;
 	private Boolean testResultVerified;
 	private String testResultText;
-
-	private PathogenTest pathogenTest;
+	private String typingId;
+	private String externalId;
+	private String externalOrderId;
+	private Boolean preliminary;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
@@ -66,7 +65,7 @@ public class TestReport extends CoreAdo {
 		this.labMessage = labMessage;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestLabName() {
 		return testLabName;
 	}
@@ -75,7 +74,7 @@ public class TestReport extends CoreAdo {
 		this.testLabName = testLabName;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestLabExternalId() {
 		return testLabExternalId;
 	}
@@ -84,7 +83,7 @@ public class TestReport extends CoreAdo {
 		this.testLabExternalId = testLabExternalId;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestLabPostalCode() {
 		return testLabPostalCode;
 	}
@@ -93,7 +92,7 @@ public class TestReport extends CoreAdo {
 		this.testLabPostalCode = testLabPostalCode;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTestLabCity() {
 		return testLabCity;
 	}
@@ -138,7 +137,7 @@ public class TestReport extends CoreAdo {
 		this.testResultVerified = testResultVerified;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getTestResultText() {
 		return testResultText;
 	}
@@ -147,12 +146,38 @@ public class TestReport extends CoreAdo {
 		this.testResultText = testResultText;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	public PathogenTest getPathogenTest() {
-		return pathogenTest;
+	public String getTypingId() {
+		return typingId;
 	}
 
-	public void setPathogenTest(PathogenTest pathogenTest) {
-		this.pathogenTest = pathogenTest;
+	public void setTypingId(String typingId) {
+		this.typingId = typingId;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getExternalOrderId() {
+		return externalOrderId;
+	}
+
+	public void setExternalOrderId(String externalOrderId) {
+		this.externalOrderId = externalOrderId;
+	}
+
+	@Column
+	public Boolean getPreliminary() {
+		return preliminary;
+	}
+
+	public void setPreliminary(Boolean preliminary) {
+		this.preliminary = preliminary;
 	}
 }

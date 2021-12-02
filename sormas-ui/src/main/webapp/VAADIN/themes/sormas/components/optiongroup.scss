@@ -49,7 +49,7 @@
 		
 	  &.soft-required,
 	  &.v-required {
-	  	.v-radiobutton {
+	  	.v-radiobutton, .v-checkbox {
 		  border-color: $v-selection-color;
         }
       }
@@ -66,6 +66,12 @@
 	  	.v-radiobutton {
 	  	  border-color: $v-error-indicator-color;
 	  	}
+	  }
+
+	  &.v-select-optiongroup-error-info {
+		  .v-radiobutton, .v-checkbox {
+			  border-color: #00a7f5 !important;
+		  }
 	  }
 		
 	  &.v-select-optiongroup-caption-inline {
@@ -166,7 +172,11 @@
 			  }
 		  }
 	  }
-   
+
+    &.v-select-optiongroup-max-height-150 {
+        max-height: 150px;
+        overflow-y: auto;
+    }
   }
 
   .v-caption-caption-inline {

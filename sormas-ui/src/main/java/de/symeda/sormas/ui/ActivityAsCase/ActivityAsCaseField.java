@@ -92,7 +92,9 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 			ActivityAsCaseDto activityAsCaseDto = (ActivityAsCaseDto) itemId;
 			String activityAsCaseString = ActivityAsCaseType.OTHER != activityAsCaseDto.getActivityAsCaseType()
 				? activityAsCaseDto.getActivityAsCaseType().toString()
-				: activityAsCaseDto.getActivityAsCaseTypeDetails();
+				: activityAsCaseDto.getActivityAsCaseTypeDetails() != null
+					? activityAsCaseDto.getActivityAsCaseTypeDetails()
+					: ActivityAsCaseType.OTHER.toString();
 
 			return new Label(activityAsCaseString, ContentMode.HTML);
 		});
@@ -102,7 +104,7 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 			return activityAsCase.getTypeOfPlace() != null
 				? TypeOfPlace.OTHER != activityAsCase.getTypeOfPlace()
 					? activityAsCase.getTypeOfPlace().toString()
-					: activityAsCase.getTypeOfPlaceDetails()
+					: activityAsCase.getTypeOfPlaceDetails() != null ? activityAsCase.getTypeOfPlaceDetails() : TypeOfPlace.OTHER.toString()
 				: "";
 		});
 

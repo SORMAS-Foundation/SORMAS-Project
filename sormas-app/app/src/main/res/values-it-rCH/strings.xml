@@ -68,6 +68,7 @@
     <string name="action_markAllAsRead">Segna tutti come già letti</string>
     <string name="action_new">Nuovo</string>
     <string name="action_new_case">Nuovo caso</string>
+    <string name="action_new_immunization">New Immunization</string>
     <string name="action_new_campaign_form_data">New Campaign Form Data</string>
     <string name="action_new_contact">Nuovo contatto</string>
     <string name="action_new_event">Nuovo Evento</string>
@@ -79,6 +80,8 @@
     <string name="action_open_prescription">Apri prescrizione</string>
     <string name="action_open_resulting_case">Apri caso risultato</string>
     <string name="action_open_source_case">Aprire il caso originale</string>
+    <string name="action_open_linked_case">Open Linked Case</string>
+    <string name="action_link_case">Link Case</string>
     <string name="action_open_syncLog">Conflitti di sincronizzazione</string>
     <string name="action_options">Opzioni</string>
     <string name="action_pick_gps">Registrare le coordinate GPS per questo indirizzo</string>
@@ -116,6 +119,8 @@
     <string name="action_kex_lbds">LBDS Key Exchange</string>
     <string name="action_sync_person_lbds">LBDS Sync Persons</string>
     <string name="action_sync_case_lbds">LBDS Sync Cases</string>
+    <string name="action_save_vaccination">Save Vaccination</string>
+    <string name="action_edit_vaccination">Edit Vaccination</string>
     <string name="caption_address">Indirizzo</string>
     <string name="caption_age">Età</string>
     <string name="caption_attended_by">Eseguito da</string>
@@ -132,6 +137,8 @@
     <string name="caption_case_samples">Campioni test</string>
     <string name="caption_case_tasks">Attività dei casi</string>
     <string name="caption_case_events">Eventi Caso</string>
+    <string name="caption_case_immunizations">Case Immunizations</string>
+    <string name="caption_case_vaccinations">Case Vaccinations</string>
     <string name="caption_case_treatments">Trattamenti</string>
     <string name="caption_case_similarity_create">Crea nuovo caso</string>
     <string name="caption_changed_data_lost">Dati modificati persi durante la ri-sincronizzazione.</string>
@@ -147,6 +154,8 @@
     <string name="caption_contact_tasks">Attivita di contatto</string>
     <string name="caption_contact_epidemiological_data">Dati epidemiologici</string>
     <string name="caption_contact_visits">Informazioni addizionali</string>
+    <string name="caption_contact_immunizations">Contact Immunizations</string>
+    <string name="caption_contact_vaccinations">Contact Vaccinations</string>
     <string name="caption_converted_to_case">Convertito in caso</string>
     <string name="caption_date_of_birth">Data di nascita (anno/mese /giorno)</string>
     <string name="caption_date_of_sampling">Data del campionamento</string>
@@ -159,6 +168,8 @@
     <string name="caption_event_period">Data dell\'evento</string>
     <string name="caption_event_information">Informazioni evento</string>
     <string name="caption_event_participants">Persone coinvolte</string>
+    <string name="caption_event_participant_immunizations">Event participant Immunizations</string>
+    <string name="caption_event_participant_vaccinations">Event participant Vaccinations</string>
     <string name="caption_event_tasks">Attività Evento</string>
     <string name="caption_executed_by">Eseguito da</string>
     <string name="caption_facility_or_home">Luogo di soggiorno</string>
@@ -231,6 +242,20 @@
     <string name="caption_year">Anno</string>
     <string name="caption_latest_submission">Ultimo invio: %1$s</string>
     <string name="caption_settings_debug_url_lbds">LBDS Server Debug URL</string>
+    <string name="caption_immunization_information">Immunization details</string>
+    <string name="caption_immunization_vaccinations">Vaccinations</string>
+    <string name="caption_vaccination_information">Vaccination Information</string>
+    <string name="caption_new_immunization">New Immunization</string>
+    <string name="caption_overwrite_immunization_management_status">Overwrite immunization management status</string>
+    <string name="caption_searchCase">Search case</string>
+    <string name="caption_aggregate_new_cases">New cases</string>
+    <string name="caption_aggregate_lab_confirmations">Lab confirmations</string>
+    <string name="caption_aggregate_deaths">Deaths</string>
+    <string name="caption_aggregate_new_cases_abbr">C</string>
+    <string name="caption_aggregate_lab_confirmations_abbr">L</string>
+    <string name="caption_aggregate_deaths_abbr">D</string>
+    <string name="caption_start_date_existing">Existing start date</string>
+    <string name="caption_end_date_existing">Existing end date</string>
     <string name="confirmation_action">Sei sicuro?</string>
     <string name="confirmation_delete">Vuoi davvero cancellare questa registrazione?</string>
     <string name="confirmation_pick_gps">Siete in questo posto in questo momento?</string>
@@ -306,6 +331,7 @@
     <string name="heading_events_list">Elenco Eventi</string>
     <string name="heading_existing_persons">Persone Esistenti</string>
     <string name="heading_existing_cases">Casi Esistenti</string>
+    <string name="heading_existing_immunizations">Existing Immunizations</string>
     <string name="heading_existing_events">Eventi Esistenti</string>
     <string name="heading_gathering">Raduni</string>
     <string name="heading_gps_activation">Attiva GPS</string>
@@ -327,6 +353,7 @@
     <string name="heading_person_contact_detail">Person contact details</string>
     <string name="heading_pick_or_create_person">Scegli o Crea Persona</string>
     <string name="heading_pick_or_create_case">Scegli o crea un caso</string>
+    <string name="heading_pick_or_create_immunization">Pick or Create an Immunization</string>
     <string name="heading_pick_or_create_event">Scegli o crea un evento</string>
     <string name="heading_prescription">Prescrizione</string>
     <string name="heading_prescription_edit">Modifica Prescrizione</string>
@@ -341,6 +368,10 @@
     <string name="heading_sample_read">Lettura Campione</string>
     <string name="heading_sample_summary">Riepilogo Campione</string>
     <string name="heading_samples_list">Elenco Campioni</string>
+    <string name="heading_immunization_edit">Edit Immunization</string>
+    <string name="heading_immunization_new">New Immunization</string>
+    <string name="heading_immunization_read">Read Immunization</string>
+    <string name="heading_immunizations_list">Immunization Listing</string>
     <string name="heading_pathogen_test_edit">Modifica Test Patogeno</string>
     <string name="heading_pathogen_test_new">Nuovo Test Patogeno</string>
     <string name="heading_pathogen_test_read">Leggi Test Patogeno</string>
@@ -381,6 +412,10 @@
     <string name="heading_campaign_form_data_summary">Campaign Data Summary</string>
     <string name="heading_campaign_form_meta_select">Select Campaign Form</string>
     <string name="heading_case_place_of_stay">Place of stay</string>
+    <string name="heading_vaccination">Vaccination</string>
+    <string name="heading_vaccination_edit">Edit Vaccination</string>
+    <string name="heading_vaccination_new">New Vaccination</string>
+    <string name="heading_search_for_case">Search specific case</string>
     <string name="hint_add_to_empty_list">Aggiungi una nuova voce premendo il simbolo \"+\" in alto a destra.</string>
     <string name="hint_clear">Elimina tutto</string>
     <string name="hint_create_pin">Scegli un PIN a quattro cifre che utilizzerai per autenticarti ogni volta che apri l\'app SORMAS.</string>
@@ -445,12 +480,14 @@
     <string name="info_case_creation_mark_check_box">Questo caso è un <b>nuovo caso</b> e <b>non un duplicato</b> di uno dei casi di cui sopra</string>
     <string name="info_event_creation_mark_check_box">Questo evento è un <b>nuovo evento</b> e <b>non un duplicato</b> di uno degli eventi di cui sopra</string>
     <string name="info_pick_campaign_form_meta">Please select a campaign form for which you want to enter data!</string>
+    <string name="info_immunization_override_mark_check_box">Override existing immunization&gt;</string>
     <string name="main_menu_cases">Casi</string>
     <string name="main_menu_contacts">Contatti</string>
     <string name="main_menu_dashboard">Dashboard</string>
     <string name="main_menu_events">Eventi</string>
     <string name="main_menu_reports">Rapporti</string>
     <string name="main_menu_samples">Campioni</string>
+    <string name="main_menu_immunizations">Immunizations</string>
     <string name="main_menu_settings">Impostazioni</string>
     <string name="main_menu_tasks">Attività</string>
     <string name="main_menu_aggregate_reports">mSERS</string>
@@ -514,6 +551,7 @@
     <string name="tag_row_item_select_or_create_person">rowItemSelectOrCreatePerson</string>
     <string name="tag_row_item_select_or_create_event">rowItemSelectOrCreateEvent</string>
     <string name="tag_row_item_case_pick_or_create">rowItemPickOrCreatePerson</string>
+    <string name="tag_row_item_immunization_pick_or_create">rowItemImmunizationPickOrCreatePerson</string>
     <string name="time_future_almost_two_years">entro quasi due anni</string>
     <string name="time_future_one_day">domani</string>
     <string name="time_future_one_hour">entro circa un\'ora</string>
@@ -555,6 +593,7 @@
     <string name="validation_visit_date_time_after_followup">La visita non può durare più di 30 giorni dopo la fine della durata del follow-up.</string>
     <string name="validation_visit_date_time_before_contact_date">La visita non può essere superiore a 30 giorni prima dell\'ultima data di contatto.</string>
     <string name="validation_visit_date_time_before_report_date">La visita non può essere più di 30 giorni prima della data del rapporto di contatto.</string>
+    <string name="value_unknown">Unknown</string>
     <string name="value_age_unknown">Età N/A</string>
     <string name="value_blood_pressure_unknown">Pressione sanguigna N/A</string>
     <string name="value_case_uuid_unknown">Caso ID N/A</string>
@@ -606,4 +645,7 @@
     <string name="scan_field_sample_id">Scansiona id campione di campo</string>
     <string name="caption_facility_type_group">Categoria della struttura</string>
     <string name="caption_facility_type">Tipo di struttura</string>
+    <string name="value_vaccine_date_unknown">Vaccination Date N/A</string>
+    <string name="value_vaccine_name_unknown">Vaccine N/A</string>
+    <string name="value_vaccine_manufacturer_unknown">Manufacturer N/A</string>
 </resources>

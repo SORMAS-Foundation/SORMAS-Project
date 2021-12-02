@@ -27,6 +27,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
@@ -41,17 +42,17 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.eventimport.EventImportEntities;
 import de.symeda.sormas.api.event.eventimport.EventImportFacade;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -59,14 +60,14 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventGroupFacadeEjb.EventGroupFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportCellData;
 import de.symeda.sormas.backend.importexport.ImportErrorException;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportHelper;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless(name = "EventImportFacade")
@@ -133,7 +134,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 	}
 
 	@Override
-	public ImportLineResultDto<EventImportEntities> saveImportedEntities(EventImportEntities entities) {
+	public ImportLineResultDto<EventImportEntities> saveImportedEntities(@Valid EventImportEntities entities) {
 
 		EventDto event = entities.getEvent();
 		List<EventParticipantDto> eventParticipants = entities.getEventParticipants();
@@ -162,6 +163,11 @@ public class EventImportFacadeEjb implements EventImportFacade {
 	}
 
 	private ImportLineResultDto<EventImportEntities> validateEntities(EventImportEntities entities) {
+		ImportLineResultDto<EventImportEntities> validationResult = importFacade.validateConstraints(entities);
+		if (validationResult.isError()) {
+			return validationResult;
+		}
+
 		try {
 			eventFacade.validate(entities.getEvent());
 			for (EventParticipantDto eventParticipant : entities.getEventParticipants()) {
@@ -312,7 +318,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 					if (importFacade.executeDefaultInvoke(pd, currentElement, entry, entryHeaderPath, true)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(EventReferenceDto.class)) {
-						EventDto referencedDto = eventFacade.getEventByUuid(entry);
+						EventDto referencedDto = eventFacade.getEventByUuid(entry, false);
 						if (referencedDto == null) {
 							throw new ImportErrorException(
 								I18nProperties.getValidationError(

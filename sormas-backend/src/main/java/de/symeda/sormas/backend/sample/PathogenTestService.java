@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.sample;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -28,11 +29,22 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.sample.PathogenTestCriteria;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -99,6 +111,43 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	public List<PathogenTest> getIndexList(PathogenTestCriteria pathogenTestCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PathogenTest> cq = cb.createQuery(getElementClass());
+		Root<PathogenTest> from = cq.from(getElementClass());
+		Predicate filter = null;
+		if (pathogenTestCriteria != null) {
+			filter = buildCriteriaFilter(pathogenTestCriteria, cb, from);
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.desc(from.get(PathogenTest.CHANGE_DATE)));
+		cq.distinct(true);
+
+		List<Order> order = new ArrayList<>();
+		if (sortProperties != null && sortProperties.size() > 0) {
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case PathogenTest.UUID:
+				case PathogenTest.SAMPLE:
+				case PathogenTest.TEST_DATE_TIME:
+					expression = from.get(sortProperty.propertyName);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+		}
+		order.add(cb.desc(from.get(PathogenTest.UUID)));
+		cq.orderBy(order);
+
+		return QueryHelper.getResultList(em, cq, first, max);
+	}
+
 	public List<PathogenTest> getAllBySample(Sample sample) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -163,6 +212,27 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		return em.createQuery(cq).getSingleResult();
 	}
 
+	public long count(PathogenTestCriteria pathogenTestCriteria) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<PathogenTest> pathogenTestRoot = cq.from(PathogenTest.class);
+
+		Predicate filter = createDefaultFilter(cb, pathogenTestRoot);
+
+		if (pathogenTestCriteria != null) {
+			Predicate criteriaFilter = buildCriteriaFilter(pathogenTestCriteria, cb, pathogenTestRoot);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.select(cb.countDistinct(pathogenTestRoot));
+		return em.createQuery(cq).getSingleResult();
+	}
+
 	public List<PathogenTest> getBySampleUuids(List<String> sampleUuids, boolean ordered) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -183,6 +253,17 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 
 	public List<PathogenTest> getBySampleUuid(String sampleUuid, boolean ordered) {
 		return getBySampleUuids(Collections.singletonList(sampleUuid), ordered);
+	}
+
+	public Predicate buildCriteriaFilter(PathogenTestCriteria pathogenTestCriteria, CriteriaBuilder cb, Root<PathogenTest> from) {
+		Predicate filter = createActiveTestsFilter(cb, from);
+
+		if (pathogenTestCriteria.getSample() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.get(PathogenTest.SAMPLE).get(Sample.UUID), pathogenTestCriteria.getSample().getUuid()));
+		}
+
+		return filter;
 	}
 
 	public List<String> getDeletedUuidsSince(Date since) {

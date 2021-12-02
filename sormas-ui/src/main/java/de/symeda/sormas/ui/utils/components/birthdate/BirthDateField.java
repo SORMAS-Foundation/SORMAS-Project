@@ -34,7 +34,10 @@ public class BirthDateField extends CustomField<BirthDateDto> {
 
 	@Override
 	protected Component initContent() {
-		setValue(new BirthDateDto());
+		if (getValue() == null) {
+			setValue(new BirthDateDto());
+		}
+
 		HorizontalLayout layout = new HorizontalLayout();
 
 		dateOfBirthYear.setId("dateOfBirthYear");

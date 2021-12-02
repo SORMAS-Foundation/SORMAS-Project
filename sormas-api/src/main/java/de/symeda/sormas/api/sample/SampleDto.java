@@ -20,20 +20,27 @@ package de.symeda.sormas.api.sample;
 import java.util.Date;
 import java.util.Set;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
-public class SampleDto extends PseudonymizableDto implements SormasToSormasEntityDto {
+public class SampleDto extends PseudonymizableDto implements SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -6975445672442728938L;
 
@@ -73,7 +80,9 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasEntit
 	private CaseReferenceDto associatedCase;
 	private ContactReferenceDto associatedContact;
 	private EventParticipantReferenceDto associatedEventParticipant;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String labSampleID;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String fieldSampleID;
 	@Required
 	private Date sampleDateTime;
@@ -83,8 +92,12 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasEntit
 	@Required
 	private UserReferenceDto reportingUser;
 	@SensitiveData
+	@Min(value = -90, message = Validations.numberTooSmall)
+	@Max(value = 90, message = Validations.numberTooBig)
 	private Double reportLat;
 	@SensitiveData
+	@Min(value = -180, message = Validations.numberTooSmall)
+	@Max(value = 180, message = Validations.numberTooBig)
 	private Double reportLon;
 
 	private Float reportLatLonAccuracy;
@@ -92,21 +105,26 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasEntit
 	@Required
 	private SampleMaterial sampleMaterial;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String sampleMaterialText;
 	@Required
 	private SamplePurpose samplePurpose;
 
 	private FacilityReferenceDto lab;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String labDetails;
 	private Date shipmentDate;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String shipmentDetails;
 	private Date receivedDate;
 	private SpecimenCondition specimenCondition;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String noTestPossibleReason;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String comment;
 	private SampleSource sampleSource;
 	private SampleReferenceDto referredTo;
@@ -118,13 +136,16 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasEntit
 	private Boolean additionalTestingRequested;
 	private Set<PathogenTestType> requestedPathogenTests;
 	private Set<AdditionalTestType> requestedAdditionalTests;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String requestedOtherPathogenTests;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String requestedOtherAdditionalTests;
 
 	private SamplingReason samplingReason;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String samplingReasonDetails;
-
+	@Valid
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
 	private boolean ownershipHandedOver;
 
@@ -447,7 +468,7 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasEntit
 		return sample;
 	}
 
-	public static SampleDto buildReferral(UserReferenceDto userRef, SampleDto referredSample) {
+	public static SampleDto buildReferralDto(UserReferenceDto userRef, SampleDto referredSample) {
 
 		final SampleDto sample;
 		final CaseReferenceDto associatedCase = referredSample.getAssociatedCase();
@@ -460,17 +481,35 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasEntit
 		} else {
 			sample = build(userRef, associatedEventParticipant);
 		}
-		sample.setSampleDateTime(referredSample.getSampleDateTime());
-		sample.setSampleMaterial(referredSample.getSampleMaterial());
-		sample.setSampleMaterialText(referredSample.getSampleMaterialText());
-		sample.setSampleSource(referredSample.getSampleSource());
-		sample.setPathogenTestingRequested(referredSample.getPathogenTestingRequested());
-		sample.setAdditionalTestingRequested(referredSample.getAdditionalTestingRequested());
-		sample.setRequestedPathogenTests(referredSample.getRequestedPathogenTests());
-		sample.setRequestedAdditionalTests(referredSample.getRequestedAdditionalTests());
-		sample.setPathogenTestResult(PathogenTestResultType.PENDING);
+		migrateAttributesOfPhysicalSample(referredSample, sample);
 
 		return sample;
+	}
+
+	/**
+	 * The physical sample is neither the source, nor the target. This method is about migrating the attributes that belong to the real
+	 * (physical) sample out there in the labs.
+	 * Source and target should both refer to the physical sample, but have different values for some attributes. For example, the
+	 * specimenCondition may be different in source and target.
+	 * In one lab (source), the specimenCondition may be ADEQUATE. But then during transport to another lab (target) the specimenCondition
+	 * can change to NOT_ADEQUATE.
+	 *
+	 * In contrast, the attributes of the physical sample don't change (e.g. samplingReason) and thus should be migrated when a sample
+	 * referral is created in SORMAS.
+	 */
+	private static void migrateAttributesOfPhysicalSample(SampleDto source, SampleDto target) {
+		target.setSampleDateTime(source.getSampleDateTime());
+		target.setSampleMaterial(source.getSampleMaterial());
+		target.setSampleMaterialText(source.getSampleMaterialText());
+		target.setSampleSource(source.getSampleSource());
+		target.setPathogenTestingRequested(source.getPathogenTestingRequested());
+		target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
+		target.setRequestedPathogenTests(source.getRequestedPathogenTests());
+		target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
+		target.setFieldSampleID(source.getFieldSampleID());
+		target.setSamplingReason(source.getSamplingReason());
+		target.setSamplingReasonDetails(source.getSamplingReasonDetails());
+		target.setSamplePurpose(source.getSamplePurpose());
 	}
 
 	@ImportIgnore
@@ -502,5 +541,10 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasEntit
 
 	public SampleReferenceDto toReference() {
 		return new SampleReferenceDto(getUuid());
+	}
+
+	@Override
+	public SampleDto clone() throws CloneNotSupportedException {
+		return (SampleDto) super.clone();
 	}
 }

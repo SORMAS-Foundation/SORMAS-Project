@@ -20,7 +20,7 @@ package de.symeda.sormas.api.report;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 public class WeeklyReportOfficerSummaryDto implements Serializable {

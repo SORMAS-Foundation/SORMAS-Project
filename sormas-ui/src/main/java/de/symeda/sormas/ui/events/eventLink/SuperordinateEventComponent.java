@@ -68,7 +68,8 @@ public class SuperordinateEventComponent extends VerticalLayout {
 
 		if (subordinateEvent.getSuperordinateEvent() != null) {
 			addComponent(
-				new SuperordinateEventInfoLayout(FacadeProvider.getEventFacade().getEventByUuid(subordinateEvent.getSuperordinateEvent().getUuid())));
+				new SuperordinateEventInfoLayout(
+					FacadeProvider.getEventFacade().getEventByUuid(subordinateEvent.getSuperordinateEvent().getUuid(), false)));
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT)) {
 				Button btnUnlinkEvent = ButtonHelper.createIconButtonWithCaption(

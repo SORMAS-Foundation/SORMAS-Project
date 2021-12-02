@@ -48,7 +48,7 @@ public final class DtoHelper {
 		if (checkChangeDate
 			&& entity.getChangeDate() != null
 			&& (dto.getChangeDate() == null || dto.getChangeDate().getTime() + CHANGE_DATE_TOLERANCE_MS < entity.getChangeDate().getTime())) {
-			throw new OutdatedEntityException(dto.getUuid(), dto.getClass());
+			throw new OutdatedEntityException(dto.getUuid(), dto.getClass(), dto.getChangeDate(), entity.getChangeDate());
 		}
 	}
 
@@ -145,6 +145,8 @@ public final class DtoHelper {
 		return target;
 	}
 
+	// todo this really should return void. Taking a target/receiver argument and then return it anyways does not make sense
+	// FIXME(#6880)
 	public static <T extends AbstractDomainObject> T fillOrBuildEntity(EntityDto source, T target, Supplier<T> newEntity, boolean checkChangeDate) {
 		if (target == null) {
 			target = newEntity.get();

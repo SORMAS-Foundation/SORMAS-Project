@@ -16,100 +16,35 @@
 package de.symeda.sormas.ui.travelentry.travelentrylink;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.CountryHelper;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
+import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
-public class TravelEntryListComponent extends VerticalLayout {
+public class TravelEntryListComponent extends SideComponent {
 
-	public static final String TRAVEL_ENTRIES_LOC = "travelEntries";
+	public TravelEntryListComponent(TravelEntryListCriteria travelEntryListCriteria) {
+		super(I18nProperties.getString(Strings.entityTravelEntries));
 
-	private TravelEntryList travelEntryList;
-
-	private TravelEntryCriteria travelEntryCriteria;
-	private CaseReferenceDto caseReferenceDto;
-	private PersonReferenceDto personReferenceDto;
-
-	public TravelEntryListComponent(CaseReferenceDto caseReferenceDto, PersonReferenceDto personReferenceDto) {
-
-		this.caseReferenceDto = caseReferenceDto;
-		this.personReferenceDto = personReferenceDto;
-		travelEntryCriteria = new TravelEntryCriteria();
-
-		if (caseReferenceDto != null) {
-			travelEntryCriteria.caze(caseReferenceDto);
-		}
-		if (personReferenceDto != null) {
-			travelEntryCriteria.person(personReferenceDto);
-		}
-
-		setWidth(100, Unit.PERCENTAGE);
-		setMargin(false);
-		setSpacing(false);
-
-		HorizontalLayout componentHeader = new HorizontalLayout();
-		componentHeader.setMargin(false);
-		componentHeader.setSpacing(false);
-		componentHeader.setWidth(100, Unit.PERCENTAGE);
-		addComponent(componentHeader);
-
-		travelEntryList = new TravelEntryList(travelEntryCriteria);
-		addComponent(travelEntryList);
-		travelEntryList.reload();
-
-		Label travelEntryHeader = new Label(I18nProperties.getString(Strings.entityTravelEntries));
-		travelEntryHeader.addStyleName(CssStyles.H3);
-		componentHeader.addComponent(travelEntryHeader);
-
-		if (caseReferenceDto != null && UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_CREATE)) {
+		UserProvider currentUser = UserProvider.getCurrent();
+		if (travelEntryListCriteria.getCaseReferenceDto() != null && currentUser != null && currentUser.hasUserRight(UserRight.TRAVEL_ENTRY_CREATE)) {
 			Button createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.travelEntryNewTravelEntry));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(e -> ControllerProvider.getTravelEntryController().create(caseReferenceDto, SormasUI::refreshView));
-			componentHeader.addComponent(createButton);
-			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
+			createButton.addClickListener(e -> ControllerProvider.getTravelEntryController().create(travelEntryListCriteria.getCaseReferenceDto()));
+			addCreateButton(createButton);
 		}
-	}
 
-	public static void addTravelEntryListComponent(CustomLayout layout, PersonReferenceDto personReferenceDto) {
-		addTravelEntryListComponent(layout, null, personReferenceDto);
-	}
-
-	public static void addTravelEntryListComponent(CustomLayout layout, CaseReferenceDto caseReferenceDto) {
-		addTravelEntryListComponent(layout, caseReferenceDto, null);
-	}
-
-	private static void addTravelEntryListComponent(CustomLayout layout, CaseReferenceDto caseReferenceDto, PersonReferenceDto personReferenceDto) {
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
-
-			VerticalLayout travelEntriesLayout = new VerticalLayout();
-			travelEntriesLayout.setMargin(false);
-			travelEntriesLayout.setSpacing(false);
-
-			TravelEntryListComponent travelEntryList = new TravelEntryListComponent(caseReferenceDto, personReferenceDto);
-			travelEntryList.addStyleName(CssStyles.SIDE_COMPONENT);
-			travelEntriesLayout.addComponent(travelEntryList);
-			layout.addComponent(travelEntriesLayout, TRAVEL_ENTRIES_LOC);
-		}
+		TravelEntryList travelEntryList = new TravelEntryList(travelEntryListCriteria);
+		addComponent(travelEntryList);
+		travelEntryList.reload();
 	}
 }

@@ -29,6 +29,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
@@ -46,9 +47,6 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.caseimport.CaseImportEntities;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -57,13 +55,16 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
-import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
-import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -73,16 +74,16 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.EnumService;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportCellData;
 import de.symeda.sormas.backend.importexport.ImportErrorException;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportHelper;
-import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
@@ -150,7 +151,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			return ImportLineResultDto.duplicateResult(entities);
 		}
 
-		ImportLineResultDto<CaseImportEntities> result = saveImportedEntities(entities);
+		ImportLineResultDto<CaseImportEntities> result = saveImportedEntities(entities, false);
 
 		return result;
 	}
@@ -161,7 +162,8 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		String caseUuid,
 		String[] values,
 		String[] entityClasses,
-		String[][] entityPropertyPaths)
+		String[][] entityPropertyPaths,
+		boolean skipPersonValidation)
 		throws InvalidColumnException {
 
 		final PersonDto person;
@@ -185,11 +187,11 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			return importResult;
 		}
 
-		return saveImportedEntities(entities);
+		return saveImportedEntities(entities, skipPersonValidation);
 	}
 
 	@Override
-	public ImportLineResultDto<CaseImportEntities> saveImportedEntities(CaseImportEntities entities) {
+	public ImportLineResultDto<CaseImportEntities> saveImportedEntities(@Valid CaseImportEntities entities, boolean skipPersonValidation) {
 
 		CaseDataDto caze = entities.getCaze();
 		PersonDto person = entities.getPerson();
@@ -206,7 +208,8 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 				return ImportLineResultDto.errorResult(I18nProperties.getString(Strings.messageEpidNumberWarning));
 			}
 
-			PersonDto savedPerson = personFacade.savePerson(person);
+//			PersonDto savedPerson = personFacade.savePerson(person);
+			final PersonDto savedPerson = personFacade.savePerson(person, skipPersonValidation);
 			caze.setPerson(savedPerson.toReference());
 			// Workaround: Reset the change date to avoid OutdatedEntityExceptions
 			// Should be changed when doing #2265
@@ -226,6 +229,12 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 	}
 
 	private ImportLineResultDto<CaseImportEntities> validateEntities(CaseImportEntities entities) {
+
+		ImportLineResultDto<CaseImportEntities> validationResult = importFacade.validateConstraints(entities);
+		if (validationResult.isError()) {
+			return validationResult;
+		}
+
 		try {
 			personFacade.validate(entities.getPerson());
 			caseFacade.validate(entities.getCaze());
@@ -336,6 +345,9 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		if (pathogenTests.size() > 0 && currentPathogenTestHasEntries.isFalse()) {
 			pathogenTests.remove(pathogenTests.size() - 1);
 		}
+
+		// Sanitize non-HOME address
+		PersonHelper.sanitizeNonHomeAddress(entities.getPerson());
 
 		return result;
 	}

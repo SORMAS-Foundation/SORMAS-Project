@@ -15,16 +15,21 @@
 
 package de.symeda.sormas.app.backend.event;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.app.backend.user.User;
 
@@ -41,6 +46,8 @@ public class EventParticipant extends PseudonymizableAdo {
 	public static final String PERSON = "person";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	public static final String RESULTING_CASE_UUID = "resultingCaseUuid";
+	public static final String RESPONSIBLE_REGION = "responsibleRegion";
+	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User reportingUser;
@@ -51,21 +58,25 @@ public class EventParticipant extends PseudonymizableAdo {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false)
 	private Person person;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String involvementDescription;
 
 	@DatabaseField
 	private String resultingCaseUuid;
-
-	// TODO [vaccination info] integrate vaccination info
-//	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-//	private VaccinationInfo vaccinationInfo;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	@DatabaseField
 	private boolean ownershipHandedOver;
 
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Region responsibleRegion;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private District responsibleDistrict;
+
+	@Enumerated(EnumType.STRING)
+	private VaccinationStatus vaccinationStatus;
 
 	public User getReportingUser() {
 		return reportingUser;
@@ -129,14 +140,13 @@ public class EventParticipant extends PseudonymizableAdo {
 		this.resultingCaseUuid = resultingCaseUuid;
 	}
 
-	// TODO [vaccination info] integrate vaccination info
-//	public VaccinationInfo getVaccinationInfo() {
-//		return vaccinationInfo;
-//	}
-//
-//	public void setVaccinationInfo(VaccinationInfo vaccinationInfo) {
-//		this.vaccinationInfo = vaccinationInfo;
-//	}
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
+	}
+
+	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
+		this.vaccinationStatus = vaccinationStatus;
+	}
 
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
@@ -152,5 +162,21 @@ public class EventParticipant extends PseudonymizableAdo {
 
 	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
 		this.ownershipHandedOver = ownershipHandedOver;
+	}
+
+	public Region getResponsibleRegion() {
+		return responsibleRegion;
+	}
+
+	public void setResponsibleRegion(Region responsibleRegion) {
+		this.responsibleRegion = responsibleRegion;
+	}
+
+	public District getResponsibleDistrict() {
+		return responsibleDistrict;
+	}
+
+	public void setResponsibleDistrict(District responsibleDistrict) {
+		this.responsibleDistrict = responsibleDistrict;
 	}
 }

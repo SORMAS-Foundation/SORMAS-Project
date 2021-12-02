@@ -1,12 +1,23 @@
-@UI @Sanity @Case @Listing
-Feature: Contacts end to end tests
+@UI @Sanity @Case
+Feature: Cases using Line Listing feature
 
-  Scenario: Create cases using Line Listing feature and validate the entries.
-    Given I log in with the user
+  Scenario: Create cases using Line Listing feature
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    Then I click on Case Line Listing button
+    And I create a new case in line listing feature popup
+    And I save the new case using line listing feature
+    Then I click on the Cases button from navbar
+    And I check that case created from Line Listing is saved and displayed in results grid
+
+  Scenario: Create contact using Line Listing feature
+    Given I log in with National User
     When I click on the Contacts button from navbar
     Then I click on Line Listing button
     And I create a new Contact with specific data through Line Listing
-    Then I click on Add Line button and fill all the details in new line
-    And I click on save
+    And I save the new contact using line listing feature
     Then I click on the Contacts button from navbar
-    And I am checking all data created from Line Listing option is saved and displayed
+    And I check that contact created from Line Listing is saved and displayed in results grid
+
+
+

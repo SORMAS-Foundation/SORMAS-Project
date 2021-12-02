@@ -1,16 +1,24 @@
 package de.symeda.sormas.api.campaign.form;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.campaign.data.translation.TranslationElement;
+import de.symeda.sormas.api.i18n.Validations;
 
 public class CampaignFormTranslations implements Serializable {
 
 	private static final long serialVersionUID = 8326680921734712660L;
 
+	@Size(max = CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String languageCode;
+	@Valid
 	private List<TranslationElement> translations;
 
 	public String getLanguageCode() {

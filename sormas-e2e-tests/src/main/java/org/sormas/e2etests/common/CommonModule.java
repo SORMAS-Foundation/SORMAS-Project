@@ -31,10 +31,10 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.Properties;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import lombok.SneakyThrows;
 import org.assertj.core.api.SoftAssertions;
+import org.sormas.e2etests.enums.TestDataUser;
 import org.sormas.e2etests.ui.DriverManager;
 
 public class CommonModule extends PrivateModule {
@@ -89,8 +89,11 @@ public class CommonModule extends PrivateModule {
 
   @Provides
   @Exposed
-  RequestSpecification provideRestAssured(
-      @Named("REST_USER") String userName, @Named("REST_PASSWORD") String userPassword) {
-    return RestAssured.given().auth().preemptive().basic(userName, userPassword);
+  RequestSpecification provideRestAssured() {
+    return RestAssured.given()
+        .auth()
+        .preemptive()
+        .basic(
+            TestDataUser.REST_AUTOMATION.getUsername(), TestDataUser.REST_AUTOMATION.getPassword());
   }
 }

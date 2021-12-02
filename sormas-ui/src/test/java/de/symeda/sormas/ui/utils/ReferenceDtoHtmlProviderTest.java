@@ -5,7 +5,7 @@ import static org.junit.Assert.assertFalse;
 import org.junit.Test;
 
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.region.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 
 public class ReferenceDtoHtmlProviderTest {
 

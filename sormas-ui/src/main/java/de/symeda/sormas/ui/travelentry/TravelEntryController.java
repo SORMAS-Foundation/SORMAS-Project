@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.travelentry;
 
-import javax.naming.CannotProceedException;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -10,7 +8,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -30,9 +27,9 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.travelentry.components.TravelEntryCreateForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import de.symeda.sormas.ui.utils.ViewMode;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
 public class TravelEntryController {
 
@@ -42,12 +39,12 @@ public class TravelEntryController {
 		navigator.addView(TravelEntryPersonView.VIEW_NAME, TravelEntryPersonView.class);
 	}
 
-	public void create(CaseReferenceDto caseReferenceDto, Runnable callback) {
-		CommitDiscardWrapperComponent<TravelEntryCreateForm> travelEntryCreateComponent = getTravelEntryCreateComponent(caseReferenceDto, callback);
+	public void create(CaseReferenceDto caseReferenceDto) {
+		CommitDiscardWrapperComponent<TravelEntryCreateForm> travelEntryCreateComponent = getTravelEntryCreateComponent(caseReferenceDto);
 		VaadinUiUtil.showModalPopupWindow(travelEntryCreateComponent, I18nProperties.getString(Strings.headingCreateNewTravelEntry));
 	}
 
-	private CommitDiscardWrapperComponent<TravelEntryCreateForm> getTravelEntryCreateComponent(CaseReferenceDto caseReferenceDto, Runnable callback) {
+	private CommitDiscardWrapperComponent<TravelEntryCreateForm> getTravelEntryCreateComponent(CaseReferenceDto caseReferenceDto) {
 
 		TravelEntryCreateForm createForm = new TravelEntryCreateForm();
 		TravelEntryDto travelEntry = TravelEntryDto.build(null);
@@ -92,14 +89,12 @@ public class TravelEntryController {
 							if (selectedPerson != null) {
 								dto.setPerson(selectedPerson);
 								FacadeProvider.getTravelEntryFacade().save(dto);
+								navigateToTravelEntry(dto.getUuid());
 							}
 						}, true);
 				} else {
 					FacadeProvider.getTravelEntryFacade().save(dto);
-				}
-
-				if (callback != null) {
-					callback.run();
+					navigateToTravelEntry(dto.getUuid());
 				}
 			}
 		});
@@ -112,10 +107,7 @@ public class TravelEntryController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
-	public CommitDiscardWrapperComponent<TravelEntryDataForm> getTravelEntryDataEditComponent(
-		String travelEntryUuid,
-		final ViewMode viewMode,
-		boolean isPseudonymized) {
+	public CommitDiscardWrapperComponent<TravelEntryDataForm> getTravelEntryDataEditComponent(String travelEntryUuid) {
 
 		TravelEntryDto travelEntry = findTravelEntry(travelEntryUuid);
 
@@ -127,16 +119,12 @@ public class TravelEntryController {
 			UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_EDIT),
 			travelEntryEditForm.getFieldGroup());
 
-		editComponent.addCommitListener(new CommitDiscardWrapperComponent.CommitListener() {
-
-			@Override
-			public void onCommit() throws CannotProceedException {
-				if (!travelEntryEditForm.getFieldGroup().isModified()) {
-					TravelEntryDto travelEntryDto = travelEntryEditForm.getValue();
-					FacadeProvider.getTravelEntryFacade().save(travelEntryDto);
-					Notification.show(I18nProperties.getString(Strings.messageTravelEntrySaved), Notification.Type.WARNING_MESSAGE);
-					SormasUI.refreshView();
-				}
+		editComponent.addCommitListener(() -> {
+			if (!travelEntryEditForm.getFieldGroup().isModified()) {
+				TravelEntryDto travelEntryDto = travelEntryEditForm.getValue();
+				FacadeProvider.getTravelEntryFacade().save(travelEntryDto);
+				Notification.show(I18nProperties.getString(Strings.messageTravelEntrySaved), Notification.Type.WARNING_MESSAGE);
+				SormasUI.refreshView();
 			}
 		});
 
@@ -167,19 +155,22 @@ public class TravelEntryController {
 		return FacadeProvider.getTravelEntryFacade().getByUuid(uuid);
 	}
 
-	public VerticalLayout getTravelEntryViewTitleLayout(String uuid) {
+	public TitleLayout getTravelEntryViewTitleLayout(String uuid) {
 		TravelEntryDto travelEntry = findTravelEntry(uuid);
 
-		VerticalLayout titleLayout = new VerticalLayout();
-		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
-		titleLayout.setSpacing(false);
+		TitleLayout titleLayout = new TitleLayout();
+
+		String pointOfEntryName = FacadeProvider.getPointOfEntryFacade().getByUuid(travelEntry.getPointOfEntry().getUuid()).getName();
+		String pointOfEntryDetails = travelEntry.getPointOfEntryDetails();
+		String travelEntryPointOfEntry = StringUtils.isNotBlank(pointOfEntryDetails) ? pointOfEntryDetails : pointOfEntryName;
+
+		titleLayout.addRow(travelEntryPointOfEntry);
 
 		String shortUuid = DataHelper.getShortUuid(travelEntry.getUuid());
-		String travelEntryPointOfEntry = FacadeProvider.getPointOfEntryFacade().getByUuid(travelEntry.getPointOfEntry().getUuid()).getName();
-		Label travelEntryLabel =
-			new Label(StringUtils.isNotBlank(travelEntryPointOfEntry) ? travelEntryPointOfEntry + " (" + shortUuid + ")" : shortUuid);
-		travelEntryLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		titleLayout.addComponent(travelEntryLabel);
+		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(travelEntry.getPerson().getUuid());
+		StringBuilder mainRowText = TitleLayoutHelper.buildPersonString(person);
+		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
+		titleLayout.addMainRow(mainRowText.toString());
 
 		return titleLayout;
 	}
@@ -199,7 +190,7 @@ public class TravelEntryController {
 				I18nProperties.getString(Strings.no),
 				640,
 				e -> {
-					if (e.booleanValue() == true) {
+					if (e) {
 						FacadeProvider.getTravelEntryFacade().archiveOrDearchiveTravelEntry(travelEntryUuid, true);
 						Notification.show(
 							String
@@ -221,7 +212,7 @@ public class TravelEntryController {
 				I18nProperties.getString(Strings.no),
 				640,
 				e -> {
-					if (e.booleanValue()) {
+					if (e) {
 						FacadeProvider.getTravelEntryFacade().archiveOrDearchiveTravelEntry(travelEntryUuid, false);
 						Notification.show(
 							String.format(

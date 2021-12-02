@@ -24,12 +24,9 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
-import de.symeda.sormas.api.labmessage.TestReportDto;
-import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.backend.sample.PathogenTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,16 +40,18 @@ import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageFacade;
 import de.symeda.sormas.api.labmessage.LabMessageFetchResult;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
+import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.labmessage.NewMessagesState;
+import de.symeda.sormas.api.labmessage.TestReportDto;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
-import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.sample.PathogenTestService;
-import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
+import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -66,7 +65,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		LabMessageIndexDto.PERSON_LAST_NAME,
 		LabMessageIndexDto.MESSAGE_DATE_TIME,
 		LabMessageIndexDto.STATUS,
-//		LabMessageIndexDto.TEST_RESULT,
+		LabMessageIndexDto.SAMPLE_OVERALL_TEST_RESULT,
 		LabMessageIndexDto.TESTED_DISEASE);
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -77,15 +76,13 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@EJB
 	private LabMessageService labMessageService;
 	@EJB
-	private PathogenTestService pathogenTestService;
-	@EJB
-	private TestReportService testReportService;
-	@EJB
 	private TestReportFacadeEjb.TestReportFacadeEjbLocal testReportFacade;
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
-	private SystemEventFacadeEjb.SystemEventFacadeEjbLocal systemEventFacade;
+	private SyncFacadeEjb.SyncFacadeEjbLocal syncFacadeEjb;
+	@EJB
+	private SampleService sampleService;
 
 	LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target, boolean checkChangeDate) {
 
@@ -126,12 +123,16 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			target.setTestReports(testReports);
 		}
 		target.setReportId(source.getReportId());
+		target.setSampleOverallTestResult(source.getSampleOverallTestResult());
 
+		if (source.getSample() != null) {
+			target.setSample(sampleService.getByReferenceDto(source.getSample()));
+		}
 		return target;
 	}
 
 	@Override
-	public LabMessageDto save(LabMessageDto dto) {
+	public LabMessageDto save(@Valid LabMessageDto dto) {
 
 		LabMessage labMessage = labMessageService.getByUuid(dto.getUuid());
 
@@ -179,11 +180,16 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			target.setTestReports(source.getTestReports().stream().map(t -> TestReportFacadeEjb.toDto(t)).collect(toList()));
 		}
 		target.setReportId(source.getReportId());
+		target.setSampleOverallTestResult(source.getSampleOverallTestResult());
+		if (source.getSample() != null) {
+			target.setSample(source.getSample().toReference());
+		}
 
 		return target;
 	}
 
 	@Override
+	// Also returns deleted lab messages
 	public LabMessageDto getByUuid(String uuid) {
 		return toDto(labMessageService.getByUuid(uuid));
 	}
@@ -204,29 +210,12 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
-	public List<LabMessageDto> getForSample(String sampleUuid) {
+	// Does not return deleted lab messages
+	public List<LabMessageDto> getForSample(SampleReferenceDto sample) {
 
-		List<String> pathogenTestUuids = new ArrayList<>();
-		for (PathogenTest pathogenTest : pathogenTestService.getBySampleUuid(sampleUuid, false)) {
-			pathogenTestUuids.add(pathogenTest.getUuid());
-		}
-
-		List<TestReport> testReports = testReportService.getByPathogenTestUuidsBatched(pathogenTestUuids, false);
-
-		List<LabMessage> labMessages = testReports.stream().map(TestReport::getLabMessage).distinct().collect(Collectors.toList());
+		List<LabMessage> labMessages = labMessageService.getForSample(sample);
 
 		return labMessages.stream().map(this::toDto).collect(Collectors.toList());
-
-	}
-
-	@Override
-	public List<LabMessageDto> getByPathogenTestUuid(String pathogenTestUuid) {
-
-		List<TestReport> testReports = testReportService.getByPathogenTestUuid(pathogenTestUuid, false);
-
-		List<LabMessage> labMessages = testReports.stream().map(TestReport::getLabMessage).distinct().collect(Collectors.toList());
-
-		return labMessages.stream().map(labMessage -> toDto(labMessage)).collect(Collectors.toList());
 
 	}
 
@@ -280,7 +269,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			labMessage.get(LabMessage.TEST_LAB_NAME),
 			labMessage.get(LabMessage.TEST_LAB_POSTAL_CODE),
 			labMessage.get(LabMessage.TESTED_DISEASE),
-//			labMessage.get(LabMessage.TEST_RESULT), TODO: this has to be reenabled in https://github.com/hzi-braunschweig/SORMAS-Project/issues/5159
+			labMessage.get(LabMessage.SAMPLE_OVERALL_TEST_RESULT),
 			labMessage.get(LabMessage.PERSON_FIRST_NAME),
 			labMessage.get(LabMessage.PERSON_LAST_NAME),
 			labMessage.get(LabMessage.PERSON_POSTAL_CODE),
@@ -290,6 +279,10 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 		// Distinct is necessary here to avoid duplicate results due to the user role join in taskService.createAssigneeFilter
 		cq.distinct(true);
+
+		// remove deleted entities from result
+		Predicate filter = labMessageService.createDefaultFilter(cb, labMessage);
+		cq.where(filter);
 
 		List<Order> order = Optional.ofNullable(sortProperties)
 			.orElseGet(ArrayList::new)
@@ -307,46 +300,42 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		return QueryHelper.getResultList(em, cq, first, max);
 	}
 
-	@Override
-	public boolean atLeastOneFetchExecuted() {
-		SystemEventDto latestSuccessEvent = systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES);
-		return latestSuccessEvent != null;
-	}
-
 	/**
 	 * This method marks the previously unfinished system events as UNCLEAR(if any exists) and creates a new event with status STARTED.
-	 * If the fetching succeds, the status of the currentSystemEvent is changed to SUCCESS.
-	 * In case of any Exception, the status of the currentSystemEvent is changed to ERROR.
+	 * If the fetching succeeds, the status of the currentSync is changed to SUCCESS.
+	 * In case of any Exception, the status of the currentSync is changed to ERROR.
 	 *
 	 * @return An indication whether the fetching of new labMessage was successful. If it was not, an error message meant for UI users.
 	 */
 	@Override
 	public LabMessageFetchResult fetchAndSaveExternalLabMessages(Date since) {
-		systemEventFacade.markPreviouslyStartedAsUnclear(SystemEventType.FETCH_LAB_MESSAGES);
-		SystemEventDto currentSystemEvent = initializeFetchEvent();
+
+		SystemEventDto currentSync = syncFacadeEjb.startSyncFor(SystemEventType.FETCH_LAB_MESSAGES);
+
 		try {
-			return fetchAndSaveExternalLabMessages(currentSystemEvent, since);
+			return fetchAndSaveExternalLabMessages(currentSync, since);
 		} catch (CannotProceedException e) {
-			systemEventFacade.reportError(currentSystemEvent, e.getMessage(), new Date());
+			syncFacadeEjb.reportSyncErrorWithTimestamp(currentSync, e.getMessage());
 			return new LabMessageFetchResult(false, NewMessagesState.UNCLEAR, e.getMessage());
 		} catch (NamingException e) {
-			systemEventFacade.reportError(currentSystemEvent, e.getMessage(), new Date());
+			syncFacadeEjb.reportSyncErrorWithTimestamp(currentSync, e.getMessage());
 			return new LabMessageFetchResult(false, NewMessagesState.UNCLEAR, I18nProperties.getString(Strings.errorLabResultsAdapterNotFound));
 		} catch (Exception t) {
-			systemEventFacade.reportError(currentSystemEvent, t.getMessage(), new Date());
+			syncFacadeEjb.reportSyncErrorWithTimestamp(currentSync, t.getMessage());
 			throw t;
 		}
 	}
 
-	protected LabMessageFetchResult fetchAndSaveExternalLabMessages(SystemEventDto currentSystemEvent, Date since) throws NamingException {
+	protected LabMessageFetchResult fetchAndSaveExternalLabMessages(SystemEventDto currentSync, Date since) throws NamingException {
 		if (since == null) {
-			since = findLastUpdateDate();
+			since = syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_LAB_MESSAGES);
 		}
 		ExternalMessageResult<List<LabMessageDto>> externalMessageResult = fetchExternalMessages(since);
 		if (externalMessageResult.isSuccess()) {
 			externalMessageResult.getValue().forEach(this::save);
-			String message = "Last synchronization date: " + externalMessageResult.getSynchronizationDate().getTime();
-			systemEventFacade.reportSuccess(currentSystemEvent, message, new Date());
+			// we have successfully completed our synchronization
+			syncFacadeEjb.reportSuccessfulSyncWithTimestamp(currentSync, externalMessageResult.getSynchronizationDate());
+
 			return getSuccessfulFetchResult(externalMessageResult);
 		} else {
 			throw new CannotProceedException(externalMessageResult.getError());
@@ -363,45 +352,6 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 		ExternalLabResultsFacade labResultsFacade = (ExternalLabResultsFacade) ic.lookup(jndiName);
 		return labResultsFacade.getExternalLabMessages(since);
-	}
-
-	protected SystemEventDto initializeFetchEvent() {
-		Date startDate = new Date();
-		SystemEventDto systemEvent = SystemEventDto.build();
-		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
-		systemEvent.setStatus(SystemEventStatus.STARTED);
-		systemEvent.setStartDate(startDate);
-		systemEventFacade.saveSystemEvent(systemEvent);
-		return systemEvent;
-	}
-
-	protected Date findLastUpdateDate() {
-		SystemEventDto latestSuccess = systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES);
-		Long millis;
-		if (latestSuccess != null) {
-			millis = determineLatestSuccessMillis(latestSuccess);
-		} else {
-			logger.info(
-				"No previous successful attempt to fetch external lab message could be found. The synchronization date is set to 0 (UNIX milliseconds)");
-			millis = 0L;
-		}
-		return new Date(millis);
-	}
-
-	private long determineLatestSuccessMillis(SystemEventDto latestSuccess) {
-		String info = latestSuccess.getAdditionalInfo();
-		if (info != null) {
-			try {
-				//parse last synchronization date
-				return Long.parseLong(info.replace("Last synchronization date: ", ""));
-			} catch (NumberFormatException e) {
-				logger.error("Synchronization date could not be parsed for the last successful lab message retrieval. Falling back to start date.");
-				return latestSuccess.getStartDate().getTime();
-			}
-		} else {
-			logger.warn("Synchronization date could not be found for the last successful lab message retrieval. Falling back to start date.");
-			return latestSuccess.getStartDate().getTime();
-		}
 	}
 
 	private LabMessageFetchResult getSuccessfulFetchResult(ExternalMessageResult<List<LabMessageDto>> externalMessageResult) {
@@ -435,6 +385,19 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		cq.where(cb.equal(from.get(LabMessage.REPORT_ID), reportId));
 
 		return em.createQuery(cq).getResultList().stream().map(this::toDto).collect(toList());
+	}
+
+	@Override
+	public boolean existsForwardedLabMessageWith(String reportId) {
+
+		List<LabMessageDto> relatedLabMessages = getByReportId(reportId);
+
+		for (LabMessageDto labMessage : relatedLabMessages) {
+			if (LabMessageStatus.FORWARDED.equals(labMessage.getStatus())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static LabMessageReferenceDto toReferenceDto(LabMessage entity) {

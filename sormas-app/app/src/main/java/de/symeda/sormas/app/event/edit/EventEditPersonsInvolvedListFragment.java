@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.app.event.edit;
 
-import java.util.List;
-
 import android.os.Bundle;
 import android.view.View;
 
@@ -25,12 +23,15 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
+import de.symeda.sormas.app.event.eventparticipant.EventParticipantSection;
 import de.symeda.sormas.app.event.eventparticipant.edit.EventParticipantEditActivity;
 import de.symeda.sormas.app.event.eventparticipant.list.EventParticipantListAdapter;
 import de.symeda.sormas.app.event.eventparticipant.list.EventParticipantListViewModel;
@@ -106,6 +107,7 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditFragment<Fragm
 	@Override
 	public void onListItemClick(View view, int position, Object item) {
 		EventParticipant o = (EventParticipant) item;
-		EventParticipantEditActivity.startActivity(getContext(), o.getUuid(), getActivityRootData().getUuid());
+		EventParticipantEditActivity
+			.startActivity(getContext(), o.getUuid(), getActivityRootData().getUuid(), EventParticipantSection.EVENT_PARTICIPANT_INFO);
 	}
 }

@@ -34,7 +34,6 @@ public class ContactsLineListingSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
   private final WebDriverHelpers webDriverHelpers;
   public static ContactsLineListing contactsLineListing;
-  public static ContactsLineListing secondContactsLineListing;
 
   @Inject
   public ContactsLineListingSteps(
@@ -64,45 +63,25 @@ public class ContactsLineListingSteps implements En {
         });
 
     When(
-        "^I click on Add Line button and fill all the details in new line$",
+        "I save the new contact using line listing feature",
         () -> {
-          secondContactsLineListing = contactsLineListingService.buildGeneratedSecondLine();
-          webDriverHelpers.clickOnWebElementBySelector(ADD_LINE);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
-              LINE_LISTING_SECOND_DATE_REPORT_INPUT);
-          fillSecondDateOfReport(contactsLineListing.getDateOfReport());
-          fillSecondDateOfLastContact(contactsLineListing.getDateOfLastContact());
-
-          selectSecondTypeOfContact(contactsLineListing.getTypeOfContact());
-          selectSecondRelationshipWithCase(contactsLineListing.getRelationshipWithCase());
-
-          fillSecondFirstName(secondContactsLineListing.getFirstName(), 1);
-          fillSecondLastName(secondContactsLineListing.getLastName(), 1);
-          selectSecondBirthYear(secondContactsLineListing.getBirthYear());
-          selectSecondBirthMonth(secondContactsLineListing.getBirthMonth());
-          selectSecondBirthDay(secondContactsLineListing.getBirthDay());
-          selectSecondSex(secondContactsLineListing.getSex());
+          webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_ACTION_SAVE);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
         });
 
     When(
-        "I click on save",
-        () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_ACTION_SAVE));
-
-    When(
-        "I am checking all data created from Line Listing option is saved and displayed",
+        "I check that contact created from Line Listing is saved and displayed in results grid",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(DISEASE_COLUMNS);
+          softly.assertThat(contactsLineListing.getDisease()).isEqualTo(getDiseaseDirectoryPage());
           softly
-              .assertThat(secondContactsLineListing.getDisease())
-              .isEqualTo(getDiseaseDirectoryPage());
-          softly
-              .assertThat(secondContactsLineListing.getTypeOfContact())
+              .assertThat(contactsLineListing.getTypeOfContact())
               .isEqualTo(getTypeOfContactDirectoryPage());
           softly
-              .assertThat(secondContactsLineListing.getFirstName())
+              .assertThat(contactsLineListing.getFirstName())
               .isEqualTo(getFirstNameDirectoryPage());
           softly
-              .assertThat(secondContactsLineListing.getLastName())
+              .assertThat(contactsLineListing.getLastName())
               .isEqualTo(getLastNameDirectoryPage());
         });
   }
@@ -162,65 +141,19 @@ public class ContactsLineListingSteps implements En {
     webDriverHelpers.selectFromCombobox(LINE_LISTING_SEX_COMBOBOX, sex);
   }
 
-  // second line
-  public void fillSecondDateOfReport(LocalDate secondDateOfReport) {
-    webDriverHelpers.clearAndFillInWebElement(
-        LINE_LISTING_SECOND_DATE_REPORT_INPUT, DATE_FORMATTER.format(secondDateOfReport));
-  }
-
-  public void fillSecondDateOfLastContact(LocalDate secondDateOfLastContact) {
-    webDriverHelpers.clearAndFillInWebElement(
-        LINE_LISTING_SECOND_DATE_LAST_CONTACT_INPUT,
-        DATE_FORMATTER.format(secondDateOfLastContact));
-  }
-
-  public void selectSecondTypeOfContact(String secondTypeOfContact) {
-    webDriverHelpers.selectFromCombobox(
-        LINE_LISTING_SECOND_TYPE_OF_CONTACT_COMBOBOX, secondTypeOfContact);
-  }
-
-  public void selectSecondRelationshipWithCase(String secondRelationshipWithCase) {
-    webDriverHelpers.selectFromCombobox(
-        LINE_LISTING_SECOND_RELATIONSHIP_TO_CASE_COMBOBOX, secondRelationshipWithCase);
-  }
-
-  public void fillSecondFirstName(String firstName, int index) {
-    webDriverHelpers.fillValueOfListElement(LINE_LISTING_FIRST_NAME_INPUT, index, firstName);
-  }
-
-  public void fillSecondLastName(String lastName, int index) {
-    webDriverHelpers.fillValueOfListElement(LINE_LISTING_LAST_NAME_INPUT, index, lastName);
-  }
-
-  public void selectSecondBirthYear(String year) {
-    webDriverHelpers.selectFromCombobox(LINE_LISTING_SECOND_BIRTHDATE_YEAR_COMBOBOX, year);
-  }
-
-  public void selectSecondBirthMonth(String month) {
-    webDriverHelpers.selectFromCombobox(LINE_LISTING_SECOND_BIRTHDATE_MONTH_COMBOBOX, month);
-  }
-
-  public void selectSecondBirthDay(String day) {
-    webDriverHelpers.selectFromCombobox(LINE_LISTING_SECOND_BIRTHDATE_DAY_COMBOBOX, day);
-  }
-
-  public void selectSecondSex(String sex) {
-    webDriverHelpers.selectFromCombobox(LINE_LISTING_SECOND_SEX_COMBOBOX, sex);
-  }
-
   public String getDiseaseDirectoryPage() {
-    return webDriverHelpers.getValueOfListElement(DISEASE_COLUMNS, 0);
+    return webDriverHelpers.getTextFromListElement(DISEASE_COLUMNS, 0);
   }
 
   public String getTypeOfContactDirectoryPage() {
-    return webDriverHelpers.getValueOfListElement(FIRST_NAME_COLUMNS, 0);
+    return webDriverHelpers.getTextFromListElement(FIRST_NAME_COLUMNS, 0);
   }
 
   public String getFirstNameDirectoryPage() {
-    return webDriverHelpers.getValueOfListElement(LAST_NAME_COLUMNS, 0);
+    return webDriverHelpers.getTextFromListElement(LAST_NAME_COLUMNS, 0);
   }
 
   public String getLastNameDirectoryPage() {
-    return webDriverHelpers.getValueOfListElement(TYPE_OF_CONTACT_COLUMNS, 0);
+    return webDriverHelpers.getTextFromListElement(TYPE_OF_CONTACT_COLUMNS, 0);
   }
 }

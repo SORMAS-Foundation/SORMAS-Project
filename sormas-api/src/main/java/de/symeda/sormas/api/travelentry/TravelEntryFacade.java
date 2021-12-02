@@ -4,12 +4,10 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.region.BaseFacade;
+import de.symeda.sormas.api.BaseFacade;
 
 @Remote
 public interface TravelEntryFacade extends BaseFacade<TravelEntryDto, TravelEntryIndexDto, TravelEntryReferenceDto, TravelEntryCriteria> {
-
-	TravelEntryReferenceDto getReferenceByUuid(String uuid);
 
 	void validate(TravelEntryDto travelEntryDto);
 
@@ -28,4 +26,6 @@ public interface TravelEntryFacade extends BaseFacade<TravelEntryDto, TravelEntr
 	void deleteTravelEntry(String travelEntryUuid);
 
 	List<DeaContentEntry> getDeaContentOfLastTravelEntry();
+
+	List<TravelEntryListEntryDto> getEntriesList(TravelEntryListCriteria criteria, Integer first, Integer max);
 }

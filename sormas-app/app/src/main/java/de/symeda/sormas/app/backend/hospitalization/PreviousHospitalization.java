@@ -15,8 +15,8 @@
 
 package de.symeda.sormas.app.backend.hospitalization;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 
@@ -54,6 +54,9 @@ public class PreviousHospitalization extends PseudonymizableAdo {
 	public static final String I18N_PREFIX = "CasePreviousHospitalization";
 	public static final String HOSPITALIZATION = "hospitalization";
 
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown admittedToHealthFacility;
+
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date admissionDate;
 
@@ -72,13 +75,16 @@ public class PreviousHospitalization extends PseudonymizableAdo {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility healthFacility;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String healthFacilityDetails;
 
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown isolated;
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date isolationDate;
+
+	@Column(length = CHARACTER_LIMIT_BIG)
 	private String description;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -98,6 +104,14 @@ public class PreviousHospitalization extends PseudonymizableAdo {
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date intensiveCareUnitEnd;
+
+	public YesNoUnknown getAdmittedToHealthFacility() {
+		return admittedToHealthFacility;
+	}
+
+	public void setAdmittedToHealthFacility(YesNoUnknown admittedToHealthFacility) {
+		this.admittedToHealthFacility = admittedToHealthFacility;
+	}
 
 	public Date getAdmissionDate() {
 		return admissionDate;
@@ -161,6 +175,14 @@ public class PreviousHospitalization extends PseudonymizableAdo {
 
 	public void setIsolated(YesNoUnknown isolated) {
 		this.isolated = isolated;
+	}
+
+	public Date getIsolationDate() {
+		return isolationDate;
+	}
+
+	public void setIsolationDate(Date isolationDate) {
+		this.isolationDate = isolationDate;
 	}
 
 	public String getDescription() {

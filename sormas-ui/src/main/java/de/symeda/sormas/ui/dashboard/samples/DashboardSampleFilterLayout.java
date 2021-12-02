@@ -21,7 +21,7 @@ public class DashboardSampleFilterLayout extends DashboardFilterLayout{
 	private ComboBox diseaseFilter;
 
 	public DashboardSampleFilterLayout(AbstractDashboardView dashboardView, DashboardDataProvider dashboardDataProvider) {
-		super(dashboardView, dashboardDataProvider);
+		super(dashboardView, dashboardDataProvider, null);
 		setStyleName(CssStyles.D_FLEX, true);
 		setStyleName(CssStyles.FLEX_WRAP, true);
 	}

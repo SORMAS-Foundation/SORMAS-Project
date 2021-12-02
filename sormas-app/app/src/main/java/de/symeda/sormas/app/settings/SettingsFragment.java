@@ -126,7 +126,7 @@ public class SettingsFragment extends BaseLandingFragment {
 			Language newLanguage = (Language) e.getValue();
 			if (!LocaleManager.getLanguagePref(getContext()).equals(e.getValue())) {
 				try {
-					User user = binding.getData();
+					User user = DatabaseHelper.getUserDao().queryUuid(ConfigProvider.getUser().getUuid());
 					if (user != null) {
 						DatabaseHelper.getUserDao().saveAndSnapshot(user);
 					}

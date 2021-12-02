@@ -24,11 +24,11 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.region.CommunityDto;
-import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
@@ -73,7 +73,7 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 		district.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null && region.getValue() == null) {
 				DistrictDto communityDistrict =
-					FacadeProvider.getDistrictFacade().getDistrictByUuid(((DistrictReferenceDto) e.getProperty().getValue()).getUuid());
+					FacadeProvider.getDistrictFacade().getByUuid(((DistrictReferenceDto) e.getProperty().getValue()).getUuid());
 				region.setValue(communityDistrict.getRegion());
 			}
 		});

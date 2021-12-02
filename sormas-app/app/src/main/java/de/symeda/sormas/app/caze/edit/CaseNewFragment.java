@@ -31,8 +31,8 @@ import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRole;
@@ -51,6 +51,7 @@ import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 
 public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBinding, Case, Case> {
 
@@ -146,7 +147,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 
 		Facility initialHealthFacility = record.getHealthFacility();
 
-		InfrastructureDaoHelper.initializeRegionFields(
+		InfrastructureFieldsDependencyHandler.instance.initializeRegionFields(
 			contentBinding.caseDataResponsibleRegion,
 			initialRegions,
 			record.getResponsibleRegion(),
@@ -157,7 +158,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			initialResponsibleCommunities,
 			record.getResponsibleCommunity());
 
-		InfrastructureDaoHelper.initializeRegionFieldListeners(
+		InfrastructureFieldsDependencyHandler.instance.initializeRegionFieldListeners(
 			contentBinding.caseDataResponsibleRegion,
 			contentBinding.caseDataResponsibleDistrict,
 			record.getResponsibleDistrict(),
@@ -170,7 +171,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			null,
 			() -> Boolean.TRUE.equals(contentBinding.caseDataDifferentPlaceOfStayJurisdiction.getValue()));
 
-		InfrastructureDaoHelper.initializeFacilityFields(
+		InfrastructureFieldsDependencyHandler.instance.initializeFacilityFields(
 			record,
 			contentBinding.caseDataRegion,
 			initialRegions,
@@ -200,7 +201,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		// trigger responsible jurisdiction change handlers removing place of stay region/district/community
 		contentBinding.caseDataDifferentPlaceOfStayJurisdiction.addValueChangedListener(f -> {
 			if (Boolean.FALSE.equals(f.getValue())) {
-				InfrastructureDaoHelper.handleCommunityChange(
+				InfrastructureFieldsDependencyHandler.instance.handleCommunityChange(
 					contentBinding.caseDataResponsibleCommunity,
 					contentBinding.caseDataResponsibleDistrict,
 					contentBinding.caseDataHealthFacility,
@@ -224,18 +225,18 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		contentBinding.symptomsOnsetDate.initializeDateField(getFragmentManager());
 
 		contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>());
-		contentBinding.personBirthdateMM.initializeSpinner(monthList, field -> {
-			DataUtils.updateListOfDays(
+		contentBinding.personBirthdateMM.initializeSpinner(
+			monthList,
+			field -> DataUtils.updateListOfDays(
 				contentBinding.personBirthdateDD,
 				(Integer) contentBinding.personBirthdateYYYY.getValue(),
-				(Integer) field.getValue());
-		});
-		contentBinding.personBirthdateYYYY.initializeSpinner(yearList, field -> {
-			DataUtils.updateListOfDays(
+				(Integer) field.getValue()));
+		contentBinding.personBirthdateYYYY.initializeSpinner(
+			yearList,
+			field -> DataUtils.updateListOfDays(
 				contentBinding.personBirthdateDD,
 				(Integer) field.getValue(),
-				(Integer) contentBinding.personBirthdateMM.getValue());
-		});
+				(Integer) contentBinding.personBirthdateMM.getValue()));
 
 		int year = Calendar.getInstance().get(Calendar.YEAR);
 		contentBinding.personBirthdateYYYY.setSelectionOnOpen(year - 35);
@@ -287,6 +288,8 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			contentBinding.facilityOrHome.setEnabled(false);
 			contentBinding.facilityTypeGroup.setEnabled(false);
 			contentBinding.caseDataFacilityType.setEnabled(false);
+			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setEnabled(false);
+			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setVisibility(GONE);
 		}
 
 		if (user.hasUserRole(UserRole.POE_INFORMANT) && user.getPointOfEntry() != null) {

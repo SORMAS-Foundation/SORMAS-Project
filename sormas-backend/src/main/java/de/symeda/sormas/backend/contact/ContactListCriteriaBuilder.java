@@ -21,6 +21,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
@@ -30,14 +32,13 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 
 @Stateless
 @LocalBean
@@ -48,7 +49,7 @@ public class ContactListCriteriaBuilder {
 
 	@EJB
 	private CaseService caseService;
-	
+
 	@EJB
 	private ContactService contactService;
 
@@ -73,6 +74,7 @@ public class ContactListCriteriaBuilder {
 
 		return Arrays.asList(
 			contact.get(Contact.UUID),
+			joins.getPerson().get(Person.UUID),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			joins.getCaze().get(Case.UUID),
@@ -91,7 +93,7 @@ public class ContactListCriteriaBuilder {
 			contact.get(Contact.FOLLOW_UP_STATUS),
 			contact.get(Contact.FOLLOW_UP_UNTIL),
 			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
-			joins.getVaccinationInfo().get(VaccinationInfo.VACCINATION),
+			contact.get(Contact.VACCINATION_STATUS),
 			joins.getContactOfficer().get(User.UUID),
 			joins.getReportingUser().get(User.UUID),
 			contact.get(Contact.REPORT_DATE_TIME),
@@ -159,7 +161,11 @@ public class ContactListCriteriaBuilder {
 		case ContactIndexDto.EXTERNAL_ID:
 		case ContactIndexDto.EXTERNAL_TOKEN:
 		case ContactIndexDto.INTERNAL_TOKEN:
+		case ContactIndexDto.VACCINATION_STATUS:
 			expressions.add(contact.get(sortProperty.propertyName));
+			break;
+		case ContactIndexDto.PERSON_UUID:
+			expressions.add(joins.getPerson().get(Person.UUID));
 			break;
 		case ContactIndexDto.PERSON_FIRST_NAME:
 		case ContactIndexDto.PERSON_LAST_NAME:
@@ -175,9 +181,6 @@ public class ContactListCriteriaBuilder {
 			break;
 		case ContactIndexDto.DISTRICT_UUID:
 			expressions.add(joins.getDistrict().get(District.NAME));
-			break;
-		case ContactIndexDto.VACCINATION:
-			expressions.add(joins.getVaccinationInfo().get(VaccinationInfo.VACCINATION));
 			break;
 		default:
 			throw new IllegalArgumentException(sortProperty.propertyName);
@@ -252,8 +255,8 @@ public class ContactListCriteriaBuilder {
 		List<Selection<?>> selections = new ArrayList<>(selectionProvider.apply(contact, contactQueryContext));
 		selections.add(cb.size(contact.get(Contact.VISITS)));
 		// This is needed in selection because of the combination of distinct and orderBy clauses - every operator in the orderBy has to be part of the select IF distinct is used
-		Expression<Date> latestChangedDateFunction =
-			cb.function(ExtendedPostgreSQL94Dialect.GREATEST, Date.class, contact.get(Contact.CHANGE_DATE), joins.getPerson().get(Person.CHANGE_DATE));
+		Expression<Date> latestChangedDateFunction = cb
+			.function(ExtendedPostgreSQL94Dialect.GREATEST, Date.class, contact.get(Contact.CHANGE_DATE), joins.getPerson().get(Person.CHANGE_DATE));
 		selections.add(latestChangedDateFunction);
 
 		Predicate filter = buildContactFilter(contactCriteria, contactQueryContext);
@@ -265,7 +268,7 @@ public class ContactListCriteriaBuilder {
 		cq.multiselect(selections);
 		cq.distinct(true);
 
-		if (sortProperties == null || sortProperties.size() == 0) {
+		if (CollectionUtils.isEmpty(sortProperties)) {
 			cq.orderBy(cb.desc(latestChangedDateFunction));
 		} else {
 			List<Order> order = new ArrayList<>(sortProperties.size());

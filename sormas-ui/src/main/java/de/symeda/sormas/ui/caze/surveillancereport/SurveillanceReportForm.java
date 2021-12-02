@@ -21,9 +21,9 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
@@ -69,12 +69,12 @@ public class SurveillanceReportForm extends AbstractEditForm<SurveillanceReportD
 		addField(SurveillanceReportDto.DATE_OF_DIAGNOSIS);
 
 		InfrastructureFieldsHelper.initInfrastructureFields(
-			addField(SurveillanceReportDto.FACILITY_REGION),
-			addField(SurveillanceReportDto.FACILITY_DISTRICT),
+			addInfrastructureField(SurveillanceReportDto.FACILITY_REGION),
+			addInfrastructureField(SurveillanceReportDto.FACILITY_DISTRICT),
 			null,
 			addFacilityTypeGroupField(),
 			addField(SurveillanceReportDto.FACILITY_TYPE),
-			addField(SurveillanceReportDto.FACILITY),
+			addInfrastructureField(SurveillanceReportDto.FACILITY),
 			addField(SurveillanceReportDto.FACILITY_DETAILS),
 			() -> getValue().getFacilityDetails());
 

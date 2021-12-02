@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+*/
 package de.symeda.sormas.backend.user;
 
 import java.util.Arrays;
@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -45,14 +44,14 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.AuthProvider;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DefaultUserHelper;
+import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -60,10 +59,10 @@ import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -148,7 +147,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			filter = from.get(User.REGION).in(regions);
 		}
 
-		if (userRoles.size() > 0) {
+		if (!userRoles.isEmpty()) {
 			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
 			Predicate rolesFilter = joinRoles.in(userRoles);
 			filter = CriteriaBuilderHelper.and(cb, filter, rolesFilter);
@@ -208,13 +207,13 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	 * @param userRoles
 	 */
 	public List<UserReference> getReferenceList(
-			List<String> regionUuids,
-			List<String> districtUuids,
-			List<String> communityUuids,
-			boolean includeSupervisors,
-			boolean filterByJurisdiction,
-			boolean activeOnly,
-			List<UserRole> userRoles) {
+		List<String> regionUuids,
+		List<String> districtUuids,
+		List<String> communityUuids,
+		boolean includeSupervisors,
+		boolean filterByJurisdiction,
+		boolean activeOnly,
+		List<UserRole> userRoles) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<UserReference> cq = cb.createQuery(UserReference.class);
@@ -251,7 +250,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		// WHERE OR
 		if (includeSupervisors) {
 			Predicate supervisorFilter = rolesJoin.in(
-					Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR));
+				Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR));
 			filter = CriteriaBuilderHelper.or(cb, filter, supervisorFilter);
 		}
 
@@ -288,12 +287,12 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 
 	public User getRandomUser(District district, UserRole... userRoles) {
 
-		return getRandomUser(getReferenceList(null, Arrays.asList(district.getUuid()), false, false, true, userRoles));
+		return getRandomUser(getReferenceList(null, Collections.singletonList(district.getUuid()), false, false, true, userRoles));
 	}
 
 	public User getRandomUser(Region region, UserRole... userRoles) {
 
-		return getRandomUser(getReferenceList(Arrays.asList(region.getUuid()), null, false, false, true, userRoles));
+		return getRandomUser(getReferenceList(Collections.singletonList(region.getUuid()), null, false, false, true, userRoles));
 	}
 
 	public User getRandomUser(List<UserReference> candidates) {
@@ -320,7 +319,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		Predicate filter = cb.and(
 			createDefaultFilter(cb, from),
 			cb.equal(from.get(User.HEALTH_FACILITY), facility),
-			joinRoles.in(Arrays.asList(UserRole.HOSPITAL_INFORMANT)));
+			joinRoles.in(Collections.singletonList(UserRole.HOSPITAL_INFORMANT)));
 
 		cq.where(filter).distinct(true);
 		return em.createQuery(cq).getResultList();
@@ -433,7 +432,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		}
 		if (userCriteria.getUserRole() != null) {
 			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
-			filter = CriteriaBuilderHelper.and(cb, filter, joinRoles.in(Arrays.asList(userCriteria.getUserRole())));
+			filter = CriteriaBuilderHelper.and(cb, filter, joinRoles.in(Collections.singletonList(userCriteria.getUserRole())));
 		}
 		if (userCriteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper
@@ -505,7 +504,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 
 	public Predicate buildUserRolesFilter(Root<User> from, Collection<UserRole> userRoles) {
 
-		if (userRoles.size() > 0) {
+		if (!userRoles.isEmpty()) {
 			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
 			return joinRoles.in(Collections.singletonList(userRoles));
 		}
@@ -539,11 +538,6 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 
 	public boolean hasRole(UserRole userRoleName) {
 		return getCurrentUser().getUserRoles().contains(userRoleName);
-	}
-
-	public boolean hasAnyRole(Set<UserRole> typeRoles) {
-		Set<UserRole> userRoles = getCurrentUser().getUserRoles();
-		return !userRoles.stream().filter(userRole -> typeRoles.contains(userRole)).collect(Collectors.toList()).isEmpty();
 	}
 
 	public boolean hasRight(UserRight right) {
@@ -581,7 +575,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
-		cq.where(cb.and(createDefaultFilter(cb, from), from.get(User.USER_NAME).in(DefaultUserHelper.getDefaultUserNames())));
+		cq.where(cb.and(createDefaultFilter(cb, from), from.get(User.USER_NAME).in(DefaultEntityHelper.getDefaultUserNames())));
 		cq.orderBy(cb.asc(from.get(User.USER_NAME)));
 
 		return em.createQuery(cq).getResultList();

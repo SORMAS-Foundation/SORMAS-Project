@@ -15,14 +15,23 @@
 
 package de.symeda.sormas.app.util;
 
+import static android.view.View.VISIBLE;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Typeface;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -31,8 +40,8 @@ import androidx.databinding.ObservableList;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SamplePurpose;
@@ -1176,5 +1185,81 @@ public class TextViewBindingAdapters {
 		}
 
 		return result;
+	}
+
+	@BindingAdapter(value = {
+		"dependencyParentField",
+		"dependencyParentValue" }, requireAll = false)
+	public static void setDependencyParentField(TextView field, TextView dependencyParentField, Object dependencyParentValue) {
+
+		Map<TextView, List<Object>> visibilityDependencies = new HashMap<>();
+
+		if (dependencyParentField != null) {
+			visibilityDependencies.put(dependencyParentField, new ArrayList<Object>() {
+
+				{
+					add(dependencyParentValue);
+				}
+			});
+		}
+
+		if (visibilityDependencies.size() == 0)
+			visibilityDependencies = null;
+
+		setVisibilityDependencies(field, visibilityDependencies, true);
+	}
+
+	public static void setVisibilityDependencies(
+		TextView field,
+		Map<TextView, List<Object>> visibilityDependencies,
+		Boolean dependencyParentVisibility) {
+
+		if (visibilityDependencies != null) {
+			for (Map.Entry<TextView, List<Object>> dependency : visibilityDependencies.entrySet()) {
+				handleDependency(field, dependencyParentVisibility, dependency.getKey(), dependency.getValue());
+				dependency.getKey().addTextChangedListener(new TextWatcher() {
+
+					@Override
+					public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+					}
+
+					@Override
+					public void onTextChanged(CharSequence s, int start, int before, int count) {
+					}
+
+					@Override
+					public void afterTextChanged(Editable parentField) {
+						for (Map.Entry<TextView, List<Object>> parentDependency : visibilityDependencies.entrySet()) {
+							handleDependency(field, dependencyParentVisibility, parentDependency.getKey(), parentDependency.getValue());
+						}
+					}
+				});
+			}
+		}
+	}
+
+	private static void handleDependency(
+		TextView field,
+		Boolean dependencyParentVisibility,
+		TextView parentField,
+		List<Object> dependencyParentValues) {
+		if (parentField.getVisibility() != VISIBLE) {
+			field.setVisibility(View.GONE);
+			return;
+		}
+
+		if (dependencyParentValues.contains(parentField.getText())) {
+			if (dependencyParentVisibility) {
+				field.setVisibility(VISIBLE);
+			} else {
+				field.setVisibility(View.GONE);
+			}
+		} else {
+			if (dependencyParentVisibility) {
+				field.setVisibility(View.GONE);
+			} else {
+				field.setVisibility(VISIBLE);
+			}
+		}
 	}
 }
