@@ -171,6 +171,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasSha
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT = "quarantineOfficialOrderSent";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
 	public static final String POSTPARTUM = "postpartum";
+	public static final String TRANSMITTED = "transmitted";
 	public static final String TRIMESTER = "trimester";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
@@ -470,6 +471,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasSha
 		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOfficialOrderSentDate;
 	private YesNoUnknown postpartum;
+	private YesNoUnknown transmitted;
 	private Trimester trimester;
 	private FollowUpStatus followUpStatus;
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
@@ -1367,6 +1369,14 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasSha
 
 	public void setPostpartum(YesNoUnknown postpartum) {
 		this.postpartum = postpartum;
+	}
+
+	public YesNoUnknown getTransmitted() {
+		return transmitted;
+	}
+
+	public void setTransmitted(YesNoUnknown transmitted) {
+		this.transmitted = transmitted;
 	}
 
 	public Trimester getTrimester() {
