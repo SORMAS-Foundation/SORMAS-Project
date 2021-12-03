@@ -72,7 +72,7 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 			(Button.ClickListener) event -> ControllerProvider.getVaccinationController()
 				.edit(
 					FacadeProvider.getVaccinationFacade().getByUuid(listEntry.getVaccination().getUuid()),
-					disease,
+					listEntry.getVaccination().getDisease(),
 					UiFieldAccessCheckers.getDefault(listEntry.getVaccination().isPseudonymized()),
 					true,
 					v -> reload(),
