@@ -127,13 +127,14 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 			}
 		}
 
-		if (validationErrors.size() > 0) {
+		if (!validationErrors.isEmpty()) {
 			throw SormasToSormasException.fromStringProperty(validationErrors, Strings.errorSormasToSormasShare);
 		}
 	}
 
 	@Override
 	protected void validateEntitiesBeforeShare(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
+		SormasToSormasShareInfo tmp = shares.get(0);
 		validateEntitiesBeforeShare(
 			shares.stream().map(SormasToSormasShareInfo::getCaze).filter(Objects::nonNull).collect(Collectors.toList()),
 			shares.get(0).isOwnershipHandedOver());

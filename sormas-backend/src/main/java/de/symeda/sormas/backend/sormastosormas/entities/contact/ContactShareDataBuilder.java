@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.sormastosormas.entities.contact;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -28,16 +29,26 @@ import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import net.opengis.ows10.validation.ContactTypeValidator;
 
 @Stateless
 @LocalBean
-public class ContactShareDataBuilder implements ShareDataBuilder<ContactDto, Contact, SormasToSormasContactDto, SormasToSormasContactPreview> {
+public class ContactShareDataBuilder
+	extends ShareDataBuilder<ContactDto, Contact, SormasToSormasContactDto, SormasToSormasContactPreview, SormasToSormasContactDtoValidator> {
 
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
 
+	@Inject
+	public ContactShareDataBuilder(SormasToSormasContactDtoValidator validator) {
+		super(validator);
+	}
+
+	public ContactShareDataBuilder() {
+	}
+
 	@Override
-	public SormasToSormasContactDto buildShareData(Contact contact, ShareRequestInfo requestInfo) {
+	protected SormasToSormasContactDto doBuildShareData(Contact contact, ShareRequestInfo requestInfo) {
 		Pseudonymizer pseudonymizer =
 			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 
@@ -49,7 +60,7 @@ public class ContactShareDataBuilder implements ShareDataBuilder<ContactDto, Con
 	}
 
 	@Override
-	public SormasToSormasContactPreview buildShareDataPreview(Contact contact, ShareRequestInfo requestInfo) {
+	public SormasToSormasContactPreview doBuildShareDataPreview(Contact contact, ShareRequestInfo requestInfo) {
 		Pseudonymizer pseudonymizer =
 			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 
