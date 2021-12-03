@@ -1387,6 +1387,10 @@ public interface Captions {
 	String LabMessage_specimenCondition = "LabMessage.specimenCondition";
 	String LabMessage_status = "LabMessage.status";
 	String LabMessage_testedDisease = "LabMessage.testedDisease";
+	String LabMessageCriteria_birthDateFrom = "LabMessageCriteria.birthDateFrom";
+	String LabMessageCriteria_birthDateTo = "LabMessageCriteria.birthDateTo";
+	String LabMessageCriteria_messageDateFrom = "LabMessageCriteria.messageDateFrom";
+	String LabMessageCriteria_messageDateTo = "LabMessageCriteria.messageDateTo";
 	String labMessageFetch = "labMessageFetch";
 	String labMessageForwardedMessageFound = "labMessageForwardedMessageFound";
 	String labMessageNoDisease = "labMessageNoDisease";

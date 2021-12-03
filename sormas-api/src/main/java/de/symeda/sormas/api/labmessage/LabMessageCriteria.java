@@ -8,6 +8,8 @@ import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class LabMessageCriteria extends BaseCriteria implements Serializable {
 
+	public static final String I18N_PREFIX = "LabMessageCriteria";
+
 	public static final String SEARCH_FIELD_LIKE = "searchFieldLike";
 	public static final String MESSAGE_DATE_FROM = "messageDateFrom";
 	public static final String MESSAGE_DATE_TO = "messageDateTo";
