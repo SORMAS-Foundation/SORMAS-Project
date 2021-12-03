@@ -36,6 +36,7 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
@@ -46,14 +47,13 @@ public class VaccinationListComponent extends SideComponent {
 		VaccinationListCriteria criteria,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
-		boolean showCreateButton,
-		Runnable refreshCallback) {
+		boolean showCreateButton) {
 		super(I18nProperties.getString(Strings.entityVaccinations));
 
 		VaccinationList vaccinationList = new VaccinationList(
 			criteria.getDisease(),
 			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade().getEntriesList(criteria, 0, maxDisplayedEntries));
-		createNewVaccinationButton(criteria, region, district, showCreateButton, refreshCallback);
+		createNewVaccinationButton(criteria, region, district, showCreateButton, () -> SormasUI.refreshView());
 		addComponent(vaccinationList);
 		vaccinationList.reload();
 	}
@@ -63,15 +63,14 @@ public class VaccinationListComponent extends SideComponent {
 		VaccinationListCriteria criteria,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
-		boolean showCreateButton,
-		Runnable refreshCallback) {
+		boolean showCreateButton) {
 
 		this(
 			criteria,
 			region,
 			district,
 			showCreateButton,
-			refreshCallback,
+			() -> SormasUI.refreshView(),
 			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
 				.getEntriesListWithRelevance(caseReferenceDto, criteria, 0, maxDisplayedEntries));
 	}
@@ -81,15 +80,14 @@ public class VaccinationListComponent extends SideComponent {
 		VaccinationListCriteria criteria,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
-		boolean showCreateButton,
-		Runnable refreshCallback) {
+		boolean showCreateButton) {
 
 		this(
 			criteria,
 			region,
 			district,
 			showCreateButton,
-			refreshCallback,
+			() -> SormasUI.refreshView(),
 			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
 				.getEntriesListWithRelevance(contactReferenceDto, criteria, 0, maxDisplayedEntries));
 	}
@@ -99,15 +97,14 @@ public class VaccinationListComponent extends SideComponent {
 		VaccinationListCriteria criteria,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
-		boolean showCreateButton,
-		Runnable refreshCallback) {
+		boolean showCreateButton) {
 
 		this(
 			criteria,
 			region,
 			district,
 			showCreateButton,
-			refreshCallback,
+			() -> SormasUI.refreshView(),
 			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
 				.getEntriesListWithRelevance(eventParticipantReferenceDto, criteria, 0, maxDisplayedEntries));
 	}
