@@ -58,11 +58,15 @@ public class LabMessageGridFilterForm extends AbstractFilterForm<LabMessageCrite
 				.withCaptionAndPixelSized(LabMessageCriteria.MESSAGE_DATE_TO, I18nProperties.getString(Strings.promptLabMessagesDateTo), 200));
 
 		addField(
-			FieldConfiguration
-				.withCaptionAndPixelSized(LabMessageCriteria.BIRTH_DATE_FROM, I18nProperties.getString(Strings.promptLabMessagesBirthDateFrom), 200));
+			FieldConfiguration.withCaptionAndPixelSized(
+				LabMessageCriteria.BIRTH_DATE_FROM,
+				I18nProperties.getString(Strings.promptLabMessagesPersonBirthDateFrom),
+				200));
 
 		addField(
-			FieldConfiguration
-				.withCaptionAndPixelSized(LabMessageCriteria.BIRTH_DATE_TO, I18nProperties.getString(Strings.promptLabMessagesBirthDateTo), 200));
+			FieldConfiguration.withCaptionAndPixelSized(
+				LabMessageCriteria.BIRTH_DATE_TO,
+				I18nProperties.getString(Strings.promptLabMessagesPersonBirthDateTo),
+				200));
 	}
 }

@@ -84,7 +84,7 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 				cb.lessThanOrEqualTo(labMessage.get(LabMessage.MESSAGE_DATE_TIME), DateHelper.getEndOfDay(criteria.getMessageDateTo())));
 		}
 		if (criteria.getBirthDateFrom() != null) {
-			Calendar birthdayFrom = new GregorianCalendar();
+			Calendar birthdayFrom = Calendar.getInstance();
 			birthdayFrom.setTime(criteria.getBirthDateFrom());
 			int yearFrom = birthdayFrom.get(Calendar.YEAR);
 			int monthFrom = birthdayFrom.get(Calendar.MONTH) + 1;

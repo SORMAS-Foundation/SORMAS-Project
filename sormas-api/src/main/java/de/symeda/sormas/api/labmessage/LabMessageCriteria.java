@@ -35,7 +35,7 @@ public class LabMessageCriteria extends BaseCriteria implements Serializable {
 		return labMessageStatus;
 	}
 
-	public LabMessageCriteria setLabMessageStatus(LabMessageStatus labMessageStatus) {
+	public LabMessageCriteria labMessageStatus(LabMessageStatus labMessageStatus) {
 		this.labMessageStatus = labMessageStatus;
 		return this;
 	}

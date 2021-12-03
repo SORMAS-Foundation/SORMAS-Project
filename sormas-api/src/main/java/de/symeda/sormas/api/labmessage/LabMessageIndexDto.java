@@ -64,6 +64,7 @@ public class LabMessageIndexDto implements Serializable {
 
 		if (personBirthDateYYYY != null && personBirthDateMM != null && personBirthDateDD != null) {
 			Calendar birthdate = Calendar.getInstance();
+			birthdate.setLenient(false);
 			birthdate.set(personBirthDateYYYY, personBirthDateMM - 1, personBirthDateDD, 0, 0, 0);
 			personBirthDate = birthdate.getTime();
 		}

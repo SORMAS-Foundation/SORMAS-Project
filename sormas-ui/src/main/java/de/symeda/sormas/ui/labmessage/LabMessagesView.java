@@ -237,7 +237,7 @@ public class LabMessagesView extends AbstractView {
 
 	private Button createAndAddStatusButton(@Nullable LabMessageStatus status, HorizontalLayout buttonLayout) {
 		Button button = ButtonHelper.createButton(status == null ? I18nProperties.getCaption(Captions.all) : status.toString(), e -> {
-			criteria.setLabMessageStatus(status);
+			criteria.labMessageStatus(status);
 			navigateTo(criteria);
 		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 
