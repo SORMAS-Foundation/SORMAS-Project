@@ -18,8 +18,6 @@
 package de.symeda.sormas.backend.event;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -37,11 +35,14 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.backend.immunization.ImmunizationService;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.vaccination.Vaccination;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -54,8 +55,6 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
-import de.symeda.sormas.backend.immunization.ImmunizationService;
-import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
@@ -66,7 +65,6 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
-import de.symeda.sormas.backend.vaccination.VaccinationService;
 
 @Stateless
 @LocalBean
@@ -494,8 +492,6 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	 */
 	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
 
-		LocalDate localVaccinationDate = vaccinationDate != null ? vaccinationDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate() : null;
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<EventParticipant> cu = cb.createCriteriaUpdate(EventParticipant.class);
 		Root<EventParticipant> root = cu.from(EventParticipant.class);
@@ -503,53 +499,15 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		Subquery<Event> eventSq = cu.subquery(Event.class);
 		Root<Event> eventSqRoot = eventSq.from(Event.class);
 		eventSq.select(eventSqRoot);
-		Path<Date> startDatePath = eventSqRoot.get(Event.START_DATE);
-		Expression<Integer> startDateYear = cb.function(ModelConstants.FUNCTION_YEAR, Integer.class, startDatePath);
-		Expression<Integer> startDateMonth = cb.function(ModelConstants.FUNCTION_MONTH, Integer.class, startDatePath);
-		Expression<Integer> startDateDay = cb.function(ModelConstants.FUNCTION_DAY, Integer.class, startDatePath);
-		Path<Date> endDatePath = eventSqRoot.get(Event.END_DATE);
-		Expression<Integer> endDateYear = cb.function(ModelConstants.FUNCTION_YEAR, Integer.class, endDatePath);
-		Expression<Integer> endDateMonth = cb.function(ModelConstants.FUNCTION_MONTH, Integer.class, endDatePath);
-		Expression<Integer> endDateDay = cb.function(ModelConstants.FUNCTION_DAY, Integer.class, endDatePath);
-		Path<Date> reportDatePath = eventSqRoot.get(Event.REPORT_DATE_TIME);
-		Expression<Integer> reportDateYear = cb.function(ModelConstants.FUNCTION_YEAR, Integer.class, reportDatePath);
-		Expression<Integer> reportDateMonth = cb.function(ModelConstants.FUNCTION_MONTH, Integer.class, reportDatePath);
-		Expression<Integer> reportDateDay = cb.function(ModelConstants.FUNCTION_DAY, Integer.class, reportDatePath);
 
 		Predicate datePredicate = vaccinationDate != null
 			? cb.or(
-				cb.or(
-					cb.greaterThan(startDateYear, localVaccinationDate.getYear()),
-					cb.and(
-						cb.equal(startDateYear, localVaccinationDate.getYear()),
-						cb.greaterThan(startDateMonth, localVaccinationDate.getMonthValue())),
-					cb.and(
-						cb.equal(startDateYear, localVaccinationDate.getYear()),
-						cb.equal(startDateMonth, localVaccinationDate.getMonthValue()),
-						cb.greaterThan(startDateDay, localVaccinationDate.getDayOfMonth()))),
-				cb.and(
-					cb.isNull(eventSqRoot.get(Event.START_DATE)),
-					cb.or(
-						cb.greaterThan(endDateYear, localVaccinationDate.getYear()),
-						cb.and(
-							cb.equal(endDateYear, localVaccinationDate.getYear()),
-							cb.greaterThan(endDateMonth, localVaccinationDate.getMonthValue())),
-						cb.and(
-							cb.equal(endDateYear, localVaccinationDate.getYear()),
-							cb.equal(endDateMonth, localVaccinationDate.getMonthValue()),
-							cb.greaterThan(endDateDay, localVaccinationDate.getDayOfMonth())))),
+				cb.greaterThanOrEqualTo(eventSqRoot.get(Event.START_DATE), vaccinationDate),
+				cb.and(cb.isNull(eventSqRoot.get(Event.START_DATE)), cb.greaterThanOrEqualTo(eventSqRoot.get(Event.END_DATE), vaccinationDate)),
 				cb.and(
 					cb.isNull(eventSqRoot.get(Event.START_DATE)),
 					cb.isNull(eventSqRoot.get(Event.END_DATE)),
-					cb.or(
-						cb.greaterThan(reportDateYear, localVaccinationDate.getYear()),
-						cb.and(
-							cb.equal(reportDateYear, localVaccinationDate.getYear()),
-							cb.greaterThan(reportDateMonth, localVaccinationDate.getMonthValue())),
-						cb.and(
-							cb.equal(reportDateYear, localVaccinationDate.getYear()),
-							cb.equal(reportDateMonth, localVaccinationDate.getMonthValue()),
-							cb.greaterThan(reportDateDay, localVaccinationDate.getDayOfMonth())))))
+					cb.greaterThanOrEqualTo(eventSqRoot.get(Event.REPORT_DATE_TIME), vaccinationDate)))
 			: null;
 
 		eventSq.where(

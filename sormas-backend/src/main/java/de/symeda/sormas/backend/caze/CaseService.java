@@ -19,8 +19,6 @@ package de.symeda.sormas.backend.caze;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,7 +46,6 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -1752,22 +1749,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	 */
 	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
 
-		LocalDate localVaccinationDate = vaccinationDate != null ? vaccinationDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate() : null;
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
 		Root<Case> root = cu.from(Case.class);
-		Path<Date> reportDatePath = root.get(Case.REPORT_DATE);
-		Expression<Integer> reportDateYear = cb.function(ModelConstants.FUNCTION_YEAR, Integer.class, reportDatePath);
-		Expression<Integer> reportDateMonth = cb.function(ModelConstants.FUNCTION_MONTH, Integer.class, reportDatePath);
-		Expression<Integer> reportDateDay = cb.function("day", Integer.class, reportDatePath);
 
 		Subquery<Symptoms> symptomsSq = cu.subquery(Symptoms.class);
 		Root<Symptoms> symptomsSqRoot = symptomsSq.from(Symptoms.class);
 		symptomsSq.select(symptomsSqRoot.get(Symptoms.ONSET_DATE));
-		Expression<Integer> onsetDateYear = cb.function(ModelConstants.FUNCTION_YEAR, Integer.class, symptomsSq.getSelection().as(Date.class));
-		Expression<Integer> onsetDateMonth = cb.function(ModelConstants.FUNCTION_MONTH, Integer.class, symptomsSq.getSelection().as(Date.class));
-		Expression<Integer> onsetDateDay = cb.function(ModelConstants.FUNCTION_DAY, Integer.class, symptomsSq.getSelection().as(Date.class));
 		symptomsSq.where(cb.equal(symptomsSqRoot, root.get(Case.SYMPTOMS)));
 
 		cu.set(root.get(Case.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
@@ -1775,26 +1763,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		Predicate datePredicate = vaccinationDate != null
 			? cb.or(
-				cb.or(
-					cb.greaterThan(onsetDateYear, localVaccinationDate.getYear()),
-					cb.and(
-						cb.equal(onsetDateYear, localVaccinationDate.getYear()),
-						cb.greaterThan(onsetDateMonth, localVaccinationDate.getMonthValue())),
-					cb.and(
-						cb.equal(onsetDateYear, localVaccinationDate.getYear()),
-						cb.equal(onsetDateMonth, localVaccinationDate.getMonthValue()),
-						cb.greaterThan(onsetDateDay, localVaccinationDate.getDayOfMonth()))),
-				cb.and(
-					cb.isNull(symptomsSq.getSelection()),
-					cb.or(
-						cb.greaterThan(reportDateYear, localVaccinationDate.getYear()),
-						cb.and(
-							cb.equal(reportDateYear, localVaccinationDate.getYear()),
-							cb.greaterThan(reportDateMonth, localVaccinationDate.getMonthValue())),
-						cb.and(
-							cb.equal(reportDateYear, localVaccinationDate.getYear()),
-							cb.equal(reportDateMonth, localVaccinationDate.getMonthValue()),
-							cb.greaterThan(reportDateDay, localVaccinationDate.getDayOfMonth())))))
+				cb.greaterThanOrEqualTo(symptomsSq.getSelection().as(Date.class), vaccinationDate),
+				cb.and(cb.isNull(symptomsSq.getSelection()), cb.greaterThanOrEqualTo(root.get(Case.REPORT_DATE), vaccinationDate)))
 			: null;
 
 		cu.where(CriteriaBuilderHelper.and(cb, cb.equal(root.get(Case.PERSON), personId), cb.equal(root.get(Case.DISEASE), disease), datePredicate));
