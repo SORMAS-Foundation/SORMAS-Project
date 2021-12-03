@@ -71,9 +71,9 @@ public class EventParticipantReadActivity extends BaseReadActivity<EventParticip
 	@Override
 	public List<PageMenuItem> getPageMenuData() {
 		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(EventParticipantSection.values(), getContext());
-		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
-			menuItems.set(EventParticipantSection.IMMUNIZATIONS.ordinal(), null);
-		}
+		// if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		// 	menuItems.set(EventParticipantSection.IMMUNIZATIONS.ordinal(), null);
+		// }
 		return menuItems;
 	}
 

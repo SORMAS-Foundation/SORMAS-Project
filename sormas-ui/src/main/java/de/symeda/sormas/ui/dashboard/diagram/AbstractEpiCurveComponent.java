@@ -67,7 +67,7 @@ public abstract class AbstractEpiCurveComponent extends VerticalLayout {
 		epiCurveChart = new HighChart();
 		epiCurveChart.setSizeFull();
 		//epiCurveChart.setHeight(0, Unit.PIXELS);
-		epiCurveGrouping = EpiCurveGrouping.WEEK;
+		epiCurveGrouping = EpiCurveGrouping.DAY;
 		showMinimumEntries = true;
 
 		addComponent(createHeader());

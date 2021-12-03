@@ -79,14 +79,6 @@
             />
 
         <item
-            android:id="@+id/menu_item_immunizations"
-            android:title="@string/main_menu_immunizations"
-            android:textSize="16sp"
-            android:icon="@drawable/ic_baseline_sanitizer_36dp"
-            android:orderInCategory="8"
-            />
-
-        <item
             android:id="@+id/menu_item_campaigns"
             android:title="Campaigns"
             android:icon="@drawable/ic_drawer_campaigns_blue_36dp"

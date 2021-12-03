@@ -291,6 +291,7 @@ public class CaseExportDto implements Serializable {
 	private Date quarantineOfficialOrderSentDate;
 
 	private YesNoUnknown postpartum;
+	private YesNoUnknown transmitted;
 	private Trimester trimester;
 
 	private FollowUpStatus followUpStatus;
@@ -370,7 +371,7 @@ public class CaseExportDto implements Serializable {
 						 String phone, String phoneOwner, String emailAddress, String otherContactDetails, EducationType educationType, String educationDetails,
 						 OccupationType occupationType, String occupationDetails, ArmedForcesRelationType ArmedForcesRelationType, YesNoUnknown contactWithSourceCaseKnown,
 						 //Date onsetDate,
-						 VaccinationStatus vaccinationStatus, YesNoUnknown postpartum, Trimester trimester,
+						 VaccinationStatus vaccinationStatus, YesNoUnknown postpartum, YesNoUnknown transmitted, Trimester trimester,
 						 long eventCount, String externalID, String externalToken, String internalToken,
 						 String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
 						 CaseIdentificationSource caseIdentificationSource, ScreeningType screeningType,
@@ -484,6 +485,7 @@ public class CaseExportDto implements Serializable {
 		this.vaccinationStatus = vaccinationStatus;
 
 		this.postpartum = postpartum;
+		this.transmitted = transmitted;
 		this.trimester = trimester;
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
@@ -2318,6 +2320,16 @@ public class CaseExportDto implements Serializable {
 		return followUpStatusChangeUserRoles;
 	}
 
+	@Order(179)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.TRANSMITTED)
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	public YesNoUnknown getTransmitted() {
+		return transmitted;
+	}
+
 	public void setFollowUpStatusChangeUserRoles(Set<UserRole> roles) {
 		this.followUpStatusChangeUserRoles = StringUtils.join(roles, ", ");
 	}
@@ -2388,6 +2400,10 @@ public class CaseExportDto implements Serializable {
 
 	public void setPostpartum(YesNoUnknown postpartum) {
 		this.postpartum = postpartum;
+	}
+
+	public void setTransmitted(YesNoUnknown transmitted) {
+		this.transmitted = transmitted;
 	}
 
 	public void setApproximateAge(String age) {

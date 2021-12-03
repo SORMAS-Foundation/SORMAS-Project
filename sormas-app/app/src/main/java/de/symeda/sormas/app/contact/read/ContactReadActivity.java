@@ -67,9 +67,9 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 		if (DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.VIEW_TAB_CONTACTS_FOLLOW_UP_VISITS)) {
 			menuItems.set(ContactSection.VISITS.ordinal(), null);
 		}
-		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
-			menuItems.set(ContactSection.IMMUNIZATIONS.ordinal(), null);
-		}
+		// if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		// 	menuItems.set(ContactSection.IMMUNIZATIONS.ordinal(), null);
+		// }
 		return menuItems;
 	}
 
@@ -98,9 +98,9 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 		case EPIDEMIOLOGICAL_DATA:
 			fragment = EpidemiologicalDataReadFragment.newInstance(activityRootData);
 			break;
-		case IMMUNIZATIONS:
+		/*case IMMUNIZATIONS:
 			fragment = ContactReadImmunizationListFragment.newInstance(activityRootData);
-			break;
+			break;*/
 		default:
 			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
 		}

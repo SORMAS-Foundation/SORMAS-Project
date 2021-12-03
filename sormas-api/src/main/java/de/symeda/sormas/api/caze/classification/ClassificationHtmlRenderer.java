@@ -388,7 +388,8 @@ public final class ClassificationHtmlRenderer {
 		CONFIRMED,
 		CONFIRMED_NO_SYMPTOMS,
 		CONFIRMED_UNKNOWN_SYMPTOMS,
-		NOT_A_CASE;
+		NOT_A_CASE,
+		NOT_EXAMINATED;
 
 		@Override
 		public String toString() {

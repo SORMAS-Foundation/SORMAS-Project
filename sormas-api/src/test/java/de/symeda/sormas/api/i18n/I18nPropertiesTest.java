@@ -23,7 +23,6 @@ public class I18nPropertiesTest {
 		UTF8Control control = new UTF8Control();
 		assertThat(control.toBundleName("captions", Locale.ROOT), is("captions"));
 		assertThat(control.toBundleName("captions", new Locale("en")), is("captions_en"));
-		assertThat(control.toBundleName("captions", new Locale("en", "NG")), is("captions_en-NG"));
 	}
 
 	@Test
@@ -50,16 +49,5 @@ public class I18nPropertiesTest {
 		}
 	}
 
-	@Test
-	public void testInfrastructureCaptions() {
 
-		// test usage of (sub)continent-names containing brackets and spaces
-		Language currentLanguage = I18nProperties.getUserLanguage();
-		I18nProperties.setUserLanguage(Language.DE);
-		assertThat(I18nProperties.getContinentName("Australia (Continent)"), is("Australien (Kontinent)"));
-		assertThat(I18nProperties.getSubcontinentName("Australia (Subcontinent)"), is("Australien (Subkontinent)"));
-		assertThat(I18nProperties.getContinentName("CustomContinent (Atlantis)"), is("CustomContinent (Atlantis)"));
-		assertThat(I18nProperties.getSubcontinentName("CustomSubcontinent (Atlantis)"), is("CustomSubcontinent (Atlantis)"));
-		I18nProperties.setUserLanguage(currentLanguage);
-	}
 }

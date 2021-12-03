@@ -305,8 +305,6 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 					NavigationHelper.goToEvents(getContext());
 				} else if (id == R.id.menu_item_samples) {
 					NavigationHelper.goToSamples(getContext());
-				} else if (id == R.id.menu_item_immunizations) {
-					NavigationHelper.goToImmunizations(getContext());
 				} else if (id == R.id.menu_item_campaigns) {
 					NavigationHelper.goToCampaigns(getContext());
 				} else if (id == R.id.menu_item_reports) {
@@ -438,10 +436,10 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.SAMPLES_LAB));
 
 
-			if (immunizationMenu != null)
-				immunizationMenu.setVisible(
-					ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
-						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.IMMUNIZATION_MANAGEMENT));
+			// if (immunizationMenu != null)
+			// 	immunizationMenu.setVisible(
+			// 		ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
+			// 			&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.IMMUNIZATION_MANAGEMENT));
 
 			if (eventMenu != null)
 				eventMenu.setVisible(

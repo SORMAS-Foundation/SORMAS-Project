@@ -61,7 +61,7 @@
 		<artifact:mvn pom="../sormas-api/pom.xml" fork="true" mavenhome="${env.M2_HOME}" failonerror="true">
 			<sysproperty key="maven.multiModuleProjectDirectory" value="../sormas-api" />
 			<arg value="test" />
-			<arg value="-Dtest=*Generator" />
+			<arg value="-Dmaven.test.skip=true" />
 		</artifact:mvn>
 	</target>
 

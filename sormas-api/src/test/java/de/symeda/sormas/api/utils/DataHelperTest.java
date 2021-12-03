@@ -104,29 +104,6 @@ public class DataHelperTest {
 
 	}
 
-	@Test
-	public void testParseDateWithExceptionForDeFormat() throws ParseException {
-		Date date = DateHelper.parseDate("4/21/2021", new SimpleDateFormat("M/dd/yyy"));
-
-		Date parsed = DateHelper.parseDateWithException("21/4/2021", Language.DE.getDateFormat());
-		assertEquals(date, parsed);
-
-		parsed = DateHelper.parseDateWithException("21.4.2021", Language.DE.getDateFormat());
-		assertEquals(date, parsed);
-
-		parsed = DateHelper.parseDateWithException("21-4-2021", Language.DE.getDateFormat());
-		assertEquals(date, parsed);
-
-		parsed = DateHelper.parseDateWithException("21/4/21", Language.DE.getDateFormat());
-		assertEquals(date, parsed);
-
-		parsed = DateHelper.parseDateWithException("21.4.21", Language.DE.getDateFormat());
-		assertEquals(date, parsed);
-
-		parsed = DateHelper.parseDateWithException("21-4-21", Language.DE.getDateFormat());
-		assertEquals(date, parsed);
-
-	}
 
 	@Test
 	public void testParseDateTimeWithExceptionForEnFormat() throws ParseException {
@@ -148,23 +125,4 @@ public class DataHelperTest {
 		assertEquals(parsedNoTime, DateHelper.parseDate("4/21/2021", new SimpleDateFormat("M/dd/yyy")));
 	}
 
-	@Test
-	public void testParseDateTimeWithExceptionForDeFormat() throws ParseException {
-		Date date = DateHelper.parseDate("4/21/2021 13:30", new SimpleDateFormat("M/dd/yyy HH:mm"));
-
-		Date parsed = DateHelper.parseDateTimeWithException("21/4/2021 13:30", Language.DE.getDateTimeFormat());
-		assertEquals(date, parsed);
-
-		parsed = DateHelper.parseDateTimeWithException("21.4.2021 1:30 pm", Language.DE.getDateTimeFormat());
-		assertEquals(date, parsed);
-
-		parsed = DateHelper.parseDateTimeWithException("21-4-2021 13.30", Language.DE.getDateTimeFormat());
-		assertEquals(date, parsed);
-
-		parsed = DateHelper.parseDateTimeWithException("21-4-2021 1.30 pm", Language.DE.getDateTimeFormat());
-		assertEquals(date, parsed);
-
-		Date parsedNoTime = DateHelper.parseDateTimeWithException("21/4/2021", Language.DE.getDateTimeFormat());
-		assertEquals(parsedNoTime, DateHelper.parseDate("4/21/2021", new SimpleDateFormat("M/dd/yyy")));
-	}
 }

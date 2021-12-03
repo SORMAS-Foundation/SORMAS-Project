@@ -183,16 +183,16 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			container.setEnabled(false);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
-			final EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
-			final Disease disease = eventDto.getDisease();
-			if (disease != null) {
-				final ImmunizationListCriteria immunizationListCriteria =
-					new ImmunizationListCriteria.Builder(eventParticipant.getPerson().toReference()).wihDisease(disease).build();
-				layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
-			}
-		}
+		// if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+		// 	&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		// 	final EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
+		// 	final Disease disease = eventDto.getDisease();
+		// 	if (disease != null) {
+		// 		final ImmunizationListCriteria immunizationListCriteria =
+		// 			new ImmunizationListCriteria.Builder(eventParticipant.getPerson().toReference()).wihDisease(disease).build();
+		// 		layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
+		// 	}
+		// }
 	}
 
 	@Override

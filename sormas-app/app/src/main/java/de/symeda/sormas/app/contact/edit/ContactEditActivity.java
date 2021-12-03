@@ -89,9 +89,9 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 		if (DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.VIEW_TAB_CONTACTS_FOLLOW_UP_VISITS)) {
 			menuItems.set(ContactSection.VISITS.ordinal(), null);
 		}
-		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
-			menuItems.set(ContactSection.IMMUNIZATIONS.ordinal(), null);
-		}
+		// if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		// 	menuItems.set(ContactSection.IMMUNIZATIONS.ordinal(), null);
+		// }
 		return menuItems;
 	}
 
@@ -120,9 +120,9 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 		case EPIDEMIOLOGICAL_DATA:
 			fragment = EpidemiologicalDataEditFragment.newInstance(activityRootData);
 			break;
-		case IMMUNIZATIONS:
+		/*case IMMUNIZATIONS:
 			fragment = ContactEditImmunizationListFragment.newInstance(activityRootData);
-			break;
+			break;*/
 		default:
 			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
 		}
@@ -199,9 +199,9 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 		case TASKS:
 			TaskNewActivity.startActivityFromContact(getContext(), getRootUuid());
 			break;
-		case IMMUNIZATIONS:
+		/*case IMMUNIZATIONS:
 			ImmunizationNewActivity.startActivityFromContact(getContext(), getRootUuid());
-			break;
+			break;*/
 		default:
 			throw new IllegalArgumentException(activeSection.toString());
 		}

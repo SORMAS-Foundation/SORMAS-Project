@@ -1,0 +1,12 @@
+## This is a comment line
+##This is also a comment line
+## This is a comment line with a , inside
+person.firstName,person.lastName,involvementDescription
+## This is a comment line after the headers
+Günther,Heinze,description 1
+Peter,Meyer,description 2
+## This is a comment line between data rows
+Hans,Flamme,description 3
+Jürgen,Holtmann,description 4
+Petra,Holtmann,description 5
+## This is an end of file comment line

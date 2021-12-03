@@ -92,9 +92,9 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 		if (caze != null && caze.isUnreferredPortHealthCase()) {
 			menuItems.set(CaseSection.SAMPLES.ordinal(), null);
 		}
-		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
-			menuItems.set(CaseSection.IMMUNIZATIONS.ordinal(), null);
-		}
+		// if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		// 	menuItems.set(CaseSection.IMMUNIZATIONS.ordinal(), null);
+		// }
 		if (caze != null && caze.isUnreferredPortHealthCase()) {
 			menuItems.set(CaseSection.EVENTS.ordinal(), null);
 		}
@@ -158,9 +158,9 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 		case EVENTS:
 			fragment = CaseReadEventListFragment.newInstance(activityRootData);
 			break;
-		case IMMUNIZATIONS:
+		/*case IMMUNIZATIONS:
 			fragment = CaseReadImmunizationListFragment.newInstance(activityRootData);
-			break;
+			break;*/
 		case PRESCRIPTIONS:
 			fragment = CaseReadPrescriptionListFragment.newInstance(activityRootData);
 			break;

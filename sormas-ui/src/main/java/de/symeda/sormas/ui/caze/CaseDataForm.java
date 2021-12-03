@@ -247,7 +247,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			fluidRowLocs(6, CaseDataDto.SURVEILLANCE_OFFICER) +
 					loc(PAPER_FORM_DATES_LOC) +
 					fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE) +
-					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
+					loc(GENERAL_COMMENT_LOC) + 
+					fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS) +
+					// loc(GENERAL_COMMENT_LOC) + 
+					fluidRowLocs(CaseDataDto.TRANSMITTED);
 	//@formatter:on
 
 	private final String caseUuid;
@@ -838,6 +841,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
 		addField(CaseDataDto.POSTPARTUM, NullableOptionGroup.class);
+		addField(CaseDataDto.TRANSMITTED, NullableOptionGroup.class);
 		addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
 
 		addField(CaseDataDto.VACCINATION_STATUS);

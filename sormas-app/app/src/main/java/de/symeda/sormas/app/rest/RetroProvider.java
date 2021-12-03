@@ -151,7 +151,7 @@ public final class RetroProvider {
 		AuthenticationInterceptor interceptor = new AuthenticationInterceptor(authToken);
 
 		OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-		httpClient.connectTimeout(20, TimeUnit.SECONDS);
+		httpClient.connectTimeout(30, TimeUnit.SECONDS);
 		httpClient.readTimeout(240, TimeUnit.SECONDS); // for infrastructure data
 		httpClient.writeTimeout(60, TimeUnit.SECONDS);
 
