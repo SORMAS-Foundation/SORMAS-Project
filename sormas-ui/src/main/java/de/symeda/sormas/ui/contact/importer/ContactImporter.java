@@ -78,7 +78,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
  */
 public class ContactImporter extends DataImporter {
 
-	private CaseDataDto caze;
+	private final CaseDataDto caze;
 	private UI currentUI;
 
 	public ContactImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze, ValueSeparator csvSeparator)
@@ -157,10 +157,8 @@ public class ContactImporter extends DataImporter {
 			}
 		}
 
-		PersonDto newPerson = newPersonTemp;
-
 		// Sanitize non-HOME address
-		PersonHelper.sanitizeNonHomeAddress(newPerson);
+		PersonHelper.sanitizeNonHomeAddress(newPersonTemp);
 
 		// If the contact still does not have any import errors, search for persons similar to the contact person in the database and,
 		// if there are any, display a window to resolve the conflict to the user
@@ -170,12 +168,14 @@ public class ContactImporter extends DataImporter {
 				ImportSimilarityResultOption resultOption = null;
 
 				ContactImportLock personSelectLock = new ContactImportLock();
+
+				String selectedPersonUuid = null;
 				// We need to pause the current thread to prevent the import from continuing until the user has acted
 				synchronized (personSelectLock) {
 					// Call the logic that allows the user to handle the similarity; once this has been done, the LOCK should be notified
 					// to allow the importer to resume
 					handlePersonSimilarity(
-						newPerson,
+						newPersonTemp,
 						result -> consumer.onImportResult(result, personSelectLock),
 						(person, similarityResultOption) -> new ContactImportSimilarityResult(person, null, similarityResultOption),
 						Strings.infoSelectOrCreatePersonForImport,
@@ -196,7 +196,7 @@ public class ContactImporter extends DataImporter {
 
 					// If the user picked an existing person, override the contact person with it
 					if (ImportSimilarityResultOption.PICK.equals(resultOption)) {
-						newPerson = FacadeProvider.getPersonFacade().getPersonByUuid(consumer.result.getMatchingPerson().getUuid());
+						selectedPersonUuid = consumer.result.getMatchingPerson().getUuid();
 					}
 				}
 
@@ -206,15 +206,18 @@ public class ContactImporter extends DataImporter {
 					return ImportLineResult.SKIPPED;
 				} else {
 					boolean skipPersonValidation = ImportSimilarityResultOption.PICK.equals(resultOption);
-					final PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson, skipPersonValidation);
-					newContactTemp.setPerson(savedPerson.toReference());
 
 					ContactDto newContact = newContactTemp;
+					PersonDto importPerson = newPersonTemp;
 
 					final ContactImportLock contactSelectLock = new ContactImportLock();
 					synchronized (contactSelectLock) {
 
-						handleContactSimilarity(newContactTemp, savedPerson, result -> consumer.onImportResult(result, contactSelectLock));
+						if (selectedPersonUuid != null) {
+							importPerson = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPersonUuid);
+						}
+
+						handleContactSimilarity(newContactTemp, importPerson, result -> consumer.onImportResult(result, contactSelectLock));
 
 						try {
 							if (!contactSelectLock.wasNotified) {
@@ -235,7 +238,15 @@ public class ContactImporter extends DataImporter {
 					}
 
 					// Workaround: Reset the change date to avoid OutdatedEntityExceptions
+					PersonReferenceDto personReferenceDto;
+					if (selectedPersonUuid != null) {
+						FacadeProvider.getPersonFacade().mergePerson(importPerson, newPersonTemp, true, skipPersonValidation);
+						personReferenceDto = importPerson.toReference();
+					} else {
+						personReferenceDto = FacadeProvider.getPersonFacade().savePerson(newPersonTemp, skipPersonValidation).toReference();
+					}
 					newContact.setChangeDate(new Date());
+					newContact.setPerson(personReferenceDto);
 					FacadeProvider.getContactFacade().saveContact(newContact, true, false);
 
 					consumer.result = null;
@@ -274,9 +285,7 @@ public class ContactImporter extends DataImporter {
 				component.addDiscardListener(
 					() -> resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.SKIP)));
 
-				contactSelection.setSelectionChangeCallback((commitAllowed) -> {
-					component.getCommitButton().setEnabled(commitAllowed);
-				});
+				contactSelection.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
 
 				VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateContact));
 

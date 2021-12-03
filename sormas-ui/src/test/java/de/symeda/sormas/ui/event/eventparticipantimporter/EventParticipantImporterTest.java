@@ -177,7 +177,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		assertEquals(1, eventParticipantFacade.count(new EventParticipantCriteria().withEvent(eventRef)));
 		assertEquals(person.getUuid(), importedEventParticipant.getPersonUuid());
 		assertEquals(person.getFirstName(), importedPerson.getFirstName());
-		assertEquals(person.getLastName(), importedPerson.getLastName());
+		assertEquals("Heinze", importedPerson.getLastName());
 
 		assertEquals(1, getPersonFacade().getAllUuids().size());
 	}

@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,16 +14,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.ui.events.importer;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.server.Sizeable.Unit;
@@ -32,9 +29,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.eventimport.EventImportEntities;
 import de.symeda.sormas.api.event.eventimport.EventImportFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -42,7 +37,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.importer.DataImporter;
@@ -67,21 +61,13 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
  */
 public class EventImporter extends DataImporter {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EventImporter.class);
-
 	private UI currentUI;
 	private final EventImportFacade eventImportFacade;
-	private final EventFacade eventFacade;
-	private final EventParticipantFacade eventParticipantFacade;
-	private final PersonFacade personFacade;
 
 	public EventImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator csvSeparator) throws IOException {
 		super(inputFile, hasEntityClassRow, currentUser, csvSeparator);
 
 		eventImportFacade = FacadeProvider.getEventImportFacade();
-		eventFacade = FacadeProvider.getEventFacade();
-		eventParticipantFacade = FacadeProvider.getEventParticipantFacade();
-		personFacade = FacadeProvider.getPersonFacade();
 	}
 
 	@Override
