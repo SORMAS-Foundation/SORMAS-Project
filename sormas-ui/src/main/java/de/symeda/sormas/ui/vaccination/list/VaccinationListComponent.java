@@ -49,7 +49,6 @@ public class VaccinationListComponent extends SideComponent {
 		VaccinationList vaccinationList = new VaccinationList(
 			criteria.getDisease(),
 			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade().getEntriesList(criteria, 0, maxDisplayedEntries));
-		createNewVaccinationButton(criteria, null, null, false, () -> SormasUI.refreshView());
 		addComponent(vaccinationList);
 		vaccinationList.reload();
 	}
@@ -64,7 +63,6 @@ public class VaccinationListComponent extends SideComponent {
 			criteria,
 			region,
 			district,
-			true,
 			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
 				.getEntriesListWithRelevance(caseReferenceDto, criteria, 0, maxDisplayedEntries));
 	}
@@ -79,7 +77,6 @@ public class VaccinationListComponent extends SideComponent {
 			criteria,
 			region,
 			district,
-			true,
 			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
 				.getEntriesListWithRelevance(contactReferenceDto, criteria, 0, maxDisplayedEntries));
 	}
@@ -94,7 +91,6 @@ public class VaccinationListComponent extends SideComponent {
 			criteria,
 			region,
 			district,
-			true,
 			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
 				.getEntriesListWithRelevance(eventParticipantReferenceDto, criteria, 0, maxDisplayedEntries));
 	}
@@ -103,13 +99,12 @@ public class VaccinationListComponent extends SideComponent {
 		VaccinationListCriteria criteria,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
-		boolean showCreateButton,
 		Function<Integer, List<VaccinationListEntryDto>> entriesListSupplier) {
 		super(I18nProperties.getString(Strings.entityVaccinations));
 
 		VaccinationList vaccinationList = new VaccinationList(criteria.getDisease(), entriesListSupplier);
 
-		createNewVaccinationButton(criteria, region, district, showCreateButton, () -> SormasUI.refreshView());
+		createNewVaccinationButton(criteria, region, district, () -> SormasUI.refreshView());
 		addComponent(vaccinationList);
 		vaccinationList.reload();
 	}
@@ -118,10 +113,9 @@ public class VaccinationListComponent extends SideComponent {
 		VaccinationListCriteria criteria,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
-		boolean showCreateButton,
 		Runnable refreshCallback) {
 		UserProvider currentUser = UserProvider.getCurrent();
-		if (showCreateButton && currentUser != null && currentUser.hasUserRight(UserRight.IMMUNIZATION_CREATE)) {
+		if (currentUser != null && currentUser.hasUserRight(UserRight.IMMUNIZATION_CREATE)) {
 			Button createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.vaccinationNewVaccination));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
