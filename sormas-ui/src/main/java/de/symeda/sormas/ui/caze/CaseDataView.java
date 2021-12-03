@@ -181,7 +181,7 @@ public class CaseDataView extends AbstractCaseView {
 				VaccinationListCriteria criteria = new VaccinationListCriteria.Builder(caze.getPerson()).withDisease(caze.getDisease()).build();
 				layout.addComponent(
 					new SideComponentLayout(
-						new VaccinationListComponent(getCaseRef(), criteria, caze.getResponsibleRegion(), caze.getResponsibleDistrict(), true)),
+						new VaccinationListComponent(getCaseRef(), criteria, caze.getResponsibleRegion(), caze.getResponsibleDistrict())),
 					VACCINATIONS_LOC);
 			}
 		}
