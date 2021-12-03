@@ -20,7 +20,6 @@ import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
@@ -43,7 +42,9 @@ import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.data.validation.ValidationDirection;
 import de.symeda.sormas.backend.user.UserService;
+import org.apache.commons.lang.NotImplementedException;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -156,14 +157,21 @@ public class InfrastructureValidator {
 		ValidationErrors validationErrors,
 		InfrastructureBaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> facade,
 		String i18property,
-		Consumer<REF_DTO> onNoErrors) {
-		if (dto != null) {
-			REF_DTO match = facade.getReferenceByUuid(dto.getUuid());
-			if (match != null) {
-				onNoErrors.accept(match);
-			} else {
-				validationErrors.add(new ValidationErrorGroup(groupNameTag), new ValidationErrorMessage(i18property, dto.getCaption()));
+		Consumer<REF_DTO> onNoErrors,
+		ValidationDirection validationDirection) {
+		if (validationDirection == ValidationDirection.INCOMING) {
+			if (dto != null) {
+				REF_DTO match = facade.getReferenceByUuid(dto.getUuid());
+				if (match != null) {
+					onNoErrors.accept(match);
+				} else {
+					validationErrors.add(new ValidationErrorGroup(groupNameTag), new ValidationErrorMessage(i18property, dto.getCaption()));
+				}
 			}
+		} else if (validationDirection == ValidationDirection.OUTGOING) {
+			throw new NotImplementedException("Outgoing validation is not yet implemented.");
+		} else {
+			throw new IllegalStateException("Unexpected value: " + validationDirection);
 		}
 	}
 
@@ -171,80 +179,96 @@ public class InfrastructureValidator {
 		ContinentReferenceDto continent,
 		String groupNameTag,
 		ValidationErrors validationErrors,
-		Consumer<ContinentReferenceDto> onNoErrors) {
-		validateInfra(continent, groupNameTag, validationErrors, continentFacade, Validations.sormasToSormasContinent, onNoErrors);
+		Consumer<ContinentReferenceDto> onNoErrors,
+		ValidationDirection direction) {
+		validateInfra(continent, groupNameTag, validationErrors, continentFacade, Validations.sormasToSormasContinent, onNoErrors, direction);
 	}
 
 	public void validateSubcontinent(
 		SubcontinentReferenceDto subcontinent,
 		String groupNameTag,
 		ValidationErrors validationErrors,
-		Consumer<SubcontinentReferenceDto> onNoErrors) {
+		Consumer<SubcontinentReferenceDto> onNoErrors,
+		ValidationDirection direction) {
 
-		validateInfra(subcontinent, groupNameTag, validationErrors, subcontinentFacade, Validations.sormasToSormasSubcontinent, onNoErrors);
+		validateInfra(
+			subcontinent,
+			groupNameTag,
+			validationErrors,
+			subcontinentFacade,
+			Validations.sormasToSormasSubcontinent,
+			onNoErrors,
+			direction);
 	}
 
 	public void validateCountry(
 		CountryReferenceDto country,
 		String groupNameTag,
 		ValidationErrors validationErrors,
-		Consumer<CountryReferenceDto> onNoErrors) {
-		validateInfra(country, groupNameTag, validationErrors, countryFacade, Validations.sormasToSormasCountry, onNoErrors);
+		Consumer<CountryReferenceDto> onNoErrors,
+		ValidationDirection direction) {
+		validateInfra(country, groupNameTag, validationErrors, countryFacade, Validations.sormasToSormasCountry, onNoErrors, direction);
 	}
 
 	public void validateRegion(
 		RegionReferenceDto region,
 		String groupNameTag,
 		ValidationErrors validationErrors,
-		Consumer<RegionReferenceDto> onNoErrors) {
-		validateInfra(region, groupNameTag, validationErrors, regionFacade, Validations.sormasToSormasRegion, onNoErrors);
+		Consumer<RegionReferenceDto> onNoErrors,
+		ValidationDirection direction) {
+		validateInfra(region, groupNameTag, validationErrors, regionFacade, Validations.sormasToSormasRegion, onNoErrors, direction);
 	}
 
 	public void validateDistrict(
 		DistrictReferenceDto district,
 		String groupNameTag,
 		ValidationErrors validationErrors,
-		Consumer<DistrictReferenceDto> onNoErrors) {
-		validateInfra(district, groupNameTag, validationErrors, districtFacade, Validations.sormasToSormasDistrict, onNoErrors);
+		Consumer<DistrictReferenceDto> onNoErrors,
+		ValidationDirection direction) {
+		validateInfra(district, groupNameTag, validationErrors, districtFacade, Validations.sormasToSormasDistrict, onNoErrors, direction);
 	}
 
 	public void validateCommunity(
 		CommunityReferenceDto community,
 		String groupNameTag,
 		ValidationErrors validationErrors,
-		Consumer<CommunityReferenceDto> onNoErrors) {
-		validateInfra(
-			community,
-			groupNameTag,
-			validationErrors,
-			communityFacade,
-			Validations.sormasToSormasCommunity,
-
-			onNoErrors);
+		Consumer<CommunityReferenceDto> onNoErrors,
+		ValidationDirection direction) {
+		validateInfra(community, groupNameTag, validationErrors, communityFacade, Validations.sormasToSormasCommunity, onNoErrors, direction);
 	}
 
 	public void validateResponsibleRegion(
 		RegionReferenceDto region,
 		String groupNameTag,
 		ValidationErrors validationErrors,
-		Consumer<RegionReferenceDto> onNoErrors) {
-		validateInfra(region, groupNameTag, validationErrors, regionFacade, Validations.sormasToSormasResponsibleRegion, onNoErrors);
+		Consumer<RegionReferenceDto> onNoErrors,
+		ValidationDirection direction) {
+		validateInfra(region, groupNameTag, validationErrors, regionFacade, Validations.sormasToSormasResponsibleRegion, onNoErrors, direction);
 	}
 
 	public void validateResponsibleDistrict(
 		DistrictReferenceDto district,
 		String groupNameTag,
 		ValidationErrors validationErrors,
-		Consumer<DistrictReferenceDto> onNoErrors) {
-		validateInfra(district, groupNameTag, validationErrors, districtFacade, Validations.sormasToSormasResponsibleDistrict, onNoErrors);
+		Consumer<DistrictReferenceDto> onNoErrors,
+		ValidationDirection direction) {
+		validateInfra(district, groupNameTag, validationErrors, districtFacade, Validations.sormasToSormasResponsibleDistrict, onNoErrors, direction);
 	}
 
 	public void validateResponsibleCommunity(
 		CommunityReferenceDto community,
 		String groupNameTag,
 		ValidationErrors validationErrors,
-		Consumer<CommunityReferenceDto> onNoErrors) {
-		validateInfra(community, groupNameTag, validationErrors, communityFacade, Validations.sormasToSormasResponsibleCommunity, onNoErrors);
+		Consumer<CommunityReferenceDto> onNoErrors,
+		ValidationDirection direction) {
+		validateInfra(
+			community,
+			groupNameTag,
+			validationErrors,
+			communityFacade,
+			Validations.sormasToSormasResponsibleCommunity,
+			onNoErrors,
+			direction);
 	}
 
 	public void validateFacility(

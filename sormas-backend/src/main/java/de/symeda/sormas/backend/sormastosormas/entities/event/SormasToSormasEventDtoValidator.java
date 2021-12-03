@@ -11,6 +11,7 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPrevi
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.data.validation.ValidationDirection;
 
 @Stateless
 @LocalBean
@@ -25,28 +26,18 @@ public class SormasToSormasEventDtoValidator extends SormasToSormasDtoValidator<
 	}
 
 	@Override
-	public ValidationErrors validateIncoming(SormasToSormasEventDto sharedData) {
+	public ValidationErrors validate(SormasToSormasEventDto sharedData, ValidationDirection direction) {
 		EventDto event = sharedData.getEntity();
 		ValidationErrors validationErrors = new ValidationErrors();
-		validateLocation(event.getEventLocation(), Captions.Event, validationErrors);
+		validateLocation(event.getEventLocation(), Captions.Event, validationErrors, ValidationDirection.INCOMING);
 
 		return validationErrors;
 	}
 
 	@Override
-	public ValidationErrors validateIncomingPreview(SormasToSormasEventPreview preview) {
+	public ValidationErrors validatePreview(SormasToSormasEventPreview preview, ValidationDirection direction) {
 		ValidationErrors eventValidationErrors = new ValidationErrors();
-		validateLocation(preview.getEventLocation(), Captions.Event, eventValidationErrors);
+		validateLocation(preview.getEventLocation(), Captions.Event, eventValidationErrors, ValidationDirection.INCOMING);
 		return eventValidationErrors;
-	}
-
-	@Override
-	public ValidationErrors validateOutgoing(SormasToSormasEventDto sharedData) {
-		return null;
-	}
-
-	@Override
-	public ValidationErrors validateOutgoingPreview(SormasToSormasEventPreview preview) {
-		return null;
 	}
 }
