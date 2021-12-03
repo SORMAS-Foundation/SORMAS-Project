@@ -353,13 +353,6 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		final From<?, EventParticipant> eventParticipantPath,
 		final EventUserFilterCriteria eventUserFilterCriteria) {
 
-		final User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
-		if (jurisdictionLevel == JurisdictionLevel.NATION || currentUser.hasAnyUserRole(UserRole.REST_USER)) {
-			return null;
-		}
-
-		Predicate filter = null;
 		final EventJoins eventJoins;
 		final From<?, Event> eventJoin;
 		final From<?, EventParticipant> eventParticipantJoin;
@@ -374,6 +367,18 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			eventJoin = eventJoins.getRoot();
 			eventParticipantJoin = eventParticipantPath;
 		}
+
+		final User currentUser = getCurrentUser();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
+		if (jurisdictionLevel == JurisdictionLevel.NATION || currentUser.hasAnyUserRole(UserRole.REST_USER)) {
+			if (currentUser.getLimitedDisease() != null) {
+				return cb.or(cb.equal(eventJoin.get(Event.DISEASE), currentUser.getLimitedDisease()), cb.isNull(eventJoin.get(Event.DISEASE)));
+			} else {
+				return null;
+			}
+		}
+
+		Predicate filter = null;
 
 		switch (jurisdictionLevel) {
 		case REGION:
