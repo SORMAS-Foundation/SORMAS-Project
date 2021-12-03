@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.labmessage;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.ejb.LocalBean;
@@ -105,7 +104,7 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 			filter = CriteriaBuilderHelper.and(cb, filter, birthDateFromFilter);
 		}
 		if (criteria.getBirthDateTo() != null) {
-			Calendar birthdayTo = new GregorianCalendar();
+			Calendar birthdayTo = Calendar.getInstance();
 			birthdayTo.setTime(criteria.getBirthDateTo());
 			int yearTo = birthdayTo.get(Calendar.YEAR);
 			int monthTo = birthdayTo.get(Calendar.MONTH) + 1;
