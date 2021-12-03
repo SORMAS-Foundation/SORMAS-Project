@@ -14,6 +14,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -41,6 +42,7 @@ import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.util.DateHelper8;
 
 public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 
@@ -278,7 +280,7 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 
 		loginWith(nationalUser);
 
-		Date today = new Date();
+		Date today = DateHelper8.toDate(LocalDate.now().atTime(12, 0));
 		PersonDto person1 = creator.createPerson("John", "Doe");
 		PersonDto person2 = creator.createPerson("Jane", "Doe");
 
@@ -315,7 +317,7 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 
 		// Create a vaccination with vaccination date = today
 		VaccinationDto vaccination1 = VaccinationDto.build(nationalUser.toReference());
-		vaccination1.setVaccinationDate(today);
+		vaccination1.setVaccinationDate(DateHelper8.toDate(LocalDate.now().atTime(6, 0)));
 		getVaccinationFacade().createWithImmunization(vaccination1, rdcf1.region, rdcf1.district, person1.toReference(), Disease.EVD);
 
 		assertNull(getCaseFacade().getByUuid(case11.getUuid()).getVaccinationStatus());

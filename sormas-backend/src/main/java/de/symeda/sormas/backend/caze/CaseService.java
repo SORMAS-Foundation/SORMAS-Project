@@ -1749,6 +1749,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	 */
 	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
 
+		// Only consider cases with relevance date at least one day after the vaccination date
 		if (vaccinationDate != null) {
 			vaccinationDate = DateHelper.getEndOfDay(vaccinationDate);
 		}
@@ -1767,8 +1768,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		Predicate datePredicate = vaccinationDate != null
 			? cb.or(
-				cb.greaterThanOrEqualTo(symptomsSq.getSelection().as(Date.class), vaccinationDate),
-				cb.and(cb.isNull(symptomsSq.getSelection()), cb.greaterThanOrEqualTo(root.get(Case.REPORT_DATE), vaccinationDate)))
+				cb.greaterThan(symptomsSq.getSelection().as(Date.class), vaccinationDate),
+				cb.and(cb.isNull(symptomsSq.getSelection()), cb.greaterThan(root.get(Case.REPORT_DATE), vaccinationDate)))
 			: null;
 
 		cu.where(CriteriaBuilderHelper.and(cb, cb.equal(root.get(Case.PERSON), personId), cb.equal(root.get(Case.DISEASE), disease), datePredicate));

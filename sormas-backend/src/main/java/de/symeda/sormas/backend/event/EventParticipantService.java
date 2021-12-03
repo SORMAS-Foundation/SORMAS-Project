@@ -492,6 +492,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	 */
 	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
 
+		// Only consider event participants with relevance date at least one day after the vaccination date
 		if (vaccinationDate != null) {
 			vaccinationDate = DateHelper.getEndOfDay(vaccinationDate);
 		}
@@ -506,12 +507,12 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 
 		Predicate datePredicate = vaccinationDate != null
 			? cb.or(
-				cb.greaterThanOrEqualTo(eventSqRoot.get(Event.START_DATE), vaccinationDate),
+				cb.greaterThan(eventSqRoot.get(Event.START_DATE), vaccinationDate),
 				cb.and(cb.isNull(eventSqRoot.get(Event.START_DATE)), cb.greaterThanOrEqualTo(eventSqRoot.get(Event.END_DATE), vaccinationDate)),
 				cb.and(
 					cb.isNull(eventSqRoot.get(Event.START_DATE)),
 					cb.isNull(eventSqRoot.get(Event.END_DATE)),
-					cb.greaterThanOrEqualTo(eventSqRoot.get(Event.REPORT_DATE_TIME), vaccinationDate)))
+					cb.greaterThan(eventSqRoot.get(Event.REPORT_DATE_TIME), vaccinationDate)))
 			: null;
 
 		eventSq.where(
