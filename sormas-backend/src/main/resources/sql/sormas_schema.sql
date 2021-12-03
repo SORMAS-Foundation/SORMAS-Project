@@ -9393,4 +9393,17 @@ ALTER TABLE testreport_history ADD COLUMN preliminary boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (431, '[DEMIS2SORMAS] Handle New Profile: Preliminary Test Results #5551');
 
+-- 2021-12-03 [S2S] Implement outgoing S2S entity validation #7070
+ALTER TABLE areas ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE community ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE continent ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE country ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE district ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE facility ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE pointofentry ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE region ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE subcontinent ADD COLUMN centrally_managed boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (432, ' [S2S] Implement outgoing S2S entity validation #7070');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
