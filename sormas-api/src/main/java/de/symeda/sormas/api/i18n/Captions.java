@@ -1703,6 +1703,9 @@ public interface Captions {
 	String registerInPatientDiaryButton = "registerInPatientDiaryButton";
 	String remove = "remove";
 	String reportingUser = "reportingUser";
+	String reportNewReport = "reportNewReport";
+	String reportNumberpeople = "reportNumberpeople";
+	String reportNumberTestedpassenger = "reportNumberTestedpassenger";
 	String Sample = "Sample";
 	String Sample_additionalTestingRequested = "Sample.additionalTestingRequested";
 	String Sample_additionalTestingStatus = "Sample.additionalTestingStatus";
@@ -1847,6 +1850,7 @@ public interface Captions {
 	String sampleSelect = "sampleSelect";
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
+	String saveNewReport = "saveNewReport";
 	String sex = "sex";
 	String showPlacesOnMap = "showPlacesOnMap";
 	String singleDayEventDate = "singleDayEventDate";
