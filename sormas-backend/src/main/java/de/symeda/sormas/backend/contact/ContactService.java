@@ -1449,6 +1449,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	 */
 	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
 
+		if (vaccinationDate != null) {
+			vaccinationDate = DateHelper.getEndOfDay(vaccinationDate);
+		}
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Contact> cu = cb.createCriteriaUpdate(Contact.class);
 		Root<Contact> root = cu.from(Contact.class);

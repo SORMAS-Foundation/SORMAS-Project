@@ -1749,6 +1749,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	 */
 	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
 
+		if (vaccinationDate != null) {
+			vaccinationDate = DateHelper.getEndOfDay(vaccinationDate);
+		}
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
 		Root<Case> root = cu.from(Case.class);
