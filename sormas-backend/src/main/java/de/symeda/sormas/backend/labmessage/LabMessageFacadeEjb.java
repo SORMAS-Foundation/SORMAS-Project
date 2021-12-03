@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -27,6 +26,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -240,21 +240,16 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<LabMessage> labMessage = cq.from(LabMessage.class);
 
-		criteriaHandler(criteria, cb, cq, labMessage);
-
-		cq.select(cb.countDistinct(labMessage));
-		return em.createQuery(cq).getSingleResult();
-	}
-
-	private <T> void criteriaHandler(LabMessageCriteria criteria, CriteriaBuilder cb, CriteriaQuery<T> cq, Root<LabMessage> labMessage) {
 		Predicate filter = null;
 		if (criteria != null) {
-			Predicate statusFilter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
-			filter = CriteriaBuilderHelper.and(cb, null, statusFilter);
+			filter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
 		}
 		if (filter != null) {
 			cq.where(filter);
 		}
+
+		cq.select(cb.countDistinct(labMessage));
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	@Override
@@ -272,27 +267,41 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			labMessage.get(LabMessage.SAMPLE_OVERALL_TEST_RESULT),
 			labMessage.get(LabMessage.PERSON_FIRST_NAME),
 			labMessage.get(LabMessage.PERSON_LAST_NAME),
+			labMessage.get(LabMessage.PERSON_BIRTH_DATE_YYYY),
+			labMessage.get(LabMessage.PERSON_BIRTH_DATE_MM),
+			labMessage.get(LabMessage.PERSON_BIRTH_DATE_DD),
 			labMessage.get(LabMessage.PERSON_POSTAL_CODE),
 			labMessage.get(LabMessage.STATUS));
 
-		criteriaHandler(criteria, cb, cq, labMessage);
+		Predicate whereFilter = null;
+		if (criteria != null) {
+			whereFilter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
+		}
+
+		// remove deleted entities from result
+		whereFilter = CriteriaBuilderHelper.and(cb, whereFilter, labMessageService.createDefaultFilter(cb, labMessage));
+		cq.where(whereFilter);
 
 		// Distinct is necessary here to avoid duplicate results due to the user role join in taskService.createAssigneeFilter
 		cq.distinct(true);
 
-		// remove deleted entities from result
-		Predicate filter = labMessageService.createDefaultFilter(cb, labMessage);
-		cq.where(filter);
+		List<Order> order = new ArrayList<>();
 
-		List<Order> order = Optional.ofNullable(sortProperties)
-			.orElseGet(ArrayList::new)
-			.stream()
-			.filter(sortProperty -> VALID_SORT_PROPERTY_NAMES.contains(sortProperty.propertyName))
-			.map(sortProperty -> {
-				Expression<?> expression = labMessage.get(sortProperty.propertyName);
-				return sortProperty.ascending ? cb.asc(expression) : cb.desc(expression);
-			})
-			.collect(toList());
+		if (!CollectionUtils.isEmpty(sortProperties)) {
+			for (SortProperty sortProperty : sortProperties) {
+				if (LabMessageIndexDto.PERSON_BIRTH_DATE.equals(sortProperty.propertyName)) {
+					Expression<?> birthdateYYYY = labMessage.get(LabMessage.PERSON_BIRTH_DATE_YYYY);
+					order.add(sortProperty.ascending ? cb.asc(birthdateYYYY) : cb.desc(birthdateYYYY));
+					Expression<?> birthdateMM = labMessage.get(LabMessage.PERSON_BIRTH_DATE_MM);
+					order.add(sortProperty.ascending ? cb.asc(birthdateMM) : cb.desc(birthdateMM));
+					Expression<?> birthdateDD = labMessage.get(LabMessage.PERSON_BIRTH_DATE_DD);
+					order.add(sortProperty.ascending ? cb.asc(birthdateDD) : cb.desc(birthdateDD));
+				} else if (VALID_SORT_PROPERTY_NAMES.contains(sortProperty.propertyName)) {
+					Expression<?> expression = labMessage.get(sortProperty.propertyName);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+				}
+			}
+		}
 
 		order.add(cb.desc(labMessage.get(LabMessage.MESSAGE_DATE_TIME)));
 		cq.orderBy(order);

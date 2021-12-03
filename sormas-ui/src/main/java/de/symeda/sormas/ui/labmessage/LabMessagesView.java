@@ -64,6 +64,7 @@ public class LabMessagesView extends AbstractView {
 	private Map<Button, String> statusButtons;
 	private Button activeStatusButton;
 
+	private LabMessageGridFilterForm filterForm;
 	private final LabMessageGrid grid;
 
 	public LabMessagesView() {
@@ -112,6 +113,8 @@ public class LabMessagesView extends AbstractView {
 		VerticalLayout gridLayout = new VerticalLayout();
 		addComponent(gridLayout);
 
+		gridLayout.addComponent(createFilterBar());
+
 		gridLayout.addComponent(createStatusFilterBar());
 
 		grid = new LabMessageGrid(criteria);
@@ -129,8 +132,34 @@ public class LabMessagesView extends AbstractView {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
 		}
-		updateStatusButtons();
+		updateFilterComponents();
 		grid.reload();
+	}
+
+	public HorizontalLayout createFilterBar() {
+
+		HorizontalLayout filterLayout = new HorizontalLayout();
+		filterLayout.setMargin(false);
+		filterLayout.setSpacing(true);
+		filterLayout.setSizeUndefined();
+		filterLayout.addStyleName("wrap");
+
+		filterForm = new LabMessageGridFilterForm();
+		filterForm.addValueChangeListener(e -> {
+			if (!filterForm.hasFilter()) {
+				this.navigateTo(null);
+			}
+		});
+		filterForm.addResetHandler(e -> {
+			ViewModelProviders.of(LabMessagesView.class).remove(LabMessageCriteria.class);
+			this.navigateTo(null, true);
+		});
+		filterForm.addApplyHandler(e -> {
+			grid.reload();
+		});
+		filterLayout.addComponent(filterForm);
+
+		return filterLayout;
 	}
 
 	public HorizontalLayout createStatusFilterBar() {
@@ -181,6 +210,13 @@ public class LabMessagesView extends AbstractView {
 		gridLayout.setStyleName("crud-main-layout");
 	}
 
+	private void updateFilterComponents() {
+		setApplyingCriteria(true);
+		updateStatusButtons();
+		filterForm.setValue(criteria);
+		setApplyingCriteria(false);
+	}
+
 	private void updateStatusButtons() {
 		statusButtons.keySet().forEach(b -> {
 			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
@@ -201,7 +237,7 @@ public class LabMessagesView extends AbstractView {
 
 	private Button createAndAddStatusButton(@Nullable LabMessageStatus status, HorizontalLayout buttonLayout) {
 		Button button = ButtonHelper.createButton(status == null ? I18nProperties.getCaption(Captions.all) : status.toString(), e -> {
-			criteria.labMessageStatus(status);
+			criteria.setLabMessageStatus(status);
 			navigateTo(criteria);
 		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 

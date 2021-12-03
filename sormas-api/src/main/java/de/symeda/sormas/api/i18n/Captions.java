@@ -1368,6 +1368,7 @@ public interface Captions {
 	String LabMessage_labPostalCode = "LabMessage.labPostalCode";
 	String LabMessage_labSampleId = "LabMessage.labSampleId";
 	String LabMessage_messageDateTime = "LabMessage.messageDateTime";
+	String LabMessage_personBirthDate = "LabMessage.personBirthDate";
 	String LabMessage_personBirthDateDD = "LabMessage.personBirthDateDD";
 	String LabMessage_personBirthDateMM = "LabMessage.personBirthDateMM";
 	String LabMessage_personBirthDateYYYY = "LabMessage.personBirthDateYYYY";
