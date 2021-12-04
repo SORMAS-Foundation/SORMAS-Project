@@ -57,6 +57,8 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 					disease != null ? Captions.vaccinationNoVaccinationsForPersonAndDisease : Captions.vaccinationNoVaccinationsForPerson));
 			listLayout.addComponent(noVaccinationsLabel);
 		}
+
+		fireEvent(new VaccinationListChangedEvent(this));
 	}
 
 	@Override

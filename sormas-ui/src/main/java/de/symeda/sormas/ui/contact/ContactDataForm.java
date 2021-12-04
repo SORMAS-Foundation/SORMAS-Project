@@ -573,6 +573,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		initializeVisibilitiesAndAllowedVisibilities();
 
+		addVaccinationListChangedEventListener(e -> {
+			ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(getValue().getUuid());
+			if (contactDto != null) {
+				getValue().setChangeDate(contactDto.getChangeDate());
+			}
+		});
+
 		addValueChangeListener(e -> {
 			if (getValue() != null) {
 				CaseDataDto caseDto = null;

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.Validator;
@@ -43,6 +44,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.vaccination.list.VaccinationListChangedEvent;
+import de.symeda.sormas.ui.vaccination.list.VaccinationListChangedEventListener;
 
 public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements FieldGroup.CommitHandler {// implements DtoEditForm<DTO> {
 
@@ -518,5 +521,12 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 
 	public void setHeading(String heading) {
 		throw new RuntimeException("setHeading should be implemented in " + getClass().getSimpleName());
+	}
+
+	protected Registration addVaccinationListChangedEventListener(VaccinationListChangedEventListener vaccinationListChangedEventListener) {
+		return addListener(
+			VaccinationListChangedEvent.class,
+			vaccinationListChangedEventListener,
+			VaccinationListChangedEventListener.ON_CHANGE_METHOD);
 	}
 }
