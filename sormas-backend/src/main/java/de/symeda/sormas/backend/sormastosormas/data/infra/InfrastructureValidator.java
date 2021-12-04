@@ -14,44 +14,44 @@
  */
 package de.symeda.sormas.backend.sormastosormas.data.infra;
 
-import de.symeda.sormas.api.EntityDto;
+import java.io.Serializable;
+import java.util.Optional;
+import java.util.function.Consumer;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
-import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
-import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
+import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.validation.ValidationDirection;
 import de.symeda.sormas.backend.user.UserService;
-import org.apache.commons.lang.NotImplementedException;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import java.io.Serializable;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 @Stateless
 @LocalBean
@@ -151,7 +151,7 @@ public class InfrastructureValidator {
 		}
 	}
 
-	private <DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, CRITERIA extends BaseCriteria> void validateInfra(
+	private <DTO extends InfrastructureDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, CRITERIA extends BaseCriteria> void validateInfra(
 		InfrastructureDataReferenceDto dto,
 		String groupNameTag,
 		ValidationErrors validationErrors,
@@ -159,17 +159,23 @@ public class InfrastructureValidator {
 		String i18property,
 		Consumer<REF_DTO> onNoErrors,
 		ValidationDirection validationDirection) {
+		if (dto == null) {
+			return;
+		}
 		if (validationDirection == ValidationDirection.INCOMING) {
-			if (dto != null) {
-				REF_DTO match = facade.getReferenceByUuid(dto.getUuid());
-				if (match != null) {
-					onNoErrors.accept(match);
-				} else {
-					validationErrors.add(new ValidationErrorGroup(groupNameTag), new ValidationErrorMessage(i18property, dto.getCaption()));
-				}
+			// try to look up the received infrastructure entity locally
+			REF_DTO match = facade.getReferenceByUuid(dto.getUuid());
+			if (match != null) {
+				onNoErrors.accept(match);
+			} else {
+				validationErrors.add(new ValidationErrorGroup(groupNameTag), new ValidationErrorMessage(i18property, dto.getCaption()));
 			}
 		} else if (validationDirection == ValidationDirection.OUTGOING) {
-			throw new NotImplementedException("Outgoing validation is not yet implemented.");
+			// check if the infra we are going to send via S2S is centrally managed
+			DTO match = facade.getByUuid(dto.getUuid());
+			if (!match.isCentrallyManaged()) {
+				validationErrors.add(new ValidationErrorGroup(groupNameTag), new ValidationErrorMessage(i18property, dto.getCaption()));
+			}
 		} else {
 			throw new IllegalStateException("Unexpected value: " + validationDirection);
 		}
@@ -320,7 +326,7 @@ public class InfrastructureValidator {
 		}
 
 		private final T entity;
-		private String details;
+		private final String details;
 
 		public T getEntity() {
 			return entity;
