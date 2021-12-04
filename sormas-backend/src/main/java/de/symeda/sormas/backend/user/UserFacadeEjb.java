@@ -72,6 +72,8 @@ import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
@@ -103,6 +105,8 @@ public class UserFacadeEjb implements UserFacade {
 	private UserService userService;
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
+	@EJB
+	private CountryService countryService;
 	@EJB
 	private RegionService regionService;
 	@EJB
@@ -145,6 +149,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setPhone(source.getPhone());
 		target.setAddress(LocationFacadeEjb.toDto(source.getAddress()));
 
+		target.setCountry(CountryFacadeEjb.toReferenceDto(source.getCountry()));
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
@@ -485,6 +490,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setUserName(source.getUserName());
 		target.setUserEmail(source.getUserEmail());
 
+		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));

@@ -417,7 +417,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		validate(source);
 
-		if (source.getFirstName().equals("EMPTY_FIRST_FAME")){
+		if (source.getFirstName().equals("EMPTY_FIRST_NAME")){
 			source.setFirstName(" ");
 			logger.debug("Updated the person firestname to empty value.....");
 		}

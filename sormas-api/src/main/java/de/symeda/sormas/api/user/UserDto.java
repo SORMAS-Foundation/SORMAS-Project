@@ -27,6 +27,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
@@ -53,6 +54,7 @@ public class UserDto extends EntityDto {
 	public static final String PHONE = "phone";
 	public static final String ADDRESS = "address";
 	public static final String USER_ROLES = "userRoles";
+	public static final String COUNTRY = "country";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -82,6 +84,7 @@ public class UserDto extends EntityDto {
 
 	private Set<UserRole> userRoles;
 
+	private CountryReferenceDto country;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	// community of community informant
@@ -195,6 +198,14 @@ public class UserDto extends EntityDto {
 
 	public void setRegion(RegionReferenceDto region) {
 		this.region = region;
+	}
+
+	public CountryReferenceDto getCountry() {
+		return country;
+	}
+
+	public void setCountry(CountryReferenceDto country) {
+		this.country = country;
 	}
 
 	public DistrictReferenceDto getDistrict() {
