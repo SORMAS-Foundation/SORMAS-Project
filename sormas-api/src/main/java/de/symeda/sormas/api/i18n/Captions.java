@@ -392,6 +392,7 @@ public interface Captions {
 	String CaseData_symptomJournalStatus = "CaseData.symptomJournalStatus";
 	String CaseData_symptoms = "CaseData.symptoms";
 	String CaseData_therapy = "CaseData.therapy";
+	String CaseData_transmitted = "CaseData.transmitted";
 	String CaseData_trimester = "CaseData.trimester";
 	String CaseData_uuid = "CaseData.uuid";
 	String CaseData_vaccinationStatus = "CaseData.vaccinationStatus";

@@ -117,6 +117,7 @@ import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
@@ -1068,6 +1069,15 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			if ((userFilterCriteria == null || userFilterCriteria.getIncludeCasesFromOtherJurisdictions())
 				&& !featureConfigurationFacade.isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
 				filter = CriteriaBuilderHelper.or(cb, filter, cb.isTrue(casePath.get(Case.SHARED_TO_COUNTRY)));
+			}
+		}
+
+		
+		if (currentUser.hasAnyUserRole(UserRole.NATIONAL_OBSERVER)){
+			final Country country = currentUser.getCountry();
+			if (country == null){
+				// Let's filter only transmitted cases for this user
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(casePath.get(Case.TRANSMITTED), YesNoUnknown.YES));
 			}
 		}
 

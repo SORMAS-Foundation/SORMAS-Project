@@ -941,6 +941,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.POINT_OF_ENTRY_DETAILS,
 			CaseDataDto.CASE_ORIGIN);
 
+		setReadOnly(true, CaseDataDto.TRANSMITTED);
+		UserProvider userProvider = UserProvider.getCurrent();
+		if ((UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) && (userProvider.getUser().getCountry() != null)){
+			setReadOnly(false, CaseDataDto.TRANSMITTED);
+		}
 		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
 		setReadOnly(
 			!UserProvider.getCurrent().hasUserRight(UserRight.CASE_INVESTIGATE),

@@ -8751,9 +8751,14 @@ CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON sharerequ
 
 INSERT INTO schema_version (version_number, comment) VALUES (420, 'Create missing history tables for S2S tables #6949');
 
--- 2021-11-18 Add Trimester and Transmitted selection to case #19336
+-- 2021-11-18 Add Country and Transmitted fields to case #19336
 ALTER TABLE cases ADD COLUMN transmitted varchar(255);
 ALTER TABLE cases_history ADD COLUMN transmitted varchar(255);
 INSERT INTO schema_version (version_number, comment) VALUES (421, 'New field transmitted #19336');
+
+INSERT INTO schema_version (version_number, comment) VALUES (422, 'New field country #19336');
+ALTER TABLE users ADD COLUMN country_id bigint;
+ALTER TABLE users_history ADD COLUMN country_id bigint;
+ALTER TABLE users ADD CONSTRAINT fk_users_country_id FOREIGN KEY (country_id) REFERENCES country(id);
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
