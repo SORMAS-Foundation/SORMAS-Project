@@ -364,7 +364,7 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		VaccinationDto vaccination4 = VaccinationDto.build(nationalUser.toReference());
 		getVaccinationFacade().createWithImmunization(vaccination4, rdcf1.region, rdcf1.district, person1.toReference(), Disease.EVD);
 
-		assertThat(getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
+		assertNull(getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus());
 	}
 
 }

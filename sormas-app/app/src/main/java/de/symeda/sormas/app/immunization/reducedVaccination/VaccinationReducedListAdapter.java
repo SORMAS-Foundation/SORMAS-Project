@@ -1,10 +1,10 @@
 package de.symeda.sormas.app.immunization.reducedVaccination;
 
-import java.util.Date;
-
 import androidx.annotation.NonNull;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.Date;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.vaccination.Vaccination;
@@ -30,7 +30,7 @@ public class VaccinationReducedListAdapter extends BindingPagedListAdapter<Vacci
 			pageHolder.setOnListItemClickListener(this.mOnListItemClickListener);
 
 			Date vaccinationDate = pageHolder.binding.getData().getVaccinationDate();
-			pageHolder.binding.setVariable(BR.fontColorGrey, vaccinationDate != null && vaccinationGrayoutDate.before(vaccinationDate));
+			pageHolder.binding.setVariable(BR.fontColorGrey, vaccinationDate == null || (vaccinationDate != null && vaccinationGrayoutDate.before(vaccinationDate)));
 		}
 	}
 }

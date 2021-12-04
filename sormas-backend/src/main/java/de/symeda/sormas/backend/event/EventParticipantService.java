@@ -495,6 +495,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		// Only consider event participants with relevance date at least one day after the vaccination date
 		if (vaccinationDate != null) {
 			vaccinationDate = DateHelper.getEndOfDay(vaccinationDate);
+		} else {
+			return;
 		}
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

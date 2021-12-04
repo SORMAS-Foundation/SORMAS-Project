@@ -1752,6 +1752,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		// Only consider cases with relevance date at least one day after the vaccination date
 		if (vaccinationDate != null) {
 			vaccinationDate = DateHelper.getEndOfDay(vaccinationDate);
+		} else {
+			return;
 		}
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
