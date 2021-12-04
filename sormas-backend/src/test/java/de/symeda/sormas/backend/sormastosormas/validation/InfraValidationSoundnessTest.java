@@ -20,7 +20,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.entities.eventparticipant.SormasToSormasEventParticipantDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.entities.immunization.SormasToSormasImmunizationDtoValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
@@ -418,7 +425,7 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 	 * @return the set of all property paths we expect to turn up in validation
 	 * 
 	 */
-	private <T extends SormasToSormasShareableDto> Set<String> getExpectedPaths(SormasToSormasEntityDto<T> entityDto, List<ResolvedField[]> paths)
+	private Set<String> getExpectedPaths(Object entityDto, List<ResolvedField[]> paths)
 		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
 		Set<String> expected = new HashSet<>();
 
@@ -455,15 +462,13 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 	 * 
 	 * @return paths we expect to get rejected by validaiton logic
 	 */
-	private <T, DTO extends SormasToSormasShareableDto, SHARED extends SormasToSormasEntityDto<DTO>> Set<String> getExpected(
-		SHARED entity,
-		DtoRootNode<T> rootNode)
+	private <T> Set<String> getExpected(Object entity, DtoRootNode<T> rootNode)
 		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
 		List<ResolvedField[]> paths = getInfraPaths(rootNode);
 		return getExpectedPaths(entity, paths);
 	}
 
-	private void doAssertValidation(Set<String> expected, Set<String> foundFields) {
+	private void assertValidation(Set<String> expected, Set<String> foundFields) {
 		// smoke test, in case both are empty for some reason this will blow up
 		assertFalse(foundFields.isEmpty());
 		assertFalse(expected.isEmpty());
@@ -471,7 +476,10 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 		assertTrue(disjunction.isEmpty(), "The following fields are not validated in the DTO: " + disjunction);
 	}
 
-	private <T, DTO extends SormasToSormasShareableDto, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW extends PseudonymizableDto> void assertValidation(
+	/**
+	 * Validate DTOs
+	 */
+	private <T, DTO extends SormasToSormasShareableDto, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW extends PseudonymizableDto> void assertValidationDto(
 		SHARED entity,
 		DtoRootNode<T> rootNode,
 		SormasToSormasDtoValidator<DTO, SHARED, PREVIEW> validator)
@@ -479,10 +487,18 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 		Set<String> expected = getExpected(entity, rootNode);
 
 		Set<String> foundFieldsIncoming = getRejectedFields(validator.validateIncoming(entity));
-		doAssertValidation(expected, foundFieldsIncoming);
+		assertValidation(expected, foundFieldsIncoming);
+	}
 
-		Set<String> foundFieldsOutgoing = getRejectedFields(validator.validateOutgoing(entity));
-		doAssertValidation(expected, foundFieldsOutgoing);
+	private <T, DTO extends SormasToSormasShareableDto, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW extends PseudonymizableDto> void assertValidationPreview(
+		PREVIEW entity,
+		DtoRootNode<T> rootNode,
+		SormasToSormasDtoValidator<DTO, SHARED, PREVIEW> validator)
+		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
+		Set<String> expected = getExpected(entity, rootNode);
+
+		Set<String> foundFieldsIncoming = getRejectedFields(validator.validateIncomingPreview(entity));
+		assertValidation(expected, foundFieldsIncoming);
 	}
 
 	@Test
@@ -496,9 +512,22 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 			}
 		}
 
+		class CasePreviewRootNode extends DtoRootNode<SormasToSormasCasePreview> {
+
+			public CasePreviewRootNode(SormasToSormasCasePreview dtoUnderTest) {
+				super(dtoUnderTest);
+			}
+		}
+
+		final SormasToSormasCaseDtoValidator dtoValidator = getSormasToSormasCaseDtoValidator();
+
 		SormasToSormasCaseDto caseDto = new SormasToSormasCaseDto();
 		CaseDtoRootNode rootNode = new CaseDtoRootNode(caseDto);
-		assertValidation(caseDto, rootNode, getSormasToSormasCaseDtoValidator());
+		assertValidationDto(caseDto, rootNode, dtoValidator);
+
+		SormasToSormasCasePreview casePreview = new SormasToSormasCasePreview();
+		CasePreviewRootNode previewRootNode = new CasePreviewRootNode(casePreview);
+		assertValidationPreview(casePreview, previewRootNode, dtoValidator);
 	}
 
 	@Test
@@ -512,9 +541,22 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 			}
 		}
 
+		class ContactPreviewRootNode extends DtoRootNode<SormasToSormasContactPreview> {
+
+			public ContactPreviewRootNode(SormasToSormasContactPreview dtoUnderTest) {
+				super(dtoUnderTest);
+			}
+		}
+
+		final SormasToSormasContactDtoValidator dtoValidator = getSormasToSormasContactDtoValidator();
+
 		SormasToSormasContactDto contactDto = new SormasToSormasContactDto();
 		ContactDtoRootNode rootNode = new ContactDtoRootNode(contactDto);
-		assertValidation(contactDto, rootNode, getSormasToSormasContactDtoValidator());
+		assertValidationDto(contactDto, rootNode, dtoValidator);
+
+		SormasToSormasContactPreview contactPreview = new SormasToSormasContactPreview();
+		ContactPreviewRootNode previewRootNode = new ContactPreviewRootNode(contactPreview);
+		assertValidationPreview(contactPreview, previewRootNode, dtoValidator);
 	}
 
 	@Test
@@ -528,9 +570,20 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 			}
 		}
 
+		class EventPreviewRootNode extends DtoRootNode<SormasToSormasEventPreview> {
+
+			public EventPreviewRootNode(SormasToSormasEventPreview dtoUnderTest) {
+				super(dtoUnderTest);
+			}
+		}
+
 		SormasToSormasEventDto eventDto = new SormasToSormasEventDto();
 		EventDtoRootNode rootNode = new EventDtoRootNode(eventDto);
-		assertValidation(eventDto, rootNode, getSormasToSormasEventDtoValidator());
+		assertValidationDto(eventDto, rootNode, getSormasToSormasEventDtoValidator());
+
+		SormasToSormasEventPreview eventPreview = new SormasToSormasEventPreview();
+		EventPreviewRootNode previewRootNode = new EventPreviewRootNode(eventPreview);
+		assertValidationPreview(eventPreview, previewRootNode, getSormasToSormasEventDtoValidator());
 	}
 
 	@Test
@@ -544,9 +597,22 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 			}
 		}
 
+		class EventParticipantPreviewRootNode extends DtoRootNode<SormasToSormasEventParticipantPreview> {
+
+			public EventParticipantPreviewRootNode(SormasToSormasEventParticipantPreview dtoUnderTest) {
+				super(dtoUnderTest);
+			}
+		}
+
+		final SormasToSormasEventParticipantDtoValidator dtoValidator = getSormasToSormasEventParticipantDtoValidator();
+
 		SormasToSormasEventParticipantDto eventParticipantDto = new SormasToSormasEventParticipantDto();
 		EventParticipantDtoRootNode rootNode = new EventParticipantDtoRootNode(eventParticipantDto);
-		assertValidation(eventParticipantDto, rootNode, getSormasToSormasEventParticipantDtoValidator());
+		assertValidationDto(eventParticipantDto, rootNode, dtoValidator);
+
+		SormasToSormasEventParticipantPreview eventParticipantPreview = new SormasToSormasEventParticipantPreview();
+		EventParticipantPreviewRootNode previewRootNode = new EventParticipantPreviewRootNode(eventParticipantPreview);
+		assertValidationPreview(eventParticipantPreview, previewRootNode, dtoValidator);
 	}
 
 	@Test
@@ -560,9 +626,11 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 			}
 		}
 
+		// todo add test once preview is available for this entity
+
 		SormasToSormasImmunizationDto immunizationDto = new SormasToSormasImmunizationDto();
 		ImmunizationDtoRootNode rootNode = new ImmunizationDtoRootNode(immunizationDto);
-		assertValidation(immunizationDto, rootNode, getSormasToSormasImmunizationDtoValidator());
+		assertValidationDto(immunizationDto, rootNode, getSormasToSormasImmunizationDtoValidator());
 	}
 
 	@Test
@@ -585,7 +653,9 @@ public class InfraValidationSoundnessTest extends AbstractBeanTest {
 
 		SormasToSormasSampleDto sampleDto = new SormasToSormasSampleDto();
 		SampleDtoRootNode rootNode = new SampleDtoRootNode(sampleDto);
-		assertValidation(sampleDto, rootNode, getSormasToSormasSampleDtoValidator());
+		assertValidationDto(sampleDto, rootNode, getSormasToSormasSampleDtoValidator());
+
+		// todo add test once preview is available for this entity
 	}
 
 }
