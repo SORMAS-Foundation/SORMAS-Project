@@ -177,7 +177,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 
 		pcrTestSpecification.setVisible(false);
-		diseaseVariantField.setVisible(false);
 
 		Map<Object, List<Object>> pcrTestSpecificationVisibilityDependencies = new HashMap<Object, List<Object>>() {
 
