@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.vaccination.list;
+package de.symeda.sormas.ui.vaccination.list.event;
 
 import com.vaadin.ui.Component;
 

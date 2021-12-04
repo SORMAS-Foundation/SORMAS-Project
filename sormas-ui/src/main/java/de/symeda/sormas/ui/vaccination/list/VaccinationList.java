@@ -30,6 +30,7 @@ import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.PaginationList;
+import de.symeda.sormas.ui.vaccination.list.event.VaccinationListChangedEvent;
 
 public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 

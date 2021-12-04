@@ -44,8 +44,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.vaccination.list.VaccinationListChangedEvent;
-import de.symeda.sormas.ui.vaccination.list.VaccinationListChangedEventListener;
+import de.symeda.sormas.ui.vaccination.list.event.VaccinationListChangedEvent;
+import de.symeda.sormas.ui.vaccination.list.event.VaccinationListChangedEventListener;
 
 public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements FieldGroup.CommitHandler {// implements DtoEditForm<DTO> {
 
