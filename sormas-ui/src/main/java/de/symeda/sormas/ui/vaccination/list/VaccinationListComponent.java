@@ -36,7 +36,6 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
@@ -104,7 +103,7 @@ public class VaccinationListComponent extends SideComponent {
 
 		VaccinationList vaccinationList = new VaccinationList(criteria.getDisease(), entriesListSupplier);
 
-		createNewVaccinationButton(criteria, region, district, () -> SormasUI.refreshView());
+		createNewVaccinationButton(criteria, region, district, () -> vaccinationList.reload());
 		addComponent(vaccinationList);
 		vaccinationList.reload();
 	}
