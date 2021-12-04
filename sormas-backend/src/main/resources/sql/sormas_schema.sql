@@ -8125,8 +8125,9 @@ DROP TABLE IF EXISTS tmp_earliest_vaccinated_entities;
 CREATE TEMP TABLE tmp_earliest_vaccinated_entities AS
 (
     SELECT DISTINCT ON (person.id, cases.disease) person.id                  AS person_id,
-                                                  cases.disease,
-                                                  coalesce(cases.firstvaccinationdate, symptoms.onsetdate,
+                                                  cases.disease              AS disease,
+                                                  cases.firstvaccinationdate AS firstvaccinationdate,
+                                                  coalesce(symptoms.onsetdate,
                                                            cases.reportdate) AS relevancedate
     FROM person
              LEFT JOIN cases ON cases.person_id = person.id
@@ -8146,11 +8147,11 @@ CREATE TEMP TABLE tmp_earliest_vaccinated_entities AS
 )
 UNION
 (
-    SELECT DISTINCT ON (person.id, contact.disease) person.id                                                 AS person_id,
-                                                    contact.disease,
-                                                    coalesce(vaccinationinfo.firstvaccinationdate,
-                                                             contact.lastcontactdate,
-                                                             contact.reportdatetime)                          AS relevancedate
+    SELECT DISTINCT ON (person.id, contact.disease) person.id                            AS person_id,
+                                                    contact.disease                      AS disease,
+                                                    vaccinationinfo.firstvaccinationdate AS firstvaccinationdate,
+                                                    coalesce(contact.lastcontactdate,
+                                                             contact.reportdatetime)     AS relevancedate
     FROM person
              LEFT JOIN contact ON contact.person_id = person.id
              LEFT JOIN vaccinationinfo ON contact.vaccinationinfo_id = vaccinationinfo.id
@@ -8170,8 +8171,9 @@ UNION
 UNION
 (
     SELECT DISTINCT ON (person.id, events.disease) person.id                                       AS person_id,
-                                                   events.disease,
-                                                   coalesce(vaccinationinfo.firstvaccinationdate, events.startdate,
+                                                   events.disease                                  AS disease,
+                                                   vaccinationinfo.firstvaccinationdate            AS firstvaccinationdate,
+                                                   coalesce(events.startdate,
                                                             events.enddate, events.reportdatetime) AS relevancedate
     FROM person
              LEFT JOIN eventparticipant ON eventparticipant.person_id = person.id
@@ -8194,7 +8196,7 @@ UNION
 
 DROP TABLE IF EXISTS tmp_earliest_vaccinated_persons;
 CREATE TEMP TABLE tmp_earliest_vaccinated_persons AS
-SELECT DISTINCT ON (person_id, disease) person_id, disease, relevancedate
+SELECT DISTINCT ON (person_id, disease) person_id, disease, firstvaccinationdate, relevancedate
 FROM tmp_earliest_vaccinated_entities
 ORDER BY person_id, disease, relevancedate ASC;
 
@@ -8207,10 +8209,11 @@ $$
         FOR rec IN SELECT * FROM tmp_earliest_vaccinated_persons
             LOOP
                 UPDATE tmp_vaccinated_persons
-                SET firstvaccinationdate = rec.relevancedate
+                SET firstvaccinationdate = rec.firstvaccinationdate
                 WHERE tmp_vaccinated_persons.person_id = rec.person_id
                   AND tmp_vaccinated_persons.disease = rec.disease
-                  AND firstvaccinationdate IS NULL;
+                  AND firstvaccinationdate IS NULL
+                  AND rec.firstvaccinationdate IS NOT NULL;
             end loop;
     END;
 $$ LANGUAGE plpgsql;
@@ -8309,7 +8312,7 @@ DO $$
                                     WHEN rec.healthconditions_id IS NOT NULL
                                         THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id))
                                     ELSE (SELECT * FROM create_healthconditions()) END,
-                                rec.reportdate, rec.reportinguser_id, coalesce(rec.firstvaccinationdate, rec.relevancedate),
+                                rec.reportdate, rec.reportinguser_id, rec.firstvaccinationdate,
                                 CASE
                                     WHEN
                                                 rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
@@ -8347,7 +8350,7 @@ DO $$
                                     WHEN rec.healthconditions_id IS NOT NULL
                                         THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id))
                                     ELSE (SELECT * FROM create_healthconditions()) END,
-                                rec.reportdate, rec.reportinguser_id, coalesce(rec.lastvaccinationdate, rec.relevancedate),
+                                rec.reportdate, rec.reportinguser_id, rec.lastvaccinationdate,
                                 CASE
                                     WHEN
                                             rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY'
@@ -8390,7 +8393,7 @@ DO $$
                                 WHEN rec.healthconditions_id IS NOT NULL
                                     THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id))
                                 ELSE (SELECT * FROM create_healthconditions()) END,
-                            rec.reportdate, rec.reportinguser_id, coalesce(rec.lastvaccinationdate, rec.firstvaccinationdate, rec.relevancedate),
+                            rec.reportdate, rec.reportinguser_id, coalesce(rec.lastvaccinationdate, rec.firstvaccinationdate),
                             CASE
                                 WHEN
                                         rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
@@ -8423,7 +8426,7 @@ DO $$
                     PERFORM create_vaccination(
                             rec.immunization_id,
                             CASE WHEN rec.healthconditions_id IS NOT NULL THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id)) ELSE (SELECT * FROM create_healthconditions()) END,
-                            rec.reportdate, rec.reportinguser_id, coalesce(rec.firstvaccinationdate, rec.relevancedate),
+                            rec.reportdate, rec.reportinguser_id, rec.firstvaccinationdate,
                             CASE
                                 WHEN
                                             rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
