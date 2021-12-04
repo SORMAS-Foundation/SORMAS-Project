@@ -218,7 +218,7 @@ public class ContactDataView extends AbstractContactView {
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);
 
-			SampleListComponent sampleList = new SampleListComponent(getContactRef(), contactDto.getDisease());
+			SampleListComponent sampleList = new SampleListComponent(getContactRef(), contactDto.getDisease(), this);
 			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
 			sampleLocLayout.addComponent(sampleList);
 
@@ -263,7 +263,7 @@ public class ContactDataView extends AbstractContactView {
 							contactDto.getRegion() != null ? contactDto.getRegion() : caseDto.getResponsibleRegion(),
 							contactDto.getDistrict() != null ? contactDto.getDistrict() : caseDto.getResponsibleDistrict(),
 							true,
-							() -> SormasUI.refreshView())),
+							SormasUI::refreshView)),
 					VACCINATIONS_LOC);
 			}
 		}

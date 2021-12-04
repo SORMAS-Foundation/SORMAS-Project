@@ -138,7 +138,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);
 
-			SampleListComponent sampleList = new SampleListComponent(eventParticipantRef, event.getDisease());
+			SampleListComponent sampleList = new SampleListComponent(eventParticipantRef, event.getDisease(), this);
 			sampleList.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.VSPACE_NONE);
 			sampleLocLayout.addComponent(sampleList);
 
@@ -209,7 +209,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 							eventParticipant.getRegion() != null ? eventParticipant.getRegion() : event.getEventLocation().getRegion(),
 							eventParticipant.getDistrict() != null ? eventParticipant.getDistrict() : event.getEventLocation().getDistrict(),
 							true,
-							() -> SormasUI.refreshView())),
+							SormasUI::refreshView)),
 					VACCINATIONS_LOC);
 			}
 		}

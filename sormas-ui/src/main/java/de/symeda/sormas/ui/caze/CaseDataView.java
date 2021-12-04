@@ -143,7 +143,7 @@ public class CaseDataView extends AbstractCaseView {
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);
 
-			SampleListComponent sampleList = new SampleListComponent(getCaseRef(), caze.getDisease());
+			SampleListComponent sampleList = new SampleListComponent(getCaseRef(), caze.getDisease(), this);
 			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
 			sampleLocLayout.addComponent(sampleList);
 
@@ -188,7 +188,7 @@ public class CaseDataView extends AbstractCaseView {
 							caze.getResponsibleRegion(),
 							caze.getResponsibleDistrict(),
 							true,
-							() -> SormasUI.refreshView())),
+							SormasUI::refreshView)),
 					VACCINATIONS_LOC);
 			}
 		}
