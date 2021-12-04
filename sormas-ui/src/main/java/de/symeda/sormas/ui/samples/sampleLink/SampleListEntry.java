@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+*/
 package de.symeda.sormas.ui.samples.sampleLink;
 
 import com.vaadin.icons.VaadinIcons;
@@ -172,16 +172,8 @@ public class SampleListEntry extends HorizontalLayout {
 			}
 		}
 
-		VerticalLayout topRightLayout = new VerticalLayout();
-		{
-			topRightLayout.addStyleName(CssStyles.ALIGN_RIGHT);
-			topRightLayout.setMargin(false);
-			topRightLayout.setSpacing(false);
-
-			topLayout.addComponent(topLeftLayout);
-		}
-		topLayout.addComponent(topRightLayout);
-		topLayout.setComponentAlignment(topRightLayout, Alignment.TOP_RIGHT);
+		topLayout.addComponent(topLeftLayout);
+		topLayout.setComponentAlignment(topLeftLayout, Alignment.TOP_LEFT);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
 			&& sample.getAdditionalTestingStatus() != AdditionalTestingStatus.NOT_REQUESTED
