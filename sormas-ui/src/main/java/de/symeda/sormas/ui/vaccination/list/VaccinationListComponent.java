@@ -42,6 +42,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.EditSideComponentFieldEventListener;
 
 public class VaccinationListComponent extends SideComponent {
 
@@ -53,8 +54,8 @@ public class VaccinationListComponent extends SideComponent {
 
 		VaccinationList vaccinationList = new VaccinationList(
 			criteria.getDisease(),
-			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade().getEntriesList(criteria, 0, maxDisplayedEntries),
-			view);
+			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade().getEntriesList(criteria, 0, maxDisplayedEntries));
+		vaccinationList.addSideComponentFieldEditEventListener(editSideComponentFieldEventListener(vaccinationList));
 		addComponent(vaccinationList);
 		vaccinationList.reload();
 	}
@@ -117,7 +118,8 @@ public class VaccinationListComponent extends SideComponent {
 
 		this.view = view;
 
-		VaccinationList vaccinationList = new VaccinationList(criteria.getDisease(), entriesListSupplier, view);
+		VaccinationList vaccinationList = new VaccinationList(criteria.getDisease(), entriesListSupplier);
+		vaccinationList.addSideComponentFieldEditEventListener(editSideComponentFieldEventListener(vaccinationList));
 
 		createNewVaccinationButton(criteria, region, district, SormasUI::refreshView);
 		addComponent(vaccinationList);
@@ -146,5 +148,20 @@ public class VaccinationListComponent extends SideComponent {
 							v -> refreshCallback.run())));
 			addCreateButton(createButton);
 		}
+	}
+
+	private EditSideComponentFieldEventListener editSideComponentFieldEventListener(VaccinationList vaccinationList) {
+		return e -> {
+			VaccinationListEntry listEntry = (VaccinationListEntry) e.getComponent();
+			view.showNavigationConfirmPopupIfDirty(
+				() -> ControllerProvider.getVaccinationController()
+					.edit(
+						FacadeProvider.getVaccinationFacade().getByUuid(listEntry.getVaccination().getUuid()),
+						listEntry.getVaccination().getDisease(),
+						UiFieldAccessCheckers.getDefault(listEntry.getVaccination().isPseudonymized()),
+						true,
+						v -> SormasUI.refreshView(),
+						vaccinationList.deleteCallback()));
+		};
 	}
 }
