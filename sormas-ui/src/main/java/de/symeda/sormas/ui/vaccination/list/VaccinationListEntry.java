@@ -15,15 +15,14 @@
 
 package de.symeda.sormas.ui.vaccination.list;
 
-import com.vaadin.shared.ui.ContentMode;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -31,7 +30,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
@@ -99,22 +97,6 @@ public class VaccinationListEntry extends SideComponentField {
 		if (showDisease) {
 			Label diseaseLabel = new Label(vaccination.getDisease().toString());
 			addComponentToField(diseaseLabel);
-		}
-	}
-
-	public void addEditListener(Button.ClickListener editClickListener) {
-		if (editButton == null) {
-			editButton = ButtonHelper.createIconButtonWithCaption(
-				"edit-vaccination-" + vaccination.getUuid(),
-				null,
-				VaadinIcons.PENCIL,
-				editClickListener,
-				ValoTheme.BUTTON_LINK,
-				CssStyles.BUTTON_COMPACT);
-
-			addComponent(editButton);
-			setComponentAlignment(editButton, Alignment.TOP_RIGHT);
-			setExpandRatio(editButton, 0);
 		}
 	}
 

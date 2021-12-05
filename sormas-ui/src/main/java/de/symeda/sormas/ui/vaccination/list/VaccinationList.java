@@ -61,7 +61,8 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 	protected void drawDisplayedEntries() {
 		for (VaccinationListEntryDto entryDto : getDisplayedEntries()) {
 			VaccinationListEntry listEntry = new VaccinationListEntry(entryDto, disease == null);
-			listEntry.addEditListener(e -> fireEvent(new EditSideComponentFieldEvent(listEntry)));
+			listEntry
+				.adEditButton("edit-vaccination-" + listEntry.getVaccination().getUuid(), e -> fireEvent(new EditSideComponentFieldEvent(listEntry)));
 			listLayout.addComponent(listEntry);
 		}
 	}
