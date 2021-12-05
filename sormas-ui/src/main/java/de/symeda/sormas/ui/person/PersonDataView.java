@@ -16,7 +16,6 @@ import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.caselink.CaseListComponent;
@@ -132,9 +131,7 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 				layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
 			} else {
 				VaccinationListCriteria criteria = new VaccinationListCriteria.Builder(getReference()).build();
-				layout.addComponent(
-					new SideComponentLayout(new VaccinationListComponent(criteria, null, null, false, () -> SormasUI.refreshView())),
-					VACCINATIONS_LOC);
+				layout.addComponent(new SideComponentLayout(new VaccinationListComponent(criteria, this)), VACCINATIONS_LOC);
 			}
 		}
 	}
