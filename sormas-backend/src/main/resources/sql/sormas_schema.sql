@@ -8121,8 +8121,8 @@ SELECT DISTINCT ON (person_id, disease) person_id,
 FROM tmp_vaccinated_entities
 ORDER BY person_id, disease, relevancedate DESC;
 
-DROP TABLE IF EXISTS tmp_earliest_vaccinated_entities;
-CREATE TEMP TABLE tmp_earliest_vaccinated_entities AS
+DROP TABLE IF EXISTS tmp_earlier_vaccinated_entities;
+CREATE TEMP TABLE tmp_earlier_vaccinated_entities AS
 (
     SELECT person.id                  AS person_id,
            cases.disease              AS disease,
@@ -8136,24 +8136,11 @@ CREATE TEMP TABLE tmp_earliest_vaccinated_entities AS
              LEFT JOIN symptoms ON cases.symptoms_id = symptoms.id
     WHERE cases.vaccination = 'VACCINATED'
       AND cases.deleted = false
-      AND ((EXISTS(SELECT *
-                   from tmp_vaccinated_persons
-                   WHERE tmp_vaccinated_persons.person_id = person_id
-                     AND tmp_vaccinated_persons.disease = cases.disease
-                     AND tmp_vaccinated_persons.firstvaccinationdate IS NULL) AND
-            cases.firstvaccinationdate IS NOT NULL) OR
-           (EXISTS(SELECT *
-                   from tmp_vaccinated_persons
-                   WHERE tmp_vaccinated_persons.person_id = person_id
-                     AND tmp_vaccinated_persons.disease = cases.disease
-                     AND tmp_vaccinated_persons.lastvaccinationdate IS NULL) AND
-            cases.lastvaccinationdate IS NOT NULL))
       AND cases.vaccinationdoses ~ '^(10|[1-9])$'
       AND EXISTS (SELECT * from tmp_vaccinated_persons
            WHERE tmp_vaccinated_persons.person_id = person_id
              AND tmp_vaccinated_persons.disease = cases.disease
              AND tmp_vaccinated_persons.vaccinationdoses >= CAST(cases.vaccinationdoses AS int))
-      AND cases.firstvaccinationdate IS NOT NULL
     ORDER BY person.id, cases.disease, relevancedate ASC
 )
 UNION
@@ -8170,24 +8157,11 @@ UNION
              LEFT JOIN vaccinationinfo ON contact.vaccinationinfo_id = vaccinationinfo.id
     WHERE vaccinationinfo.vaccination = 'VACCINATED'
       AND contact.deleted = false
-      AND ((EXISTS(SELECT *
-                   from tmp_vaccinated_persons
-                   WHERE tmp_vaccinated_persons.person_id = person_id
-                     AND tmp_vaccinated_persons.disease = contact.disease
-                     AND tmp_vaccinated_persons.firstvaccinationdate IS NULL) AND
-            vaccinationinfo.firstvaccinationdate IS NOT NULL) OR
-           (EXISTS(SELECT *
-                   from tmp_vaccinated_persons
-                   WHERE tmp_vaccinated_persons.person_id = person_id
-                     AND tmp_vaccinated_persons.disease = contact.disease
-                     AND tmp_vaccinated_persons.lastvaccinationdate IS NULL) AND
-            vaccinationinfo.lastvaccinationdate IS NOT NULL))
       AND vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
       AND EXISTS (SELECT * from tmp_vaccinated_persons
                   WHERE tmp_vaccinated_persons.person_id = person_id
                     AND tmp_vaccinated_persons.disease = contact.disease
                     AND tmp_vaccinated_persons.vaccinationdoses >= CAST(vaccinationinfo.vaccinationdoses AS int))
-      AND vaccinationinfo.firstvaccinationdate IS NOT NULL
     ORDER BY person.id, contact.disease, relevancedate ASC
 )
 UNION
@@ -8205,18 +8179,6 @@ UNION
              LEFT JOIN vaccinationinfo ON eventparticipant.vaccinationinfo_id = vaccinationinfo.id
     WHERE vaccinationinfo.vaccination = 'VACCINATED'
       AND eventparticipant.deleted = false
-      AND ((EXISTS(SELECT *
-                   from tmp_vaccinated_persons
-                   WHERE tmp_vaccinated_persons.person_id = person_id
-                     AND tmp_vaccinated_persons.disease = events.disease
-                     AND tmp_vaccinated_persons.firstvaccinationdate IS NULL) AND
-            vaccinationinfo.firstvaccinationdate IS NOT NULL) OR
-           (EXISTS(SELECT *
-                   from tmp_vaccinated_persons
-                   WHERE tmp_vaccinated_persons.person_id = person_id
-                     AND tmp_vaccinated_persons.disease = events.disease
-                     AND tmp_vaccinated_persons.lastvaccinationdate IS NULL) AND
-            vaccinationinfo.lastvaccinationdate IS NOT NULL))
       AND vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
       AND EXISTS(SELECT *
                  from tmp_vaccinated_persons
@@ -8231,7 +8193,7 @@ UNION
 DROP TABLE IF EXISTS tmp_earliest_reported_vaccinated_persons;
 CREATE TEMP TABLE tmp_earliest_reported_vaccinated_persons AS
 SELECT DISTINCT ON (person_id, disease) person_id, disease, reportdate, relevancedate
-FROM tmp_earliest_vaccinated_entities
+FROM tmp_earlier_vaccinated_entities
 ORDER BY person_id, disease, relevancedate ASC;
 
 DO
@@ -8253,8 +8215,8 @@ $$ LANGUAGE plpgsql;
 DROP TABLE IF EXISTS tmp_earliest_firstvaccinationdate_vaccinated_persons;
 CREATE TEMP TABLE tmp_earliest_firstvaccinationdate_vaccinated_persons AS
 SELECT DISTINCT ON (person_id, disease) person_id, disease, firstvaccinationdate
-FROM tmp_earliest_vaccinated_entities
-WHERE tmp_earliest_vaccinated_entities.firstvaccinationdate IS NOT NULL
+FROM tmp_earlier_vaccinated_entities
+WHERE tmp_earlier_vaccinated_entities.firstvaccinationdate IS NOT NULL
 ORDER BY person_id, disease, firstvaccinationdate ASC;
 
 DO
@@ -8278,8 +8240,8 @@ $$ LANGUAGE plpgsql;
 DROP TABLE IF EXISTS tmp_latest_lastvaccinationdate_vaccinated_persons;
 CREATE TEMP TABLE tmp_latest_lastvaccinationdate_vaccinated_persons AS
 SELECT DISTINCT ON (person_id, disease) person_id, disease, lastvaccinationdate
-FROM tmp_earliest_vaccinated_entities
-WHERE tmp_earliest_vaccinated_entities.lastvaccinationdate IS NOT NULL
+FROM tmp_earlier_vaccinated_entities
+WHERE tmp_earlier_vaccinated_entities.lastvaccinationdate IS NOT NULL
 ORDER BY person_id, disease, lastvaccinationdate DESC;
 
 DO
@@ -8607,7 +8569,7 @@ $$ LANGUAGE plpgsql;
 
 DROP TABLE IF EXISTS tmp_vaccinated_entities;
 DROP TABLE IF EXISTS tmp_vaccinated_persons;
-DROP TABLE IF EXISTS tmp_earliest_vaccinated_entities;
+DROP TABLE IF EXISTS tmp_earlier_vaccinated_entities;
 DROP TABLE IF EXISTS tmp_earliest_reported_vaccinated_persons;
 DROP TABLE IF EXISTS tmp_earliest_firstvaccinationdate_vaccinated_persons;
 DROP TABLE IF EXISTS tmp_latest_lastvaccinationdate_vaccinated_persons;
