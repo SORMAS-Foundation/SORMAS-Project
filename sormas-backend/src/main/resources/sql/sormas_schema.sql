@@ -8609,6 +8609,8 @@ DROP TABLE IF EXISTS tmp_vaccinated_entities;
 DROP TABLE IF EXISTS tmp_vaccinated_persons;
 DROP TABLE IF EXISTS tmp_earliest_vaccinated_entities;
 DROP TABLE IF EXISTS tmp_earliest_reported_vaccinated_persons;
+DROP TABLE IF EXISTS tmp_earliest_firstvaccinationdate_vaccinated_persons;
+DROP TABLE IF EXISTS tmp_latest_lastvaccinationdate_vaccinated_persons;
 DROP FUNCTION IF EXISTS clone_healthconditions(bigint);
 DROP FUNCTION IF EXISTS create_healthconditions();
 DROP FUNCTION IF EXISTS create_vaccination(bigint, bigint, timestamp, bigint, timestamp, varchar(255), text, varchar(255), text, text, text, text, text, varchar(255), varchar(255), varchar(255));
