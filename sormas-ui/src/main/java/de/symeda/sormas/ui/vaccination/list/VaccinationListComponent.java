@@ -151,17 +151,16 @@ public class VaccinationListComponent extends SideComponent {
 	}
 
 	private EditSideComponentFieldEventListener editSideComponentFieldEventListener(VaccinationList vaccinationList) {
-		return e -> {
+		return e -> view.showNavigationConfirmPopupIfDirty(() -> {
 			VaccinationListEntry listEntry = (VaccinationListEntry) e.getComponent();
-			view.showNavigationConfirmPopupIfDirty(
-				() -> ControllerProvider.getVaccinationController()
-					.edit(
-						FacadeProvider.getVaccinationFacade().getByUuid(listEntry.getVaccination().getUuid()),
-						listEntry.getVaccination().getDisease(),
-						UiFieldAccessCheckers.getDefault(listEntry.getVaccination().isPseudonymized()),
-						true,
-						v -> SormasUI.refreshView(),
-						vaccinationList.deleteCallback()));
-		};
+			ControllerProvider.getVaccinationController()
+				.edit(
+					FacadeProvider.getVaccinationFacade().getByUuid(listEntry.getVaccination().getUuid()),
+					listEntry.getVaccination().getDisease(),
+					UiFieldAccessCheckers.getDefault(listEntry.getVaccination().isPseudonymized()),
+					true,
+					v -> SormasUI.refreshView(),
+					vaccinationList.deleteCallback());
+		});
 	}
 }
