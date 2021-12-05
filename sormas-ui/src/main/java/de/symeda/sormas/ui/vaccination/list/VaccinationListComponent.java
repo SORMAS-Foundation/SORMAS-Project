@@ -43,17 +43,13 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class VaccinationListComponent extends SideComponent {
 
-	public VaccinationListComponent(
-		VaccinationListCriteria criteria,
-		RegionReferenceDto region,
-		DistrictReferenceDto district,
-		boolean showCreateButton) {
+	public VaccinationListComponent(VaccinationListCriteria criteria) {
 		super(I18nProperties.getString(Strings.entityVaccinations));
 
 		VaccinationList vaccinationList = new VaccinationList(
 			criteria.getDisease(),
 			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade().getEntriesList(criteria, 0, maxDisplayedEntries));
-		createNewVaccinationButton(criteria, region, district, showCreateButton, SormasUI::refreshView);
+		createNewVaccinationButton(criteria, null, null, false, SormasUI::refreshView);
 		addComponent(vaccinationList);
 		vaccinationList.reload();
 	}
@@ -62,14 +58,13 @@ public class VaccinationListComponent extends SideComponent {
 		CaseReferenceDto caseReferenceDto,
 		VaccinationListCriteria criteria,
 		RegionReferenceDto region,
-		DistrictReferenceDto district,
-		boolean showCreateButton) {
+		DistrictReferenceDto district) {
 
 		this(
 			criteria,
 			region,
 			district,
-			showCreateButton,
+			true,
 			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
 				.getEntriesListWithRelevance(caseReferenceDto, criteria, 0, maxDisplayedEntries));
 	}
@@ -78,14 +73,13 @@ public class VaccinationListComponent extends SideComponent {
 		ContactReferenceDto contactReferenceDto,
 		VaccinationListCriteria criteria,
 		RegionReferenceDto region,
-		DistrictReferenceDto district,
-		boolean showCreateButton) {
+		DistrictReferenceDto district) {
 
 		this(
 			criteria,
 			region,
 			district,
-			showCreateButton,
+			true,
 			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
 				.getEntriesListWithRelevance(contactReferenceDto, criteria, 0, maxDisplayedEntries));
 	}
@@ -94,14 +88,13 @@ public class VaccinationListComponent extends SideComponent {
 		EventParticipantReferenceDto eventParticipantReferenceDto,
 		VaccinationListCriteria criteria,
 		RegionReferenceDto region,
-		DistrictReferenceDto district,
-		boolean showCreateButton) {
+		DistrictReferenceDto district) {
 
 		this(
 			criteria,
 			region,
 			district,
-			showCreateButton,
+			true,
 			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
 				.getEntriesListWithRelevance(eventParticipantReferenceDto, criteria, 0, maxDisplayedEntries));
 	}

@@ -206,8 +206,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 							getReference(),
 							criteria,
 							eventParticipant.getRegion() != null ? eventParticipant.getRegion() : event.getEventLocation().getRegion(),
-							eventParticipant.getDistrict() != null ? eventParticipant.getDistrict() : event.getEventLocation().getDistrict(),
-							true)),
+							eventParticipant.getDistrict() != null ? eventParticipant.getDistrict() : event.getEventLocation().getDistrict())),
 					VACCINATIONS_LOC);
 			}
 		}
