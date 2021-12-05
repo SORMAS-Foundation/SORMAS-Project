@@ -23,6 +23,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -38,17 +39,22 @@ import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class VaccinationListComponent extends SideComponent {
 
-	public VaccinationListComponent(VaccinationListCriteria criteria) {
+	private final AbstractDetailView<? extends ReferenceDto> view;
+
+	public VaccinationListComponent(VaccinationListCriteria criteria, AbstractDetailView<? extends ReferenceDto> view) {
 		super(I18nProperties.getString(Strings.entityVaccinations));
+		this.view = view;
 
 		VaccinationList vaccinationList = new VaccinationList(
 			criteria.getDisease(),
-			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade().getEntriesList(criteria, 0, maxDisplayedEntries));
+			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade().getEntriesList(criteria, 0, maxDisplayedEntries),
+			view);
 		addComponent(vaccinationList);
 		vaccinationList.reload();
 	}
@@ -57,52 +63,61 @@ public class VaccinationListComponent extends SideComponent {
 		CaseReferenceDto caseReferenceDto,
 		VaccinationListCriteria criteria,
 		RegionReferenceDto region,
-		DistrictReferenceDto district) {
+		DistrictReferenceDto district,
+		AbstractDetailView<? extends ReferenceDto> view) {
 
 		this(
 			criteria,
 			region,
 			district,
 			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
-				.getEntriesListWithRelevance(caseReferenceDto, criteria, 0, maxDisplayedEntries));
+				.getEntriesListWithRelevance(caseReferenceDto, criteria, 0, maxDisplayedEntries),
+			view);
 	}
 
 	public VaccinationListComponent(
 		ContactReferenceDto contactReferenceDto,
 		VaccinationListCriteria criteria,
 		RegionReferenceDto region,
-		DistrictReferenceDto district) {
+		DistrictReferenceDto district,
+		AbstractDetailView<? extends ReferenceDto> view) {
 
 		this(
 			criteria,
 			region,
 			district,
 			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
-				.getEntriesListWithRelevance(contactReferenceDto, criteria, 0, maxDisplayedEntries));
+				.getEntriesListWithRelevance(contactReferenceDto, criteria, 0, maxDisplayedEntries),
+			view);
 	}
 
 	public VaccinationListComponent(
 		EventParticipantReferenceDto eventParticipantReferenceDto,
 		VaccinationListCriteria criteria,
 		RegionReferenceDto region,
-		DistrictReferenceDto district) {
+		DistrictReferenceDto district,
+		AbstractDetailView<? extends ReferenceDto> view) {
 
 		this(
 			criteria,
 			region,
 			district,
 			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
-				.getEntriesListWithRelevance(eventParticipantReferenceDto, criteria, 0, maxDisplayedEntries));
+				.getEntriesListWithRelevance(eventParticipantReferenceDto, criteria, 0, maxDisplayedEntries),
+			view);
 	}
 
 	private VaccinationListComponent(
 		VaccinationListCriteria criteria,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
-		Function<Integer, List<VaccinationListEntryDto>> entriesListSupplier) {
+		Function<Integer, List<VaccinationListEntryDto>> entriesListSupplier,
+		AbstractDetailView<? extends ReferenceDto> view) {
 		super(I18nProperties.getString(Strings.entityVaccinations));
 
-		VaccinationList vaccinationList = new VaccinationList(criteria.getDisease(), entriesListSupplier);
+		this.view = view;
+
+		VaccinationList vaccinationList = new VaccinationList(criteria.getDisease(), entriesListSupplier, view);
 
 		createNewVaccinationButton(criteria, region, district, SormasUI::refreshView);
 		addComponent(vaccinationList);
@@ -120,14 +135,15 @@ public class VaccinationListComponent extends SideComponent {
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(
-				e -> ControllerProvider.getVaccinationController()
-					.create(
-						region,
-						district,
-						criteria.getPerson(),
-						criteria.getDisease(),
-						UiFieldAccessCheckers.getNoop(),
-						v -> refreshCallback.run()));
+				e -> view.showNavigationConfirmPopupIfDirty(
+					() -> ControllerProvider.getVaccinationController()
+						.create(
+							region,
+							district,
+							criteria.getPerson(),
+							criteria.getDisease(),
+							UiFieldAccessCheckers.getNoop(),
+							v -> refreshCallback.run())));
 			addCreateButton(createButton);
 		}
 	}

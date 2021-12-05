@@ -18,16 +18,17 @@ package de.symeda.sormas.ui.vaccination.list;
 import java.util.List;
 import java.util.function.Function;
 
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
@@ -37,10 +38,16 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 
 	private final Function<Integer, List<VaccinationListEntryDto>> vaccinationListSupplier;
 
-	public VaccinationList(Disease disease, Function<Integer, List<VaccinationListEntryDto>> vaccinationListSupplier) {
+	private final AbstractDetailView<? extends ReferenceDto> view;
+
+	public VaccinationList(
+		Disease disease,
+		Function<Integer, List<VaccinationListEntryDto>> vaccinationListSupplier,
+		AbstractDetailView<? extends ReferenceDto> view) {
 		super(MAX_DISPLAYED_ENTRIES);
 		this.vaccinationListSupplier = vaccinationListSupplier;
 		this.disease = disease;
+		this.view = view;
 	}
 
 	@Override
@@ -69,16 +76,17 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 
 	private void addEditButton(VaccinationListEntry listEntry) {
 		listEntry.addEditListener(
-			(Button.ClickListener) event -> ControllerProvider.getVaccinationController()
-				.edit(
-					FacadeProvider.getVaccinationFacade().getByUuid(listEntry.getVaccination().getUuid()),
-					listEntry.getVaccination().getDisease(),
-					UiFieldAccessCheckers.getDefault(listEntry.getVaccination().isPseudonymized()),
-					true,
-					v -> reload(),
-					() -> {
-						listLayout.removeAllComponents();
-						reload();
-					}));
+			e -> view.showNavigationConfirmPopupIfDirty(
+				() -> ControllerProvider.getVaccinationController()
+					.edit(
+						FacadeProvider.getVaccinationFacade().getByUuid(listEntry.getVaccination().getUuid()),
+						listEntry.getVaccination().getDisease(),
+						UiFieldAccessCheckers.getDefault(listEntry.getVaccination().isPseudonymized()),
+						true,
+						v -> reload(),
+						() -> {
+							listLayout.removeAllComponents();
+							reload();
+						})));
 	}
 }

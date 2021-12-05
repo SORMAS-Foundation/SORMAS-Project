@@ -131,7 +131,7 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 				layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
 			} else {
 				VaccinationListCriteria criteria = new VaccinationListCriteria.Builder(getReference()).build();
-				layout.addComponent(new SideComponentLayout(new VaccinationListComponent(criteria)), VACCINATIONS_LOC);
+				layout.addComponent(new SideComponentLayout(new VaccinationListComponent(criteria, this)), VACCINATIONS_LOC);
 			}
 		}
 	}

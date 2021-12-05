@@ -260,7 +260,8 @@ public class ContactDataView extends AbstractContactView {
 							getContactRef(),
 							criteria,
 							contactDto.getRegion() != null ? contactDto.getRegion() : caseDto.getResponsibleRegion(),
-							contactDto.getDistrict() != null ? contactDto.getDistrict() : caseDto.getResponsibleDistrict())),
+							contactDto.getDistrict() != null ? contactDto.getDistrict() : caseDto.getResponsibleDistrict(),
+							this)),
 					VACCINATIONS_LOC);
 			}
 		}
