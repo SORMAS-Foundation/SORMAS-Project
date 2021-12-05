@@ -70,7 +70,6 @@ public class VaccinationListComponent extends SideComponent {
 			region,
 			district,
 			showCreateButton,
-			SormasUI::refreshView,
 			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
 				.getEntriesListWithRelevance(caseReferenceDto, criteria, 0, maxDisplayedEntries));
 	}
@@ -87,7 +86,6 @@ public class VaccinationListComponent extends SideComponent {
 			region,
 			district,
 			showCreateButton,
-			SormasUI::refreshView,
 			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
 				.getEntriesListWithRelevance(contactReferenceDto, criteria, 0, maxDisplayedEntries));
 	}
@@ -104,7 +102,6 @@ public class VaccinationListComponent extends SideComponent {
 			region,
 			district,
 			showCreateButton,
-			SormasUI::refreshView,
 			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
 				.getEntriesListWithRelevance(eventParticipantReferenceDto, criteria, 0, maxDisplayedEntries));
 	}
@@ -114,13 +111,12 @@ public class VaccinationListComponent extends SideComponent {
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
 		boolean showCreateButton,
-		Runnable refreshCallback,
 		Function<Integer, List<VaccinationListEntryDto>> entriesListSupplier) {
 		super(I18nProperties.getString(Strings.entityVaccinations));
 
 		VaccinationList vaccinationList = new VaccinationList(criteria.getDisease(), entriesListSupplier);
 
-		createNewVaccinationButton(criteria, region, district, showCreateButton, refreshCallback);
+		createNewVaccinationButton(criteria, region, district, showCreateButton, SormasUI::refreshView);
 		addComponent(vaccinationList);
 		vaccinationList.reload();
 	}
