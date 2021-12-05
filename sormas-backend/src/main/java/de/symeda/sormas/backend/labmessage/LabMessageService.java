@@ -14,7 +14,6 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -71,16 +70,12 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 			}
 		}
 		if (criteria.getMessageDateFrom() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.greaterThanOrEqualTo(labMessage.get(LabMessage.MESSAGE_DATE_TIME), DateHelper.getStartOfDay(criteria.getMessageDateFrom())));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.greaterThanOrEqualTo(labMessage.get(LabMessage.MESSAGE_DATE_TIME), criteria.getMessageDateFrom()));
 		}
 		if (criteria.getMessageDateTo() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.lessThanOrEqualTo(labMessage.get(LabMessage.MESSAGE_DATE_TIME), DateHelper.getEndOfDay(criteria.getMessageDateTo())));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.lessThanOrEqualTo(labMessage.get(LabMessage.MESSAGE_DATE_TIME), criteria.getMessageDateTo()));
 		}
 		if (criteria.getBirthDateFrom() != null) {
 			Calendar birthdayFrom = Calendar.getInstance();
