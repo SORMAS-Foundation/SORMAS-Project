@@ -3029,7 +3029,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 
 		// Retrieve the latest case of each person for each disease
-		Comparator<Object[]> comparator = (c1, c2) -> new Date((Long) c1[9]).compareTo(new Date((Long) c2[9]));
+		Comparator<Object[]> comparator = Comparator.comparing(c -> new Date((Long) c[9]));
 		List<Object[]> filteredCaseInfo = new ArrayList<>();
 		Map<Disease, List<Object[]>> caseInfoByDisease = caseInfoList.stream().collect(Collectors.groupingBy(c -> Disease.valueOf((String) c[2])));
 		caseInfoByDisease.keySet().forEach(d -> {
@@ -3046,16 +3046,42 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							r -> new ArrayList<>(r.values()))));
 		});
 
-		// Replace vaccination date with the first vaccination date of the earliest entity with vaccination info
 		filteredCaseInfo.forEach(objects -> {
-			if (objects[10] == null) {
-				caseInfoByDisease.get(Disease.valueOf((String) objects[2]))
+			final List<Object[]> objectList = caseInfoByDisease.get(Disease.valueOf((String) objects[2]));
+			/* set earliest report date */
+				objectList
 					.stream()
 					.sorted(comparator.reversed())
 					.findFirst()
 					.ifPresent(earliestObject -> {
 						if (earliestObject[12] != null && objects[12] != null && (int) earliestObject[12] <= (int) objects[12]) {
 							objects[10] = earliestObject[10];
+						}
+					});
+			/* set earliest first vaccination date  */
+			if (objects[10] == null) {
+
+				Comparator<Object[]> firstVacDateComparator = Comparator.comparing(c -> new Date((Long) c[10]));
+				objectList
+					.stream()
+					.sorted(firstVacDateComparator.reversed())
+					.findFirst()
+					.ifPresent(earliestObject -> {
+						if (earliestObject[12] != null && objects[12] != null && (int) earliestObject[12] <= (int) objects[12]) {
+							objects[10] = earliestObject[10];
+						}
+					});
+			}
+			/* set latest last vaccination date  */
+			if (objects[11] == null) {
+				Comparator<Object[]> lastVacDateComparator = Comparator.comparing(c -> new Date((Long) c[11]));
+				objectList
+					.stream()
+					.sorted(lastVacDateComparator)
+					.findFirst()
+					.ifPresent(earliestObject -> {
+						if (earliestObject[12] != null && objects[12] != null && (int) earliestObject[12] <= (int) objects[12]) {
+							objects[11] = earliestObject[11];
 						}
 					});
 			}
