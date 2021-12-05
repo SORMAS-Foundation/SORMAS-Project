@@ -15,17 +15,13 @@
 
 package de.symeda.sormas.ui.travelentry.travelentrylink;
 
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.travelentry.TravelEntryListEntryDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
@@ -35,7 +31,6 @@ public class TravelEntryListEntry extends SideComponentField {
 	public static final String SEPARATOR = ": ";
 
 	private final TravelEntryListEntryDto travelEntry;
-	private Button editButton;
 
 	public TravelEntryListEntry(TravelEntryListEntryDto travelEntry) {
 
@@ -76,22 +71,6 @@ public class TravelEntryListEntry extends SideComponentField {
 		diseasePointOfEntryLayout.setComponentAlignment(diseaseLabel, Alignment.MIDDLE_LEFT);
 		diseasePointOfEntryLayout.setComponentAlignment(pointOfEntryLabel, Alignment.MIDDLE_RIGHT);
 		addComponentToField(diseasePointOfEntryLayout);
-	}
-
-	public void addEditListener(Button.ClickListener editClickListener) {
-		if (editButton == null) {
-			editButton = ButtonHelper.createIconButtonWithCaption(
-				"edit-travelEntry-" + travelEntry.getUuid(),
-				null,
-				VaadinIcons.PENCIL,
-				editClickListener,
-				ValoTheme.BUTTON_LINK,
-				CssStyles.BUTTON_COMPACT);
-
-			addComponent(editButton);
-			setComponentAlignment(editButton, Alignment.TOP_RIGHT);
-			setExpandRatio(editButton, 0);
-		}
 	}
 
 	public TravelEntryListEntryDto getTravelEntry() {

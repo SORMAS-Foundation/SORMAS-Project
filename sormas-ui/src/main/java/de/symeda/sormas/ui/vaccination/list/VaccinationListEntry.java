@@ -20,7 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
@@ -40,7 +39,6 @@ public class VaccinationListEntry extends SideComponentField {
 	public static final String SEPARATOR = ": ";
 
 	private final VaccinationListEntryDto vaccination;
-	private Button editButton;
 
 	public VaccinationListEntry(VaccinationListEntryDto vaccination, boolean showDisease) {
 		this.vaccination = vaccination;
