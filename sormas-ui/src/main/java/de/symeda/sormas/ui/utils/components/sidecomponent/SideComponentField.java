@@ -33,7 +33,7 @@ public class SideComponentField extends HorizontalLayout {
 		mainLayout.addComponent(component);
 	}
 
-	public void adEditButton(String id, Button.ClickListener editClickListener) {
+	public void addEditButton(String id, Button.ClickListener editClickListener) {
 		Button editButton = ButtonHelper
 			.createIconButtonWithCaption(id, null, VaadinIcons.PENCIL, editClickListener, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 
