@@ -77,21 +77,6 @@ public class BaseSteps implements StepLifecycleListener {
     log.info("Finished test: " + scenario.getName());
   }
 
-  @Before(value = "@PagesMeasurements")
-  public void createResultsDataFile() {
-    //    FileWriter file;
-    //    try {
-    //      File resultsText = new File(textFilePath);
-    //      if (!resultsText.exists()) {
-    //        log.info("Creating results.txt file to store execution results.");
-    //        file = new FileWriter(textFilePath);
-    //        file.flush();
-    //      }
-    //    } catch (IOException e) {
-    //      log.warn("Unable to create test results text file: " + e.getStackTrace());
-    //    }
-  }
-
   @After(value = "@PublishCustomReport")
   public void generateMeasurementsReport() {
     log.info("Parsing results collected in results.txt and converting them into Row Objects");
