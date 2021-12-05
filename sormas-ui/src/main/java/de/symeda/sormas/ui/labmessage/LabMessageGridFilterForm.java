@@ -15,8 +15,11 @@
 
 package de.symeda.sormas.ui.labmessage;
 
+import java.util.Date;
+
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -25,6 +28,7 @@ import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
+import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
 import de.symeda.sormas.ui.utils.FutureDateValidator;
 
@@ -53,16 +57,14 @@ public class LabMessageGridFilterForm extends AbstractFilterForm<LabMessageCrite
 				.withCaptionAndPixelSized(LabMessageCriteria.SEARCH_FIELD_LIKE, I18nProperties.getString(Strings.promptLabMessagesSearchField), 200));
 		searchField.setNullRepresentation("");
 
-		DateField messageDateFrom = addField(
-			FieldConfiguration
-				.withCaptionAndPixelSized(LabMessageCriteria.MESSAGE_DATE_FROM, I18nProperties.getString(Strings.promptLabMessagesDateFrom), 200));
-
-		DateField messageDateTo = addField(
-			FieldConfiguration
-				.withCaptionAndPixelSized(LabMessageCriteria.MESSAGE_DATE_TO, I18nProperties.getString(Strings.promptLabMessagesDateTo), 200));
+		DateTimeField messageDateFrom = addField(LabMessageCriteria.MESSAGE_DATE_FROM, DateTimeField.class);
 		messageDateFrom.setCaption(I18nProperties.getPrefixCaption(LabMessageCriteria.I18N_PREFIX, LabMessageCriteria.MESSAGE_DATE_FROM));
+		messageDateFrom.setInputPrompt(I18nProperties.getString(Strings.promptLabMessagesDateFrom));
+
+		DateTimeField messageDateTo = addField(LabMessageCriteria.MESSAGE_DATE_TO, DateTimeField.class);
 		messageDateTo.setCaption(I18nProperties.getPrefixCaption(LabMessageCriteria.I18N_PREFIX, LabMessageCriteria.MESSAGE_DATE_TO));
-		DateComparisonValidator.addStartEndValidators(messageDateFrom, messageDateTo);
+		messageDateTo.setInputPrompt(I18nProperties.getString(Strings.promptLabMessagesDateTo));
+		DateComparisonValidator.addStartEndValidators(messageDateFrom, messageDateTo, false);
 
 		DateField personBirthDateFrom = addField(
 			FieldConfiguration.withCaptionAndPixelSized(
@@ -82,8 +84,8 @@ public class LabMessageGridFilterForm extends AbstractFilterForm<LabMessageCrite
 		initDateFields(messageDateFrom, messageDateTo, personBirthDateFrom, personBirthDateTo);
 	}
 
-	private void initDateFields(DateField... dateFields) {
-		for (DateField dateField : dateFields) {
+	private void initDateFields(Field<Date>... dateFields) {
+		for (Field<Date> dateField : dateFields) {
 			dateField.addStyleName("caption-hidden");
 			for (Validator validator : dateField.getValidators()) {
 				if (validator instanceof FutureDateValidator) {
