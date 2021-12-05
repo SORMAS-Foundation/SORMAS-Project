@@ -49,15 +49,7 @@ public class VaccinationListComponent extends SideComponent {
 	private final AbstractDetailView<? extends ReferenceDto> view;
 
 	public VaccinationListComponent(VaccinationListCriteria criteria, AbstractDetailView<? extends ReferenceDto> view) {
-		super(I18nProperties.getString(Strings.entityVaccinations));
-		this.view = view;
-
-		VaccinationList vaccinationList = new VaccinationList(
-			criteria.getDisease(),
-			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade().getEntriesList(criteria, 0, maxDisplayedEntries));
-		vaccinationList.addSideComponentFieldEditEventListener(editSideComponentFieldEventListener(vaccinationList));
-		addComponent(vaccinationList);
-		vaccinationList.reload();
+		this(criteria, maxDisplayedEntries -> FacadeProvider.getVaccinationFacade().getEntriesList(criteria, 0, maxDisplayedEntries), view);
 	}
 
 	public VaccinationListComponent(
@@ -114,14 +106,22 @@ public class VaccinationListComponent extends SideComponent {
 		DistrictReferenceDto district,
 		Function<Integer, List<VaccinationListEntryDto>> entriesListSupplier,
 		AbstractDetailView<? extends ReferenceDto> view) {
-		super(I18nProperties.getString(Strings.entityVaccinations));
 
+		this(criteria, entriesListSupplier, view);
+		createNewVaccinationButton(criteria, region, district, SormasUI::refreshView);
+	}
+
+	private VaccinationListComponent(
+		VaccinationListCriteria criteria,
+		Function<Integer, List<VaccinationListEntryDto>> entriesListSupplier,
+		AbstractDetailView<? extends ReferenceDto> view) {
+
+		super(I18nProperties.getString(Strings.entityVaccinations));
 		this.view = view;
 
 		VaccinationList vaccinationList = new VaccinationList(criteria.getDisease(), entriesListSupplier);
 		vaccinationList.addSideComponentFieldEditEventListener(editSideComponentFieldEventListener(vaccinationList));
 
-		createNewVaccinationButton(criteria, region, district, SormasUI::refreshView);
 		addComponent(vaccinationList);
 		vaccinationList.reload();
 	}
