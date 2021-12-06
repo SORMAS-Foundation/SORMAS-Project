@@ -8145,11 +8145,6 @@ CREATE TEMP TABLE tmp_earlier_vaccinated_entities AS
              LEFT JOIN symptoms ON cases.symptoms_id = symptoms.id
     WHERE cases.vaccination = 'VACCINATED'
       AND cases.deleted = false
-      AND cases.vaccinationdoses ~ '^(10|[1-9])$'
-      AND EXISTS (SELECT * from tmp_vaccinated_persons
-           WHERE tmp_vaccinated_persons.person_id = person_id
-             AND tmp_vaccinated_persons.disease = cases.disease
-             AND tmp_vaccinated_persons.vaccinationdoses >= CAST(cases.vaccinationdoses AS int))
     ORDER BY person.id, cases.disease, relevancedate ASC
 )
 UNION
@@ -8175,11 +8170,6 @@ UNION
              LEFT JOIN vaccinationinfo ON contact.vaccinationinfo_id = vaccinationinfo.id
     WHERE vaccinationinfo.vaccination = 'VACCINATED'
       AND contact.deleted = false
-      AND vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
-      AND EXISTS (SELECT * from tmp_vaccinated_persons
-                  WHERE tmp_vaccinated_persons.person_id = person_id
-                    AND tmp_vaccinated_persons.disease = contact.disease
-                    AND tmp_vaccinated_persons.vaccinationdoses >= CAST(vaccinationinfo.vaccinationdoses AS int))
     ORDER BY person.id, contact.disease, relevancedate ASC
 )
 UNION
@@ -8206,12 +8196,6 @@ UNION
              LEFT JOIN vaccinationinfo ON eventparticipant.vaccinationinfo_id = vaccinationinfo.id
     WHERE vaccinationinfo.vaccination = 'VACCINATED'
       AND eventparticipant.deleted = false
-      AND vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
-      AND EXISTS(SELECT *
-                 from tmp_vaccinated_persons
-                 WHERE tmp_vaccinated_persons.person_id = person_id
-                   AND tmp_vaccinated_persons.disease = events.disease
-                   AND tmp_vaccinated_persons.vaccinationdoses >= CAST(vaccinationinfo.vaccinationdoses AS int))
 
     ORDER BY person.id, events.disease, relevancedate ASC
 );
@@ -8291,7 +8275,7 @@ $$ LANGUAGE plpgsql;
 /* set latest available vaccine name  */
 DROP TABLE IF EXISTS tmp_latest_vaccinename;
 CREATE TEMP TABLE tmp_latest_vaccinename AS
-SELECT DISTINCT ON (person_id, disease) person_id, disease, vaccineName, relevancedate
+SELECT DISTINCT ON (person_id, disease) person_id, disease, vaccineName, otherVaccineName, relevancedate
 FROM tmp_earlier_vaccinated_entities
 WHERE tmp_earlier_vaccinated_entities.vaccineName IS NOT NULL
 ORDER BY person_id, disease, relevancedate DESC;
@@ -8304,7 +8288,8 @@ $$
         FOR rec IN SELECT * FROM tmp_latest_vaccinename
             LOOP
                 UPDATE tmp_vaccinated_persons
-                SET vaccineName = rec.vaccineName
+                SET vaccineName      = rec.vaccineName,
+                    otherVaccineName = rec.otherVaccineName
                 WHERE tmp_vaccinated_persons.person_id = rec.person_id
                   AND tmp_vaccinated_persons.disease = rec.disease
                   AND vaccineName IS NULL
@@ -8313,35 +8298,10 @@ $$
     END;
 $$ LANGUAGE plpgsql;
 
-/* set latest available other vaccine name  */
-DROP TABLE IF EXISTS tmp_latest_othervaccinename;
-CREATE TEMP TABLE tmp_latest_othervaccinename AS
-SELECT DISTINCT ON (person_id, disease) person_id, disease, otherVaccineName, relevancedate
-FROM tmp_earlier_vaccinated_entities
-WHERE tmp_earlier_vaccinated_entities.otherVaccineName IS NOT NULL
-ORDER BY person_id, disease, relevancedate DESC;
-
-DO
-$$
-    DECLARE
-        rec RECORD;
-    BEGIN
-        FOR rec IN SELECT * FROM tmp_latest_othervaccinename
-            LOOP
-                UPDATE tmp_vaccinated_persons
-                SET otherVaccineName = rec.otherVaccineName
-                WHERE tmp_vaccinated_persons.person_id = rec.person_id
-                  AND tmp_vaccinated_persons.disease = rec.disease
-                  AND otherVaccineName IS NULL
-                  AND rec.otherVaccineName IS NOT NULL;
-            end loop;
-    END;
-$$ LANGUAGE plpgsql;
-
 /* set latest available vaccine manufacturer  */
 DROP TABLE IF EXISTS tmp_latest_vaccinemanufacturer;
 CREATE TEMP TABLE tmp_latest_vaccinemanufacturer AS
-SELECT DISTINCT ON (person_id, disease) person_id, disease, vaccineManufacturer, relevancedate
+SELECT DISTINCT ON (person_id, disease) person_id, disease, vaccineManufacturer, otherVaccineManufacturer, relevancedate
 FROM tmp_earlier_vaccinated_entities
 WHERE tmp_earlier_vaccinated_entities.vaccineManufacturer IS NOT NULL
 ORDER BY person_id, disease, relevancedate DESC;
@@ -8354,7 +8314,8 @@ $$
         FOR rec IN SELECT * FROM tmp_latest_vaccinemanufacturer
             LOOP
                 UPDATE tmp_vaccinated_persons
-                SET vaccineManufacturer = rec.vaccineManufacturer
+                SET vaccineManufacturer      = rec.vaccineManufacturer,
+                    otherVaccineManufacturer = rec.otherVaccineManufacturer
                 WHERE tmp_vaccinated_persons.person_id = rec.person_id
                   AND tmp_vaccinated_persons.disease = rec.disease
                   AND vaccineManufacturer IS NULL
@@ -8363,34 +8324,9 @@ $$
     END;
 $$ LANGUAGE plpgsql;
 
-/* set latest available other vaccine manufacturer  */
-DROP TABLE IF EXISTS tmp_latest_othervaccinemanufacturer;
-CREATE TEMP TABLE tmp_latest_othervaccinemanufacturer AS
-SELECT DISTINCT ON (person_id, disease) person_id, disease, otherVaccineManufacturer, relevancedate
-FROM tmp_earlier_vaccinated_entities
-WHERE tmp_earlier_vaccinated_entities.otherVaccineManufacturer IS NOT NULL
-ORDER BY person_id, disease, relevancedate DESC;
-
-DO
-$$
-    DECLARE
-        rec RECORD;
-    BEGIN
-        FOR rec IN SELECT * FROM tmp_latest_othervaccinemanufacturer
-            LOOP
-                UPDATE tmp_vaccinated_persons
-                SET otherVaccineManufacturer = rec.otherVaccineManufacturer
-                WHERE tmp_vaccinated_persons.person_id = rec.person_id
-                  AND tmp_vaccinated_persons.disease = rec.disease
-                  AND otherVaccineManufacturer IS NULL
-                  AND rec.otherVaccineManufacturer IS NOT NULL;
-            end loop;
-    END;
-$$ LANGUAGE plpgsql;
-
 /* set latest available vaccineInn  */
-DROP TABLE IF EXISTS tmp_latest_vaccineInn;
-CREATE TEMP TABLE tmp_latest_vaccineInn AS
+DROP TABLE IF EXISTS tmp_latest_vaccineinn;
+CREATE TEMP TABLE tmp_latest_vaccineinn AS
 SELECT DISTINCT ON (person_id, disease) person_id, disease, vaccineInn, relevancedate
 FROM tmp_earlier_vaccinated_entities
 WHERE tmp_earlier_vaccinated_entities.vaccineInn IS NOT NULL
@@ -8401,7 +8337,7 @@ $$
     DECLARE
         rec RECORD;
     BEGIN
-        FOR rec IN SELECT * FROM tmp_latest_vaccineInn
+        FOR rec IN SELECT * FROM tmp_latest_vaccineinn
             LOOP
                 UPDATE tmp_vaccinated_persons
                 SET vaccineInn = rec.vaccineInn
@@ -8414,8 +8350,8 @@ $$
 $$ LANGUAGE plpgsql;
 
 /* set latest available vaccineBatchNumber  */
-DROP TABLE IF EXISTS tmp_latest_vaccineBatchNumber;
-CREATE TEMP TABLE tmp_latest_vaccineBatchNumber AS
+DROP TABLE IF EXISTS tmp_latest_vaccinebatchnumber;
+CREATE TEMP TABLE tmp_latest_vaccinebatchnumber AS
 SELECT DISTINCT ON (person_id, disease) person_id, disease, vaccineBatchNumber, relevancedate
 FROM tmp_earlier_vaccinated_entities
 WHERE tmp_earlier_vaccinated_entities.vaccineBatchNumber IS NOT NULL
@@ -8426,7 +8362,7 @@ $$
     DECLARE
         rec RECORD;
     BEGIN
-        FOR rec IN SELECT * FROM tmp_latest_vaccineBatchNumber
+        FOR rec IN SELECT * FROM tmp_latest_vaccinebatchnumber
             LOOP
                 UPDATE tmp_vaccinated_persons
                 SET vaccineBatchNumber = rec.vaccineBatchNumber
@@ -8439,8 +8375,8 @@ $$
 $$ LANGUAGE plpgsql;
 
 /* set latest available vaccineUniiCode  */
-DROP TABLE IF EXISTS tmp_latest_vaccineUniiCode;
-CREATE TEMP TABLE tmp_latest_vaccineUniiCode AS
+DROP TABLE IF EXISTS tmp_latest_vaccineuniicode;
+CREATE TEMP TABLE tmp_latest_vaccineuniicode AS
 SELECT DISTINCT ON (person_id, disease) person_id, disease, vaccineUniiCode, relevancedate
 FROM tmp_earlier_vaccinated_entities
 WHERE tmp_earlier_vaccinated_entities.vaccineUniiCode IS NOT NULL
@@ -8451,7 +8387,7 @@ $$
     DECLARE
         rec RECORD;
     BEGIN
-        FOR rec IN SELECT * FROM tmp_latest_vaccineUniiCode
+        FOR rec IN SELECT * FROM tmp_latest_vaccineuniicode
             LOOP
                 UPDATE tmp_vaccinated_persons
                 SET vaccineUniiCode = rec.vaccineUniiCode
@@ -8463,9 +8399,9 @@ $$
     END;
 $$ LANGUAGE plpgsql;
 
-/* set latest available vaccineUniiCode  */
-DROP TABLE IF EXISTS tmp_latest_vaccineAtcCode;
-CREATE TEMP TABLE tmp_latest_vaccineAtcCode AS
+/* set latest available vaccineAtcCode  */
+DROP TABLE IF EXISTS tmp_latest_vaccineatccode;
+CREATE TEMP TABLE tmp_latest_vaccineatccode AS
 SELECT DISTINCT ON (person_id, disease) person_id, disease, vaccineAtcCode, relevancedate
 FROM tmp_earlier_vaccinated_entities
 WHERE tmp_earlier_vaccinated_entities.vaccineAtcCode IS NOT NULL
@@ -8476,7 +8412,7 @@ $$
     DECLARE
         rec RECORD;
     BEGIN
-        FOR rec IN SELECT * FROM tmp_latest_vaccineAtcCode
+        FOR rec IN SELECT * FROM tmp_latest_vaccineatccode
             LOOP
                 UPDATE tmp_vaccinated_persons
                 SET vaccineAtcCode = rec.vaccineAtcCode
@@ -8488,9 +8424,9 @@ $$
     END;
 $$ LANGUAGE plpgsql;
 
-/* set latest available vaccineUniiCode  */
-DROP TABLE IF EXISTS tmp_latest_vaccinationInfoSource;
-CREATE TEMP TABLE tmp_latest_vaccinationInfoSource AS
+/* set latest available vaccinationInfoSource  */
+DROP TABLE IF EXISTS tmp_latest_vaccinationinfosource;
+CREATE TEMP TABLE tmp_latest_vaccinationinfosource AS
 SELECT DISTINCT ON (person_id, disease) person_id, disease, vaccinationInfoSource, relevancedate
 FROM tmp_earlier_vaccinated_entities
 WHERE tmp_earlier_vaccinated_entities.vaccinationInfoSource IS NOT NULL
@@ -8501,7 +8437,7 @@ $$
     DECLARE
         rec RECORD;
     BEGIN
-        FOR rec IN SELECT * FROM tmp_latest_vaccinationInfoSource
+        FOR rec IN SELECT * FROM tmp_latest_vaccinationinfosource
             LOOP
                 UPDATE tmp_vaccinated_persons
                 SET vaccinationInfoSource = rec.vaccinationInfoSource
@@ -8825,6 +8761,17 @@ DROP TABLE IF EXISTS tmp_earlier_vaccinated_entities;
 DROP TABLE IF EXISTS tmp_earliest_reported_vaccinated_persons;
 DROP TABLE IF EXISTS tmp_earliest_firstvaccinationdate_vaccinated_persons;
 DROP TABLE IF EXISTS tmp_latest_lastvaccinationdate_vaccinated_persons;
+DROP TABLE IF EXISTS tmp_latest_vaccinename;
+DROP TABLE IF EXISTS tmp_latest_othervaccinename;
+DROP TABLE IF EXISTS tmp_latest_vaccinemanufacturer;
+DROP TABLE IF EXISTS tmp_latest_othervaccinemanufacturer;
+DROP TABLE IF EXISTS tmp_latest_vaccineinn;
+DROP TABLE IF EXISTS tmp_latest_vaccinebatchnumber;
+DROP TABLE IF EXISTS tmp_latest_vaccineuniicode;
+DROP TABLE IF EXISTS tmp_latest_vaccineatccode;
+DROP TABLE IF EXISTS tmp_latest_vaccinationinfosource;
+
+
 DROP FUNCTION IF EXISTS clone_healthconditions(bigint);
 DROP FUNCTION IF EXISTS create_healthconditions();
 DROP FUNCTION IF EXISTS create_vaccination(bigint, bigint, timestamp, bigint, timestamp, varchar(255), text, varchar(255), text, text, text, text, text, varchar(255), varchar(255), varchar(255));
