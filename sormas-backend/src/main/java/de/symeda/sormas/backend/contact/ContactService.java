@@ -1450,10 +1450,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
 
 		// Only consider contacts with relevance date at least one day after the vaccination date
-		if (vaccinationDate != null) {
-			vaccinationDate = DateHelper.getEndOfDay(vaccinationDate);
-		} else {
+		if (vaccinationDate == null) {
 			return;
+		} else {
+			vaccinationDate = DateHelper.getEndOfDay(vaccinationDate);
 		}
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
