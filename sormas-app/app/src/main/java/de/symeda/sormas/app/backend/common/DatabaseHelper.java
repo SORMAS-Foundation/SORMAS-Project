@@ -3053,26 +3053,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			// set earliest report date
 			objectList.stream().max(comparator).ifPresent(earliestObject -> {
-				if (earliestObject[12] != null && objects[12] != null && (int) earliestObject[12] <= (int) objects[12]) {
-					objects[4] = earliestObject[4];
-				}
+				objects[4] = earliestObject[4];
 			});
 			// set earliest first vaccination date
 			if (objects[10] == null) {
 				Comparator<Object[]> firstVacDateComparator = Comparator.comparing(c -> new Date((Long) c[10]));
 				objectList.stream().filter(c -> c[10] != null).max(firstVacDateComparator).ifPresent(earliestObject -> {
-					if (earliestObject[12] != null && objects[12] != null && (int) earliestObject[12] <= (int) objects[12]) {
-						objects[10] = earliestObject[10];
-					}
+					objects[10] = earliestObject[10];
 				});
 			}
 			// set latest last vaccination date
 			if (objects[11] == null) {
 				Comparator<Object[]> lastVacDateComparator = Comparator.comparing(c -> new Date((Long) c[11]));
 				objectList.stream().filter(c -> c[11] != null).min(lastVacDateComparator).ifPresent(earliestObject -> {
-					if (earliestObject[12] != null && objects[12] != null && (int) earliestObject[12] <= (int) objects[12]) {
-						objects[11] = earliestObject[11];
-					}
+					objects[11] = earliestObject[11];
 				});
 			}
 			// set latest available vaccine name
