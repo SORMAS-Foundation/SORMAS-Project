@@ -15,18 +15,18 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
-public interface SormasToSormasShareableDto extends HasUuid {
+public abstract class SormasToSormasShareableDto extends PseudonymizableDto {
 
-	SormasToSormasOriginInfoDto getSormasToSormasOriginInfo();
+	public abstract SormasToSormasOriginInfoDto getSormasToSormasOriginInfo();
 
-	void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto originInfo);
+	public abstract void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto originInfo);
 
-	boolean isOwnershipHandedOver();
+	public abstract boolean isOwnershipHandedOver();
 
-	UserReferenceDto getReportingUser();
+	public abstract UserReferenceDto getReportingUser();
 
-	void setReportingUser(UserReferenceDto user);
+	public abstract void setReportingUser(UserReferenceDto user);
 }

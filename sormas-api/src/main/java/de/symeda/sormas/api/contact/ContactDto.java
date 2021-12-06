@@ -61,7 +61,7 @@ import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
-public class ContactDto extends PseudonymizableDto implements SormasToSormasShareableDto {
+public class ContactDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
