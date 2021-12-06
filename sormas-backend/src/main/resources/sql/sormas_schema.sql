@@ -8203,9 +8203,9 @@ UNION
 /* set earliest report date  */
 DROP TABLE IF EXISTS tmp_earliest_reported_vaccinated_persons;
 CREATE TEMP TABLE tmp_earliest_reported_vaccinated_persons AS
-SELECT DISTINCT ON (person_id, disease) person_id, disease, reportdate, relevancedate
+SELECT DISTINCT ON (person_id, disease) person_id, disease, reportdate
 FROM tmp_earlier_vaccinated_entities
-ORDER BY person_id, disease, relevancedate ASC;
+ORDER BY person_id, disease, reportdate ASC;
 
 DO
 $$

@@ -3052,7 +3052,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				caseInfoByDisease.get(Disease.valueOf((String) objects[2])).stream().filter(c -> c[1] == objects[1]).collect(Collectors.toList());
 
 			// set earliest report date
-			objectList.stream().max(comparator).ifPresent(earliestObject -> {
+			Comparator<Object[]> reportDateComparator = Comparator.comparing(c -> new Date((Long) c[4]));
+			objectList.stream().min(reportDateComparator).ifPresent(earliestObject -> {
 				objects[4] = earliestObject[4];
 			});
 			// set earliest first vaccination date
