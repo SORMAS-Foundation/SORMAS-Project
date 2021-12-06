@@ -493,7 +493,9 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
 
 		// Only consider event participants with relevance date at least one day after the vaccination date
-		if (vaccinationDate != null) {
+		if (vaccinationDate == null) {
+			return;
+		} else {
 			vaccinationDate = DateHelper.getEndOfDay(vaccinationDate);
 		}
 

@@ -1750,7 +1750,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
 
 		// Only consider cases with relevance date at least one day after the vaccination date
-		if (vaccinationDate != null) {
+		if (vaccinationDate == null) {
+			return;
+		} else {
 			vaccinationDate = DateHelper.getEndOfDay(vaccinationDate);
 		}
 
