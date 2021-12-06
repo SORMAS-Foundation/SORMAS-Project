@@ -3055,12 +3055,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					.findFirst()
 					.ifPresent(earliestObject -> {
 						if (earliestObject[12] != null && objects[12] != null && (int) earliestObject[12] <= (int) objects[12]) {
-							objects[10] = earliestObject[10];
+							objects[4] = earliestObject[4];
 						}
 					});
 			/* set earliest first vaccination date  */
 			if (objects[10] == null) {
-
 				Comparator<Object[]> firstVacDateComparator = Comparator.comparing(c -> new Date((Long) c[10]));
 				objectList
 					.stream()
