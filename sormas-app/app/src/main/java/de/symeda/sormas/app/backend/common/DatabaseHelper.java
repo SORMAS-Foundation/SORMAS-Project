@@ -3048,8 +3048,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 		filteredCaseInfo.forEach(objects -> {
 			// Retrieve all cases of the case person with the respective disease
+			final Object caseId = objects[0];
+			final Object personId = objects[1];
 			final List<Object[]> objectList =
-				caseInfoByDisease.get(Disease.valueOf((String) objects[2])).stream().filter(c -> c[1] == objects[1]).collect(Collectors.toList());
+				caseInfoByDisease.get(Disease.valueOf((String) objects[2])).stream().filter(c -> ((BigInteger) c[0]).intValue() != ((BigInteger) caseId).intValue() && ((BigInteger) c[1]).intValue() == ((BigInteger) personId).intValue()).collect(Collectors.toList());
 
 			// set earliest report date
 			Comparator<Object[]> reportDateComparator = Comparator.comparing(c -> new Date((Long) c[4]));
