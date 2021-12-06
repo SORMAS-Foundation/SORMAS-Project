@@ -136,7 +136,7 @@ public class ReportsView extends AbstractView {
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createReportButton);
-			if (!UserProvider.getCurrent().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+			if ((!UserProvider.getCurrent().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) && (!UserProvider.getCurrent().hasUserRole(UserRole.POE_INFORMANT))) {
 				createReportButton.setEnabled(false);
 			}
 		}

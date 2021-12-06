@@ -849,7 +849,7 @@ public class CaseController {
 
 		CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(
 			caseEditForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
+			UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW),
 			caseEditForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {

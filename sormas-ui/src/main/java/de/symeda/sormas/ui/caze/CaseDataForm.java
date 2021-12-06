@@ -942,6 +942,42 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.CASE_ORIGIN);
 
 		setReadOnly(true, CaseDataDto.TRANSMITTED);
+
+		setReadOnly(true, CaseDataDto.REPORT_DATE);
+		setReadOnly(true, CaseDataDto.EPID_NUMBER);
+		setReadOnly(true, CaseDataDto.EXTERNAL_TOKEN);
+		setReadOnly(true, CaseDataDto.INTERNAL_TOKEN);
+		setReadOnly(true, CaseDataDto.REPORT_LAT_LON_ACCURACY);
+		setReadOnly(true, CaseDataDto.PREGNANT);
+		setReadOnly(true, CaseDataDto.POSTPARTUM);
+		setReadOnly(true, CaseDataDto.VACCINATION_STATUS);
+		setReadOnly(true, CaseDataDto.DISTRICT_LEVEL_DATE);
+		setReadOnly(true, CaseDataDto.REGION_LEVEL_DATE);
+		setReadOnly(true, CaseDataDto.NATIONAL_LEVEL_DATE);
+		setReadOnly(true, CaseDataDto.QUARANTINE);
+		setReadOnly(true, CaseDataDto.CLINICAL_CONFIRMATION);
+		setReadOnly(true, CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION);
+		setReadOnly(true, CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION);
+		assignNewEpidNumberButton.setEnabled(false);
+		
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)){
+			setReadOnly(false, CaseDataDto.REPORT_DATE);
+			setReadOnly(false, CaseDataDto.EPID_NUMBER);
+			setReadOnly(false, CaseDataDto.EXTERNAL_TOKEN);
+			setReadOnly(false, CaseDataDto.INTERNAL_TOKEN);
+			setReadOnly(false, CaseDataDto.REPORT_LAT_LON_ACCURACY);
+			setReadOnly(false, CaseDataDto.PREGNANT);
+			setReadOnly(false, CaseDataDto.POSTPARTUM);
+			setReadOnly(false, CaseDataDto.VACCINATION_STATUS);
+			setReadOnly(false, CaseDataDto.DISTRICT_LEVEL_DATE);
+			setReadOnly(false, CaseDataDto.REGION_LEVEL_DATE);
+			setReadOnly(false, CaseDataDto.NATIONAL_LEVEL_DATE);
+			setReadOnly(false, CaseDataDto.QUARANTINE);
+			setReadOnly(false, CaseDataDto.CLINICAL_CONFIRMATION);
+			setReadOnly(false, CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION);
+			setReadOnly(false, CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION);
+			assignNewEpidNumberButton.setEnabled(true);
+		}
 		UserProvider userProvider = UserProvider.getCurrent();
 		if ((UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) && (userProvider.getUser().getCountry() != null)){
 			setReadOnly(false, CaseDataDto.TRANSMITTED);
@@ -1152,6 +1188,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				FORCE_CAPTION);
 
 			getContent().addComponent(classificationRulesButton, CLASSIFICATION_RULES_LOC);
+			classificationRulesButton.setEnabled(false);
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)){
+				classificationRulesButton.setEnabled(true);
+			}
 		}
 
 		addValueChangeListener(e -> {
