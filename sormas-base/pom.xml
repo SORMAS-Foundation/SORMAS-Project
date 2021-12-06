@@ -42,6 +42,11 @@
 		<license.inceptionYear>2016</license.inceptionYear>
 		<license.licenseName>gpl_v3</license.licenseName>
 		<license.verbose>true</license.verbose>
+		<license.addJavaLicenseAfterPackage>false</license.addJavaLicenseAfterPackage>
+		<license.projectName>SORMAS® - Surveillance Outbreak Response Management &amp; Analysis System</license.projectName>
+		<license.processStartTag>BEGIN_LICENSE</license.processStartTag>
+		<license.processEndTag>END_LICENSE</license.processEndTag>
+		<license.sectionDelimiter>------------------------------------------------------------------------------</license.sectionDelimiter>
 		<!-- Attention: Compile dependencies with versions are maintained redundantly in sormas-app/app/build.gradle -->
 
 	</properties>
