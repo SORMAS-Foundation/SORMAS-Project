@@ -3028,7 +3028,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			}
 		}
 
-		// Retrieve the latest case of each person for each disease
+		// Retrieve earlier cases of each person for each disease
 		Comparator<Object[]> comparator = Comparator.comparing(c -> new Date((Long) c[9]));
 		List<Object[]> filteredCaseInfo = new ArrayList<>();
 		Map<Disease, List<Object[]>> caseInfoByDisease = caseInfoList.stream().collect(Collectors.groupingBy(c -> Disease.valueOf((String) c[2])));
@@ -3047,44 +3047,71 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		});
 
 		filteredCaseInfo.forEach(objects -> {
-			final List<Object[]> objectList = caseInfoByDisease.get(Disease.valueOf((String) objects[2]));
-			/* set earliest report date */
-				objectList
-					.stream()
-					.sorted(comparator.reversed())
-					.findFirst()
-					.ifPresent(earliestObject -> {
-						if (earliestObject[12] != null && objects[12] != null && (int) earliestObject[12] <= (int) objects[12]) {
-							objects[4] = earliestObject[4];
-						}
-					});
-			/* set earliest first vaccination date */
+			// Retrieve all cases of the case person with the respective disease
+			final List<Object[]> objectList =
+				caseInfoByDisease.get(Disease.valueOf((String) objects[2])).stream().filter(c -> c[1] == objects[1]).collect(Collectors.toList());
+
+			// set earliest report date
+			objectList.stream().max(comparator).ifPresent(earliestObject -> {
+				if (earliestObject[12] != null && objects[12] != null && (int) earliestObject[12] <= (int) objects[12]) {
+					objects[4] = earliestObject[4];
+				}
+			});
+			// set earliest first vaccination date
 			if (objects[10] == null) {
 				Comparator<Object[]> firstVacDateComparator = Comparator.comparing(c -> new Date((Long) c[10]));
-				objectList
-					.stream()
-					.filter(c -> c[10] != null)
-					.sorted(firstVacDateComparator.reversed())
-					.findFirst()
-					.ifPresent(earliestObject -> {
-						if (earliestObject[12] != null && objects[12] != null && (int) earliestObject[12] <= (int) objects[12]) {
-							objects[10] = earliestObject[10];
-						}
-					});
+				objectList.stream().filter(c -> c[10] != null).max(firstVacDateComparator).ifPresent(earliestObject -> {
+					if (earliestObject[12] != null && objects[12] != null && (int) earliestObject[12] <= (int) objects[12]) {
+						objects[10] = earliestObject[10];
+					}
+				});
 			}
-			/* set latest last vaccination date  */
+			// set latest last vaccination date
 			if (objects[11] == null) {
 				Comparator<Object[]> lastVacDateComparator = Comparator.comparing(c -> new Date((Long) c[11]));
-				objectList
-					.stream()
-					.filter(c -> c[11] != null)
-					.sorted(lastVacDateComparator)
-					.findFirst()
-					.ifPresent(earliestObject -> {
-						if (earliestObject[12] != null && objects[12] != null && (int) earliestObject[12] <= (int) objects[12]) {
-							objects[11] = earliestObject[11];
-						}
-					});
+				objectList.stream().filter(c -> c[11] != null).min(lastVacDateComparator).ifPresent(earliestObject -> {
+					if (earliestObject[12] != null && objects[12] != null && (int) earliestObject[12] <= (int) objects[12]) {
+						objects[11] = earliestObject[11];
+					}
+				});
+			}
+			// set latest available vaccine name
+			if (objects[13] == null) {
+				objectList.stream().filter(c -> c[13] != null).min(comparator).ifPresent(latestObject -> {
+					objects[13] = latestObject[13];
+					objects[14] = latestObject[14];
+				});
+			}
+			// set latest available vaccine
+			if (objects[15] == null) {
+				objectList.stream().filter(c -> c[15] != null).min(comparator).ifPresent(latestObject -> objects[15] = latestObject[15]);
+			}
+			// set latest available vaccine manufacturer
+			if (objects[16] == null) {
+				objectList.stream().filter(c -> c[16] != null).min(comparator).ifPresent(latestObject -> {
+					objects[16] = latestObject[16];
+					objects[17] = latestObject[17];
+				});
+			}
+			// set latest available vaccination info source
+			if (objects[18] == null) {
+				objectList.stream().filter(c -> c[18] != null).min(comparator).ifPresent(latestObject -> objects[18] = latestObject[18]);
+			}
+			// set latest available INN
+			if (objects[19] == null) {
+				objectList.stream().filter(c -> c[19] != null).min(comparator).ifPresent(latestObject -> objects[19] = latestObject[19]);
+			}
+			// set latest available batch number
+			if (objects[20] == null) {
+				objectList.stream().filter(c -> c[20] != null).min(comparator).ifPresent(latestObject -> objects[20] = latestObject[20]);
+			}
+			// set latest available UNII code
+			if (objects[21] == null) {
+				objectList.stream().filter(c -> c[21] != null).min(comparator).ifPresent(latestObject -> objects[21] = latestObject[21]);
+			}
+			// set latest available ATC code
+			if (objects[22] == null) {
+				objectList.stream().filter(c -> c[22] != null).min(comparator).ifPresent(latestObject -> objects[22] = latestObject[22]);
 			}
 		});
 
