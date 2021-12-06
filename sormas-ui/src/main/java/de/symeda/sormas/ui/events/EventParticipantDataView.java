@@ -38,7 +38,6 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.ContactListComponent;
@@ -138,7 +137,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);
 
-			SampleListComponent sampleList = new SampleListComponent(eventParticipantRef, event.getDisease());
+			SampleListComponent sampleList = new SampleListComponent(eventParticipantRef, event.getDisease(), this);
 			sampleList.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.VSPACE_NONE);
 			sampleLocLayout.addComponent(sampleList);
 
@@ -208,8 +207,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 							criteria,
 							eventParticipant.getRegion() != null ? eventParticipant.getRegion() : event.getEventLocation().getRegion(),
 							eventParticipant.getDistrict() != null ? eventParticipant.getDistrict() : event.getEventLocation().getDistrict(),
-							true,
-							() -> SormasUI.refreshView())),
+							this)),
 					VACCINATIONS_LOC);
 			}
 		}

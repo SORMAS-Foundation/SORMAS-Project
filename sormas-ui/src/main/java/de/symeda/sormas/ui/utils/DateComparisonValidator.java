@@ -21,7 +21,6 @@ import java.util.function.Supplier;
 import org.joda.time.DateTimeComparator;
 
 import com.vaadin.v7.data.validator.AbstractValidator;
-import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -38,6 +37,7 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 	private Supplier<Date> referenceDateSupplier;
 	private boolean earlierOrSame;
 	private boolean changeInvalidCommitted;
+	private boolean dateOnly = true;
 
 	public DateComparisonValidator(
 		Field<Date> dateField,
@@ -82,7 +82,8 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 		}
 
 		if (earlierOrSame) {
-			if (DateTimeComparator.getDateOnlyInstance().compare(date, referenceDate) <= 0) {
+			DateTimeComparator comparator = dateOnly ? DateTimeComparator.getDateOnlyInstance() : DateTimeComparator.getInstance();
+			if (comparator.compare(date, referenceDate) <= 0) {
 				if (changeInvalidCommitted) {
 					dateField.setInvalidCommitted(true);
 				}
@@ -94,7 +95,8 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 				return false;
 			}
 		} else {
-			if (DateTimeComparator.getDateOnlyInstance().compare(date, referenceDate) >= 0) {
+			DateTimeComparator comparator = dateOnly ? DateTimeComparator.getDateOnlyInstance() : DateTimeComparator.getInstance();
+			if (comparator.compare(date, referenceDate) >= 0) {
 				if (changeInvalidCommitted) {
 					dateField.setInvalidCommitted(true);
 				}
@@ -113,21 +115,37 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 		return Date.class;
 	}
 
-	public static void addStartEndValidators(DateField startDate, DateField endDate) {
-		startDate.addValidator(
-			new DateComparisonValidator(
-				startDate,
-				endDate,
-				true,
-				false,
-				I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), endDate.getCaption())));
-		endDate.addValidator(
-			new DateComparisonValidator(
-				endDate,
-				startDate,
-				false,
-				false,
-				I18nProperties.getValidationError(Validations.afterDate, endDate.getCaption(), startDate.getCaption())));
+	public boolean isDateOnly() {
+		return dateOnly;
+	}
+
+	public void setDateOnly(boolean dateOnly) {
+		this.dateOnly = dateOnly;
+	}
+
+	public static void addStartEndValidators(Field<Date> startDate, Field<Date> endDate) {
+		addStartEndValidators(startDate, endDate, true);
+	}
+
+	public static void addStartEndValidators(Field<Date> startDate, Field<Date> endDate, boolean dateOnly) {
+		DateComparisonValidator startDateValidator = new DateComparisonValidator(
+			startDate,
+			endDate,
+			true,
+			false,
+			I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), endDate.getCaption()));
+		DateComparisonValidator endDateValidator = new DateComparisonValidator(
+			endDate,
+			startDate,
+			false,
+			false,
+			I18nProperties.getValidationError(Validations.afterDate, endDate.getCaption(), startDate.getCaption()));
+
+		startDate.addValidator(startDateValidator);
+		endDate.addValidator(endDateValidator);
+
+		startDateValidator.setDateOnly(dateOnly);
+		endDateValidator.setDateOnly(dateOnly);
 	}
 
 }
