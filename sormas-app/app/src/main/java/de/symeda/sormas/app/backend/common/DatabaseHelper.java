@@ -3162,11 +3162,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			? (caseInfo[13].equals("ASTRA_ZENECA_COMIRNATY")
 				? Vaccine.COMIRNATY
 				: (caseInfo[13].equals("ASTRA_ZENECA_MRNA_1273")) ? Vaccine.MRNA_1273 : Vaccine.valueOf((String) caseInfo[13]))
-			: Vaccine.OTHER;
-		String otherVaccineName = vaccineName == Vaccine.OTHER ? (String) caseInfo[14] : (String) caseInfo[15];
+			: (caseInfo[15] != null ? Vaccine.OTHER : null);
+		String otherVaccineName = vaccineName == Vaccine.OTHER && caseInfo[15] == null ? (String) caseInfo[14] : (String) caseInfo[15];
 		VaccineManufacturer vaccineManufacturer = "ASTRA_ZENECA_COMIRNATY".equals(caseInfo[13])
 			? VaccineManufacturer.BIONTECH_PFIZER
-			: ("ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13])) ? VaccineManufacturer.MODERNA : VaccineManufacturer.valueOf((String) caseInfo[16]);
+			: ("ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13]))
+				? VaccineManufacturer.MODERNA
+				: (caseInfo[16] != null ? VaccineManufacturer.valueOf((String) caseInfo[16]) : null);
 		insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, vaccinationDate);
 	}
 
