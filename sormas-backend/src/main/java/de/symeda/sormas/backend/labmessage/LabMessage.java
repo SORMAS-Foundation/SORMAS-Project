@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
@@ -25,6 +26,7 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "labmessage")
 @Audited
@@ -61,6 +63,7 @@ public class LabMessage extends CoreAdo {
 	public static final String REPORT_ID = "reportId";
 	public static final String SAMPLE_OVERALL_TEST_RESULT = "sampleOverallTestResult";
 	public static final String SAMPLE = "sample";
+	public static final String ASSIGNEE = "assignee";
 
 	private Disease testedDisease;
 	private Date messageDateTime;
@@ -96,6 +99,7 @@ public class LabMessage extends CoreAdo {
 	private Sample sample;
 
 	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
+	private User assignee;
 
 	@Enumerated(EnumType.STRING)
 	public Disease getTestedDisease() {
@@ -357,6 +361,16 @@ public class LabMessage extends CoreAdo {
 
 	public void setSampleOverallTestResult(PathogenTestResultType sampleOverallTestResult) {
 		this.sampleOverallTestResult = sampleOverallTestResult;
+	}
+
+	@ManyToOne(cascade = {})
+	@JoinColumn(nullable = false)
+	public User getAssignee() {
+		return assignee;
+	}
+
+	public void setAssignee(User assignee) {
+		this.assignee = assignee;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)

@@ -9418,4 +9418,11 @@ ALTER TABLE eventparticipant ALTER COLUMN reportinguser_id SET NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (433, 'Fill missing reporting users of event participants #7531');
 
+-- 2021-12-07 Added assignee to labmassage #7310
+ALTER TABLE labmessage ADD COLUMN reportinguser_id bigint;
+ALTER TABLE labmessage_history ADD COLUMN reportinguser_id bigint;
+ALTER TABLE labmessage ADD CONSTRAINT fk_labmessage_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (434, 'Added assignee to labmassage #7310');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

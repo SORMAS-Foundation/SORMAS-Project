@@ -57,6 +57,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -90,6 +91,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	private SyncFacadeEjb.SyncFacadeEjbLocal syncFacadeEjb;
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private UserService userService;
 
 	LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target, boolean checkChangeDate) {
 
@@ -131,6 +134,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		}
 		target.setReportId(source.getReportId());
 		target.setSampleOverallTestResult(source.getSampleOverallTestResult());
+		target.setAssignee(userService.getByReferenceDto(source.getAssignee()));
 
 		if (source.getSample() != null) {
 			target.setSample(sampleService.getByReferenceDto(source.getSample()));
@@ -191,6 +195,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		if (source.getSample() != null) {
 			target.setSample(source.getSample().toReference());
 		}
+		target.setAssignee(source.getAssignee().toReference());
 
 		return target;
 	}
