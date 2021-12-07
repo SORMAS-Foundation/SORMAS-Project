@@ -106,5 +106,5 @@ public interface UserFacade {
 
 	List<UserReferenceDto> getUsersHavingTravelEntryInJurisdiction(TravelEntryReferenceDto travelEntryReferenceDto);
 
-	List<UserReferenceWithTaskNumbersDto> getUsersWithNoOfTasks(TaskContextIndex taskContextIndex);
+	List<UserReferenceWithTaskNumbersDto> getAssignableUsersWithTaskNumbers(TaskContextIndex taskContextIndex);
 }
