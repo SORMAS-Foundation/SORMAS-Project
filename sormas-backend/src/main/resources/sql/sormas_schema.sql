@@ -9398,13 +9398,28 @@ ALTER TABLE areas ADD COLUMN centrally_managed boolean DEFAULT false;
 ALTER TABLE areas_history ADD COLUMN centrally_managed boolean DEFAULT false;
 
 ALTER TABLE community ADD COLUMN centrally_managed boolean DEFAULT false;
+/*ALTER TABLE community_history ADD COLUMN centrally_managed boolean DEFAULT false;*/
+
 ALTER TABLE continent ADD COLUMN centrally_managed boolean DEFAULT false;
+/*ALTER TABLE continent_history ADD COLUMN centrally_managed boolean DEFAULT false;*/
+
 ALTER TABLE country ADD COLUMN centrally_managed boolean DEFAULT false;
+/*ALTER TABLE country_history ADD COLUMN centrally_managed boolean DEFAULT false;*/
+
 ALTER TABLE district ADD COLUMN centrally_managed boolean DEFAULT false;
+/*ALTER TABLE district_history ADD COLUMN centrally_managed boolean DEFAULT false;*/
+
 ALTER TABLE facility ADD COLUMN centrally_managed boolean DEFAULT false;
+/*ALTER TABLE facility_history ADD COLUMN centrally_managed boolean DEFAULT false;*/
+
 ALTER TABLE pointofentry ADD COLUMN centrally_managed boolean DEFAULT false;
+/*ALTER TABLE pointofentry_history ADD COLUMN centrally_managed boolean DEFAULT false;*/
+
 ALTER TABLE region ADD COLUMN centrally_managed boolean DEFAULT false;
+/*ALTER TABLE region_history ADD COLUMN centrally_managed boolean DEFAULT false;*/
+
 ALTER TABLE subcontinent ADD COLUMN centrally_managed boolean DEFAULT false;
+/*ALTER TABLE subcontinent_history ADD COLUMN centrally_managed boolean DEFAULT false;*/
 
 INSERT INTO schema_version (version_number, comment) VALUES (432, ' [S2S] Implement outgoing S2S entity validation #7070');
 

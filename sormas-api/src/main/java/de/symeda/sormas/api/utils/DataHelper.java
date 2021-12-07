@@ -71,8 +71,8 @@ public final class DataHelper {
 		return uuid;
 	}
 
-	public static String createConstantUuid(int seed) {
-		return new UUID(0, seed).toString();
+	public static String createConstantUuid() {
+		return new UUID(0, 0).toString();
 	}
 
 	public static boolean isSame(HasUuid left, HasUuid right) {
