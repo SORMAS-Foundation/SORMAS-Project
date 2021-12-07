@@ -39,22 +39,21 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.backend.immunization.ImmunizationService;
-import de.symeda.sormas.backend.immunization.entity.Immunization;
-import de.symeda.sormas.backend.vaccination.Vaccination;
-import de.symeda.sormas.backend.vaccination.VaccinationService;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
+import de.symeda.sormas.backend.immunization.ImmunizationService;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
@@ -65,6 +64,7 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 
 @Stateless
 @LocalBean
@@ -492,6 +492,13 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	 */
 	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
 
+		// Only consider event participants with relevance date at least one day after the vaccination date
+		if (vaccinationDate == null) {
+			return;
+		} else {
+			vaccinationDate = DateHelper.getEndOfDay(vaccinationDate);
+		}
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<EventParticipant> cu = cb.createCriteriaUpdate(EventParticipant.class);
 		Root<EventParticipant> root = cu.from(EventParticipant.class);
@@ -502,12 +509,12 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 
 		Predicate datePredicate = vaccinationDate != null
 			? cb.or(
-				cb.greaterThanOrEqualTo(eventSqRoot.get(Event.START_DATE), vaccinationDate),
+				cb.greaterThan(eventSqRoot.get(Event.START_DATE), vaccinationDate),
 				cb.and(cb.isNull(eventSqRoot.get(Event.START_DATE)), cb.greaterThanOrEqualTo(eventSqRoot.get(Event.END_DATE), vaccinationDate)),
 				cb.and(
 					cb.isNull(eventSqRoot.get(Event.START_DATE)),
 					cb.isNull(eventSqRoot.get(Event.END_DATE)),
-					cb.greaterThanOrEqualTo(eventSqRoot.get(Event.REPORT_DATE_TIME), vaccinationDate)))
+					cb.greaterThan(eventSqRoot.get(Event.REPORT_DATE_TIME), vaccinationDate)))
 			: null;
 
 		eventSq.where(

@@ -47,6 +47,7 @@ public class SormasToSormasImmunizationDtoValidator
 
 	@Override
 	public ValidationErrors validateIncomingPreview(PreviewNotImplementedDto previewNotImplementedDto) {
+		// todo adjust test in InfraValidationSoundnessTest once preview is available for this entity
 		throw new RuntimeException("Immunizations preview not yet implemented");
 	}
 
@@ -57,6 +58,7 @@ public class SormasToSormasImmunizationDtoValidator
 
 	@Override
 	public ValidationErrors validateOutgoingPreview(PreviewNotImplementedDto previewNotImplementedDto) {
+		// todo adjust test in InfraValidationSoundnessTest once preview is available for this entity
 		return null;
 	}
 }
