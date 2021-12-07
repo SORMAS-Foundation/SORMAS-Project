@@ -15,11 +15,11 @@
 
 package de.symeda.sormas.app.caze.edit;
 
-import java.util.Date;
+import android.view.View;
 
 import org.joda.time.DateTimeComparator;
 
-import android.view.View;
+import java.util.Date;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -176,5 +176,6 @@ final class CaseValidator {
 	static void initializePreviousHospitalizationValidation(final DialogPreviousHospitalizationLayoutBinding contentBinding) {
 		ValidationHelper.initDateIntervalValidator(contentBinding.casePreviousHospitalizationAdmissionDate, contentBinding.casePreviousHospitalizationDischargeDate, false);
 		ValidationHelper.initDateIntervalValidator(contentBinding.casePreviousHospitalizationIntensiveCareUnitStart, contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd, false);
+		ValidationHelper.initDateIntervalValidator(contentBinding.casePreviousHospitalizationIntensiveCareUnitStart, contentBinding.casePreviousHospitalizationDischargeDate, false);
 	}
 }
