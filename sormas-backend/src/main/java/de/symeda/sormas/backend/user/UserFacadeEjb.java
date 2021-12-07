@@ -334,7 +334,7 @@ public class UserFacadeEjb implements UserFacade {
 			.collect(Collectors.toList());
 	}
 
-	private List<UserReferenceDto> getAllUsers(TaskContextIndex taskContextIndex) {
+	private List<UserReferenceDto> getAssignableUsersBasedOnContext(TaskContextIndex taskContextIndex) {
 		List<UserReferenceDto> availableUsers = new ArrayList<>();
 		if (taskContextIndex.getUuid() == null) {
 			taskContextIndex = new TaskContextIndex(TaskContext.GENERAL);
