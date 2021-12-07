@@ -72,7 +72,7 @@ public class User extends AbstractDomainObject {
 	public static final String USER_EMAIL = "userEmail";
 	public static final String PHONE = "phone";
 	public static final String ADDRESS = "address";
-	// public static final String COUNTRY = "country";
+	public static final String COUNTRY = "country";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -98,7 +98,7 @@ public class User extends AbstractDomainObject {
 
 	private Set<UserRole> userRoles;
 
-	// private Country country;
+	private Country country;
 	private Region region;
 	private District district;
 	// community of community informant
@@ -212,14 +212,14 @@ public class User extends AbstractDomainObject {
 		this.region = region;
 	}
 
-	// @ManyToOne
-	// public Country getCountry() {
-	// 	return country;
-	// }
+	@ManyToOne
+	public Country getCountry() {
+		return country;
+	}
 
-	// public void setCountry(Country usercountry) {
-	// 	this.country = usercountry;
-	// }
+	public void setCountry(Country country) {
+		this.country = country;
+	}
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Enumerated(EnumType.STRING)
