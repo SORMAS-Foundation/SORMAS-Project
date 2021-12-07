@@ -146,6 +146,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private UserService userService;
 	@EJB
 	private ImmunizationService immunizationService;
+	@EJB
+	private VaccinationService vaccinationService;
 
 	public ContactService() {
 		super(Contact.class);
@@ -1483,7 +1485,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			.anyMatch(
 				immunization -> immunization.getVaccinations()
 					.stream()
-					.anyMatch(vaccination -> VaccinationService.isVaccinationRelevant(contact, vaccination)));
+					.anyMatch(vaccination -> vaccinationService.isVaccinationRelevant(contact, vaccination)));
 
 		if (hasValidVaccinations) {
 			contact.setVaccinationStatus(VaccinationStatus.VACCINATED);

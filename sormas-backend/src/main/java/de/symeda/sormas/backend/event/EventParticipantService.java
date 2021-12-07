@@ -78,6 +78,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private ImmunizationService immunizationService;
+	@EJB
+	private VaccinationService vaccinationService;
 
 	public EventParticipantService() {
 		super(EventParticipant.class);
@@ -542,7 +544,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			.anyMatch(
 				immunization -> immunization.getVaccinations()
 					.stream()
-					.anyMatch(vaccination -> VaccinationService.isVaccinationRelevant(event, vaccination)));
+					.anyMatch(vaccination -> vaccinationService.isVaccinationRelevant(event, vaccination)));
 
 		if (hasValidVaccinations) {
 			eventParticipant.setVaccinationStatus(VaccinationStatus.VACCINATED);

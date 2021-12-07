@@ -80,21 +80,21 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 		}
 	}
 
-	public static boolean isVaccinationRelevant(Case caze, Vaccination vaccination) {
+	public boolean isVaccinationRelevant(Case caze, Vaccination vaccination) {
 		return vaccination.getVaccinationDate() != null
 			&& (caze.getSymptoms().getOnsetDate() != null
 				? DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(caze.getSymptoms().getOnsetDate())
 				: DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(caze.getReportDate()));
 	}
 
-	public static boolean isVaccinationRelevant(Contact contact, Vaccination vaccination) {
+	public boolean isVaccinationRelevant(Contact contact, Vaccination vaccination) {
 		return vaccination.getVaccinationDate() != null
 			&& (contact.getLastContactDate() != null
 				? DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(contact.getLastContactDate())
 				: DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(contact.getReportDateTime()));
 	}
 
-	public static boolean isVaccinationRelevant(Event event, Vaccination vaccination) {
+	public boolean isVaccinationRelevant(Event event, Vaccination vaccination) {
 		if (vaccination.getVaccinationDate() == null) {
 			return false;
 		}

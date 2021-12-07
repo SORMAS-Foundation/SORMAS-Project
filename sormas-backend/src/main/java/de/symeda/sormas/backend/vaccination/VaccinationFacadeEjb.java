@@ -258,7 +258,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			.map(
 				v -> toVaccinationListEntryDto(
 					v,
-					VaccinationService.isVaccinationRelevant(caze, v),
+					vaccinationService.isVaccinationRelevant(caze, v),
 					I18nProperties.getString(
 						v.getVaccinationDate() != null
 							? Strings.messageVaccinationNotRelevantForCase
@@ -279,7 +279,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			.map(
 				v -> toVaccinationListEntryDto(
 					v,
-					VaccinationService.isVaccinationRelevant(contact, v),
+					vaccinationService.isVaccinationRelevant(contact, v),
 					I18nProperties.getString(
 						v.getVaccinationDate() != null
 							? Strings.messageVaccinationNotRelevantForContact
@@ -300,11 +300,11 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			.map(
 				v -> toVaccinationListEntryDto(
 					v,
-					VaccinationService.isVaccinationRelevant(eventParticipant.getEvent(), v),
+					vaccinationService.isVaccinationRelevant(eventParticipant.getEvent(), v),
 					I18nProperties.getString(
-							v.getVaccinationDate() != null
-									? Strings.messageVaccinationNotRelevantForEventParticipant
-									: Strings.messageVaccinationNoDateNotRelevantForEventParticipant)))
+						v.getVaccinationDate() != null
+							? Strings.messageVaccinationNotRelevantForEventParticipant
+							: Strings.messageVaccinationNoDateNotRelevantForEventParticipant)))
 			.collect(Collectors.toList());
 	}
 

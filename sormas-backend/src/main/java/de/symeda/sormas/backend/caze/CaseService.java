@@ -182,6 +182,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	@EJB
 	private ImmunizationService immunizationService;
 	@EJB
+	private VaccinationService vaccinationService;
+	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
@@ -1786,7 +1788,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			.anyMatch(
 				immunization -> immunization.getVaccinations()
 					.stream()
-					.anyMatch(vaccination -> VaccinationService.isVaccinationRelevant(caze, vaccination)));
+					.anyMatch(vaccination -> vaccinationService.isVaccinationRelevant(caze, vaccination)));
 
 		if (hasValidVaccinations) {
 			caze.setVaccinationStatus(VaccinationStatus.VACCINATED);
