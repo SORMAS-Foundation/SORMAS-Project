@@ -1398,7 +1398,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		cq.orderBy(cb.desc(latestChangedDateFunction));
 
-		Predicate filter = createUserFilter(cb, cq, root, new CaseUserFilterCriteria());
+		Predicate filter = CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, root), createUserFilter(cb, cq, root, new CaseUserFilterCriteria()));
 
 		if (caseCriteria != null) {
 			if (caseCriteria.getDisease() != null) {
