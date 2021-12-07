@@ -955,9 +955,18 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		setReadOnly(true, CaseDataDto.REGION_LEVEL_DATE);
 		setReadOnly(true, CaseDataDto.NATIONAL_LEVEL_DATE);
 		setReadOnly(true, CaseDataDto.QUARANTINE);
-		setReadOnly(true, CaseDataDto.CLINICAL_CONFIRMATION);
-		setReadOnly(true, CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION);
-		setReadOnly(true, CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION);
+		if (extendedClassification){
+			setReadOnly(true, CaseDataDto.CLINICAL_CONFIRMATION);
+			setReadOnly(true, CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION);
+			setReadOnly(true, CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION);
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)){
+				setReadOnly(false, CaseDataDto.CLINICAL_CONFIRMATION);
+				setReadOnly(false, CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION);
+				setReadOnly(false, CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION);
+			}
+		}
+		
+		
 		assignNewEpidNumberButton.setEnabled(false);
 		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)){
@@ -973,9 +982,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			setReadOnly(false, CaseDataDto.REGION_LEVEL_DATE);
 			setReadOnly(false, CaseDataDto.NATIONAL_LEVEL_DATE);
 			setReadOnly(false, CaseDataDto.QUARANTINE);
-			setReadOnly(false, CaseDataDto.CLINICAL_CONFIRMATION);
-			setReadOnly(false, CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION);
-			setReadOnly(false, CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION);
 			assignNewEpidNumberButton.setEnabled(true);
 		}
 		UserProvider userProvider = UserProvider.getCurrent();
@@ -1188,10 +1194,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				FORCE_CAPTION);
 
 			getContent().addComponent(classificationRulesButton, CLASSIFICATION_RULES_LOC);
-			classificationRulesButton.setEnabled(false);
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)){
-				classificationRulesButton.setEnabled(true);
-			}
+			// classificationRulesButton.setEnabled(false);
+			// if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)){
+			// 	classificationRulesButton.setEnabled(true);
+			// }
 		}
 
 		addValueChangeListener(e -> {
