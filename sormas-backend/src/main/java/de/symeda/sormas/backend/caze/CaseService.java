@@ -1073,13 +1073,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		
-		if (currentUser.hasAnyUserRole(UserRole.NATIONAL_OBSERVER)){
-			final Country country = currentUser.getCountry();
-			if (country == null){
-				// Let's filter only transmitted cases for this user
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(casePath.get(Case.TRANSMITTED), YesNoUnknown.YES));
-			}
-		}
+		// if (currentUser.hasAnyUserRole(UserRole.NATIONAL_OBSERVER)){
+		// 	final Country country = currentUser.getCountry();
+		// 	if (country == null){
+		// 		// Let's filter only transmitted cases for this user
+		// 		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(casePath.get(Case.TRANSMITTED), YesNoUnknown.YES));
+		// 	}
+		// }
 
 		// only show cases of a specific disease if a limited disease is set
 		if (currentUser.getLimitedDisease() != null) {
