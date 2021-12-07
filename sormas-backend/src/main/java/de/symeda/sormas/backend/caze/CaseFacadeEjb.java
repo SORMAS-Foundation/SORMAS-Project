@@ -315,6 +315,7 @@ import de.symeda.sormas.backend.util.PatchHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.Vaccination;
+import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
@@ -445,6 +446,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
 	private SormasToSormasCaseFacadeEjbLocal sormasToSormasCaseFacade;
+	@EJB
+	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@Resource
 	private ManagedScheduledExecutorService executorService;
 
@@ -1942,7 +1945,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		if (existingCase == null) {
-			caseService.updateVaccinationStatuses(newCase);
+			vaccinationFacade.updateVaccinationStatuses(newCase);
 		}
 	}
 

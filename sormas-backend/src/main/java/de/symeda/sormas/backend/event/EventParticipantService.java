@@ -52,8 +52,6 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
-import de.symeda.sormas.backend.immunization.ImmunizationService;
-import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
@@ -64,7 +62,6 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
-import de.symeda.sormas.backend.vaccination.VaccinationService;
 
 @Stateless
 @LocalBean
@@ -76,10 +73,6 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	private SampleService sampleService;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
-	@EJB
-	private ImmunizationService immunizationService;
-	@EJB
-	private VaccinationService vaccinationService;
 
 	public EventParticipantService() {
 		super(EventParticipant.class);
@@ -529,25 +522,5 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		cu.where(cb.and(cb.equal(root.get(EventParticipant.PERSON), personId), cb.isNotNull(eventSq.getSelection())));
 
 		em.createQuery(cu).executeUpdate();
-	}
-
-	// keep both updateVaccinationStatuses logic from EventParticipantService in sync
-	public void updateVaccinationStatuses(EventParticipant eventParticipant) {
-		if (eventParticipant.getEvent().getDisease() == null) {
-			return;
-		}
-		List<Immunization> eventParticipantImmunizations =
-			immunizationService.getByPersonAndDisease(eventParticipant.getPerson().getUuid(), eventParticipant.getEvent().getDisease(), true);
-		Event event = eventParticipant.getEvent();
-
-		boolean hasValidVaccinations = eventParticipantImmunizations.stream()
-			.anyMatch(
-				immunization -> immunization.getVaccinations()
-					.stream()
-					.anyMatch(vaccination -> vaccinationService.isVaccinationRelevant(event, vaccination)));
-
-		if (hasValidVaccinations) {
-			eventParticipant.setVaccinationStatus(VaccinationStatus.VACCINATED);
-		}
 	}
 }

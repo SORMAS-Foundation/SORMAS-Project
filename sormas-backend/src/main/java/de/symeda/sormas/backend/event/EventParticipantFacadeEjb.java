@@ -97,9 +97,7 @@ import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedExcep
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
-import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.importexport.ExportHelper;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -127,6 +125,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.Vaccination;
+import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless(name = "EventParticipantFacade")
@@ -160,9 +159,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
 	@EJB
-	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
-	@EJB
-	private ImmunizationService immunizationService;
+	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 
 	@Override
 	public List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid) {
@@ -294,7 +291,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		boolean syncShares) {
 
 		if (existingEventParticipant == null) {
-			updateVaccinationStatus(newEventParticipant);
+			vaccinationFacade.updateVaccinationStatuses(newEventParticipant);
 		}
 
 		eventFacade.onEventChange(event, syncShares);
@@ -1075,9 +1072,5 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		List<EventParticipant> resultList = em.createQuery(cq).getResultList();
 		return resultList.stream().map(EventParticipantFacadeEjb::toDto).collect(Collectors.toList());
-	}
-
-	public void updateVaccinationStatus(EventParticipant eventParticipant) {
-		eventParticipantService.updateVaccinationStatuses(eventParticipant);
 	}
 }
