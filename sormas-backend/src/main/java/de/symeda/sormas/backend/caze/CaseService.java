@@ -81,6 +81,7 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -629,6 +630,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				cb,
 				filter,
 				cb.equal(from.join(Case.HEALTH_FACILITY, JoinType.LEFT).get(Facility.UUID), caseCriteria.getHealthFacility().getUuid()));
+		}
+		if (caseCriteria.getFacilityTypeGroup() != null) {
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, from.get(Case.FACILITY_TYPE).in(FacilityType.getTypes(caseCriteria.getFacilityTypeGroup())));
+		}
+		if (caseCriteria.getFacilityType() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.FACILITY_TYPE), caseCriteria.getFacilityType()));
 		}
 		if (caseCriteria.getPointOfEntry() != null) {
 			filter = CriteriaBuilderHelper.and(
