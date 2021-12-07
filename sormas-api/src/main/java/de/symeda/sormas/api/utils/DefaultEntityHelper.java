@@ -61,6 +61,20 @@ public class DefaultEntityHelper {
 			POE_INF_USERNAME_AND_PASSWORD);
 	}
 
+	public enum DefaultInfrastructureUuidSeed {
+		CONTINENT,
+		SUBCONTINENT,
+		COUNTRY,
+		REGION,
+		DISTRICT,
+		COMMUNITY,
+		FACILITY,
+		POINT_OF_ENTRY
+	}
+
+	public static String getConstantUuidFor(DefaultInfrastructureUuidSeed seed) {
+		return DataHelper.createConstantUuid(seed.ordinal());
+	}
 
 	public static boolean isDefaultUser(String username) {
 		return defaultUsersWithPassword.containsKey(username);

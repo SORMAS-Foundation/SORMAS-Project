@@ -27,23 +27,23 @@ public class DefaultEntitiesCreator {
 
 	public Continent createDefaultContinent(boolean randomUuid) {
 		Continent continent = new Continent();
-		continent.setUuid(createUuid(randomUuid));
+		continent.setUuid(createUuid(randomUuid, DefaultEntityHelper.DefaultInfrastructureUuidSeed.CONTINENT));
 		continent.setDefaultName(I18nProperties.getCaption(Captions.continent, "Default Continent"));
 		continent.setExternalId("CONT");
 		return continent;
 	}
 
-	private String createUuid(boolean randomUuid) {
+	private String createUuid(boolean randomUuid, DefaultEntityHelper.DefaultInfrastructureUuidSeed seed) {
 		if (randomUuid) {
 			return DataHelper.createUuid();
 		} else {
-			return DataHelper.createConstantUuid();
+			return DefaultEntityHelper.getConstantUuidFor(seed);
 		}
 	}
 
 	public Subcontinent createDefaultSubcontinent(Continent continent, boolean randomUuid) {
 		Subcontinent subcontinent = new Subcontinent();
-		subcontinent.setUuid(createUuid(randomUuid));
+		subcontinent.setUuid(createUuid(randomUuid, DefaultEntityHelper.DefaultInfrastructureUuidSeed.SUBCONTINENT));
 		subcontinent.setDefaultName(I18nProperties.getCaption(Captions.subcontinent, "Default Subcontinent"));
 		subcontinent.setExternalId("SUB-CNT");
 		subcontinent.setContinent(continent);
@@ -52,7 +52,7 @@ public class DefaultEntitiesCreator {
 
 	public Country createDefaultCountry(Subcontinent subcontinent, boolean randomUuid) {
 		Country country = new Country();
-		country.setUuid(createUuid(randomUuid));
+		country.setUuid(createUuid(randomUuid, DefaultEntityHelper.DefaultInfrastructureUuidSeed.COUNTRY));
 		country.setDefaultName(I18nProperties.getCaption(Captions.country, "Default Country"));
 		country.setExternalId("CNT");
 		country.setSubcontinent(subcontinent);
@@ -61,7 +61,7 @@ public class DefaultEntitiesCreator {
 
 	public Region createDefaultRegion(boolean randomUuid) {
 		Region region = new Region();
-		region.setUuid(createUuid(randomUuid));
+		region.setUuid(createUuid(randomUuid, DefaultEntityHelper.DefaultInfrastructureUuidSeed.REGION));
 		region.setName(I18nProperties.getCaption(Captions.defaultRegion, "Default Region"));
 		region.setEpidCode("DEF-REG");
 		region.setDistricts(new ArrayList<>());
@@ -70,7 +70,7 @@ public class DefaultEntitiesCreator {
 
 	public District createDefaultDistrict(Region region, boolean randomUuid) {
 		District district = new District();
-		district.setUuid(createUuid(randomUuid));
+		district.setUuid(createUuid(randomUuid, DefaultEntityHelper.DefaultInfrastructureUuidSeed.DISTRICT));
 		district.setName(I18nProperties.getCaption(Captions.defaultDistrict, "Default District"));
 		district.setRegion(region);
 		district.setEpidCode("DIS");
@@ -80,7 +80,7 @@ public class DefaultEntitiesCreator {
 
 	public Community createDefaultCommunity(District district, boolean randomUuid) {
 		Community community = new Community();
-		community.setUuid(createUuid(randomUuid));
+		community.setUuid(createUuid(randomUuid, DefaultEntityHelper.DefaultInfrastructureUuidSeed.COMMUNITY));
 		community.setName(I18nProperties.getCaption(Captions.defaultCommunity, "Default Community"));
 		community.setDistrict(district);
 		return community;

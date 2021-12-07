@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.common.DefaultEntitiesCreator;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -94,6 +96,18 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 	 */
 	private final Set<Class<?>> ignoreLeaves =
 		new HashSet<>(Arrays.asList(Date.class, String.class, Double.class, Float.class, Integer.class, Boolean.class));
+
+	private final Map<String, String> infraTypeToConstantUuid = new HashMap<String, String>() {
+
+		{
+			put("CommunityReferenceDto", DefaultEntityHelper.getConstantUuidFor(DefaultEntityHelper.DefaultInfrastructureUuidSeed.COMMUNITY));
+			put("DistrictReferenceDto", DefaultEntityHelper.getConstantUuidFor(DefaultEntityHelper.DefaultInfrastructureUuidSeed.DISTRICT));
+			put("RegionReferenceDto", DefaultEntityHelper.getConstantUuidFor(DefaultEntityHelper.DefaultInfrastructureUuidSeed.REGION));
+			put("CountryReferenceDto", DefaultEntityHelper.getConstantUuidFor(DefaultEntityHelper.DefaultInfrastructureUuidSeed.COUNTRY));
+			put("SubcontinentReferenceDto", DefaultEntityHelper.getConstantUuidFor(DefaultEntityHelper.DefaultInfrastructureUuidSeed.SUBCONTINENT));
+			put("ContinentReferenceDto", DefaultEntityHelper.getConstantUuidFor(DefaultEntityHelper.DefaultInfrastructureUuidSeed.CONTINENT));
+		}
+	};
 
 	/**
 	 * Represents a graph or tree node. Carries data and a human readable label.
@@ -356,15 +370,20 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 		if (childObject == null) {
 			// populate the field
 
+			final Class<?> erasedType = currentField.getType().getErasedType();
 			if (path.peek() == null) {
 				// we reached a leaf, get the InfrastructureDataReferenceDto(String uuid, String caption, String externalId) constructor
 				// in case this call errors, make sure that a constructor (String uuid, String caption, String externalId) is available in
 				// the reference DTO.
-				Constructor<?> constructor = currentField.getType().getErasedType().getConstructor(String.class, String.class, String.class);
-				childObject = constructor.newInstance(DataHelper.createConstantUuid(), caption, "");
+				Constructor<?> constructor = erasedType.getConstructor(String.class, String.class, String.class);
+				final String uuid = infraTypeToConstantUuid.get(erasedType.getSimpleName());
+				if (uuid == null) {
+					throw new RuntimeException();
+				}
+				childObject = constructor.newInstance(uuid, caption, "");
 			} else {
 				// we still descend through the object tree
-				Constructor<?> constructor = currentField.getType().getErasedType().getConstructor();
+				Constructor<?> constructor = erasedType.getConstructor();
 				childObject = constructor.newInstance();
 			}
 			// assign the created object to the current field
