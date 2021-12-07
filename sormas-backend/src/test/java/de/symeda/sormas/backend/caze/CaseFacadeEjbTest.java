@@ -50,6 +50,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -1902,6 +1903,61 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(savedCaze.getSymptoms().getUuid(), not(isEmptyOrNullString()));
 		MatcherAssert.assertThat(savedCaze.getEpiData().getUuid(), not(isEmptyOrNullString()));
 		MatcherAssert.assertThat(savedCaze.getEpiData().getExposures().get(0).getUuid(), not(isEmptyOrNullString()));
+	}
+
+	@Test
+	public void testSearchByFacilityTypeAndGroup() {
+		RDCF rdcf = creator.createRDCF();
+		PersonReferenceDto personDto = creator.createPerson().toReference();
+		CaseDataDto savedCaze1 = createCaseOfFacilityType(rdcf, personDto, FacilityType.HOSPITAL);
+		CaseDataDto savedCaze2 = createCaseOfFacilityType(rdcf, personDto, FacilityType.MATERNITY_FACILITY);
+		CaseDataDto savedCaze3 = createCaseOfFacilityType(rdcf, personDto, FacilityType.HOTEL);
+		CaseDataDto savedCaze4 = createCaseOfFacilityType(rdcf, personDto, FacilityType.REFUGEE_ACCOMMODATION);
+
+		MatcherAssert.assertThat(getCaseFacade().getIndexList(new CaseCriteria(), 0, 100, null), hasSize(4));
+
+		final CaseCriteria facilityTypeGroupFilter = new CaseCriteria();
+		facilityTypeGroupFilter.setFacilityTypeGroup(FacilityTypeGroup.MEDICAL_FACILITY);
+		MatcherAssert.assertThat(getCaseFacade().getIndexList(facilityTypeGroupFilter, 0, 100, null), hasSize(2));
+
+		final CaseCriteria facilityTypeAndGroupFilter = new CaseCriteria();
+		facilityTypeAndGroupFilter.setFacilityTypeGroup(FacilityTypeGroup.MEDICAL_FACILITY);
+		facilityTypeAndGroupFilter.setFacilityType(FacilityType.HOSPITAL);
+		MatcherAssert.assertThat(getCaseFacade().getIndexList(facilityTypeAndGroupFilter, 0, 100, null), hasSize(1));
+
+		final CaseCriteria facilityTypeFilter = new CaseCriteria();
+		facilityTypeFilter.setFacilityType(FacilityType.HOTEL);
+		final List<CaseIndexDto> indexListByFacilityTYpe = getCaseFacade().getIndexList(facilityTypeFilter, 0, 100, null);
+		MatcherAssert.assertThat(indexListByFacilityTYpe, hasSize(1));
+		Assert.assertEquals(indexListByFacilityTYpe.get(0).getUuid(), savedCaze3.getUuid());
+
+		final CaseCriteria facilityTypeAndGroupNonMatchingFilter = new CaseCriteria();
+		facilityTypeAndGroupNonMatchingFilter.setFacilityTypeGroup(FacilityTypeGroup.MEDICAL_FACILITY);
+		facilityTypeAndGroupNonMatchingFilter.setFacilityType(FacilityType.HOTEL);
+		MatcherAssert.assertThat(getCaseFacade().getIndexList(facilityTypeAndGroupNonMatchingFilter, 0, 100, null), hasSize(0));
+	}
+
+	private CaseDataDto createCaseOfFacilityType(RDCF rdcf, PersonReferenceDto personDto, FacilityType facilityType) {
+		CaseDataDto caze1 = CaseDataDto.build(personDto, Disease.CORONAVIRUS);
+		caze1.setReportDate(new Date());
+		caze1.setReportingUser(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference());
+		caze1.setCaseClassification(CaseClassification.PROBABLE);
+		caze1.setInvestigationStatus(InvestigationStatus.PENDING);
+		caze1.setDisease(Disease.CORONAVIRUS);
+		caze1.setPerson(personDto);
+		caze1.setResponsibleRegion(rdcf.region);
+		caze1.setResponsibleDistrict(rdcf.district);
+		caze1.setFacilityType(facilityType);
+		caze1.setHealthFacility(rdcf.facility);
+		caze1.setTherapy(new TherapyDto());
+		caze1.setSymptoms(new SymptomsDto());
+		EpiDataDto epiData = new EpiDataDto();
+		ExposureDto exposure = new ExposureDto();
+		exposure.setExposureType(ExposureType.WORK);
+		epiData.setExposures(Collections.singletonList(exposure));
+		caze1.setEpiData(epiData);
+
+		return getCaseFacade().saveCase(caze1);
 	}
 
 	@Test
