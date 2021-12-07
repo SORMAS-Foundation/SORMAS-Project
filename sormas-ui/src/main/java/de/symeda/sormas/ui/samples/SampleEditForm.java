@@ -54,6 +54,8 @@ public class SampleEditForm extends AbstractSampleForm {
 
 	private List<PathogenTestReferenceDto> testsToBeRemovedOnCommit;
 
+	private Label laboratorySampleHeadingLabel;
+
 	public SampleEditForm(boolean isPseudonymized, Disease disease) {
 		super(SampleDto.class, SampleDto.I18N_PREFIX, disease, UiFieldAccessCheckers.forSensitiveData(isPseudonymized));
 		testsToBeRemovedOnCommit = new ArrayList();
@@ -62,7 +64,7 @@ public class SampleEditForm extends AbstractSampleForm {
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
-		Label laboratorySampleHeadingLabel = new Label(I18nProperties.getString(Strings.headingLaboratorySample));
+		laboratorySampleHeadingLabel = new Label(I18nProperties.getString(Strings.headingLaboratorySample));
 		laboratorySampleHeadingLabel.addStyleName(H3);
 		getContent().addComponent(laboratorySampleHeadingLabel, LABORATORY_SAMPLE_HEADING_LOC);
 
@@ -125,5 +127,10 @@ public class SampleEditForm extends AbstractSampleForm {
 
 	public List<PathogenTestReferenceDto> getTestsToBeRemovedOnCommit() {
 		return testsToBeRemovedOnCommit;
+	}
+
+	@Override
+	public void setHeading(String heading) {
+		laboratorySampleHeadingLabel.setValue(heading);
 	}
 }

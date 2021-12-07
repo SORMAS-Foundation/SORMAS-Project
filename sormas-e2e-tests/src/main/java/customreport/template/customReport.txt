@@ -2,80 +2,52 @@
 <html>
 <head>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
-<script>
-	jQuery( document ).ready(function() {
-		jQuery(".table").find("tbody > tr").each(function() {
-      var values = [];
-		  jQuery(this).find("td").each(function(index) {
-          values[index] = jQuery(this).text();
-      });
-       if (values[1] == 22) {
-      	  jQuery(this).children().eq(1).text("Couldn't load page under 20s");
-      	  }
-      if (values[1] > 10) {
-        jQuery(this).children().eq(1).css("color", "red");
-        jQuery(this).find("img").css("visibility", "visible").css("padding-left", "20px");
-      }
-		});
-	});
-</script>
-<script>
-$(document).ready(function(){
-	var date=new Date();
-	var val="Report generated on: "  + date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear() + " - " + date.getHours() + ":" + date.getMinutes();
-  $('#date').text(val);
-});
-</script>
-
 <style>
-
-tr, th {
-  width: 300px;
+table, td, tr, th {
+  width: 100px;
   text-align: left;
+   border: 1px solid black;
 }
 
 .headers {
-   text-align: center;
+   text-align: left;
 }
-
 </style>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-
 </head>
+
 <body>
-
-<div> <img src="images/logo.png" alt="Logo" style="width:200;height:200px"></div>
-
+<div class="container-fluid">
+<div class="row"><div class="col">
+    <div> <img src="images/logo.png" alt="Logo" style="width:200;height:200px"></div>
 <div id="date">
-   <p>The initial text</p>
+   <p>$Date_text</p>
 </div>
-
-<br><div class="shadow p-3 mb-5 bg-white rounded" style="width:40%;">
-<p class="font-weight-bold"> Pages loading measurements results  </p>
-</div></br>
-
-<br> <table class="table table-hover table table-bordered" style="width: 40%;">
-  <thead>
-	  <tr>
-		<th class="headers">Page name</th>
-		<th class="headers">Page loading time (seconds)</th>
-	  </tr>
-  </thead>
-
+<div class="shadow p-3 mb-5 bg-white rounded" style="width:100%;">
+	<h1 class="font-weight-bold"> Pages loading measurements results  </h1>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-lg-12 col-xl-4">
+<br>
+<table style="width: 40%;">
+	  <thead>
+		  <tr>
+			<th class="headers">Page name</th>
+			<th class="headers">Page loading time (seconds)</th>
+		  </tr>
+	  </thead>
 <tbody>
  $table_data_placeholder
 </tbody>
-  
-</table> </br>
-
-<br>
-<img src="images/BarChart.jpeg" alt="Chart" style="width:50;height:50%">
-</br>
-
+</table>
+</div>
+<div class="col-lg-12 col-xl-8">
+    <img src="images/BarChart.jpeg" alt="Chart" style="max-width:60%">
+</div>
+</div>
+</div>
 </body>
 </html>
 

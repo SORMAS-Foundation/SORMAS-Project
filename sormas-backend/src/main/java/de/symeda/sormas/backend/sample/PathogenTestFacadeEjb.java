@@ -259,7 +259,11 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		// update event participant if necessary
 		EventParticipant associatedEventParticipant = pathogenTest.getSample().getAssociatedEventParticipant();
 		if (associatedEventParticipant != null) {
-			eventParticipantFacade.onEventParticipantChanged(EventFacadeEjbLocal.toDto(associatedEventParticipant.getEvent()), syncShares);
+			eventParticipantFacade.onEventParticipantChanged(
+				EventFacadeEjbLocal.toDto(associatedEventParticipant.getEvent()),
+				EventParticipantFacadeEjbLocal.toDto(associatedEventParticipant),
+				associatedEventParticipant,
+				syncShares);
 		}
 	}
 

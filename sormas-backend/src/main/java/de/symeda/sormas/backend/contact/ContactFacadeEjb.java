@@ -407,6 +407,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	public void onContactChanged(ContactDto existingContact, Contact contact, boolean syncShares) {
+
+		if (existingContact == null) {
+			contactService.updateVaccinationStatuses(contact);
+		}
+
 		onContactChanged(toDto(contact), syncShares);
 
 		// This logic should be consistent with ContactDataForm.onContactChanged

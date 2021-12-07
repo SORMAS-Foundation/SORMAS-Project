@@ -35,8 +35,9 @@ public class SormasToSormasContactDtoValidator
 
 		String groupNameTag = Captions.Contact;
 		infraValidator.validateRegion(contact.getRegion(), groupNameTag, validationErrors, contact::setRegion);
-		infraValidator.validateDistrit(contact.getDistrict(), groupNameTag, validationErrors, contact::setDistrict);
+		infraValidator.validateDistrict(contact.getDistrict(), groupNameTag, validationErrors, contact::setDistrict);
 		infraValidator.validateCommunity(contact.getCommunity(), groupNameTag, validationErrors, contact::setCommunity);
+		infraValidator.validateDistrict(contact.getReportingDistrict(), groupNameTag, validationErrors, contact::setReportingDistrict);
 
 		validateEpiData(contact.getEpiData(), validationErrors);
 
@@ -46,9 +47,12 @@ public class SormasToSormasContactDtoValidator
 	public ValidationErrors validateIncomingPreview(SormasToSormasContactPreview preview) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
+		ValidationErrors personValidationErrors = validatePersonPreview(preview.getPerson());
+		validationErrors.addAll(personValidationErrors);
+
 		String groupNameTag = Captions.Contact;
 		infraValidator.validateRegion(preview.getRegion(), groupNameTag, validationErrors, preview::setRegion);
-		infraValidator.validateDistrit(preview.getDistrict(), groupNameTag, validationErrors, preview::setDistrict);
+		infraValidator.validateDistrict(preview.getDistrict(), groupNameTag, validationErrors, preview::setDistrict);
 		infraValidator.validateCommunity(preview.getCommunity(), groupNameTag, validationErrors, preview::setCommunity);
 
 		return validationErrors;

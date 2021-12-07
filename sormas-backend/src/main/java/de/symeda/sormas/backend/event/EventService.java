@@ -355,11 +355,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		final User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
-		if (jurisdictionLevel == JurisdictionLevel.NATION || currentUser.hasAnyUserRole(UserRole.REST_USER)) {
-			return null;
-		}
-
 		Predicate filter = null;
+
 		final EventJoins eventJoins;
 		final From<?, Event> eventJoin;
 		final From<?, EventParticipant> eventParticipantJoin;
@@ -375,63 +372,69 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			eventParticipantJoin = eventParticipantPath;
 		}
 
-		switch (jurisdictionLevel) {
-		case REGION:
-			if (currentUser.getRegion() != null) {
+		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.REST_USER)) {
+			switch (jurisdictionLevel) {
+			case REGION:
+				if (currentUser.getRegion() != null) {
+					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.REGION), currentUser.getRegion()));
+				}
+				break;
+			case DISTRICT:
+				if (currentUser.getDistrict() != null) {
+					filter =
+						CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.DISTRICT), currentUser.getDistrict()));
+				}
+				break;
+			case COMMUNITY:
+				if (currentUser.getCommunity() != null) {
+					filter =
+						CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.COMMUNITY), currentUser.getCommunity()));
+				}
+				break;
+			case HEALTH_FACILITY:
+				if (currentUser.getHealthFacility() != null && currentUser.getHealthFacility().getDistrict() != null) {
+					filter = CriteriaBuilderHelper
+						.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.DISTRICT), currentUser.getHealthFacility().getDistrict()));
+				}
+				break;
+			case LABORATORY:
+				final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
+				final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
+				final SampleJoins sampleJoins = new SampleJoins(sampleRoot);
+				final Join eventParticipant = sampleJoins.getEventParticipant();
+				SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator =
+					SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, currentUser);
+				sampleSubQuery
+					.where(cb.and(cb.equal(eventParticipant, eventParticipantJoin), sampleJurisdictionPredicateValidator.inJurisdictionOrOwned()));
+				sampleSubQuery.select(sampleRoot.get(Sample.ID));
+				filter = CriteriaBuilderHelper.or(cb, cb.exists(sampleSubQuery));
+				break;
+			default:
+			}
+
+			Predicate filterResponsible = cb.equal(eventJoins.getReportingUser(), currentUser);
+			filterResponsible = cb.or(filterResponsible, cb.equal(eventJoins.getResponsibleUser(), currentUser));
+
+			if (eventUserFilterCriteria != null && eventUserFilterCriteria.isIncludeUserCaseAndEventParticipantFilter()) {
+				filter = CriteriaBuilderHelper.or(cb, filter, createCaseAndEventParticipantFilter(cb, cq, eventParticipantJoin));
+			}
+
+			if (eventUserFilterCriteria != null && eventUserFilterCriteria.isForceRegionJurisdiction()) {
 				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.REGION), currentUser.getRegion()));
 			}
-			break;
-		case DISTRICT:
-			if (currentUser.getDistrict() != null) {
-				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.DISTRICT), currentUser.getDistrict()));
+
+			if (filter != null) {
+				filter = CriteriaBuilderHelper.or(cb, filter, filterResponsible);
+			} else {
+				filter = filterResponsible;
 			}
-			break;
-		case COMMUNITY:
-			if (currentUser.getCommunity() != null) {
-				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.COMMUNITY), currentUser.getCommunity()));
-			}
-			break;
-		case HEALTH_FACILITY:
-			if (currentUser.getHealthFacility() != null && currentUser.getHealthFacility().getDistrict() != null) {
-				filter = CriteriaBuilderHelper
-					.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.DISTRICT), currentUser.getHealthFacility().getDistrict()));
-			}
-			break;
-		case LABORATORY:
-			final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
-			final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
-			final SampleJoins sampleJoins = new SampleJoins(sampleRoot);
-			final Join eventParticipant = sampleJoins.getEventParticipant();
-			SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator =
-				SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, currentUser);
-			sampleSubQuery
-				.where(cb.and(cb.equal(eventParticipant, eventParticipantJoin), sampleJurisdictionPredicateValidator.inJurisdictionOrOwned()));
-			sampleSubQuery.select(sampleRoot.get(Sample.ID));
-			filter = CriteriaBuilderHelper.or(cb, cb.exists(sampleSubQuery));
-			break;
-		default:
 		}
 
-		if (filter != null && currentUser.getLimitedDisease() != null) {
-			filter = cb
-				.and(filter, cb.or(cb.equal(eventJoin.get(Event.DISEASE), currentUser.getLimitedDisease()), cb.isNull(eventJoin.get(Event.DISEASE))));
-		}
-
-		Predicate filterResponsible = cb.equal(eventJoins.getReportingUser(), currentUser);
-		filterResponsible = cb.or(filterResponsible, cb.equal(eventJoins.getResponsibleUser(), currentUser));
-
-		if (eventUserFilterCriteria != null && eventUserFilterCriteria.isIncludeUserCaseAndEventParticipantFilter()) {
-			filter = CriteriaBuilderHelper.or(cb, filter, createCaseAndEventParticipantFilter(cb, cq, eventParticipantJoin));
-		}
-
-		if (eventUserFilterCriteria != null && eventUserFilterCriteria.isForceRegionJurisdiction()) {
-			filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.REGION), currentUser.getRegion()));
-		}
-
-		if (filter != null) {
-			filter = CriteriaBuilderHelper.or(cb, filter, filterResponsible);
-		} else {
-			filter = filterResponsible;
+		if (currentUser.getLimitedDisease() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(cb.equal(eventJoin.get(Event.DISEASE), currentUser.getLimitedDisease()), cb.isNull(eventJoin.get(Event.DISEASE))));
 		}
 
 		return filter;

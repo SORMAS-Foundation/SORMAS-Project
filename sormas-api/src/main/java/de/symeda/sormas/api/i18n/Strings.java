@@ -135,6 +135,7 @@ public interface Strings {
 	String confirmationExtendFollowUp = "confirmationExtendFollowUp";
 	String confirmationExtendQuarantine = "confirmationExtendQuarantine";
 	String confirmationFetchLabMessages = "confirmationFetchLabMessages";
+	String confirmationLabMessageCorrection = "confirmationLabMessageCorrection";
 	String confirmationLocationFacilityAddressOverride = "confirmationLocationFacilityAddressOverride";
 	String confirmationLostToFollowUp = "confirmationLostToFollowUp";
 	String confirmationManuallyForwardedLabMessage = "confirmationManuallyForwardedLabMessage";
@@ -157,6 +158,7 @@ public interface Strings {
 	String confirmationUnclearLabMessage = "confirmationUnclearLabMessage";
 	String confirmationUnlinkCaseFromEvent = "confirmationUnlinkCaseFromEvent";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
+	String confirmLabMessageCorrectionThrough = "confirmLabMessageCorrectionThrough";
 	String confirmNetworkDiagramTooManyContacts = "confirmNetworkDiagramTooManyContacts";
 	String date = "date";
 	String day = "day";
@@ -395,6 +397,9 @@ public interface Strings {
 	String headingContactsPerCase = "headingContactsPerCase";
 	String headingContactsPlacedInQuarantine = "headingContactsPlacedInQuarantine";
 	String headingContactTracingFirstContact = "headingContactTracingFirstContact";
+	String headingCorrectPathogenTest = "headingCorrectPathogenTest";
+	String headingCorrectPerson = "headingCorrectPerson";
+	String headingCorrectSample = "headingCorrectSample";
 	String headingCreateAdditionalTest = "headingCreateAdditionalTest";
 	String headingCreateCampaignDataForm = "headingCreateCampaignDataForm";
 	String headingCreateEntry = "headingCreateEntry";
@@ -470,6 +475,7 @@ public interface Strings {
 	String headingEventGroupData = "headingEventGroupData";
 	String headingEventGroupLinkEventIssue = "headingEventGroupLinkEventIssue";
 	String headingEventGroupUnlinkEventIssue = "headingEventGroupUnlinkEventIssue";
+	String headingEventJurisdictionUpdated = "headingEventJurisdictionUpdated";
 	String headingEventNotDeleted = "headingEventNotDeleted";
 	String headingEventParticipantResponsibleJurisdictionUpdated = "headingEventParticipantResponsibleJurisdictionUpdated";
 	String headingEventParticipantsDeleted = "headingEventParticipantsDeleted";
@@ -526,6 +532,8 @@ public interface Strings {
 	String headingInfrastructureLocked = "headingInfrastructureLocked";
 	String headingIntroduction = "headingIntroduction";
 	String headingInvalidDateEntered = "headingInvalidDateEntered";
+	String headingLabMessageCorrection = "headingLabMessageCorrection";
+	String headingLabMessageCorrectionThrough = "headingLabMessageCorrectionThrough";
 	String headingLabMessageDownload = "headingLabMessageDownload";
 	String headingLabMessagesDeleted = "headingLabMessagesDeleted";
 	String headingLabMessagesDeleteProcessed = "headingLabMessagesDeleteProcessed";
@@ -586,6 +594,9 @@ public interface Strings {
 	String headingPointOfEntryInformation = "headingPointOfEntryInformation";
 	String headingPrescriptionsDeleted = "headingPrescriptionsDeleted";
 	String headingPreviousHospitalizations = "headingPreviousHospitalizations";
+	String headingPreviousPathogenTestInformation = "headingPreviousPathogenTestInformation";
+	String headingPreviousPersonInformation = "headingPreviousPersonInformation";
+	String headingPreviousSampleInformation = "headingPreviousSampleInformation";
 	String headingQuarantineForCases = "headingQuarantineForCases";
 	String headingRecovery = "headingRecovery";
 	String headingReduceQuarantine = "headingReduceQuarantine";
@@ -633,6 +644,9 @@ public interface Strings {
 	String headingUnderFollowUp = "headingUnderFollowUp";
 	String headingUnlinkCaseFromEvent = "headingUnlinkCaseFromEvent";
 	String headingUpdateCaseWithNewDiseaseVariant = "headingUpdateCaseWithNewDiseaseVariant";
+	String headingUpdatedPathogenTestInformation = "headingUpdatedPathogenTestInformation";
+	String headingUpdatedPersonInformation = "headingUpdatedPersonInformation";
+	String headingUpdatedSampleInformation = "headingUpdatedSampleInformation";
 	String headingUpdatePassword = "headingUpdatePassword";
 	String headingUpdatePersonContactDetails = "headingUpdatePersonContactDetails";
 	String headingUploadSuccess = "headingUploadSuccess";
@@ -949,6 +963,7 @@ public interface Strings {
 	String messageEventGroupCreated = "messageEventGroupCreated";
 	String messageEventGroupDearchived = "messageEventGroupDearchived";
 	String messageEventGroupSaved = "messageEventGroupSaved";
+	String messageEventJurisdictionUpdated = "messageEventJurisdictionUpdated";
 	String messageEventLinkedAsSubordinate = "messageEventLinkedAsSubordinate";
 	String messageEventLinkedAsSuperordinate = "messageEventLinkedAsSuperordinate";
 	String messageEventLinkedToGroup = "messageEventLinkedToGroup";
@@ -1117,6 +1132,12 @@ public interface Strings {
 	String messageUserSyncFailedFull = "messageUserSyncFailedFull";
 	String messageUserSyncPartiallySuccessful = "messageUserSyncPartiallySuccessful";
 	String messageUserSyncSuccessful = "messageUserSyncSuccessful";
+	String messageVaccinationNoDateNotRelevantForCase = "messageVaccinationNoDateNotRelevantForCase";
+	String messageVaccinationNoDateNotRelevantForContact = "messageVaccinationNoDateNotRelevantForContact";
+	String messageVaccinationNoDateNotRelevantForEventParticipant = "messageVaccinationNoDateNotRelevantForEventParticipant";
+	String messageVaccinationNotRelevantForCase = "messageVaccinationNotRelevantForCase";
+	String messageVaccinationNotRelevantForContact = "messageVaccinationNotRelevantForContact";
+	String messageVaccinationNotRelevantForEventParticipant = "messageVaccinationNotRelevantForEventParticipant";
 	String messageVisitsDeleted = "messageVisitsDeleted";
 	String messageWrongFileType = "messageWrongFileType";
 	String messageWrongTemplateFileType = "messageWrongTemplateFileType";
@@ -1243,6 +1264,11 @@ public interface Strings {
 	String promptImmunizationRecoveryDateFrom = "promptImmunizationRecoveryDateFrom";
 	String promptImmunizationStartDateFrom = "promptImmunizationStartDateFrom";
 	String promptImmunizationValidFrom = "promptImmunizationValidFrom";
+	String promptLabMessagesDateFrom = "promptLabMessagesDateFrom";
+	String promptLabMessagesDateTo = "promptLabMessagesDateTo";
+	String promptLabMessagesPersonBirthDateFrom = "promptLabMessagesPersonBirthDateFrom";
+	String promptLabMessagesPersonBirthDateTo = "promptLabMessagesPersonBirthDateTo";
+	String promptLabMessagesSearchField = "promptLabMessagesSearchField";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";
 	String promptPersonDuplicateSearchIdExternalId = "promptPersonDuplicateSearchIdExternalId";

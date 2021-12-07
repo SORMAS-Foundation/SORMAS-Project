@@ -42,6 +42,7 @@ public class SormasToSormasSampleDtoValidator extends SormasToSormasDtoValidator
 
 	@Override
 	public ValidationErrors validateIncomingPreview(PreviewNotImplementedDto previewNotImplementedDto) {
+		// todo adjust test in InfraValidationSoundnessTest once preview is available for this entity
 		throw new RuntimeException("Samples preview not yet implemented");
 	}
 
@@ -52,6 +53,7 @@ public class SormasToSormasSampleDtoValidator extends SormasToSormasDtoValidator
 
 	@Override
 	public ValidationErrors validateOutgoingPreview(PreviewNotImplementedDto previewNotImplementedDto) {
+		// todo adjust test in InfraValidationSoundnessTest once preview is available for this entity
 		return null;
 	}
 }
