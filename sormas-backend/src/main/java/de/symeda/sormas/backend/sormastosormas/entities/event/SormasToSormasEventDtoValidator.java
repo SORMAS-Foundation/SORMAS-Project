@@ -29,7 +29,7 @@ public class SormasToSormasEventDtoValidator extends SormasToSormasDtoValidator<
 	public ValidationErrors validate(SormasToSormasEventDto sharedData, ValidationDirection direction) {
 		EventDto event = sharedData.getEntity();
 		ValidationErrors validationErrors = new ValidationErrors();
-		validateLocation(event.getEventLocation(), Captions.Event, validationErrors, ValidationDirection.INCOMING);
+		validateLocation(event.getEventLocation(), Captions.Event, validationErrors, direction);
 
 		return validationErrors;
 	}
@@ -37,7 +37,7 @@ public class SormasToSormasEventDtoValidator extends SormasToSormasDtoValidator<
 	@Override
 	public ValidationErrors validatePreview(SormasToSormasEventPreview preview, ValidationDirection direction) {
 		ValidationErrors eventValidationErrors = new ValidationErrors();
-		validateLocation(preview.getEventLocation(), Captions.Event, eventValidationErrors, ValidationDirection.INCOMING);
+		validateLocation(preview.getEventLocation(), Captions.Event, eventValidationErrors, direction);
 		return eventValidationErrors;
 	}
 }

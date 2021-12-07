@@ -61,13 +61,6 @@ public class DefaultEntityHelper {
 			POE_INF_USERNAME_AND_PASSWORD);
 	}
 
-	public enum DefaultInfrastructureUuidSeed {
-		REGION,
-		DISTRICT,
-		COMMUNITY,
-		FACILITY,
-		POINT_OF_ENTRY
-	}
 
 	public static boolean isDefaultUser(String username) {
 		return defaultUsersWithPassword.containsKey(username);
