@@ -45,6 +45,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -359,9 +360,9 @@ public class UserFacadeEjb implements UserFacade {
 		return availableUsers;
 	}
 
-	public List<UserReferenceWithTaskNumbersDto> getUsersWithNoOfTasks(TaskContextIndex taskContextIndex) {
+	public List<UserReferenceWithTaskNumbersDto> getAssignableUsersWithTaskNumbers(@NotNull TaskContextIndex taskContextIndex) {
 
-		List<UserReferenceDto> availableUsers = getAllUsers(taskContextIndex);
+		List<UserReferenceDto> availableUsers = getAssignableUsersBasedOnContext(taskContextIndex);
 		Map<String, Long> userTaskCounts =
 			taskFacade.getPendingTaskCountPerUser(availableUsers.stream().map(UserReferenceDto::getUuid).collect(Collectors.toList()));
 

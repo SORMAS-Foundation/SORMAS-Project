@@ -87,6 +87,6 @@ public class UserResource {
 	@POST
 	@Path("/userReferenceWithNoOfTask")
 	public List<UserReferenceWithTaskNumbersDto> getUsersWithTaskNumbers(@RequestBody TaskContextIndex taskContextIndex) {
-		return FacadeProvider.getUserFacade().getUsersWithNoOfTasks(taskContextIndex);
+		return FacadeProvider.getUserFacade().getAssignableUsersWithTaskNumbers(taskContextIndex);
 	}
 }
