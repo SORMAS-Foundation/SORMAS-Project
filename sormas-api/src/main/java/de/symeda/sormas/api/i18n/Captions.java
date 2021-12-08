@@ -2267,13 +2267,13 @@ public interface Captions {
 	String User_active = "User.active";
 	String User_address = "User.address";
 	String User_associatedOfficer = "User.associatedOfficer";
-	String User_country = "User.country";
 	String User_hasConsentedToGdpr = "User.hasConsentedToGdpr";
 	String User_healthFacility = "User.healthFacility";
 	String User_laboratory = "User.laboratory";
 	String User_limitedDisease = "User.limitedDisease";
 	String User_phone = "User.phone";
 	String User_pointOfEntry = "User.pointOfEntry";
+	String User_userCountry = "User.userCountry";
 	String User_userEmail = "User.userEmail";
 	String User_userName = "User.userName";
 	String User_userRoles = "User.userRoles";
