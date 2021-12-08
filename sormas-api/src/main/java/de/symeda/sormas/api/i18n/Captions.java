@@ -2273,6 +2273,7 @@ public interface Captions {
 	String User_limitedDisease = "User.limitedDisease";
 	String User_phone = "User.phone";
 	String User_pointOfEntry = "User.pointOfEntry";
+	String User_userCountry = "User.userCountry";
 	String User_userEmail = "User.userEmail";
 	String User_userName = "User.userName";
 	String User_userRoles = "User.userRoles";

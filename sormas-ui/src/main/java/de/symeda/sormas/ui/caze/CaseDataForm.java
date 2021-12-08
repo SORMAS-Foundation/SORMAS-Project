@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.caze;
 import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
 import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.CssStyles.LABEL_WARNING;
 import static de.symeda.sormas.ui.utils.CssStyles.LABEL_WHITE_SPACE_NORMAL;
 import static de.symeda.sormas.ui.utils.CssStyles.LAYOUT_COL_HIDE_INVSIBLE;
 import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
@@ -160,6 +161,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String DIFFERENT_PLACE_OF_STAY_JURISDICTION = "differentPlaceOfStayJurisdiction";
 	private static final String DONT_SHARE_WARNING_LOC = "dontShareWarning";
 	private static final String CASE_CLASSIFICATION_CALCULATE_BTN_LOC = "caseClassificationCalculateBtnLoc";
+	private static final String TRANSMITTEDWARNING = "headingTransmitted";
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -249,7 +251,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE) +
 					loc(GENERAL_COMMENT_LOC) + 
 					fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS) +
-					// loc(GENERAL_COMMENT_LOC) + 
+					loc(TRANSMITTEDWARNING) + 
 					fluidRowLocs(CaseDataDto.TRANSMITTED);
 	//@formatter:on
 
@@ -831,6 +833,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		Label generalCommentLabel = new Label(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.ADDITIONAL_DETAILS));
 		generalCommentLabel.addStyleName(H3);
 		getContent().addComponent(generalCommentLabel, GENERAL_COMMENT_LOC);
+		
+		Label LabelTransmittedWarning = new Label(I18nProperties.getString(Strings.headingTransmitted));
+		LabelTransmittedWarning.addStyleName(LABEL_WARNING);
+		getContent().addComponent(LabelTransmittedWarning, TRANSMITTEDWARNING);
 
 		TextArea additionalDetails = addField(CaseDataDto.ADDITIONAL_DETAILS, TextArea.class);
 		additionalDetails.setRows(6);
@@ -955,9 +961,16 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		setReadOnly(true, CaseDataDto.REGION_LEVEL_DATE);
 		setReadOnly(true, CaseDataDto.NATIONAL_LEVEL_DATE);
 		setReadOnly(true, CaseDataDto.QUARANTINE);
-		setReadOnly(true, CaseDataDto.CLINICAL_CONFIRMATION);
-		setReadOnly(true, CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION);
-		setReadOnly(true, CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION);
+		if(extendedClassification){
+			setReadOnly(true, CaseDataDto.CLINICAL_CONFIRMATION);
+			setReadOnly(true, CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION);
+			setReadOnly(true, CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION);
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)){
+				setReadOnly(false, CaseDataDto.CLINICAL_CONFIRMATION);
+				setReadOnly(false, CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION);
+				setReadOnly(false, CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION);
+			}
+		}
 		assignNewEpidNumberButton.setEnabled(false);
 		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)){
@@ -979,8 +992,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			assignNewEpidNumberButton.setEnabled(true);
 		}
 		UserProvider userProvider = UserProvider.getCurrent();
-		if ((UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) && (userProvider.getUser().getCountry() != null)){
-			setReadOnly(false, CaseDataDto.TRANSMITTED);
+		if ((UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) && (userProvider.getUser().getUserCountry() != null)){
+			CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getByUuid(caseUuid);
+			if (caseDataDto != null){
+				if (caseDataDto.getTransmitted() != YesNoUnknown.YES){
+					setReadOnly(false, CaseDataDto.TRANSMITTED);
+				}
+			}
 		}
 		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
 		setReadOnly(
