@@ -17,14 +17,22 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.statistics;
 
+import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.Component;
 
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
+import com.vaadin.ui.themes.ValoTheme;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
 public class AbstractStatisticsView extends AbstractSubNavigationView<Component> {
@@ -41,6 +49,15 @@ public class AbstractStatisticsView extends AbstractSubNavigationView<Component>
 		menu.addView(StatisticsView.VIEW_NAME, I18nProperties.getCaption(Captions.statisticsStatistics), params);
 		if (UserProvider.getCurrent().hasUserRight(UserRight.DATABASE_EXPORT_ACCESS)) {
 			menu.addView(DatabaseExportView.VIEW_NAME, I18nProperties.getCaption(Captions.statisticsDatabaseExport), params);
+		}
+
+		String sormasStatsUrl = FacadeProvider.getConfigFacade().getSormasStatsUrl();
+		if (sormasStatsUrl != null) {
+			Link whatsNewLink = new Link(
+				I18nProperties.getCaption(Captions.statisticsOpenSormasStats),
+				new ExternalResource(sormasStatsUrl));
+			whatsNewLink.addStyleNames(CssStyles.LINK_BUTTON, CssStyles.LINK_BUTTON_PRIMARY);
+			this.addHeaderComponent(whatsNewLink);
 		}
 	}
 }
