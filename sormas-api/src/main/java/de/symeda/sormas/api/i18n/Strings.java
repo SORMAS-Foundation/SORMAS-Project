@@ -1132,6 +1132,9 @@ public interface Strings {
 	String messageUserSyncFailedFull = "messageUserSyncFailedFull";
 	String messageUserSyncPartiallySuccessful = "messageUserSyncPartiallySuccessful";
 	String messageUserSyncSuccessful = "messageUserSyncSuccessful";
+	String messageVaccinationNoDateNotRelevantForCase = "messageVaccinationNoDateNotRelevantForCase";
+	String messageVaccinationNoDateNotRelevantForContact = "messageVaccinationNoDateNotRelevantForContact";
+	String messageVaccinationNoDateNotRelevantForEventParticipant = "messageVaccinationNoDateNotRelevantForEventParticipant";
 	String messageVaccinationNotRelevantForCase = "messageVaccinationNotRelevantForCase";
 	String messageVaccinationNotRelevantForContact = "messageVaccinationNotRelevantForContact";
 	String messageVaccinationNotRelevantForEventParticipant = "messageVaccinationNotRelevantForEventParticipant";
@@ -1261,6 +1264,11 @@ public interface Strings {
 	String promptImmunizationRecoveryDateFrom = "promptImmunizationRecoveryDateFrom";
 	String promptImmunizationStartDateFrom = "promptImmunizationStartDateFrom";
 	String promptImmunizationValidFrom = "promptImmunizationValidFrom";
+	String promptLabMessagesDateFrom = "promptLabMessagesDateFrom";
+	String promptLabMessagesDateTo = "promptLabMessagesDateTo";
+	String promptLabMessagesPersonBirthDateFrom = "promptLabMessagesPersonBirthDateFrom";
+	String promptLabMessagesPersonBirthDateTo = "promptLabMessagesPersonBirthDateTo";
+	String promptLabMessagesSearchField = "promptLabMessagesSearchField";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";
 	String promptPersonDuplicateSearchIdExternalId = "promptPersonDuplicateSearchIdExternalId";

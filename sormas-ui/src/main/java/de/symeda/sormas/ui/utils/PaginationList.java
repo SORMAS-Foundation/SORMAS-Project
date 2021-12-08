@@ -186,6 +186,13 @@ public abstract class PaginationList<T> extends VerticalLayout {
 		}
 	}
 
+	public Runnable deleteCallback() {
+		return () -> {
+			listLayout.removeAllComponents();
+			reload();
+		};
+	}
+
 	private int calculateLastPageNumber() {
 		return (int) Math.ceil(entries.size() / (double) maxDisplayedEntries);
 	}

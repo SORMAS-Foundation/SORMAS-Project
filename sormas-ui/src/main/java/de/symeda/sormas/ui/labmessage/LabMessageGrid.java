@@ -97,6 +97,7 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 			LabMessageIndexDto.SAMPLE_OVERALL_TEST_RESULT,
 			LabMessageIndexDto.PERSON_FIRST_NAME,
 			LabMessageIndexDto.PERSON_LAST_NAME,
+			LabMessageIndexDto.PERSON_BIRTH_DATE,
 			LabMessageIndexDto.PERSON_POSTAL_CODE,
 			LabMessageIndexDto.STATUS,
 			COLUMN_PROCESS,
@@ -105,6 +106,8 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 		((Column<LabMessageIndexDto, String>) getColumn(LabMessageIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<LabMessageIndexDto, Date>) getColumn(LabMessageIndexDto.MESSAGE_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
+		((Column<LabMessageIndexDto, Date>) getColumn(LabMessageIndexDto.PERSON_BIRTH_DATE))
+			.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(I18nProperties.getUserLanguage())));
 
 		getColumn(COLUMN_PROCESS).setSortable(false);
 		getColumn(COLUMN_DOWNLOAD).setSortable(false);
