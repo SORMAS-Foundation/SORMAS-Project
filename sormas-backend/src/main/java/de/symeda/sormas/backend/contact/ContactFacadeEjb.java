@@ -362,6 +362,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		if (existingContact == null && featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.CONTACT_INVESTIGATION)) {
 			createInvestigationTask(entity);
+
 		}
 
 		if (handleChanges) {
@@ -1553,11 +1554,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
-		if (source.getDisease() == null && source.getCaze() != null) {
-			target.setDisease(source.getCaze().getDisease());
-		} else {
-			target.setDisease(source.getDisease());
-		}
+		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		if (source.getCaze() != null) {
 			target.setDiseaseVariant(source.getCaze().getDiseaseVariant());
@@ -1731,7 +1728,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		if (contact.getReportingUser() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportingUser));
 		}
-		if (contact.getCaze() == null && contact.getDisease() == null) {
+		if (contact.getDisease() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDisease));
 		}
 		if (contact.getPerson() == null) {
