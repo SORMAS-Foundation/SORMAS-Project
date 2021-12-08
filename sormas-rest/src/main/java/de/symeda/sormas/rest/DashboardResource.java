@@ -10,7 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.dashboard.DashboardCriteriaInterval;
+import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
@@ -24,7 +24,7 @@ public class DashboardResource extends EntityDtoResource {
 
 	@POST
 	@Path("/diseaseBurden")
-	public List<DiseaseBurdenDto> getAll(@RequestBody DashboardCriteriaInterval criteria) {
+	public List<DiseaseBurdenDto> getAll(@RequestBody DashboardCriteria criteria) {
 		return FacadeProvider.getDashboardFacade()
 			.getDiseaseBurden(
 				criteria.getRegion(),
