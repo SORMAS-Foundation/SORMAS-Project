@@ -93,6 +93,9 @@ public interface Captions {
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
 	String actionSaveAndContinue = "actionSaveAndContinue";
+	String actionSaveAndOpenCase = "actionSaveAndOpenCase";
+	String actionSaveAndOpenContact = "actionSaveAndOpenContact";
+	String actionSaveAndOpenEventParticipant = "actionSaveAndOpenEventParticipant";
 	String actionSaveAndOpenHospitalization = "actionSaveAndOpenHospitalization";
 	String actionSaveChanges = "actionSaveChanges";
 	String actionSearch = "actionSearch";

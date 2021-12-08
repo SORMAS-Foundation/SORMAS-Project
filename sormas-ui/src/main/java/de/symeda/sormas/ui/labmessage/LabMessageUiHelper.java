@@ -18,8 +18,13 @@ package de.symeda.sormas.ui.labmessage;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 
+import com.vaadin.ui.HorizontalLayout;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.samples.AbstractSampleForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 
@@ -36,6 +41,52 @@ public class LabMessageUiHelper {
 		component.getDiscardButton().setCaption(I18nProperties.getCaption(discardCaptionTag));
 
 		return cancelButton;
+	}
+
+	public static void establishFinalCommitButtons(
+		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
+		CommitDiscardWrapperComponent.CommitListener defaultCallback) {
+		// add default callback
+		sampleComponent.addCommitListener(defaultCallback);
+		// add option to navigate to related entry after saving
+		LabMessageUiHelper.addSaveAndOpenEntryButton(sampleComponent);
+		// add yet another listener just for the save button, it will not be added to the save and open entry button
+		sampleComponent.getCommitButton()
+			.addClickListener((Button.ClickListener) clickEvent -> SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME));
+	}
+
+	private static Button addSaveAndOpenEntryButton(CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent) {
+		Button saveAndOpenEntryButton;
+		SampleDto sample = sampleComponent.getWrappedComponent().getValue();
+		if (sample.getAssociatedCase() != null) {
+			saveAndOpenEntryButton = ButtonHelper.createButton(
+				I18nProperties.getCaption(Captions.actionSaveAndOpenCase),
+				clickEvent -> ControllerProvider.getCaseController().navigateToCase(sample.getAssociatedCase().getUuid()));
+		} else if (sample.getAssociatedContact() != null) {
+			saveAndOpenEntryButton = ButtonHelper.createButton(
+				I18nProperties.getCaption(Captions.actionSaveAndOpenContact),
+				clickEvent -> ControllerProvider.getContactController().navigateToData(sample.getAssociatedContact().getUuid()));
+		} else if (sample.getAssociatedEventParticipant() != null) {
+			saveAndOpenEntryButton = ButtonHelper.createButton(
+				I18nProperties.getCaption(Captions.actionSaveAndOpenEventParticipant),
+				clickEvent -> ControllerProvider.getEventParticipantController().navigateToData(sample.getAssociatedEventParticipant().getUuid()));
+		} else {
+			throw new UnsupportedOperationException("Could not create saveAndOpenEntryButton: associated entity is not supported.");
+		}
+
+		// Copy every existing listener from the old commit button to the newly added one
+		for (Object listener : sampleComponent.getCommitButton().getListeners(Button.ClickEvent.class)) {
+			saveAndOpenEntryButton.addClickListener((Button.ClickListener) listener);
+		}
+
+		saveAndOpenEntryButton.setStyleName(sampleComponent.getCommitButton().getStyleName());
+
+		HorizontalLayout buttonsPanel = sampleComponent.getButtonsPanel();
+		buttonsPanel.addComponent(saveAndOpenEntryButton, buttonsPanel.getComponentCount() - 1);
+
+		saveAndOpenEntryButton.setId("saveAndOpenEntryButton");
+
+		return saveAndOpenEntryButton;
 	}
 
 }
