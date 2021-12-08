@@ -192,7 +192,6 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.backend.activityascase.ActivityAsCaseService;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb.MaternalHistoryFacadeEjbLocal;
@@ -316,6 +315,7 @@ import de.symeda.sormas.backend.util.PatchHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.Vaccination;
+import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
@@ -441,13 +441,13 @@ public class CaseFacadeEjb implements CaseFacade {
 	@EJB
 	private EpiDataService epiDataService;
 	@EJB
-	private ActivityAsCaseService activityAsCaseService;
-	@EJB
 	private SurveillanceReportFacadeEjb.SurveillanceReportFacadeEjbLocal surveillanceReportFacade;
 	@EJB
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
 	private SormasToSormasCaseFacadeEjbLocal sormasToSormasCaseFacade;
+	@EJB
+	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@Resource
 	private ManagedScheduledExecutorService executorService;
 
@@ -1945,7 +1945,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		if (existingCase == null) {
-			caseService.updateVaccinationStatuses(newCase);
+			vaccinationFacade.updateVaccinationStatuses(newCase);
 		}
 	}
 

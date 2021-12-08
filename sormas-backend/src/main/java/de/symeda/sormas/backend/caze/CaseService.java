@@ -118,7 +118,6 @@ import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
-import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -149,7 +148,6 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
-import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.utils.CaseJoins;
@@ -1787,20 +1785,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		cu.where(CriteriaBuilderHelper.and(cb, cb.equal(root.get(Case.PERSON), personId), cb.equal(root.get(Case.DISEASE), disease), datePredicate));
 
 		em.createQuery(cu).executeUpdate();
-	}
-
-	public void updateVaccinationStatuses(Case caze) {
-		List<Immunization> casePersonImmunizations = immunizationService.getByPersonAndDisease(caze.getPerson().getUuid(), caze.getDisease(), true);
-
-		boolean hasValidVaccinations = casePersonImmunizations.stream()
-			.anyMatch(
-				immunization -> immunization.getVaccinations()
-					.stream()
-					.anyMatch(vaccination -> VaccinationService.isVaccinationRelevant(caze, vaccination)));
-
-		if (hasValidVaccinations) {
-			caze.setVaccinationStatus(VaccinationStatus.VACCINATED);
-		}
 	}
 
 	private float calculateCompleteness(Case caze) {
