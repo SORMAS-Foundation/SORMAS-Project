@@ -91,7 +91,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 		Vaccination existingVaccination = dto.getUuid() != null ? vaccinationService.getByUuid(dto.getUuid()) : null;
 		VaccinationDto existingDto = toDto(existingVaccination);
-		Date currentVaccinationDate = existingVaccination != null ? existingVaccination.getVaccinationDate() : null;
+		Date oldVaccinationDate = existingVaccination != null ? existingVaccination.getVaccinationDate() : null;
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		restorePseudonymizedDto(dto, existingDto, existingVaccination, pseudonymizer);
@@ -103,7 +103,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 		updateVaccinationStatuses(
 			existingVaccination.getVaccinationDate(),
-			currentVaccinationDate,
+			oldVaccinationDate,
 			existingVaccination.getImmunization().getPerson().getId(),
 			existingVaccination.getImmunization().getDisease());
 
@@ -259,7 +259,10 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 				v -> toVaccinationListEntryDto(
 					v,
 					VaccinationService.isVaccinationRelevant(caze, v),
-					I18nProperties.getString(Strings.messageVaccinationNotRelevantForCase)))
+					I18nProperties.getString(
+						v.getVaccinationDate() != null
+							? Strings.messageVaccinationNotRelevantForCase
+							: Strings.messageVaccinationNoDateNotRelevantForCase)))
 			.collect(Collectors.toList());
 	}
 
@@ -277,7 +280,10 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 				v -> toVaccinationListEntryDto(
 					v,
 					VaccinationService.isVaccinationRelevant(contact, v),
-					I18nProperties.getString(Strings.messageVaccinationNotRelevantForContact)))
+					I18nProperties.getString(
+						v.getVaccinationDate() != null
+							? Strings.messageVaccinationNotRelevantForContact
+							: Strings.messageVaccinationNoDateNotRelevantForContact)))
 			.collect(Collectors.toList());
 	}
 
@@ -295,7 +301,10 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 				v -> toVaccinationListEntryDto(
 					v,
 					VaccinationService.isVaccinationRelevant(eventParticipant.getEvent(), v),
-					I18nProperties.getString(Strings.messageVaccinationNotRelevantForEventParticipant)))
+					I18nProperties.getString(
+							v.getVaccinationDate() != null
+									? Strings.messageVaccinationNotRelevantForEventParticipant
+									: Strings.messageVaccinationNoDateNotRelevantForEventParticipant)))
 			.collect(Collectors.toList());
 	}
 
@@ -343,9 +352,9 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 	}
 
-	public void updateVaccinationStatuses(Date newVaccinationDate, Date currentVaccinationDate, Long personId, Disease disease) {
+	public void updateVaccinationStatuses(Date newVaccinationDate, Date oldVaccinationDate, Long personId, Disease disease) {
 
-		if (currentVaccinationDate == null || newVaccinationDate != currentVaccinationDate) {
+		if (oldVaccinationDate == null || newVaccinationDate != oldVaccinationDate) {
 			caseService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
 			contactService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
 			eventParticipantService.updateVaccinationStatuses(personId, disease, newVaccinationDate);

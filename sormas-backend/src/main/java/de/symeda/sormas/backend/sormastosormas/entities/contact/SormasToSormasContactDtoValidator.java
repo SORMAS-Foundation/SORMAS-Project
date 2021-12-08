@@ -47,6 +47,9 @@ public class SormasToSormasContactDtoValidator
 	public ValidationErrors validateIncomingPreview(SormasToSormasContactPreview preview) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
+		ValidationErrors personValidationErrors = validatePersonPreview(preview.getPerson());
+		validationErrors.addAll(personValidationErrors);
+
 		String groupNameTag = Captions.Contact;
 		infraValidator.validateRegion(preview.getRegion(), groupNameTag, validationErrors, preview::setRegion);
 		infraValidator.validateDistrict(preview.getDistrict(), groupNameTag, validationErrors, preview::setDistrict);

@@ -29,6 +29,7 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -44,16 +45,19 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 	public SampleList(ContactReferenceDto contactRef) {
 		super(5);
 		sampleCriteria.contact(contactRef);
+		sampleCriteria.sampleAssociationType(SampleAssociationType.CONTACT);
 	}
 
 	public SampleList(CaseReferenceDto caseRef) {
 		super(5);
 		sampleCriteria.caze(caseRef);
+		sampleCriteria.sampleAssociationType(SampleAssociationType.CASE);
 	}
 
 	public SampleList(EventParticipantReferenceDto eventParticipantRef) {
 		super(5);
 		sampleCriteria.eventParticipant(eventParticipantRef);
+		sampleCriteria.sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT);
 	}
 
 	@Override

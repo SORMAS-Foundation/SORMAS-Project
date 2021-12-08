@@ -81,6 +81,7 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -629,6 +630,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				cb,
 				filter,
 				cb.equal(from.join(Case.HEALTH_FACILITY, JoinType.LEFT).get(Facility.UUID), caseCriteria.getHealthFacility().getUuid()));
+		}
+		if (caseCriteria.getFacilityTypeGroup() != null) {
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, from.get(Case.FACILITY_TYPE).in(FacilityType.getTypes(caseCriteria.getFacilityTypeGroup())));
+		}
+		if (caseCriteria.getFacilityType() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.FACILITY_TYPE), caseCriteria.getFacilityType()));
 		}
 		if (caseCriteria.getPointOfEntry() != null) {
 			filter = CriteriaBuilderHelper.and(
@@ -1398,7 +1406,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		cq.orderBy(cb.desc(latestChangedDateFunction));
 
-		Predicate filter = createUserFilter(cb, cq, root, new CaseUserFilterCriteria());
+		Predicate filter = CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, root), createUserFilter(cb, cq, root, new CaseUserFilterCriteria()));
 
 		if (caseCriteria != null) {
 			if (caseCriteria.getDisease() != null) {
@@ -1749,6 +1757,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	 */
 	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
 
+		// Only consider cases with relevance date at least one day after the vaccination date
+		if (vaccinationDate == null) {
+			return;
+		} else {
+			vaccinationDate = DateHelper.getEndOfDay(vaccinationDate);
+		}
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
 		Root<Case> root = cu.from(Case.class);
@@ -1763,8 +1778,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		Predicate datePredicate = vaccinationDate != null
 			? cb.or(
-				cb.greaterThanOrEqualTo(symptomsSq.getSelection().as(Date.class), vaccinationDate),
-				cb.and(cb.isNull(symptomsSq.getSelection()), cb.greaterThanOrEqualTo(root.get(Case.REPORT_DATE), vaccinationDate)))
+				cb.greaterThan(symptomsSq.getSelection().as(Date.class), vaccinationDate),
+				cb.and(cb.isNull(symptomsSq.getSelection()), cb.greaterThan(root.get(Case.REPORT_DATE), vaccinationDate)))
 			: null;
 
 		cu.where(CriteriaBuilderHelper.and(cb, cb.equal(root.get(Case.PERSON), personId), cb.equal(root.get(Case.DISEASE), disease), datePredicate));
