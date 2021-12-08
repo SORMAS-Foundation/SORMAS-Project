@@ -200,11 +200,11 @@ public class UserDto extends EntityDto {
 		this.region = region;
 	}
 
-	public CountryReferenceDto getCountry() {
+	public CountryReferenceDto getUserCountry() {
 		return country;
 	}
 
-	public void setCountry(CountryReferenceDto country) {
+	public void setUserCountry(CountryReferenceDto country) {
 		this.country = country;
 	}
 

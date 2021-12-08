@@ -213,11 +213,11 @@ public class User extends AbstractDomainObject {
 	}
 
 	@ManyToOne
-	public Country getCountry() {
+	public Country getUserCountry() {
 		return country;
 	}
 
-	public void setCountry(Country country) {
+	public void setUserCountry(Country country) {
 		this.country = country;
 	}
 
