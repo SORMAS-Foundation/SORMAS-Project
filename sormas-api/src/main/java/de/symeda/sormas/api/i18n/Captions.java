@@ -1396,6 +1396,7 @@ public interface Captions {
 	String LabMessageCriteria_messageDateTo = "LabMessageCriteria.messageDateTo";
 	String labMessageFetch = "labMessageFetch";
 	String labMessageForwardedMessageFound = "labMessageForwardedMessageFound";
+	String labMessageLabMessagesList = "labMessageLabMessagesList";
 	String labMessageNoDisease = "labMessageNoDisease";
 	String labMessageNoNewMessages = "labMessageNoNewMessages";
 	String labMessageProcess = "labMessageProcess";
