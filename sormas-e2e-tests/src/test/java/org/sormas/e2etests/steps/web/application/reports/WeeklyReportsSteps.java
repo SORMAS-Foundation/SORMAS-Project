@@ -36,17 +36,17 @@ public class WeeklyReportsSteps implements En {
 	public WeeklyReportsSteps(WebDriverHelpers webDriverHelpers) {
 		this.webDriverHelpers = webDriverHelpers;
 
-		When("I choose {string} as year", (String year) -> {
+		When("I choose {string} as year for weekly reports", (String year) -> {
 			webDriverHelpers.waitForPageLoaded();
 			webDriverHelpers.selectFromCombobox(WeeklyReportsPage.YEAR_FILTER, year);
 		});
 
-		When("I choose {string} as epi week", (String epiWeek) -> {
+		When("I choose {string} as epi week for weekly reports", (String epiWeek) -> {
 			webDriverHelpers.waitForPageLoaded();
 			webDriverHelpers.selectFromCombobox(WeeklyReportsPage.EPI_WEEK_FILTER, epiWeek);
 		});
 
-		When("I click on the last epi week button", () -> {
+		When("I click on the last epi week button for weekly reports", () -> {
 			webDriverHelpers.waitForPageLoaded();
 			webDriverHelpers.clickOnWebElementBySelector(WeeklyReportsPage.LAST_EPI_WEEK_BUTTON);
 		});
