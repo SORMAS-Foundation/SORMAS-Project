@@ -267,6 +267,7 @@ public class SubcontinentFacadeEjb
 		target.setArchived(source.isArchived());
 		target.setExternalId(source.getExternalId());
 		target.setContinent(continentService.getByReferenceDto(source.getContinent()));
+		target.setCentrallyManaged(source.isCentrallyManaged());
 		return target;
 	}
 

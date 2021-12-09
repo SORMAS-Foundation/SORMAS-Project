@@ -3,6 +3,7 @@ package de.symeda.sormas.api.caze;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -28,6 +29,7 @@ public class CaseSelectionDto extends PseudonymizableIndexDto implements Seriali
 	private String uuid;
 	private String epidNumber;
 	private String externalID;
+	private Disease disease;
 	@PersonalData
 	@SensitiveData
 	private String personFirstName;
@@ -50,6 +52,7 @@ public class CaseSelectionDto extends PseudonymizableIndexDto implements Seriali
 		String uuid,
 		String epidNumber,
 		String externalID,
+		Disease disease,
 		String personFirstName,
 		String personLastName,
 		AgeAndBirthDateDto ageAndBirthDate,
@@ -64,6 +67,7 @@ public class CaseSelectionDto extends PseudonymizableIndexDto implements Seriali
 		this.uuid = uuid;
 		this.epidNumber = epidNumber;
 		this.externalID = externalID;
+		this.disease = disease;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
 		this.ageAndBirthDate = ageAndBirthDate;
@@ -98,6 +102,14 @@ public class CaseSelectionDto extends PseudonymizableIndexDto implements Seriali
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
+	}
+
+	public Disease getDisease() {
+		return disease;
+	}
+
+	public void setDisease(Disease disease) {
+		this.disease = disease;
 	}
 
 	public String getPersonFirstName() {
