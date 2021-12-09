@@ -54,6 +54,7 @@ public interface SampleFacade {
 	SampleReferenceDto getReferredFrom(String sampleUuid);
 
 	List<String> getAllActiveUuids();
+	List<String> getAllUuids();
 
 	List<SampleDto> getByUuids(List<String> uuids);
 

@@ -25,6 +25,8 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -439,6 +441,8 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasShare
 
 		final SampleDto sampleDto = getSampleDto(userRef);
 		sampleDto.setAssociatedCase(caseRef);
+		int samplecount = (FacadeProvider.getSampleFacade().getAllUuids()).size();
+		sampleDto.setUuid(caseRef.getUuid() + "-" + (samplecount+1));
 		return sampleDto;
 	}
 
