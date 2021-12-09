@@ -2,12 +2,12 @@ package de.symeda.sormas.api.infrastructure.area;
 
 import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
-public class AreaDto extends EntityDto {
+public class AreaDto extends InfrastructureDto {
 
 	public static final String I18N_PREFIX = "Area";
 	public static final String NAME = "name";
