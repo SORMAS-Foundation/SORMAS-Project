@@ -272,7 +272,7 @@ public class DirectoryImmunizationService extends AbstractCoreAdoService<Directo
 		if (Boolean.TRUE.equals(criteria.getOnlyPersonsWithOverdueImmunization())) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS), ImmunizationManagementStatus.ONGOING));
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Immunization.END_DATE), new Date()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThan(from.get(Immunization.END_DATE), new Date()));
 		}
 		if (criteria.getImmunizationDateType() != null) {
 			Path<Object> path = buildPathForDateFilter(criteria.getImmunizationDateType(), directoryImmunizationQueryContext);
