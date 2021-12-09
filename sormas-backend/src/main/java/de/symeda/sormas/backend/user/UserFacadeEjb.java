@@ -149,7 +149,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setPhone(source.getPhone());
 		target.setAddress(LocationFacadeEjb.toDto(source.getAddress()));
 
-		target.setUserCountry(CountryFacadeEjb.toReferenceDto(source.getUserCountry()));
+		target.setAssociatedCountry(CountryFacadeEjb.toReferenceDto(source.getAssociatedCountry()));
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
@@ -490,7 +490,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setUserName(source.getUserName());
 		target.setUserEmail(source.getUserEmail());
 
-		target.setUserCountry(countryService.getByReferenceDto(source.getUserCountry()));
+		target.setAssociatedCountry(countryService.getByReferenceDto(source.getAssociatedCountry()));
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));

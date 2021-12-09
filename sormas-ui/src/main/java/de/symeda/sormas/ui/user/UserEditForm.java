@@ -79,7 +79,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 					loc(USER_DATA_HEADING_LOC) +
                     fluidRowLocs(UserDto.ACTIVE) +
                     fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES) +
-                    fluidRowLocs(UserDto.USERCOUNTRY, "", "") +
+                    fluidRowLocs(UserDto.ASSOCIATED_COUNTRY, "", "") +
                     fluidRowLocs(UserDto.REGION, UserDto.DISTRICT, UserDto.COMMUNITY) +
                     fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.POINT_OF_ENTRY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY) +
                     fluidRowLocs(UserDto.LIMITED_DISEASE, "", "");
@@ -138,7 +138,6 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
         userRoles.setMultiSelect(true);
 
-        ComboBox country = addInfrastructureField(UserDto.USERCOUNTRY);
         ComboBox region = addInfrastructureField(UserDto.REGION);
         ComboBox community = addInfrastructureField(UserDto.COMMUNITY);
 
@@ -152,6 +151,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
         // for informant
         ComboBox associatedOfficer = addField(UserDto.ASSOCIATED_OFFICER, ComboBox.class);
+        ComboBox associatedCountry = addField(UserDto.ASSOCIATED_COUNTRY, ComboBox.class);
 
         ComboBox healthFacility = addInfrastructureField(UserDto.HEALTH_FACILITY);
         ComboBox cbPointOfEntry = addInfrastructureField(UserDto.POINT_OF_ENTRY);
@@ -177,7 +177,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         ComboBox laboratory = addInfrastructureField(UserDto.LABORATORY);
         laboratory.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false));
 
-        country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
+        associatedCountry.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
         region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
         setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES);
