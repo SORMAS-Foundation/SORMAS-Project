@@ -19,20 +19,17 @@ package de.symeda.sormas.ui.statistics;
 
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.Component;
-
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
-import com.vaadin.ui.themes.ValoTheme;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import org.apache.commons.lang3.StringUtils;
 
 @SuppressWarnings("serial")
 public class AbstractStatisticsView extends AbstractSubNavigationView<Component> {
@@ -52,7 +49,7 @@ public class AbstractStatisticsView extends AbstractSubNavigationView<Component>
 		}
 
 		String sormasStatsUrl = FacadeProvider.getConfigFacade().getSormasStatsUrl();
-		if (sormasStatsUrl != null) {
+		if (StringUtils.isNotBlank(sormasStatsUrl)) {
 			Link sormasStatsLink = new Link(
 				I18nProperties.getCaption(Captions.statisticsOpenSormasStats),
 				new ExternalResource(sormasStatsUrl));
