@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -54,12 +55,15 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskContextIndex;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceWithTaskNumbersDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRole.UserRoleValidationException;
@@ -97,6 +101,7 @@ import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
@@ -129,6 +134,8 @@ public class UserFacadeEjb implements UserFacade {
 	private FacilityService facilityService;
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
+	@EJB
+	private TaskFacadeEjb.TaskFacadeEjbLocal taskFacade;
 	@EJB
 	private CaseService caseService;
 	@EJB
@@ -325,6 +332,43 @@ public class UserFacadeEjb implements UserFacade {
 			.stream()
 			.map(c -> toReferenceDto(c))
 			.collect(Collectors.toList());
+	}
+
+	private List<UserReferenceDto> getAssignableUsersBasedOnContext(TaskContextIndex taskContextIndex) {
+		List<UserReferenceDto> availableUsers = new ArrayList<>();
+		if (taskContextIndex.getUuid() == null) {
+			taskContextIndex = new TaskContextIndex(TaskContext.GENERAL);
+		}
+		switch (taskContextIndex.getTaskContext()) {
+		case CASE:
+			availableUsers.addAll(getUsersHavingCaseInJurisdiction(new CaseReferenceDto(taskContextIndex.getUuid())));
+			break;
+		case CONTACT:
+			availableUsers.addAll(getUsersHavingContactInJurisdiction(new ContactReferenceDto(taskContextIndex.getUuid())));
+			break;
+		case EVENT:
+			availableUsers.addAll(getUsersHavingEventInJurisdiction(new EventReferenceDto(taskContextIndex.getUuid())));
+			break;
+		case TRAVEL_ENTRY:
+			availableUsers.addAll(getUsersHavingTravelEntryInJurisdiction(new TravelEntryReferenceDto(taskContextIndex.getUuid())));
+			break;
+		default:
+			availableUsers.addAll(getAllUserRefs(false));
+
+		}
+		return availableUsers;
+	}
+
+	public List<UserReferenceWithTaskNumbersDto> getAssignableUsersWithTaskNumbers(TaskContextIndex taskContextIndex) {
+
+		List<UserReferenceDto> availableUsers = getAssignableUsersBasedOnContext(taskContextIndex);
+		Map<String, Long> userTaskCounts =
+			taskFacade.getPendingTaskCountPerUser(availableUsers.stream().map(UserReferenceDto::getUuid).collect(Collectors.toList()));
+
+		return availableUsers.stream()
+			.map(userReference -> new UserReferenceWithTaskNumbersDto(userReference, userTaskCounts.get(userReference.getUuid())))
+			.collect(Collectors.toList());
+
 	}
 
 	@Override
