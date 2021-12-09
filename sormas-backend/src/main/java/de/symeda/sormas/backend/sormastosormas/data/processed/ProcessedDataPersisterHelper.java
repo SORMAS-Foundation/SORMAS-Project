@@ -65,7 +65,7 @@ public class ProcessedDataPersisterHelper {
 			this.shareInfoService = shareInfoService;
 		}
 
-		public <T extends HasUuid & SormasToSormasShareableDto> void apply(T entity, BiFunction<String, String, SormasToSormasShareInfo> findShareInfo) {
+		public <T extends SormasToSormasShareableDto> void apply(T entity, BiFunction<String, String, SormasToSormasShareInfo> findShareInfo) {
 			if (entity.getSormasToSormasOriginInfo() != null) {
 				entity.getSormasToSormasOriginInfo().setOwnershipHandedOver(false);
 			} else {
@@ -98,7 +98,7 @@ public class ProcessedDataPersisterHelper {
 			this.oriInfoFacade = originInfoFacade;
 		}
 
-		public <T extends HasUuid & SormasToSormasShareableDto> void apply(T entity, BiFunction<String, String, SormasToSormasShareInfo> findShareInfo) {
+		public <T extends SormasToSormasShareableDto> void apply(T entity, BiFunction<String, String, SormasToSormasShareInfo> findShareInfo) {
 			SormasToSormasShareInfo shareInfo = findShareInfo.apply(entity.getUuid(), originInfo.getOrganizationId());
 
 			if (shareInfo == null) {

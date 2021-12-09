@@ -30,6 +30,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -54,6 +55,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
@@ -91,7 +93,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 		Vaccination existingVaccination = dto.getUuid() != null ? vaccinationService.getByUuid(dto.getUuid()) : null;
 		VaccinationDto existingDto = toDto(existingVaccination);
-		Date currentVaccinationDate = existingVaccination != null ? existingVaccination.getVaccinationDate() : null;
+		Date oldVaccinationDate = existingVaccination != null ? existingVaccination.getVaccinationDate() : null;
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		restorePseudonymizedDto(dto, existingDto, existingVaccination, pseudonymizer);
@@ -103,7 +105,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 		updateVaccinationStatuses(
 			existingVaccination.getVaccinationDate(),
-			currentVaccinationDate,
+			oldVaccinationDate,
 			existingVaccination.getImmunization().getPerson().getId(),
 			existingVaccination.getImmunization().getDisease());
 
@@ -258,8 +260,11 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			.map(
 				v -> toVaccinationListEntryDto(
 					v,
-					VaccinationService.isVaccinationRelevant(caze, v),
-					I18nProperties.getString(Strings.messageVaccinationNotRelevantForCase)))
+					vaccinationService.isVaccinationRelevant(caze, v),
+					I18nProperties.getString(
+						v.getVaccinationDate() != null
+							? Strings.messageVaccinationNotRelevantForCase
+							: Strings.messageVaccinationNoDateNotRelevantForCase)))
 			.collect(Collectors.toList());
 	}
 
@@ -276,8 +281,11 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			.map(
 				v -> toVaccinationListEntryDto(
 					v,
-					VaccinationService.isVaccinationRelevant(contact, v),
-					I18nProperties.getString(Strings.messageVaccinationNotRelevantForContact)))
+					vaccinationService.isVaccinationRelevant(contact, v),
+					I18nProperties.getString(
+						v.getVaccinationDate() != null
+							? Strings.messageVaccinationNotRelevantForContact
+							: Strings.messageVaccinationNoDateNotRelevantForContact)))
 			.collect(Collectors.toList());
 	}
 
@@ -294,8 +302,11 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			.map(
 				v -> toVaccinationListEntryDto(
 					v,
-					VaccinationService.isVaccinationRelevant(eventParticipant.getEvent(), v),
-					I18nProperties.getString(Strings.messageVaccinationNotRelevantForEventParticipant)))
+					vaccinationService.isVaccinationRelevant(eventParticipant.getEvent(), v),
+					I18nProperties.getString(
+						v.getVaccinationDate() != null
+							? Strings.messageVaccinationNotRelevantForEventParticipant
+							: Strings.messageVaccinationNoDateNotRelevantForEventParticipant)))
 			.collect(Collectors.toList());
 	}
 
@@ -343,12 +354,60 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 	}
 
-	public void updateVaccinationStatuses(Date newVaccinationDate, Date currentVaccinationDate, Long personId, Disease disease) {
+	public void updateVaccinationStatuses(Date newVaccinationDate, Date oldVaccinationDate, Long personId, Disease disease) {
 
-		if (currentVaccinationDate == null || newVaccinationDate != currentVaccinationDate) {
+		if (oldVaccinationDate == null || newVaccinationDate != oldVaccinationDate) {
 			caseService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
 			contactService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
 			eventParticipantService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
+		}
+	}
+
+	public void updateVaccinationStatuses(Case caze) {
+		List<Immunization> casePersonImmunizations = immunizationService.getByPersonAndDisease(caze.getPerson().getUuid(), caze.getDisease(), true);
+
+		boolean hasValidVaccinations = casePersonImmunizations.stream()
+			.anyMatch(
+				immunization -> immunization.getVaccinations()
+					.stream()
+					.anyMatch(vaccination -> vaccinationService.isVaccinationRelevant(caze, vaccination)));
+
+		if (hasValidVaccinations) {
+			caze.setVaccinationStatus(VaccinationStatus.VACCINATED);
+		}
+	}
+
+	public void updateVaccinationStatuses(Contact contact) {
+		List<Immunization> contactPersonImmunizations =
+			immunizationService.getByPersonAndDisease(contact.getPerson().getUuid(), contact.getDisease(), true);
+
+		boolean hasValidVaccinations = contactPersonImmunizations.stream()
+			.anyMatch(
+				immunization -> immunization.getVaccinations()
+					.stream()
+					.anyMatch(vaccination -> vaccinationService.isVaccinationRelevant(contact, vaccination)));
+
+		if (hasValidVaccinations) {
+			contact.setVaccinationStatus(VaccinationStatus.VACCINATED);
+		}
+	}
+
+	public void updateVaccinationStatuses(EventParticipant eventParticipant) {
+		if (eventParticipant.getEvent().getDisease() == null) {
+			return;
+		}
+		List<Immunization> eventParticipantImmunizations =
+			immunizationService.getByPersonAndDisease(eventParticipant.getPerson().getUuid(), eventParticipant.getEvent().getDisease(), true);
+		Event event = eventParticipant.getEvent();
+
+		boolean hasValidVaccinations = eventParticipantImmunizations.stream()
+			.anyMatch(
+				immunization -> immunization.getVaccinations()
+					.stream()
+					.anyMatch(vaccination -> vaccinationService.isVaccinationRelevant(event, vaccination)));
+
+		if (hasValidVaccinations) {
+			eventParticipant.setVaccinationStatus(VaccinationStatus.VACCINATED);
 		}
 	}
 
