@@ -191,6 +191,12 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	public List<String> getAllUuids() {
+
+		return sampleService.getAllUuids();
+	}
+	
+	@Override
 	public List<SampleDto> getAllActiveSamplesAfter(Date date) {
 
 		User user = userService.getCurrentUser();
