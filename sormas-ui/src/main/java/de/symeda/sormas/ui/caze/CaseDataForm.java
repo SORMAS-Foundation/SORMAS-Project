@@ -992,14 +992,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			assignNewEpidNumberButton.setEnabled(true);
 		}
 		UserProvider userProvider = UserProvider.getCurrent();
-		// if ((UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) && (userProvider.getUser().getAssociatedCountry() != null)){
-		// 	CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getByUuid(caseUuid);
-		// 	if (caseDataDto != null){
-		// 		if (caseDataDto.getTransmitted() != YesNoUnknown.YES){
-		// 			setReadOnly(false, CaseDataDto.TRANSMITTED);
-		// 		}
-		// 	}
-		// }
+		if ((UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) && (userProvider.getUser().getAssociatedCountry() != null)){
+			CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getByUuid(caseUuid);
+			if (caseDataDto != null){
+				if (caseDataDto.getTransmitted() != YesNoUnknown.YES){
+					setReadOnly(false, CaseDataDto.TRANSMITTED);
+				}
+			}
+		}
 		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
 		setReadOnly(
 			!UserProvider.getCurrent().hasUserRight(UserRight.CASE_INVESTIGATE),
