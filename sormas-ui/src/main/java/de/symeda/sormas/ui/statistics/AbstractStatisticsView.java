@@ -53,11 +53,11 @@ public class AbstractStatisticsView extends AbstractSubNavigationView<Component>
 
 		String sormasStatsUrl = FacadeProvider.getConfigFacade().getSormasStatsUrl();
 		if (sormasStatsUrl != null) {
-			Link whatsNewLink = new Link(
+			Link sormasStatsLink = new Link(
 				I18nProperties.getCaption(Captions.statisticsOpenSormasStats),
 				new ExternalResource(sormasStatsUrl));
-			whatsNewLink.addStyleNames(CssStyles.LINK_BUTTON, CssStyles.LINK_BUTTON_PRIMARY);
-			this.addHeaderComponent(whatsNewLink);
+			sormasStatsLink.addStyleNames(CssStyles.LINK_BUTTON, CssStyles.LINK_BUTTON_PRIMARY);
+			this.addHeaderComponent(sormasStatsLink);
 		}
 	}
 }
