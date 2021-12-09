@@ -100,6 +100,7 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 			LabMessageIndexDto.PERSON_BIRTH_DATE,
 			LabMessageIndexDto.PERSON_POSTAL_CODE,
 			LabMessageIndexDto.STATUS,
+			LabMessageIndexDto.ASSIGNEE,
 			COLUMN_PROCESS,
 			COLUMN_DOWNLOAD);
 

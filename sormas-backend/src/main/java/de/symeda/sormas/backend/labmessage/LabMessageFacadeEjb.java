@@ -20,6 +20,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -57,6 +59,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -269,6 +272,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<LabMessageIndexDto> cq = cb.createQuery(LabMessageIndexDto.class);
 		Root<LabMessage> labMessage = cq.from(LabMessage.class);
+		Join<LabMessage, User> userJoin = labMessage.join(LabMessage.ASSIGNEE, JoinType.LEFT);
 
 		cq.multiselect(
 			labMessage.get(LabMessage.UUID),
@@ -283,7 +287,10 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			labMessage.get(LabMessage.PERSON_BIRTH_DATE_MM),
 			labMessage.get(LabMessage.PERSON_BIRTH_DATE_DD),
 			labMessage.get(LabMessage.PERSON_POSTAL_CODE),
-			labMessage.get(LabMessage.STATUS));
+			labMessage.get(LabMessage.STATUS),
+			userJoin.get(User.UUID),
+			userJoin.get(User.FIRST_NAME),
+			userJoin.get(User.LAST_NAME));
 
 		Predicate whereFilter = null;
 		if (criteria != null) {

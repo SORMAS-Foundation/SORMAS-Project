@@ -2285,6 +2285,7 @@ public interface Captions {
 	String TreatmentExport_caseUuid = "TreatmentExport.caseUuid";
 	String treatmentNewTreatment = "treatmentNewTreatment";
 	String treatmentOpenPrescription = "treatmentOpenPrescription";
+	String unassigned = "unassigned";
 	String unknown = "unknown";
 	String User = "User";
 	String User_active = "User.active";
