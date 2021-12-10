@@ -921,7 +921,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			} else {
 				// Fix bug when there is no filter that matches
 				// Add a default filter that always matches
-				return cb.isNull(contactPath.get(Contact.UUID));
+				return null;
 			}
 		}
 
@@ -966,9 +966,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		// Fix bug when there is no filter that matches
 		// Add a default filter that always matches
-		if(filter == null){
-			filter = cb.isNull(contactPath.get(Contact.UUID));
-		}
+		// if(filter == null){
+		// 	filter = cb.isNull(contactPath.get(Contact.UUID));
+		// }
 		return filter;
 	}
 
