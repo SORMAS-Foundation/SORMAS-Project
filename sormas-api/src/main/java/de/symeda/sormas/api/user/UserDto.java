@@ -54,12 +54,12 @@ public class UserDto extends EntityDto {
 	public static final String PHONE = "phone";
 	public static final String ADDRESS = "address";
 	public static final String USER_ROLES = "userRoles";
-	public static final String USERCOUNTRY = "userCountry";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
+	public static final String ASSOCIATED_COUNTRY = "associatedCountry";
 	public static final String LABORATORY = "laboratory";
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String LIMITED_DISEASE = "limitedDisease";
@@ -84,7 +84,6 @@ public class UserDto extends EntityDto {
 
 	private Set<UserRole> userRoles;
 
-	private CountryReferenceDto userCountry;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	// community of community informant
@@ -97,6 +96,8 @@ public class UserDto extends EntityDto {
 	private PointOfEntryReferenceDto pointOfEntry;
 
 	private UserReferenceDto associatedOfficer;
+
+	private CountryReferenceDto associatedCountry;
 
 	private Disease limitedDisease;
 
@@ -192,20 +193,20 @@ public class UserDto extends EntityDto {
 		this.associatedOfficer = associatedOfficer;
 	}
 
+	public CountryReferenceDto getAssociatedCountry() {
+		return associatedCountry;
+	}
+
+	public void setAssociatedCountry(CountryReferenceDto associatedCountry) {
+		this.associatedCountry = associatedCountry;
+	}
+
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
 
 	public void setRegion(RegionReferenceDto region) {
 		this.region = region;
-	}
-
-	public CountryReferenceDto getUserCountry() {
-		return userCountry;
-	}
-
-	public void setUserCountry(CountryReferenceDto userCountry) {
-		this.userCountry = userCountry;
 	}
 
 	public DistrictReferenceDto getDistrict() {

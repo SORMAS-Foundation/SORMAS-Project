@@ -72,7 +72,6 @@ public class User extends AbstractDomainObject {
 	public static final String USER_EMAIL = "userEmail";
 	public static final String PHONE = "phone";
 	public static final String ADDRESS = "address";
-	public static final String USERCOUNTRY = "userCountry";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -81,6 +80,7 @@ public class User extends AbstractDomainObject {
 	public static final String LABORATORY = "laboratory";
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
+	public static final String ASSOCIATED_COUNTRY = "associatedCountry";
 	public static final String LANGUAGE = "language";
 	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";
 
@@ -98,7 +98,6 @@ public class User extends AbstractDomainObject {
 
 	private Set<UserRole> userRoles;
 
-	private Country userCountry;
 	private Region region;
 	private District district;
 	// community of community informant
@@ -111,6 +110,8 @@ public class User extends AbstractDomainObject {
 	private PointOfEntry pointOfEntry;
 
 	private User associatedOfficer;
+
+	private Country associatedCountry;
 
 	private Disease limitedDisease;
 
@@ -212,15 +213,6 @@ public class User extends AbstractDomainObject {
 		this.region = region;
 	}
 
-	@ManyToOne(cascade = {})
-	public Country getUserCountry() {
-		return userCountry;
-	}
-
-	public void setUserCountry(Country userCountry) {
-		this.userCountry = userCountry;
-	}
-
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name = TABLE_NAME_USERROLES,
@@ -244,6 +236,15 @@ public class User extends AbstractDomainObject {
 
 	public void setAssociatedOfficer(User associatedOfficer) {
 		this.associatedOfficer = associatedOfficer;
+	}
+
+	@ManyToOne(cascade = {})
+	public Country getAssociatedCountry() {
+		return associatedCountry;
+	}
+
+	public void setAssociatedCountry(Country associatedCountry) {
+		this.associatedCountry = associatedCountry;
 	}
 
 	@Override

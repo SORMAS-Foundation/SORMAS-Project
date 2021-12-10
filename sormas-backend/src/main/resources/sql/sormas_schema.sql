@@ -8756,9 +8756,9 @@ ALTER TABLE cases ADD COLUMN transmitted varchar(255);
 ALTER TABLE cases_history ADD COLUMN transmitted varchar(255);
 INSERT INTO schema_version (version_number, comment) VALUES (421, 'New field transmitted #19336');
 
-INSERT INTO schema_version (version_number, comment) VALUES (422, 'New field country #19336');
-ALTER TABLE users ADD COLUMN country_id bigint;
-ALTER TABLE users_history ADD COLUMN country_id bigint;
-ALTER TABLE users ADD CONSTRAINT fk_users_country_id FOREIGN KEY (country_id) REFERENCES country(id);
+INSERT INTO schema_version (version_number, comment) VALUES (423, 'New field Associatedcountry #19336');
+ALTER TABLE users ADD COLUMN associatedcountry_id bigint;
+ALTER TABLE users_history ADD COLUMN associatedcountry_id bigint;
+ALTER TABLE users ADD CONSTRAINT fk_users_associatedcountry_id FOREIGN KEY (associatedcountry_id) REFERENCES country(id);
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

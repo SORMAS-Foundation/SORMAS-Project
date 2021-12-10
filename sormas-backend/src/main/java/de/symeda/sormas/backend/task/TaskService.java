@@ -63,6 +63,8 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventQueryContext;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
@@ -148,6 +150,16 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 		// National users can access all tasks in the system that are assigned in their jurisdiction
 		User currentUser = getCurrentUser();
+		final Country country = currentUser.getAssociatedCountry();
+		if (currentUser.hasAnyUserRole(UserRole.NATIONAL_OBSERVER)){
+			if (country == null) {
+				// Let's filter only tasks fot transmitted cases
+				assigneeFilter = CriteriaBuilderHelper.and(
+					cb,
+					assigneeFilter,
+					cb.equal(taskPath.get(Task.CAZE).get(Case.TRANSMITTED), YesNoUnknown.YES));
+			}
+		}
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (currentUser == null
 			|| (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
@@ -176,6 +188,16 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			filter = cb.or(filter, travelEntryFilter);
 		}
 
+		if (currentUser.hasAnyUserRole(UserRole.NATIONAL_OBSERVER)){
+			if (country == null) {
+				// Let's filter only tasks fot transmitted cases
+				filter = CriteriaBuilderHelper.and(
+					cb,
+					filter,
+					cb.equal(taskPath.get(Task.CAZE).get(Case.TRANSMITTED), YesNoUnknown.YES));
+			}
+		}
+		
 		return CriteriaBuilderHelper.and(cb, filter, assigneeFilter);
 	}
 
