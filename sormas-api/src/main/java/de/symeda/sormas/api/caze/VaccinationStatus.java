@@ -22,9 +22,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 public enum VaccinationStatus {
 
 	VACCINATED,
+	IN_PROGRESS,
 	UNVACCINATED,
-	UNKNOWN,
-	IN_PROGRESS;
+	UNKNOWN;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
