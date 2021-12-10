@@ -15,18 +15,18 @@
 
 package de.symeda.sormas.app.rest;
 
-import android.content.Context;
-import android.os.AsyncTask;
-import android.util.Log;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.AddTrace;
 import com.google.firebase.perf.metrics.Trace;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
@@ -97,6 +97,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 	@Override
 	protected Void doInBackground(Void... params) {
+
 		if (!RetroProvider.isConnected()) {
 			return null;
 		}
@@ -106,24 +107,28 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		}
 
 		try {
-			Trace syncModeTrace = null;
+			Trace syncModeTrace;
+
 			switch (syncMode) {
 			case Changes:
 				syncModeTrace = FirebasePerformance.getInstance().newTrace("syncModeChangesTrace");
 				syncModeTrace.start();
 
-				// infrastructure always has to be pulled - otherwise referenced data may be lost (e.g. #586)
+				// Prioritize pushing new data
+				pushNewData(true);
+				// Infrastructure always has to be pulled - otherwise referenced data may be lost (e.g. #586)
 				pullInfrastructure();
-				// pull and remove deleted entities when the last time this has been done is more than 24 hours ago
+				// Pull and remove deleted entities when the last time this has been done is more than 24 hours ago
 				if (ConfigProvider.getLastDeletedSyncDate() == null
 					|| DateHelper.getFullDaysBetween(ConfigProvider.getLastDeletedSyncDate(), new Date()) >= 1) {
 					pullAndRemoveDeletedUuidsSince(ConfigProvider.getLastDeletedSyncDate());
 				}
-				// pull and remove archived entities when the last time this has been done is more than 24 hours ago
+				// Pull and remove archived entities when the last time this has been done is more than 24 hours ago
 				if (ConfigProvider.getLastArchivedSyncDate() == null
 					|| DateHelper.getFullDaysBetween(ConfigProvider.getLastArchivedSyncDate(), new Date()) >= 1) {
 					pullAndRemoveArchivedUuidsSince(ConfigProvider.getLastArchivedSyncDate());
 				}
+				// Pull changed data and push existing data that has been changed on the mobile device
 				synchronizeChangedData();
 
 				syncModeTrace.stop();
@@ -132,6 +137,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				syncModeTrace = FirebasePerformance.getInstance().newTrace("syncModeCompleteTrace");
 				syncModeTrace.start();
 
+				pushNewData(false);
 				pullInfrastructure(); // do before missing, because we may have a completely empty database
 				pullMissingAndDeleteInvalidInfrastructure();
 				pushNewPullMissingAndDeleteInvalidData();
@@ -238,6 +244,82 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			|| DatabaseHelper.getTreatmentDao().isAnyModified()
 			|| DatabaseHelper.getClinicalVisitDao().isAnyModified()
 			|| hasUnsynchronizedCampaignData;
+	}
+
+	@AddTrace(name = "pushNewDataTrace")
+	private void pushNewData(boolean pullChanges)
+		throws ServerCommunicationException, ServerConnectionException, DaoException, NoConnectionException {
+
+		PersonDtoHelper personDtoHelper = new PersonDtoHelper();
+		CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
+		ImmunizationDtoHelper immunizationDtoHelper = new ImmunizationDtoHelper();
+		EventDtoHelper eventDtoHelper = new EventDtoHelper();
+		EventParticipantDtoHelper eventParticipantDtoHelper = new EventParticipantDtoHelper();
+		SampleDtoHelper sampleDtoHelper = new SampleDtoHelper();
+		PathogenTestDtoHelper pathogenTestDtoHelper = new PathogenTestDtoHelper();
+		AdditionalTestDtoHelper additionalTestDtoHelper = new AdditionalTestDtoHelper();
+		ContactDtoHelper contactDtoHelper = new ContactDtoHelper();
+		VisitDtoHelper visitDtoHelper = new VisitDtoHelper();
+		TaskDtoHelper taskDtoHelper = new TaskDtoHelper();
+		WeeklyReportDtoHelper weeklyReportDtoHelper = new WeeklyReportDtoHelper();
+		AggregateReportDtoHelper aggregateReportDtoHelper = new AggregateReportDtoHelper();
+		PrescriptionDtoHelper prescriptionDtoHelper = new PrescriptionDtoHelper();
+		TreatmentDtoHelper treatmentDtoHelper = new TreatmentDtoHelper();
+		ClinicalVisitDtoHelper clinicalVisitDtoHelper = new ClinicalVisitDtoHelper();
+
+		boolean personsNeedPull = personDtoHelper.pushEntities(true);
+		boolean casesNeedPull = caseDtoHelper.pushEntities(true);
+		boolean immunizationsNeedPull = immunizationDtoHelper.pushEntities(true);
+		boolean eventsNeedPull = eventDtoHelper.pushEntities(true);
+		boolean eventParticipantsNeedPull = eventParticipantDtoHelper.pushEntities(true);
+		boolean samplesNeedPull = sampleDtoHelper.pushEntities(true);
+		boolean pathogenTestsNeedPull = pathogenTestDtoHelper.pushEntities(true);
+		boolean additionalTestsNeedPull = additionalTestDtoHelper.pushEntities(true);
+		boolean contactsNeedPull = contactDtoHelper.pushEntities(true);
+		boolean visitsNeedPull = visitDtoHelper.pushEntities(true);
+		boolean tasksNeedPull = taskDtoHelper.pushEntities(true);
+		boolean weeklyReportsNeedPull = weeklyReportDtoHelper.pushEntities(true);
+		boolean aggregateReportsNeedPull = aggregateReportDtoHelper.pushEntities(true);
+		boolean prescriptionsNeedPull = prescriptionDtoHelper.pushEntities(true);
+		boolean treatmentsNeedPull = treatmentDtoHelper.pushEntities(true);
+		boolean clinicalVisitsNeedPull = clinicalVisitDtoHelper.pushEntities(true);
+
+		if (pullChanges) {
+			casesNeedPull |= clinicalVisitsNeedPull;
+
+			if (personsNeedPull)
+				personDtoHelper.pullEntities(true);
+			if (casesNeedPull)
+				caseDtoHelper.pullEntities(true);
+			if (immunizationsNeedPull)
+				immunizationDtoHelper.pullEntities(true);
+			if (eventsNeedPull)
+				eventDtoHelper.pullEntities(true);
+			if (eventParticipantsNeedPull)
+				eventParticipantDtoHelper.pullEntities(true);
+			if (samplesNeedPull)
+				sampleDtoHelper.pullEntities(true);
+			if (pathogenTestsNeedPull)
+				pathogenTestDtoHelper.pullEntities(true);
+			if (additionalTestsNeedPull)
+				additionalTestDtoHelper.pullEntities(true);
+			if (contactsNeedPull)
+				contactDtoHelper.pullEntities(true);
+			if (visitsNeedPull)
+				visitDtoHelper.pullEntities(true);
+			if (tasksNeedPull)
+				taskDtoHelper.pullEntities(true);
+			if (weeklyReportsNeedPull)
+				weeklyReportDtoHelper.pullEntities(true);
+			if (aggregateReportsNeedPull)
+				aggregateReportDtoHelper.pullEntities(true);
+			if (prescriptionsNeedPull)
+				prescriptionDtoHelper.pullEntities(true);
+			if (treatmentsNeedPull)
+				treatmentDtoHelper.pullEntities(true);
+			if (clinicalVisitsNeedPull)
+				clinicalVisitDtoHelper.pullEntities(true);
+		}
 	}
 
 	@AddTrace(name = "synchronizeChangedDataTrace")
@@ -497,7 +579,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			}
 
 			// Immunization
-			List<String> immunizationUuids = executeUuidCall(RetroProvider.getImmunizationFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+			List<String> immunizationUuids =
+				executeUuidCall(RetroProvider.getImmunizationFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
 			for (String immunizationUuid : immunizationUuids) {
 				DatabaseHelper.getImmunizationDao().deleteImmunizationAndAllDependingEntities(immunizationUuid);
 			}
@@ -544,22 +627,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// first push everything that has been CREATED by the user - otherwise this data my lose it's references to other entities.
 		// Example: Case is created using an existing person, meanwhile user loses access to the person
-		new PersonDtoHelper().pushEntities(true);
-		new CaseDtoHelper().pushEntities(true);
-		new ImmunizationDtoHelper().pushEntities(true);
-		new EventDtoHelper().pushEntities(true);
-		new EventParticipantDtoHelper().pushEntities(true);
-		new SampleDtoHelper().pushEntities(true);
-		new PathogenTestDtoHelper().pushEntities(true);
-		new AdditionalTestDtoHelper().pushEntities(true);
-		new ContactDtoHelper().pushEntities(true);
-		new VisitDtoHelper().pushEntities(true);
-		new TaskDtoHelper().pushEntities(true);
-		new WeeklyReportDtoHelper().pushEntities(true);
-		new AggregateReportDtoHelper().pushEntities(true);
-		new PrescriptionDtoHelper().pushEntities(true);
-		new TreatmentDtoHelper().pushEntities(true);
-		new ClinicalVisitDtoHelper().pushEntities(true);
+		pushNewData(false);
 
 		// weekly reports and entries
 		List<String> weeklyReportUuids = executeUuidCall(RetroProvider.getWeeklyReportFacade().pullUuids());
@@ -762,8 +830,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		Changes,
 		Complete,
 		/**
-		 * Also repulls all non-infrastructure data and users
-		 * Use to handle conflict states resulting out of bugs
+		 * Also repulls all non-infrastructure data and users.
+		 * Use to handle conflict states resulting out of bugs.
 		 */
 		CompleteAndRepull,
 	}
