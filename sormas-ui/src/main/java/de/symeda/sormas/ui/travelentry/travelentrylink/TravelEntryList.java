@@ -71,7 +71,8 @@ public class TravelEntryList extends PaginationList<TravelEntryListEntryDto> {
 
 	private void addEditButton(TravelEntryListEntry listEntry) {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_EDIT)) {
-			listEntry.addEditListener(
+			listEntry.addEditButton(
+				"edit-travelEntry-" + listEntry.getTravelEntry().getUuid(),
 				(Button.ClickListener) event -> ControllerProvider.getTravelEntryController()
 					.navigateToTravelEntry(listEntry.getTravelEntry().getUuid()));
 		}

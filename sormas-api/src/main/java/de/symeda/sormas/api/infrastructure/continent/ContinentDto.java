@@ -2,12 +2,12 @@ package de.symeda.sormas.api.infrastructure.continent;
 
 import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
-public class ContinentDto extends EntityDto {
+public class ContinentDto extends InfrastructureDto {
 
 	public static final String I18N_PREFIX = "Continent";
 	public static final String DEFAULT_NAME = "defaultName";

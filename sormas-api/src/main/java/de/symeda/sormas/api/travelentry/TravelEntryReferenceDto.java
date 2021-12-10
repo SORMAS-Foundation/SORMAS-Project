@@ -12,6 +12,10 @@ public class TravelEntryReferenceDto extends ReferenceDto {
 		this.externalId = externalId;
 	}
 
+	public TravelEntryReferenceDto(String uuid) {
+		super(uuid);
+	}
+
 	public String getExternalId() {
 		return externalId;
 	}
