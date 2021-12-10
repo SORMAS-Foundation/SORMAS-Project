@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.outbreak;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -198,6 +199,39 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 		}
 
 		return filter;
+	}
+
+	public Map<Disease, District> getOutbreakDistrictNameByDisease(OutbreakCriteria criteria, User user) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Outbreak> outbreak = cq.from(Outbreak.class);
+		Join<Outbreak, District> districtJoin = outbreak.join(Case.DISTRICT, JoinType.LEFT);
+
+		Predicate filter = this.buildCriteriaFilter(criteria, cb, outbreak);
+		filter = and(cb, filter, createUserFilter(cb, cq, outbreak));
+
+		if (filter != null)
+			cq.where(filter);
+
+
+		Expression<Number> maxReportDate = cb.max(outbreak.get(Outbreak.REPORT_DATE));
+		cq.multiselect(outbreak.get(Outbreak.DISEASE), districtJoin, maxReportDate);
+		cq.groupBy(outbreak.get(Outbreak.DISEASE), districtJoin);
+		cq.orderBy(cb.desc(maxReportDate));
+
+		List<Object[]> results = em.createQuery(cq).getResultList();
+
+		Map<Disease, District> outbreaksDistrict = new HashMap<>(); //results.stream().collect(Collectors.toMap(e -> (Disease) e[0], e -> (String) e[1]));
+
+		for (Object[] e : results) {
+			Disease disease = (Disease) e[0];
+			if (!outbreaksDistrict.containsKey(disease)) {
+				District district = (District) e[1];
+				outbreaksDistrict.put(disease, district);
+			}
+		}
+		return outbreaksDistrict;
 	}
 
 	public Map<Disease, Long> getOutbreakDistrictCountByDisease(OutbreakCriteria criteria, User user) {

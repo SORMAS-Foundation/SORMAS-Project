@@ -38,6 +38,9 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb;
+import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -196,6 +199,12 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	@RightsAllowed({
 		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
 		UserRight._DASHBOARD_CONTACT_VIEW })
+	public Map<Disease, District> getOutbreakDistrictNameByDisease(OutbreakCriteria criteria) {
+		User user = userService.getCurrentUser();
+
+		return outbreakService.getOutbreakDistrictNameByDisease(criteria, user);
+	}
+
 	public Map<Disease, Long> getOutbreakDistrictCountByDisease(OutbreakCriteria criteria) {
 		User user = userService.getCurrentUser();
 
