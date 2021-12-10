@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -42,6 +43,8 @@ import de.symeda.sormas.api.dashboard.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
+
+import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 
 // FIXME: 06/08/2020 this should be refactored into two specific data providers for case and contact dashboards
@@ -79,6 +82,9 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	private DiseaseBurdenDto diseaseBurdenDetail;
 	private Map<PathogenTestResultType, Long> testResultCountByResultType;
 
+	private List<DashboardTestResultDto> testResults = new ArrayList<>();
+	private List<DashboardTestResultDto> previousTestResults = new ArrayList<>();
+	private List<RegionDto> regionDtoList;
 
 	public void refreshData() {
 
@@ -96,8 +102,6 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 		return new DashboardCriteria();
 	}
 	public void refreshDiseaseData() {
-		System.out.println("Dashboard data provider on refreshDiseaseData=:" + disease);
-
 		setDiseaseBurdenDetail(
 			FacadeProvider.getDiseaseFacade().getDiseaseForDashboard(region, district, disease, fromDate, toDate, previousFromDate, previousToDate));
 
@@ -231,14 +235,12 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 			caseCriteria.newCaseDateBetween(previousFromDate, previousToDate, NewCaseDateType.MOST_RELEVANT);
 			setPreviousCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria));
 
-			if (getDashboardType() != DashboardType.CONTACTS) {
-				if (getCases().size() > 0) {
-					setTestResultCountByResultType(
-						FacadeProvider.getSampleFacade()
-							.getNewTestResultCountByResultType(getCases().stream().map(c -> c.getId()).collect(Collectors.toList())));
-				} else {
-					setTestResultCountByResultType(new HashMap<>());
-				}
+			if (getCases().size() > 0) {
+				setTestResultCountByResultType(
+					FacadeProvider.getSampleFacade()
+						.getNewTestResultCountByResultType(getCases().stream().map(c -> c.getId()).collect(Collectors.toList())));
+			} else {
+				setTestResultCountByResultType(new HashMap<>());
 			}
 		}
 
@@ -332,8 +334,6 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	}
 
 	public List<DiseaseBurdenDto> getDiseasesBurden() {
-		System.out.println("DashboardDataProvider am i getting from getDiseasesBurden(): " + diseasesBurden);
-
 		return diseasesBurden;
 	}
 
@@ -342,7 +342,6 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	}
 
 	public DiseaseBurdenDto getDiseaseBurdenDetail() {
-		System.out.println("What am i getting from getDiseaseBurdenDetail(): " + diseaseBurdenDetail);
 		return diseaseBurdenDetail;
 	}
 
@@ -431,5 +430,12 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 
 	public void setCaseWithReferenceDefinitionFulfilledCount(Long caseWithReferenceDefinitionFulfilledCount) {
 		this.caseWithReferenceDefinitionFulfilledCount = caseWithReferenceDefinitionFulfilledCount;
+	}
+	public List<RegionDto> getRegionDtoList() {
+		return regionDtoList;
+	}
+
+	public void setRegionDtoList(List<RegionDto> regionDtoList) {
+		this.regionDtoList = regionDtoList;
 	}
 }
