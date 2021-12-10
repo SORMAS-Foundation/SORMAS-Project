@@ -1077,13 +1077,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			if (country == null){
 				// Let's filter only transmitted cases for this user
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(casePath.get(Case.TRANSMITTED), YesNoUnknown.YES));
-			}
-		}
-		if (country != null) {
-			filter = CriteriaBuilderHelper.and(
+			}else{
+				filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.equal(casePath.get(Case.RESPONSIBLE_REGION).get(Region.COUNTRY), country.getId()));
+			}
 		}
 
 		// only show cases of a specific disease if a limited disease is set
