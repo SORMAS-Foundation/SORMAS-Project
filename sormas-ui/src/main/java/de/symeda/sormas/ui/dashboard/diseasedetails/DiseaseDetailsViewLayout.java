@@ -4,7 +4,6 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
@@ -22,7 +21,7 @@ public class DiseaseDetailsViewLayout extends CustomLayout {
 
 	private final DashboardDataProvider dashboardDataProvider;
 	private DiseaseDetailsComponent diseaseDetailsComponent;
-	private RegionalDiseaseBurdenGrid regionalDiseaseBurdenGrid;
+	private de.symeda.sormas.ui.dashboard.diseasedetails.RegionalDiseaseBurdenGrid regionalDiseaseBurdenGrid;
 
 	public DiseaseDetailsViewLayout(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
@@ -34,7 +33,7 @@ public class DiseaseDetailsViewLayout extends CustomLayout {
 //				NOTE span is width size, offset is margin left
 
 		diseaseDetailsComponent = new DiseaseDetailsComponent(dashboardDataProvider);
-		regionalDiseaseBurdenGrid = new RegionalDiseaseBurdenGrid(dashboardDataProvider);
+		regionalDiseaseBurdenGrid = new de.symeda.sormas.ui.dashboard.diseasedetails.RegionalDiseaseBurdenGrid(dashboardDataProvider);
 		reload();
 	}
 

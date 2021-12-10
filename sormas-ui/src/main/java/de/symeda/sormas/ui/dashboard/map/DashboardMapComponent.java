@@ -17,29 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.map;
 
+import static de.symeda.sormas.api.i18n.Captions.UserRole;
 import static java.util.Objects.nonNull;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.AbstractOrderedLayout;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.OptionGroup;
@@ -57,6 +46,7 @@ import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.geo.GeoLatLon;
+import de.symeda.sormas.api.geo.GeoShapeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -66,16 +56,16 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardType;
-import de.symeda.sormas.ui.map.LeafletMapUtil;
-import de.symeda.sormas.ui.map.LeafletMarker;
-import de.symeda.sormas.ui.map.LeafletPolygon;
-import de.symeda.sormas.ui.map.MarkerIcon;
+import de.symeda.sormas.ui.map.*;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -126,6 +116,46 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE ? Strings.headingCaseStatusMap : Strings.headingContactMap,
 			dashboardDataProvider,
 			null);
+	
+		//this.dashboardDataProvider = dashboardDataProvider;
+
+		setMargin(false);
+		setSpacing(false);
+		setSizeFull();
+
+		map = new LeafletMap();
+
+		map.setSizeFull();
+		map.addMarkerClickListener(event -> onMarkerClicked(event.getGroupId(), event.getMarkerIndex()));
+
+		{
+
+			GeoShapeProvider geoShapeProvider = FacadeProvider.getGeoShapeProvider();
+
+			final GeoLatLon mapCenter;
+			//if (UserProvider.getCurrent().hasAnyUserRole(DefaultUserRole.NATIONAL_USER, DefaultUserRole.NATIONAL_CLINICIAN, DefaultUserRole.NATIONAL_OBSERVER)) {
+				mapCenter = geoShapeProvider.getCenterOfAllRegions();
+
+			//} else {
+				UserDto user = UserProvider.getCurrent().getUser();
+
+//				if (user.getRegion() != null) {
+//					mapCenter = geoShapeProvider.getCenterOfRegion(user.getRegion());
+//				} else {
+//					mapCenter = geoShapeProvider.getCenterOfAllRegions();
+//				}
+		//	}
+
+			GeoLatLon center = Optional.ofNullable(mapCenter).orElseGet(FacadeProvider.getConfigFacade()::getCountryCenter);
+
+			if (center == null || (center.getLat() == 0.0 && center.getLon() == 0)) {
+				center = new GeoLatLon(8.134, 1.423);
+			}
+			map.setCenter(center);
+		}
+
+		map.setZoom(FacadeProvider.getConfigFacade().getMapZoom());
+
 	}
 
 	@Override
@@ -137,7 +167,8 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			showEvents = false;
 			showConfirmedContacts = true;
 			showUnconfirmedContacts = true;
-		} else if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
+		}
+		else if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
 			showCases = false;
 			caseClassificationOption = MapCaseClassificationOption.ALL_CASES;
 			showContacts = true;
@@ -146,6 +177,15 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			showUnconfirmedContacts = true;
 		}
 
+		else if (dashboardDataProvider.getDashboardType() == DashboardType.DISEASE) {
+			map.setZoom(6);
+			showCases = true;
+			caseClassificationOption = MapCaseClassificationOption.ALL_CASES;
+			showContacts = false;
+			showEvents = false;
+			showConfirmedContacts = true;
+			showUnconfirmedContacts = true;
+		}
 		hideOtherCountries = false;
 		showCurrentEpiSituation = false;
 
@@ -399,6 +439,47 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 		});
 		layersLayout.addComponent(showCurrentEpiSituationCB);
 	}
+
+	private HorizontalLayout createHeader() {
+		HorizontalLayout mapHeaderLayout = new HorizontalLayout();
+		mapHeaderLayout.setWidth(100, Unit.PERCENTAGE);
+		mapHeaderLayout.setSpacing(true);
+		CssStyles.style(mapHeaderLayout, CssStyles.VSPACE_4);
+
+		Label mapLabel = new Label();
+		if (dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE) {
+			mapLabel.setValue(I18nProperties.getString(Strings.headingCaseStatusMap));
+			CssStyles.style(mapLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+		}else if (dashboardDataProvider.getDashboardType() == DashboardType.DISEASE) {
+			mapLabel.setValue(I18nProperties.getCaption(Captions.diseaseDetailMap));
+			CssStyles.style(mapLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_NONE);
+		}
+		else {
+			mapLabel.setValue(I18nProperties.getString(Strings.headingContactMap));
+			CssStyles.style(mapLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+		}
+		mapLabel.setSizeUndefined();
+
+		mapHeaderLayout.addComponent(mapLabel);
+		mapHeaderLayout.setComponentAlignment(mapLabel, Alignment.BOTTOM_LEFT);
+		mapHeaderLayout.setExpandRatio(mapLabel, 1);
+
+		// "Expand" and "Collapse" buttons
+		Button expandMapButton =
+			ButtonHelper.createIconButtonWithCaption("expandMap", "", VaadinIcons.EXPAND, null, CssStyles.BUTTON_SUBTLE, CssStyles.VSPACE_NONE);
+		Button collapseMapButton =
+			ButtonHelper.createIconButtonWithCaption("collapseMap", "", VaadinIcons.COMPRESS, null, CssStyles.BUTTON_SUBTLE, CssStyles.VSPACE_NONE);
+
+		expandMapButton.addClickListener(e -> {
+			externalExpandListener.accept(true);
+			mapHeaderLayout.removeComponent(expandMapButton);
+			mapHeaderLayout.addComponent(collapseMapButton);
+			mapHeaderLayout.setComponentAlignment(collapseMapButton, Alignment.MIDDLE_RIGHT);
+		});
+
+
+        return mapHeaderLayout;
+    }
 
 	@Override
 	protected List<Component> getLegendComponents() {
