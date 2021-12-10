@@ -40,12 +40,14 @@ public class DiseaseBurdenDto implements Serializable {
 	public static final String LAST_REPORTED_DISTRICT_NAME = "lastReportedDistrictName";
 
 	//Regional specific Disease Details
+	public static final String CASES_TOTAL = "total";
 	public static final String CASES_REGION = "region";
-	public static final String CASES_ACTIVE_CASE = "caseActiveCases";
-	public static final String CASES_RECOVERED_CASES = "caseRecoveredCase";
-	public static final String CASES_DEATH_CASES = "caseDeathCase";
+	public static final String ACTIVE_CASE = "activeCases";
+	public static final String RECOVERED_CASES = "recovered";
+	public static final String DEATH = "deaths";
 
 	private Disease disease;
+	private String total;
 	private Long caseCount;
 	private Long previousCaseCount;
 	private Long eventCount;
@@ -56,41 +58,28 @@ public class DiseaseBurdenDto implements Serializable {
 	private Integer cfr;
 	private String lastReportedDistrict;
 	private String outbreakDistrict;
-	private Integer death;
+	private String deaths;
 
 	private RegionDto region;
-	private Long caseRecoveredCase;
-	private Long caseActiveCases;
-
-	public DiseaseBurdenDto(
-		Disease disease,
-		Long caseCount,
-		Long previousCaseCount,
-		Long eventCount,
-		Long outbreakDistrictCount,
-		Long caseDeathCount,
-		String lastReportedDistrictName,
-		Integer cfr,
-		String lastReportedDistrict,
-		String outbreakDistrict,
-		Integer death) {
-
-		this.disease = disease;
-		this.caseCount = caseCount;
-		this.previousCaseCount = previousCaseCount;
-		this.eventCount = eventCount;
-		this.outbreakDistrictCount = outbreakDistrictCount;
-		this.caseDeathCount = caseDeathCount;
-		this.lastReportedDistrictName = lastReportedDistrictName;
-
-		this.cfr = cfr;
-		this.lastReportedDistrict = lastReportedDistrict;
-		this.outbreakDistrict = outbreakDistrict;
-		this.death = death;
-	}
+	private String recovered;
+	private String activeCases;
 
 	public DiseaseBurdenDto(
 			RegionDto regionDto,
+			String total,
+			String activeCases,
+			String recovered,
+			String deaths) {
+
+		this.region = regionDto;
+		this.total = total;
+		this.activeCases = activeCases;
+		this.recovered = recovered;
+		this.deaths = deaths;
+	}
+
+
+	public DiseaseBurdenDto(
 			Disease disease,
 			Long caseCount,
 			Long previousCaseCount,
@@ -98,12 +87,8 @@ public class DiseaseBurdenDto implements Serializable {
 			Long outbreakDistrictCount,
 			Long caseDeathCount,
 			String lastReportedDistrictName,
-			Integer cfr,
-			String lastReportedDistrict,
-			String outbreakDistrict,
-			Integer death) {
+			String outbreakDistrict) {
 
-		this.region = regionDto;
 		this.disease = disease;
 		this.caseCount = caseCount;
 		this.previousCaseCount = previousCaseCount;
@@ -111,11 +96,7 @@ public class DiseaseBurdenDto implements Serializable {
 		this.outbreakDistrictCount = outbreakDistrictCount;
 		this.caseDeathCount = caseDeathCount;
 		this.lastReportedDistrictName = lastReportedDistrictName;
-
-		this.cfr = cfr;
-		this.lastReportedDistrict = lastReportedDistrict;
 		this.outbreakDistrict = outbreakDistrict;
-		this.death = death;
 	}
 
 	public DiseaseBurdenDto(
@@ -244,12 +225,12 @@ public class DiseaseBurdenDto implements Serializable {
 		this.outbreakDistrict = outbreakDistrict;
 	}
 
-	public Integer getDeath() {
-		return death;
+	public String getDeaths() {
+		return deaths;
 	}
 
-	public void setDeath(Integer death) {
-		this.death = death;
+	public void setDeaths(String deaths) {
+		this.deaths = deaths;
 	}
 
 	public RegionDto getRegion() {
@@ -260,19 +241,27 @@ public class DiseaseBurdenDto implements Serializable {
 		this.region = region;
 	}
 
-	public Long getCaseRecoveredCase() {
-		return caseRecoveredCase;
+	public String getRecovered() {
+		return recovered;
 	}
 
-	public void setCaseRecoveredCase(Long caseRecoveredCase) {
-		this.caseRecoveredCase = caseRecoveredCase;
+	public void setRecovered(String recovered) {
+		this.recovered = recovered;
 	}
 
-	public Long getCaseActiveCases() {
-		return caseActiveCases;
+	public String getActiveCases() {
+		return activeCases;
 	}
 
-	public void setCaseActiveCases(Long caseActiveCases) {
-		this.caseActiveCases = caseActiveCases;
+	public void setActiveCases(String activeCases) {
+		this.activeCases = activeCases;
+	}
+
+	public String getTotal() {
+		return total;
+	}
+
+	public void setTotal(String total) {
+		this.total = total;
 	}
 }
