@@ -7922,6 +7922,8 @@ INSERT INTO schema_version (version_number, comment) VALUES (405, 'Vaccination d
 /* Vaccination refactoring */
 /* Step 1: Create a temporary table containing the latest vaccination information for each disease of each person */
 DROP TABLE IF EXISTS tmp_vaccinated_entities;
+DROP TABLE IF EXISTS tmp_healthconditions;
+CREATE TEMP TABLE tmp_healthconditions (LIKE healthconditions);
 CREATE TEMP TABLE tmp_vaccinated_entities AS
 (
     SELECT DISTINCT ON (person.id, cases.disease)
@@ -8471,11 +8473,9 @@ CREATE OR REPLACE FUNCTION clone_healthconditions(healthconditions_id bigint)
 $BODY$
 DECLARE new_id bigint;
 BEGIN
-    DROP TABLE IF EXISTS tmp_healthconditions;
-    CREATE TEMP TABLE tmp_healthconditions AS SELECT * FROM healthconditions WHERE id = healthconditions_id;
-    UPDATE tmp_healthconditions SET id = nextval('entity_seq'), uuid = generate_base32_uuid(), changedate = now(), creationdate = now(), sys_period = tstzrange(now(), null);
-    INSERT INTO healthconditions SELECT * FROM tmp_healthconditions RETURNING id INTO new_id;
-    DROP TABLE IF EXISTS tmp_healthconditions;
+    INSERT INTO tmp_healthconditions SELECT * FROM healthconditions WHERE id = healthconditions_id;
+    UPDATE tmp_healthconditions SET id = nextval('entity_seq'), uuid = generate_base32_uuid(), changedate = now(), creationdate = now(), sys_period = tstzrange(now(), null) WHERE id = healthconditions_id RETURNING id INTO new_id;
+    INSERT INTO healthconditions SELECT * FROM tmp_healthconditions WHERE id = new_id;
     RETURN new_id;
 END;
 $BODY$;
@@ -8627,8 +8627,8 @@ DO $$
                             rec.reportdate, rec.reportinguser_id, coalesce(rec.lastvaccinationdate, rec.firstvaccinationdate),
                             CASE
                                 WHEN
-                                        rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
-                                        rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                            rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
+                                            rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
                                     THEN
                                     'OXFORD_ASTRA_ZENECA'
                                 ELSE
@@ -8637,8 +8637,8 @@ DO $$
                             rec.othervaccinename,
                             CASE
                                 WHEN
-                                        rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
-                                        rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                            rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
+                                            rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
                                     THEN
                                     'ASTRA_ZENECA'
                                 ELSE
@@ -8770,7 +8770,7 @@ DROP TABLE IF EXISTS tmp_latest_vaccinebatchnumber;
 DROP TABLE IF EXISTS tmp_latest_vaccineuniicode;
 DROP TABLE IF EXISTS tmp_latest_vaccineatccode;
 DROP TABLE IF EXISTS tmp_latest_vaccinationinfosource;
-
+DROP TABLE IF EXISTS tmp_healthconditions;
 
 DROP FUNCTION IF EXISTS clone_healthconditions(bigint);
 DROP FUNCTION IF EXISTS create_healthconditions();
