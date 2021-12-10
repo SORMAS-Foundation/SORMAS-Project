@@ -87,8 +87,8 @@ public class RegionalDiseaseBurdenGrid extends Grid {
 		setColumns(
 				DiseaseBurdenDto.CASES_REGION,
 				DiseaseBurdenDto.CASE_COUNT,
-				DiseaseBurdenDto.CASES_ACTIVE_CASE,
-				DiseaseBurdenDto.CASES_RECOVERED_CASES,
+				DiseaseBurdenDto.ACTIVE_CASE,
+				DiseaseBurdenDto.RECOVERED_CASES,
 				DiseaseBurdenDto.CASE_DEATH_COUNT);
 
 //		Language userLanguage = I18nProperties.getUserLanguage();
