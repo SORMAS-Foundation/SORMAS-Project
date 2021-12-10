@@ -552,7 +552,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			getSymptomJournalConfig().getAuthUrl(),
 			getPatientDiaryConfig().getUrl(),
 			getPatientDiaryConfig().getProbandsUrl(),
-			getPatientDiaryConfig().getAuthUrl());
+			getPatientDiaryConfig().getAuthUrl(),
+			getSormasStatsUrl());
 
 		SormasToSormasConfig s2sConfig = getS2SConfig();
 
