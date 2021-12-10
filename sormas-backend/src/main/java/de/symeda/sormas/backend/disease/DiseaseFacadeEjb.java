@@ -27,18 +27,27 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.disease.DiseaseFacade;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
+
+import de.symeda.sormas.api.person.PresentCondition;
 
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 
@@ -56,6 +65,9 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 	private OutbreakFacadeEjbLocal outbreakFacade;
 	@EJB
 	private PersonFacadeEjbLocal personFacade;
+
+	@EJB
+	private RegionFacadeEjb.RegionFacadeEjbLocal regionFacade;
 	@EJB
 	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 
@@ -129,8 +141,6 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		Date previousFrom,
 		Date previousTo) {
 
-		System.out.println("Disease Facade EJB getDiseaseForDashboard parameters:---- Disease: " + disease + " From and To Date: " +from + " To---: " + to);
-
 		//new cases
 		CaseCriteria caseCriteria = new CaseCriteria()
 				.newCaseDateBetween(from, to, null).region(regionRef).district(districtRef).disease(disease);
@@ -141,9 +151,14 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		Map<Disease, Long> events =
 			eventFacade.getEventCountByDisease(new EventCriteria().region(regionRef).district(districtRef).reportedBetween(from, to));
 
+
 		//outbreaks
 		Map<Disease, Long> outbreakDistrictsCount = outbreakFacade
-			.getOutbreakDistrictCountByDisease(new OutbreakCriteria().region(regionRef).district(districtRef).reportedBetween(from, to));
+				.getOutbreakDistrictCountByDisease(new OutbreakCriteria().region(regionRef).district(districtRef).reportedBetween(from, to));
+
+		//outbreaks
+		Map<Disease, District> outbreakDistricts = outbreakFacade
+			.getOutbreakDistrictNameByDisease(new OutbreakCriteria().disease(disease).region(regionRef).district(districtRef).reportedBetween(from, to));
 
 		//last report district
 		Map<Disease, District> lastReportedDistricts = caseFacade.getLastReportedDistrictByDisease(caseCriteria, true, true);
@@ -162,35 +177,81 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		Long outbreakDistrictCount = outbreakDistrictsCount.getOrDefault(disease, 0L);
 		Long caseFatalityCount = caseFatalities.getOrDefault(disease, 0L);
 		District lastReportedDistrict = lastReportedDistricts.getOrDefault(disease, null);
+		District outbreakDistrict = outbreakDistricts.getOrDefault(disease, null);
 
 		String lastReportedDistrictName = lastReportedDistrict == null ? "" : lastReportedDistrict.getName();
-
-			return new DiseaseBurdenDto(
-				disease,
-				caseCount,
-				previousCaseCount,
-				eventCount,
-				outbreakDistrictCount,
-				caseFatalityCount,
-				lastReportedDistrictName);
+		String outbreakDistrictName = outbreakDistrict == null ? "" : outbreakDistrict.getName();
 
 //			return new DiseaseBurdenDto(
+//				regionDto,
 //					disease,
-//					caseCount,
-//					previousCaseCount,
-//					eventCount,
-//					outbreakDistrictCount,
-//					caseFatalityCount,
-//					lastReportedDistrictName);
+//				caseCount,
+//				previousCaseCount,
+//				eventCount,
+//				outbreakDistrictCount,
+//				caseFatalityCount,
+//				lastReportedDistrictName,
+//				"",
+//				null
+//				);
+			return new DiseaseBurdenDto(
+					disease,
+					caseCount,
+					previousCaseCount,
+					eventCount,
+					outbreakDistrictCount,
+					caseFatalityCount,
+					lastReportedDistrictName,
+					outbreakDistrictName);
 //
 //		}).collect(Collectors.toList())
 
 //		return null;
 	}
 
-	@Override
-	public DiseaseBurdenDto getDiseaseGridForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, Date previousFromDate, Date previousToDate) {
-		return null;
+
+	
+	public DiseaseBurdenDto getDiseaseGridForDashboard(
+			RegionReferenceDto regionRef,
+			DistrictReferenceDto districtRef,
+			Disease disease,
+			Date from,
+			Date to,
+			Date previousFrom,
+			Date previousTo) {
+
+		//Get the region
+		RegionDto regionDto = regionFacade.getByUuid(regionRef.getUuid());
+
+		//new cases
+		CaseCriteria caseCriteria = new CaseCriteria().newCaseDateBetween(from, to, null).region(regionRef).disease(disease);
+
+		//Load count all dead/ fatalities
+		Map<Disease, Long> allCasesFetched = caseFacade.getCaseCountByDisease(caseCriteria, true, true);
+
+		//case fatalities
+//		caseCriteria.setOutcome(CaseOutcome.DECEASED);
+		Map<Disease, Long> caseFatalities = personFacade.getDeathCountByDisease(caseCriteria, true, true);
+
+		caseCriteria.setOutcome(CaseOutcome.RECOVERED);
+		Map<Disease, Long> recoveredCase = personFacade.getDeathCountByDisease(caseCriteria, true, true);
+
+		caseCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+		Map<Disease, Long> archievedCase = caseFacade.getCaseCountByDisease(caseCriteria, true, true);
+
+		//build diseasesBurden
+		Long totalCaseCount = allCasesFetched.getOrDefault(disease, 0L);
+		Long activeCaseCount = archievedCase.getOrDefault(disease, 0L);
+		Long recoveredCaseCount = recoveredCase.getOrDefault(disease, 0L);
+		Long caseFatalityCount = caseFatalities.getOrDefault(disease, 0L);
+
+		return new DiseaseBurdenDto(
+				regionDto,
+				totalCaseCount.toString(),
+				activeCaseCount.toString(),
+				recoveredCaseCount.toString(),
+				caseFatalityCount.toString()
+		);
 	}
 
 	@LocalBean
