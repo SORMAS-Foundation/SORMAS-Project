@@ -23,7 +23,8 @@ public enum VaccinationStatus {
 
 	VACCINATED,
 	UNVACCINATED,
-	UNKNOWN;
+	UNKNOWN,
+	IN_PROGRESS;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
