@@ -1,128 +1,132 @@
 package de.symeda.sormas.ui.dashboard.diseasedetails;
 
-import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.*;
 
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.disease.tile.RegionalDiseaseBurdenGrid;
+import de.symeda.sormas.ui.dashboard.map.MapCaseDisplayMode;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+
+import java.util.function.Consumer;
 
 public class DiseaseDetailsViewLayout extends CustomLayout {
 
 	private static final long serialVersionUID = 6582975657305031105L;
-	private static final String EXTEND_BUTTONS_LOC = "extendButtons";
 
 	private static final String CARD = "card";
 	private static final String GRID_TABLE = "table";
+	private static final String GRID_VIEW_MORE = "viewMore";
 	private static final String MAP = "map";
 
 	private final DashboardDataProvider dashboardDataProvider;
-	private DiseaseDetailsComponent diseaseDetailsComponent;
-	private RegionalDiseaseBurdenGrid regionalDiseaseBurdenGrid;
+	private final DiseaseDetailsComponent diseaseDetailsComponent;
+	private final RegionalDiseaseBurdenGrid regionalDiseaseBurdenGrid;
+	private final DashboardMapComponent dashboardMapComponent;
 
+	private boolean isShowMore;
+	private Button button;
 	public DiseaseDetailsViewLayout(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
+//		this.setWidthFull();
+//		this.setSizeFull();
+		setWidth(100, Unit.PERCENTAGE);
 		setTemplateContents(
 			LayoutUtil.fluidRow(
-				LayoutUtil.fluidColumnLoc(3, 1, 0, 12, CARD),
-				LayoutUtil.fluidColumnLoc(8, 0, 0, 12, GRID_TABLE),
-				LayoutUtil.fluidColumnLoc(12, 0, 12, 6, MAP)));
-//				NOTE span is width size, offset is margin left
+				LayoutUtil.fluidColumnLoc(2, 0, 0, 0, CARD),
+				LayoutUtil.fluidColumnLoc(7, 1, 0, 0, GRID_TABLE),
+				LayoutUtil.fluidColumnLoc(6, 4, 0, 0, GRID_VIEW_MORE),
+				LayoutUtil.fluidColumnLoc(12, 0, 5, 0, MAP)
+
+					)
+		); //NOTE span is heigth size, offset is row down
+
+		isShowMore = false;
 
 		diseaseDetailsComponent = new DiseaseDetailsComponent(dashboardDataProvider);
 		regionalDiseaseBurdenGrid = new RegionalDiseaseBurdenGrid(dashboardDataProvider);
+		dashboardMapComponent = new DashboardMapComponent(dashboardDataProvider);
+
 		reload();
 	}
 
-	public void refresh(){
+	public void refresh() {
+		diseaseDetailsComponent.removeAllComponents();
 		diseaseDetailsComponent.refresh();
 		regionalDiseaseBurdenGrid.refresh();
+		dashboardMapComponent.refreshMap();
 	}
 
 	public void reload() {
-//		Disease Card layout
-//		System.out.println("The disease clicked in is....:"+ diseasesBurden.getDisease());
-//		DiseaseDetailsComponent diseaseCardLayout = new DiseaseDetailsComponent(dashboardDataProvider);
-//		DiseaseBurdenDto diseasesBurden = dashboardDataProvider.getDiseaseBurdenDetail();
-//		DiseaseDetailsComponent diseaseCardLayout = new DiseaseDetailsComponent(diseasesBurden);
-//		addComponent(diseaseCardLayout, CARD);
-//		Label label = new Label("Outbreak..");
-//		diseaseCardLayout.addComponent(label);
-//		addComponent(diseaseCardLayout, CARD);
-//		DiseaseDetailsComponent diseasesBurden = dashboardDataProvider.getDiseaseBurdenDetail();
-//		DiseaseDetailsComponent diseasesBurden = DiseaseBurdenDto(
-//			Disease.AFP,
-//			Long.valueOf(120),
-//			Long.valueOf(350),
-//			Long.valueOf(100),
-//			Long.valueOf(30),
-//			Long.valueOf(50),
-//			"Some District here",
-//			2145,
-//			null,
-//			null,
-//			1154);
-
+//		Disease Card Layout
 		HorizontalLayout diseaseCardLayout = new HorizontalLayout();
+		diseaseCardLayout.setWidth(50, Unit.PERCENTAGE);
+		diseaseCardLayout.setMargin(true);
+		diseaseCardLayout.setSpacing(true);
 		diseaseCardLayout.addComponent(diseaseDetailsComponent);
 		addComponent(diseaseCardLayout, CARD);
 
 //		Grid card layout
 		HorizontalLayout diseaseGridLayout = new HorizontalLayout();
-		diseaseGridLayout.addComponent(regionalDiseaseBurdenGrid);
+		diseaseGridLayout.setWidth(400, Unit.PIXELS);
+		regionalDiseaseBurdenGrid.setHeight(320, Unit.PIXELS);
+		diseaseGridLayout.setMargin(false);
+		diseaseGridLayout.setSpacing(false);
+		diseaseGridLayout.addComponents(regionalDiseaseBurdenGrid);
 		addComponent(diseaseGridLayout, GRID_TABLE);
 
+		viewMoreLayout(I18nProperties.getCaption(Captions.viewMore));
+		button.addClickListener(event -> {
+			if(!isShowMore) {
+				regionalDiseaseBurdenGrid.setHeight(750, Unit.PIXELS);
+				isShowMore = true;
+			}else {
+				regionalDiseaseBurdenGrid.setHeight(320, Unit.PIXELS);
+				isShowMore = false;
+			}
+		});
+
 //		Map layout 
-//		HorizontalLayout mapLayout = new HorizontalLayout();
-//		mapLayout.addComponent(mapVerticalLayout());
-//		addComponent(mapLayout, MAP);
-	}
-
-	private HorizontalLayout cardLayout(DiseaseBurdenDto diseaseBurdenDto) {
-		HorizontalLayout diseaseCaseCountLayout = new HorizontalLayout();
-		Label title = new Label(diseaseBurdenDto.getDisease().getName());
-		diseaseCaseCountLayout.addComponent(title);
-
-		HorizontalLayout caseCountLayout = new HorizontalLayout();
-		Label totalCaseCount = new Label(diseaseBurdenDto.getCaseCount().toString());
-		CssStyles.style(totalCaseCount, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
-		caseCountLayout.addComponent(totalCaseCount);
-
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.addComponent(diseaseCaseCountLayout);
-		layout.addComponent(totalCaseCount);
-
-		return layout;
-	}
-
-	private HorizontalLayout gridTableLayout() {
-		HorizontalLayout tableLayout = new HorizontalLayout();
-		tableLayout.setMargin(false);
-		tableLayout.setSpacing(false);
-
-//		Label title = new Label(I18nProperties.getCaption(Strings.DiseaseNetworkDiagram_heading));
-		Label labelGrid = new Label("Grid Table here");
-
-		tableLayout.addComponent(labelGrid);
-		addComponent(tableLayout);
-		return tableLayout;
-	}
-
-	private HorizontalLayout mapVerticalLayout() {
 		HorizontalLayout mapLayout = new HorizontalLayout();
-		mapLayout.setMargin(false);
+		mapLayout.setWidth(100, Unit.PERCENTAGE);
+		final int BASE_HEIGHT = 600;
+		mapLayout.setHeight(BASE_HEIGHT, Unit.PIXELS);
+//		mapLayout.setMargin(true);
 		mapLayout.setSpacing(false);
-		DashboardMapComponent dashboardMapComponent = new DashboardMapComponent(dashboardDataProvider);
-		dashboardMapComponent.addStyleName(CssStyles.SIDE_COMPONENT);
 
+		dashboardMapComponent.setMargin(false);
+		dashboardMapComponent.setSpacing(false);
+		mapLayout.setMargin(new MarginInfo(true, true, false, true));
+		dashboardMapComponent.addStyleName("map-border-layout");
 		mapLayout.addComponent(dashboardMapComponent);
-
-		addComponent(mapLayout);
-		return mapLayout;
+		addComponent(mapLayout, MAP);
 	}
 
+	public void removeTopComponents() {
+		removeAllComponents();
+	}
+
+	public void addMapComponent() {
+		addComponent(dashboardMapComponent, "1");
+
+	}
+
+	public HorizontalLayout viewMoreLayout(String title){
+		HorizontalLayout viewMoreLayout = new HorizontalLayout();
+		viewMoreLayout.setMargin(false);
+		viewMoreLayout.setSpacing(false);
+		button = new Button(title);
+		viewMoreLayout.setHeight(5, Unit.PIXELS);
+		button.setHeight(30, Unit.PIXELS);
+		viewMoreLayout.addComponent(button);
+		viewMoreLayout.setComponentAlignment(button, Alignment.TOP_CENTER);
+		addComponent(viewMoreLayout, GRID_VIEW_MORE);
+
+		return viewMoreLayout;
+	}
 }
