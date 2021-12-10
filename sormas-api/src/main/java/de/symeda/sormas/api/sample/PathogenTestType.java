@@ -42,6 +42,9 @@ public enum PathogenTestType {
 	CQ_VALUE_DETECTION,
 	SEQUENCING,
 	DNA_MICROARRAY,
+	D_DIMERES,
+	TP,
+	TCK,
 	OTHER;
 
 	public String toString() {
