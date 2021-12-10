@@ -919,7 +919,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			if (currentUser.getLimitedDisease() != null) {
 				return cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease());
 			} else {
-				return null;
+				// Fix bug when there is no filter that matches
+				// Add a default filter that always matches
+				return cb.isNull(contactPath.get(Contact.UUID));
 			}
 		}
 
@@ -962,6 +964,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		default:
 		}
 
+		// Fix bug when there is no filter that matches
+		// Add a default filter that always matches
+		if(filter == null){
+			filter = cb.isNull(contactPath.get(Contact.UUID));
+		}
 		return filter;
 	}
 

@@ -178,6 +178,12 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         laboratory.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false));
 
         associatedCountry.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
+        associatedCountry.addValueChangeListener(e -> {
+            FieldHelper.removeItems(region);
+            CountryReferenceDto countryDto = (CountryReferenceDto) e.getProperty().getValue();
+            FieldHelper
+                    .updateItems(region, countryDto != null ? FacadeProvider.getRegionFacade().getAllActiveByCountry(countryDto.getUuid()) : null);
+        });
         region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
         setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES);
