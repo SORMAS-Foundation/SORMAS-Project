@@ -296,6 +296,10 @@ public abstract class DashboardFilterLayout<P extends AbstractDashboardDataProvi
 			setDateFilter(from, to);
 			btnCurrentPeriod.setCaption(btnToday.getCaption());
 			updateComparisonButtons(DateFilterType.TODAY, from, to, false);
+			if (DashboardType.DISEASE.equals(dashboardDataProvider.getDashboardType()))
+				dashboardView.refreshDiseaseData();
+			else
+				dashboardView.refreshDashboard();
 		});
 
 		btnYesterday = createAndAddDateFilterButton(
@@ -311,6 +315,10 @@ public abstract class DashboardFilterLayout<P extends AbstractDashboardDataProvi
 			setDateFilter(from, to);
 			btnCurrentPeriod.setCaption(btnYesterday.getCaption());
 			updateComparisonButtons(DateFilterType.YESTERDAY, from, to, false);
+			if (DashboardType.DISEASE.equals(dashboardDataProvider.getDashboardType()))
+				dashboardView.refreshDiseaseData();
+			else
+				dashboardView.refreshDashboard();
 		});
 
 		btnThisWeek = createAndAddDateFilterButton(
@@ -327,6 +335,10 @@ public abstract class DashboardFilterLayout<P extends AbstractDashboardDataProvi
 			setDateFilter(from, to);
 			btnCurrentPeriod.setCaption(btnThisWeek.getCaption());
 			updateComparisonButtons(DateFilterType.THIS_WEEK, from, to, false);
+			if (DashboardType.DISEASE.equals(dashboardDataProvider.getDashboardType()))
+				dashboardView.refreshDiseaseData();
+			else
+				dashboardView.refreshDashboard();
 		});
 
 		btnLastWeek = createAndAddDateFilterButton(
@@ -343,6 +355,10 @@ public abstract class DashboardFilterLayout<P extends AbstractDashboardDataProvi
 			setDateFilter(from, to);
 			btnCurrentPeriod.setCaption(btnLastWeek.getCaption());
 			updateComparisonButtons(DateFilterType.LAST_WEEK, from, to, false);
+			if (DashboardType.DISEASE.equals(dashboardDataProvider.getDashboardType()))
+				dashboardView.refreshDiseaseData();
+			else
+				dashboardView.refreshDashboard();
 		});
 
 		btnThisYear = createAndAddDateFilterButton(
@@ -359,6 +375,10 @@ public abstract class DashboardFilterLayout<P extends AbstractDashboardDataProvi
 			setDateFilter(from, to);
 			btnCurrentPeriod.setCaption(btnThisYear.getCaption());
 			updateComparisonButtons(DateFilterType.THIS_YEAR, from, to, false);
+			if (DashboardType.DISEASE.equals(dashboardDataProvider.getDashboardType()))
+				dashboardView.refreshDiseaseData();
+			else
+				dashboardView.refreshDashboard();
 		});
 
 		layout.addComponents(btnShowCustomPeriod, btnToday, btnYesterday, btnThisWeek, btnLastWeek, btnThisYear);
@@ -430,6 +450,10 @@ public abstract class DashboardFilterLayout<P extends AbstractDashboardDataProvi
 								+ DateHelper.getEpiWeekYearBefore(toWeek).toShortString()));
 				}
 				updateComparisonButtons(DateFilterType.CUSTOM, null, null, true);
+				if (DashboardType.DISEASE.equals(dashboardDataProvider.getDashboardType()))
+					dashboardView.refreshDiseaseData();
+				else
+					dashboardView.refreshDashboard();
 			} else {
 				if (dateFilterOption == DateFilterOption.DATE) {
 					new Notification(
@@ -460,6 +484,10 @@ public abstract class DashboardFilterLayout<P extends AbstractDashboardDataProvi
 			activeComparisonButton = btnPeriodBefore;
 			updateComparisonDates();
 			btnComparisonPeriod.setCaption(btnPeriodBefore.getCaption());
+			if (DashboardType.DISEASE.equals(dashboardDataProvider.getDashboardType()))
+				dashboardView.refreshDiseaseData();
+			else
+				dashboardView.refreshDashboard();
 		});
 
 		btnPeriodLastYear = createAndAddDateFilterButton(Captions.dashboardSameDayLastYear, null, dateComparisonButtons);
@@ -467,6 +495,10 @@ public abstract class DashboardFilterLayout<P extends AbstractDashboardDataProvi
 			activeComparisonButton = btnPeriodLastYear;
 			updateComparisonDates();
 			btnComparisonPeriod.setCaption(btnPeriodLastYear.getCaption());
+			if (DashboardType.DISEASE.equals(dashboardDataProvider.getDashboardType()))
+				dashboardView.refreshDiseaseData();
+			else
+				dashboardView.refreshDashboard();
 		});
 
 		layout.addComponents(btnPeriodBefore, btnPeriodLastYear);

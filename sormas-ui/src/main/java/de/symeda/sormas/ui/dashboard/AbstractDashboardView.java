@@ -68,9 +68,6 @@ public abstract class AbstractDashboardView extends AbstractView {
 			dashboardDataProvider.setDisease(FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease());
 		}
 		if (DashboardType.DISEASE.equals(dashboardDataProvider.getDashboardType())) {
-//			dashboardDataProvider.setDisease(FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease());
-			System.out.println("Getting getDiseases: " + getDiseases());
-
 			dashboardDataProvider.setDisease(getDiseases());
 		}
 
@@ -206,7 +203,10 @@ public abstract class AbstractDashboardView extends AbstractView {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		refreshDashboard();
+		if (!DashboardType.DISEASE.equals(dashboardDataProvider.getDashboardType()))
+//			refreshDiseaseData();
+//		else
+			refreshDashboard();
 	}
 
 	//public abstract void refreshDashboard();
