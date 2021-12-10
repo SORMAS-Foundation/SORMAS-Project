@@ -31,6 +31,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
@@ -40,6 +42,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.VisualStateControlType;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 public class ControlTextEditField extends ControlPropertyEditField<String> {
 
@@ -330,10 +333,10 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 
 		visualState = state;
 
-		int labelColor = getResources().getColor(state.getLabelColor());
-		Drawable drawable = getResources().getDrawable(state.getBackground(VisualStateControlType.TEXT_FIELD));
-		int textColor = getResources().getColor(state.getTextColor());
-		int hintColor = getResources().getColor(state.getHintColor());
+		int labelColor = ResourceUtils.getColor(getContext(),state.getLabelColor());
+		Drawable drawable = ResourceUtils.getDrawable(getContext(), state.getBackground(VisualStateControlType.TEXT_FIELD));
+		int textColor = ResourceUtils.getColor(getContext(), state.getTextColor());
+		int hintColor = ResourceUtils.getColor(getContext(), state.getHintColor());
 
 		if (drawable != null) {
 			drawable = drawable.mutate();
@@ -403,12 +406,13 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 	}
 
 	@InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
-	public static String getValue(ControlTextEditField view) {
+	public static String getValue(@NonNull ControlTextEditField view) {
 		return view.getFieldValue();
 	}
 
+	@Nullable
 	@InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
-	public static Integer getIntegerValue(ControlTextEditField view) {
+	public static Integer getIntegerValue(@NonNull ControlTextEditField view) {
 		if (view.getFieldValue() != null && !view.getFieldValue().isEmpty()) {
 			return Integer.valueOf(view.getFieldValue());
 		} else {
@@ -416,8 +420,9 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 		}
 	}
 
+	@Nullable
 	@InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
-	public static Float getFloatValue(ControlTextEditField view) {
+	public static Float getFloatValue(@NonNull ControlTextEditField view) {
 		if (view.getFieldValue() != null && !view.getFieldValue().isEmpty()) {
 			return Float.valueOf(view.getFieldValue());
 		} else {
@@ -425,8 +430,9 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 		}
 	}
 
+	@Nullable
 	@InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
-	public static Double getDoubleValue(ControlTextEditField view) {
+	public static Double getDoubleValue(@NonNull ControlTextEditField view) {
 		if (view.getFieldValue() != null && !view.getFieldValue().isEmpty()) {
 			return Double.valueOf(view.getFieldValue());
 		} else {
@@ -435,7 +441,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 	}
 
 	@BindingAdapter("valueAttrChanged")
-	public static void setListener(ControlTextEditField view, InverseBindingListener listener) {
+	public static void setListener(@NonNull ControlTextEditField view, InverseBindingListener listener) {
 		view.inverseBindingListener = listener;
 	}
 

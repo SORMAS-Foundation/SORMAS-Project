@@ -31,6 +31,7 @@ import androidx.annotation.NonNull;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 public class ControlSpinnerAdapter extends ArrayAdapter<Item> {
 
@@ -105,7 +106,7 @@ public class ControlSpinnerAdapter extends ArrayAdapter<Item> {
 			} else {
 				textView.setHint(getContext().getResources().getString(R.string.hint_select_entry));
 			}
-			textView.setTextColor(getContext().getResources().getColor(R.color.hintText));
+			textView.setTextColor(ResourceUtils.getColor(getContext(), R.color.hintText));
 		}
 
 		return view;
@@ -147,11 +148,11 @@ public class ControlSpinnerAdapter extends ArrayAdapter<Item> {
 			int selectedPosition = spinner.getPositionOf(spinner.getSelectedItem());
 			if (selectedPosition >= 0) {
 				if (position == selectedPosition) {
-					textView.setTextColor(getContext().getResources().getColor(R.color.spinnerDropdownItemTextActive));
-					view.setBackgroundColor(getContext().getResources().getColor(R.color.spinnerDropdownItemBackgroundActive));
+					textView.setTextColor(ResourceUtils.getColor(getContext(), R.color.spinnerDropdownItemTextActive));
+					view.setBackgroundColor(ResourceUtils.getColor(getContext(), R.color.spinnerDropdownItemBackgroundActive));
 				} else {
-					textView.setTextColor(getContext().getResources().getColor(R.color.controlTextColor));
-					view.setBackground(getContext().getResources().getDrawable(R.drawable.background_spinner_item));
+					textView.setTextColor(ResourceUtils.getColor(getContext(), R.color.controlTextColor));
+					view.setBackground(ResourceUtils.getDrawable(getContext(), R.drawable.background_spinner_item));
 				}
 			}
 		}

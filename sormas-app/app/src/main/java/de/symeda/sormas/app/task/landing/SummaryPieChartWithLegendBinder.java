@@ -37,6 +37,7 @@ import de.symeda.sormas.app.component.visualization.data.SummaryPieData;
 import de.symeda.sormas.app.component.visualization.data.SummaryPieEntry;
 import de.symeda.sormas.app.core.adapter.multiview.DataBinder;
 import de.symeda.sormas.app.core.adapter.multiview.RecyclerViewDataBinderAdapter;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 /**
  * Created by Orson on 27/11/2017.
@@ -65,7 +66,7 @@ public class SummaryPieChartWithLegendBinder extends DataBinder<SummaryPieChartW
 		List<PieEntry> entries = new ArrayList<PieEntry>();
 
 		if (position == PositionHelper.TASK_PRIORITY)
-			holder.layout.setBackground(this.getContext().getResources().getDrawable(R.drawable.background_summary_cell_last));
+			holder.layout.setBackground(ResourceUtils.getDrawable(getContext(), R.drawable.background_summary_cell_last));
 
 		holder.txtTitle.setText(data.get(position).getTitle());
 

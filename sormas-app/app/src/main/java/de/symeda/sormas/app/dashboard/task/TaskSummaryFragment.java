@@ -17,6 +17,7 @@ package de.symeda.sormas.app.dashboard.task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import android.os.Bundle;
@@ -183,11 +184,11 @@ public class TaskSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.View
 																		.setPercentage(PercentageUtils.percentageOf(entry.getValue(), valueList)));
 
 																if (i == 0) {
-																	item.addColor(getContext().getResources().getColor(R.color.normalPriority));
+																	item.addColor(ResourceUtils.getColor(requireContext(), R.color.normalPriority));
 																} else if (i == 1) {
-																	item.addColor(getContext().getResources().getColor(R.color.lowPriority));
+																	item.addColor(ResourceUtils.getColor(requireContext(), R.color.lowPriority));
 																} else {
-																	item.addColor(getContext().getResources().getColor(R.color.highPriority));
+																	item.addColor(ResourceUtils.getColor(requireContext(), R.color.highPriority));
 																}
 
 																i = i + 1;

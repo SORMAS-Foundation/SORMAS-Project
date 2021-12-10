@@ -42,6 +42,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
+import androidx.annotation.NonNull;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
@@ -55,6 +56,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.VisualStateControlType;
 import de.symeda.sormas.app.util.DateFormatHelper;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 public class ControlDateTimeField extends ControlPropertyEditField<Date> {
 
@@ -201,7 +203,7 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
 //        });
 //    }
 
-	private void setUpOnClickListener(final EditText input) {
+	private void setUpOnClickListener(@NonNull final EditText input) {
 		input.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -290,7 +292,7 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
 	}
 
 	@Override
-	protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+	protected void inflateView(@NonNull Context context, AttributeSet attrs, int defStyle) {
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		if (inflater != null) {
@@ -389,10 +391,10 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
 
 		visualState = state;
 
-		int labelColor = getResources().getColor(state.getLabelColor());
-		Drawable drawable = getResources().getDrawable(state.getBackground(VisualStateControlType.TEXT_FIELD));
-		int textColor = getResources().getColor(state.getTextColor());
-		int hintColor = getResources().getColor(state.getHintColor());
+		int labelColor = ResourceUtils.getColor(getContext(), state.getLabelColor());
+		Drawable drawable = ResourceUtils.getDrawable(getContext(), state.getBackground(VisualStateControlType.TEXT_FIELD));
+		int textColor = ResourceUtils.getColor(getContext(), state.getTextColor());
+		int hintColor = ResourceUtils.getColor(getContext(), state.getHintColor());
 
 		if (drawable != null) {
 			drawable = drawable.mutate();
@@ -426,22 +428,22 @@ public class ControlDateTimeField extends ControlPropertyEditField<Date> {
 	// Data binding, getters & setters
 
 	@BindingAdapter("value")
-	public static void setValue(ControlDateTimeField view, Date date) {
+	public static void setValue(@NonNull ControlDateTimeField view, Date date) {
 		view.setFieldValue(date);
 	}
 
 	@InverseBindingAdapter(attribute = "value", event = "valueAttrChanged")
-	public static Date getValue(ControlDateTimeField view) {
+	public static Date getValue(@NonNull ControlDateTimeField view) {
 		return view.getFieldValue();
 	}
 
 	@BindingAdapter("valueAttrChanged")
-	public static void setListener(ControlDateTimeField view, InverseBindingListener listener) {
+	public static void setListener(@NonNull ControlDateTimeField view, InverseBindingListener listener) {
 		view.inverseBindingListener = listener;
 	}
 
 	@BindingAdapter("dateFormat")
-	public static void setDateFormat(ControlDateTimeField field, SimpleDateFormat dateFormat) {
+	public static void setDateFormat(@NonNull ControlDateTimeField field, SimpleDateFormat dateFormat) {
 		field.dateFormat = dateFormat;
 	}
 

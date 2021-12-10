@@ -35,6 +35,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.ObservableList;
 
@@ -152,7 +153,7 @@ public class TextViewBindingAdapters {
 
 	@BindingAdapter(value = {
 		"htmlValue" })
-	public static void setHtmlValue(TextView view, String value) {
+	public static void setHtmlValue(@NonNull TextView view, String value) {
 		view.setText(!StringUtils.isBlank(value) ? Html.fromHtml(value) : "");
 	}
 
@@ -198,7 +199,7 @@ public class TextViewBindingAdapters {
 		"ageDateValue",
 		"valueCaption",
 		"defaultValue" })
-	public static void setAgeDateValueWithCaption(TextView view, Person person, String valueCaption, String defaultValue) {
+	public static void setAgeDateValueWithCaption(TextView view, @NonNull Person person, String valueCaption, String defaultValue) {
 		setValueWithCaption(
 			view,
 			DateFormatHelper.getAgeAndBirthdateString(
@@ -368,7 +369,7 @@ public class TextViewBindingAdapters {
 			val = stringValue;
 			//textField.setText(val);
 
-			if (valueFormat != null && valueFormat.trim() != "") {
+			if (valueFormat != null && !valueFormat.trim().equals("")) {
 				textField.setText(String.format(valueFormat, stringValue, append1, append2));
 			} else {
 				textField.setText(val);
@@ -745,7 +746,7 @@ public class TextViewBindingAdapters {
 
 			Integer dueDateColor = null;
 			if (task.getDueDate().compareTo(new Date()) <= 0 && !TaskStatus.DONE.equals(task.getTaskStatus())) {
-				dueDateColor = textField.getContext().getResources().getColor(R.color.watchOut);
+				dueDateColor = ResourceUtils.getColor(textField.getContext(), R.color.watchOut);
 				textField.setTypeface(textField.getTypeface(), Typeface.BOLD);
 				textField.setTextColor(dueDateColor);
 			}
@@ -775,7 +776,7 @@ public class TextViewBindingAdapters {
 			Integer dueDateColor = null;
 			TaskStatus kkk = task.getTaskStatus();
 			if (task.getDueDate().compareTo(new Date()) <= 0 && !TaskStatus.DONE.equals(task.getTaskStatus())) {
-				dueDateColor = textField.getContext().getResources().getColor(R.color.watchOut);
+				dueDateColor = ResourceUtils.getColor(textField.getContext(), R.color.watchOut);
 				//textField.setTypeface(textField.getTypeface(), Typeface.BOLD);
 				textField.setTextColor(dueDateColor);
 			} else {
@@ -1009,7 +1010,7 @@ public class TextViewBindingAdapters {
 		"facilityDetailsValue",
 		"prependValue",
 		"valueFormat" })
-	public static void setFacilityValue(TextView textField, Facility facility, String facilityDetails, String prependValue, String valueFormat) {
+	public static void setFacilityValue(TextView textField, @NonNull Facility facility, String facilityDetails, String prependValue, String valueFormat) {
 		String value;
 		if (FacilityHelper.isOtherOrNoneHealthFacility(facility.getUuid())) {
 			value = facility.getName() + " (" + facilityDetails + ")";
@@ -1060,7 +1061,7 @@ public class TextViewBindingAdapters {
 	@BindingAdapter(value = {
 		"removeBottomMarginIfEmpty",
 		"bottomMargin" })
-	public static void setRemoveBottomMarginIfEmpty(LinearLayout viewGroup, ObservableList list, float bottomMargin) {
+	public static void setRemoveBottomMarginIfEmpty(@NonNull LinearLayout viewGroup, ObservableList list, float bottomMargin) {
 		LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) viewGroup.getLayoutParams();
 
 		if (list == null || list.size() <= 0) {
@@ -1073,7 +1074,7 @@ public class TextViewBindingAdapters {
 	}
 
 	@BindingAdapter("hasValue")
-	public static void setHasValue(TextView textView, ObservableList list) {
+	public static void setHasValue(@NonNull TextView textView, ObservableList list) {
 		Resources resources = textView.getContext().getResources();
 
 		String yes = resources.getString(R.string.yes);
@@ -1092,11 +1093,11 @@ public class TextViewBindingAdapters {
 			Context context = textView.getContext();
 			PathogenTestResultTypeElaborator elaborator = (PathogenTestResultTypeElaborator) StatusElaboratorFactory.getElaborator(resultType);
 			textView.setText(resultType.name());
-			textView.setTextColor(context.getResources().getColor(elaborator.getColorIndicatorResource()));
+			textView.setTextColor(ResourceUtils.getColor(context, elaborator.getColorIndicatorResource()));
 		}
 	}
 
-	private static String getDisease(Task record) {
+	private static String getDisease(@NonNull Task record) {
 		if (record.getCaze() != null && record.getCaze().getDisease() != null) {
 			return record.getCaze().getDisease().toShortString();
 		} else if (record.getContact() != null && record.getContact().getDisease() != null) {
@@ -1128,7 +1129,7 @@ public class TextViewBindingAdapters {
 		return record.getDisease().toShortString();
 	}
 
-	private static String getDisease(Sample sample) {
+	private static String getDisease(@NonNull Sample sample) {
 		String result = "";
 		Case assocCase = sample.getAssociatedCase();
 
@@ -1149,7 +1150,8 @@ public class TextViewBindingAdapters {
 		return result;
 	}
 
-	private static String getPersonInfo(Sample sample) {
+	@NonNull
+	private static String getPersonInfo(@NonNull Sample sample) {
 		String result = "";
 		Case assocCase = sample.getAssociatedCase();
 
@@ -1164,7 +1166,7 @@ public class TextViewBindingAdapters {
 		return person.toString();
 	}
 
-	private static String getPersonInfo(Task record) {
+	private static String getPersonInfo(@NonNull Task record) {
 		String result = null;
 
 		if (record.getCaze() != null) {

@@ -79,8 +79,7 @@ android {
 repositories {
     mavenLocal()
     google()
-    maven { url "https://maven.repository.redhat.com/ga/" }
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {

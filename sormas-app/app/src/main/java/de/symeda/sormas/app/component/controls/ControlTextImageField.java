@@ -23,7 +23,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import androidx.core.content.ContextCompat;
+import androidx.annotation.NonNull;
 import androidx.databinding.BindingAdapter;
 
 import de.symeda.sormas.api.task.TaskPriority;
@@ -31,6 +31,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.util.DateFormatHelper;
+import de.symeda.sormas.app.util.ResourceUtils;
 
 public class ControlTextImageField extends ControlTextReadField {
 
@@ -71,7 +72,7 @@ public class ControlTextImageField extends ControlTextReadField {
 	public void setImageBackground(int imageResource, int tintResource) {
 		if (imageView != null) {
 			Context context = imageView.getContext();
-			Drawable background = ContextCompat.getDrawable(context, imageResource);
+			Drawable background = ResourceUtils.getDrawable(context, imageResource);
 
 			applyBackground(background, tintResource, context);
 		}
@@ -80,7 +81,7 @@ public class ControlTextImageField extends ControlTextReadField {
 	public void setImageBackground(int tintResource) {
 		if (imageView != null) {
 			Context context = imageView.getContext();
-			Drawable background = ContextCompat.getDrawable(context, getImage());
+			Drawable background = ResourceUtils.getDrawable(context, getImage());
 
 			applyBackground(background, tintResource, context);
 		}
@@ -88,7 +89,7 @@ public class ControlTextImageField extends ControlTextReadField {
 
 	private void applyBackground(Drawable background, int tintResource, Context context) {
 		if (background != null) {
-			background.setTint(context.getResources().getColor(tintResource));
+			background.setTint(ResourceUtils.getColor(context,tintResource));
 		}
 
 		imageView.setBackground(background);
@@ -117,7 +118,7 @@ public class ControlTextImageField extends ControlTextReadField {
 	}
 
 	@Override
-	protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+	protected void inflateView(@NonNull Context context, AttributeSet attrs, int defStyle) {
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		if (inflater != null) {
@@ -260,7 +261,7 @@ public class ControlTextImageField extends ControlTextReadField {
 		"value",
 		"valueFormat",
 		"defaultValue" }, requireAll = false)
-	public static void setValue(ControlTextImageField textImageField, Boolean booleanValue, String valueFormat, String defaultValue) {
+	public static void setValue(ControlTextImageField textImageField, @NonNull Boolean booleanValue, String valueFormat, String defaultValue) {
 		if (booleanValue) {
 			textImageField.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.green);
 		} else {

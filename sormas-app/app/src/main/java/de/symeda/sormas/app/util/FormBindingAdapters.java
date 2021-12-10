@@ -26,7 +26,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import androidx.core.content.ContextCompat;
+import androidx.annotation.NonNull;
 import androidx.databinding.BindingAdapter;
 
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -52,8 +52,8 @@ public class FormBindingAdapters {
 			PathogenTestResultTypeElaborator elaborator = (PathogenTestResultTypeElaborator) StatusElaboratorFactory.getElaborator(resultType);
 
 			int iconResource = elaborator.getIconResourceId();
-			Drawable drawable = ContextCompat.getDrawable(context, iconResource).mutate();
-			drawable.setTint(context.getResources().getColor(elaborator.getColorIndicatorResource()));
+			Drawable drawable = ResourceUtils.getDrawable(context, iconResource).mutate();
+			drawable.setTint(ResourceUtils.getColor(context, elaborator.getColorIndicatorResource()));
 			imageView.setBackground(drawable);
 		}
 	}
@@ -74,7 +74,7 @@ public class FormBindingAdapters {
 			}
 			val = caze.toString() + location;
 
-			if (valueFormat != null && valueFormat.trim() != "") {
+			if (valueFormat != null && !valueFormat.trim().equals("")) {
 				control.setValue(String.format(valueFormat, val));
 			} else {
 				control.setValue(val);
@@ -122,7 +122,7 @@ public class FormBindingAdapters {
 			}
 			val = event.toString() + location;
 
-			if (valueFormat != null && valueFormat.trim() != "") {
+			if (valueFormat != null && !valueFormat.trim().equals("")) {
 				control.setValue(String.format(valueFormat, val));
 			} else {
 				control.setValue(val);
@@ -185,10 +185,10 @@ public class FormBindingAdapters {
 		"emptyBottomMargin",
 		"nonEmptyBottomMargin" }, requireAll = true)
 	public static <T> void setAlternateBottomMarginIfEmpty(
-		RelativeLayout viewGroup,
-		List<T> list,
-		float emptyBottomMargin,
-		float nonEmptyBottomMargin) {
+			@NonNull RelativeLayout viewGroup,
+			List<T> list,
+			float emptyBottomMargin,
+			float nonEmptyBottomMargin) {
 		LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) viewGroup.getLayoutParams();
 
 		if (list == null || list.size() <= 0) {
@@ -212,7 +212,7 @@ public class FormBindingAdapters {
 		} else {
 			val = location.toString();
 
-			if (valueFormat != null && valueFormat.trim() != "") {
+			if (valueFormat != null && !valueFormat.trim().equals("")) {
 				textField.setValue(String.format(valueFormat, val));
 			} else {
 				textField.setValue(val);
