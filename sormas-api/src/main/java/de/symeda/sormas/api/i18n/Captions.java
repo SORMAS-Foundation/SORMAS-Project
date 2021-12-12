@@ -473,6 +473,7 @@ public interface Captions {
 	String caseFilterWithoutGeo = "caseFilterWithoutGeo";
 	String caseFilterWithoutResponsibleOfficer = "caseFilterWithoutResponsibleOfficer";
 	String caseFilterWithReducedQuarantine = "caseFilterWithReducedQuarantine";
+	String caseFilterOnlyQuarantineHelpNeeded = "caseFilterOnlyQuarantineHelpNeeded";
 	String caseFollowupVisitsView = "caseFollowupVisitsView";
 	String CaseHospitalization = "CaseHospitalization";
 	String CaseHospitalization_admissionDate = "CaseHospitalization.admissionDate";
