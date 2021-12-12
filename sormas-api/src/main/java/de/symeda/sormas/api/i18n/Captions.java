@@ -466,6 +466,7 @@ public interface Captions {
 	String caseFilterOnlyCasesWithDontShareWithExternalSurvTool = "caseFilterOnlyCasesWithDontShareWithExternalSurvTool";
 	String caseFilterOnlyCasesWithFulfilledReferenceDefinition = "caseFilterOnlyCasesWithFulfilledReferenceDefinition";
 	String caseFilterOnlyFromOtherInstances = "caseFilterOnlyFromOtherInstances";
+	String caseFilterOnlyQuarantineHelpNeeded = "caseFilterOnlyQuarantineHelpNeeded";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterRelatedToEvent = "caseFilterRelatedToEvent";
 	String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
@@ -473,7 +474,6 @@ public interface Captions {
 	String caseFilterWithoutGeo = "caseFilterWithoutGeo";
 	String caseFilterWithoutResponsibleOfficer = "caseFilterWithoutResponsibleOfficer";
 	String caseFilterWithReducedQuarantine = "caseFilterWithReducedQuarantine";
-	String caseFilterOnlyQuarantineHelpNeeded = "caseFilterOnlyQuarantineHelpNeeded";
 	String caseFollowupVisitsView = "caseFollowupVisitsView";
 	String CaseHospitalization = "CaseHospitalization";
 	String CaseHospitalization_admissionDate = "CaseHospitalization.admissionDate";
