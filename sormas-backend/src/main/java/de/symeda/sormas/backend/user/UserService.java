@@ -497,8 +497,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			jurisdictionFilter = cb.equal(from.get(User.DISTRICT), currentUser.getDistrict());
 		}
 
-		Predicate seePersonalDataOutsideJurisdiction = hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION) ? cb.conjunction() : cb.disjunction();
-		return CriteriaBuilderHelper.or(cb, regionalOrNationalFilter, jurisdictionFilter, seePersonalDataOutsideJurisdiction);
+		return CriteriaBuilderHelper.or(cb, regionalOrNationalFilter, jurisdictionFilter);
 	}
 
 	public Predicate buildUserRolesFilter(Root<User> from, Collection<UserRole> userRoles) {
