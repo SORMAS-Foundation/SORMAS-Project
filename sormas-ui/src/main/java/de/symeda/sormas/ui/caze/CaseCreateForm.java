@@ -449,9 +449,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			facilityCombo.setReadOnly(true);
 		}
 		if (UserProvider.getCurrent().hasUserRole(UserRole.SURVEILLANCE_OFFICER)){
-			region.setReadOnly(true);
 			responsibleRegion.setReadOnly(true);
-			districtCombo.setReadOnly(true);
 			responsibleDistrictCombo.setReadOnly(true);
 		}	
 
