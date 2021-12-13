@@ -475,9 +475,6 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	 * user in question has more than one user role.
 	 */
 	public Predicate createJurisdictionFilter(CriteriaBuilder cb, From<?, User> from) {
-//		if (hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION)) {
-//			return null;
-//		}
 
 		User currentUser = getCurrentUser();
 
