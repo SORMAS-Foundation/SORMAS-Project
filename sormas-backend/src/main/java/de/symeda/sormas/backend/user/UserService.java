@@ -476,7 +476,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	 */
 	public Predicate createJurisdictionFilter(CriteriaBuilder cb, From<?, User> from) {
 		if (hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION)) {
-			return null;
+			return cb.conjunction();
 		}
 
 		User currentUser = getCurrentUser();
