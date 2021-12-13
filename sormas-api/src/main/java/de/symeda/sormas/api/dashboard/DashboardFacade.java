@@ -34,6 +34,8 @@ public interface DashboardFacade {
 
 	Map<EventStatus, Long> getEventCountByStatus(DashboardCriteria dashboardCriteria);
 
+	Map<PathogenTestResultType, Long> getTestResultCountByResultType(DashboardCriteria dashboardCriteria);
+
 	List<DiseaseBurdenDto> getDiseaseBurden(
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
