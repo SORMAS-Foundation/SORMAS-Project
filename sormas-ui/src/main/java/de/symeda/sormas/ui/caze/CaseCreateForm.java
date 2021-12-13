@@ -85,8 +85,6 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
@@ -119,7 +117,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	// necessary extra data. This variable is expected to be replaced in the implementation of
 	// issue #5910.
 	private TravelEntryDto convertedTravelEntry;
-	private final Logger logger = LoggerFactory.getLogger(getClass());
 	//@formatter:off
 	private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
 			+ fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER, CaseDataDto.EXTERNAL_ID)
