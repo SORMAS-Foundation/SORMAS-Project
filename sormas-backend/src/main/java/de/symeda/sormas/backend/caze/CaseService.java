@@ -677,6 +677,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.lessThan(from.get(Case.CREATION_DATE), DateHelper.getEndOfDay(caseCriteria.getCreationDateTo())));
 		}
+		if (caseCriteria.getQuarantineType() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.QUARANTINE), caseCriteria.getQuarantineType()));
+		}
 		if (caseCriteria.getQuarantineTo() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
@@ -726,6 +729,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 		if (Boolean.TRUE.equals(caseCriteria.getWithReducedQuarantine())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isTrue(from.get(Case.QUARANTINE_REDUCED)));
+		}
+		if (Boolean.TRUE.equals(caseCriteria.getOnlyQuarantineHelpNeeded())) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.and(cb.notEqual(from.get(Case.QUARANTINE_HELP_NEEDED), ""), cb.isNotNull(from.get(Case.QUARANTINE_HELP_NEEDED))));
 		}
 		if (caseCriteria.getRelevanceStatus() != null) {
 			if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
