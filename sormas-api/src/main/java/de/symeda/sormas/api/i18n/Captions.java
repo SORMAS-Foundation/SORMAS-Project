@@ -1930,6 +1930,7 @@ public interface Captions {
 	String statisticsExchange = "statisticsExchange";
 	String statisticsIncidenceDivisor = "statisticsIncidenceDivisor";
 	String statisticsMapType = "statisticsMapType";
+	String statisticsOpenSormasStats = "statisticsOpenSormasStats";
 	String statisticsRemoveFilter = "statisticsRemoveFilter";
 	String statisticsResetFilters = "statisticsResetFilters";
 	String statisticsShowCaseIncidence = "statisticsShowCaseIncidence";
