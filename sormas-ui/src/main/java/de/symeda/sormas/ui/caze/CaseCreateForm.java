@@ -85,6 +85,8 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
@@ -117,7 +119,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	// necessary extra data. This variable is expected to be replaced in the implementation of
 	// issue #5910.
 	private TravelEntryDto convertedTravelEntry;
-
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	//@formatter:off
 	private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
 			+ fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER, CaseDataDto.EXTERNAL_ID)
@@ -429,7 +431,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		});
 		facilityType.addValueChangeListener(e -> updateFacility());
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
-
 		JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
 		if (userJurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY) {
 			region.setReadOnly(true);
@@ -440,7 +441,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			responsibleCommunityCombo.setReadOnly(true);
 			differentPlaceOfStayJurisdiction.setVisible(false);
 			differentPlaceOfStayJurisdiction.setEnabled(false);
-
 			facilityOrHome.setImmediate(true);
 			facilityOrHome.setValue(Sets.newHashSet(TypeOfPlace.FACILITY)); // [FACILITY]
 			facilityOrHome.setReadOnly(true);
@@ -451,6 +451,12 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			facilityCombo.setValue(UserProvider.getCurrent().getUser().getHealthFacility());
 			facilityCombo.setReadOnly(true);
 		}
+		if (UserProvider.getCurrent().hasUserRole(UserRole.SURVEILLANCE_OFFICER)){
+			region.setReadOnly(true);
+			responsibleRegion.setReadOnly(true);
+			districtCombo.setReadOnly(true);
+			responsibleDistrictCombo.setReadOnly(true);
+		}	
 
 		if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
 			ogCaseOrigin.addValueChangeListener(ev -> {
