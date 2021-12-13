@@ -39,6 +39,11 @@ jobs:
         if: ${{ !fromJSON(env.PRIVILEGED_RUN) }}
         uses: actions/checkout@v2
 
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: ${{ env.CODEQL_LANGUAGES }}
+
       - name: Set up JDK ${{ env.JAVA }}
         uses: actions/setup-java@v1
         with:
@@ -59,11 +64,6 @@ jobs:
         # FIXME(@JonasCir) see https://github.com/hzi-braunschweig/SORMAS-Project/issues/3730#issuecomment-745165678
         working-directory: ./sormas-base
         run: mvn verify -B -ntp
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v1
-        with:
-          languages: ${{ env.CODEQL_LANGUAGES }}
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v1
