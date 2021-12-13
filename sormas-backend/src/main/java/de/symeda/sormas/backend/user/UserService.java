@@ -495,6 +495,8 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			jurisdictionFilter = cb.equal(from.get(User.COMMUNITY), currentUser.getCommunity());
 		} else if (currentUser.getDistrict() != null) {
 			jurisdictionFilter = cb.equal(from.get(User.DISTRICT), currentUser.getDistrict());
+		} else if (currentUser.getRegion() != null) {
+			jurisdictionFilter = cb.equal(from.get(User.REGION), currentUser.getRegion());
 		}
 
 		return CriteriaBuilderHelper.or(cb, regionalOrNationalFilter, jurisdictionFilter);
