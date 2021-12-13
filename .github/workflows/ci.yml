@@ -6,17 +6,21 @@ name: Java CI with Maven
 env:
   JAVA: 11
   PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') || github.event.pull_request.head.repo.full_name == github.repository }}
-
+  CODEQL_LANGUAGES: ['java', 'javascript']
 on:
   push:
     branches: [ development, master, hotfix* ]
   pull_request:
     branches: [ development, hotfix* ]
-
+  workflow_dispatch: # run it manually from the GH Actions web console
+  schedule:
+    - cron: '35 1 * * 0'
 jobs:
   test:
-    name: mvn verify
+    name: SORMAS CI
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
 
     steps:
       - name: Checkout repository (with token)
@@ -56,6 +60,14 @@ jobs:
         working-directory: ./sormas-base
         run: mvn verify -B -ntp
 
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: ${{ CODEQL_LANGUAGES }}
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
+
       - name: Commit external visits API spec to development
         # Privileged action needing a secret token. Since this only runs on development in our own repo
         # the token will be available through a privileged checkout.
@@ -73,3 +85,4 @@ jobs:
             git commit -m "[GitHub Actions] Update external visits API spec files"
             git pull --rebase
             git push
+
