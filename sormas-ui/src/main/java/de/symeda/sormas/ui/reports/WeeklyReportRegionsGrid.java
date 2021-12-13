@@ -34,12 +34,16 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.report.WeeklyReportRegionSummaryDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.PercentageRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
+import de.symeda.sormas.ui.UserProvider;
 @SuppressWarnings("serial")
 public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 
@@ -160,7 +164,19 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 		EpiWeek epiWeek = new EpiWeek(year, week);
 
 		List<WeeklyReportRegionSummaryDto> summaryDtos = FacadeProvider.getWeeklyReportFacade().getSummariesPerRegion(epiWeek);
-		summaryDtos.forEach(s -> getContainer().addItem(s));
+			if (UserProvider.getCurrent().hasAnyUserRole(UserRole.NATIONAL_OBSERVER)){
+				if (UserProvider.getCurrent().getUser().getAssociatedCountry() != null){
+					for(WeeklyReportRegionSummaryDto weeklyRepRegionSummaryDto: summaryDtos) {
+						CountryReferenceDto countryReferenceDto  = UserProvider.getCurrent().getUser().getAssociatedCountry();
+						RegionDto ReportregionDto = FacadeProvider.getRegionFacade().getByUuid(weeklyRepRegionSummaryDto.getRegion().getUuid());
+						if (countryReferenceDto.getUuid().equals(ReportregionDto.getCountry().getUuid())){
+							getContainer().addItem(weeklyRepRegionSummaryDto);
+						}
+					}
+				}
+			}else{
+				summaryDtos.forEach(s -> getContainer().addItem(s));
+			}
 	}
 
 	@Override
