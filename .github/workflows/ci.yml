@@ -6,7 +6,7 @@ name: Java CI with Maven
 env:
   JAVA: 11
   PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') || github.event.pull_request.head.repo.full_name == github.repository }}
-  CODEQL_LANGUAGES: ['java', 'javascript']
+  CODEQL_LANGUAGES: 'java, javascript'
 on:
   push:
     branches: [ development, master, hotfix* ]
@@ -16,7 +16,7 @@ on:
   schedule:
     - cron: '35 1 * * 0'
 jobs:
-  test:
+  ci:
     name: SORMAS CI
     runs-on: ubuntu-latest
     permissions:
