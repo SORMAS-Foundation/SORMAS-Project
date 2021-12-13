@@ -1,0 +1,59 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  - package-ecosystem: "maven" # See documentation for possible values
+    directory: "/sormas-api" # Location of package manifests
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/sormas-app"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/sormas-backend"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/sormas-base"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/sormas-cargoserver"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/sormas-e2e-performance-tests"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/sormas-e2e-tests"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/sormas-ear"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/sormas-keycloak-service-provider"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/sormas-rest"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/sormas-ui"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/sormas-widgetset"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
