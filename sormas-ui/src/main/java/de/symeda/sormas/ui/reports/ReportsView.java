@@ -136,7 +136,7 @@ public class ReportsView extends AbstractView {
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createReportButton);
-			if (!UserProvider.getCurrent().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+			if ((!UserProvider.getCurrent().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) && (!UserProvider.getCurrent().hasUserRole(UserRole.POE_INFORMANT))) {
 				createReportButton.setEnabled(false);
 			}
 		}
@@ -234,7 +234,7 @@ public class ReportsView extends AbstractView {
 							logger.info("Point trouve : {} pour le district {}", pntofentry, TheDistrict);
 							activeDistrict = districtFacade.getByUuid(TheDistrict).toReference();
 							Region = districtFacade.getByUuid(TheDistrict).getRegion();
-							logger.info("La region {} a te mise a jour par la meme occasion", Region);
+							logger.info("La region {} a ete mise a jour par la meme occasion", Region);
 							found = true;
 							break;
 						}
@@ -249,7 +249,7 @@ public class ReportsView extends AbstractView {
 				// importResult = caseImportFacade.DirectSaveCaseData(
 				// values, entityClasses, entityProperties, entityPropertyPaths, false);
 				personDto = new PersonDto();
-				personDto.setFirstName("EMPTY_FIRST_FAME");
+				personDto.setFirstName("EMPTY_FIRST_NAME");
 				personDto.setLastName("EMPTY_LAST_NAME");
 				personDto.setSex(Sex.UNKNOWN);
 				PersonDto createdPerson = personFacade.savePerson(personDto);

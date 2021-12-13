@@ -628,6 +628,7 @@ public interface Strings {
 	String headingTemplateNotAvailable = "headingTemplateNotAvailable";
 	String headingTests = "headingTests";
 	String headingTransferCase = "headingTransferCase";
+	String headingTransmitted = "headingTransmitted";
 	String headingTravelEntryData = "headingTravelEntryData";
 	String headingTreatments = "headingTreatments";
 	String headingTreatmentsDeleted = "headingTreatmentsDeleted";

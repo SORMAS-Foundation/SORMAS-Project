@@ -27,6 +27,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
@@ -58,6 +59,7 @@ public class UserDto extends EntityDto {
 	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
+	public static final String ASSOCIATED_COUNTRY = "associatedCountry";
 	public static final String LABORATORY = "laboratory";
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String LIMITED_DISEASE = "limitedDisease";
@@ -94,6 +96,8 @@ public class UserDto extends EntityDto {
 	private PointOfEntryReferenceDto pointOfEntry;
 
 	private UserReferenceDto associatedOfficer;
+
+	private CountryReferenceDto associatedCountry;
 
 	private Disease limitedDisease;
 
@@ -187,6 +191,14 @@ public class UserDto extends EntityDto {
 
 	public void setAssociatedOfficer(UserReferenceDto associatedOfficer) {
 		this.associatedOfficer = associatedOfficer;
+	}
+
+	public CountryReferenceDto getAssociatedCountry() {
+		return associatedCountry;
+	}
+
+	public void setAssociatedCountry(CountryReferenceDto associatedCountry) {
+		this.associatedCountry = associatedCountry;
 	}
 
 	public RegionReferenceDto getRegion() {

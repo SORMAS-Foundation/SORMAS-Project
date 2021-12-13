@@ -183,6 +183,16 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	public List<String> getAllUuids() {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Sample> from = cq.from(getElementClass());
+		cq.select(from.get(Sample.UUID));
+
+		return em.createQuery(cq).getResultList();
+	}
+	
 	/**
 	 * Returns the sample that refers to the sample identified by the sampleUuid.
 	 *

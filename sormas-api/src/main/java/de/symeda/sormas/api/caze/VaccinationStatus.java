@@ -22,6 +22,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 public enum VaccinationStatus {
 
 	VACCINATED,
+	IN_PROGRESS,
 	UNVACCINATED,
 	UNKNOWN;
 

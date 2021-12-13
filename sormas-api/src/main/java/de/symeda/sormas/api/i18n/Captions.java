@@ -392,6 +392,7 @@ public interface Captions {
 	String CaseData_symptomJournalStatus = "CaseData.symptomJournalStatus";
 	String CaseData_symptoms = "CaseData.symptoms";
 	String CaseData_therapy = "CaseData.therapy";
+	String CaseData_transmitted = "CaseData.transmitted";
 	String CaseData_trimester = "CaseData.trimester";
 	String CaseData_uuid = "CaseData.uuid";
 	String CaseData_vaccinationStatus = "CaseData.vaccinationStatus";
@@ -2265,6 +2266,7 @@ public interface Captions {
 	String User = "User";
 	String User_active = "User.active";
 	String User_address = "User.address";
+	String User_associatedCountry = "User.associatedCountry";
 	String User_associatedOfficer = "User.associatedOfficer";
 	String User_hasConsentedToGdpr = "User.hasConsentedToGdpr";
 	String User_healthFacility = "User.healthFacility";

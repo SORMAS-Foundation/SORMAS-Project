@@ -47,6 +47,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
@@ -79,6 +80,7 @@ public class User extends AbstractDomainObject {
 	public static final String LABORATORY = "laboratory";
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
+	public static final String ASSOCIATED_COUNTRY = "associatedCountry";
 	public static final String LANGUAGE = "language";
 	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";
 
@@ -108,6 +110,8 @@ public class User extends AbstractDomainObject {
 	private PointOfEntry pointOfEntry;
 
 	private User associatedOfficer;
+
+	private Country associatedCountry;
 
 	private Disease limitedDisease;
 
@@ -232,6 +236,15 @@ public class User extends AbstractDomainObject {
 
 	public void setAssociatedOfficer(User associatedOfficer) {
 		this.associatedOfficer = associatedOfficer;
+	}
+
+	@ManyToOne(cascade = {})
+	public Country getAssociatedCountry() {
+		return associatedCountry;
+	}
+
+	public void setAssociatedCountry(Country associatedCountry) {
+		this.associatedCountry = associatedCountry;
 	}
 
 	@Override

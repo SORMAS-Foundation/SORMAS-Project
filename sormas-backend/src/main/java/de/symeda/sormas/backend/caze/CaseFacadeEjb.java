@@ -2827,7 +2827,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private void createInvestigationTask(Case caze) {
 
-		if (StringUtils.isBlank(caze.getPerson().getFathersName())){
+		if (StringUtils.isBlank(caze.getPerson().getFirstName())){
 			return;
 		}
 		Task task = new Task();
