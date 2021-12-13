@@ -475,9 +475,9 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	 * user in question has more than one user role.
 	 */
 	public Predicate createJurisdictionFilter(CriteriaBuilder cb, From<?, User> from) {
-		if (hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION)) {
-			return null;
-		}
+//		if (hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION)) {
+//			return null;
+//		}
 
 		User currentUser = getCurrentUser();
 
@@ -499,7 +499,8 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			jurisdictionFilter = cb.equal(from.get(User.REGION), currentUser.getRegion());
 		}
 
-		return CriteriaBuilderHelper.or(cb, regionalOrNationalFilter, jurisdictionFilter);
+		Predicate seePersonalDataOutsideJurisdiction = hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION) ? cb.conjunction() : cb.disjunction();
+		return CriteriaBuilderHelper.or(cb, regionalOrNationalFilter, jurisdictionFilter, seePersonalDataOutsideJurisdiction);
 	}
 
 	public Predicate buildUserRolesFilter(Root<User> from, Collection<UserRole> userRoles) {
