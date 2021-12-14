@@ -17,7 +17,8 @@ package de.symeda.sormas.api.feature;
 
 public enum FeatureTypeProperty {
 
-	REDUCED(Boolean.class);
+	REDUCED(Boolean.class),
+	AUTOMATIC_RESPONSIBILITY_ASSIGNMENT(Boolean.class);
 
 	private final Class<?> returnType;
 
