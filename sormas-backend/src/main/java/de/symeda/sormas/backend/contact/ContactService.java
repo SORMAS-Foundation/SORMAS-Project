@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+*/
 package de.symeda.sormas.backend.contact;
 
 import java.sql.Timestamp;
@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,6 +49,8 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.utils.DefaultEntityHelper;
+import de.symeda.sormas.api.visit.VisitStatus;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -526,7 +530,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			List<DashboardContactDto> dashboardContacts = em.createQuery(cq).getResultList();
 
 			if (!dashboardContacts.isEmpty()) {
-				List<Long> dashboardContactIds = dashboardContacts.stream().map(d -> d.getId()).collect(Collectors.toList());
+				List<Long> dashboardContactIds = dashboardContacts.stream().map(DashboardContactDto::getId).collect(Collectors.toList());
 
 				CriteriaQuery<DashboardVisit> visitsCq = cb.createQuery(DashboardVisit.class);
 				Root<Contact> visitsCqRoot = visitsCq.from(getElementClass());
@@ -555,8 +559,15 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 						dashboardContact.setLastVisitDateTime(lastVisit.getVisitDateTime());
 						dashboardContact.setLastVisitStatus(lastVisit.getVisitStatus());
 						dashboardContact.setSymptomatic(lastVisit.isSymptomatic());
-						dashboardContact
-							.setVisitStatusMap(visits.stream().collect(Collectors.groupingBy(DashboardVisit::getVisitStatus, Collectors.counting())));
+
+						List<VisitStatus> visitStatuses = visits.stream().map(DashboardVisit::getVisitStatus).collect(Collectors.toList());
+						Map<VisitStatus, Integer> frequency = new EnumMap<>(VisitStatus.class);
+						for (VisitStatus status : VisitStatus.values()) {
+							int freq = Collections.frequency(visitStatuses, status);
+							frequency.put(status, freq);
+						}
+
+						dashboardContact.setVisitStatusMap(frequency);
 					}
 				}
 

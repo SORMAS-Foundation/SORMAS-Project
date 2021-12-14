@@ -421,17 +421,17 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 	protected void updateFourthComponent(int visibleDiseasesCount) {
 		List<DashboardContactDto> contacts = dashboardDataProvider.getContacts();
 		List<DashboardContactDto> previousContacts = dashboardDataProvider.getPreviousContacts();
-		Map<VisitStatus, Long> visitStatusMap = new HashMap<>();
-		Map<VisitStatus, Long> previousVisitStatusMap = new HashMap<>();
-		long doneEssentialVisitsCount = 0;	// only visits that needed to be done, i.e. at most the amount of follow-up days
-		long previousDoneEssentialVisitsCount = 0;
+		Map<VisitStatus, Integer> visitStatusMap = new HashMap<>();
+		Map<VisitStatus, Integer> previousVisitStatusMap = new HashMap<>();
+		int doneEssentialVisitsCount = 0;	// only visits that needed to be done, i.e. at most the amount of follow-up days
+		int previousDoneEssentialVisitsCount = 0;
 
 		Date now = new Date();
 		int totalFollowUpDays = 0;
 		int previousTotalFollowUpDays = 0;
 		for (DashboardContactDto contact : contacts) {
 			for (VisitStatus visitStatus : contact.getVisitStatusMap().keySet()) {
-				Long value = 0L;
+				int value = 0;
 				if (visitStatusMap.containsKey(visitStatus)) {
 					value = visitStatusMap.get(visitStatus);
 				}
@@ -442,14 +442,14 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 					DateHelper.getDaysBetween(contact.getReportDate(), now),
 					DateHelper.getDaysBetween(contact.getReportDate(), contact.getFollowUpUntil()));
 				totalFollowUpDays += contactFollowUpDays;
-				Long visitCount = contact.getVisitStatusMap().values().stream().reduce(0L, Long::sum);
+				Integer visitCount = contact.getVisitStatusMap().values().stream().reduce(0, Integer::sum);
 				doneEssentialVisitsCount += (visitCount > contactFollowUpDays ? contactFollowUpDays : visitCount);
 			}
 		}
 
 		for (DashboardContactDto contact : previousContacts) {
 			for (VisitStatus visitStatus : contact.getVisitStatusMap().keySet()) {
-				Long value = 0L;
+				Integer value = 0;
 				if (previousVisitStatusMap.containsKey(visitStatus)) {
 					value = previousVisitStatusMap.get(visitStatus);
 				}
@@ -460,22 +460,22 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 					DateHelper.getDaysBetween(contact.getReportDate(), now),
 					DateHelper.getDaysBetween(contact.getReportDate(), contact.getFollowUpUntil()));
 				previousTotalFollowUpDays += contactFollowUpDays;
-				Long visitCount = contact.getVisitStatusMap().values().stream().reduce(0L, Long::sum);
+				Integer visitCount = contact.getVisitStatusMap().values().stream().reduce(0, Integer::sum);
 				previousDoneEssentialVisitsCount += (visitCount > contactFollowUpDays ? contactFollowUpDays : visitCount);
 			}
 		}
 
-		Long visitsCount = visitStatusMap.values().stream().reduce(0L, Long::sum);
+		Integer visitsCount = visitStatusMap.values().stream().reduce(0, Integer::sum);
 		fourthComponent.updateCountLabel(visitsCount.intValue());
 
 		int missedVisitsCount = totalFollowUpDays - doneEssentialVisitsCount;
-		int unavailableVisitsCount = Optional.ofNullable(visitStatusMap.get(VisitStatus.UNAVAILABLE)).orElse(0L).intValue();
-		int uncooperativeVisitsCount = Optional.ofNullable(visitStatusMap.get(VisitStatus.UNCOOPERATIVE)).orElse(0L).intValue();
-		int cooperativeVisitsCount = Optional.ofNullable(visitStatusMap.get(VisitStatus.COOPERATIVE)).orElse(0L).intValue();
+		int unavailableVisitsCount = Optional.ofNullable(visitStatusMap.get(VisitStatus.UNAVAILABLE)).orElse(0).intValue();
+		int uncooperativeVisitsCount = Optional.ofNullable(visitStatusMap.get(VisitStatus.UNCOOPERATIVE)).orElse(0).intValue();
+		int cooperativeVisitsCount = Optional.ofNullable(visitStatusMap.get(VisitStatus.COOPERATIVE)).orElse(0).intValue();
 		int previousMissedVisitsCount = previousTotalFollowUpDays - previousDoneEssentialVisitsCount;
-		int previousUnavailableVisitsCount = Optional.ofNullable(previousVisitStatusMap.get(VisitStatus.UNAVAILABLE)).orElse(0L).intValue();
-		int previousUncooperativeVisitsCount = Optional.ofNullable(previousVisitStatusMap.get(VisitStatus.UNCOOPERATIVE)).orElse(0L).intValue();
-		int previousCooperativeVisitsCount = Optional.ofNullable(previousVisitStatusMap.get(VisitStatus.COOPERATIVE)).orElse(0L).intValue();
+		int previousUnavailableVisitsCount = Optional.ofNullable(previousVisitStatusMap.get(VisitStatus.UNAVAILABLE)).orElse(0).intValue();
+		int previousUncooperativeVisitsCount = Optional.ofNullable(previousVisitStatusMap.get(VisitStatus.UNCOOPERATIVE)).orElse(0).intValue();
+		int previousCooperativeVisitsCount = Optional.ofNullable(previousVisitStatusMap.get(VisitStatus.COOPERATIVE)).orElse(0).intValue();
 		int missedVisitsPercentage = totalFollowUpDays == 0 ? 0 : (int) ((missedVisitsCount * 100.0f) / totalFollowUpDays);
 		int unavailableVisitsPercentage = visitsCount == 0 ? 0 : (int) ((unavailableVisitsCount * 100.0f) / visitsCount);
 		int uncooperativeVisitsPercentage = visitsCount == 0 ? 0 : (int) ((uncooperativeVisitsCount * 100.0f) / visitsCount);

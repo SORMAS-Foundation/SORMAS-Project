@@ -75,8 +75,8 @@ public class DashboardStatisticsGraphicalGrowthElement extends VerticalLayout {
 		addComponent(svgBarElement);
 	}
 
-	public void update(int count, int percentage, int growthPercentage, boolean increaseIsPositive, boolean showPercentage) {
-		countLabel.setValue(Integer.toString(count) + (showPercentage ? " (" + percentage + " %)" : ""));
+	public void update(long count, int percentage, int growthPercentage, boolean increaseIsPositive, boolean showPercentage) {
+		countLabel.setValue(count + (showPercentage ? " (" + percentage + " %)" : ""));
 		svgBarElement.updateSvg(percentage);
 		percentageLabel.setValue(growthPercentage != Integer.MIN_VALUE ? (growthPercentage + " %") : "");
 		CssStyles.removeStyles(growthLabel, CssStyles.LABEL_CRITICAL, CssStyles.LABEL_POSITIVE, CssStyles.LABEL_IMPORTANT);
