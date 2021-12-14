@@ -25,14 +25,14 @@ updates:
     directory: "/sormas-cargoserver"
     schedule:
       interval: "daily"
-  - package-ecosystem: "maven"
-    directory: "/sormas-e2e-performance-tests"
-    schedule:
-      interval: "daily"
-  - package-ecosystem: "maven"
-    directory: "/sormas-e2e-tests"
-    schedule:
-      interval: "daily"
+  #- package-ecosystem: "gradle" FIXME(@JonasCir)
+  #  directory: "/sormas-e2e-performance-tests"
+  #  schedule:
+  #    interval: "daily"
+  # - package-ecosystem: "gradle"
+  #  directory: "/sormas-e2e-tests"
+  #  schedule:
+  #    interval: "daily"
   - package-ecosystem: "maven"
     directory: "/sormas-ear"
     schedule:
