@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.dashboard.contacts;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -190,7 +191,7 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 			symptomaticContacts.updateCountLabel(symptomaticContactsCount + " (" + symptomaticContactsPercentage + " %)");
 
 			// Create a map with all diseases as keys and their respective case counts as values
-			Map<Disease, Integer> diseaseMap = new TreeMap<Disease, Integer>();
+			Map<Disease, Integer> diseaseMap = new TreeMap<>();
 			for (Disease disease : FacadeProvider.getDiseaseConfigurationFacade().getAllDiseasesWithFollowUp()) {
 				diseaseMap.put(disease, (int) contacts.stream().filter(c -> c.getDisease() == disease).count());
 			}
@@ -199,7 +200,7 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 			List<Map.Entry<Disease, Integer>> sortedDiseaseList = createSortedDiseaseList(diseaseMap);
 
 			// Create a new StatisticsDiseaseElement for every disease, automatically sorting them by case count
-			for (int i = 0; i < (visibleDiseasesCount <= sortedDiseaseList.size() ? visibleDiseasesCount : sortedDiseaseList.size()); i++) {
+			for (int i = 0; i < (Math.min(visibleDiseasesCount, sortedDiseaseList.size())); i++) {
 
 				Map.Entry<Disease, Integer> mapEntry = sortedDiseaseList.get(i);
 				int previousDiseaseCount = (int) previousContacts.stream().filter(c -> c.getDisease() == mapEntry.getKey()).count();
@@ -280,8 +281,7 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 
 	@Override
 	protected void updateSecondComponent(int visibleDiseasesCount) {
-		List<DashboardContactDto> contacts = new ArrayList<>();
-		contacts.addAll(dashboardDataProvider.getContacts());
+		List<DashboardContactDto> contacts = new ArrayList<>(dashboardDataProvider.getContacts());
 		contacts.removeIf(c -> c.getFollowUpStatus() != FollowUpStatus.FOLLOW_UP);
 
 		int contactsCount = contacts.size();
@@ -367,8 +367,7 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 
 	@Override
 	protected void updateThirdComponent(int visibleDiseasesCount) {
-		List<DashboardContactDto> contacts = new ArrayList<>();
-		contacts.addAll(dashboardDataProvider.getContacts());
+		List<DashboardContactDto> contacts = new ArrayList<>(dashboardDataProvider.getContacts());
 		contacts.removeIf(c -> c.getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP || c.getFollowUpStatus() == FollowUpStatus.FOLLOW_UP);
 
 		int contactsCount = contacts.size();
@@ -421,8 +420,8 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 	protected void updateFourthComponent(int visibleDiseasesCount) {
 		List<DashboardContactDto> contacts = dashboardDataProvider.getContacts();
 		List<DashboardContactDto> previousContacts = dashboardDataProvider.getPreviousContacts();
-		Map<VisitStatus, Integer> visitStatusMap = new HashMap<>();
-		Map<VisitStatus, Integer> previousVisitStatusMap = new HashMap<>();
+		Map<VisitStatus, Integer> visitStatusMap = new EnumMap<>(VisitStatus.class);
+		Map<VisitStatus, Integer> previousVisitStatusMap = new EnumMap<>(VisitStatus.class);
 		int doneEssentialVisitsCount = 0;	// only visits that needed to be done, i.e. at most the amount of follow-up days
 		int previousDoneEssentialVisitsCount = 0;
 
@@ -442,14 +441,14 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 					DateHelper.getDaysBetween(contact.getReportDate(), now),
 					DateHelper.getDaysBetween(contact.getReportDate(), contact.getFollowUpUntil()));
 				totalFollowUpDays += contactFollowUpDays;
-				Integer visitCount = contact.getVisitStatusMap().values().stream().reduce(0, Integer::sum);
-				doneEssentialVisitsCount += (visitCount > contactFollowUpDays ? contactFollowUpDays : visitCount);
+				int visitCount = contact.getVisitStatusMap().values().stream().reduce(0, Integer::sum);
+				doneEssentialVisitsCount += (Math.min(visitCount, contactFollowUpDays));
 			}
 		}
 
 		for (DashboardContactDto contact : previousContacts) {
 			for (VisitStatus visitStatus : contact.getVisitStatusMap().keySet()) {
-				Integer value = 0;
+				int value = 0;
 				if (previousVisitStatusMap.containsKey(visitStatus)) {
 					value = previousVisitStatusMap.get(visitStatus);
 				}
@@ -460,13 +459,13 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 					DateHelper.getDaysBetween(contact.getReportDate(), now),
 					DateHelper.getDaysBetween(contact.getReportDate(), contact.getFollowUpUntil()));
 				previousTotalFollowUpDays += contactFollowUpDays;
-				Integer visitCount = contact.getVisitStatusMap().values().stream().reduce(0, Integer::sum);
-				previousDoneEssentialVisitsCount += (visitCount > contactFollowUpDays ? contactFollowUpDays : visitCount);
+				int visitCount = contact.getVisitStatusMap().values().stream().reduce(0, Integer::sum);
+				previousDoneEssentialVisitsCount += (Math.min(visitCount, contactFollowUpDays));
 			}
 		}
 
-		Integer visitsCount = visitStatusMap.values().stream().reduce(0, Integer::sum);
-		fourthComponent.updateCountLabel(visitsCount.intValue());
+		int visitsCount = visitStatusMap.values().stream().reduce(0, Integer::sum);
+		fourthComponent.updateCountLabel(visitsCount);
 
 		int missedVisitsCount = totalFollowUpDays - doneEssentialVisitsCount;
 		int unavailableVisitsCount = Optional.ofNullable(visitStatusMap.get(VisitStatus.UNAVAILABLE)).orElse(0).intValue();
