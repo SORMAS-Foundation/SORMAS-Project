@@ -137,6 +137,14 @@ public class NavBarSteps implements En {
         });
 
     When(
+        "^I click on the Reports button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.REPORTS_BUTTON);
+          startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+        });
+
+    When(
         "^I click on the Users from navbar$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
