@@ -423,8 +423,8 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 		List<DashboardContactDto> previousContacts = dashboardDataProvider.getPreviousContacts();
 		Map<VisitStatus, Long> visitStatusMap = new HashMap<>();
 		Map<VisitStatus, Long> previousVisitStatusMap = new HashMap<>();
-		int doneEssentialVisitsCount = 0;	// only visits that needed to be done, i.e. at most the amount of follow-up days
-		int previousDoneEssentialVisitsCount = 0;
+		long doneEssentialVisitsCount = 0;	// only visits that needed to be done, i.e. at most the amount of follow-up days
+		long previousDoneEssentialVisitsCount = 0;
 
 		Date now = new Date();
 		int totalFollowUpDays = 0;
