@@ -1,6 +1,7 @@
 package de.symeda.sormas.rest;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
@@ -12,6 +13,8 @@ import javax.ws.rs.core.MediaType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
+import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Path("/dashboard")
@@ -35,4 +38,17 @@ public class DashboardResource extends EntityDtoResource {
 				criteria.getPreviousDateTo(),
 				criteria.getNewCaseDateType());
 	}
+
+	@POST
+	@Path("/newEvents")
+	public Map<EventStatus, Long> getEventCountByStatus(@RequestBody DashboardCriteria criteria) {
+		return FacadeProvider.getDashboardFacade().getEventCountByStatus(criteria);
+	}
+
+	@POST
+	@Path("/testResults")
+	public Map<PathogenTestResultType, Long> getTestResultCountByResultType(@RequestBody DashboardCriteria criteria) {
+		return FacadeProvider.getDashboardFacade().getTestResultCountByResultType(criteria);
+	}
+
 }

@@ -686,6 +686,7 @@ public interface Strings {
 	String infoCaseMap = "infoCaseMap";
 	String infoCheckProbableInfectionEnvironment = "infoCheckProbableInfectionEnvironment";
 	String infoCompletenessMerge = "infoCompletenessMerge";
+	String infoContactAlreadyConvertedToCase = "infoContactAlreadyConvertedToCase";
 	String infoContactCalculateCompleteness = "infoContactCalculateCompleteness";
 	String infoContactCompleteness = "infoContactCompleteness";
 	String infoContactCompletenessMerge = "infoContactCompletenessMerge";
