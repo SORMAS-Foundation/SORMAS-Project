@@ -208,7 +208,7 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 		return sortedDiseaseList;
 	}
 
-	public int calculateGrowth(long currentCount, long previousCount) {
+	public int calculateGrowth(int currentCount, int previousCount) {
 		return currentCount == 0
 			? (previousCount > 0 ? -100 : 0)
 			: previousCount == 0
