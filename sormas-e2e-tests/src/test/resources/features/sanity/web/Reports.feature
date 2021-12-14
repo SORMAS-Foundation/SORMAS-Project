@@ -1,4 +1,4 @@
-@UI @WeeklyReports
+@UI @Sanity @WeeklyReports
 Feature: Reports
 
   Scenario: Reports directory layout
