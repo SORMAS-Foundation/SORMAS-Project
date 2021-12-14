@@ -78,6 +78,10 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		return sampleFacade.getNewTestResultCountByResultType(cases.stream().map(DashboardCaseDto::getId).collect(Collectors.toList()));
 	}
 
+	public Map<PathogenTestResultType, Long> getTestResultCountByResultType(DashboardCriteria dashboardCriteria) {
+		return getTestResultCountByResultType(getCases(dashboardCriteria));
+	}
+
 	@Override
 	public long countCasesConvertedFromContacts(DashboardCriteria dashboardCriteria) {
 		return dashboardService.countCasesConvertedFromContacts(dashboardCriteria);

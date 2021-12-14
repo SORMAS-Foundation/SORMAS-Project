@@ -161,6 +161,10 @@ public final class CssStyles {
 	public static final String BUTTON_FONT_SIZE_LARGE = "font-size-large";
 	public static final String GEOCODE_BUTTON_HIGHLIGHT = "geocode-button-highlight";
 
+	// Link styles
+	public static final String LINK_BUTTON = "button";
+	public static final String LINK_BUTTON_PRIMARY = "button-primary";
+
 	// List styles
 	public static final String SORMAS_LIST = "s-list";
 	public static final String SORMAS_LIST_ENTRY = "s-list-entry";

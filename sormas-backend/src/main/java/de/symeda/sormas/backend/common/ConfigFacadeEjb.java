@@ -161,6 +161,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String STEP_SIZE_FOR_CSV_EXPORT = "stepSizeForCsvExport";
 
 	private static final String UI_URL = "ui.url";
+	private static final String SORMAS_STATS_URL = "sormasStats.url";
 
 	private static final String DOCUMENT_UPLOAD_SIZE_LIMIT_MB = "documentUploadSizeLimitMb";
 	public static final int DEFAULT_DOCUMENT_UPLOAD_SIZE_LIMIT_MB = 20;
@@ -343,6 +344,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getUiUrl() {
 		return getProperty(UI_URL, null);
+	}
+
+	@Override
+	public String getSormasStatsUrl() {
+		return getProperty(SORMAS_STATS_URL, null);
 	}
 
 	@Override
@@ -546,7 +552,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			getSymptomJournalConfig().getAuthUrl(),
 			getPatientDiaryConfig().getUrl(),
 			getPatientDiaryConfig().getProbandsUrl(),
-			getPatientDiaryConfig().getAuthUrl());
+			getPatientDiaryConfig().getAuthUrl(),
+			getSormasStatsUrl());
 
 		SormasToSormasConfig s2sConfig = getS2SConfig();
 
