@@ -18,6 +18,8 @@
 package org.sormas.e2etests.steps.api;
 
 import cucumber.api.java8.En;
+import java.util.ArrayList;
+import java.util.List;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.api.CaseHelper;
 import org.sormas.e2etests.pojo.api.Case;
@@ -36,5 +38,19 @@ public class CaseSteps implements En {
           caseHelper.createCase(caze);
           apiState.setCreatedCase(caze);
         });
+
+    When(
+        "API: I create {int} cases",
+        (Integer numberOfCases) -> {
+          List<Case> casesList = new ArrayList<>();
+          for (int i = 0; i < numberOfCases; i++) {
+            casesList.add(
+                caseApiService.buildGeneratedCase(apiState.getLastCreatedPersonsList().get(i)));
+          }
+          caseHelper.createMultipleCases(casesList);
+          apiState.setCreatedCases(casesList);
+        });
+
+    When("API: I receive all cases ids", caseHelper::getAllCasesUuid);
   }
 }
