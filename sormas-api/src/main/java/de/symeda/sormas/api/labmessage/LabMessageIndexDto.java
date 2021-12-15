@@ -67,7 +67,9 @@ public class LabMessageIndexDto implements Serializable {
 		this.personLastName = personLastName;
 		this.personPostalCode = personPostalCode;
 		this.status = status;
-		this.assignee = new UserReferenceDto(assigneeUuid, assigneeFirstName, assigneeLastName, null);
+		if (assigneeUuid != null) {
+			this.assignee = new UserReferenceDto(assigneeUuid, assigneeFirstName, assigneeLastName, null);
+		}
 
 		if (personBirthDateYYYY != null && personBirthDateMM != null && personBirthDateDD != null) {
 			Calendar birthdate = Calendar.getInstance();

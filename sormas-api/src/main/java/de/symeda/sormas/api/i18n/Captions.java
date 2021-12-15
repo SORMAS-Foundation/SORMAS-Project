@@ -178,6 +178,8 @@ public interface Captions {
 	String areaActiveAreas = "areaActiveAreas";
 	String areaAllAreas = "areaAllAreas";
 	String areaArchivedAreas = "areaArchivedAreas";
+	String assign = "assign";
+	String assignToMe = "assignToMe";
 	String BAGExport = "BAGExport";
 	String bulkActionCreatDocuments = "bulkActionCreatDocuments";
 	String bulkActions = "bulkActions";
