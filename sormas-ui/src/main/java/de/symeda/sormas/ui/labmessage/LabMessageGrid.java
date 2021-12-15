@@ -178,7 +178,7 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 	private HorizontalLayout buildAssigneeLayout(LabMessageIndexDto labMessage) {
 		HorizontalLayout layout = new HorizontalLayout();
 		Button button = new Button();
-		CssStyles.style(ValoTheme.BUTTON_LINK, button);
+		CssStyles.style(button, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 		if (labMessage.getAssignee() == null) {
 			button.setCaption(I18nProperties.getCaption(Captions.assign));
 		} else {

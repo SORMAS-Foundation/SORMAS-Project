@@ -1318,8 +1318,8 @@ public class LabMessageController {
 		// get fresh data
 		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
 
-		HorizontalLayout form = new HorizontalLayout();
-		CssStyles.style(form, CssStyles.VSPACE_3);
+		VerticalLayout form = new VerticalLayout();
+		form.setSpacing(false);
 
 		ComboBoxWithPlaceholder assigneeComboBox = new ComboBoxWithPlaceholder();
 		assigneeComboBox.setCaption(I18nProperties.getCaption(Captions.LabMessage_assignee));
@@ -1335,11 +1335,11 @@ public class LabMessageController {
 		}
 
 		Button assignMeButton = new Button(I18nProperties.getCaption(Captions.assignToMe));
-		CssStyles.style(assignMeButton, CssStyles.FORCE_CAPTION, ValoTheme.BUTTON_LINK);
+		CssStyles.style(assignMeButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 
 		form.addComponents(assigneeComboBox, assignMeButton);
 
-		final CommitDiscardWrapperComponent<HorizontalLayout> wrapperComponent = new CommitDiscardWrapperComponent<HorizontalLayout>(form);
+		final CommitDiscardWrapperComponent<VerticalLayout> wrapperComponent = new CommitDiscardWrapperComponent<VerticalLayout>(form);
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(wrapperComponent, I18nProperties.getString(Strings.headingEditAssignee));
 
