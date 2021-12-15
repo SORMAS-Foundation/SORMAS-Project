@@ -19,10 +19,11 @@ import org.openqa.selenium.By;
 
 public class WeeklyReportsPage {
 
-	public static final By YEAR_FILTER = By.cssSelector("#year > div");
-	public static final By EPI_WEEK_FILTER = By.cssSelector("#epiWeek > div");
-	public static final By LAST_EPI_WEEK_BUTTON = By.id("dashboardLastWeek");
-	public static final By INFO_ICON = By.cssSelector(".v-icon-info_circle");
-	public static final By GRID = By.cssSelector(".v-grid-tablewrapper");
-	public static final String GRID_HEADER = "//thead[@class='v-grid-header']//div[contains(text(), '%s')]";
+  public static final By YEAR_FILTER = By.cssSelector("#year > div");
+  public static final By EPI_WEEK_FILTER = By.cssSelector("#epiWeek > div");
+  public static final By LAST_EPI_WEEK_BUTTON = By.id("dashboardLastWeek");
+  public static final By INFO_ICON = By.cssSelector(".v-icon-info_circle");
+  public static final By GRID = By.cssSelector(".v-grid-tablewrapper");
+  public static final String GRID_HEADER =
+      "//thead[@class='v-grid-header']//div[contains(text(), '%s')]";
 }
