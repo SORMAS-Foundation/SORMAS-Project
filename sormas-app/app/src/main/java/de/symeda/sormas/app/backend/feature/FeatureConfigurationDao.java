@@ -98,7 +98,7 @@ public class FeatureConfigurationDao extends AbstractAdoDao<FeatureConfiguration
 			if (featureConfiguration != null && featureConfiguration.getPropertiesJson() != null) {
 				propertyObjectMap = featureConfiguration.getPropertiesMap();
 			} else {
-				return false;
+				return featureType.getSupportedPropertyDefaults().get(property) == Boolean.TRUE;
 			}
 
 		} catch (SQLException e) {
