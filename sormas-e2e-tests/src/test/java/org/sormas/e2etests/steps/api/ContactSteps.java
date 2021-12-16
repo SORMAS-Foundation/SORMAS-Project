@@ -19,6 +19,7 @@ package org.sormas.e2etests.steps.api;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.helpers.api.ContactHelper;
 import org.sormas.e2etests.helpers.api.PersonsHelper;
 import org.sormas.e2etests.pojo.api.Case;
@@ -28,6 +29,7 @@ import org.sormas.e2etests.services.api.ContactApiService;
 import org.sormas.e2etests.services.api.PersonApiService;
 import org.sormas.e2etests.state.ApiState;
 
+@Slf4j
 public class ContactSteps implements En {
 
   @Inject
