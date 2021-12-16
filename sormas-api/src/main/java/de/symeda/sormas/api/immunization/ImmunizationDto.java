@@ -52,6 +52,8 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -6538566879882613529L;
 
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 22811020;
+
 	public static final String I18N_PREFIX = "Immunization";
 
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";

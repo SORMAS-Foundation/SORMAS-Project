@@ -80,6 +80,8 @@ import retrofit2.Response;
 
 public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
+	public static final double JSON_COMPRESSION_FACTOR = 5.7; // number derived using https://dafrok.github.io/gzip-size-online/
+
 	/**
 	 * Should be set to true when the synchronization fails and reset to false as soon
 	 * as the last callback is called (i.e. the synchronization has been completed/cancelled).

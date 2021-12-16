@@ -41,6 +41,8 @@ public class SampleDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -6975445672442728938L;
 
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 105308;
+
 	public static final String I18N_PREFIX = "Sample";
 
 	public static final String ASSOCIATED_CASE = "associatedCase";
