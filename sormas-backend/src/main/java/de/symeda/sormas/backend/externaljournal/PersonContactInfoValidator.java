@@ -93,10 +93,12 @@ public class PersonContactInfoValidator {
 		}
 
 		contactInfo.forEach(i -> {
-			if (i.isInvalid()) {
-				validationErrors.add(i.invalidError);
-			} else if (i.isTaken()) {
-				validationErrors.add(i.takenError);
+			if (!i.isBlank()) {
+				if (i.isMalformatted()) {
+					validationErrors.add(i.invalidError);
+				} else if (i.isUnavailable()) {
+					validationErrors.add(i.takenError);
+				}
 			}
 		});
 
@@ -133,17 +135,12 @@ public class PersonContactInfoValidator {
 			return StringUtils.isBlank(contactInfo);
 		}
 
-		public boolean isInvalid() {
-			return !StringUtils.isBlank(contactInfo) && !isValid(contactInfo);
-		}
+		// Shall return true if the format of the contactInfo is not legit
+		abstract boolean isMalformatted();
 
-		public boolean isTaken() {
-			return !StringUtils.isBlank(contactInfo) && !isAvailable(contactInfo);
-		}
+		// Shall return true if existing entries block the usage of the contactInfo for another person
+		abstract boolean isUnavailable();
 
-		abstract boolean isValid(String contactInfo);
-
-		abstract boolean isAvailable(String contactInfo);
 	}
 
 	private interface ContactInfoSupplier {
@@ -161,17 +158,17 @@ public class PersonContactInfoValidator {
 		}
 
 		@Override
-		boolean isValid(String contactInfo) {
+		boolean isMalformatted() {
 			EmailValidator validator = EmailValidator.getInstance();
-			return validator.isValid(contactInfo);
+			return !validator.isValid(super.contactInfo);
 		}
 
 		@Override
-		boolean isAvailable(String contactInfo) {
-			PatientDiaryQueryResponse response = patientDiaryClient.queryPatientDiary(EMAIL_QUERY_PARAM, contactInfo)
+		boolean isUnavailable() {
+			PatientDiaryQueryResponse response = patientDiaryClient.queryPatientDiary(EMAIL_QUERY_PARAM, super.contactInfo)
 				.orElseThrow(() -> new RuntimeException("Could not query patient diary for Email address availability"));
 
-			return hasAnyMatch(response, person);
+			return hasBlockingEntries(response, person);
 		}
 	}
 
@@ -186,35 +183,34 @@ public class PersonContactInfoValidator {
 		}
 
 		@Override
-		boolean isValid(String contactInfo) {
+		boolean isMalformatted() {
 			PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 			try {
-				Phonenumber.PhoneNumber germanNumberProto = phoneUtil.parse(contactInfo, "DE");
-				return phoneUtil.isValidNumber(germanNumberProto);
+				Phonenumber.PhoneNumber germanNumberProto = phoneUtil.parse(super.contactInfo, "DE");
+				return !phoneUtil.isValidNumber(germanNumberProto);
 			} catch (NumberParseException e) {
 				logger.warn("NumberParseException was thrown: " + e.toString());
-				return false;
+				return true;
 			}
 		}
 
 		@Override
-		boolean isAvailable(String contactInfo) {
-			PatientDiaryQueryResponse response = patientDiaryClient.queryPatientDiary(MOBILE_PHONE_QUERY_PARAM, contactInfo)
+		boolean isUnavailable() {
+			PatientDiaryQueryResponse response = patientDiaryClient.queryPatientDiary(MOBILE_PHONE_QUERY_PARAM, super.contactInfo)
 				.orElseThrow(() -> new RuntimeException("Could not query patient diary for phone number availability"));
 
-			return hasAnyMatch(response, person);
+			return hasBlockingEntries(response, person);
 		}
 	}
 
 	/**
-	 *
 	 * @param response
-	 *            response data from patient diary
+	 *            response data from patient diary containing entries of all persons already related to a contact info.
 	 * @param person
-	 *            person to match
-	 * @return true if response contanes the given person, otherwise false
+	 *            person to be associated with that contact info.
+	 * @return false if response does not contain any blocking entry. A blocking entry is a different person with identical first name.
 	 */
-	private static boolean hasAnyMatch(PatientDiaryQueryResponse response, PersonDto person) {
+	private static boolean hasBlockingEntries(PatientDiaryQueryResponse response, PersonDto person) {
 		boolean notUsed = response.getCount() == 0;
 		boolean samePerson = response.getResults()
 			.stream()
@@ -227,6 +223,6 @@ public class PersonContactInfoValidator {
 			.map(PatientDiaryPersonData::getIdatId)
 			.map(PatientDiaryIdatId::getIdat)
 			.noneMatch(patientDiaryPerson -> person.getFirstName().equals(patientDiaryPerson.getFirstName()));
-		return notUsed || samePerson || differentFirstNames;
+		return !(notUsed || samePerson || differentFirstNames);
 	}
 }
