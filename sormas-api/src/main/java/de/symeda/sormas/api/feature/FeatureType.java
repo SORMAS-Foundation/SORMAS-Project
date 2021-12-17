@@ -37,7 +37,11 @@ public enum FeatureType {
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-			ImmutableMap.of(FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT, Boolean.TRUE, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE, Boolean.FALSE)),
+		ImmutableMap.of(
+			FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT,
+			Boolean.TRUE,
+			FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE,
+			Boolean.FALSE)),
 	EVENT_SURVEILLANCE(true, true, null, null),
 	SAMPLES_LAB(true,
 		true,
@@ -65,7 +69,7 @@ public enum FeatureType {
 		false,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-			ImmutableMap.of(FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE, Boolean.FALSE)),
+		ImmutableMap.of(FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE, Boolean.FALSE)),
 	DOCUMENTS(true,
 		false,
 		new FeatureType[] {
