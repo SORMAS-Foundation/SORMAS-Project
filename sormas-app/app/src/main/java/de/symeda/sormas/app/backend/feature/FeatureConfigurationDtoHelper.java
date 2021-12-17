@@ -22,7 +22,7 @@ public class FeatureConfigurationDtoHelper extends AdoDtoHelper<FeatureConfigura
 	}
 
 	@Override
-	protected Call<List<FeatureConfigurationDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<FeatureConfigurationDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
 		return RetroProvider.getFeatureConfigurationFacade().pullAllSince(since);
 	}
 
@@ -53,4 +53,9 @@ public class FeatureConfigurationDtoHelper extends AdoDtoHelper<FeatureConfigura
 		target.setEnabled(source.isEnabled());
 		target.setProperties(source.getPropertiesMap());
 	}
+
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
+    }
 }

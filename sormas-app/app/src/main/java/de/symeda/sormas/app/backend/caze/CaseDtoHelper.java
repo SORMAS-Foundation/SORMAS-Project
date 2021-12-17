@@ -76,8 +76,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 	}
 
 	@Override
-	protected Call<List<CaseDataDto>> pullAllSince(long since) throws NoConnectionException {
-		return RetroProvider.getCaseFacade().pullAllSince(since);
+	protected Call<List<CaseDataDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+		return RetroProvider.getCaseFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
 	}
 
 	@Override
@@ -475,6 +475,11 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
 		target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());
 		target.setFollowUpStatusChangeUser(UserDtoHelper.toReferenceDto(source.getFollowUpStatusChangeUser()));
+	}
+
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return CaseDataDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
 	}
 
 	public static CaseReferenceDto toReferenceDto(Case ado) {

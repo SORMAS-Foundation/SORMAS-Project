@@ -27,8 +27,11 @@ import retrofit2.http.Path;
 
 public interface WeeklyReportFacadeRetro {
 
-	@GET("weeklyreports/all/{since}")
-	Call<List<WeeklyReportDto>> pullAllSince(@Path("since") long since);
+	@GET("weeklyreports/all/{since}/{size}/{lastUUID}")
+	Call<List<WeeklyReportDto>> pullAllSince(
+			@Path("since") long since,
+			@Path("size") int size,
+			@Path("lastUUID") String lastSynchronizedUuidSameTimestamp);
 
 	@POST("weeklyreports/query")
 	Call<List<WeeklyReportDto>> pullByUuids(@Body List<String> uuids);

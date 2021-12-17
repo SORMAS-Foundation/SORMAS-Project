@@ -30,7 +30,7 @@ public class VaccinationDtoHelper extends AdoDtoHelper<Vaccination, VaccinationD
 	}
 
 	@Override
-	protected Call<List<VaccinationDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<VaccinationDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 
@@ -108,4 +108,9 @@ public class VaccinationDtoHelper extends AdoDtoHelper<Vaccination, VaccinationD
 
 		target.setPseudonymized(source.isPseudonymized());
 	}
+
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
+    }
 }

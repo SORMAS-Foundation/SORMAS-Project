@@ -52,8 +52,8 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 	}
 
 	@Override
-	protected Call<List<EventDto>> pullAllSince(long since) throws NoConnectionException {
-		return RetroProvider.getEventFacade().pullAllSince(since);
+	protected Call<List<EventDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+		return RetroProvider.getEventFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
 	}
 
 	@Override
@@ -235,7 +235,12 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setInternalToken(source.getInternalToken());
 	}
 
-	public static EventReferenceDto toReferenceDto(Event ado) {
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return EventDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+    }
+
+    public static EventReferenceDto toReferenceDto(Event ado) {
 		if (ado == null) {
 			return null;
 		}

@@ -39,7 +39,7 @@ public class DistrictDtoHelper extends AdoDtoHelper<District, DistrictDto> {
 	}
 
 	@Override
-	protected Call<List<DistrictDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<DistrictDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
 		return RetroProvider.getDistrictFacade().pullAllSince(since);
 	}
 
@@ -66,7 +66,12 @@ public class DistrictDtoHelper extends AdoDtoHelper<District, DistrictDto> {
 		throw new UnsupportedOperationException("Entity is infrastructure");
 	}
 
-	public static DistrictReferenceDto toReferenceDto(District ado) {
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
+    }
+
+    public static DistrictReferenceDto toReferenceDto(District ado) {
 		if (ado == null) {
 			return null;
 		}

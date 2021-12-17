@@ -30,8 +30,11 @@ import retrofit2.http.Path;
  */
 public interface TaskFacadeRetro {
 
-	@GET("tasks/all/{since}")
-	Call<List<TaskDto>> pullAllSince(@Path("since") long since);
+	@GET("tasks/all/{since}/{size}/{lastUUID}")
+	Call<List<TaskDto>> pullAllSince(
+			@Path("since") long since,
+			@Path("size") int size,
+			@Path("lastUUID") String lastSynchronizedUuidSameTimestamp);
 
 	@POST("tasks/query")
 	Call<List<TaskDto>> pullByUuids(@Body List<String> uuids);

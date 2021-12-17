@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.backend.region;
 
+import android.content.Context;
+
 import java.sql.SQLException;
 import java.util.List;
 
@@ -47,7 +49,7 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
 	}
 
 	@Override
-	protected Call<List<CommunityDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<CommunityDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
 		return RetroProvider.getCommunityFacade().pullAllSince(since);
 	}
 
@@ -76,11 +78,11 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
 	}
 
 	@Override
-	public void pullEntities(final boolean markAsRead)
+	public void pullEntities(final boolean markAsRead, Context context)
 		throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
 		databaseWasEmpty = DatabaseHelper.getCommunityDao().countOf() == 0;
 		try {
-			super.pullEntities(markAsRead);
+			super.pullEntities(markAsRead, context);
 		} finally {
 			databaseWasEmpty = false;
 		}
@@ -105,7 +107,12 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
 		throw new UnsupportedOperationException("Entity is infrastructure");
 	}
 
-	public static CommunityReferenceDto toReferenceDto(Community ado) {
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
+    }
+
+    public static CommunityReferenceDto toReferenceDto(Community ado) {
 		if (ado == null) {
 			return null;
 		}

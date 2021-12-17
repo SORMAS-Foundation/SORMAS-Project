@@ -50,7 +50,7 @@ public class CampaignDtoHelper extends AdoDtoHelper<Campaign, CampaignDto> {
     }
 
     @Override
-    protected Call<List<CampaignDto>> pullAllSince(long since) throws NoConnectionException {
+    protected Call<List<CampaignDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
         return RetroProvider.getCampaignFacade().pullAllSince(since);
     }
 
@@ -80,5 +80,10 @@ public class CampaignDtoHelper extends AdoDtoHelper<Campaign, CampaignDto> {
     @Override
     protected void fillInnerFromAdo(CampaignDto dto, Campaign campaign) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
     }
 }

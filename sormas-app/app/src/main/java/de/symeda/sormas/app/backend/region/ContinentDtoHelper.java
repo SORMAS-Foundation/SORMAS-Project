@@ -40,7 +40,7 @@ public class ContinentDtoHelper extends AdoDtoHelper<Continent, ContinentDto> {
     }
 
     @Override
-    protected Call<List<ContinentDto>> pullAllSince(long since) throws NoConnectionException {
+    protected Call<List<ContinentDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
         return RetroProvider.getContinentFacade().pullAllSince(since);
     }
 
@@ -63,6 +63,11 @@ public class ContinentDtoHelper extends AdoDtoHelper<Continent, ContinentDto> {
     @Override
     protected void fillInnerFromAdo(ContinentDto dto, Continent continent) {
         throw new UnsupportedOperationException("Entity is infrastructure");
+    }
+
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
     }
 
     public static ContinentReferenceDto toReferenceDto(Continent ado) {

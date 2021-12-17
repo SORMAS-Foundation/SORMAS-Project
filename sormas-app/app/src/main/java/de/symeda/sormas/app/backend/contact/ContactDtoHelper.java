@@ -62,8 +62,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 	}
 
 	@Override
-	protected Call<List<ContactDto>> pullAllSince(long since) throws NoConnectionException {
-		return RetroProvider.getContactFacade().pullAllSince(since);
+	protected Call<List<ContactDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+		return RetroProvider.getContactFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
 	}
 
 	@Override
@@ -317,7 +317,12 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setVaccinationStatus(source.getVaccinationStatus());
 	}
 
-	public static ContactReferenceDto toReferenceDto(Contact ado) {
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return ContactDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+    }
+
+    public static ContactReferenceDto toReferenceDto(Contact ado) {
 		if (ado == null) {
 			return null;
 		}

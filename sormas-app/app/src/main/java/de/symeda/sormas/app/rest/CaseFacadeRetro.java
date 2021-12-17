@@ -27,8 +27,11 @@ import retrofit2.http.Path;
 
 public interface CaseFacadeRetro {
 
-	@GET("cases/all/{since}")
-	Call<List<CaseDataDto>> pullAllSince(@Path("since") long since);
+	@GET("cases/all/{since}/{size}/{lastUUID}")
+	Call<List<CaseDataDto>> pullAllSince(
+		@Path("since") long since,
+		@Path("size") int size,
+		@Path("lastUUID") String lastSynchronizedUuidSameTimestamp);
 
 	@POST("cases/query")
 	Call<List<CaseDataDto>> pullByUuids(@Body List<String> uuids);

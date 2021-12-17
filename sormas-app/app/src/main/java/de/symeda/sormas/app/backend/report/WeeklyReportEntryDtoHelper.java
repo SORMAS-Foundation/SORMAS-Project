@@ -40,7 +40,7 @@ public class WeeklyReportEntryDtoHelper extends AdoDtoHelper<WeeklyReportEntry, 
 	}
 
 	@Override
-	protected Call<List<WeeklyReportEntryDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<WeeklyReportEntryDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 
@@ -65,4 +65,9 @@ public class WeeklyReportEntryDtoHelper extends AdoDtoHelper<WeeklyReportEntry, 
 		target.setDisease(source.getDisease());
 		target.setNumberOfCases(source.getNumberOfCases());
 	}
+
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
+    }
 }

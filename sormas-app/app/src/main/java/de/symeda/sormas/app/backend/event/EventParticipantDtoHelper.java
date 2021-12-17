@@ -52,8 +52,8 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 	}
 
 	@Override
-	protected Call<List<EventParticipantDto>> pullAllSince(long since) throws NoConnectionException {
-		return RetroProvider.getEventParticipantFacade().pullAllSince(since);
+	protected Call<List<EventParticipantDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+		return RetroProvider.getEventParticipantFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
 	}
 
 	@Override
@@ -153,7 +153,12 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 		target.setPseudonymized(source.isPseudonymized());
 	}
 
-	public static EventParticipantReferenceDto toReferenceDto(EventParticipant ado) {
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return EventParticipantDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+    }
+
+    public static EventParticipantReferenceDto toReferenceDto(EventParticipant ado) {
 		if (ado == null) {
 			return null;
 		}

@@ -15,6 +15,12 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import android.content.Context;
+import android.util.Log;
+
+import com.j256.ormlite.logger.Logger;
+import com.j256.ormlite.logger.LoggerFactory;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -22,11 +28,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
-
-import com.j256.ormlite.logger.Logger;
-import com.j256.ormlite.logger.LoggerFactory;
-
-import android.util.Log;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.PushResult;
@@ -46,7 +47,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
 	protected abstract Class<DTO> getDtoClass();
 
-	protected abstract Call<List<DTO>> pullAllSince(long since) throws NoConnectionException;
+	protected abstract Call<List<DTO>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp) throws NoConnectionException;
 
 	/**
 	 * Explicitly pull missing entities.
@@ -64,36 +65,46 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 	protected void preparePulledResult(List<DTO> result) {
 	}
 
+	protected abstract long getApproximateJsonSizeInBytes();
+
 	/**
 	 * @return another pull needed?
+	 * @param context
 	 */
-	public boolean pullAndPushEntities() throws DaoException, ServerConnectionException, ServerCommunicationException, NoConnectionException {
+	public boolean pullAndPushEntities(Context context) throws DaoException, ServerConnectionException, ServerCommunicationException, NoConnectionException {
 
-		pullEntities(false);
+		pullEntities(false, context);
 
 		return pushEntities(false);
 	}
 
-	public void pullEntities(final boolean markAsRead)
+	public void pullEntities(final boolean markAsRead, Context context)
 		throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
 		try {
 			final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
 			Date maxModifiedDate = dao.getLatestChangeDate();
-			Call<List<DTO>> dtoCall = pullAllSince(maxModifiedDate != null ? maxModifiedDate.getTime() : 0);
-			if (dtoCall == null) {
-				return;
+			long approximateJsonSizeInBytes = getApproximateJsonSizeInBytes();
+			final Integer batchSize = approximateJsonSizeInBytes != 0
+				? NetworkHelper.getNumberOfEntitiesToBePulledInOneBatch(approximateJsonSizeInBytes, context)
+				: Integer.MAX_VALUE;
+			Integer lastBatchSize = batchSize;
+			while (lastBatchSize == batchSize) {
+				Call<List<DTO>> dtoCall = pullAllSince(maxModifiedDate != null ? maxModifiedDate.getTime() : 0, batchSize, null);
+
+				if (dtoCall == null) {
+					return;
+				}
+
+				Response<List<DTO>> response;
+				try {
+					response = dtoCall.execute();
+				} catch (IOException e) {
+					throw new ServerCommunicationException(e);
+				}
+
+				lastBatchSize = handlePullResponse(markAsRead, dao, response);
 			}
-
-			Response<List<DTO>> response;
-			try {
-				response = dtoCall.execute();
-			} catch (IOException e) {
-				throw new ServerCommunicationException(e);
-			}
-
-			handlePullResponse(markAsRead, dao, response);
-
 		} catch (RuntimeException e) {
 			Log.e(getClass().getName(), "Exception thrown when trying to pull entities");
 			throw new DaoException(e);
@@ -104,7 +115,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 		try {
 			final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
-			Call<List<DTO>> dtoCall = pullAllSince(0);
+			Call<List<DTO>> dtoCall = pullAllSince(0, Integer.MAX_VALUE, null);
 			if (dtoCall == null) {
 				return;
 			}

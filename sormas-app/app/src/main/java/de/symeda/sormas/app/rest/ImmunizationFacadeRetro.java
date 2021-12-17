@@ -29,8 +29,12 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface ImmunizationFacadeRetro {
-    @GET("immunizations/all/{since}")
-    Call<List<ImmunizationDto>> pullAllSince(@Path("since") long since);
+
+	@GET("contacts/all/{since}/{size}/{lastUUID}")
+	Call<List<ImmunizationDto>> pullAllSince(
+		@Path("since") long since,
+		@Path("size") int size,
+		@Path("lastUUID") String lastSynchronizedUuidSameTimestamp);
 
     @POST("immunizations/query")
     Call<List<ImmunizationDto>> pullByUuids(@Body List<String> uuids);

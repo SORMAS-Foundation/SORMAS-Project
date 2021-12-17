@@ -42,8 +42,8 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
 	}
 
 	@Override
-	protected Call<List<PathogenTestDto>> pullAllSince(long since) throws NoConnectionException {
-		return RetroProvider.getSampleTestFacade().pullAllSince(since);
+	protected Call<List<PathogenTestDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+		return RetroProvider.getSampleTestFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
 	}
 
 	@Override
@@ -128,4 +128,9 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
 
 		target.setPseudonymized(source.isPseudonymized());
 	}
+
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return PathogenTestDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+    }
 }

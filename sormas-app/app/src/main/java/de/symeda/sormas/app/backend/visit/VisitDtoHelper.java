@@ -47,8 +47,8 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
 	}
 
 	@Override
-	protected Call<List<VisitDto>> pullAllSince(long since) throws NoConnectionException {
-		return RetroProvider.getVisitFacade().pullAllSince(since);
+	protected Call<List<VisitDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp) throws NoConnectionException {
+		return RetroProvider.getVisitFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
 	}
 
 	@Override
@@ -120,4 +120,9 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
 
 		target.setPseudonymized(source.isPseudonymized());
 	}
+
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return VisitDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+    }
 }

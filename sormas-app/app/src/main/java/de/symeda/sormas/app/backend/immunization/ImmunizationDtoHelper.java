@@ -63,8 +63,8 @@ public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, Immunizati
 	}
 
 	@Override
-	protected Call<List<ImmunizationDto>> pullAllSince(long since) throws NoConnectionException {
-		return RetroProvider.getImmunizationFacade().pullAllSince(since);
+	protected Call<List<ImmunizationDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+		return RetroProvider.getImmunizationFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
 	}
 
 	@Override
@@ -205,7 +205,12 @@ public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, Immunizati
 		target.setPseudonymized(source.isPseudonymized());
 	}
 
-	public static ImmunizationReferenceDto toReferenceDto(Immunization ado) {
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return ImmunizationDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+    }
+
+    public static ImmunizationReferenceDto toReferenceDto(Immunization ado) {
 		if (ado == null) {
 			return null;
 		}
