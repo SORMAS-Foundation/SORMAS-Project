@@ -112,6 +112,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String INTERFACE_PATIENT_DIARY_PASSWORD = "interface.patientdiary.password";
 	public static final String INTERFACE_PATIENT_DIARY_DEFAULT_USER_USERNAME = "interface.patientdiary.defaultuser.username";
 	public static final String INTERFACE_PATIENT_DIARY_DEFAULT_USER_PASSWORD = "interface.patientdiary.defaultuser.password";
+	public static final String INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT = "interface.patientdiary.acceptPhoneContact";
 
 	public static final String DOCGENERATION_NULL_REPLACEMENT = "docgeneration.nullReplacement";
 	public static final String INTERFACE_DEMIS_JNDINAME = "interface.demis.jndiName";
@@ -500,6 +501,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setAuthUrl(getProperty(INTERFACE_PATIENT_DIARY_AUTH_URL, null));
 		config.setEmail(getProperty(INTERFACE_PATIENT_DIARY_EMAIL, null));
 		config.setPassword(getProperty(INTERFACE_PATIENT_DIARY_PASSWORD, null));
+		config.setAcceptPhoneContact(getBoolean(INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT, true));
 
 		UserConfig userConfig = new UserConfig();
 		userConfig.setUsername(getProperty(INTERFACE_PATIENT_DIARY_DEFAULT_USER_USERNAME, null));

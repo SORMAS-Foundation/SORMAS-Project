@@ -2006,29 +2006,31 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	public void setResponsibleSurveillanceOfficer(Case caze) {
-		District reportingUserDistrict = caze.getReportingUser().getDistrict();
+		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT)) {
+			District reportingUserDistrict = caze.getReportingUser().getDistrict();
 
-		if (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)
-			&& (reportingUserDistrict.equals(caze.getResponsibleDistrict()) || reportingUserDistrict.equals(caze.getDistrict()))) {
-			caze.setSurveillanceOfficer(caze.getReportingUser());
-		} else {
-			List<User> informants = caze.getHealthFacility() != null && FacilityType.HOSPITAL.equals(caze.getHealthFacility().getType())
-				? userService.getInformantsOfFacility(caze.getHealthFacility())
-				: new ArrayList<>();
-			Random rand = new Random();
-			if (!informants.isEmpty()) {
-				caze.setSurveillanceOfficer(informants.get(rand.nextInt(informants.size())).getAssociatedOfficer());
+			if (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)
+				&& (reportingUserDistrict.equals(caze.getResponsibleDistrict()) || reportingUserDistrict.equals(caze.getDistrict()))) {
+				caze.setSurveillanceOfficer(caze.getReportingUser());
 			} else {
-				User survOff = null;
-				if (caze.getResponsibleDistrict() != null) {
-					survOff = getRandomSurveillanceOfficer(caze.getResponsibleDistrict());
-				}
+				List<User> informants = caze.getHealthFacility() != null && FacilityType.HOSPITAL.equals(caze.getHealthFacility().getType())
+					? userService.getInformantsOfFacility(caze.getHealthFacility())
+					: new ArrayList<>();
+				Random rand = new Random();
+				if (!informants.isEmpty()) {
+					caze.setSurveillanceOfficer(informants.get(rand.nextInt(informants.size())).getAssociatedOfficer());
+				} else {
+					User survOff = null;
+					if (caze.getResponsibleDistrict() != null) {
+						survOff = getRandomSurveillanceOfficer(caze.getResponsibleDistrict());
+					}
 
-				if (survOff == null && caze.getDistrict() != null) {
-					survOff = getRandomSurveillanceOfficer(caze.getDistrict());
-				}
+					if (survOff == null && caze.getDistrict() != null) {
+						survOff = getRandomSurveillanceOfficer(caze.getDistrict());
+					}
 
-				caze.setSurveillanceOfficer(survOff);
+					caze.setSurveillanceOfficer(survOff);
+				}
 			}
 		}
 	}
