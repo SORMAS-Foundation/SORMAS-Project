@@ -56,6 +56,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateTypeHelper;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -111,7 +112,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		+ loc(WEEK_AND_DATE_FILTER);
 
 	protected CaseFilterForm() {
-		super(CaseCriteria.class, CaseDataDto.I18N_PREFIX);
+		super(CaseCriteria.class, CaseDataDto.I18N_PREFIX, FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
 	}
 
 	@Override
