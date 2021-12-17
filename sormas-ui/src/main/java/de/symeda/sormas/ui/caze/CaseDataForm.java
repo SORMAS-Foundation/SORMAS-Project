@@ -278,6 +278,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBox facilityCombo;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
 	private TextField tfExpectedFollowUpUntilDate;
+	private boolean ignoreDifferentPlaceOfStayJurisdiction = false;
 
 	public CaseDataForm(String caseUuid, PersonDto person, Disease disease, SymptomsDto symptoms, ViewMode viewMode, boolean isPseudonymized) {
 
@@ -902,7 +903,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		});
 
 		differentPlaceOfStayJurisdiction.addValueChangeListener(e -> {
-			updateFacility();
+			if (!ignoreDifferentPlaceOfStayJurisdiction) {
+				updateFacility();
+			}
 		});
 
 		// Set initial visibilities & accesses
@@ -1490,16 +1493,26 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpStartDate(), I18nProperties.getUserLanguage())));
 		}
 
-		if (newFieldValue.getRegion() != null || newFieldValue.getDistrict() != null || newFieldValue.getCommunity() != null) {
-			boolean readOnly = differentPlaceOfStayJurisdiction.isReadOnly();
-			differentPlaceOfStayJurisdiction.setReadOnly(false);
-			differentPlaceOfStayJurisdiction.setValue(Boolean.TRUE);
-			differentPlaceOfStayJurisdiction.setReadOnly(readOnly);
-		}
+		updateVisibilityDifferentPlaceOfStayJurisdiction(newFieldValue);
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value
 		discard();
+	}
+
+	public void onDiscard() {
+		ignoreDifferentPlaceOfStayJurisdiction = true;
+		updateVisibilityDifferentPlaceOfStayJurisdiction(getValue());
+		ignoreDifferentPlaceOfStayJurisdiction = false;
+	}
+
+	private void updateVisibilityDifferentPlaceOfStayJurisdiction(CaseDataDto newFieldValue) {
+		boolean isDifferentPlaceOfStayJurisdiction =
+			newFieldValue.getRegion() != null || newFieldValue.getDistrict() != null || newFieldValue.getCommunity() != null;
+		boolean readOnly = differentPlaceOfStayJurisdiction.isReadOnly();
+		differentPlaceOfStayJurisdiction.setReadOnly(false);
+		differentPlaceOfStayJurisdiction.setValue(isDifferentPlaceOfStayJurisdiction);
+		differentPlaceOfStayJurisdiction.setReadOnly(readOnly);
 	}
 
 	private void updateFacility() {
