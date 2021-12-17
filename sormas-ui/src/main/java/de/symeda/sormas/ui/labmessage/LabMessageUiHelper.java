@@ -56,27 +56,29 @@ public class LabMessageUiHelper {
 	}
 
 	private static Button addSaveAndOpenEntryButton(CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent) {
-		Button saveAndOpenEntryButton;
-		SampleDto sample = sampleComponent.getWrappedComponent().getValue();
-		if (sample.getAssociatedCase() != null) {
-			saveAndOpenEntryButton = ButtonHelper.createButton(
-				I18nProperties.getCaption(Captions.actionSaveAndOpenCase),
-				clickEvent -> ControllerProvider.getCaseController().navigateToCase(sample.getAssociatedCase().getUuid()));
-		} else if (sample.getAssociatedContact() != null) {
-			saveAndOpenEntryButton = ButtonHelper.createButton(
-				I18nProperties.getCaption(Captions.actionSaveAndOpenContact),
-				clickEvent -> ControllerProvider.getContactController().navigateToData(sample.getAssociatedContact().getUuid()));
-		} else if (sample.getAssociatedEventParticipant() != null) {
-			saveAndOpenEntryButton = ButtonHelper.createButton(
-				I18nProperties.getCaption(Captions.actionSaveAndOpenEventParticipant),
-				clickEvent -> ControllerProvider.getEventParticipantController().navigateToData(sample.getAssociatedEventParticipant().getUuid()));
-		} else {
-			throw new UnsupportedOperationException("Could not create saveAndOpenEntryButton: associated entity is not supported.");
-		}
+		Button saveAndOpenEntryButton = ButtonHelper.createButton("");
 
 		// Copy every existing listener from the old commit button to the newly added one
 		for (Object listener : sampleComponent.getCommitButton().getListeners(Button.ClickEvent.class)) {
 			saveAndOpenEntryButton.addClickListener((Button.ClickListener) listener);
+		}
+
+		SampleDto sample = sampleComponent.getWrappedComponent().getValue();
+
+		if (sample.getAssociatedCase() != null) {
+			saveAndOpenEntryButton
+				.addClickListener(clickEvent -> ControllerProvider.getCaseController().navigateToCase(sample.getAssociatedCase().getUuid()));
+			saveAndOpenEntryButton.setCaption(I18nProperties.getCaption(Captions.actionSaveAndOpenCase));
+		} else if (sample.getAssociatedContact() != null) {
+			saveAndOpenEntryButton
+				.addClickListener(clickEvent -> ControllerProvider.getContactController().navigateToData(sample.getAssociatedContact().getUuid()));
+			saveAndOpenEntryButton.setCaption(I18nProperties.getCaption(Captions.actionSaveAndOpenContact));
+		} else if (sample.getAssociatedEventParticipant() != null) {
+			saveAndOpenEntryButton.addClickListener(
+				clickEvent -> ControllerProvider.getEventParticipantController().navigateToData(sample.getAssociatedEventParticipant().getUuid()));
+			saveAndOpenEntryButton.setCaption(I18nProperties.getCaption(Captions.actionSaveAndOpenEventParticipant));
+		} else {
+			throw new UnsupportedOperationException("Could not create saveAndOpenEntryButton: associated entity is not supported.");
 		}
 
 		saveAndOpenEntryButton.setStyleName(sampleComponent.getCommitButton().getStyleName());
