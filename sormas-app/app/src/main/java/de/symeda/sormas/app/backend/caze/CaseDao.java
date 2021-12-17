@@ -17,19 +17,6 @@ package de.symeda.sormas.app.backend.caze;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
-
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -41,11 +28,26 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRight;
@@ -486,8 +488,8 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			boolean facilityChanged = !DataHelper.isSame(changedCase.getHealthFacility(), existingCase.getHealthFacility());
 
 			// If the case is moved from the surveillance officer's jurisdiction, assign a new surveillance officer
-			if (changedCase.getSurveillanceOfficer() == null
-				|| ((responsibleDistrictChanged || districtChanged)
+			if (DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT)
+					&& changedCase.getSurveillanceOfficer() == null || ((responsibleDistrictChanged || districtChanged)
 					&& !DataHelper.isSame(changedCase.getResponsibleDistrict(), changedCase.getSurveillanceOfficer().getDistrict())
 					&& !DataHelper.isSame(changedCase.getDistrict(), changedCase.getSurveillanceOfficer().getDistrict()))) {
 				List<User> districtOfficers =
