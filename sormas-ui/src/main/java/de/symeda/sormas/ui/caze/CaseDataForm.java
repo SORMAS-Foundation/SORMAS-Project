@@ -1242,13 +1242,16 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					symptoms.getOnsetDate(),
 					reportDate.getValue(),
 					FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caseUuid)));
-				Date minimumFollowUpUntilDate = FollowUpLogic
-					.calculateFollowUpUntilDate(
-						followUpPeriod,
-						null,
-						FacadeProvider.getVisitFacade().getVisitsByCase(new CaseReferenceDto(caseUuid)),
-						FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration((Disease) diseaseField.getValue()))
-					.getFollowUpEndDate();
+				Date minimumFollowUpUntilDate =
+					FollowUpLogic
+						.calculateFollowUpUntilDate(
+							followUpPeriod,
+							null,
+							FacadeProvider.getVisitFacade().getVisitsByCase(new CaseReferenceDto(caseUuid)),
+							FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration((Disease) diseaseField.getValue()),
+							FacadeProvider.getFeatureConfigurationFacade()
+								.isPropertyValueTrue(FeatureType.CASE_FOLLOWUP, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE))
+						.getFollowUpEndDate();
 
 				if (FacadeProvider.getFeatureConfigurationFacade()
 					.isPropertyValueTrue(FeatureType.CASE_FOLLOWUP, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE)) {
@@ -1273,11 +1276,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					});
 				} else {
 					dfFollowUpUntil.addValidator(
-							new DateRangeValidator(
-									I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
-									minimumFollowUpUntilDate,
-									null,
-									Resolution.DAY));
+						new DateRangeValidator(
+							I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
+							minimumFollowUpUntilDate,
+							null,
+							Resolution.DAY));
 				}
 			}
 

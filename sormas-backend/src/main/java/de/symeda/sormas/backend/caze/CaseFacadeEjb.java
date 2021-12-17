@@ -132,6 +132,7 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -3547,7 +3548,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			CaseLogic.getFollowUpStartDate(caseDto, sampleFacade.getByCaseUuids(Collections.singletonList(caseDto.getUuid()))),
 			visitFacade.getVisitsByCase(caseDto.toReference()),
 			diseaseConfigurationFacade.getCaseFollowUpDuration(caseDto.getDisease()),
-			ignoreOverwrite);
+			ignoreOverwrite,
+			featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_FOLLOWUP, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE));
 	}
 
 	public boolean isCaseEditAllowed(String caseUuid) {

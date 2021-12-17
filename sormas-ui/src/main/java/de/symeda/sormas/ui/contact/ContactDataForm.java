@@ -638,14 +638,15 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					lastContactDate.getValue(),
 					reportDate.getValue(),
 					FacadeProvider.getSampleFacade().getByContactUuids(Collections.singletonList(getValue().getUuid())));
-				Date minimumFollowUpUntilDate =
-					FollowUpLogic
-						.calculateFollowUpUntilDate(
-							followUpPeriod,
-							null,
-							FacadeProvider.getVisitFacade().getVisitsByContact(new ContactReferenceDto(getValue().getUuid())),
-							FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(getSelectedDisease()))
-						.getFollowUpEndDate();
+				Date minimumFollowUpUntilDate = FollowUpLogic
+					.calculateFollowUpUntilDate(
+						followUpPeriod,
+						null,
+						FacadeProvider.getVisitFacade().getVisitsByContact(new ContactReferenceDto(getValue().getUuid())),
+						FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(getSelectedDisease()),
+						FacadeProvider.getFeatureConfigurationFacade()
+							.isPropertyValueTrue(FeatureType.CONTACT_TRACING, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE))
+					.getFollowUpEndDate();
 
 				if (FacadeProvider.getFeatureConfigurationFacade()
 					.isPropertyValueTrue(FeatureType.CONTACT_TRACING, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE)) {
