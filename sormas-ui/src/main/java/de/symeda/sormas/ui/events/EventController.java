@@ -348,7 +348,7 @@ public class EventController {
 
 		Set<String> relatedEventUuids = FacadeProvider.getEventFacade().getAllEventUuidsByEventGroupUuid(eventGroupReference.getUuid());
 
-		EventSelectionField eventSelect = new EventSelectionField(eventGroupReference, relatedEventUuids);
+		EventSelectionField eventSelect = new EventSelectionField(relatedEventUuids);
 		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
@@ -744,20 +744,21 @@ public class EventController {
 				final DistrictReferenceDto userDistrict = user.getDistrict();
 				final RegionReferenceDto epEventRegion = eventDto.getEventLocation().getRegion();
 				final DistrictReferenceDto epEventDistrict = eventDto.getEventLocation().getDistrict();
-				final Boolean eventOutsideJurisdiction = (userRegion != null && !userRegion.equals(epEventRegion) || userDistrict != null && !userDistrict.equals(epEventDistrict));
+				final Boolean eventOutsideJurisdiction =
+					(userRegion != null && !userRegion.equals(epEventRegion) || userDistrict != null && !userDistrict.equals(epEventDistrict));
 
 				if (eventOutsideJurisdiction) {
 					VaadinUiUtil.showConfirmationPopup(
-							I18nProperties.getString(Strings.headingEventJurisdictionUpdated),
-							new Label(I18nProperties.getString(Strings.messageEventJurisdictionUpdated)),
-							I18nProperties.getString(Strings.yes),
-							I18nProperties.getString(Strings.no),
-							500,
-							confirmed -> {
-								if (confirmed) {
-									saveEvent(saveCallback, eventDto);
-								}
-							});
+						I18nProperties.getString(Strings.headingEventJurisdictionUpdated),
+						new Label(I18nProperties.getString(Strings.messageEventJurisdictionUpdated)),
+						I18nProperties.getString(Strings.yes),
+						I18nProperties.getString(Strings.no),
+						500,
+						confirmed -> {
+							if (confirmed) {
+								saveEvent(saveCallback, eventDto);
+							}
+						});
 				} else {
 					saveEvent(saveCallback, eventDto);
 				}
