@@ -73,7 +73,8 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 		menu.addView(ContactsView.VIEW_NAME, I18nProperties.getCaption(Captions.contactContactsList));
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LAB_MESSAGES)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)) {
+			&& UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)
+			&& FacadeProvider.getLabMessageFacade().existsLabMessageForEntity(getReference())) {
 			menu.addView(LabMessagesView.VIEW_NAME, I18nProperties.getCaption(Captions.labMessageLabMessagesList));
 		}
 

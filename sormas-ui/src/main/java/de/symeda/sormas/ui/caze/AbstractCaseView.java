@@ -140,7 +140,8 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		menu.addView(CasesView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseCasesList));
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LAB_MESSAGES)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)) {
+			&& UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)
+			&& FacadeProvider.getLabMessageFacade().existsLabMessageForEntity(getReference())) {
 			menu.addView(LabMessagesView.VIEW_NAME, I18nProperties.getCaption(Captions.labMessageLabMessagesList));
 		}
 
