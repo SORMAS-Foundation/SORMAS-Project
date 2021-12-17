@@ -40,6 +40,7 @@ public interface Validations {
 	String caseClassificationInvalid = "caseClassificationInvalid";
 	String caseMultipleInfectionEnvironments = "caseMultipleInfectionEnvironments";
 	String contactFollowUpUntilDate = "contactFollowUpUntilDate";
+	String contactFollowUpUntilDateSoftValidation = "contactFollowUpUntilDateSoftValidation";
 	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
 	String duplicateEpidNumber = "duplicateEpidNumber";
 	String duplicateExternalToken = "duplicateExternalToken";

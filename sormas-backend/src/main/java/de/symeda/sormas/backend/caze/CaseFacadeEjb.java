@@ -3550,7 +3550,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			CaseLogic.getFollowUpStartDate(caseDto, sampleFacade.getByCaseUuids(Collections.singletonList(caseDto.getUuid()))),
 			visitFacade.getVisitsByCase(caseDto.toReference()),
 			diseaseConfigurationFacade.getCaseFollowUpDuration(caseDto.getDisease()),
-			ignoreOverwrite);
+			ignoreOverwrite,
+			featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_FOLLOWUP, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE));
 	}
 
 	public boolean isCaseEditAllowed(String caseUuid) {
