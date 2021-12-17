@@ -8108,7 +8108,7 @@ UNION
              LEFT JOIN events ON eventparticipant.event_id = events.id
              LEFT JOIN location ON events.eventlocation_id = location.id
              LEFT JOIN vaccinationinfo ON eventparticipant.vaccinationinfo_id = vaccinationinfo.id
-    WHERE vaccinationinfo.vaccination = 'VACCINATED' AND eventparticipant.deleted = false
+    WHERE vaccinationinfo.vaccination = 'VACCINATED' AND eventparticipant.deleted = false AND events.disease IS NOT NULL
     ORDER BY person.id, events.disease, relevancedate DESC
 );
 
@@ -8198,6 +8198,7 @@ UNION
              LEFT JOIN vaccinationinfo ON eventparticipant.vaccinationinfo_id = vaccinationinfo.id
     WHERE vaccinationinfo.vaccination = 'VACCINATED'
       AND eventparticipant.deleted = false
+      AND events.disease IS NOT NULL
 
     ORDER BY person.id, events.disease, relevancedate ASC
 );
