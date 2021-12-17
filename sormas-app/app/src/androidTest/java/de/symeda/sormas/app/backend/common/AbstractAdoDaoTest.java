@@ -19,7 +19,6 @@ import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
-import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.visit.Visit;
 
@@ -59,14 +58,12 @@ public class AbstractAdoDaoTest extends TestCase {
 		Sample sample = TestEntityCreator.createSample(caseChangeDate0);
 		Event event = TestEntityCreator.createEvent();
 		EventParticipant eventParticipant = TestEntityCreator.createEventParticipant(event);
-		Person person = TestEntityCreator.createPerson();
 
 		assertEquals(1, DatabaseHelper.getContactDao().queryForNew().size());
 		assertEquals(1, DatabaseHelper.getVisitDao().queryForNew().size());
 		assertEquals(1, DatabaseHelper.getSampleDao().queryForNew().size());
 		assertEquals(1, DatabaseHelper.getEventDao().queryForNew().size());
 		assertEquals(1, DatabaseHelper.getEventParticipantDao().queryForNew().size());
-		assertEquals(1, DatabaseHelper.getPersonDao().queryForNew().size());
 	}
 
 	@Test
@@ -75,15 +72,18 @@ public class AbstractAdoDaoTest extends TestCase {
 		CaseDao caseDao = DatabaseHelper.getCaseDao();
 
 		// Modified cases with change date 0 should be included
-		TestEntityCreator.createCase();
-		List<Case> newCases = caseDao.queryForNew();
+		Case caseChangeDate0 = TestEntityCreator.createCase();
+		// Modification is necessary because TestEntityCreator automatically accepts the case
+		caseChangeDate0.setAdditionalDetails("...");
+		caseDao.saveAndSnapshot(caseChangeDate0);
+		List<Case> newCases = caseDao.queryForModified();
 		assertEquals(1, newCases.size());
 
 		// Modified cases with newer change date should also be included
 		Case caseNewChangeDate = TestEntityCreator.createCase();
 		caseNewChangeDate.setChangeDate(new Date());
 		caseDao.saveAndSnapshot(caseNewChangeDate);
-		newCases = caseDao.queryForNew();
+		newCases = caseDao.queryForModified();
 		assertEquals(2, newCases.size());
 	}
 }
