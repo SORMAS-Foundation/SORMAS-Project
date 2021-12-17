@@ -13,6 +13,7 @@ public class PatientDiaryConfig implements Serializable, Cloneable {
 	private String email;
 	private String password;
 	private UserConfig defaultUser;
+	private boolean acceptPhoneContact;
 
 	public String getUrl() {
 		return url;
@@ -66,6 +67,14 @@ public class PatientDiaryConfig implements Serializable, Cloneable {
 		this.defaultUser = defaultUser;
 	}
 
+	public boolean isAcceptPhoneContact() {
+		return acceptPhoneContact;
+	}
+
+	public void setAcceptPhoneContact(boolean acceptPhoneContact) {
+		this.acceptPhoneContact = acceptPhoneContact;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -78,12 +87,13 @@ public class PatientDiaryConfig implements Serializable, Cloneable {
 			&& Objects.equals(authUrl, that.authUrl)
 			&& Objects.equals(email, that.email)
 			&& Objects.equals(password, that.password)
-			&& Objects.equals(defaultUser, that.defaultUser);
+			&& Objects.equals(defaultUser, that.defaultUser)
+			&& Objects.equals(acceptPhoneContact, that.acceptPhoneContact);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(url, probandsUrl, authUrl, email, password, defaultUser);
+		return Objects.hash(url, probandsUrl, authUrl, email, password, defaultUser, acceptPhoneContact);
 	}
 
 	@Override
