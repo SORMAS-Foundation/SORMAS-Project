@@ -182,13 +182,12 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 
 		differentPointOfEntryJurisdiction.addValueChangeListener(e -> {
 			if (!ignoreDifferentPointOfEntryJurisdiction) {
-				DistrictReferenceDto districtDto;
-				if (differentPointOfEntryJurisdiction.getValue().booleanValue()) {
+				if (differentPointOfEntryJurisdiction.booleanValue()) {
 					districtCombo.setValue(null);
 					getPointsOfEntryForDistrict(null);
 				} else {
 					cbPointOfEntry.setValue(null);
-					districtDto = (DistrictReferenceDto) responsibleDistrict.getValue();
+					DistrictReferenceDto districtDto = (DistrictReferenceDto) responsibleDistrict.getValue();
 					getPointsOfEntryForDistrict(districtDto);
 				}
 			}
