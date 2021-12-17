@@ -53,9 +53,11 @@ public interface Validations {
 	String externalJournalPersonValidationEmail = "externalJournalPersonValidationEmail";
 	String externalJournalPersonValidationEmailTaken = "externalJournalPersonValidationEmailTaken";
 	String externalJournalPersonValidationError = "externalJournalPersonValidationError";
+	String externalJournalPersonValidationNoEmail = "externalJournalPersonValidationNoEmail";
 	String externalJournalPersonValidationNoEmailOrPhone = "externalJournalPersonValidationNoEmailOrPhone";
 	String externalJournalPersonValidationPhone = "externalJournalPersonValidationPhone";
 	String externalJournalPersonValidationPhoneTaken = "externalJournalPersonValidationPhoneTaken";
+	String externalJournalPersonValidationSeveralEmails = "externalJournalPersonValidationSeveralEmails";
 	String externalJournalPersonValidationSeveralPhonesOrEmails = "externalJournalPersonValidationSeveralPhonesOrEmails";
 	String externalMessageConfigError = "externalMessageConfigError";
 	String externalMessageConversionError = "externalMessageConversionError";
