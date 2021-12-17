@@ -71,7 +71,9 @@ public final class FollowUpLogic {
 		FollowUpPeriodDto followUpPeriod,
 		Date overwriteUntilDate,
 		List<VisitDto> visits,
-		int followUpDuration) {
+		int followUpDuration,
+		boolean allowFreeOverwrite) {
+
 		Date standardUntilDate = DateHelper.addDays(followUpPeriod.getFollowUpStartDate(), followUpDuration);
 		Date untilDate = overwriteUntilDate != null ? overwriteUntilDate : standardUntilDate;
 
@@ -94,8 +96,8 @@ public final class FollowUpLogic {
 		}
 
 		// If the follow-up until date is before the standard follow-up until date for some reason (e.g. because the report date, last contact
-		// date or symptom onset date were changed), set it to the standard follow-up until date
-		if (DateHelper.getStartOfDay(untilDate).before(standardUntilDate)) {
+		// date or symptom onset date were changed), and allowFreeOverwrite is false, set it to the standard follow-up until date
+		if (!allowFreeOverwrite && DateHelper.getStartOfDay(untilDate).before(standardUntilDate)) {
 			untilDate = standardUntilDate;
 		}
 
