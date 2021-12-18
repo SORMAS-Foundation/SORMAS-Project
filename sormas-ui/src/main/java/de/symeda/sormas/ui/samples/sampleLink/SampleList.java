@@ -31,14 +31,14 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
-import de.symeda.sormas.api.sample.SampleIndexDto;
+import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 @SuppressWarnings("serial")
-public class SampleList extends PaginationList<SampleIndexDto> {
+public class SampleList extends PaginationList<SampleListEntryDto> {
 
 	private static final int MAX_DISPLAYED_ENTRIES = 5;
 
@@ -68,7 +68,7 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 
 	@Override
 	public void reload() {
-		List<SampleIndexDto> samples = FacadeProvider.getSampleFacade().getEntriesList(sampleCriteria, 0, maxDisplayedEntries * 20);
+		List<SampleListEntryDto> samples = FacadeProvider.getSampleFacade().getEntriesList(sampleCriteria, 0, maxDisplayedEntries * 20);
 
 		setEntries(samples);
 		if (!samples.isEmpty()) {
@@ -82,7 +82,7 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
-		for (SampleIndexDto sample : getDisplayedEntries()) {
+		for (SampleListEntryDto sample : getDisplayedEntries()) {
 			SampleListEntry listEntry = new SampleListEntry(sample);
 			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT)) {
 				String sampleUuid = sample.getUuid();
@@ -96,7 +96,7 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 	}
 
 	private void addViewLabMessageButton(SampleListEntry listEntry) {
-		List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getForSample(listEntry.getSample().toReference());
+		List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getForSample(listEntry.getSampleListEntryDto().toReference());
 		if (!labMessages.isEmpty()) {
 			listEntry.addAssociatedLabMessagesListener(clickEvent -> ControllerProvider.getLabMessageController().showLabMessagesSlider(labMessages));
 		}

@@ -34,6 +34,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
+import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
@@ -48,12 +49,12 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 @SuppressWarnings("serial")
 public class SampleListEntry extends SideComponentField {
 
-	private final SampleIndexDto sample;
+	private final SampleListEntryDto sampleListEntryDto;
 	private Button associatedLabMessagesButton;
 
-	public SampleListEntry(SampleIndexDto sample) {
+	public SampleListEntry(SampleListEntryDto sampleListEntryDto) {
 
-		this.sample = sample;
+		this.sampleListEntryDto = sampleListEntryDto;
 
 		HorizontalLayout topLayout = new HorizontalLayout();
 		topLayout.setWidth(100, Unit.PERCENTAGE);
@@ -66,38 +67,39 @@ public class SampleListEntry extends SideComponentField {
 			topLeftLayout.setMargin(false);
 			topLeftLayout.setSpacing(false);
 
-			Label materialLabel = new Label(DataHelper.toStringNullable(sample.getSampleMaterial()));
+			Label materialLabel = new Label(DataHelper.toStringNullable(sampleListEntryDto.getSampleMaterial()));
 			CssStyles.style(materialLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 			materialLabel.setWidth(50, Unit.PERCENTAGE);
 			topLeftLayout.addComponent(materialLabel);
 
 			Label resultLabel = new Label();
 			CssStyles.style(resultLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
-			if (sample.getPathogenTestResult() != null) {
-				resultLabel.setValue(DataHelper.toStringNullable(sample.getPathogenTestResult()));
-				if (sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+			if (sampleListEntryDto.getPathogenTestResult() != null) {
+				resultLabel.setValue(DataHelper.toStringNullable(sampleListEntryDto.getPathogenTestResult()));
+				if (sampleListEntryDto.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
 					resultLabel.addStyleName(CssStyles.LABEL_CRITICAL);
-				} else if (sample.getPathogenTestResult() == PathogenTestResultType.INDETERMINATE) {
+				} else if (sampleListEntryDto.getPathogenTestResult() == PathogenTestResultType.INDETERMINATE) {
 					resultLabel.addStyleName(CssStyles.LABEL_WARNING);
 				}
-			} else if (sample.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
-				resultLabel.setValue(DataHelper.toStringNullable(sample.getSpecimenCondition()));
+			} else if (sampleListEntryDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
+				resultLabel.setValue(DataHelper.toStringNullable(sampleListEntryDto.getSpecimenCondition()));
 				resultLabel.addStyleName(CssStyles.LABEL_WARNING);
 			}
 			topLeftLayout.addComponent(resultLabel);
 
 			Label referredLabel = new Label();
 			CssStyles.style(referredLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
-			if (sample.isReferred()) {
+			if (sampleListEntryDto.isReferred()) {
 				referredLabel.setValue(I18nProperties.getCaption(Captions.sampleReferredShort));
 				referredLabel.addStyleName(CssStyles.LABEL_NOT);
-			} else if (sample.getSamplePurpose() != SamplePurpose.INTERNAL) {
-				if (sample.isReceived()) {
-					referredLabel
-						.setValue(I18nProperties.getCaption(Captions.sampleReceived) + " " + DateFormatHelper.formatDate(sample.getReceivedDate()));
-				} else if (sample.isShipped()) {
-					referredLabel
-						.setValue(I18nProperties.getCaption(Captions.sampleShipped) + " " + DateFormatHelper.formatDate((sample.getShipmentDate())));
+			} else if (sampleListEntryDto.getSamplePurpose() != SamplePurpose.INTERNAL) {
+				if (sampleListEntryDto.isReceived()) {
+					referredLabel.setValue(
+						I18nProperties.getCaption(Captions.sampleReceived) + " " + DateFormatHelper.formatDate(sampleListEntryDto.getReceivedDate()));
+				} else if (sampleListEntryDto.isShipped()) {
+					referredLabel.setValue(
+						I18nProperties.getCaption(Captions.sampleShipped) + " "
+							+ DateFormatHelper.formatDate((sampleListEntryDto.getShipmentDate())));
 				} else {
 					referredLabel.setValue(I18nProperties.getCaption(Captions.sampleNotShippedLong));
 				}
@@ -106,22 +108,22 @@ public class SampleListEntry extends SideComponentField {
 
 			Label dateTimeLabel = new Label(
 				I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME) + ": "
-					+ DateFormatHelper.formatDate(sample.getSampleDateTime()));
+					+ DateFormatHelper.formatDate(sampleListEntryDto.getSampleDateTime()));
 			topLeftLayout.addComponent(dateTimeLabel);
 
-			if (sample.getSamplePurpose() == SamplePurpose.INTERNAL) {
+			if (sampleListEntryDto.getSamplePurpose() == SamplePurpose.INTERNAL) {
 				Label purposeLabel = new Label(SamplePurpose.INTERNAL.toString());
 				topLeftLayout.addComponent(purposeLabel);
 			} else {
-				Label labLabel = new Label(DataHelper.toStringNullable(sample.getLab()));
+				Label labLabel = new Label(DataHelper.toStringNullable(sampleListEntryDto.getLab()));
 				topLeftLayout.addComponent(labLabel);
 			}
 
-			SamplingReason samplingReason = sample.getSamplingReason();
+			SamplingReason samplingReason = sampleListEntryDto.getSamplingReason();
 			if (samplingReason != null) {
 				String samplingReasonCaption = samplingReason.toString();
-				if (samplingReason == SamplingReason.OTHER_REASON && sample.getSamplingReasonDetails() != null) {
-					samplingReasonCaption = sample.getSamplingReasonDetails();
+				if (samplingReason == SamplingReason.OTHER_REASON && sampleListEntryDto.getSamplingReasonDetails() != null) {
+					samplingReasonCaption = sampleListEntryDto.getSamplingReasonDetails();
 				}
 				Label samplingReasonLabel =
 					new Label(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLING_REASON) + ": " + samplingReasonCaption);
@@ -129,17 +131,18 @@ public class SampleListEntry extends SideComponentField {
 			}
 
 			Label testCountLabel = new Label(
-				I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleIndexDto.PATHOGEN_TEST_COUNT) + ": " + sample.getPathogenTestCount());
+				I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleIndexDto.PATHOGEN_TEST_COUNT) + ": "
+					+ sampleListEntryDto.getPathogenTestCount());
 			topLeftLayout.addComponent(testCountLabel);
 
-			if (sample.getPathogenTestCount() > 0) {
+			if (sampleListEntryDto.getPathogenTestCount() > 0) {
 				VerticalLayout latestTestLayout = new VerticalLayout();
 				latestTestLayout.setMargin(false);
 				latestTestLayout.setSpacing(false);
 
 				Label heading = new Label(I18nProperties.getCaption(Captions.latestPathogenTest));
 				CssStyles.style(heading, CssStyles.LABEL_BOLD);
-				PathogenTestDto latestTest = FacadeProvider.getPathogenTestFacade().getLatestPathogenTest(sample.getUuid());
+				PathogenTestDto latestTest = FacadeProvider.getPathogenTestFacade().getLatestPathogenTest(sampleListEntryDto.getUuid());
 				Label testDate = new Label(
 					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_DATE_TIME) + ": "
 						+ DateFormatHelper.formatDate(latestTest.getTestDateTime()));
@@ -161,10 +164,11 @@ public class SampleListEntry extends SideComponentField {
 		topLayout.setComponentAlignment(topLeftLayout, Alignment.TOP_LEFT);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
-			&& sample.getAdditionalTestingStatus() != AdditionalTestingStatus.NOT_REQUESTED
+			&& sampleListEntryDto.getAdditionalTestingStatus() != AdditionalTestingStatus.NOT_REQUESTED
 			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ADDITIONAL_TESTS)) {
 			Label labelAdditionalTests = new Label(
-				I18nProperties.getString(Strings.entityAdditionalTests) + " " + sample.getAdditionalTestingStatus().toString().toLowerCase());
+				I18nProperties.getString(Strings.entityAdditionalTests) + " "
+					+ sampleListEntryDto.getAdditionalTestingStatus().toString().toLowerCase());
 			addComponentToField(labelAdditionalTests);
 		}
 	}
@@ -172,7 +176,7 @@ public class SampleListEntry extends SideComponentField {
 	public void addAssociatedLabMessagesListener(ClickListener associatedLabMessagesClickListener) {
 		if (associatedLabMessagesButton == null) {
 			associatedLabMessagesButton = ButtonHelper.createIconButtonWithCaption(
-				"see-associated-lab-messages-" + sample.getUuid(),
+				"see-associated-lab-messages-" + sampleListEntryDto.getUuid(),
 				null,
 				VaadinIcons.NOTEBOOK,
 				associatedLabMessagesClickListener,
@@ -186,7 +190,7 @@ public class SampleListEntry extends SideComponentField {
 		}
 	}
 
-	public SampleIndexDto getSample() {
-		return sample;
+	public SampleListEntryDto getSampleListEntryDto() {
+		return sampleListEntryDto;
 	}
 }

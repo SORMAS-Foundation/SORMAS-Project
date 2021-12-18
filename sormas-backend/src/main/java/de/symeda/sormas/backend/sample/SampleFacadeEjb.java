@@ -65,6 +65,7 @@ import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
+import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
@@ -377,8 +378,28 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public List<SampleIndexDto> getEntriesList(SampleCriteria sampleCriteria, Integer first, Integer max) {
-		return sampleService.getIndexList(sampleCriteria, first, max, null);
+	public List<SampleListEntryDto> getEntriesList(SampleCriteria sampleCriteria, Integer first, Integer max) {
+		return sampleService.getIndexList(sampleCriteria, first, max, null)
+			.stream()
+			.map(
+				entry -> new SampleListEntryDto(
+					entry.getUuid(),
+					entry.getSampleMaterial(),
+					entry.getPathogenTestResult(),
+					entry.getSpecimenCondition(),
+					entry.isReferred(),
+					entry.getSamplePurpose(),
+					entry.isReceived(),
+					entry.getReceivedDate(),
+					entry.isShipped(),
+					entry.getShipmentDate(),
+					entry.getSampleDateTime(),
+					entry.getLab(),
+					entry.getSamplingReason(),
+					entry.getSamplingReasonDetails(),
+					entry.getPathogenTestCount(),
+					entry.getAdditionalTestingStatus()))
+			.collect(Collectors.toList());
 	}
 
 	public Page<SampleIndexDto> getIndexPage(SampleCriteria sampleCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
