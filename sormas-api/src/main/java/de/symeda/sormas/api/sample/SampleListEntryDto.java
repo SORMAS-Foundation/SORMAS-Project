@@ -8,6 +8,12 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
 public class SampleListEntryDto extends PseudonymizableIndexDto implements Serializable {
 
+	public static final String I18N_PREFIX = "Sample";
+
+	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
+	public static final String SAMPLING_REASON = "samplingReason";
+	public static final String PATHOGEN_TEST_COUNT = "pathogenTestCount";
+
 	private String uuid;
 	private SampleMaterial sampleMaterial;
 	private PathogenTestResultType pathogenTestResult;

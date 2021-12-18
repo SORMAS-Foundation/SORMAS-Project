@@ -32,8 +32,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.AdditionalTestingStatus;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SamplingReason;
@@ -107,7 +105,7 @@ public class SampleListEntry extends SideComponentField {
 			topLeftLayout.addComponent(referredLabel);
 
 			Label dateTimeLabel = new Label(
-				I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME) + ": "
+				I18nProperties.getPrefixCaption(SampleListEntryDto.I18N_PREFIX, SampleListEntryDto.SAMPLE_DATE_TIME) + ": "
 					+ DateFormatHelper.formatDate(sampleListEntryDto.getSampleDateTime()));
 			topLeftLayout.addComponent(dateTimeLabel);
 
@@ -125,13 +123,14 @@ public class SampleListEntry extends SideComponentField {
 				if (samplingReason == SamplingReason.OTHER_REASON && sampleListEntryDto.getSamplingReasonDetails() != null) {
 					samplingReasonCaption = sampleListEntryDto.getSamplingReasonDetails();
 				}
-				Label samplingReasonLabel =
-					new Label(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLING_REASON) + ": " + samplingReasonCaption);
+				Label samplingReasonLabel = new Label(
+					I18nProperties.getPrefixCaption(SampleListEntryDto.I18N_PREFIX, SampleListEntryDto.SAMPLING_REASON) + ": "
+						+ samplingReasonCaption);
 				topLeftLayout.addComponent(samplingReasonLabel);
 			}
 
 			Label testCountLabel = new Label(
-				I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleIndexDto.PATHOGEN_TEST_COUNT) + ": "
+				I18nProperties.getPrefixCaption(SampleListEntryDto.I18N_PREFIX, SampleListEntryDto.PATHOGEN_TEST_COUNT) + ": "
 					+ sampleListEntryDto.getPathogenTestCount());
 			topLeftLayout.addComponent(testCountLabel);
 
