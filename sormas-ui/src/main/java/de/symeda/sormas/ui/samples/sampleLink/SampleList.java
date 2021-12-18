@@ -40,24 +40,30 @@ import de.symeda.sormas.ui.utils.PaginationList;
 @SuppressWarnings("serial")
 public class SampleList extends PaginationList<SampleIndexDto> {
 
-	private final SampleCriteria sampleCriteria = new SampleCriteria();
+	private static final int MAX_DISPLAYED_ENTRIES = 5;
 
-	public SampleList(ContactReferenceDto contactRef) {
-		super(5);
-		sampleCriteria.contact(contactRef);
-		sampleCriteria.sampleAssociationType(SampleAssociationType.CONTACT);
-	}
+	private final SampleCriteria sampleCriteria = new SampleCriteria();
+	private final Label noSamplesLabel;
 
 	public SampleList(CaseReferenceDto caseRef) {
-		super(5);
+		super(MAX_DISPLAYED_ENTRIES);
 		sampleCriteria.caze(caseRef);
 		sampleCriteria.sampleAssociationType(SampleAssociationType.CASE);
+		noSamplesLabel = new Label(I18nProperties.getCaption(Captions.sampleNoSamplesForCase));
+	}
+
+	public SampleList(ContactReferenceDto contactRef) {
+		super(MAX_DISPLAYED_ENTRIES);
+		sampleCriteria.contact(contactRef);
+		sampleCriteria.sampleAssociationType(SampleAssociationType.CONTACT);
+		noSamplesLabel = new Label(I18nProperties.getCaption(Captions.sampleNoSamplesForContact));
 	}
 
 	public SampleList(EventParticipantReferenceDto eventParticipantRef) {
-		super(5);
+		super(MAX_DISPLAYED_ENTRIES);
 		sampleCriteria.eventParticipant(eventParticipantRef);
 		sampleCriteria.sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT);
+		noSamplesLabel = new Label(I18nProperties.getCaption(Captions.sampleNoSamplesForEventParticipant));
 	}
 
 	@Override
@@ -68,12 +74,8 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 		if (!samples.isEmpty()) {
 			showPage(1);
 		} else {
+			listLayout.removeAllComponents();
 			updatePaginationLayout();
-			Label noSamplesLabel = new Label(
-				I18nProperties.getCaption(
-					sampleCriteria.getCaze() != null
-						? Captions.sampleNoSamplesForCase
-						: sampleCriteria.getContact() != null ? Captions.sampleNoSamplesForContact : Captions.sampleNoSamplesForEventParticipant));
 			listLayout.addComponent(noSamplesLabel);
 		}
 	}
