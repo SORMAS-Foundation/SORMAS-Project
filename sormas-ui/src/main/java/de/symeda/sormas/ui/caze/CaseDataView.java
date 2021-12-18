@@ -28,10 +28,12 @@ import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
+import de.symeda.sormas.api.sample.SampleListCriteria;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.messaging.SmsListComponent;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportListComponent;
@@ -40,6 +42,7 @@ import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
+import de.symeda.sormas.ui.samples.sampleLink.SampleList;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
@@ -142,7 +145,10 @@ public class CaseDataView extends AbstractCaseView {
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);
 
-			SampleListComponent sampleList = new SampleListComponent(getCaseRef(), caze.getDisease(), this);
+			SampleListComponent sampleList = new SampleListComponent(
+				new SampleList(new SampleListCriteria.Builder().withCase(getCaseRef()).build()),
+				e -> ControllerProvider.getSampleController().create(getCaseRef(), caze.getDisease(), SormasUI::refreshView),
+				this);
 			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
 			sampleLocLayout.addComponent(sampleList);
 

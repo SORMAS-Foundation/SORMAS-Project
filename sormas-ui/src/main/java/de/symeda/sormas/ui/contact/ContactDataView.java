@@ -37,16 +37,19 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
+import de.symeda.sormas.api.sample.SampleListCriteria;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
+import de.symeda.sormas.ui.samples.sampleLink.SampleList;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
@@ -217,7 +220,10 @@ public class ContactDataView extends AbstractContactView {
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);
 
-			SampleListComponent sampleList = new SampleListComponent(getContactRef(), contactDto.getDisease(), this);
+			SampleListComponent sampleList = new SampleListComponent(
+				new SampleList(new SampleListCriteria.Builder().withContact(getContactRef()).build()),
+				e -> ControllerProvider.getSampleController().create(getContactRef(), contactDto.getDisease(), SormasUI::refreshView),
+				this);
 			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
 			sampleLocLayout.addComponent(sampleList);
 

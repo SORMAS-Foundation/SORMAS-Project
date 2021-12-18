@@ -25,18 +25,11 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sample.SampleListCriteria;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -45,33 +38,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 @SuppressWarnings("serial")
 public class SampleListComponent extends VerticalLayout {
 
-	private SampleList list;
-
-	public SampleListComponent(ContactReferenceDto contactRef, Disease disease, AbstractDetailView<? extends ReferenceDto> view) {
-		createSampleListComponent(
-			new SampleList(new SampleListCriteria.Builder().withContact(contactRef).build()),
-			e -> ControllerProvider.getSampleController().create(contactRef, disease, SormasUI::refreshView),
-			view);
-	}
-
-	public SampleListComponent(CaseReferenceDto caseRef, Disease disease, AbstractDetailView<? extends ReferenceDto> view) {
-		createSampleListComponent(
-			new SampleList(new SampleListCriteria.Builder().withCase(caseRef).build()),
-			e -> ControllerProvider.getSampleController().create(caseRef, disease, SormasUI::refreshView),
-			view);
-	}
-
-	public SampleListComponent(EventParticipantReferenceDto eventParticipantRef, Disease disease, AbstractDetailView<? extends ReferenceDto> view) {
-		createSampleListComponent(
-			new SampleList(new SampleListCriteria.Builder().withEventParticipant(eventParticipantRef).build()),
-			e -> ControllerProvider.getSampleController().create(eventParticipantRef, disease, SormasUI::refreshView),
-			view);
-	}
-
-	private void createSampleListComponent(
-		SampleList sampleList,
-		Consumer<Button.ClickEvent> clickListener,
-		AbstractDetailView<? extends ReferenceDto> view) {
+	public SampleListComponent(SampleList sampleList, Consumer<Button.ClickEvent> clickListener, AbstractDetailView<? extends ReferenceDto> view) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -82,7 +49,7 @@ public class SampleListComponent extends VerticalLayout {
 		componentHeader.setWidth(100, Unit.PERCENTAGE);
 		addComponent(componentHeader);
 
-		list = sampleList;
+		SampleList list = sampleList;
 		addComponent(list);
 		list.reload();
 
@@ -98,9 +65,5 @@ public class SampleListComponent extends VerticalLayout {
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 		}
-	}
-
-	public void reload() {
-		list.reload();
 	}
 }

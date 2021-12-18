@@ -35,14 +35,17 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.sample.SampleCriteria;
+import de.symeda.sormas.api.sample.SampleListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.ContactListComponent;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
+import de.symeda.sormas.ui.samples.sampleLink.SampleList;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
@@ -137,7 +140,10 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);
 
-			SampleListComponent sampleList = new SampleListComponent(eventParticipantRef, event.getDisease(), this);
+			SampleListComponent sampleList = new SampleListComponent(
+				new SampleList(new SampleListCriteria.Builder().withEventParticipant(eventParticipantRef).build()),
+				e -> ControllerProvider.getSampleController().create(eventParticipantRef, event.getDisease(), SormasUI::refreshView),
+				this);
 			sampleList.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.VSPACE_NONE);
 			sampleLocLayout.addComponent(sampleList);
 
