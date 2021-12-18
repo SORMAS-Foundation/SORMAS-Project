@@ -68,7 +68,7 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 
 	@Override
 	public void reload() {
-		List<SampleIndexDto> samples = FacadeProvider.getSampleFacade().getIndexList(sampleCriteria, 0, maxDisplayedEntries * 20, null);
+		List<SampleIndexDto> samples = FacadeProvider.getSampleFacade().getEntriesList(sampleCriteria, 0, maxDisplayedEntries * 20);
 
 		setEntries(samples);
 		if (!samples.isEmpty()) {

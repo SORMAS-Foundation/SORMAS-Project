@@ -96,7 +96,6 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
-import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -151,8 +150,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	private CaseService caseService;
 	@EJB
 	private ContactService contactService;
-	@EJB
-	private EventService eventService;
 	@EJB
 	private EventParticipantService eventParticipantService;
 	@EJB
@@ -314,7 +311,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			cb.equal(sampleRoot.get(Sample.LAB_SAMPLE_ID), labSampleId));
 		cq.where(filter);
 
-		return em.createQuery(cq).getResultList().stream().distinct().map(sample -> toDto(sample)).collect(Collectors.toList());
+		return em.createQuery(cq).getResultList().stream().distinct().map(SampleFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -377,6 +374,11 @@ public class SampleFacadeEjb implements SampleFacade {
 	@Override
 	public List<SampleIndexDto> getIndexList(SampleCriteria sampleCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		return sampleService.getIndexList(sampleCriteria, first, max, sortProperties);
+	}
+
+	@Override
+	public List<SampleIndexDto> getEntriesList(SampleCriteria sampleCriteria, Integer first, Integer max) {
+		return sampleService.getIndexList(sampleCriteria, first, max, null);
 	}
 
 	public Page<SampleIndexDto> getIndexPage(SampleCriteria sampleCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {

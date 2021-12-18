@@ -37,6 +37,8 @@ public interface SampleFacade {
 
 	List<SampleIndexDto> getIndexList(SampleCriteria sampleCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
+	List<SampleIndexDto> getEntriesList(SampleCriteria sampleCriteria, Integer first, Integer max);
+
 	Page<SampleIndexDto> getIndexPage(SampleCriteria sampleCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
 	List<SampleExportDto> getExportList(SampleCriteria sampleCriteria, Collection<String> selectedRows, int first, int max);
