@@ -26,6 +26,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleListCriteria;
 import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -44,7 +45,7 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 	public SampleList(SampleListCriteria sampleListCriteria) {
 		super(MAX_DISPLAYED_ENTRIES);
 		this.sampleListCriteria = sampleListCriteria;
-		noSamplesLabel = new Label(I18nProperties.getCaption(Captions.sampleNoSamplesForCase));
+		noSamplesLabel = new Label(buildNoSamplesCaption(sampleListCriteria.getSampleAssociationType()));
 	}
 
 	@Override
@@ -81,5 +82,23 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 		if (!labMessages.isEmpty()) {
 			listEntry.addAssociatedLabMessagesListener(clickEvent -> ControllerProvider.getLabMessageController().showLabMessagesSlider(labMessages));
 		}
+	}
+
+	private String buildNoSamplesCaption(SampleAssociationType sampleAssociationType) {
+		String caption;
+		switch (sampleAssociationType) {
+		case CASE:
+			caption = Captions.sampleNoSamplesForCase;
+			break;
+		case CONTACT:
+			caption = Captions.sampleNoSamplesForContact;
+			break;
+		case EVENT_PARTICIPANT:
+			caption = Captions.sampleNoSamplesForEventParticipant;
+			break;
+		default:
+			caption = "";
+		}
+		return I18nProperties.getCaption(caption);
 	}
 }
