@@ -82,16 +82,14 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 	protected void drawDisplayedEntries() {
 		for (SampleIndexDto sample : getDisplayedEntries()) {
 			SampleListEntry listEntry = new SampleListEntry(sample);
-			addEditButton(listEntry);
+			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT)) {
+				String sampleUuid = sample.getUuid();
+				listEntry.addEditButton(
+					"edit-sample-" + sampleUuid,
+					(ClickListener) event -> ControllerProvider.getSampleController().navigateToData(sampleUuid));
+			}
 			addViewLabMessageButton(listEntry);
 			listLayout.addComponent(listEntry);
-		}
-	}
-
-	private void addEditButton(SampleListEntry listEntry) {
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT)) {
-			listEntry
-				.addEditListener((ClickListener) event -> ControllerProvider.getSampleController().navigateToData(listEntry.getSample().getUuid()));
 		}
 	}
 

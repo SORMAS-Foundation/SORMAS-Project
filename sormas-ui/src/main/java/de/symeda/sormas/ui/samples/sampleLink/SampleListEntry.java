@@ -170,22 +170,6 @@ public class SampleListEntry extends SideComponentField {
 		}
 	}
 
-	public void addEditListener(ClickListener editClickListener) {
-		if (editButton == null) {
-			editButton = ButtonHelper.createIconButtonWithCaption(
-				"edit-sample-" + sample.getUuid(),
-				null,
-				VaadinIcons.PENCIL,
-				editClickListener,
-				ValoTheme.BUTTON_LINK,
-				CssStyles.BUTTON_COMPACT);
-
-			addComponent(editButton);
-			setComponentAlignment(editButton, Alignment.TOP_RIGHT);
-			setExpandRatio(editButton, 0);
-		}
-	}
-
 	public void addAssociatedLabMessagesListener(ClickListener associatedLabMessagesClickListener) {
 		if (associatedLabMessagesButton == null) {
 			associatedLabMessagesButton = ButtonHelper.createIconButtonWithCaption(
