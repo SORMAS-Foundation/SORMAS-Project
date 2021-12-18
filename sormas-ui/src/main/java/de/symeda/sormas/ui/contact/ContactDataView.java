@@ -49,7 +49,6 @@ import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
-import de.symeda.sormas.ui.samples.sampleLink.SampleList;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
@@ -221,7 +220,7 @@ public class ContactDataView extends AbstractContactView {
 			sampleLocLayout.setSpacing(false);
 
 			SampleListComponent sampleList = new SampleListComponent(
-				new SampleList(new SampleListCriteria.Builder().withContact(getContactRef()).build()),
+				new SampleListCriteria.Builder().withContact(getContactRef()).build(),
 				e -> ControllerProvider.getSampleController().create(getContactRef(), contactDto.getDisease(), SormasUI::refreshView),
 				this);
 			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);

@@ -18,52 +18,39 @@ package de.symeda.sormas.ui.samples.sampleLink;
 import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sample.SampleListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 @SuppressWarnings("serial")
-public class SampleListComponent extends VerticalLayout {
+public class SampleListComponent extends SideComponent {
 
-	public SampleListComponent(SampleList sampleList, Consumer<Button.ClickEvent> clickListener, AbstractDetailView<? extends ReferenceDto> view) {
-		setWidth(100, Unit.PERCENTAGE);
-		setMargin(false);
-		setSpacing(false);
-
-		HorizontalLayout componentHeader = new HorizontalLayout();
-		componentHeader.setMargin(false);
-		componentHeader.setSpacing(false);
-		componentHeader.setWidth(100, Unit.PERCENTAGE);
-		addComponent(componentHeader);
-
-		SampleList list = sampleList;
-		addComponent(list);
-		list.reload();
-
-		Label tasksHeader = new Label(I18nProperties.getString(Strings.entitySamples));
-		tasksHeader.addStyleName(CssStyles.H3);
-		componentHeader.addComponent(tasksHeader);
+	public SampleListComponent(
+		SampleListCriteria sampleListCriteria,
+		Consumer<Button.ClickEvent> clickListener,
+		AbstractDetailView<? extends ReferenceDto> view) {
+		super(I18nProperties.getString(Strings.entitySamples));
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
 			Button createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.sampleNewSample));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(e -> view.showNavigationConfirmPopupIfDirty(() -> clickListener.accept(e)));
-			componentHeader.addComponent(createButton);
-			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
+			addCreateButton(createButton);
 		}
+
+		SampleList sampleList = new SampleList(sampleListCriteria);
+		addComponent(sampleList);
+		sampleList.reload();
 	}
 }

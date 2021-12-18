@@ -42,7 +42,6 @@ import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
-import de.symeda.sormas.ui.samples.sampleLink.SampleList;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
@@ -146,7 +145,7 @@ public class CaseDataView extends AbstractCaseView {
 			sampleLocLayout.setSpacing(false);
 
 			SampleListComponent sampleList = new SampleListComponent(
-				new SampleList(new SampleListCriteria.Builder().withCase(getCaseRef()).build()),
+				new SampleListCriteria.Builder().withCase(getCaseRef()).build(),
 				e -> ControllerProvider.getSampleController().create(getCaseRef(), caze.getDisease(), SormasUI::refreshView),
 				this);
 			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
