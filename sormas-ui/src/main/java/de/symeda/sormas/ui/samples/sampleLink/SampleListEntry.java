@@ -1,20 +1,17 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 package de.symeda.sormas.ui.samples.sampleLink;
 
 import com.vaadin.icons.VaadinIcons;
@@ -46,9 +43,10 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 
 @SuppressWarnings("serial")
-public class SampleListEntry extends HorizontalLayout {
+public class SampleListEntry extends SideComponentField {
 
 	private final SampleIndexDto sample;
 	private Button editButton;
@@ -58,23 +56,11 @@ public class SampleListEntry extends HorizontalLayout {
 
 		this.sample = sample;
 
-		setMargin(false);
-		setSpacing(true);
-		setWidth(100, Unit.PERCENTAGE);
-		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
-
-		VerticalLayout mainLayout = new VerticalLayout();
-		mainLayout.setWidth(100, Unit.PERCENTAGE);
-		mainLayout.setMargin(false);
-		mainLayout.setSpacing(false);
-		addComponent(mainLayout);
-		setExpandRatio(mainLayout, 1);
-
 		HorizontalLayout topLayout = new HorizontalLayout();
 		topLayout.setWidth(100, Unit.PERCENTAGE);
 		topLayout.setMargin(false);
 		topLayout.setSpacing(false);
-		mainLayout.addComponent(topLayout);
+		addComponentToField(topLayout);
 
 		VerticalLayout topLeftLayout = new VerticalLayout();
 		{
@@ -180,7 +166,7 @@ public class SampleListEntry extends HorizontalLayout {
 			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ADDITIONAL_TESTS)) {
 			Label labelAdditionalTests = new Label(
 				I18nProperties.getString(Strings.entityAdditionalTests) + " " + sample.getAdditionalTestingStatus().toString().toLowerCase());
-			mainLayout.addComponent(labelAdditionalTests);
+			addComponentToField(labelAdditionalTests);
 		}
 	}
 
