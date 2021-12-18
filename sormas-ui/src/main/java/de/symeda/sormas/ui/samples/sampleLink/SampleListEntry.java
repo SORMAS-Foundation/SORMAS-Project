@@ -49,7 +49,6 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 public class SampleListEntry extends SideComponentField {
 
 	private final SampleIndexDto sample;
-	private Button editButton;
 	private Button associatedLabMessagesButton;
 
 	public SampleListEntry(SampleIndexDto sample) {
