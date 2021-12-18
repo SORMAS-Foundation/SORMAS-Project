@@ -65,6 +65,7 @@ import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
+import de.symeda.sormas.api.sample.SampleListCriteria;
 import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -378,8 +379,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public List<SampleListEntryDto> getEntriesList(SampleCriteria sampleCriteria, Integer first, Integer max) {
-		return sampleService.getEntriesList(sampleCriteria, first, max);
+	public List<SampleListEntryDto> getEntriesList(SampleListCriteria sampleListCriteria, Integer first, Integer max) {
+		return sampleService.getEntriesList(sampleListCriteria, first, max);
 	}
 
 	public Page<SampleIndexDto> getIndexPage(SampleCriteria sampleCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {

@@ -67,6 +67,7 @@ import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
+import de.symeda.sormas.api.sample.SampleListCriteria;
 import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -376,7 +377,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return samples;
 	}
 
-	public List<SampleListEntryDto> getEntriesList(SampleCriteria sampleCriteria, Integer first, Integer max) {
+	public List<SampleListEntryDto> getEntriesList(SampleListCriteria sampleListCriteria, Integer first, Integer max) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Sample> sample = cq.from(Sample.class);
@@ -418,10 +419,12 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		selections.addAll(getJurisdictionSelections(sampleQueryContext));
 		cq.multiselect(selections);
 
+		SampleCriteria sampleCriteria = new SampleCriteria();
+		sampleCriteria.sampleAssociationType(sampleCriteria.getSampleAssociationType());
 		Predicate filter = createUserFilter(cq, cb, joins, sampleCriteria);
 
-		if (sampleCriteria != null) {
-			Predicate criteriaFilter = buildCriteriaFilter(sampleCriteria, cb, joins);
+		if (sampleListCriteria != null) {
+			Predicate criteriaFilter = buildSampleListCriteriaFilter(sampleListCriteria, cb, joins);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -886,6 +889,36 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		if (criteria.getEventParticipantUuids() != null) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, sample.get(Sample.ASSOCIATED_EVENT_PARTICIPANT).get(EventParticipant.UUID).in(criteria.getEventParticipantUuids()));
+		}
+
+		return filter;
+	}
+
+	private Predicate buildSampleListCriteriaFilter(SampleListCriteria criteria, CriteriaBuilder cb, SampleJoins joins) {
+		final From<?, ?> sample = joins.getRoot();
+
+		Predicate filter = null;
+		final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
+		if (sampleAssociationType == SampleAssociationType.CASE) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(joins.getCaze()));
+		} else if (sampleAssociationType == SampleAssociationType.CONTACT) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(joins.getContact()));
+		} else if (sampleAssociationType == SampleAssociationType.EVENT_PARTICIPANT) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(joins.getEventParticipant()));
+		}
+
+		if (criteria.getCaseReferenceDto() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaze().get(Case.UUID), criteria.getCaseReferenceDto().getUuid()));
+		}
+		if (criteria.getContactReferenceDto() != null) {
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContact().get(Contact.UUID), criteria.getContactReferenceDto().getUuid()));
+		}
+		if (criteria.getEventParticipantReferenceDto() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.equal(joins.getEventParticipant().get(EventParticipant.UUID), criteria.getEventParticipantReferenceDto().getUuid()));
 		}
 
 		return filter;

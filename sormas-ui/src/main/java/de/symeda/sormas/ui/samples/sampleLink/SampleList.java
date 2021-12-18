@@ -29,8 +29,7 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.api.sample.SampleAssociationType;
-import de.symeda.sormas.api.sample.SampleCriteria;
+import de.symeda.sormas.api.sample.SampleListCriteria;
 import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -42,33 +41,30 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 
 	private static final int MAX_DISPLAYED_ENTRIES = 5;
 
-	private final SampleCriteria sampleCriteria = new SampleCriteria();
+	private final SampleListCriteria sampleListCriteria;
 	private final Label noSamplesLabel;
 
 	public SampleList(CaseReferenceDto caseRef) {
 		super(MAX_DISPLAYED_ENTRIES);
-		sampleCriteria.caze(caseRef);
-		sampleCriteria.sampleAssociationType(SampleAssociationType.CASE);
+		this.sampleListCriteria = new SampleListCriteria.Builder().withCase(caseRef).build();
 		noSamplesLabel = new Label(I18nProperties.getCaption(Captions.sampleNoSamplesForCase));
 	}
 
 	public SampleList(ContactReferenceDto contactRef) {
 		super(MAX_DISPLAYED_ENTRIES);
-		sampleCriteria.contact(contactRef);
-		sampleCriteria.sampleAssociationType(SampleAssociationType.CONTACT);
+		this.sampleListCriteria = new SampleListCriteria.Builder().withContact(contactRef).build();
 		noSamplesLabel = new Label(I18nProperties.getCaption(Captions.sampleNoSamplesForContact));
 	}
 
 	public SampleList(EventParticipantReferenceDto eventParticipantRef) {
 		super(MAX_DISPLAYED_ENTRIES);
-		sampleCriteria.eventParticipant(eventParticipantRef);
-		sampleCriteria.sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT);
+		this.sampleListCriteria = new SampleListCriteria.Builder().withEventParticipant(eventParticipantRef).build();
 		noSamplesLabel = new Label(I18nProperties.getCaption(Captions.sampleNoSamplesForEventParticipant));
 	}
 
 	@Override
 	public void reload() {
-		List<SampleListEntryDto> samples = FacadeProvider.getSampleFacade().getEntriesList(sampleCriteria, 0, maxDisplayedEntries * 20);
+		List<SampleListEntryDto> samples = FacadeProvider.getSampleFacade().getEntriesList(sampleListCriteria, 0, maxDisplayedEntries * 20);
 
 		setEntries(samples);
 		if (!samples.isEmpty()) {
