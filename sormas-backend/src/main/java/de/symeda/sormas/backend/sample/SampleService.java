@@ -67,6 +67,7 @@ import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
+import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -92,6 +93,7 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.sample.transformers.SampleListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -327,13 +329,11 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 				.filter(distinctByKey(pathogenTest -> pathogenTest[2]))
 				.collect(Collectors.toMap(pathogenTest -> pathogenTest[2].toString(), Function.identity()));
 
-			if (tests != null) {
-				for (SampleIndexDto indexDto : samples) {
-					Optional.ofNullable(tests.get(indexDto.getUuid())).ifPresent(test -> {
-						indexDto.setTypeOfLastTest((PathogenTestType) test[0]);
-						indexDto.setLastTestCqValue((Float) test[1]);
-					});
-				}
+			for (SampleIndexDto indexDto : samples) {
+				Optional.ofNullable(tests.get(indexDto.getUuid())).ifPresent(test -> {
+					indexDto.setTypeOfLastTest((PathogenTestType) test[0]);
+					indexDto.setLastTestCqValue((Float) test[1]);
+				});
 			}
 		}
 
@@ -374,6 +374,66 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 			}, true);
 
 		return samples;
+	}
+
+	public List<SampleListEntryDto> getEntriesList(SampleCriteria sampleCriteria, Integer first, Integer max) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		final Root<Sample> sample = cq.from(Sample.class);
+
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sample);
+		SampleJoins<Sample> joins = (SampleJoins<Sample>) sampleQueryContext.getJoins();
+
+		cq.distinct(true);
+
+		List<Selection<?>> selections = new ArrayList<>(
+			Arrays.asList(
+				sample.get(Sample.UUID),
+				sample.get(Sample.SAMPLE_MATERIAL),
+				sample.get(Sample.PATHOGEN_TEST_RESULT),
+				sample.get(Sample.SPECIMEN_CONDITION),
+				sample.get(Sample.SAMPLE_PURPOSE),
+				joins.getReferredSample().get(Sample.UUID),
+				sample.get(Sample.RECEIVED),
+				sample.get(Sample.RECEIVED_DATE),
+				sample.get(Sample.SHIPPED),
+				sample.get(Sample.SHIPMENT_DATE),
+				sample.get(Sample.SAMPLE_DATE_TIME),
+				joins.getLab().get(Facility.NAME),
+				joins.getLab().get(Facility.UUID),
+				sample.get(Sample.SAMPLING_REASON),
+				sample.get(Sample.SAMPLING_REASON_DETAILS),
+				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED),
+				cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS))));
+
+		// Tests count subquery
+		Subquery<Long> testCountSq = cq.subquery(Long.class);
+		Root<PathogenTest> testCountRoot = testCountSq.from(PathogenTest.class);
+		testCountSq.where(
+			cb.equal(testCountRoot.join(PathogenTest.SAMPLE, JoinType.LEFT).get(Sample.ID), sample.get(Sample.ID)),
+			cb.isFalse(testCountRoot.get(PathogenTest.DELETED)));
+		testCountSq.select(cb.countDistinct(testCountRoot.get(PathogenTest.ID)));
+		selections.add(testCountSq.getSelection());
+
+		selections.addAll(getJurisdictionSelections(sampleQueryContext));
+		cq.multiselect(selections);
+
+		Predicate filter = createUserFilter(cq, cb, joins, sampleCriteria);
+
+		if (sampleCriteria != null) {
+			Predicate criteriaFilter = buildCriteriaFilter(sampleCriteria, cb, joins);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.orderBy(cb.desc(sample.get(Sample.SAMPLE_DATE_TIME)));
+
+		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
+			.setResultTransformer(new SampleListEntryDtoResultTransformer())
+			.getResultList();
 	}
 
 	public List<Sample> getAllActiveSamplesAfter(Date date, User user) {

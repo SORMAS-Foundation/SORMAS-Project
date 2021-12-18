@@ -22,16 +22,16 @@ public class SampleListEntryDto extends PseudonymizableIndexDto implements Seria
 	private FacilityReferenceDto lab;
 	private SamplingReason samplingReason;
 	private String samplingReasonDetails;
-	private Long pathogenTestCount;
 	private AdditionalTestingStatus additionalTestingStatus;
+	private long pathogenTestCount;
 
 	public SampleListEntryDto(
 		String uuid,
 		SampleMaterial sampleMaterial,
 		PathogenTestResultType pathogenTestResult,
 		SpecimenCondition specimenCondition,
-		boolean referred,
 		SamplePurpose samplePurpose,
+		boolean referred,
 		boolean received,
 		Date receivedDate,
 		boolean shipped,
@@ -40,15 +40,15 @@ public class SampleListEntryDto extends PseudonymizableIndexDto implements Seria
 		FacilityReferenceDto lab,
 		SamplingReason samplingReason,
 		String samplingReasonDetails,
-		Long pathogenTestCount,
-		AdditionalTestingStatus additionalTestingStatus) {
+		AdditionalTestingStatus additionalTestingStatus,
+		long pathogenTestCount) {
 
 		this.uuid = uuid;
 		this.sampleMaterial = sampleMaterial;
 		this.pathogenTestResult = pathogenTestResult;
 		this.specimenCondition = specimenCondition;
-		this.referred = referred;
 		this.samplePurpose = samplePurpose;
+		this.referred = referred;
 		this.received = received;
 		this.receivedDate = receivedDate;
 		this.shipped = shipped;
@@ -57,8 +57,8 @@ public class SampleListEntryDto extends PseudonymizableIndexDto implements Seria
 		this.lab = lab;
 		this.samplingReason = samplingReason;
 		this.samplingReasonDetails = samplingReasonDetails;
-		this.pathogenTestCount = pathogenTestCount;
 		this.additionalTestingStatus = additionalTestingStatus;
+		this.pathogenTestCount = pathogenTestCount;
 	}
 
 	public String getUuid() {
@@ -173,14 +173,6 @@ public class SampleListEntryDto extends PseudonymizableIndexDto implements Seria
 		this.samplingReasonDetails = samplingReasonDetails;
 	}
 
-	public Long getPathogenTestCount() {
-		return pathogenTestCount;
-	}
-
-	public void setPathogenTestCount(Long pathogenTestCount) {
-		this.pathogenTestCount = pathogenTestCount;
-	}
-
 	public AdditionalTestingStatus getAdditionalTestingStatus() {
 		return additionalTestingStatus;
 	}
@@ -189,8 +181,15 @@ public class SampleListEntryDto extends PseudonymizableIndexDto implements Seria
 		this.additionalTestingStatus = additionalTestingStatus;
 	}
 
-	public SampleReferenceDto toReference() {
+	public long getPathogenTestCount() {
+		return pathogenTestCount;
+	}
 
+	public void setPathogenTestCount(long pathogenTestCount) {
+		this.pathogenTestCount = pathogenTestCount;
+	}
+
+	public SampleReferenceDto toReference() {
 		return new SampleReferenceDto(uuid, getSampleMaterial(), null, null, null);
 	}
 }
