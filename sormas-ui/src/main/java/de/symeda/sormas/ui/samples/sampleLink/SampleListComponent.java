@@ -33,6 +33,7 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sample.SampleListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -48,21 +49,21 @@ public class SampleListComponent extends VerticalLayout {
 
 	public SampleListComponent(ContactReferenceDto contactRef, Disease disease, AbstractDetailView<? extends ReferenceDto> view) {
 		createSampleListComponent(
-			new SampleList(contactRef),
+			new SampleList(new SampleListCriteria.Builder().withContact(contactRef).build()),
 			e -> ControllerProvider.getSampleController().create(contactRef, disease, SormasUI::refreshView),
 			view);
 	}
 
 	public SampleListComponent(CaseReferenceDto caseRef, Disease disease, AbstractDetailView<? extends ReferenceDto> view) {
 		createSampleListComponent(
-			new SampleList(caseRef),
+			new SampleList(new SampleListCriteria.Builder().withCase(caseRef).build()),
 			e -> ControllerProvider.getSampleController().create(caseRef, disease, SormasUI::refreshView),
 			view);
 	}
 
 	public SampleListComponent(EventParticipantReferenceDto eventParticipantRef, Disease disease, AbstractDetailView<? extends ReferenceDto> view) {
 		createSampleListComponent(
-			new SampleList(eventParticipantRef),
+			new SampleList(new SampleListCriteria.Builder().withEventParticipant(eventParticipantRef).build()),
 			e -> ControllerProvider.getSampleController().create(eventParticipantRef, disease, SormasUI::refreshView),
 			view);
 	}

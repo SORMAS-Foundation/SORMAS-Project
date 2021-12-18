@@ -23,9 +23,6 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
@@ -44,22 +41,10 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 	private final SampleListCriteria sampleListCriteria;
 	private final Label noSamplesLabel;
 
-	public SampleList(CaseReferenceDto caseRef) {
+	public SampleList(SampleListCriteria sampleListCriteria) {
 		super(MAX_DISPLAYED_ENTRIES);
-		this.sampleListCriteria = new SampleListCriteria.Builder().withCase(caseRef).build();
+		this.sampleListCriteria = sampleListCriteria;
 		noSamplesLabel = new Label(I18nProperties.getCaption(Captions.sampleNoSamplesForCase));
-	}
-
-	public SampleList(ContactReferenceDto contactRef) {
-		super(MAX_DISPLAYED_ENTRIES);
-		this.sampleListCriteria = new SampleListCriteria.Builder().withContact(contactRef).build();
-		noSamplesLabel = new Label(I18nProperties.getCaption(Captions.sampleNoSamplesForContact));
-	}
-
-	public SampleList(EventParticipantReferenceDto eventParticipantRef) {
-		super(MAX_DISPLAYED_ENTRIES);
-		this.sampleListCriteria = new SampleListCriteria.Builder().withEventParticipant(eventParticipantRef).build();
-		noSamplesLabel = new Label(I18nProperties.getCaption(Captions.sampleNoSamplesForEventParticipant));
 	}
 
 	@Override
