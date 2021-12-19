@@ -64,8 +64,21 @@ public class BaseSampleService extends AbstractCoreAdoService<Sample> {
 			return filter;
 		}
 
-		if (criteria != null && criteria.getSampleAssociationType() != null && criteria.getSampleAssociationType() != SampleAssociationType.ALL) {
-			final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
+		if (criteria != null) {
+			filter = getUSerFilterFromSampleAssociations(cq, cb, joins, criteria.getSampleAssociationType(), filter, currentUser);
+		}
+
+		return filter;
+	}
+
+	protected Predicate getUSerFilterFromSampleAssociations(
+		CriteriaQuery cq,
+		CriteriaBuilder cb,
+		SampleJoins joins,
+		SampleAssociationType sampleAssociationType,
+		Predicate filter,
+		User currentUser) {
+		if (sampleAssociationType != null && sampleAssociationType != SampleAssociationType.ALL) {
 			if (sampleAssociationType == SampleAssociationType.CASE) {
 				filter = CriteriaBuilderHelper.or(cb, filter, caseService.createUserFilter(cb, cq, joins.getCaze(), null));
 			} else if (sampleAssociationType == SampleAssociationType.CONTACT) {
@@ -90,7 +103,6 @@ public class BaseSampleService extends AbstractCoreAdoService<Sample> {
 				contactService.createUserFilterForJoin(cb, cq, joins.getContact()),
 				eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant()));
 		}
-
 		return filter;
 	}
 
