@@ -77,7 +77,7 @@ import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
-import de.symeda.sormas.backend.sample.PathogenTestService;
+import de.symeda.sormas.backend.sample.services.PathogenTestService;
 
 /**
  * Stateless instead of Singleton. It's ok to have multiple instances with an

@@ -70,6 +70,8 @@ import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipant
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.sample.services.PathogenTestService;
+import de.symeda.sormas.backend.sample.services.SampleService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
@@ -342,22 +344,18 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return pathogenTestService.getBySampleUuids(sampleUuids, true)
 			.stream()
-			.collect(
-				Collectors.toMap(
-					s -> s.getSample().getUuid(),
-					(s) -> s,
-					(s1, s2) -> {
+			.collect(Collectors.toMap(s -> s.getSample().getUuid(), (s) -> s, (s1, s2) -> {
 
-						// keep the positive one
-						if (s1.getTestResult() == PathogenTestResultType.POSITIVE) {
-							return s1;
-						} else if (s2.getTestResult() == PathogenTestResultType.POSITIVE) {
-							return s2;
-						}
+				// keep the positive one
+				if (s1.getTestResult() == PathogenTestResultType.POSITIVE) {
+					return s1;
+				} else if (s2.getTestResult() == PathogenTestResultType.POSITIVE) {
+					return s2;
+				}
 
-						// ordered by creation date by default, so always keep the first one
-						return s1;
-					}))
+				// ordered by creation date by default, so always keep the first one
+				return s1;
+			}))
 			.values()
 			.stream()
 			.map(s -> convertToDto(s, pseudonymizer))

@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+import de.symeda.sormas.backend.sample.services.SampleService;
 import org.junit.Test;
 
 import de.symeda.sormas.backend.AbstractBeanTest;
