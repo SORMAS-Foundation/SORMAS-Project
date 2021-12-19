@@ -17,17 +17,13 @@ package de.symeda.sormas.ui.samples.sampleLink;
 
 import java.util.function.Consumer;
 
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleListCriteria;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 @SuppressWarnings("serial")
@@ -36,13 +32,7 @@ public class SampleListComponent extends SideComponent {
 	public SampleListComponent(SampleListCriteria sampleListCriteria, Consumer<Button.ClickEvent> clickListener) {
 		super(I18nProperties.getString(Strings.entitySamples));
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE) && clickListener != null) {
-			Button createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.sampleNewSample));
-			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(e -> clickListener.accept(e));
-			addCreateButton(createButton);
-		}
+		addCreateButton(I18nProperties.getCaption(Captions.sampleNewSample), UserRight.SAMPLE_CREATE, clickListener);
 
 		SampleList sampleList = new SampleList(sampleListCriteria);
 		addComponent(sampleList);
