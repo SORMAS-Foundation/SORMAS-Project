@@ -21,31 +21,26 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 @SuppressWarnings("serial")
 public class SampleListComponent extends SideComponent {
 
-	public SampleListComponent(
-		SampleListCriteria sampleListCriteria,
-		Consumer<Button.ClickEvent> clickListener,
-		AbstractDetailView<? extends ReferenceDto> view) {
+	public SampleListComponent(SampleListCriteria sampleListCriteria, Consumer<Button.ClickEvent> clickListener) {
 		super(I18nProperties.getString(Strings.entitySamples));
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE) && clickListener != null) {
 			Button createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.sampleNewSample));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(e -> view.showNavigationConfirmPopupIfDirty(() -> clickListener.accept(e)));
+			createButton.addClickListener(e -> clickListener.accept(e));
 			addCreateButton(createButton);
 		}
 

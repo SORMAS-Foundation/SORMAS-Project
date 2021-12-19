@@ -134,8 +134,8 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			SampleListComponent sampleList = new SampleListComponent(
 				new SampleListCriteria.Builder().withEventParticipant(eventParticipantRef).build(),
-				e -> ControllerProvider.getSampleController().create(eventParticipantRef, event.getDisease()),
-				this);
+				e -> showNavigationConfirmPopupIfDirty(
+					() -> ControllerProvider.getSampleController().create(eventParticipantRef, event.getDisease())));
 
 			SampleListComponentLayout sampleListComponentLayout =
 				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesEventParticipant));

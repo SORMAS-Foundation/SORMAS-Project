@@ -215,8 +215,8 @@ public class ContactDataView extends AbstractContactView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			SampleListComponent sampleList = new SampleListComponent(
 				new SampleListCriteria.Builder().withContact(getContactRef()).build(),
-				e -> ControllerProvider.getSampleController().create(getContactRef(), contactDto.getDisease()),
-				this);
+				e -> showNavigationConfirmPopupIfDirty(
+					() -> ControllerProvider.getSampleController().create(getContactRef(), contactDto.getDisease())));
 
 			SampleListComponentLayout sampleListComponentLayout =
 				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesContact));

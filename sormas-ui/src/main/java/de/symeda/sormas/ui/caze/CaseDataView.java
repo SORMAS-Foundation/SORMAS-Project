@@ -139,8 +139,7 @@ public class CaseDataView extends AbstractCaseView {
 			&& !caze.checkIsUnreferredPortHealthCase()) {
 			SampleListComponent sampleList = new SampleListComponent(
 				new SampleListCriteria.Builder().withCase(getCaseRef()).build(),
-				e -> ControllerProvider.getSampleController().create(getCaseRef(), caze.getDisease()),
-				this);
+				e -> showNavigationConfirmPopupIfDirty(() -> ControllerProvider.getSampleController().create(getCaseRef(), caze.getDisease())));
 
 			SampleListComponentLayout sampleListComponentLayout =
 				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesCase));
