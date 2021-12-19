@@ -36,7 +36,6 @@ import de.symeda.sormas.api.sample.SampleListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.ContactListComponent;
@@ -135,7 +134,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			SampleListComponent sampleList = new SampleListComponent(
 				new SampleListCriteria.Builder().withEventParticipant(eventParticipantRef).build(),
-				e -> ControllerProvider.getSampleController().create(eventParticipantRef, event.getDisease(), SormasUI::refreshView),
+				e -> ControllerProvider.getSampleController().create(eventParticipantRef, event.getDisease()),
 				this);
 
 			SampleListComponentLayout sampleListComponentLayout =

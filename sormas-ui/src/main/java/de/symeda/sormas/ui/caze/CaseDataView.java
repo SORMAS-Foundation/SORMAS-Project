@@ -30,7 +30,6 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.messaging.SmsListComponent;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportListComponent;
@@ -140,7 +139,7 @@ public class CaseDataView extends AbstractCaseView {
 			&& !caze.checkIsUnreferredPortHealthCase()) {
 			SampleListComponent sampleList = new SampleListComponent(
 				new SampleListCriteria.Builder().withCase(getCaseRef()).build(),
-				e -> ControllerProvider.getSampleController().create(getCaseRef(), caze.getDisease(), SormasUI::refreshView),
+				e -> ControllerProvider.getSampleController().create(getCaseRef(), caze.getDisease()),
 				this);
 
 			SampleListComponentLayout sampleListComponentLayout =

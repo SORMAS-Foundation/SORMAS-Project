@@ -40,7 +40,6 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
@@ -216,7 +215,7 @@ public class ContactDataView extends AbstractContactView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			SampleListComponent sampleList = new SampleListComponent(
 				new SampleListCriteria.Builder().withContact(getContactRef()).build(),
-				e -> ControllerProvider.getSampleController().create(getContactRef(), contactDto.getDisease(), SormasUI::refreshView),
+				e -> ControllerProvider.getSampleController().create(getContactRef(), contactDto.getDisease()),
 				this);
 
 			SampleListComponentLayout sampleListComponentLayout =

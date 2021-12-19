@@ -102,20 +102,20 @@ public class SampleController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
-	public void create(CaseReferenceDto caseRef, Disease disease, Runnable callback) {
-		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef), disease);
+	public void create(CaseReferenceDto caseRef, Disease disease) {
+		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef), disease);
 	}
 
-	public void create(ContactReferenceDto contactRef, Disease disease, Runnable callback) {
-		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef), disease);
+	public void create(ContactReferenceDto contactRef, Disease disease) {
+		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef), disease);
 	}
 
-	public void create(EventParticipantReferenceDto eventParticipantRef, Disease disease, Runnable callback) {
-		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef), disease);
+	public void create(EventParticipantReferenceDto eventParticipantRef, Disease disease) {
+		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef), disease);
 	}
 
-	private void createSample(Runnable callback, SampleDto sampleDto, Disease disease) {
-		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, disease, callback);
+	private void createSample(SampleDto sampleDto, Disease disease) {
+		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, disease, SormasUI::refreshView);
 		// add option to create additional pathogen tests
 		addPathogenTestButton(editView, false);
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
