@@ -389,23 +389,15 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 	@Override
 	public boolean existsLabMessageForEntity(ReferenceDto entityRef) {
-		List<Sample> samples;
 		if (CaseReferenceDto.class.equals(entityRef.getClass())) {
-			samples = sampleService.getByCaseUuids(Arrays.asList(entityRef.getUuid()));
+			return labMessageService.countForCase(entityRef.getUuid()) > 0;
 		} else if (ContactReferenceDto.class.equals(entityRef.getClass())) {
-			samples = sampleService.getByContactUuids(Arrays.asList(entityRef.getUuid()));
+			return labMessageService.countForContact(entityRef.getUuid()) > 0;
 		} else if (EventParticipantReferenceDto.class.equals(entityRef.getClass())) {
-			samples = sampleService.getByEventParticipantUuids(Arrays.asList(entityRef.getUuid()));
+			return labMessageService.countForEventParticipant(entityRef.getUuid()) > 0;
 		} else {
 			throw new UnsupportedOperationException("Reference class" + entityRef.getClass() + " is not supported.");
 		}
-
-		for (Sample sample : samples) {
-			if (!labMessageService.getForSample(sample.toReference()).isEmpty()) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	@Override
