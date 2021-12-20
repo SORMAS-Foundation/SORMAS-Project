@@ -119,6 +119,11 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 							cb.lessThanOrEqualTo(labMessage.get(LabMessage.PERSON_BIRTH_DATE_DD), dayTo)))));
 			filter = CriteriaBuilderHelper.and(cb, filter, birthDateToFilter);
 		}
+
+		if (criteria.getDeleted() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(LabMessage.DELETED), criteria.getDeleted()));
+		}
+
 		return filter;
 	}
 
