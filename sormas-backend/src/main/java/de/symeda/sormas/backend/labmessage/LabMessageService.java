@@ -27,14 +27,6 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 		super(LabMessage.class);
 	}
 
-	/**
-	 * Creates a default filter that should be used as the basis of queries in this service..
-	 * This essentially removes {@link CoreAdo#deleted} lab messages from the queries.
-	 */
-	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<LabMessage> root) {
-		return cb.isFalse(root.get(LabMessage.DELETED));
-	}
-
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, LabMessage> from) {
 		return null;
