@@ -2925,7 +2925,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 329:
 				currentVersion = 329;
-				getDao(Vaccination.class).executeRaw("ALTER TABLE vaccination ADD COLUMN snapshot SMALLINT DEFAULT 0;");
+
+				if (columnDoesNotExist("vaccination", "snapshot")) {
+					getDao(Vaccination.class).executeRaw("ALTER TABLE vaccination ADD COLUMN snapshot SMALLINT DEFAULT 0;");
+				}
 
 				// ATTENTION: break should only be done after last version
 				break;
