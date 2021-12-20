@@ -13,7 +13,6 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
@@ -22,16 +21,17 @@ import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.outbreak.OutbreakCriteria;
-import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.outbreak.OutbreakCriteria;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
-import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 
 @Stateless(name = "DashboardFacade")
@@ -78,6 +78,10 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		return sampleFacade.getNewTestResultCountByResultType(cases.stream().map(DashboardCaseDto::getId).collect(Collectors.toList()));
 	}
 
+	public Map<PathogenTestResultType, Long> getTestResultCountByResultType(DashboardCriteria dashboardCriteria) {
+		return getTestResultCountByResultType(getCases(dashboardCriteria));
+	}
+
 	@Override
 	public long countCasesConvertedFromContacts(DashboardCriteria dashboardCriteria) {
 		return dashboardService.countCasesConvertedFromContacts(dashboardCriteria);
@@ -106,7 +110,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		Date toDate,
 		Date previousFromDate,
 		Date previousToDate,
-		NewCaseDateType newCaseDateType) {
+		CriteriaDateType newCaseDateType) {
 
 		//diseases
 		List<Disease> diseases = diseaseConfigurationFacade.getAllDiseases(true, true, true);

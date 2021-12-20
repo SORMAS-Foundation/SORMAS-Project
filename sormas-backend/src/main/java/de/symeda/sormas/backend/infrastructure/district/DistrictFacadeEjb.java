@@ -334,6 +334,7 @@ public class DistrictFacadeEjb
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
+		target.setCentrallyManaged(source.isCentrallyManaged());
 		return target;
 	}
 

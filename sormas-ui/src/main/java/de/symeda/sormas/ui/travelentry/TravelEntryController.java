@@ -128,6 +128,8 @@ public class TravelEntryController {
 			}
 		});
 
+		editComponent.addDiscardListener(() -> travelEntryEditForm.onDiscard());
+
 		// Initialize 'Delete' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)) {
 			editComponent.addDeleteListener(() -> {

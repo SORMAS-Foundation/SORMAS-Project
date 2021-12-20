@@ -292,6 +292,7 @@ public class CountryFacadeEjb
 		target.setExternalId(source.getExternalId());
 		target.setIsoCode(source.getIsoCode());
 		target.setUnoCode(source.getUnoCode());
+		target.setCentrallyManaged(source.isCentrallyManaged());
 		final SubcontinentReferenceDto subcontinent = source.getSubcontinent();
 		if (subcontinent != null) {
 			target.setSubcontinent(subcontinentService.getByUuid(subcontinent.getUuid()));

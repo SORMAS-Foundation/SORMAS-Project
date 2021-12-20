@@ -320,6 +320,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 		target.setExternalID(source.getExternalID());
 		target.setArea(areaService.getByReferenceDto(source.getArea()));
 		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
+		target.setCentrallyManaged(source.isCentrallyManaged());
 
 		return target;
 	}

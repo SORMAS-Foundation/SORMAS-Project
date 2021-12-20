@@ -45,8 +45,10 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.UserError;
+import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Image;
@@ -90,6 +92,7 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -278,6 +281,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBox facilityCombo;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
 	private TextField tfExpectedFollowUpUntilDate;
+	private boolean ignoreDifferentPlaceOfStayJurisdiction = false;
 
 	public CaseDataForm(String caseUuid, PersonDto person, Disease disease, SymptomsDto symptoms, ViewMode viewMode, boolean isPseudonymized) {
 
@@ -902,7 +906,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		});
 
 		differentPlaceOfStayJurisdiction.addValueChangeListener(e -> {
-			updateFacility();
+			if (!ignoreDifferentPlaceOfStayJurisdiction) {
+				updateFacility();
+			}
 		});
 
 		// Set initial visibilities & accesses
@@ -1239,20 +1245,46 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					symptoms.getOnsetDate(),
 					reportDate.getValue(),
 					FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caseUuid)));
-				Date minimumFollowUpUntilDate = FollowUpLogic
-					.calculateFollowUpUntilDate(
-						followUpPeriod,
-						null,
-						FacadeProvider.getVisitFacade().getVisitsByCase(new CaseReferenceDto(caseUuid)),
-						FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration((Disease) diseaseField.getValue()))
-					.getFollowUpEndDate();
+				Date minimumFollowUpUntilDate =
+					FollowUpLogic
+						.calculateFollowUpUntilDate(
+							followUpPeriod,
+							null,
+							FacadeProvider.getVisitFacade().getVisitsByCase(new CaseReferenceDto(caseUuid)),
+							FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration((Disease) diseaseField.getValue()),
+							FacadeProvider.getFeatureConfigurationFacade()
+								.isPropertyValueTrue(FeatureType.CASE_FOLLOWUP, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE))
+						.getFollowUpEndDate();
 
-				dfFollowUpUntil.addValidator(
-					new DateRangeValidator(
-						I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
-						minimumFollowUpUntilDate,
-						null,
-						Resolution.DAY));
+				if (FacadeProvider.getFeatureConfigurationFacade()
+					.isPropertyValueTrue(FeatureType.CASE_FOLLOWUP, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE)) {
+					dfFollowUpUntil.addValueChangeListener(valueChangeEvent -> {
+
+						if (DateHelper.getEndOfDay(dfFollowUpUntil.getValue()).before(minimumFollowUpUntilDate)) {
+							dfFollowUpUntil.setComponentError(new ErrorMessage() {
+
+								@Override
+								public ErrorLevel getErrorLevel() {
+									return ErrorLevel.INFO;
+								}
+
+								@Override
+								public String getFormattedHtmlMessage() {
+									return I18nProperties.getValidationError(
+										Validations.contactFollowUpUntilDateSoftValidation,
+										I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_UNTIL));
+								}
+							});
+						}
+					});
+				} else {
+					dfFollowUpUntil.addValidator(
+						new DateRangeValidator(
+							I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
+							minimumFollowUpUntilDate,
+							null,
+							Resolution.DAY));
+				}
 			}
 
 			// Overwrite visibility for quarantine fields
@@ -1490,16 +1522,26 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpStartDate(), I18nProperties.getUserLanguage())));
 		}
 
-		if (newFieldValue.getRegion() != null || newFieldValue.getDistrict() != null || newFieldValue.getCommunity() != null) {
-			boolean readOnly = differentPlaceOfStayJurisdiction.isReadOnly();
-			differentPlaceOfStayJurisdiction.setReadOnly(false);
-			differentPlaceOfStayJurisdiction.setValue(Boolean.TRUE);
-			differentPlaceOfStayJurisdiction.setReadOnly(readOnly);
-		}
+		updateVisibilityDifferentPlaceOfStayJurisdiction(newFieldValue);
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value
 		discard();
+	}
+
+	public void onDiscard() {
+		ignoreDifferentPlaceOfStayJurisdiction = true;
+		updateVisibilityDifferentPlaceOfStayJurisdiction(getValue());
+		ignoreDifferentPlaceOfStayJurisdiction = false;
+	}
+
+	private void updateVisibilityDifferentPlaceOfStayJurisdiction(CaseDataDto newFieldValue) {
+		boolean isDifferentPlaceOfStayJurisdiction =
+			newFieldValue.getRegion() != null || newFieldValue.getDistrict() != null || newFieldValue.getCommunity() != null;
+		boolean readOnly = differentPlaceOfStayJurisdiction.isReadOnly();
+		differentPlaceOfStayJurisdiction.setReadOnly(false);
+		differentPlaceOfStayJurisdiction.setValue(isDifferentPlaceOfStayJurisdiction);
+		differentPlaceOfStayJurisdiction.setReadOnly(readOnly);
 	}
 
 	private void updateFacility() {
