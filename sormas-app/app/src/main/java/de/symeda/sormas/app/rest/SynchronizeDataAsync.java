@@ -348,34 +348,34 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// order is important, due to dependencies (e.g. case & person)
 
-		new UserRoleConfigDtoHelper().repullEntities();
-		new DiseaseClassificationDtoHelper().repullEntities();
-		new UserDtoHelper().repullEntities();
-		new OutbreakDtoHelper().repullEntities();
-		new DiseaseConfigurationDtoHelper().repullEntities();
-		new CustomizableEnumValueDtoHelper().repullEntities();
-		new FeatureConfigurationDtoHelper().repullEntities();
-		personDtoHelper.repullEntities();
-		caseDtoHelper.repullEntities();
-		immunizationDtoHelper.repullEntities();
-		eventDtoHelper.repullEntities();
-		eventParticipantDtoHelper.repullEntities();
-		sampleDtoHelper.repullEntities();
-		pathogenTestDtoHelper.repullEntities();
-		additionalTestDtoHelper.repullEntities();
-		contactDtoHelper.repullEntities();
-		visitDtoHelper.repullEntities();
-		taskDtoHelper.repullEntities();
-		weeklyReportDtoHelper.repullEntities();
-		aggregateReportDtoHelper.repullEntities();
-		prescriptionDtoHelper.repullEntities();
-		treatmentDtoHelper.repullEntities();
-		clinicalVisitDtoHelper.repullEntities();
+		new UserRoleConfigDtoHelper().repullEntities(context);
+		new DiseaseClassificationDtoHelper().repullEntities(context);
+		new UserDtoHelper().repullEntities(context);
+		new OutbreakDtoHelper().repullEntities(context);
+		new DiseaseConfigurationDtoHelper().repullEntities(context);
+		new CustomizableEnumValueDtoHelper().repullEntities(context);
+		new FeatureConfigurationDtoHelper().repullEntities(context);
+		personDtoHelper.repullEntities(context);
+		caseDtoHelper.repullEntities(context);
+		immunizationDtoHelper.repullEntities(context);
+		eventDtoHelper.repullEntities(context);
+		eventParticipantDtoHelper.repullEntities(context);
+		sampleDtoHelper.repullEntities(context);
+		pathogenTestDtoHelper.repullEntities(context);
+		additionalTestDtoHelper.repullEntities(context);
+		contactDtoHelper.repullEntities(context);
+		visitDtoHelper.repullEntities(context);
+		taskDtoHelper.repullEntities(context);
+		weeklyReportDtoHelper.repullEntities(context);
+		aggregateReportDtoHelper.repullEntities(context);
+		prescriptionDtoHelper.repullEntities(context);
+		treatmentDtoHelper.repullEntities(context);
+		clinicalVisitDtoHelper.repullEntities(context);
 
 		// Campaigns
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
 			final CampaignFormDataDtoHelper campaignFormDataDtoHelper = new CampaignFormDataDtoHelper();
-			campaignFormDataDtoHelper.repullEntities();
+			campaignFormDataDtoHelper.repullEntities(context);
 		}
 	}
 

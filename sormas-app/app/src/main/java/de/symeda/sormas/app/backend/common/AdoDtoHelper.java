@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -42,6 +43,10 @@ import retrofit2.Response;
 public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends EntityDto> {
 
 	private static final Logger logger = LoggerFactory.getLogger(AdoDtoHelper.class);
+
+	private Date lastChangeDate;
+	private Date lastSyncedEntityDate;
+	private String lastSyncedEntityUuid;
 
 	protected abstract Class<ADO> getAdoClass();
 
@@ -89,9 +94,16 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 				? NetworkHelper.getNumberOfEntitiesToBePulledInOneBatch(approximateJsonSizeInBytes, context)
 				: Integer.MAX_VALUE;
 			Integer lastBatchSize = batchSize;
-			while (lastBatchSize == batchSize) {
-				Call<List<DTO>> dtoCall = pullAllSince(maxModifiedDate != null ? maxModifiedDate.getTime() : 0, batchSize, null);
 
+			lastSyncedEntityDate = maxModifiedDate;
+
+			while (lastBatchSize == batchSize) {
+				Call<List<DTO>> dtoCall = pullAllSince(
+					lastSyncedEntityDate.getTime(),
+					batchSize,
+					lastSyncedEntityDate.equals(lastChangeDate) ? lastSyncedEntityUuid : null);
+
+				lastChangeDate = lastSyncedEntityDate;
 				if (dtoCall == null) {
 					return;
 				}
@@ -111,23 +123,36 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 		}
 	}
 
-	public void repullEntities() throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
+	public void repullEntities(Context context) throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
 		try {
 			final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
-			Call<List<DTO>> dtoCall = pullAllSince(0, Integer.MAX_VALUE, null);
-			if (dtoCall == null) {
-				return;
-			}
+			long approximateJsonSizeInBytes = getApproximateJsonSizeInBytes();
+			final Integer batchSize = approximateJsonSizeInBytes != 0
+				? NetworkHelper.getNumberOfEntitiesToBePulledInOneBatch(approximateJsonSizeInBytes, context)
+				: Integer.MAX_VALUE;
+			Integer lastBatchSize = batchSize;
 
-			Response<List<DTO>> response;
-			try {
-				response = dtoCall.execute();
-			} catch (IOException e) {
-				throw new ServerCommunicationException(e);
-			}
+			while (lastBatchSize == batchSize) {
+				Call<List<DTO>> dtoCall = pullAllSince(
+					lastSyncedEntityDate.getTime(),
+					batchSize,
+					lastSyncedEntityDate.equals(lastChangeDate) ? lastSyncedEntityUuid : null);
 
-			handlePullResponse(false, dao, response);
+				lastChangeDate = lastSyncedEntityDate;
+				if (dtoCall == null) {
+					return;
+				}
+
+				Response<List<DTO>> response;
+				try {
+					response = dtoCall.execute();
+				} catch (IOException e) {
+					throw new ServerCommunicationException(e);
+				}
+
+				lastBatchSize = handlePullResponse(false, dao, response);
+			}
 
 		} catch (RuntimeException e) {
 			Log.e(getClass().getName(), "Exception thrown when trying to pull entities");
@@ -154,13 +179,19 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 	public int handlePulledList(AbstractAdoDao<ADO> dao, List<DTO> result) throws DaoException {
 		preparePulledResult(result);
 		dao.callBatchTasks((Callable<Void>) () -> {
-//            boolean empty = dao.countOf() == 0;
-			for (DTO dto : result) {
+// 		boolean empty = dao.countOf() == 0;
+			Iterator<DTO> iterator = result.iterator();
+			while (iterator.hasNext()) {
+				final DTO dto = iterator.next();
 				handlePulledDto(dao, dto);
 				// TODO #704
-//                        if (entity != null && markAsRead) {
-//                            dao.markAsRead(entity);
-//                        }
+//				if (entity != null && markAsRead) {
+//					dao.markAsRead(entity);
+//				}
+				if (!iterator.hasNext()){
+					lastSyncedEntityUuid = dto.getUuid();
+					lastSyncedEntityDate = dto.getChangeDate();
+				}
 			}
 			return null;
 		});
