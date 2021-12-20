@@ -135,8 +135,7 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 		LabMessageCriteria criteria = new LabMessageCriteria();
 		criteria.setSample(sample);
 
-		Predicate filter = createDefaultFilter(cb, labMessageRoot);
-		filter = CriteriaBuilderHelper.and(cb, filter, buildCriteriaFilter(cb, labMessageRoot, criteria));
+		Predicate filter = buildCriteriaFilter(cb, labMessageRoot, criteria);
 
 		cq.where(filter);
 		cq.distinct(true);
