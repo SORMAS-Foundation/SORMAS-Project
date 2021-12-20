@@ -11,7 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.dashboard.CaseStatisticDto;
+import de.symeda.sormas.api.dashboard.DashboardCaseStatisticDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventStatus;
@@ -42,8 +42,8 @@ public class DashboardResource extends EntityDtoResource {
 
 	@POST
 	@Path("/newCases")
-	public CaseStatisticDto getNewCasesCount(@RequestBody DashboardCriteria dashboardCriteria) {
-		return FacadeProvider.getDashboardFacade().getNewCasesCount(dashboardCriteria);
+	public DashboardCaseStatisticDto getDashboardCaseStatistic(@RequestBody DashboardCriteria dashboardCriteria) {
+		return FacadeProvider.getDashboardFacade().getDashboardCaseStatistic(dashboardCriteria);
 	}
 
 	@POST

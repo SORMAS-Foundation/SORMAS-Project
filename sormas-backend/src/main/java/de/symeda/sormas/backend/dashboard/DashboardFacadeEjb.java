@@ -17,8 +17,8 @@ import org.apache.commons.lang3.time.DateUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDefinition;
-import de.symeda.sormas.api.dashboard.CaseStatisticDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
+import de.symeda.sormas.api.dashboard.DashboardCaseStatisticDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
@@ -139,11 +139,14 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		};
 	}
 
-	public CaseStatisticDto getNewCasesCount(DashboardCriteria dashboardCriteria) {
+	public DashboardCaseStatisticDto getDashboardCaseStatistic(DashboardCriteria dashboardCriteria) {
 		List<DashboardCaseDto> dashboardCases = dashboardService.getCases(dashboardCriteria);
+		long newCases = dashboardCases.size();
+
 		long fatalCasesCount = dashboardCases.stream().filter(DashboardCaseDto::wasFatal).count();
-		float fatalityRate = 100 * ((float) fatalCasesCount / (float) (dashboardCases.size() == 0 ? 1 : dashboardCases.size()));
+		float fatalityRate = 100 * ((float) fatalCasesCount / (float) (newCases == 0 ? 1 : newCases));
 		fatalityRate = Math.round(fatalityRate * 100) / 100f;
+
 		List<DashboardQuarantineDataDto> casesInQuarantineDtos = dashboardCases.stream()
 			.map(DashboardCaseDto::getDashboardQuarantineDataDto)
 			.filter(quarantineData(dashboardCriteria.getDateFrom(), dashboardCriteria.getDateTo()))
@@ -156,6 +159,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 					&& dashboardCriteria.getDateFrom().before(DateUtils.addDays(dashboardQuarantineDataDto.getQuarantineFrom(), 1))
 					&& dashboardQuarantineDataDto.getQuarantineFrom().before(dashboardCriteria.getDateTo())))
 			.count();
+
 		long casesWithReferenceDefinitionFulfilledCount =
 			dashboardCases.stream().filter(cases -> cases.getCaseReferenceDefinition() == CaseReferenceDefinition.FULFILLED).count();
 
@@ -165,8 +169,12 @@ public class DashboardFacadeEjb implements DashboardFacade {
 				.disease(dashboardCriteria.getDisease())
 				.reportedBetween(dashboardCriteria.getDateFrom(), dashboardCriteria.getDateTo()));
 
-		return new CaseStatisticDto(
-			dashboardService.getCasesCountByClassification(dashboardCriteria),
+		Map<CaseClassification, Integer> casesCountByClassification =
+			dashboardService.getCasesCountByClassification(dashboardCriteria.includeNotACaseClassification(true));
+
+		return new DashboardCaseStatisticDto(
+			casesCountByClassification,
+			casesCountByClassification.values().stream().reduce(0, Integer::sum),
 			fatalCasesCount,
 			fatalityRate,
 			outbreakDistrictCount,

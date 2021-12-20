@@ -5,13 +5,13 @@ import java.util.Map;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 
-public class CaseStatisticDto implements Serializable {
+public class DashboardCaseStatisticDto implements Serializable {
 
 	private static final long serialVersionUID = -5705128377788207648L;
 	public static final String I18N_PREFIX = "CaseStatistics";
 
 	private Map<CaseClassification, Integer> caseClassificationCount;
-
+	private Integer newCases;
 	private Long fatalityCount;
 	private Float fatalityRate;
 	private Long outbreakDistrictCount;
@@ -21,8 +21,9 @@ public class CaseStatisticDto implements Serializable {
 	private Long contactResultingCaseCount;
 	private String lastReportedDistrict;
 
-	public CaseStatisticDto(
+	public DashboardCaseStatisticDto(
 		Map<CaseClassification, Integer> caseClassificationCount,
+		Integer newCases,
 		Long fatalityCount,
 		Float fatalityRate,
 		Long outbreakDistrictCount,
@@ -32,6 +33,7 @@ public class CaseStatisticDto implements Serializable {
 		Long contactResultingCaseCount,
 		String lastReportedDistrict) {
 		this.caseClassificationCount = caseClassificationCount;
+		this.newCases = newCases;
 		this.fatalityCount = fatalityCount;
 		this.fatalityRate = fatalityRate;
 		this.outbreakDistrictCount = outbreakDistrictCount;
@@ -44,6 +46,10 @@ public class CaseStatisticDto implements Serializable {
 
 	public Map<CaseClassification, Integer> getCaseClassificationCount() {
 		return caseClassificationCount;
+	}
+
+	public Integer getNewCases() {
+		return newCases;
 	}
 
 	public Long getFatalityCount() {

@@ -34,7 +34,7 @@ public interface DashboardFacade {
 
 	Map<EventStatus, Long> getEventCountByStatus(DashboardCriteria dashboardCriteria);
 
-	CaseStatisticDto getNewCasesCount(DashboardCriteria dashboardCriteria);
+	DashboardCaseStatisticDto getDashboardCaseStatistic(DashboardCriteria dashboardCriteria);
 
 	Map<PathogenTestResultType, Long> getTestResultCountByResultType(DashboardCriteria dashboardCriteria);
 
