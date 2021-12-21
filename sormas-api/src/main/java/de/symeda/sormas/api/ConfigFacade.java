@@ -38,6 +38,8 @@ public interface ConfigFacade {
 
 	String getUiUrl();
 
+	String getSormasStatsUrl();
+
 	boolean isFeatureAutomaticCaseClassification();
 
 	String getEmailSenderAddress();

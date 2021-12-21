@@ -319,10 +319,10 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 					.findAny()
 					.orElse(null);
 			}
-			Date existingVaccinationDate = existingVaccination != null ? existingVaccination.getVaccinationDate() : null;
+			Date oldVaccinationDate = existingVaccination != null ? existingVaccination.getVaccinationDate() : null;
 			vaccinationFacade.updateVaccinationStatuses(
 				vaccination.getVaccinationDate(),
-				existingVaccinationDate,
+				oldVaccinationDate,
 				immunization.getPersonId(),
 				immunization.getDisease());
 		});

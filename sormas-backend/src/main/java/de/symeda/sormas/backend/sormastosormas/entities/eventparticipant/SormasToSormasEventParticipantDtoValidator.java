@@ -7,6 +7,7 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParti
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.data.validation.ValidationDirection;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -26,32 +27,23 @@ public class SormasToSormasEventParticipantDtoValidator
 	}
 
 	@Override
-	public ValidationErrors validateIncoming(SormasToSormasEventParticipantDto sharedData) {
+	public ValidationErrors validate(SormasToSormasEventParticipantDto sharedData, ValidationDirection direction) {
 		EventParticipantDto ep = sharedData.getEntity();
 		ValidationErrors validationErrors = new ValidationErrors();
 
-		ValidationErrors personValidationErrors = validatePerson(ep.getPerson());
+		ValidationErrors personValidationErrors = validatePerson(ep.getPerson(), direction);
 		validationErrors.addAll(personValidationErrors);
 
 		final String groupNameTag = Captions.EventParticipant;
-		infraValidator.validateRegion(ep.getRegion(), groupNameTag, validationErrors, ep::setRegion);
-		infraValidator.validateDistrict(ep.getDistrict(), groupNameTag, validationErrors, ep::setDistrict);
+		infraValidator.validateRegion(ep.getRegion(), groupNameTag, validationErrors, ep::setRegion, direction);
+		infraValidator.validateDistrict(ep.getDistrict(), groupNameTag, validationErrors, ep::setDistrict, direction);
 
 		return validationErrors;
 	}
 
 	@Override
-	public ValidationErrors validateIncomingPreview(SormasToSormasEventParticipantPreview preview) {
-		return validatePersonPreview(preview.getPerson());
+	public ValidationErrors validatePreview(SormasToSormasEventParticipantPreview preview, ValidationDirection direction) {
+		return validatePersonPreview(preview.getPerson(), direction);
 	}
 
-	@Override
-	public ValidationErrors validateOutgoing(SormasToSormasEventParticipantDto sharedData) {
-		return null;
-	}
-
-	@Override
-	public ValidationErrors validateOutgoingPreview(SormasToSormasEventParticipantPreview preview) {
-		return null;
-	}
 }

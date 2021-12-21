@@ -132,6 +132,7 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -192,7 +193,6 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.backend.activityascase.ActivityAsCaseService;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb.MaternalHistoryFacadeEjbLocal;
@@ -316,6 +316,7 @@ import de.symeda.sormas.backend.util.PatchHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.Vaccination;
+import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
@@ -441,13 +442,13 @@ public class CaseFacadeEjb implements CaseFacade {
 	@EJB
 	private EpiDataService epiDataService;
 	@EJB
-	private ActivityAsCaseService activityAsCaseService;
-	@EJB
 	private SurveillanceReportFacadeEjb.SurveillanceReportFacadeEjbLocal surveillanceReportFacade;
 	@EJB
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
 	private SormasToSormasCaseFacadeEjbLocal sormasToSormasCaseFacade;
+	@EJB
+	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@Resource
 	private ManagedScheduledExecutorService executorService;
 
@@ -1945,7 +1946,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		if (existingCase == null) {
-			caseService.updateVaccinationStatuses(newCase);
+			vaccinationFacade.updateVaccinationStatuses(newCase);
 		}
 	}
 
@@ -2005,29 +2006,31 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	public void setResponsibleSurveillanceOfficer(Case caze) {
-		District reportingUserDistrict = caze.getReportingUser().getDistrict();
+		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT)) {
+			District reportingUserDistrict = caze.getReportingUser().getDistrict();
 
-		if (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)
-			&& (reportingUserDistrict.equals(caze.getResponsibleDistrict()) || reportingUserDistrict.equals(caze.getDistrict()))) {
-			caze.setSurveillanceOfficer(caze.getReportingUser());
-		} else {
-			List<User> informants = caze.getHealthFacility() != null && FacilityType.HOSPITAL.equals(caze.getHealthFacility().getType())
-				? userService.getInformantsOfFacility(caze.getHealthFacility())
-				: new ArrayList<>();
-			Random rand = new Random();
-			if (!informants.isEmpty()) {
-				caze.setSurveillanceOfficer(informants.get(rand.nextInt(informants.size())).getAssociatedOfficer());
+			if (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)
+				&& (reportingUserDistrict.equals(caze.getResponsibleDistrict()) || reportingUserDistrict.equals(caze.getDistrict()))) {
+				caze.setSurveillanceOfficer(caze.getReportingUser());
 			} else {
-				User survOff = null;
-				if (caze.getResponsibleDistrict() != null) {
-					survOff = getRandomSurveillanceOfficer(caze.getResponsibleDistrict());
-				}
+				List<User> informants = caze.getHealthFacility() != null && FacilityType.HOSPITAL.equals(caze.getHealthFacility().getType())
+					? userService.getInformantsOfFacility(caze.getHealthFacility())
+					: new ArrayList<>();
+				Random rand = new Random();
+				if (!informants.isEmpty()) {
+					caze.setSurveillanceOfficer(informants.get(rand.nextInt(informants.size())).getAssociatedOfficer());
+				} else {
+					User survOff = null;
+					if (caze.getResponsibleDistrict() != null) {
+						survOff = getRandomSurveillanceOfficer(caze.getResponsibleDistrict());
+					}
 
-				if (survOff == null && caze.getDistrict() != null) {
-					survOff = getRandomSurveillanceOfficer(caze.getDistrict());
-				}
+					if (survOff == null && caze.getDistrict() != null) {
+						survOff = getRandomSurveillanceOfficer(caze.getDistrict());
+					}
 
-				caze.setSurveillanceOfficer(survOff);
+					caze.setSurveillanceOfficer(survOff);
+				}
 			}
 		}
 	}
@@ -3547,7 +3550,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			CaseLogic.getFollowUpStartDate(caseDto, sampleFacade.getByCaseUuids(Collections.singletonList(caseDto.getUuid()))),
 			visitFacade.getVisitsByCase(caseDto.toReference()),
 			diseaseConfigurationFacade.getCaseFollowUpDuration(caseDto.getDisease()),
-			ignoreOverwrite);
+			ignoreOverwrite,
+			featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_FOLLOWUP, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE));
 	}
 
 	public boolean isCaseEditAllowed(String caseUuid) {

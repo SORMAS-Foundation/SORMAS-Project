@@ -466,6 +466,7 @@ public interface Captions {
 	String caseFilterOnlyCasesWithDontShareWithExternalSurvTool = "caseFilterOnlyCasesWithDontShareWithExternalSurvTool";
 	String caseFilterOnlyCasesWithFulfilledReferenceDefinition = "caseFilterOnlyCasesWithFulfilledReferenceDefinition";
 	String caseFilterOnlyFromOtherInstances = "caseFilterOnlyFromOtherInstances";
+	String caseFilterOnlyQuarantineHelpNeeded = "caseFilterOnlyQuarantineHelpNeeded";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterRelatedToEvent = "caseFilterRelatedToEvent";
 	String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
@@ -1368,6 +1369,7 @@ public interface Captions {
 	String LabMessage_labPostalCode = "LabMessage.labPostalCode";
 	String LabMessage_labSampleId = "LabMessage.labSampleId";
 	String LabMessage_messageDateTime = "LabMessage.messageDateTime";
+	String LabMessage_personBirthDate = "LabMessage.personBirthDate";
 	String LabMessage_personBirthDateDD = "LabMessage.personBirthDateDD";
 	String LabMessage_personBirthDateMM = "LabMessage.personBirthDateMM";
 	String LabMessage_personBirthDateYYYY = "LabMessage.personBirthDateYYYY";
@@ -1386,6 +1388,10 @@ public interface Captions {
 	String LabMessage_specimenCondition = "LabMessage.specimenCondition";
 	String LabMessage_status = "LabMessage.status";
 	String LabMessage_testedDisease = "LabMessage.testedDisease";
+	String LabMessageCriteria_birthDateFrom = "LabMessageCriteria.birthDateFrom";
+	String LabMessageCriteria_birthDateTo = "LabMessageCriteria.birthDateTo";
+	String LabMessageCriteria_messageDateFrom = "LabMessageCriteria.messageDateFrom";
+	String LabMessageCriteria_messageDateTo = "LabMessageCriteria.messageDateTo";
 	String labMessageFetch = "labMessageFetch";
 	String labMessageForwardedMessageFound = "labMessageForwardedMessageFound";
 	String labMessageNoDisease = "labMessageNoDisease";
@@ -1924,6 +1930,7 @@ public interface Captions {
 	String statisticsExchange = "statisticsExchange";
 	String statisticsIncidenceDivisor = "statisticsIncidenceDivisor";
 	String statisticsMapType = "statisticsMapType";
+	String statisticsOpenSormasStats = "statisticsOpenSormasStats";
 	String statisticsRemoveFilter = "statisticsRemoveFilter";
 	String statisticsResetFilters = "statisticsResetFilters";
 	String statisticsShowCaseIncidence = "statisticsShowCaseIncidence";

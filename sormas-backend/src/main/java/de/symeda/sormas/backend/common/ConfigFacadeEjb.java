@@ -112,6 +112,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String INTERFACE_PATIENT_DIARY_PASSWORD = "interface.patientdiary.password";
 	public static final String INTERFACE_PATIENT_DIARY_DEFAULT_USER_USERNAME = "interface.patientdiary.defaultuser.username";
 	public static final String INTERFACE_PATIENT_DIARY_DEFAULT_USER_PASSWORD = "interface.patientdiary.defaultuser.password";
+	public static final String INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT = "interface.patientdiary.acceptPhoneContact";
 
 	public static final String DOCGENERATION_NULL_REPLACEMENT = "docgeneration.nullReplacement";
 	public static final String INTERFACE_DEMIS_JNDINAME = "interface.demis.jndiName";
@@ -161,6 +162,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String STEP_SIZE_FOR_CSV_EXPORT = "stepSizeForCsvExport";
 
 	private static final String UI_URL = "ui.url";
+	private static final String SORMAS_STATS_URL = "sormasStats.url";
 
 	private static final String DOCUMENT_UPLOAD_SIZE_LIMIT_MB = "documentUploadSizeLimitMb";
 	public static final int DEFAULT_DOCUMENT_UPLOAD_SIZE_LIMIT_MB = 20;
@@ -346,6 +348,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public String getSormasStatsUrl() {
+		return getProperty(SORMAS_STATS_URL, null);
+	}
+
+	@Override
 	public String getDocumentFilesPath() {
 		return getProperty(DOCUMENT_FILES_PATH, "/opt/sormas/documents/");
 	}
@@ -494,6 +501,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setAuthUrl(getProperty(INTERFACE_PATIENT_DIARY_AUTH_URL, null));
 		config.setEmail(getProperty(INTERFACE_PATIENT_DIARY_EMAIL, null));
 		config.setPassword(getProperty(INTERFACE_PATIENT_DIARY_PASSWORD, null));
+		config.setAcceptPhoneContact(getBoolean(INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT, true));
 
 		UserConfig userConfig = new UserConfig();
 		userConfig.setUsername(getProperty(INTERFACE_PATIENT_DIARY_DEFAULT_USER_USERNAME, null));
@@ -546,7 +554,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			getSymptomJournalConfig().getAuthUrl(),
 			getPatientDiaryConfig().getUrl(),
 			getPatientDiaryConfig().getProbandsUrl(),
-			getPatientDiaryConfig().getAuthUrl());
+			getPatientDiaryConfig().getAuthUrl(),
+			getSormasStatsUrl());
 
 		SormasToSormasConfig s2sConfig = getS2SConfig();
 

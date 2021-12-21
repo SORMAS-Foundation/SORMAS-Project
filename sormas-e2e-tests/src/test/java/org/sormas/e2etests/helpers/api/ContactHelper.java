@@ -18,6 +18,7 @@
 package org.sormas.e2etests.helpers.api;
 
 import static org.sormas.e2etests.constants.api.Endpoints.CONTACTS_PATH;
+import static org.sormas.e2etests.constants.api.Endpoints.UUIDS_PATH;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.Method;
@@ -25,19 +26,25 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.pojo.api.Contact;
 import org.sormas.e2etests.pojo.api.Request;
+import org.sormas.e2etests.state.ApiState;
 
+@Slf4j
 public class ContactHelper {
 
   private final RestAssuredClient restAssuredClient;
+  private final ApiState apiState;
   private final ObjectMapper objectMapper;
 
   @Inject
-  public ContactHelper(RestAssuredClient restAssuredClient, ObjectMapper objectMapper) {
+  public ContactHelper(
+      RestAssuredClient restAssuredClient, ObjectMapper objectMapper, ApiState apiState) {
     this.restAssuredClient = restAssuredClient;
     this.objectMapper = objectMapper;
+    this.apiState = apiState;
   }
 
   @SneakyThrows
@@ -51,5 +58,13 @@ public class ContactHelper {
             .path(CONTACTS_PATH + "push")
             .body(out.toString())
             .build());
+  }
+
+  public void getAllContactsUuid() {
+    restAssuredClient.sendRequest(
+        Request.builder().method(Method.GET).path(CONTACTS_PATH + UUIDS_PATH).build());
+    int totalPersons =
+        apiState.getResponse().getBody().asString().replaceAll("\"", "").split(",").length;
+    log.info("Total persons: " + totalPersons);
   }
 }

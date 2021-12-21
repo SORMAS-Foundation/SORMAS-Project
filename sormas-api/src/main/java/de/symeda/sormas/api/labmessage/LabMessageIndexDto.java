@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.labmessage;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
@@ -18,6 +19,7 @@ public class LabMessageIndexDto implements Serializable {
 	public static final String SAMPLE_OVERALL_TEST_RESULT = "sampleOverallTestResult";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
+	public static final String PERSON_BIRTH_DATE = "personBirthDate";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
 	public static final String STATUS = "status";
 
@@ -30,6 +32,7 @@ public class LabMessageIndexDto implements Serializable {
 	private PathogenTestResultType sampleOverallTestResult;
 	private String personFirstName;
 	private String personLastName;
+	private Date personBirthDate;
 	private String personPostalCode;
 	private LabMessageStatus status;
 
@@ -42,6 +45,9 @@ public class LabMessageIndexDto implements Serializable {
 		PathogenTestResultType sampleOverallTestResult,
 		String personFirstName,
 		String personLastName,
+		Integer personBirthDateYYYY,
+		Integer personBirthDateMM,
+		Integer personBirthDateDD,
 		String personPostalCode,
 		LabMessageStatus status) {
 
@@ -55,6 +61,17 @@ public class LabMessageIndexDto implements Serializable {
 		this.personLastName = personLastName;
 		this.personPostalCode = personPostalCode;
 		this.status = status;
+
+		if (personBirthDateYYYY != null && personBirthDateMM != null && personBirthDateDD != null) {
+			Calendar birthdate = Calendar.getInstance();
+			birthdate.setLenient(false);
+			try {
+				birthdate.set(personBirthDateYYYY, personBirthDateMM - 1, personBirthDateDD, 0, 0, 0);
+				personBirthDate = birthdate.getTime();
+			} catch (Exception e) {
+				personBirthDate = null;
+			}
+		}
 	}
 
 	public String getUuid() {
@@ -119,6 +136,14 @@ public class LabMessageIndexDto implements Serializable {
 
 	public void setPersonLastName(String personLastName) {
 		this.personLastName = personLastName;
+	}
+
+	public Date getPersonBirthDate() {
+		return personBirthDate;
+	}
+
+	public void setPersonBirthDate(Date personBirthDate) {
+		this.personBirthDate = personBirthDate;
 	}
 
 	public String getPersonPostalCode() {

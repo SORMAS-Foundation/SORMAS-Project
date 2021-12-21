@@ -861,6 +861,8 @@ public class CaseController {
 			saveCaseWithFacilityChangedPrompt(cazeDto, oldCase);
 		});
 
+		editView.addDiscardListener(() -> caseEditForm.onDiscard());
+
 		appendSpecialCommands(caze, editView);
 
 		return editView;

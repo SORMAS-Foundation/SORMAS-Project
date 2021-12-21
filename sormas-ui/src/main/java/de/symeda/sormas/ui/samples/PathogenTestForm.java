@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.apache.commons.collections.CollectionUtils;
 
@@ -176,7 +177,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 
 		pcrTestSpecification.setVisible(false);
-		diseaseVariantField.setVisible(false);
 
 		Map<Object, List<Object>> pcrTestSpecificationVisibilityDependencies = new HashMap<Object, List<Object>>() {
 
@@ -222,13 +222,20 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			Arrays.asList(PathogenTestType.CQ_VALUE_DETECTION),
 			true);
 
-		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
-			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();
+		Consumer<Disease> updateDiseaseVariantField = disease -> {
 			List<DiseaseVariant> diseaseVariants =
 				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 			diseaseVariantField.setVisible(
 				disease != null && isVisibleAllowed(PathogenTestDto.TESTED_DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
+		};
+
+		// trigger the update, as the disease may already be set
+		updateDiseaseVariantField.accept((Disease) diseaseField.getValue());
+
+		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
+			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();
+			updateDiseaseVariantField.accept(disease);
 
 			FieldHelper.updateItems(
 				testTypeField,
