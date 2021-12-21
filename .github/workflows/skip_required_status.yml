@@ -12,5 +12,4 @@ jobs:
     steps:
       - name: Make mergefreeze pass if we want to commit external visits API spec to development
         if: github.event_name == 'push' && github.ref == 'refs/heads/development' && github.actor == 'sormas-vitagroup'
-        # https://stackoverflow.com/questions/59604922/authorize-bash-to-access-github-protected-branch
         run: 'echo "Skipping mergefreeze check for bot"'
