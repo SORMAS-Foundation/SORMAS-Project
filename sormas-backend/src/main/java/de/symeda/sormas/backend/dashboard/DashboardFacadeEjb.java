@@ -5,18 +5,24 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import org.apache.commons.lang3.time.DateUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
+import de.symeda.sormas.api.dashboard.DashboardCaseStatisticDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
+import de.symeda.sormas.api.dashboard.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventStatus;
@@ -100,6 +106,83 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	@Override
 	public Map<EventStatus, Long> getEventCountByStatus(DashboardCriteria dashboardCriteria) {
 		return dashboardService.getEventCountByStatus(dashboardCriteria);
+	}
+
+	private Predicate<DashboardQuarantineDataDto> quarantineData(Date fromDate, Date toDate) {
+		return p -> {
+			Date quarantineFrom = p.getQuarantineFrom();
+			Date quarantineTo = p.getQuarantineTo();
+
+			if (fromDate != null && toDate != null) {
+				if (quarantineFrom != null && quarantineTo != null) {
+					return quarantineTo.after(fromDate) && quarantineFrom.before(toDate);
+				} else if (quarantineFrom != null) {
+					return quarantineFrom.after(fromDate) && quarantineFrom.before(toDate);
+				} else if (quarantineTo != null) {
+					return quarantineTo.after(fromDate) && quarantineTo.before(toDate);
+				}
+			} else if (fromDate != null) {
+				if (quarantineFrom != null) {
+					return quarantineFrom.after(fromDate);
+				} else if (quarantineTo != null) {
+					return quarantineTo.after(fromDate);
+				}
+			} else if (toDate != null) {
+				if (quarantineFrom != null) {
+					return quarantineFrom.before(toDate);
+				} else if (quarantineTo != null) {
+					return quarantineTo.before(toDate);
+				}
+			}
+
+			return false;
+		};
+	}
+
+	public DashboardCaseStatisticDto getDashboardCaseStatistic(DashboardCriteria dashboardCriteria) {
+		List<DashboardCaseDto> dashboardCases = dashboardService.getCases(dashboardCriteria);
+		long newCases = dashboardCases.size();
+
+		long fatalCasesCount = dashboardCases.stream().filter(DashboardCaseDto::wasFatal).count();
+		float fatalityRate = 100 * ((float) fatalCasesCount / (float) (newCases == 0 ? 1 : newCases));
+		fatalityRate = Math.round(fatalityRate * 100) / 100f;
+
+		List<DashboardQuarantineDataDto> casesInQuarantineDtos = dashboardCases.stream()
+			.map(DashboardCaseDto::getDashboardQuarantineDataDto)
+			.filter(quarantineData(dashboardCriteria.getDateFrom(), dashboardCriteria.getDateTo()))
+			.collect(Collectors.toList());
+
+		long casesInQuarantineCount = casesInQuarantineDtos.size();
+		long casesPlacedInQuarantineCount = casesInQuarantineDtos.stream()
+			.filter(
+				dashboardQuarantineDataDto -> (dashboardQuarantineDataDto.getQuarantineFrom() != null
+					&& dashboardCriteria.getDateFrom().before(DateUtils.addDays(dashboardQuarantineDataDto.getQuarantineFrom(), 1))
+					&& dashboardQuarantineDataDto.getQuarantineFrom().before(dashboardCriteria.getDateTo())))
+			.count();
+
+		long casesWithReferenceDefinitionFulfilledCount =
+			dashboardCases.stream().filter(cases -> cases.getCaseReferenceDefinition() == CaseReferenceDefinition.FULFILLED).count();
+
+		long outbreakDistrictCount = outbreakFacade.getOutbreakDistrictCount(
+			new OutbreakCriteria().region(dashboardCriteria.getRegion())
+				.district(dashboardCriteria.getDistrict())
+				.disease(dashboardCriteria.getDisease())
+				.reportedBetween(dashboardCriteria.getDateFrom(), dashboardCriteria.getDateTo()));
+
+		Map<CaseClassification, Integer> casesCountByClassification =
+			dashboardService.getCasesCountByClassification(dashboardCriteria.includeNotACaseClassification(true));
+
+		return new DashboardCaseStatisticDto(
+			casesCountByClassification,
+			casesCountByClassification.values().stream().reduce(0, Integer::sum),
+			fatalCasesCount,
+			fatalityRate,
+			outbreakDistrictCount,
+			casesInQuarantineCount,
+			casesPlacedInQuarantineCount,
+			casesWithReferenceDefinitionFulfilledCount,
+			dashboardService.countCasesConvertedFromContacts(dashboardCriteria),
+			dashboardService.getLastReportedDistrictName(dashboardCriteria));
 	}
 
 	@Override
