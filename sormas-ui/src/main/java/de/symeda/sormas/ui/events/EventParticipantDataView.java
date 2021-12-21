@@ -43,6 +43,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.ContactListComponent;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
+import de.symeda.sormas.ui.labmessage.LabMessagesView;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
@@ -228,6 +229,12 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			I18nProperties.getCaption(Captions.eventEventParticipants),
 			eventParticipantDto.getEvent().getUuid(),
 			true);
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LAB_MESSAGES)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)
+			&& FacadeProvider.getLabMessageFacade().existsLabMessageForEntity(getReference())) {
+			menu.addView(LabMessagesView.VIEW_NAME, I18nProperties.getCaption(Captions.labMessageLabMessagesList));
+		}
 
 		menu.addView(EventParticipantDataView.VIEW_NAME, I18nProperties.getCaption(EventParticipantDto.I18N_PREFIX), params);
 
