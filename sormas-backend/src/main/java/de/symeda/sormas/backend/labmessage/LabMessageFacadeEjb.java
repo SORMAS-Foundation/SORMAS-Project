@@ -26,6 +26,11 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.backend.sample.Sample;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -380,6 +385,19 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@Override
 	public boolean exists(String uuid) {
 		return labMessageService.exists(uuid);
+	}
+
+	@Override
+	public boolean existsLabMessageForEntity(ReferenceDto entityRef) {
+		if (CaseReferenceDto.class.equals(entityRef.getClass())) {
+			return labMessageService.countForCase(entityRef.getUuid()) > 0;
+		} else if (ContactReferenceDto.class.equals(entityRef.getClass())) {
+			return labMessageService.countForContact(entityRef.getUuid()) > 0;
+		} else if (EventParticipantReferenceDto.class.equals(entityRef.getClass())) {
+			return labMessageService.countForEventParticipant(entityRef.getUuid()) > 0;
+		} else {
+			throw new UnsupportedOperationException("Reference class" + entityRef.getClass() + " is not supported.");
+		}
 	}
 
 	@Override
