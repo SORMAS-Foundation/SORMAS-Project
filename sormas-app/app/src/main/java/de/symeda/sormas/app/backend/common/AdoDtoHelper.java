@@ -91,7 +91,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 			Date maxModifiedDate = dao.getLatestChangeDate();
 			long approximateJsonSizeInBytes = getApproximateJsonSizeInBytes();
 			final Integer batchSize = approximateJsonSizeInBytes != 0
-				? NetworkHelper.getNumberOfEntitiesToBePulledInOneBatch(approximateJsonSizeInBytes, context)
+				? RetroProvider.getNumberOfEntitiesToBePulledInOneBatch(approximateJsonSizeInBytes, context)
 				: Integer.MAX_VALUE;
 			Integer lastBatchSize = batchSize;
 
@@ -129,7 +129,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
 			long approximateJsonSizeInBytes = getApproximateJsonSizeInBytes();
 			final Integer batchSize = approximateJsonSizeInBytes != 0
-				? NetworkHelper.getNumberOfEntitiesToBePulledInOneBatch(approximateJsonSizeInBytes, context)
+				? RetroProvider.getNumberOfEntitiesToBePulledInOneBatch(approximateJsonSizeInBytes, context)
 				: Integer.MAX_VALUE;
 			Integer lastBatchSize = batchSize;
 

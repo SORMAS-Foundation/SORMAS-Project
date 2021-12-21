@@ -15,10 +15,13 @@
 
 package de.symeda.sormas.app.rest;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.util.Log;
+
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,12 +30,10 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.util.Log;
-
-import androidx.fragment.app.FragmentActivity;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationAllSymptomsCriteriaDto;
@@ -81,6 +82,8 @@ public final class RetroProvider {
 	private static int lastConnectionId = 0;
 	private static RetroProvider instance = null;
 	private static boolean connecting = false;
+
+	private static final Integer ASSUMED_TRANSFER_TIME_IN_SECONDS = 60;
 
 	private final Context context;
 	private final Retrofit retrofit;
@@ -298,6 +301,19 @@ public final class RetroProvider {
 
 	public static boolean isConnected() {
 		return instance != null && isConnectedToNetwork(instance.context);
+	}
+
+	public static Integer getNumberOfEntitiesToBePulledInOneBatch(long approximateJsonSizeInBytes, Context context) throws ServerConnectionException {
+		return Math.toIntExact(getNetworkDownloadSpeedInKbps(context) * ASSUMED_TRANSFER_TIME_IN_SECONDS * 1024 / (approximateJsonSizeInBytes * 8));
+	}
+
+	public static long getNetworkDownloadSpeedInKbps(Context context) throws ServerConnectionException {
+		final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (cm == null || cm.getNetworkCapabilities(cm.getActiveNetwork()) == null) {
+			throw new ServerConnectionException(600);
+		}
+		final NetworkCapabilities nc = cm.getNetworkCapabilities(cm.getActiveNetwork());
+		return nc.getLinkDownstreamBandwidthKbps();
 	}
 
 	public static boolean isConnectedOrConnecting() {
