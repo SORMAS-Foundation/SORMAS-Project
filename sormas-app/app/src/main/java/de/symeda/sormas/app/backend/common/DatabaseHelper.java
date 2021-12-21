@@ -2925,15 +2925,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 329:
 				currentVersion = 329;
-				getDao(EventParticipant.class).executeRaw(
-					"UPDATE eventParticipants SET reportingUser_id = (SELECT reportingUser_id FROM events WHERE events.id = eventParticipants.event_id) WHERE reportingUser_id IS NULL;");
-
-			case 330:
-				currentVersion = 330;
 
 				if (columnDoesNotExist("vaccination", "snapshot")) {
 					getDao(Vaccination.class).executeRaw("ALTER TABLE vaccination ADD COLUMN snapshot SMALLINT DEFAULT 0;");
 				}
+
+			case 330:
+				currentVersion = 330;
+				getDao(EventParticipant.class).executeRaw(
+					"UPDATE eventParticipants SET reportingUser_id = (SELECT reportingUser_id FROM events WHERE events.id = eventParticipants.event_id) WHERE reportingUser_id IS NULL;");
 
 				// ATTENTION: break should only be done after last version
 				break;
