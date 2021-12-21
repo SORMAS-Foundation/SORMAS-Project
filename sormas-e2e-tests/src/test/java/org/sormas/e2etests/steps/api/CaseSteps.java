@@ -21,11 +21,13 @@ import cucumber.api.java8.En;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.helpers.api.CaseHelper;
 import org.sormas.e2etests.pojo.api.Case;
 import org.sormas.e2etests.services.api.CaseApiService;
 import org.sormas.e2etests.state.ApiState;
 
+@Slf4j
 public class CaseSteps implements En {
 
   @Inject
@@ -47,6 +49,7 @@ public class CaseSteps implements En {
             casesList.add(
                 caseApiService.buildGeneratedCase(apiState.getLastCreatedPersonsList().get(i)));
           }
+          log.info("Pushing %s Cases", numberOfCases);
           caseHelper.createMultipleCases(casesList);
           apiState.setCreatedCases(casesList);
         });
