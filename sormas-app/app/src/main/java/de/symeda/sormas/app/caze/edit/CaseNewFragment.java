@@ -251,7 +251,10 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			if (e.getValue() == TypeOfPlace.FACILITY) {
 				contentBinding.facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
 				contentBinding.caseDataFacilityType.setValue(FacilityType.HOSPITAL);
-				contentBinding.caseDataHealthFacility.setValue(null);
+				User user = ConfigProvider.getUser();
+				if (!user.hasUserRole(UserRole.HOSPITAL_INFORMANT)) {
+					contentBinding.caseDataHealthFacility.setValue(null);
+				}
 			}
 		});
 	}
