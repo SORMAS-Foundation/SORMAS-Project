@@ -955,7 +955,7 @@ public class DevModeView extends AbstractConfigurationView {
 			}
 
 			FacadeProvider.getPersonFacade().savePerson(person);
-			FacadeProvider.getCaseFacade().saveCase(caze);
+			FacadeProvider.getCaseFacade().saveCase(caze, false);
 		}
 
 		dt = System.nanoTime() - dt;
@@ -1351,7 +1351,7 @@ public class DevModeView extends AbstractConfigurationView {
 						caze.setHealthFacility(facility.toReference());
 						caze.setFacilityType(facility.getType());
 						caze.setAdditionalDetails("Case generated using DevMode on " + LocalDate.now());
-						FacadeProvider.getCaseFacade().saveCase(caze);
+						FacadeProvider.getCaseFacade().saveCase(caze, false);
 						eventParticipant.setResultingCase(caze.toReference());
 						generatedCases++;
 					}

@@ -131,7 +131,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 		if (caze.getClinicalCourse() == null) {
 			ClinicalCourseDto clinicalCourse = ClinicalCourseDto.build();
 			caze.setClinicalCourse(clinicalCourse);
-			caze = FacadeProvider.getCaseFacade().saveCase(caze);
+			caze = FacadeProvider.getCaseFacade().saveCase(caze, false);
 		}
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);

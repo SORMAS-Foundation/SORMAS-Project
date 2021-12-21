@@ -658,7 +658,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	public CaseDataDto postUpdate(String uuid, JsonNode caseDataDtoJson) {
 		CaseDataDto existingCaseDto = getCaseDataWithoutPseudonyimization(uuid);
 		PatchHelper.postUpdate(caseDataDtoJson, existingCaseDto);
-		return saveCase(existingCaseDto);
+		return saveCase(existingCaseDto, false);
 
 	}
 
@@ -1334,8 +1334,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public CaseDataDto saveCase(@Valid CaseDataDto dto) throws ValidationRuntimeException {
-		return saveCase(dto, true, true);
+	public CaseDataDto saveCase(@Valid CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException {
+		return saveCase(dto, true, true, false, systemSave);
 	}
 
 	public void saveBulkCase(
@@ -1447,16 +1447,16 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
-	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate) {
-		return saveCase(dto, handleChanges, checkChangeDate, true);
+	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, Boolean systemSave) {
+		return saveCase(dto, handleChanges, checkChangeDate, true, systemSave);
 	}
 
-	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal)
+	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal, Boolean systemSave)
 		throws ValidationRuntimeException {
 
 		Case existingCase = caseService.getByUuid(dto.getUuid());
 
-		if (internal && existingCase != null && !caseService.isCaseEditAllowed(existingCase)) {
+		if (!systemSave && internal && existingCase != null && !caseService.isCaseEditAllowed(existingCase)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorCaseNotEditable));
 		}
 
@@ -3167,7 +3167,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		// 1.1 Case
 
 		copyDtoValues(leadCaseData, otherCaseData, cloning);
-		saveCase(leadCaseData, !cloning, true);
+		saveCase(leadCaseData, !cloning, true, false, false);
 
 		// 1.2 Person - Only merge when the persons have different UUIDs
 		if (!cloning && !DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid())) {

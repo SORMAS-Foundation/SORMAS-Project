@@ -165,7 +165,7 @@ public class PathogenTestController {
 					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(existingCaseDto.getUuid());
 					caseDataByUuid.setDiseaseVariant(diseaseVariant);
 					caseDataByUuid.setDiseaseVariantDetails(diseaseVariantDetails);
-					FacadeProvider.getCaseFacade().saveCase(caseDataByUuid);
+					FacadeProvider.getCaseFacade().saveCase(caseDataByUuid, false);
 					ControllerProvider.getCaseController().navigateToCase(caseDataByUuid.getUuid());
 				}
 				if (callback != null) {
@@ -452,7 +452,7 @@ public class PathogenTestController {
 					clonedCase.setDiseaseVariantDetails(diseaseVariantDetails);
 					clonedCase.setEpidNumber(null);
 					clonedCase.setReportDate(new Date());
-					FacadeProvider.getCaseFacade().saveCase(clonedCase);
+					FacadeProvider.getCaseFacade().saveCase(clonedCase, false);
 					ControllerProvider.getCaseController().navigateToCase(clonedCase.getUuid());
 				}
 			});
@@ -478,7 +478,7 @@ public class PathogenTestController {
 				if (confirmed) {
 					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
 					caseDataByUuid.setCaseClassification(CaseClassification.CONFIRMED);
-					FacadeProvider.getCaseFacade().saveCase(caseDataByUuid);
+					FacadeProvider.getCaseFacade().saveCase(caseDataByUuid, false);
 				}
 			});
 	}

@@ -523,9 +523,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		case12.setFollowUpUntil(DateHelper.subtractDays(now, 8));
 		case2.setFollowUpUntil(now);
 
-		getCaseFacade().saveCase(case11);
-		getCaseFacade().saveCase(case12);
-		getCaseFacade().saveCase(case2);
+		getCaseFacade().saveCase(case11, false);
+		getCaseFacade().saveCase(case12, false);
+		getCaseFacade().saveCase(case2, false);
 
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
@@ -592,11 +592,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		getContactFacade().saveContact(contact2);
 		getContactFacade().saveContact(contact3);
 		getContactFacade().saveContact(contact4);
-		getCaseFacade().saveCase(case1);
-		getCaseFacade().saveCase(case2);
-		getCaseFacade().saveCase(case3);
-		getCaseFacade().saveCase(case4);
-		getCaseFacade().saveCase(case5);
+		getCaseFacade().saveCase(case1, false);
+		getCaseFacade().saveCase(case2, false);
+		getCaseFacade().saveCase(case3, false);
+		getCaseFacade().saveCase(case4, false);
+		getCaseFacade().saveCase(case5, false);
 
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
@@ -752,7 +752,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	private void updateFollowUpStatus(CaseDataDto caze, FollowUpStatus status) {
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		caze.setFollowUpStatus(status);
-		getCaseFacade().saveCase(caze);
+		getCaseFacade().saveCase(caze, false);
 	}
 
 	@Test

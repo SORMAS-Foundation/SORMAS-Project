@@ -214,7 +214,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			// Workaround: Reset the change date to avoid OutdatedEntityExceptions
 			// Should be changed when doing #2265
 			caze.setChangeDate(new Date());
-			caseFacade.saveCase(caze);
+			caseFacade.saveCase(caze, false);
 			for (SampleDto sample : samples) {
 				sampleFacade.saveSample(sample);
 			}

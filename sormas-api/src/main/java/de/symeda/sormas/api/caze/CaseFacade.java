@@ -92,7 +92,7 @@ public interface CaseFacade {
 
 	CaseDataDto getCaseDataByUuid(String uuid);
 
-	CaseDataDto saveCase(@Valid CaseDataDto dto) throws ValidationRuntimeException;
+	CaseDataDto saveCase(@Valid CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException;
 
 	void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef);
 
