@@ -389,6 +389,7 @@ read -p "--- Press [Enter] to continue..."
 # Logging
 echo "Configuring logging..."
 ${ASADMIN} create-jvm-options "-Dlogback.configurationFile=\${com.sun.aas.instanceRoot}/config/logback.xml"
+${ASADMIN} create-jvm-options "-DlogbackDisableServletContainerInitializer=true"
 ${ASADMIN} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles=14
 ${ASADMIN} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.rotationLimitInBytes=0
 ${ASADMIN} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.rotationOnDateChange=true
