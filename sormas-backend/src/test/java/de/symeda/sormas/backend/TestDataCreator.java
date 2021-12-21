@@ -1124,6 +1124,10 @@ public class TestDataCreator {
 		return sample;
 	}
 
+	public SampleDto createSample(EventParticipantReferenceDto associatedEventParticipant, UserReferenceDto reportingUser, FacilityReferenceDto lab) {
+		return createSample(associatedEventParticipant, new Date(), new Date(), reportingUser, SampleMaterial.BLOOD, lab);
+	}
+
 	public SampleDto createSample(
 		EventParticipantReferenceDto associatedEventParticipant,
 		Date sampleDateTime,

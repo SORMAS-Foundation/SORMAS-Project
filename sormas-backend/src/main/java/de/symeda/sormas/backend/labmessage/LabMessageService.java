@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.labmessage;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import javax.ejb.LocalBean;
@@ -8,15 +9,21 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.sample.Sample;
 
 @Stateless
@@ -135,5 +142,54 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 		cq.orderBy(cb.desc(labMessageRoot.get(LabMessage.CREATION_DATE)));
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public long countForCase(String caseUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<LabMessage> labMessageRoot = cq.from(LabMessage.class);
+		Join<LabMessage, Sample> sampleJoin = labMessageRoot.join(LabMessage.SAMPLE, JoinType.LEFT);
+		Join<Sample, Case> caseJoin = sampleJoin.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
+
+		Predicate filter =
+			cb.and(createDefaultFilter(cb, labMessageRoot), caseJoin.get(AbstractDomainObject.UUID).in(Collections.singleton(caseUuid)));
+
+		cq.where(filter);
+		cq.select(cb.countDistinct(labMessageRoot));
+
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	public long countForContact(String contactUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<LabMessage> labMessageRoot = cq.from(LabMessage.class);
+		Join<LabMessage, Sample> sampleJoin = labMessageRoot.join(LabMessage.SAMPLE, JoinType.LEFT);
+		Join<Sample, Contact> contactJoin = sampleJoin.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT);
+
+		Predicate filter =
+			cb.and(createDefaultFilter(cb, labMessageRoot), contactJoin.get(AbstractDomainObject.UUID).in(Collections.singleton(contactUuid)));
+
+		cq.where(filter);
+		cq.select(cb.countDistinct(labMessageRoot));
+
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	public long countForEventParticipant(String eventParticipantUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<LabMessage> labMessageRoot = cq.from(LabMessage.class);
+		Join<LabMessage, Sample> sampleJoin = labMessageRoot.join(LabMessage.SAMPLE, JoinType.LEFT);
+		Join<Sample, EventParticipant> eventParticipantJoin = sampleJoin.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
+
+		Predicate filter = cb.and(
+			createDefaultFilter(cb, labMessageRoot),
+			eventParticipantJoin.get(AbstractDomainObject.UUID).in(Collections.singleton(eventParticipantUuid)));
+
+		cq.where(filter);
+		cq.select(cb.countDistinct(labMessageRoot));
+
+		return em.createQuery(cq).getSingleResult();
 	}
 }
