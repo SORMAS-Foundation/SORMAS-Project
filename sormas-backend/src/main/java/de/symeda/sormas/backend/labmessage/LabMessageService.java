@@ -27,14 +27,6 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 		super(LabMessage.class);
 	}
 
-	/**
-	 * Creates a default filter that should be used as the basis of queries in this service..
-	 * This essentially removes {@link CoreAdo#deleted} lab messages from the queries.
-	 */
-	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<LabMessage> root) {
-		return cb.isFalse(root.get(LabMessage.DELETED));
-	}
-
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, LabMessage> from) {
 		return null;
@@ -119,6 +111,11 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 							cb.lessThanOrEqualTo(labMessage.get(LabMessage.PERSON_BIRTH_DATE_DD), dayTo)))));
 			filter = CriteriaBuilderHelper.and(cb, filter, birthDateToFilter);
 		}
+
+		if (criteria.getDeleted() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(LabMessage.DELETED), criteria.getDeleted()));
+		}
+
 		return filter;
 	}
 
@@ -130,8 +127,7 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 		LabMessageCriteria criteria = new LabMessageCriteria();
 		criteria.setSample(sample);
 
-		Predicate filter = createDefaultFilter(cb, labMessageRoot);
-		filter = CriteriaBuilderHelper.and(cb, filter, buildCriteriaFilter(cb, labMessageRoot, criteria));
+		Predicate filter = buildCriteriaFilter(cb, labMessageRoot, criteria);
 
 		cq.where(filter);
 		cq.distinct(true);

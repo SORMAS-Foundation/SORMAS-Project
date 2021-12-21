@@ -51,6 +51,7 @@ public interface LabMessageFacade {
 	// Also returns deleted lab messages
 	List<LabMessageDto> getByReportId(String reportId);
 
+	// Also considers deleted lab messages
 	boolean existsForwardedLabMessageWith(String reportId);
 
 }
