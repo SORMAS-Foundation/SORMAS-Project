@@ -280,8 +280,6 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			whereFilter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
 		}
 
-		// remove deleted entities from result
-		whereFilter = CriteriaBuilderHelper.and(cb, whereFilter, labMessageService.createDefaultFilter(cb, labMessage));
 		cq.where(whereFilter);
 
 		// Distinct is necessary here to avoid duplicate results due to the user role join in taskService.createAssigneeFilter
