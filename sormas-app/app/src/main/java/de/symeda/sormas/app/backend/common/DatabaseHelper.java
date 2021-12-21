@@ -183,7 +183,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 329;
+	public static final int DATABASE_VERSION = 331;
 
 	private static DatabaseHelper instance = null;
 
@@ -2923,6 +2923,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						+ "modified, snapshot, uuid, validFrom, validUntil, facilityType, healthFacility_id, healthFacilityDetails FROM tmp_immunization;");
 				getDao(Immunization.class).executeRaw("DROP TABLE tmp_immunization");
 
+			case 329:
+				currentVersion = 329;
+				getDao(EventParticipant.class).executeRaw(
+					"UPDATE eventParticipants SET reportingUser_id = (SELECT reportingUser_id FROM events WHERE events.id = eventParticipants.event_id) WHERE reportingUser_id IS NULL;");
+
+			case 330:
+				currentVersion = 330;
+
+				if (columnDoesNotExist("vaccination", "snapshot")) {
+					getDao(Vaccination.class).executeRaw("ALTER TABLE vaccination ADD COLUMN snapshot SMALLINT DEFAULT 0;");
+				}
+
 				// ATTENTION: break should only be done after last version
 				break;
 
@@ -3050,8 +3062,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			// Retrieve all cases of the case person with the respective disease
 			final Object caseId = objects[0];
 			final Object personId = objects[1];
-			final List<Object[]> objectList =
-				caseInfoByDisease.get(Disease.valueOf((String) objects[2])).stream().filter(c -> ((BigInteger) c[0]).intValue() != ((BigInteger) caseId).intValue() && ((BigInteger) c[1]).intValue() == ((BigInteger) personId).intValue()).collect(Collectors.toList());
+			final List<Object[]> objectList = caseInfoByDisease.get(Disease.valueOf((String) objects[2]))
+				.stream()
+				.filter(
+					c -> ((BigInteger) c[0]).intValue() != ((BigInteger) caseId).intValue()
+						&& ((BigInteger) c[1]).intValue() == ((BigInteger) personId).intValue())
+				.collect(Collectors.toList());
 
 			// set earliest report date
 			Comparator<Object[]> reportDateComparator = Comparator.comparing(c -> new Date((Long) c[4]));

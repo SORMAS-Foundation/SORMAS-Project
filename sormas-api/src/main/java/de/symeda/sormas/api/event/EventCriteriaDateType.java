@@ -22,7 +22,8 @@ public enum EventCriteriaDateType
 	implements
 	CriteriaDateType {
 
-	EVENT_DATE;
+	EVENT_DATE,
+	REPORT_DATE;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

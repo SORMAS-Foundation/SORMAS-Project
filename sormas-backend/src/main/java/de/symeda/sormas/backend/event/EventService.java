@@ -751,6 +751,20 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			if (eventDateFrom != null || eventDateTo != null) {
 				filter = CriteriaBuilderHelper.and(cb, filter, eventDateFilter);
 			}
+		} else if (eventDateType == EventCriteriaDateType.REPORT_DATE) {
+			Predicate eventDateFilter = null;
+
+			if (eventDateFrom != null && eventDateTo != null) {
+				eventDateFilter = cb.between(from.get(Event.REPORT_DATE_TIME), eventDateFrom, eventDateTo);
+			} else if (eventDateFrom != null) {
+				eventDateFilter = cb.greaterThanOrEqualTo(from.get(Event.REPORT_DATE_TIME), eventDateFrom);
+			} else if (eventDateTo != null) {
+				eventDateFilter = cb.lessThanOrEqualTo(from.get(Event.REPORT_DATE_TIME), eventDateTo);
+			}
+
+			if (eventDateFrom != null || eventDateTo != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, eventDateFilter);
+			}
 		} else if (eventDateType == ExternalShareDateType.LAST_EXTERNAL_SURVEILLANCE_TOOL_SHARE) {
 			filter = externalShareInfoService.buildLatestSurvToolShareDateFilter(cq, cb, from, ExternalShareInfo.EVENT, (latestShareDate) -> {
 				if (eventDateFrom != null && eventDateTo != null) {
