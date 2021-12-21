@@ -11,5 +11,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Make mergefreeze pass if we want to commit external visits API spec to development
-        if: github.event_name == 'push' && github.ref == 'refs/heads/development' && github.actor == 'sormas-vitagroup'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/development'
         run: 'echo "Skipping mergefreeze check for bot"'
