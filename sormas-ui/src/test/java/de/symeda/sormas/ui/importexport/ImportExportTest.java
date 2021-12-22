@@ -106,7 +106,7 @@ public class ImportExportTest extends AbstractBeanTest {
 		caze.getSymptoms().setTremor(SymptomState.YES);
 		caze.getSymptoms().setVomiting(SymptomState.YES);
 
-		getCaseFacade().saveCase(caze, false);
+		getCaseFacade().saveCase(caze);
 
 		person.setSex(Sex.MALE);
 		person.setBirthdateDD(11);

@@ -237,7 +237,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 			CaseDataDto caze = caseFacade.getCaseDataByUuid(caseUuid);
 			SymptomsDto caseSymptoms = caze.getSymptoms();
 			SymptomsHelper.updateSymptoms(clinicalVisit.getSymptoms(), caseSymptoms);
-			caseFacade.saveCase(caze, false);
+			caseFacade.saveCase(caze);
 		}
 
 		return convertToDto(entity, Pseudonymizer.getDefault(userService::hasRight));

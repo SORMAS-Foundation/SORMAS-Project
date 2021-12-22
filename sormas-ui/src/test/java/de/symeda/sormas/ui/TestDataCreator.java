@@ -299,7 +299,7 @@ public class TestDataCreator {
 		caze.setFacilityType(facility.getType());
 		caze.setHealthFacility(facility.toReference());
 
-		caze = FacadeProvider.getCaseFacade().saveCase(caze, false);
+		caze = FacadeProvider.getCaseFacade().saveCase(caze);
 
 		return caze;
 	}

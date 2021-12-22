@@ -387,7 +387,7 @@ public class ContactController {
 				if (asSourceContact && caze != null) {
 					CaseDataDto caseDto = FacadeProvider.getCaseFacade().getByUuid(caze.getUuid());
 					caseDto.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
-					FacadeProvider.getCaseFacade().saveCase(caseDto, false);
+					FacadeProvider.getCaseFacade().saveCase(caseDto);
 				}
 				if (asSourceContact && alternativeCallback != null && casePerson != null) {
 					selectOrCreateContact(dto, casePerson, selectedContactUuid -> {

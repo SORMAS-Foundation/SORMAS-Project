@@ -295,7 +295,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		caseDataDto.setFacilityType(rdcf.facility.getType());
 		caseDataDto.setHealthFacility(new FacilityReferenceDto(rdcf.facility.getUuid(), null, null));
 		caseDataDto.setReportingUser(user.toReference());
-		CaseDataDto caseConvertedFromContact = getCaseFacade().saveCase(caseDataDto, false);
+		CaseDataDto caseConvertedFromContact = getCaseFacade().saveCase(caseDataDto);
 
 		getCaseFacade().setSampleAssociations(contact.toReference(), caseConvertedFromContact.toReference());
 

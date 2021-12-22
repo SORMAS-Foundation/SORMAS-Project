@@ -267,7 +267,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		caze.setReportLon(null);
 		caze.setReportLatLonAccuracy(20F);
 
-		getCaseFacade().saveCase(caze, false);
+		getCaseFacade().saveCase(caze);
 
 		assertPseudonymizedDataNotUpdated(caze, rdcf2, user2);
 	}
@@ -448,7 +448,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		caze.setReportLon(23.234);
 		caze.setReportLatLonAccuracy(20F);
 
-		getCaseFacade().saveCase(caze, false);
+		getCaseFacade().saveCase(caze);
 	}
 
 	private void assertPseudonymizedDataUpdated(CaseDataDto caze) {

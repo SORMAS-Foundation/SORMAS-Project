@@ -658,7 +658,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	public CaseDataDto postUpdate(String uuid, JsonNode caseDataDtoJson) {
 		CaseDataDto existingCaseDto = getCaseDataWithoutPseudonyimization(uuid);
 		PatchHelper.postUpdate(caseDataDtoJson, existingCaseDto);
-		return saveCase(existingCaseDto, false);
+		return saveCase(existingCaseDto);
 
 	}
 
@@ -1331,6 +1331,11 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public CaseReferenceDto getReferenceByUuid(String uuid) {
 		return convertToReferenceDto(caseService.getByUuid(uuid));
+	}
+
+	@Override
+	public CaseDataDto saveCase(@Valid CaseDataDto dto) throws ValidationRuntimeException {
+		return saveCase(dto, true, true, false, false);
 	}
 
 	@Override

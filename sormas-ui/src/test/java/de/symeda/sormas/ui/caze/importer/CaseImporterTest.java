@@ -227,7 +227,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		// Change epid number of the case in database to pass creation test
 		CaseDataDto caze = getCaseFacade().getAllActiveCasesAfter(null).get(0);
 		caze.setEpidNumber("ABC-DEF-GHI-19-99");
-		getCaseFacade().saveCase(caze, false);
+		getCaseFacade().saveCase(caze);
 		assertEquals("ABC-DEF-GHI-19-99", getCaseFacade().getAllActiveCasesAfter(null).get(0).getEpidNumber());
 
 		// Similarity: create -> pass

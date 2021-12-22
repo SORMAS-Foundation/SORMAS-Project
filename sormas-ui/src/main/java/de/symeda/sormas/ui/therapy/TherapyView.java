@@ -224,7 +224,7 @@ public class TherapyView extends AbstractCaseView {
 		if (caze.getTherapy() == null) {
 			TherapyDto therapy = TherapyDto.build();
 			caze.setTherapy(therapy);
-			caze = FacadeProvider.getCaseFacade().saveCase(caze, false);
+			caze = FacadeProvider.getCaseFacade().saveCase(caze);
 		}
 
 		prescriptionCriteria.therapy(caze.getTherapy().toReference());
