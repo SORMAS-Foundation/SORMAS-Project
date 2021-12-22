@@ -53,6 +53,11 @@ public class DefaultOpenIdAuthenticationDefinition implements OpenIdAuthenticati
 			}
 
 			@Override
+			public String issuer() {
+				return "";
+			}
+
+			@Override
 			public String authorizationEndpoint() {
 				return "";
 			}
@@ -75,6 +80,46 @@ public class DefaultOpenIdAuthenticationDefinition implements OpenIdAuthenticati
 			@Override
 			public String jwksURI() {
 				return "";
+			}
+
+			@Override
+			public String[] scopesSupported() {
+				return new String[0];
+			}
+
+			@Override
+			public String[] responseTypesSupported() {
+				return new String[0];
+			}
+
+			@Override
+			public String[] subjectTypesSupported() {
+				return new String[0];
+			}
+
+			@Override
+			public String[] idTokenSigningAlgValuesSupported() {
+				return new String[0];
+			}
+
+			@Override
+			public String[] idTokenEncryptionAlgValuesSupported() {
+				return new String[0];
+			}
+
+			@Override
+			public String[] idTokenEncryptionEncValuesSupported() {
+				return new String[0];
+			}
+
+			@Override
+			public String[] claimsSupported() {
+				return new String[0];
+			}
+
+			@Override
+			public boolean disableScopeValidation() {
+				return false;
 			}
 		};
 	}
@@ -210,5 +255,10 @@ public class DefaultOpenIdAuthenticationDefinition implements OpenIdAuthenticati
 	@Override
 	public int tokenMinValidity() {
 		return 10 * 1000;
+	}
+
+	@Override
+	public boolean userClaimsFromIDToken() {
+		return false;
 	}
 }
