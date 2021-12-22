@@ -85,7 +85,7 @@ jobs:
             git pull
 
             rm -rf openapi
-            cp /tmp/openapi .
+            cp -r /tmp/openapi .
 
             git add openapi
             git commit -m "[GitHub Actions] Update external visits API spec files"
