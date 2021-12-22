@@ -653,7 +653,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.facilityOrHome.setValue(TypeOfPlace.HOME);
 		} else {
 			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
-			if (record.getFacilityType()!=null){
+			if (record.getFacilityType() != null) {
 				contentBinding.facilityTypeGroup.setValue(record.getFacilityType().getFacilityTypeGroup());
 			}
 		}
