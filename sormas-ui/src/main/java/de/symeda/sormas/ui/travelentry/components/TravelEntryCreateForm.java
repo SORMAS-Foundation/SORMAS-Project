@@ -14,11 +14,8 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
-import com.vaadin.v7.data.util.converter.Converter;
-import de.symeda.sormas.ui.travelentry.DEAFormBuilder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -40,13 +37,14 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
@@ -73,9 +71,9 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 	private static final String HTML_LAYOUT = fluidRowLocs(TravelEntryDto.REPORT_DATE, TravelEntryDto.EXTERNAL_ID)
 		+ fluidRow(
 		fluidColumnLoc(6, 0, TravelEntryDto.DISEASE),
-		fluidColumnLoc(6, 0, TravelEntryDto.DISEASE_DETAILS),
-		fluidColumnLoc(6, 0, TravelEntryDto.DISEASE_VARIANT)) +
-		fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
+		fluidColumnLoc(6, 0, TravelEntryDto.DISEASE_DETAILS)) 
+		+ fluidRowLocs(TravelEntryDto.DISEASE_VARIANT, TravelEntryDto.DISEASE_VARIANT_DETAILS)
+		+ fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
 		+ fluidRowLocs(TravelEntryDto.RESPONSIBLE_REGION, TravelEntryDto.RESPONSIBLE_DISTRICT, TravelEntryDto.RESPONSIBLE_COMMUNITY)
 		+ fluidRowLocs(DIFFERENT_POINT_OF_ENTRY_JURISDICTION)
 		+ fluidRowLocs(POINT_OF_ENTRY_HEADING_LOC)
@@ -86,7 +84,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 		fluidRowLocs(PersonDto.SEX))
 		+ fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
-		+ fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE)
+		+ fluidRowLocs(PersonDto.PRESENT_CONDITION, "")
 		+ fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS);
 	//@formatter:on
 
@@ -94,6 +92,9 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 	private ComboBox cbPointOfEntry;
 	private ComboBox birthDateDay;
 	private DEAFormBuilder deaFormBuilder;
+	private ComboBox responsibleRegion;
+	private ComboBox responsibleDistrict;
+	private ComboBox responsibleCommunity;
 
 	public TravelEntryCreateForm() {
 		super(
@@ -116,25 +117,27 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		TextField externalIdField = addField(TravelEntryDto.EXTERNAL_ID, TextField.class);
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
-		ComboBox diseaseField = addDiseaseField(TravelEntryDto.DISEASE, false);
+		ComboBox diseaseField = addDiseaseField(TravelEntryDto.DISEASE, false, true);
 		ComboBox diseaseVariantField = addField(TravelEntryDto.DISEASE_VARIANT, ComboBox.class);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		diseaseVariantField.setVisible(false);
 		addField(TravelEntryDto.DISEASE_DETAILS, TextField.class);
+		TextField diseaseVariantDetailsField = addField(TravelEntryDto.DISEASE_VARIANT_DETAILS, TextField.class);
+		diseaseVariantDetailsField.setVisible(false);
 
 		Label jurisdictionHeadingLabel = new Label(I18nProperties.getString(Strings.headingResponsibleJurisdiction));
 		jurisdictionHeadingLabel.addStyleName(H3);
 		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
 
-		ComboBox responsibleRegion = addField(TravelEntryDto.RESPONSIBLE_REGION);
+		responsibleRegion = addInfrastructureField(TravelEntryDto.RESPONSIBLE_REGION);
 		responsibleRegion.setRequired(true);
-		ComboBox responsibleDistrictCombo = addField(TravelEntryDto.RESPONSIBLE_DISTRICT);
-		responsibleDistrictCombo.setRequired(true);
-		ComboBox responsibleCommunityCombo = addField(TravelEntryDto.RESPONSIBLE_COMMUNITY);
-		responsibleCommunityCombo.setNullSelectionAllowed(true);
-		responsibleCommunityCombo.addStyleName(SOFT_REQUIRED);
+		responsibleDistrict = addInfrastructureField(TravelEntryDto.RESPONSIBLE_DISTRICT);
+		responsibleDistrict.setRequired(true);
+		responsibleCommunity = addInfrastructureField(TravelEntryDto.RESPONSIBLE_COMMUNITY);
+		responsibleCommunity.setNullSelectionAllowed(true);
+		responsibleCommunity.addStyleName(SOFT_REQUIRED);
 
-		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrictCombo, responsibleCommunityCombo);
+		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrict, responsibleCommunity);
 
 		CheckBox differentPointOfEntryJurisdiction = addCustomField(DIFFERENT_POINT_OF_ENTRY_JURISDICTION, Boolean.class, CheckBox.class);
 		differentPointOfEntryJurisdiction.addStyleName(VSPACE_3);
@@ -207,12 +210,6 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		ComboBox presentCondition = addCustomField(PersonDto.PRESENT_CONDITION, PresentCondition.class, ComboBox.class);
 		presentCondition.setCaption(I18nProperties.getCaption(Captions.Person_presentCondition));
 
-		addCustomField(
-			SymptomsDto.ONSET_DATE,
-			Date.class,
-			DateField.class,
-			I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
-
 		TextField phone = addCustomField(PersonDto.PHONE, String.class, TextField.class);
 		phone.setCaption(I18nProperties.getCaption(Captions.Person_phone));
 		TextField email = addCustomField(PersonDto.EMAIL_ADDRESS, String.class, TextField.class);
@@ -228,20 +225,19 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 				.updateItems(districtCombo, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		districtCombo.addValueChangeListener(e -> {
-			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
-			getPointsOfEntryForDistrict(districtDto);
+			if (differentPointOfEntryJurisdiction.getValue()) {
+				DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+				getPointsOfEntryForDistrict(districtDto);
+			}
 		});
 
-		UserProvider currentUserProvider = UserProvider.getCurrent();
-		JurisdictionLevel userJurisditionLevel =
-			currentUserProvider != null ? UserRole.getJurisdictionLevel(currentUserProvider.getUserRoles()) : JurisdictionLevel.NONE;
-		if (userJurisditionLevel == JurisdictionLevel.COMMUNITY) {
-			regionCombo.setReadOnly(true);
-			districtCombo.setReadOnly(true);
-		} else if (userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY) {
-			regionCombo.setReadOnly(true);
-			districtCombo.setReadOnly(true);
-		}
+		differentPointOfEntryJurisdiction.addValueChangeListener(v -> {
+			if (differentPointOfEntryJurisdiction.getValue()) {
+				cbPointOfEntry.removeAllItems();
+			} else {
+				getPointsOfEntryForDistrict((DistrictReferenceDto) responsibleDistrict.getValue());
+			}
+		});
 
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
@@ -282,7 +278,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 			false,
 			null);
 
-		responsibleDistrictCombo.addValueChangeListener(e -> {
+		responsibleDistrict.addValueChangeListener(e -> {
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			getPointsOfEntryForDistrict(districtDto);
 		});
@@ -294,6 +290,10 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 			diseaseVariantField
 				.setVisible(disease != null && isVisibleAllowed(TravelEntryDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
+		});
+		diseaseVariantField.addValueChangeListener(e -> {
+			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();
+			diseaseVariantDetailsField.setVisible(diseaseVariant != null && diseaseVariant.matchPropertyValue(DiseaseVariant.HAS_DETAILS, true));
 		});
 	}
 
@@ -420,8 +420,9 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 	}
 
 	private void buildDeaContent(TravelEntryDto newFieldValue) {
-		if (newFieldValue.getDeaContent() != null) {
-			deaFormBuilder = new DEAFormBuilder(newFieldValue.getDeaContent(), true);
+		final List<DeaContentEntry> deaContent = newFieldValue.getDeaContent();
+		if (CollectionUtils.isNotEmpty(deaContent)) {
+			deaFormBuilder = new DEAFormBuilder(deaContent, true);
 			deaFormBuilder.buildForm();
 			getContent().addComponent(deaFormBuilder.getLayout(), DEA_CONTENT_LOC);
 		}
@@ -440,5 +441,19 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 	public void setValue(TravelEntryDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
 		buildDeaContent(newFieldValue);
+
+		UserProvider currentUserProvider = UserProvider.getCurrent();
+		JurisdictionLevel userJurisditionLevel =
+			currentUserProvider != null ? UserRole.getJurisdictionLevel(currentUserProvider.getUserRoles()) : JurisdictionLevel.NONE;
+
+		if (userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY) {
+			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(currentUserProvider.getUser().getHealthFacility().getUuid());
+			responsibleRegion.setValue(facility.getRegion());
+			responsibleRegion.setReadOnly(true);
+			responsibleDistrict.setValue(facility.getDistrict());
+			responsibleDistrict.setReadOnly(true);
+			responsibleCommunity.setValue(facility.getCommunity());
+			responsibleCommunity.setReadOnly(true);
+		}
 	}
 }

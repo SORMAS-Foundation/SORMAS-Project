@@ -64,15 +64,15 @@ import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.ParenteralTransmissionMode;
 import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -83,6 +83,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CheckBoxTree;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
+import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
@@ -119,8 +120,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 					fluidRowLocs(4,EventDto.EVENT_INVESTIGATION_START_DATE, 4, EventDto.EVENT_INVESTIGATION_END_DATE) +
 					fluidRow(
 							fluidColumnLoc(6, 0, EventDto.DISEASE),
-							fluidColumnLoc(6, 0, EventDto.DISEASE_DETAILS),
-							fluidColumnLoc(6, 0, EventDto.DISEASE_VARIANT)) +
+							fluidColumnLoc(6, 0, EventDto.DISEASE_DETAILS)) +
+					fluidRowLocs(EventDto.DISEASE_VARIANT, EventDto.DISEASE_VARIANT_DETAILS) +
 					fluidRowLocs(EventDto.EXTERNAL_ID, EventDto.EXTERNAL_TOKEN) +
 					fluidRowLocs(EventDto.INTERNAL_TOKEN, EXTERNAL_TOKEN_WARNING_LOC) +
 					fluidRowLocs(EventDto.EVENT_TITLE) +
@@ -159,10 +160,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private List<UserReferenceDto> responsibleUserSurveillanceSupervisors;
 	private EpidemiologicalEvidenceCheckBoxTree epidemiologicalEvidenceCheckBoxTree;
 	private LaboratoryDiagnosticEvidenceCheckBoxTree laboratoryDiagnosticEvidenceCheckBoxTree;
-	private ComboBox diseaseField;
-	private ComboBox diseaseVariantField;
-	private DateField reportDate;
-	private DateField startDate;
+	private LocationEditForm locationForm;
 
 	public EventDataForm(boolean create, boolean isPseudonymized) {
 		super(
@@ -213,11 +211,13 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		getContent().addComponent(locationHeadingLabel, LOCATION_HEADING_LOC);
 
 		addField(EventDto.UUID, TextField.class);
-		diseaseField = addDiseaseField(EventDto.DISEASE, false);
+		ComboBox diseaseField = addDiseaseField(EventDto.DISEASE, false, isCreateForm);
 		addField(EventDto.DISEASE_DETAILS, TextField.class);
-		diseaseVariantField = addField(EventDto.DISEASE_VARIANT, ComboBox.class);
+		ComboBox diseaseVariantField = addField(EventDto.DISEASE_VARIANT, ComboBox.class);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		addFields(EventDto.EXTERNAL_ID);
+		TextField diseaseVariantDetailsField = addField(EventDto.DISEASE_VARIANT_DETAILS, TextField.class);
+		diseaseVariantDetailsField.setVisible(false);
 
 		TextField externalTokenField = addField(EventDto.EXTERNAL_TOKEN);
 		Label externalTokenWarningLabel = new Label(I18nProperties.getString(Strings.messageEventExternalTokenWarning));
@@ -226,9 +226,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		addField(EventDto.INTERNAL_TOKEN);
 
-		startDate = addField(EventDto.START_DATE, DateField.class);
+		DateTimeField startDate = addField(EventDto.START_DATE, DateTimeField.class);
 		CheckBox multiDayCheckbox = addField(EventDto.MULTI_DAY_EVENT, CheckBox.class);
-		DateField endDate = addField(EventDto.END_DATE, DateField.class);
+		DateTimeField endDate = addField(EventDto.END_DATE, DateTimeField.class);
 		initEventDateValidation(startDate, endDate, multiDayCheckbox);
 
 		addField(EventDto.EVENT_STATUS, NullableOptionGroup.class);
@@ -346,7 +346,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			}
 		});
 
-		reportDate = addField(EventDto.REPORT_DATE_TIME, DateField.class);
+		DateField reportDate = addField(EventDto.REPORT_DATE_TIME, DateField.class);
 		addField(EventDto.REPORTING_USER, ComboBox.class);
 		addField(EventDto.TRANSREGIONAL_OUTBREAK, NullableOptionGroup.class);
 
@@ -381,7 +381,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.EVENT_LOCATION, new LocationEditForm(fieldVisibilityCheckers, createFieldAccessCheckers(isPseudonymized, false)))
 			.setCaption(null);
 
-		LocationEditForm locationForm = (LocationEditForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);
+		locationForm = (LocationEditForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);
 		locationForm.setDistrictRequiredOnDefaultCountry(true);
 		ComboBox regionField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.REGION);
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
@@ -430,6 +430,10 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, disease);
 			FieldHelper.updateItems(specificRiskField, specificRiskValues);
 			specificRiskField.setVisible(isVisibleAllowed(EventDto.SPECIFIC_RISK) && CollectionUtils.isNotEmpty(specificRiskValues));
+		});
+		diseaseVariantField.addValueChangeListener(e -> {
+			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();
+			diseaseVariantDetailsField.setVisible(diseaseVariant != null && diseaseVariant.matchPropertyValue(DiseaseVariant.HAS_DETAILS, true));
 		});
 
 		setRequired(true, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_TITLE, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
@@ -637,7 +641,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			laboratoryDiagnosticEvidenceDetail);
 	}
 
-	private void initEventDateValidation(DateField startDate, DateField endDate, CheckBox multiDayCheckbox) {
+	private void initEventDateValidation(DateTimeField startDate, DateTimeField endDate, CheckBox multiDayCheckbox) {
 		DateComparisonValidator startDateValidator = new DateComparisonValidator(
 			startDate,
 			endDate,
@@ -694,6 +698,12 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	public void setValue(EventDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		epidemiologicalEvidenceCheckBoxTree.setValues(newFieldValue.getEpidemiologicalEvidenceDetails());
 		laboratoryDiagnosticEvidenceCheckBoxTree.setValues(newFieldValue.getLaboratoryDiagnosticEvidenceDetails());
+
+		if (!isCreateForm && FacadeProvider.getEventFacade().hasAnyEventParticipantWithoutJurisdiction(newFieldValue.getUuid())) {
+			locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
+			locationForm.setCountryDisabledWithHint(I18nProperties.getString(Strings.infoCountryNotEditableEventParticipantsWithoutJurisdiction));
+		}
+
 		super.setValue(newFieldValue);
 	}
 }

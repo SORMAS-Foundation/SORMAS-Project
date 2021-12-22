@@ -5,13 +5,16 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.63.0-SNAPSHOT</version>
+	<version>1.67.0-SNAPSHOT</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<developmentBranch>development</developmentBranch>
+		<productionBranch>master</productionBranch>
+		<pushHotfixes>true</pushHotfixes>
 
 		<!-- *** Payara module versions *** -->
 		<jackson.version>2.10.2</jackson.version>
@@ -24,15 +27,17 @@
 		<!-- *** Other dependency versions *** -->
 		<glassfish.jaxb.version>2.3.3</glassfish.jaxb.version>
 		<slf4j.version>1.7.30</slf4j.version>
-		<logback.version>1.1.7</logback.version>
+		<logback.version>1.2.9</logback.version>
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
-		<vaadin.version>8.13.1</vaadin.version>
+		<vaadin.version>8.14.1</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<swagger.version>2.1.6</swagger.version>
 		<bouncycastle.version>1.67</bouncycastle.version>
-		<keycloak.version>12.0.1</keycloak.version>
+		<keycloak.version>12.0.4</keycloak.version>
+		<resteasy.version>3.15.1.Final</resteasy.version>
 		<xdocreport.version>2.0.2</xdocreport.version>
-		<docx4j.version>8.2.8</docx4j.version>
+		<docx4j.version>8.3.1</docx4j.version>
+		<archunit.version>0.22.0</archunit.version>
 
 		<!-- Attention: Compile dependencies with versions are maintained redundantly in sormas-app/app/build.gradle -->
 
@@ -535,7 +540,7 @@
 			<dependency>
 				<groupId>org.jsoup</groupId>
 				<artifactId>jsoup</artifactId>
-				<version>1.13.1</version>
+				<version>1.14.2</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -584,7 +589,7 @@
 			<dependency>
 				<groupId>com.jayway.jsonpath</groupId>
 				<artifactId>json-path</artifactId>
-				<version>2.4.0</version>
+				<version>2.6.0</version>
 			</dependency>
 
 			<dependency>
@@ -637,6 +642,27 @@
 				<groupId>org.geotools</groupId>
 				<artifactId>gt-shapefile</artifactId>
 				<version>24.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>resteasy-client</artifactId>
+				<version>${resteasy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>resteasy-multipart-provider</artifactId>
+				<version>${resteasy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>resteasy-jackson2-provider</artifactId>
+				<version>${resteasy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>resteasy-jaxb-provider</artifactId>
+				<version>${resteasy.version}</version>
 			</dependency>
 
 			<dependency>
@@ -803,7 +829,7 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-context</artifactId>
-				<version>4.0.3.RELEASE</version>
+				<version>4.3.30.RELEASE</version>
 				<!-- downgraded because of missing support in android api 24-->
 			</dependency>
 
@@ -820,6 +846,20 @@
 				<version>2.27.2</version>
 				<scope>test</scope>
 			</dependency>
+
+			<dependency>
+				<groupId>com.tngtech.archunit</groupId>
+				<artifactId>archunit</artifactId>
+				<version>${archunit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.tngtech.archunit</groupId>
+				<artifactId>archunit-junit4</artifactId>
+				<version>${archunit.version}</version>
+				<scope>test</scope>
+			</dependency>
+
 			<!-- *** Test dependencies END *** -->
 
 			<dependency>
@@ -1044,8 +1084,9 @@
 					<version>1.0-m5.1</version>
 					<configuration>
 						<flowInitContext>
-							<masterBranchName>master</masterBranchName>
-							<developBranchName>development</developBranchName>
+							<masterBranchName>${productionBranch}</masterBranchName>
+							<!-- Option to overwrite developBranchName to not automatically merge hotfix branches into development -->
+							<developBranchName>${developmentBranch}</developBranchName>
 							<featureBranchPrefix>feature-</featureBranchPrefix>
 							<releaseBranchPrefix>release-</releaseBranchPrefix>
 							<hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
@@ -1057,7 +1098,7 @@
 						<password>${github.sormas.password}</password>
 						<scmCommentPrefix>[GITFLOW]</scmCommentPrefix>
 						<pushReleases>true</pushReleases>
-						<pushHotfixes>true</pushHotfixes>
+						<pushHotfixes>${pushHotfixes}</pushHotfixes>
 						<useReleaseProfile>false</useReleaseProfile>
 						<noDeploy>true</noDeploy>
 						<noHotfixBuild>true</noHotfixBuild>
@@ -1141,8 +1182,9 @@
 	<repositories>
 		<repository>
 			<id>central</id>
-			<name>bintray</name>
-			<url>https://jcenter.bintray.com</url>
+			<name>Maven Central</name>
+			<layout>default</layout>
+			<url>https://repo1.maven.org/maven2</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -1167,6 +1209,15 @@
 			<id>osgeo</id>
 			<name>Open Source Geospatial Foundation Repository</name>
 			<url>https://repo.osgeo.org/repository/release/</url>
+		</repository>
+		<repository>
+			<!-- this repo is readOnly since 2021 and only listed for older artifacts that may not be found elsewhere -->
+			<id>bintray</id>
+			<name>bintray</name>
+			<url>https://jcenter.bintray.com</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 

@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import com.vaadin.ui.Notification;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -34,6 +33,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -180,7 +180,7 @@ public class UserController {
 	}
 
 	public void makeInitialPassword(String userUuid, String userEmail) {
-		if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider().isDefaultProvider()) {
+		if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
 			String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
 			showPasswordResetInternalSuccessPopup(newPassword);
 		} else {
@@ -191,7 +191,7 @@ public class UserController {
 	public void makeNewPassword(String userUuid, String userEmail) {
 		String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
 
-		if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider().isDefaultProvider()) {
+		if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
 			showPasswordResetInternalSuccessPopup(newPassword);
 		} else {
 			showPasswordResetExternalSuccessPopup();

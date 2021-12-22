@@ -17,16 +17,21 @@ package de.symeda.sormas.api.exposure;
 
 import java.util.Date;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
@@ -101,24 +106,31 @@ public class ExposureDto extends PseudonymizableDto {
 	private Date startDate;
 	private Date endDate;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String description;
 	@Required
 	private ExposureType exposureType;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String exposureTypeDetails;
+	@Valid
 	private LocationDto location;
 	private ExposureRole exposureRole;
 
 	// Type of Place
 	private TypeOfPlace typeOfPlace;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String typeOfPlaceDetails;
 	private MeansOfTransport meansOfTransport;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String meansOfTransportDetails;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String connectionNumber;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String seatNumber;
 
 	private WorkEnvironment workEnvironment;
@@ -130,11 +142,11 @@ public class ExposureDto extends PseudonymizableDto {
 	private YesNoUnknown wearingPpe;
 	private YesNoUnknown otherProtectiveMeasures;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String protectiveMeasuresDetails;
 	private YesNoUnknown shortDistance;
 	private YesNoUnknown longFaceToFaceContact;
 	@Diseases({
-		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private YesNoUnknown animalMarket;
@@ -194,6 +206,7 @@ public class ExposureDto extends PseudonymizableDto {
 	private YesNoUnknown animalVaccinated;
 	private AnimalContactType animalContactType;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String animalContactTypeDetails;
 	@Diseases({
 		Disease.AFP,
@@ -219,6 +232,7 @@ public class ExposureDto extends PseudonymizableDto {
 		Disease.POLIO,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String waterSourceDetails;
 	@PersonalData
 	private ContactReferenceDto contactToCase;
@@ -229,12 +243,15 @@ public class ExposureDto extends PseudonymizableDto {
 	// Exposure sub-types
 	private GatheringType gatheringType;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String gatheringDetails;
 	private HabitationType habitationType;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String habitationDetails;
 	private TypeOfAnimal typeOfAnimal;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String typeOfAnimalDetails;
 
 	// Fields specific to ExposureType.BURIAL
@@ -242,8 +259,10 @@ public class ExposureDto extends PseudonymizableDto {
 	private YesNoUnknown physicalContactWithBody;
 	private YesNoUnknown deceasedPersonIll;
 	@PersonalData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String deceasedPersonName;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String deceasedPersonRelation;
 	private YesNoUnknown largeAttendanceNumber;
 

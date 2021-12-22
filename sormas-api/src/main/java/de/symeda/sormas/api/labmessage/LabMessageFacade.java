@@ -4,25 +4,29 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 @Remote
 public interface LabMessageFacade {
 
-	LabMessageDto save(LabMessageDto dto);
+	LabMessageDto save(@Valid LabMessageDto dto);
 
+	// Also returns deleted lab messages
 	LabMessageDto getByUuid(String uuid);
 
 	void deleteLabMessage(String uuid);
 
 	void deleteLabMessages(List<String> uuids);
 
-    List<LabMessageDto> getForSample(String sampleUuid);
+	// Does not return deleted lab messages
+	List<LabMessageDto> getForSample(SampleReferenceDto sample);
 
-    List<LabMessageDto> getByPathogenTestUuid(String pathogenTestUuid);
-
-    /**
+	/**
 	 * This method is used to check whether a labMessage is marked processed in the database.
 	 * It can be used to check for recent changes.
 	 *
@@ -36,8 +40,6 @@ public interface LabMessageFacade {
 
 	List<LabMessageIndexDto> getIndexList(LabMessageCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	boolean atLeastOneFetchExecuted();
-
 	/**
 	 * Fetches external lab messages from the connected external system and saves them in the database.
 	 *
@@ -47,5 +49,13 @@ public interface LabMessageFacade {
 	LabMessageFetchResult fetchAndSaveExternalLabMessages(Date since);
 
 	boolean exists(String uuid);
+
+	boolean existsLabMessageForEntity(ReferenceDto entityRef);
+
+	// Also returns deleted lab messages
+	List<LabMessageDto> getByReportId(String reportId);
+
+	// Also considers deleted lab messages
+	boolean existsForwardedLabMessageWith(String reportId);
 
 }

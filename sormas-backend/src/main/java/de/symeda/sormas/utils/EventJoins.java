@@ -19,17 +19,16 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventGroup;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
@@ -43,13 +42,14 @@ public class EventJoins<T> extends AbstractDomainObjectJoins<T, Event> {
 	private Join<Location, District> district;
 	private Join<Location, Community> community;
 	private Join<Location, Facility> facility;
-	private Join<Location, FacilityType> facilityType;
 
 	private Join<Event, EventParticipant> eventParticipants;
 	private Join<EventParticipant, Person> eventParticipantPersons;
 	private Join<EventParticipant, Case> eventParticipantCases;
 
 	private Join<Event, EventGroup> eventGroup;
+
+	private Join<Event, Event> superordinateEvent;
 
 	public EventJoins(From<T, Event> event) {
 		super(event);
@@ -146,5 +146,13 @@ public class EventJoins<T> extends AbstractDomainObjectJoins<T, Event> {
 
 	private void setEventGroup(Join<Event, EventGroup> eventGroup) {
 		this.eventGroup = eventGroup;
+	}
+
+	public Join<Event, Event> getSuperordinateEvent() {
+		return getOrCreate(superordinateEvent, Event.SUPERORDINATE_EVENT, JoinType.LEFT, this::setSuperordinateEvent);
+	}
+
+	private void setSuperordinateEvent(Join<Event, Event> superordinateEvent) {
+		this.superordinateEvent = superordinateEvent;
 	}
 }

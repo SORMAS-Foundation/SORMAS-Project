@@ -30,6 +30,10 @@ import de.symeda.sormas.api.task.TaskExportDto;
 
 public class TaskDownloadUtil {
 
+	private TaskDownloadUtil() {
+		// Hide Utility Class Constructor
+	}
+
 	public static StreamResource createTaskExportResource(
 		TaskCriteria taskCriteria,
 		Supplier<Collection<String>> selectedRows,

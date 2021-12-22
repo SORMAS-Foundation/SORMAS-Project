@@ -47,20 +47,20 @@ public class AuthProvider {
 
     private final String name;
 
-    private AuthProvider() {
-        String configuredProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
+	private AuthProvider(ConfigFacade configFacade) {
+		String configuredProvider = configFacade.getAuthenticationProvider();
         isUsernameCaseSensitive = SORMAS.equalsIgnoreCase(configuredProvider);
         isDefaultProvider = SORMAS.equalsIgnoreCase(configuredProvider);
         isUserSyncSupported = KEYCLOAK.equalsIgnoreCase(configuredProvider);
-        isUserSyncAtStartupEnabled = isUserSyncSupported && FacadeProvider.getConfigFacade().isAuthenticationProviderUserSyncAtStartupEnabled();
+        isUserSyncAtStartupEnabled = isUserSyncSupported && configFacade.isAuthenticationProviderUserSyncAtStartupEnabled();
         name = configuredProvider;
     }
 
-    public static AuthProvider getProvider() {
+	public static AuthProvider getProvider(ConfigFacade configFacade) {
         if (provider == null) {
             synchronized (AuthProvider.class) {
                 if (provider == null) {
-                    provider = new AuthProvider();
+					provider = new AuthProvider(configFacade);
                 }
             }
         }

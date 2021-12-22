@@ -34,6 +34,8 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+
 @Entity(name = Hospitalization.TABLE_NAME)
 @DatabaseTable(tableName = Hospitalization.TABLE_NAME)
 @EmbeddedAdo
@@ -57,6 +59,8 @@ public class Hospitalization extends AbstractDomainObject {
 	private YesNoUnknown isolated;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date isolationDate;
+	@Column(length = CHARACTER_LIMIT_BIG)
+	private String description;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown leftAgainstAdvice;
 
@@ -108,6 +112,14 @@ public class Hospitalization extends AbstractDomainObject {
 
 	public void setIsolationDate(Date isolationDate) {
 		this.isolationDate = isolationDate;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public YesNoUnknown getHospitalizedPreviously() {

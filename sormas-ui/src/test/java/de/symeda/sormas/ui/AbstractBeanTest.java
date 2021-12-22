@@ -20,6 +20,12 @@ package de.symeda.sormas.ui;
 
 import static org.mockito.Mockito.when;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +33,10 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.commons.io.input.BOMInputStream;
 import org.junit.Before;
+
+import com.opencsv.CSVReader;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -36,20 +45,21 @@ import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
-import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationFacade;
-import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
+import de.symeda.sormas.api.infrastructure.community.CommunityFacade;
+import de.symeda.sormas.api.infrastructure.country.CountryFacade;
+import de.symeda.sormas.api.infrastructure.district.DistrictFacade;
+import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
+import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.person.PersonFacade;
-import de.symeda.sormas.api.region.CommunityFacade;
-import de.symeda.sormas.api.region.CountryFacade;
-import de.symeda.sormas.api.region.DistrictFacade;
-import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb.CaseImportFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
@@ -57,17 +67,20 @@ import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
-import de.symeda.sormas.backend.region.CountryFacadeEjb;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
-import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
+import de.symeda.sormas.backend.user.CurrentUser;
+import de.symeda.sormas.backend.user.CurrentUserService;
+import de.symeda.sormas.backend.user.UserService;
 import info.novatec.beantest.api.BaseBeanTest;
 
 public abstract class AbstractBeanTest extends BaseBeanTest {
@@ -112,6 +125,14 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
 			getDiseaseConfigurationService().ensurePersisted(configuration);
 		});
+	}
+
+	public CurrentUserService getCurrentUserService() {
+		return getBean(CurrentUserService.class);
+	}
+
+	public UserService getUserService() {
+		return getBean(UserService.class);
 	}
 
 	public PersonFacade getPersonFacade() {
@@ -184,5 +205,19 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public SampleFacade getSampleFacade() {
 		return getBean(SampleFacadeEjb.SampleFacadeEjbLocal.class);
+	}
+
+	public CSVReader getCsvReader(InputStream inputStream) {
+		CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
+		BOMInputStream bomInputStream = new BOMInputStream(inputStream);
+		Reader reader = new InputStreamReader(bomInputStream, decoder);
+		BufferedReader bufferedReader = new BufferedReader(reader);
+		return CSVUtils.createCSVReader(bufferedReader, ',');
+	}
+
+	protected void loginWith(UserDto user) {
+		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
+		final CurrentUser currentUser = getCurrentUserService().getCurrentUser();
+		getUserService().setCurrentUser(currentUser.getUser());
 	}
 }

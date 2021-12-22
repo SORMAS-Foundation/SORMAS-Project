@@ -46,6 +46,7 @@ public class CreateNewTaskSteps implements En {
           task = taskService.buildGeneratedTask();
           fillAllFields(task);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
         });
 
     When(
@@ -64,9 +65,9 @@ public class CreateNewTaskSteps implements En {
         });
 
     When(
-        "^I change all fields and save$",
+        "^I change all Task's fields and save$",
         () -> {
-          task = taskService.buildEditTask();
+          task = taskService.buildEditTask("CASE", getStatus());
           fillAllFields(task);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
@@ -81,8 +82,6 @@ public class CreateNewTaskSteps implements En {
     selectAssignedTo(task.getAssignedTo());
     selectPriority(task.getPriority());
     fillCommentsOnTask(task.getCommentsOnTask());
-    fillCommentsOnExecution(task.getCommentsOnExecution());
-    selectTaskStatus(task.getTaskStatus());
   }
 
   public void selectTaskType(String taskType) {
@@ -139,7 +138,6 @@ public class CreateNewTaskSteps implements En {
         .assignedTo(getAssignedToWithoutNoTasks())
         .priority(getPriority())
         .commentsOnTask(getCommentsOnTask())
-        .commentsOnExecution(getCommentsOnExecution())
         .taskStatus(getStatus())
         .build();
   }

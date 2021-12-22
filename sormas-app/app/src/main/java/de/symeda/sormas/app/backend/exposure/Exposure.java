@@ -1,6 +1,6 @@
 package de.symeda.sormas.app.backend.exposure;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 
@@ -86,9 +86,9 @@ public class Exposure extends PseudonymizableAdo {
 	private MeansOfTransport meansOfTransport;
 	@Column(columnDefinition = "text")
 	private String meansOfTransportDetails;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String connectionNumber;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String seatNumber;
 
 	@Enumerated(EnumType.STRING)
@@ -167,9 +167,9 @@ public class Exposure extends PseudonymizableAdo {
 	private YesNoUnknown physicalContactWithBody;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown deceasedPersonIll;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String deceasedPersonName;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String deceasedPersonRelation;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown largeAttendanceNumber;

@@ -72,7 +72,7 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
 		}
 
 		personDialog.setPositiveCallback(() -> {
-			if (personDialog.getSelectedPerson() != null && !personDialog.getSelectedPerson().getUuid().equals(person.getUuid())) {
+			if (personDialog.getSelectedPerson() != null) {
 				resultConsumer.accept(personDialog.getSelectedPerson());
 			} else {
 				personDialog.suppressNextDismiss();
@@ -121,9 +121,7 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
 		List<String> similarNameUuids = DatabaseHelper.getPersonDao()
 			.getRelevantPersonNames(similarityCriteria)
 			.stream()
-			.filter(
-				name -> PersonHelper
-					.areNamesSimilar(person.getFirstName(), person.getLastName(), name.getFirstName(), name.getLastName(), null))
+			.filter(name -> PersonHelper.areNamesSimilar(person.getFirstName(), person.getLastName(), name.getFirstName(), name.getLastName(), null))
 			.map(PersonNameDto::getUuid)
 			.collect(Collectors.toList());
 

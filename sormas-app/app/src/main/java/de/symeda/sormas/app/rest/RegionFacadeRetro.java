@@ -17,7 +17,7 @@ package de.symeda.sormas.app.rest;
 
 import java.util.List;
 
-import de.symeda.sormas.api.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;

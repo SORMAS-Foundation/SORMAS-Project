@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -30,10 +31,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.region.CommunityCriteria;
-import de.symeda.sormas.api.region.CommunityDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
@@ -46,7 +48,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @RolesAllowed({
 	"USER",
 	"REST_USER" })
-public class CommunityResource {
+public class CommunityResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
@@ -58,6 +60,13 @@ public class CommunityResource {
 	@Path("/query")
 	public List<CommunityDto> getByUuids(List<String> uuids) {
 		List<CommunityDto> result = FacadeProvider.getCommunityFacade().getByUuids(uuids);
+		return result;
+	}
+
+	@POST
+	@Path("/push")
+	public List<PushResult> postCommunities(@Valid List<CommunityDto> dtos) {
+		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getCommunityFacade()::save);
 		return result;
 	}
 

@@ -30,6 +30,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
@@ -38,9 +39,9 @@ import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.dashboard.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 
@@ -82,6 +83,7 @@ public class DashboardDataProvider {
 	private Long casesInQuarantineCount = 0L;
 	private Long casesPlacedInQuarantineCount = 0L;
 	private Long contactsConvertedToCaseCount = 0L;
+	private Long caseWithReferenceDefinitionFulfilledCount = 0L;
 
 	public void refreshData() {
 
@@ -123,6 +125,7 @@ public class DashboardDataProvider {
 	}
 
 	private Predicate<DashboardQuarantineDataDto> quarantineData(Date fromDate, Date toDate) {
+
 		return p -> {
 			Date quarantineFrom = p.getQuarantineFrom();
 			Date quarantineTo = p.getQuarantineTo();
@@ -166,6 +169,12 @@ public class DashboardDataProvider {
 		DashboardCriteria dashboardCriteria =
 			new DashboardCriteria().region(region).district(district).disease(disease).dateBetween(fromDate, toDate);
 		setContactsConvertedToCaseCount(FacadeProvider.getDashboardFacade().countCasesConvertedFromContacts(dashboardCriteria));
+	}
+
+	private void refreshDataForCasesWithReferenceDefinitionFulfilled() {
+		List<DashboardCaseDto> casesWithReferenceDefinitionFulfilled =
+			getCases().stream().filter(cases -> cases.getCaseReferenceDefinition() == CaseReferenceDefinition.FULFILLED).collect(Collectors.toList());
+		setCaseWithReferenceDefinitionFulfilledCount(Long.valueOf(casesWithReferenceDefinitionFulfilled.size()));
 	}
 
 	private void refreshDataForSelectedDisease() {
@@ -219,6 +228,7 @@ public class DashboardDataProvider {
 
 		refreshDataForQuarantinedCases();
 		refreshDataForConvertedContactsToCase();
+		refreshDataForCasesWithReferenceDefinitionFulfilled();
 	}
 
 	public List<DashboardCaseDto> getCases() {
@@ -440,5 +450,13 @@ public class DashboardDataProvider {
 
 	public void setContactsConvertedToCaseCount(Long contactsConvertedToCaseCount) {
 		this.contactsConvertedToCaseCount = contactsConvertedToCaseCount;
+	}
+
+	public Long getCaseWithReferenceDefinitionFulfilledCount() {
+		return caseWithReferenceDefinitionFulfilledCount;
+	}
+
+	public void setCaseWithReferenceDefinitionFulfilledCount(Long caseWithReferenceDefinitionFulfilledCount) {
+		this.caseWithReferenceDefinitionFulfilledCount = caseWithReferenceDefinitionFulfilledCount;
 	}
 }

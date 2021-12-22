@@ -29,4 +29,6 @@ import lombok.extern.jackson.Jacksonized;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Symptoms {
   String uuid;
+  Boolean pseudonymized;
+  Boolean symptomatic;
 }

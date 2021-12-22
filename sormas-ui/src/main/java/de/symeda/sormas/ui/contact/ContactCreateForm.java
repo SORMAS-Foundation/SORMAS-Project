@@ -25,23 +25,17 @@ import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.joda.time.LocalDate;
-
 import com.google.common.collect.Sets;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.data.Validator;
-import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.data.validator.EmailValidator;
-import com.vaadin.v7.shared.ui.datefield.Resolution;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -49,7 +43,6 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
@@ -58,10 +51,10 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -115,7 +108,6 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private Disease disease;
 	private final Boolean hasCaseRelation;
 	private final boolean asSourceContact;
-	private CaseReferenceDto selectedCase;
 	private NullableOptionGroup contactCategory;
 	private TextField contactProximityDetails;
 	private ComboBox birthDateDay;
@@ -144,7 +136,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		}
 
 		addField(ContactDto.REPORT_DATE_TIME, DateField.class);
-		ComboBox cbDisease = addDiseaseField(ContactDto.DISEASE, false);
+		ComboBox cbDisease = addDiseaseField(ContactDto.DISEASE, false, true);
 		addField(ContactDto.DISEASE_DETAILS, TextField.class);
 		TextField firstName = addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		TextField lastName = addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
@@ -272,7 +264,6 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			chooseCaseButton.addClickListener(e -> {
 				ControllerProvider.getContactController().openSelectCaseForContactWindow((Disease) cbDisease.getValue(), selectedCase -> {
 					if (selectedCase != null) {
-						this.selectedCase = selectedCase.toReference();
 						caseInfoLabel.setValue(
 							String.format(
 								I18nProperties.getString(Strings.infoContactCreationSourceCase),
@@ -282,8 +273,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 						removeCaseButton.setVisible(true);
 						chooseCaseButton.setCaption(I18nProperties.getCaption(Captions.contactChangeCase));
 
+						getValue().setCaze(selectedCase.toReference());
 						cbDisease.setValue(selectedCase.getDisease());
-						getValue().setCaze(this.selectedCase);
 						updateFieldVisibilitiesByCase(true);
 					}
 				});
@@ -291,8 +282,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			getContent().addComponent(chooseCaseButton, CHOOSE_CASE_LOC);
 
 			removeCaseButton.addClickListener(e -> {
-				this.selectedCase = null;
 				getValue().setCaze(null);
+				cbDisease.setValue(null);
 				caseInfoLabel.setValue(I18nProperties.getString(Strings.infoNoSourceCaseSelected));
 				caseInfoLabel.addStyleName(CssStyles.VSPACE_TOP_4);
 				removeCaseButton.setVisible(false);
@@ -378,31 +369,6 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private void updateFieldVisibilitiesByCase(boolean caseSelected) {
 		setVisible(!caseSelected, ContactDto.DISEASE, ContactDto.CASE_ID_EXTERNAL_SYSTEM, ContactDto.CASE_OR_EVENT_INFORMATION);
 		setRequired(!caseSelected, ContactDto.DISEASE, ContactDto.REGION, ContactDto.DISTRICT);
-	}
-
-	private void updateRelationDescriptionField(ComboBox relationToCase, TextField relationDescription) {
-		boolean otherContactRelation = relationToCase.getValue().equals(ContactRelation.OTHER);
-		relationDescription.setVisible(otherContactRelation);
-	}
-
-	protected void updateLastContactDateValidator() {
-		Field<?> dateField = getField(ContactDto.LAST_CONTACT_DATE);
-		for (Validator validator : dateField.getValidators()) {
-			if (validator instanceof DateRangeValidator) {
-				dateField.removeValidator(validator);
-			}
-		}
-		if (getValue() != null) {
-			dateField.addValidator(
-				new DateRangeValidator(
-					I18nProperties.getValidationError(
-						Validations.beforeDate,
-						I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.LAST_CONTACT_DATE),
-						I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REPORT_DATE_TIME)),
-					null,
-					new LocalDate(getValue().getReportDateTime()).toDate(),
-					Resolution.SECOND));
-		}
 	}
 
 	private void updateContactProximity() {

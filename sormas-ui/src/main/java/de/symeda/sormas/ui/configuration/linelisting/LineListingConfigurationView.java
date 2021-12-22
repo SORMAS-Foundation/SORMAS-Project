@@ -27,7 +27,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -189,7 +189,7 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 		String[] params = event.getParameters().split("\\?");
 		if (params.length > 0) {
 			String regionUuid = params[0].replaceAll("/", "");
-			this.region = FacadeProvider.getRegionFacade().getRegionReferenceByUuid(regionUuid);
+			this.region = FacadeProvider.getRegionFacade().getReferenceByUuid(regionUuid);
 			if (params.length > 1) {
 				disease = Disease.valueOf(params[1].substring(params[1].indexOf("=") + 1));
 			}

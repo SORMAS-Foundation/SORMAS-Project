@@ -43,27 +43,21 @@
         android:orientation="vertical"
         android:padding="@dimen/rowListItemPadding">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+        <de.symeda.sormas.app.component.controls.ControlTextReadField
+            android:id="@+id/exposure_exposureType"
+            app:enumValue="@{data.exposureType}"
+            app:detailsEnumValue="@{ExposureType.OTHER}"
+            app:detailsValue="@{data.exposureTypeDetails}"
+            style="@style/ControlSingleColumnStyle" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/exposure_exposureType"
-                app:enumValue="@{data.exposureType}"
-                app:detailsEnumValue="@{ExposureType.OTHER}"
-                app:detailsValue="@{data.exposureTypeDetails}"
-                style="@style/ControlFirstOfTwoColumnsStyle" />
+        <de.symeda.sormas.app.component.controls.ControlTextReadField
+            android:id="@+id/exposure_exposureDate"
+            android:textAlignment="viewEnd"
+            app:dateTimeValue="@{data.startDate}"
+            app:appendValue="@{data.endDate}"
+            app:valueFormat='@{@string/date_range_format}'
+            style="@style/ControlSingleColumnStyle" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/exposure_exposureDate"
-                android:textAlignment="viewEnd"
-                app:appendValue="@{data.startDate}"
-                app:value="@{data.endDate}"
-                app:valueFormat='@{@string/date_range_format}'
-                style="@style/ControlSecondOfTwoColumnsStyle" />
-
-        </LinearLayout>
 
         <de.symeda.sormas.app.component.controls.ControlTextReadField
             android:id="@+id/exposure_typeOfPlace"

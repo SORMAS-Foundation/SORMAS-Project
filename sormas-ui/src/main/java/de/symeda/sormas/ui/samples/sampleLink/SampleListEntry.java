@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+*/
 package de.symeda.sormas.ui.samples.sampleLink;
 
 import com.vaadin.icons.VaadinIcons;
@@ -27,6 +27,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -171,19 +172,12 @@ public class SampleListEntry extends HorizontalLayout {
 			}
 		}
 
-		VerticalLayout topRightLayout = new VerticalLayout();
-		{
-			topRightLayout.addStyleName(CssStyles.ALIGN_RIGHT);
-			topRightLayout.setMargin(false);
-			topRightLayout.setSpacing(false);
-
-			topLayout.addComponent(topLeftLayout);
-		}
-		topLayout.addComponent(topRightLayout);
-		topLayout.setComponentAlignment(topRightLayout, Alignment.TOP_RIGHT);
+		topLayout.addComponent(topLeftLayout);
+		topLayout.setComponentAlignment(topLeftLayout, Alignment.TOP_LEFT);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
-			&& sample.getAdditionalTestingStatus() != AdditionalTestingStatus.NOT_REQUESTED) {
+			&& sample.getAdditionalTestingStatus() != AdditionalTestingStatus.NOT_REQUESTED
+			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ADDITIONAL_TESTS)) {
 			Label labelAdditionalTests = new Label(
 				I18nProperties.getString(Strings.entityAdditionalTests) + " " + sample.getAdditionalTestingStatus().toString().toLowerCase());
 			mainLayout.addComponent(labelAdditionalTests);

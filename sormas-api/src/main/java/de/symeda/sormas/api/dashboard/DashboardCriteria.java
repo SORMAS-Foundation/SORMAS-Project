@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 
@@ -17,6 +17,8 @@ public class DashboardCriteria extends BaseCriteria implements Serializable {
 	private CriteriaDateType newCaseDateType;
 	private Date dateFrom;
 	private Date dateTo;
+	private Date previousDateFrom;
+	private Date previousDateTo;
 
 	private boolean includeNotACaseClassification;
 
@@ -77,5 +79,13 @@ public class DashboardCriteria extends BaseCriteria implements Serializable {
 	public DashboardCriteria includeNotACaseClassification(boolean includeNotACaseClassification) {
 		this.includeNotACaseClassification = includeNotACaseClassification;
 		return this;
+	}
+
+	public Date getPreviousDateFrom() {
+		return previousDateFrom;
+	}
+
+	public Date getPreviousDateTo() {
+		return previousDateTo;
 	}
 }

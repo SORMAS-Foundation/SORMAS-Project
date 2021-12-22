@@ -1,11 +1,20 @@
 package de.symeda.sormas.api.campaign.data.translation;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
+
 import java.io.Serializable;
 import java.util.Objects;
 
+import javax.validation.constraints.Size;
+
+import de.symeda.sormas.api.i18n.Validations;
+
 public class TranslationElement implements Serializable {
 
+	@Size(max = CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String elementId;
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String caption;
 
 	public String getElementId() {

@@ -15,11 +15,11 @@
 
 package de.symeda.sormas.app.caze.edit;
 
-import java.util.Date;
+import android.view.View;
 
 import org.joda.time.DateTimeComparator;
 
-import android.view.View;
+import java.util.Date;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -148,6 +148,20 @@ final class CaseValidator {
 				}
 			}
 
+			if (contentBinding.caseHospitalizationAdmissionDate.getValue() != null
+				&& contentBinding.caseHospitalizationIntensiveCareUnitStart.getValue() != null) {
+				if (DateTimeComparator.getInstance()
+					.compare(contentBinding.caseHospitalizationAdmissionDate.getValue(), contentBinding.caseHospitalizationIntensiveCareUnitStart.getValue())
+					> 0) {
+					contentBinding.caseHospitalizationAdmissionDate.enableErrorState(
+						I18nProperties.getValidationError(
+							Validations.beforeDate,
+							contentBinding.caseHospitalizationAdmissionDate.getCaption(),
+							contentBinding.caseHospitalizationIntensiveCareUnitStart.getCaption()));
+					return true;
+				}
+			}
+
 			return false;
 		};
 
@@ -165,16 +179,64 @@ final class CaseValidator {
 					return true;
 				}
 			}
+			if (contentBinding.caseHospitalizationDischargeDate.getValue() != null
+					&& contentBinding.caseHospitalizationIntensiveCareUnitEnd.getValue() != null) {
+				if (DateTimeComparator.getDateOnlyInstance()
+						.compare(contentBinding.caseHospitalizationDischargeDate.getValue(), contentBinding.caseHospitalizationIntensiveCareUnitEnd.getValue())
+						< 0) {
+					contentBinding.caseHospitalizationDischargeDate.enableErrorState(
+							I18nProperties.getValidationError(
+									Validations.afterDate,
+									contentBinding.caseHospitalizationDischargeDate.getCaption(),
+									contentBinding.caseHospitalizationIntensiveCareUnitEnd.getCaption()));
+					return true;
+				}
+			}
+
+			return false;
+		};
+
+		ResultCallback<Boolean> intensiveCareDateCallback = () -> {
+			if (contentBinding.caseHospitalizationIntensiveCareUnitStart.getValue() != null
+				&& contentBinding.caseHospitalizationIntensiveCareUnitEnd.getValue() != null) {
+				if (DateTimeComparator.getDateOnlyInstance()
+					.compare(contentBinding.caseHospitalizationIntensiveCareUnitStart.getValue(), contentBinding.caseHospitalizationIntensiveCareUnitEnd.getValue())
+					< 0) {
+					contentBinding.caseHospitalizationIntensiveCareUnitStart.enableErrorState(
+						I18nProperties.getValidationError(
+							Validations.afterDate,
+							contentBinding.caseHospitalizationIntensiveCareUnitStart.getCaption(),
+							contentBinding.caseHospitalizationIntensiveCareUnitEnd.getCaption()));
+					return true;
+				}
+			}
+			if (contentBinding.caseHospitalizationIntensiveCareUnitStart.getValue() != null
+				&& contentBinding.caseHospitalizationDischargeDate.getValue() != null) {
+				if (DateTimeComparator.getDateOnlyInstance()
+					.compare(contentBinding.caseHospitalizationIntensiveCareUnitStart.getValue(), contentBinding.caseHospitalizationDischargeDate.getValue())
+					< 0) {
+					contentBinding.caseHospitalizationIntensiveCareUnitStart.enableErrorState(
+						I18nProperties.getValidationError(
+							Validations.afterDate,
+							contentBinding.caseHospitalizationIntensiveCareUnitStart.getCaption(),
+							contentBinding.caseHospitalizationDischargeDate.getCaption()));
+					return true;
+				}
+			}
 
 			return false;
 		};
 
 		contentBinding.caseHospitalizationAdmissionDate.setValidationCallback(admissionDateCallback);
 		contentBinding.caseHospitalizationDischargeDate.setValidationCallback(dischargeDateCallback);
+		contentBinding.caseHospitalizationIntensiveCareUnitStart.setValidationCallback(intensiveCareDateCallback);
 	}
 
 	static void initializePreviousHospitalizationValidation(final DialogPreviousHospitalizationLayoutBinding contentBinding) {
 		ValidationHelper.initDateIntervalValidator(contentBinding.casePreviousHospitalizationAdmissionDate, contentBinding.casePreviousHospitalizationDischargeDate, false);
+		ValidationHelper.initDateIntervalValidator(contentBinding.casePreviousHospitalizationAdmissionDate, contentBinding.casePreviousHospitalizationIntensiveCareUnitStart, false);
 		ValidationHelper.initDateIntervalValidator(contentBinding.casePreviousHospitalizationIntensiveCareUnitStart, contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd, false);
+		ValidationHelper.initDateIntervalValidator(contentBinding.casePreviousHospitalizationIntensiveCareUnitStart, contentBinding.casePreviousHospitalizationDischargeDate, false);
+		ValidationHelper.initDateIntervalValidator(contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd, contentBinding.casePreviousHospitalizationDischargeDate, false);
 	}
 }

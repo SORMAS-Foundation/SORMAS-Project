@@ -65,13 +65,13 @@ public class EventList extends PaginationList<EventIndexDto> {
 						480,
 						confirmed -> {
 							if (confirmed) {
-								EventDto selectedEvent = FacadeProvider.getEventFacade().getEventByUuid(listEntry.getEvent().getUuid());
+								EventDto selectedEvent = FacadeProvider.getEventFacade().getEventByUuid(listEntry.getEvent().getUuid(), false);
 								CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseReferenceDto.getUuid());
 								ControllerProvider.getEventController()
-										.removeLinkCaseEventParticipant(
-												selectedEvent,
-												caseDataDto,
-												I18nProperties.getString(Strings.messageEventParticipationUnlinked));
+									.removeLinkCaseEventParticipant(
+										selectedEvent,
+										caseDataDto,
+										I18nProperties.getString(Strings.messageEventParticipationUnlinked));
 								reload();
 							}
 						});
@@ -105,7 +105,7 @@ public class EventList extends PaginationList<EventIndexDto> {
 		addUnlinkEventListener = (Integer i, EventListEntry listEntry) -> {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT)) {
 				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
-					EventDto selectedEvent = FacadeProvider.getEventFacade().getEventByUuid(listEntry.getEvent().getUuid());
+					EventDto selectedEvent = FacadeProvider.getEventFacade().getEventByUuid(listEntry.getEvent().getUuid(), false);
 					ControllerProvider.getEventController()
 						.removeSuperordinateEvent(selectedEvent, false, I18nProperties.getString(Strings.messageEventSubordinateEventUnlinked));
 					reload();

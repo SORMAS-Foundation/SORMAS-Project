@@ -32,24 +32,24 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.HasUuid;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityIndexDto;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityIndexDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
-import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
-import de.symeda.sormas.api.region.AreaDto;
-import de.symeda.sormas.api.region.CommunityDto;
-import de.symeda.sormas.api.region.ContinentDto;
-import de.symeda.sormas.api.region.CountryDto;
-import de.symeda.sormas.api.region.CountryIndexDto;
-import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.DistrictIndexDto;
-import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.region.RegionIndexDto;
-import de.symeda.sormas.api.region.SubcontinentDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
+import de.symeda.sormas.api.infrastructure.area.AreaDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.infrastructure.continent.ContinentDto;
+import de.symeda.sormas.api.infrastructure.country.CountryDto;
+import de.symeda.sormas.api.infrastructure.country.CountryIndexDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictIndexDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.region.RegionIndexDto;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -82,7 +82,7 @@ public class InfrastructureController {
 	}
 
 	public void editArea(String uuid) {
-		AreaDto area = FacadeProvider.getAreaFacade().getAreaByUuid(uuid);
+		AreaDto area = FacadeProvider.getAreaFacade().getByUuid(uuid);
 		CommitDiscardWrapperComponent<AreaEditForm> editComponent = getAreaEditComponent(area);
 		String caption = I18nProperties.getString(Strings.edit) + " " + area.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
@@ -118,7 +118,7 @@ public class InfrastructureController {
 	}
 
 	public void editCountry(String uuid) {
-		CountryDto country = FacadeProvider.getCountryFacade().getCountryByUuid(uuid);
+		CountryDto country = FacadeProvider.getCountryFacade().getByUuid(uuid);
 		CommitDiscardWrapperComponent<CountryEditForm> editComponent = getCountryEditComponent(country);
 		String caption = I18nProperties.getString(Strings.headingEditCountry);
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
@@ -130,7 +130,7 @@ public class InfrastructureController {
 	}
 
 	public void editRegion(String uuid) {
-		RegionDto region = FacadeProvider.getRegionFacade().getRegionByUuid(uuid);
+		RegionDto region = FacadeProvider.getRegionFacade().getByUuid(uuid);
 		CommitDiscardWrapperComponent<RegionEditForm> editComponent = getRegionEditComponent(region);
 		String caption = I18nProperties.getString(Strings.edit) + " " + region.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
@@ -142,7 +142,7 @@ public class InfrastructureController {
 	}
 
 	public void editDistrict(String uuid) {
-		DistrictDto district = FacadeProvider.getDistrictFacade().getDistrictByUuid(uuid);
+		DistrictDto district = FacadeProvider.getDistrictFacade().getByUuid(uuid);
 		CommitDiscardWrapperComponent<DistrictEditForm> editComponent = getDistrictEditComponent(district);
 		String caption = I18nProperties.getString(Strings.edit) + " " + district.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
@@ -192,7 +192,7 @@ public class InfrastructureController {
 
 			@Override
 			public void onCommit() {
-				FacadeProvider.getFacilityFacade().saveFacility(editForm.getValue());
+				FacadeProvider.getFacilityFacade().save(editForm.getValue());
 				Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 				SormasUI.get().getNavigator().navigateTo(FacilitiesView.VIEW_NAME);
 			}
@@ -225,7 +225,7 @@ public class InfrastructureController {
 			editForm.getFieldGroup());
 
 		editComponent.addCommitListener(() -> {
-			FacadeProvider.getAreaFacade().saveArea(editForm.getValue());
+			FacadeProvider.getAreaFacade().save(editForm.getValue());
 			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 			SormasUI.get().getNavigator().navigateTo(AreasView.VIEW_NAME);
 		});
@@ -307,7 +307,7 @@ public class InfrastructureController {
 			editForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
-			FacadeProvider.getCountryFacade().saveCountry(editForm.getValue());
+			FacadeProvider.getCountryFacade().save(editForm.getValue());
 			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 			SormasUI.get().getNavigator().navigateTo(CountriesView.VIEW_NAME);
 		});
@@ -335,7 +335,7 @@ public class InfrastructureController {
 			editForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
-			FacadeProvider.getRegionFacade().saveRegion(editForm.getValue());
+			FacadeProvider.getRegionFacade().save(editForm.getValue());
 			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 			SormasUI.get().getNavigator().navigateTo(RegionsView.VIEW_NAME);
 		});
@@ -366,7 +366,7 @@ public class InfrastructureController {
 
 			@Override
 			public void onCommit() {
-				FacadeProvider.getDistrictFacade().saveDistrict(editForm.getValue());
+				FacadeProvider.getDistrictFacade().save(editForm.getValue());
 				Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 				SormasUI.get().getNavigator().navigateTo(DistrictsView.VIEW_NAME);
 			}
@@ -398,7 +398,7 @@ public class InfrastructureController {
 
 			@Override
 			public void onCommit() {
-				FacadeProvider.getCommunityFacade().saveCommunity(editForm.getValue());
+				FacadeProvider.getCommunityFacade().save(editForm.getValue());
 				Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 				SormasUI.get().getNavigator().navigateTo(CommunitiesView.VIEW_NAME);
 			}
@@ -634,7 +634,7 @@ public class InfrastructureController {
 						if (archive) {
 							FacadeProvider.getAreaFacade().archive(entityUuid);
 						} else {
-							FacadeProvider.getAreaFacade().deArchive(entityUuid);
+							FacadeProvider.getAreaFacade().dearchive(entityUuid);
 						}
 						SormasUI.get().getNavigator().navigateTo(AreasView.VIEW_NAME);
 						break;
@@ -849,7 +849,7 @@ public class InfrastructureController {
 							if (archive) {
 								FacadeProvider.getAreaFacade().archive(selectedRow.getUuid());
 							} else {
-								FacadeProvider.getAreaFacade().deArchive(selectedRow.getUuid());
+								FacadeProvider.getAreaFacade().dearchive(selectedRow.getUuid());
 							}
 						}
 						break;

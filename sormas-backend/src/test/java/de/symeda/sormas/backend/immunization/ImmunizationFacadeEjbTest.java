@@ -17,20 +17,27 @@ package de.symeda.sormas.backend.immunization;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
+import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -157,6 +164,103 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testImmunizationCreatedByDistrictUserIsVisibleToThatUser() {
+		loginWith(districtUser1);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+
+		final ImmunizationDto immunization = creator.createImmunization(
+			Disease.ANTHRAX,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
+
+		final Date yesterday = new DateTime(new Date()).minusDays(1).toDate();
+		final List<ImmunizationDto> allImmunizations = getImmunizationFacade().getAllAfter(yesterday);
+		assertEquals(1, allImmunizations.size());
+		final ImmunizationDto immunizationDto = allImmunizations.get(0);
+		assertEquals(immunization.getUuid(), immunizationDto.getUuid());
+		assertEquals(immunization.getImmunizationStatus(), immunizationDto.getImmunizationStatus());
+		assertEquals(immunization.getImmunizationManagementStatus(), immunizationDto.getImmunizationManagementStatus());
+		assertEquals(immunization.getMeansOfImmunization(), immunizationDto.getMeansOfImmunization());
+
+		final List<PersonDto> allPersonsAfter = getPersonFacade().getPersonsAfter(yesterday);
+		assertEquals(1, allPersonsAfter.size());
+		final PersonDto personDto = allPersonsAfter.get(0);
+
+		assertEquals(person.getUuid(), personDto.getUuid());
+		assertEquals("John", personDto.getFirstName());
+		assertEquals("Doe", personDto.getLastName());
+	}
+
+	@Test
+	public void testOverdueImmunizationsFilterEnabled() {
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+		final Date now = new Date();
+		final ImmunizationDto ongoingImmunizationThatEndedYesterday =
+			createOngoingImmunizationWithEndDate(person, new DateTime(now).minusDays(1).toDate());
+		createOngoingImmunizationWithEndDate(person, now);
+
+		final ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
+		immunizationCriteria.setOnlyPersonsWithOverdueImmunization(true);
+		final List<ImmunizationIndexDto> onlyOverdueImmunizations = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
+		Assert.assertEquals(1, onlyOverdueImmunizations.size());
+		Assert.assertEquals(ongoingImmunizationThatEndedYesterday.getUuid(), onlyOverdueImmunizations.get(0).getUuid());
+	}
+
+	@Test
+	public void testOverdueImmunizationsFilterEnabledAtStartOfDay() {
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+		final Date startOfDay = DateHelper.getStartOfDay(new Date());
+		final ImmunizationDto ongoingImmunizationThatEndedYesterday =
+			createOngoingImmunizationWithEndDate(person, new DateTime(startOfDay).minusDays(1).toDate());
+		createOngoingImmunizationWithEndDate(person, startOfDay);
+
+		final ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
+		immunizationCriteria.setOnlyPersonsWithOverdueImmunization(true);
+		final List<ImmunizationIndexDto> onlyOverdueImmunizations = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
+		Assert.assertEquals(1, onlyOverdueImmunizations.size());
+		Assert.assertEquals(ongoingImmunizationThatEndedYesterday.getUuid(), onlyOverdueImmunizations.get(0).getUuid());
+	}
+
+	@Test
+	public void testOverdueImmunizationsFilterDisabled() {
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+		final Date now = new Date();
+		createOngoingImmunizationWithEndDate(person, new DateTime(now).minusDays(1).toDate());
+		createOngoingImmunizationWithEndDate(person, now);
+
+		final ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
+		immunizationCriteria.setOnlyPersonsWithOverdueImmunization(false);
+		final List<ImmunizationIndexDto> allImmunizations = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
+		Assert.assertEquals(2, allImmunizations.size());
+	}
+
+	private ImmunizationDto createOngoingImmunizationWithEndDate(PersonDto person, Date endDate) {
+		return creator.createImmunization(
+			Disease.CORONAVIRUS,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.ONGOING,
+			rdcf2,
+			new DateTime(new Date()).minusDays(10).toDate(),
+			endDate,
+			null,
+			new DateTime(new Date()).plusDays(1).toDate());
+	}
+
+	@Test
 	public void testImmunizationAutomation() {
 		loginWith(nationalUser);
 
@@ -195,6 +299,8 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf2,
 			new DateTime(new Date()).minusDays(10).toDate(),
+			null,
+			null,
 			new DateTime(new Date()).plusDays(1).toDate());
 		ImmunizationDto acquiredImmunizationNoLongerValid = creator.createImmunization(
 			Disease.DENGUE,
@@ -205,6 +311,8 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf2,
 			new DateTime(new Date()).minusDays(10).toDate(),
+			null,
+			null,
 			new DateTime(new Date()).minusDays(2).toDate());
 
 		// immunizations before status automation update
@@ -233,4 +341,217 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			ImmunizationStatus.EXPIRED,
 			getImmunizationFacade().getByUuid(acquiredImmunizationNoLongerValid.getUuid()).getImmunizationStatus());
 	}
+
+	@Test
+	public void testSimilarImmunizationsForNonExistingRange() {
+		loginWith(nationalUser);
+		final PersonDto person = creator.createPerson("John", "Doe");
+		final Date now = new Date();
+		createImmunizationWithDateRange(person, null, null);
+
+		assertSimilarImmunizationsSize(1, person, now, null);
+		assertSimilarImmunizationsSize(1, person, now, new DateTime().plusDays(5).toDate());
+		assertSimilarImmunizationsSize(1, person, new DateTime().minusDays(10).toDate(), new DateTime().minusDays(5).toDate());
+		assertSimilarImmunizationsSize(1, person, new DateTime().minusDays(10).toDate(), null);
+		assertSimilarImmunizationsSize(1, person, new DateTime().minusDays(30).toDate(), null);
+		assertSimilarImmunizationsSize(1, person, null, new DateTime().minusDays(10).toDate());
+		assertSimilarImmunizationsSize(1, person, null, new DateTime().minusDays(30).toDate());
+		assertSimilarImmunizationsSize(1, person, new DateTime().plusDays(1).toDate(), null);
+		assertSimilarImmunizationsSize(1, person, new DateTime().plusDays(1).toDate(), new DateTime().plusDays(100).toDate());
+	}
+
+	@Test
+	public void testSimilarImmunizationsForExistingRange() {
+		loginWith(nationalUser);
+		final PersonDto person = creator.createPerson("John", "Doe");
+		final Date now = new Date();
+		createImmunizationWithDateRange(person, new DateTime().minusDays(20).toDate(), now);
+
+		assertSimilarImmunizationsSize(1, person, now, null);
+		assertSimilarImmunizationsSize(1, person, now, new DateTime().plusDays(5).toDate());
+		assertSimilarImmunizationsSize(1, person, new DateTime().minusDays(10).toDate(), new DateTime().minusDays(5).toDate());
+		assertSimilarImmunizationsSize(1, person, new DateTime().minusDays(10).toDate(), null);
+		assertSimilarImmunizationsSize(1, person, new DateTime().minusDays(30).toDate(), null);
+		assertSimilarImmunizationsSize(1, person, null, new DateTime().minusDays(10).toDate());
+		assertSimilarImmunizationsSize(0, person, null, new DateTime().minusDays(30).toDate());
+		assertSimilarImmunizationsSize(0, person, new DateTime().plusDays(1).toDate(), null);
+		assertSimilarImmunizationsSize(0, person, new DateTime().plusDays(1).toDate(), new DateTime().plusDays(100).toDate());
+	}
+
+	@Test
+	public void testSimilarImmunizationsForExistingStartDate() {
+		loginWith(nationalUser);
+		final PersonDto person = creator.createPerson("John", "Doe");
+		final Date now = new Date();
+		createImmunizationWithDateRange(person, new DateTime().minusDays(20).toDate(), null);
+
+		assertSimilarImmunizationsSize(1, person, now, null);
+		assertSimilarImmunizationsSize(1, person, now, new DateTime().plusDays(5).toDate());
+		assertSimilarImmunizationsSize(1, person, new DateTime().minusDays(10).toDate(), new DateTime().minusDays(5).toDate());
+		assertSimilarImmunizationsSize(1, person, new DateTime().minusDays(10).toDate(), null);
+		assertSimilarImmunizationsSize(1, person, new DateTime().minusDays(30).toDate(), null);
+		assertSimilarImmunizationsSize(1, person, null, new DateTime().minusDays(10).toDate());
+		assertSimilarImmunizationsSize(0, person, null, new DateTime().minusDays(30).toDate());
+		assertSimilarImmunizationsSize(1, person, new DateTime().plusDays(1).toDate(), null);
+		assertSimilarImmunizationsSize(1, person, new DateTime().plusDays(1).toDate(), new DateTime().plusDays(100).toDate());
+	}
+
+	@Test
+	public void testSimilarImmunizationsForExistingEndDate() {
+
+		loginWith(nationalUser);
+		final PersonDto person = creator.createPerson("John", "Doe");
+		final Date now = new Date();
+		createImmunizationWithDateRange(person, null, now);
+
+		assertSimilarImmunizationsSize(1, person, now, null);
+		assertSimilarImmunizationsSize(1, person, now, new DateTime().plusDays(5).toDate());
+		assertSimilarImmunizationsSize(1, person, new DateTime().minusDays(10).toDate(), new DateTime().minusDays(5).toDate());
+		assertSimilarImmunizationsSize(1, person, new DateTime().minusDays(10).toDate(), null);
+		assertSimilarImmunizationsSize(1, person, new DateTime().minusDays(30).toDate(), null);
+		assertSimilarImmunizationsSize(1, person, null, new DateTime().minusDays(10).toDate());
+		assertSimilarImmunizationsSize(1, person, null, new DateTime().minusDays(30).toDate());
+		assertSimilarImmunizationsSize(0, person, new DateTime().plusDays(1).toDate(), null);
+		assertSimilarImmunizationsSize(0, person, new DateTime().plusDays(1).toDate(), new DateTime().plusDays(100).toDate());
+	}
+
+	private void createImmunizationWithDateRange(PersonDto person, Date startDate, Date endDate) {
+		final ImmunizationDto immunization = creator.createImmunizationDto(
+			Disease.ANTHRAX,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
+		immunization.setStartDate(startDate);
+		immunization.setEndDate(endDate);
+		getImmunizationFacade().save(immunization);
+	}
+
+	private void assertSimilarImmunizationsSize(int size, PersonDto person, Date startDate, Date endDate) {
+		final ImmunizationSimilarityCriteria criteria = new ImmunizationSimilarityCriteria.Builder().withDisease(Disease.ANTHRAX)
+			.withMeansOfImmunization(MeansOfImmunization.VACCINATION)
+			.withPerson(person.getUuid())
+			.withStartDate(startDate)
+			.withEndDate(endDate)
+			.build();
+		final List<ImmunizationDto> similarImmunizations = getImmunizationFacade().getSimilarImmunizations(criteria);
+		assertEquals(size, similarImmunizations.size());
+	}
+
+	@Test
+	public void testUpdateImmunizationStatusBasedOnVaccinationsOngoing() {
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+
+		final ImmunizationDto immunization = creator.createImmunizationDto(
+			Disease.DENGUE,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.PENDING,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.SCHEDULED,
+			rdcf1);
+
+		immunization.setNumberOfDoses(2);
+		immunization.setStartDate(DateHelper.subtractDays(new Date(), 1));
+		immunization.setVaccinations(
+			Arrays.asList(creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto())));
+		getImmunizationFacade().save(immunization);
+
+		final ImmunizationDto immWithOneVac = getImmunizationFacade().getByUuid(immunization.getUuid());
+		Assert.assertEquals(1, immWithOneVac.getVaccinations().size());
+		Assert.assertEquals(ImmunizationManagementStatus.ONGOING, immWithOneVac.getImmunizationManagementStatus());
+		Assert.assertEquals(ImmunizationStatus.PENDING, immWithOneVac.getImmunizationStatus());
+	}
+
+	@Test
+	public void testUpdateImmunizationStatusBasedOnVaccinationsCompleted() {
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+
+		final ImmunizationDto immunization = creator.createImmunizationDto(
+			Disease.DENGUE,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.PENDING,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.SCHEDULED,
+			rdcf1);
+
+		immunization.setNumberOfDoses(2);
+		immunization.setStartDate(DateHelper.subtractDays(new Date(), 1));
+		immunization.setVaccinations(
+			Arrays.asList(
+				creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto()),
+				creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto())));
+		getImmunizationFacade().save(immunization);
+
+		final ImmunizationDto immWithTwoVac = getImmunizationFacade().getByUuid(immunization.getUuid());
+		Assert.assertEquals(2, immWithTwoVac.getVaccinations().size());
+		Assert.assertEquals(ImmunizationManagementStatus.COMPLETED, immWithTwoVac.getImmunizationManagementStatus());
+		Assert.assertEquals(ImmunizationStatus.ACQUIRED, immWithTwoVac.getImmunizationStatus());
+	}
+
+	@Test
+	public void testNoImmunizationStatusUpdateWhenExpired() {
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+
+		final ImmunizationDto immunization = creator.createImmunizationDto(
+			Disease.DENGUE,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.EXPIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.SCHEDULED,
+			rdcf1);
+
+		immunization.setNumberOfDoses(2);
+		immunization.setStartDate(DateHelper.subtractDays(new Date(), 1));
+		immunization.setVaccinations(
+			Arrays.asList(
+				creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto()),
+				creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto())));
+		getImmunizationFacade().save(immunization);
+
+		final ImmunizationDto immWithTwoVac = getImmunizationFacade().getByUuid(immunization.getUuid());
+		Assert.assertEquals(2, immWithTwoVac.getVaccinations().size());
+		Assert.assertEquals(ImmunizationManagementStatus.SCHEDULED, immWithTwoVac.getImmunizationManagementStatus());
+		Assert.assertEquals(ImmunizationStatus.EXPIRED, immWithTwoVac.getImmunizationStatus());
+	}
+
+	@Test
+	public void testNoImmunizationStatusUpdateWhenNotAcquired() {
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+
+		final ImmunizationDto immunization = creator.createImmunizationDto(
+			Disease.DENGUE,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.NOT_ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.SCHEDULED,
+			rdcf1);
+
+		immunization.setNumberOfDoses(2);
+		immunization.setStartDate(DateHelper.subtractDays(new Date(), 1));
+		immunization.setVaccinations(
+			Arrays.asList(
+				creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto()),
+				creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto())));
+		getImmunizationFacade().save(immunization);
+
+		final ImmunizationDto immWithTwoVac = getImmunizationFacade().getByUuid(immunization.getUuid());
+		Assert.assertEquals(2, immWithTwoVac.getVaccinations().size());
+		Assert.assertEquals(ImmunizationManagementStatus.SCHEDULED, immWithTwoVac.getImmunizationManagementStatus());
+		Assert.assertEquals(ImmunizationStatus.NOT_ACQUIRED, immWithTwoVac.getImmunizationStatus());
+	}
+
 }

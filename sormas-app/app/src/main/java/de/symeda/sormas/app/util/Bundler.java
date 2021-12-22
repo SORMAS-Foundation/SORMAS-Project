@@ -26,6 +26,7 @@ public class Bundler {
 	private static final String ROOT_UUID = "rootUuid";
 	private static final String LIST_FILTER = "listFilter";
 	private static final String CASE_UUID = "caseUuid";
+	private static final String IMMUNIZATION_UUID = "immunizationUuid";
 	private static final String CONTACT_UUID = "contactUuid";
 	private static final String EVENT_UUID = "eventUuid";
 	private static final String CAMPAIGN_UUID = "campaignUuid";
@@ -136,6 +137,18 @@ public class Bundler {
 	public String getCaseUuid() {
 		if (bundle.containsKey(CASE_UUID)) {
 			return bundle.getString(CASE_UUID);
+		}
+		return null;
+	}
+
+	public Bundler setImmunizationUuid(String recordUuid) {
+		bundle.putString(IMMUNIZATION_UUID, recordUuid);
+		return this;
+	}
+
+	public String getImmunizationUuid() {
+		if (bundle.containsKey(IMMUNIZATION_UUID)) {
+			return bundle.getString(IMMUNIZATION_UUID);
 		}
 		return null;
 	}

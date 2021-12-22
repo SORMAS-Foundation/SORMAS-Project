@@ -51,6 +51,13 @@ public class UserReferenceDto extends ReferenceDto {
 		this.lastName = lastName;
 	}
 
+	protected UserReferenceDto(String uuid, String firstName, String lastName, String caption) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		setUuid(uuid);
+		setCaption(caption);
+	}
+
 	public static String buildCaption(String firstName, String lastName, Set<UserRole> userRoles) {
 
 		StringBuilder result = new StringBuilder();

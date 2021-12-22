@@ -45,10 +45,7 @@ public class ExportConfigurationsLayout extends VerticalLayout {
 	private ExportConfigurationsGrid grid;
 	private ExportConfigurationsGrid gridSharedExportsToPublic;
 
-	public ExportConfigurationsLayout(
-		ExportType exportType,
-		List<ExportPropertyMetaInfo> availableProperties,
-		Runnable closeCallback) {
+	public ExportConfigurationsLayout(ExportType exportType, List<ExportPropertyMetaInfo> availableProperties, Runnable closeCallback) {
 
 		lblDescription = new Label(I18nProperties.getString(Strings.infoCustomExport));
 		lblDescription.setWidth(100, Unit.PERCENTAGE);
@@ -57,7 +54,11 @@ public class ExportConfigurationsLayout extends VerticalLayout {
 		btnNewExportConfiguration = ButtonHelper.createIconButton(Captions.exportNewExportConfiguration, VaadinIcons.PLUS, e -> {
 			ExportConfigurationDto newConfig = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference(), exportType);
 			ControllerProvider.getCustomExportController()
-				.openEditExportConfigurationWindow(grid, newConfig, availableProperties);
+				.openEditExportConfigurationWindow(
+					grid,
+					newConfig,
+					availableProperties,
+					I18nProperties.getCaption(Captions.exportNewExportConfiguration));
 		}, ValoTheme.BUTTON_PRIMARY);
 		addComponent(btnNewExportConfiguration);
 		setComponentAlignment(btnNewExportConfiguration, Alignment.MIDDLE_RIGHT);

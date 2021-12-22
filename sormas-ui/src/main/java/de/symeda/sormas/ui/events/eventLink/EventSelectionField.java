@@ -24,12 +24,10 @@ import java.util.Date;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -40,7 +38,6 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventCriteriaDateType;
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventHelper;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -106,7 +103,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		initializeGrid();
 	}
 
-	public EventSelectionField(EventGroupReferenceDto eventGroupReference, Set<String> excludedUuids) {
+	public EventSelectionField(Set<String> excludedUuids) {
 		this.searchField = new TextField();
 		this.infoPickOrCreateEvent = I18nProperties.getString(Strings.infoPickOrCreateEventGroupForEvent);
 		this.allowCreation = false;
@@ -129,9 +126,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		}
 		rbSelectEvent = new RadioButtonGroup<>();
 		rbSelectEvent.setItems(SELECT_EVENT);
-		rbSelectEvent.setItemCaptionGenerator((item) -> {
-			return I18nProperties.getCaption(Captions.eventSelect);
-		});
+		rbSelectEvent.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.eventSelect));
 		CssStyles.style(rbSelectEvent, CssStyles.VSPACE_NONE);
 		rbSelectEvent.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
@@ -229,8 +224,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 	public EventIndexDto getValue() {
 
 		if (eventGrid != null) {
-			EventIndexDto value = eventGrid.getSelectedItems().stream().findFirst().orElse(null);
-			return value;
+			return eventGrid.getSelectedItems().stream().findFirst().orElse(null);
 		}
 
 		return null;
@@ -292,25 +286,8 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 			if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 				applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
 				criteria.eventDateBetween(fromDate, toDate, EventCriteriaDateType.EVENT_DATE, dateFilterOption);
-
 			} else {
-				if (dateFilterOption == DateFilterOption.DATE) {
-					Notification notification = new Notification(
-						I18nProperties.getString(Strings.headingMissingDateFilter),
-						I18nProperties.getString(Strings.messageMissingDateFilter),
-						Notification.Type.WARNING_MESSAGE,
-						false);
-					notification.setDelayMsec(-1);
-					notification.show(Page.getCurrent());
-				} else {
-					Notification notification = new Notification(
-						I18nProperties.getString(Strings.headingMissingEpiWeekFilter),
-						I18nProperties.getString(Strings.messageMissingEpiWeekFilter),
-						Notification.Type.WARNING_MESSAGE,
-						false);
-					notification.setDelayMsec(-1);
-					notification.show(Page.getCurrent());
-				}
+				weekAndDateFilter.setNotificationsForMissingFilters();
 			}
 			eventGrid.setCriteria(criteria);
 			eventGrid.getSelectedItems();

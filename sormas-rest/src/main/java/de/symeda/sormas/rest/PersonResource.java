@@ -107,7 +107,7 @@ public class PersonResource extends EntityDtoResource {
 
 	@POST
 	@Path("/externalData")
-	public Response updateExternalData(List<ExternalDataDto> externalData) {
+	public Response updateExternalData(@Valid List<ExternalDataDto> externalData) {
 		try {
 			FacadeProvider.getPersonFacade().updateExternalData(externalData);
 			return Response.status(Response.Status.OK).build();
@@ -115,5 +115,4 @@ public class PersonResource extends EntityDtoResource {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
 	}
-
 }

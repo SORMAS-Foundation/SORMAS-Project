@@ -2,8 +2,12 @@ package de.symeda.sormas.api.systemevents;
 
 import java.util.Date;
 
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class SystemEventDto extends EntityDto {
 
@@ -11,6 +15,7 @@ public class SystemEventDto extends EntityDto {
 	private Date startDate;
 	private Date endDate;
 	private SystemEventStatus status;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String additionalInfo;
 
 	public SystemEventType getType() {
@@ -60,4 +65,14 @@ public class SystemEventDto extends EntityDto {
 		return systemEvent;
 	}
 
+	@Override
+	public String toString() {
+		return "SystemEventDto{" +
+				"type=" + type +
+				", startDate=" + startDate +
+				", endDate=" + endDate +
+				", status=" + status +
+				", additionalInfo='" + additionalInfo + '\'' +
+				'}';
+	}
 }

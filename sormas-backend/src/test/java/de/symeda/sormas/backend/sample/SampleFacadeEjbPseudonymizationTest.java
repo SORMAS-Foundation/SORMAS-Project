@@ -38,7 +38,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -52,7 +52,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
@@ -62,6 +62,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	private UserDto user1;
 	private UserDto user2;
 	private UserDto labUser;
+	private UserDto observerUser;
 
 	@Override
 	public void init() {
@@ -78,6 +79,8 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			.createUser(null, null, null, "Lab", "Off", UserRole.LAB_USER);
 		labUser.setLaboratory(rdcf1.facility);
 		getUserFacade().saveUser(labUser);
+
+		observerUser = creator.createUser(null, null, null, null, "National", "Observer", UserRole.NATIONAL_OBSERVER);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
@@ -350,9 +353,11 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testUpdateSampleOutsideJurisdiction() {
+	public void testUpdatePseudonymizedSample() {
 		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
 		SampleDto sample = createCaseSample(caze, user1);
+
+		loginWith(observerUser);
 
 		sample.setReportLat(null);
 		sample.setReportLon(null);

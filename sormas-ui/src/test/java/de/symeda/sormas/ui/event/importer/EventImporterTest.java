@@ -7,8 +7,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -19,10 +21,14 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.opencsv.exceptions.CsvValidationException;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -79,19 +85,20 @@ public class EventImporterTest extends AbstractBeanTest {
 		assertEquals(3, getPersonFacade().count(null));
 
 		// Similarity: pick
+		List<SimilarPersonDto> persons = FacadeProvider.getPersonFacade().getSimilarPersonDtos(user.toReference(), new PersonSimilarityCriteria());
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_event_import_test_similarities.csv").toURI());
 		eventImporter = new EventImporterExtension(csvFile, true, user) {
 
 			@Override
 			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<PersonImportSimilarityResult> resultConsumer) {
-				Optional<SimilarPersonDto> optionalPerson = getPersonFacade().getSimilarPersonsByUuids(getPersonFacade().getAllUuids())
-					.stream()
-					.filter(
-						person -> Objects.equals(person.getFirstName(), newPerson.getFirstName())
-							&& Objects.equals(person.getLastName(), newPerson.getLastName()))
-					.findFirst();
-				assertTrue(optionalPerson.isPresent());
-				resultConsumer.accept(new PersonImportSimilarityResult(optionalPerson.get(), ImportSimilarityResultOption.PICK));
+				List<SimilarPersonDto> entries = new ArrayList<>();
+				for (SimilarPersonDto person : persons) {
+					if (PersonHelper
+						.areNamesSimilar(newPerson.getFirstName(), newPerson.getLastName(), person.getFirstName(), person.getLastName(), null)) {
+						entries.add(person);
+					}
+				}
+				resultConsumer.accept(new PersonImportSimilarityResult(entries.get(0), ImportSimilarityResultOption.PICK));
 			}
 		};
 		importResult = eventImporter.runImport();
@@ -144,8 +151,8 @@ public class EventImporterTest extends AbstractBeanTest {
 		private StringBuilder errors = new StringBuilder("");
 		private StringBuilderWriter writer = new StringBuilderWriter(errors);
 
-		private EventImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
-			super(inputFile, hasEntityClassRow, currentUser);
+		private EventImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) throws IOException {
+			super(inputFile, hasEntityClassRow, currentUser, ValueSeparator.DEFAULT);
 		}
 
 		protected void handlePersonSimilarity(PersonDto newPerson, Consumer<PersonImportSimilarityResult> resultConsumer) {
@@ -154,6 +161,11 @@ public class EventImporterTest extends AbstractBeanTest {
 
 		protected Writer createErrorReportWriter() {
 			return writer;
+		}
+
+		@Override
+		protected Path getErrorReportFolderPath() {
+			return Paths.get(System.getProperty("java.io.tmpdir"));
 		}
 	}
 }

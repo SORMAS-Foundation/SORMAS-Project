@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -80,7 +81,7 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 	}
 
 	@Override
-	public UserRoleConfigDto saveUserRoleConfig(UserRoleConfigDto dto) {
+	public UserRoleConfigDto saveUserRoleConfig(@Valid UserRoleConfigDto dto) {
 
 		UserRoleConfig entity = fromDto(dto, true);
 		userRoleConfigService.ensurePersisted(entity);

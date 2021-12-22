@@ -1,21 +1,21 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.ui.samples.sampleLink;
+
+import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
@@ -25,6 +25,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -35,6 +37,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -43,23 +46,31 @@ public class SampleListComponent extends VerticalLayout {
 
 	private SampleList list;
 
-	public SampleListComponent(ContactReferenceDto contactRef) {
+	public SampleListComponent(ContactReferenceDto contactRef, Disease disease, AbstractDetailView<? extends ReferenceDto> view) {
 		createSampleListComponent(
 			new SampleList(contactRef),
-			e -> ControllerProvider.getSampleController().create(contactRef, SormasUI::refreshView));
+			e -> ControllerProvider.getSampleController().create(contactRef, disease, SormasUI::refreshView),
+			view);
 	}
 
-	public SampleListComponent(CaseReferenceDto caseRef) {
-		createSampleListComponent(new SampleList(caseRef), e -> ControllerProvider.getSampleController().create(caseRef, SormasUI::refreshView));
+	public SampleListComponent(CaseReferenceDto caseRef, Disease disease, AbstractDetailView<? extends ReferenceDto> view) {
+		createSampleListComponent(
+			new SampleList(caseRef),
+			e -> ControllerProvider.getSampleController().create(caseRef, disease, SormasUI::refreshView),
+			view);
 	}
 
-	public SampleListComponent(EventParticipantReferenceDto eventParticipantRef) {
+	public SampleListComponent(EventParticipantReferenceDto eventParticipantRef, Disease disease, AbstractDetailView<? extends ReferenceDto> view) {
 		createSampleListComponent(
 			new SampleList(eventParticipantRef),
-			e -> ControllerProvider.getSampleController().create(eventParticipantRef, SormasUI::refreshView));
+			e -> ControllerProvider.getSampleController().create(eventParticipantRef, disease, SormasUI::refreshView),
+			view);
 	}
 
-	private void createSampleListComponent(SampleList sampleList, Button.ClickListener clickListener) {
+	private void createSampleListComponent(
+		SampleList sampleList,
+		Consumer<Button.ClickEvent> clickListener,
+		AbstractDetailView<? extends ReferenceDto> view) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -82,7 +93,7 @@ public class SampleListComponent extends VerticalLayout {
 			Button createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.sampleNewSample));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(clickListener);
+			createButton.addClickListener(e -> view.showNavigationConfirmPopupIfDirty(() -> clickListener.accept(e)));
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 		}

@@ -47,6 +47,7 @@ public final class MockDataGenerator {
 		if (CollectionUtils.isNotEmpty(userRoles)) {
 			user.setUserRoles(new HashSet<>(userRoles));
 		}
+		user.updateJurisdictionLevel();
 		user.setUserName(UserHelper.getSuggestedUsername(user.getFirstName(), user.getLastName()));
 		user.setSeed(PasswordHelper.createPass(16));
 		user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));

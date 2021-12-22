@@ -28,7 +28,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -37,9 +39,11 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.location.AreaType;
+import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonExportDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserDto;
@@ -232,26 +236,36 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetContactPersonOutsideJurisdiction() {
-		loginWith(districtUser2);
-
+		loginWith(districtUser1);
 		person = createPerson();
 		ContactDto contact =
 			creator.createContact(districtUser1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf1);
+
+		loginWith(districtUser2);
 		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
 
+		loginWith(districtUser1);
 		CaseDataDto caze = creator.createCase(districtUser1.toReference(), creator.createPerson().toReference(), rdcf2);
 		contact.setCaze(caze.toReference());
 		contact = getContactFacade().saveContact(contact);
+
+		loginWith(districtUser2);
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 
+		loginWith(districtUser1);
 		contact.setRegion(rdcf2.region);
 		contact.setDistrict(rdcf2.district);
 		contact = getContactFacade().saveContact(contact);
+
+		loginWith(districtUser2);
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 
+		loginWith(districtUser1);
 		contact.setRegion(null);
 		contact.setDistrict(null);
 		contact = getContactFacade().saveContact(contact);
+
+		loginWith(districtUser2);
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
@@ -352,6 +366,29 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		assertNotPseudonymized(persons.stream().filter(p -> p.getUuid().equals(person.getUuid())).findFirst().get());
 		assertPseudonymised(persons.stream().filter(p -> p.getUuid().equals(person2.getUuid())).findFirst().get());
+	}
+
+	@Test
+	public void testPseudonymizeExportList() {
+		loginWith(districtUser2);
+
+		person = createPerson();
+		creator.createCase(districtUser1.toReference(), person.toReference(), rdcf2);
+
+		PersonDto person2 = createPerson();
+		//create readonly case with person2 --> person2 should be pseudonymized
+		CaseDataDto caze = creator.createCase(districtUser1.toReference(), person2.toReference(), rdcf1);
+		creator
+			.createContact(districtUser2.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+
+		List<PersonExportDto> exportList = getPersonFacade().getExportList(new PersonCriteria(), 0, 100);
+
+		PersonExportDto exportedPerson = exportList.stream().filter(p -> p.getUuid().equals(person.getUuid())).findFirst().get();
+		assertThat(exportedPerson.getFirstName(), is("James"));
+		assertThat(exportedPerson.getLastName(), is("Smith"));
+		assertThat(exportedPerson.getBirthdate().getDateOfBirthDD(), is(1));
+
+		Assert.assertEquals(Optional.empty(), exportList.stream().filter(p -> p.getUuid().equals(person2.getUuid())).findFirst());
 	}
 
 	private PersonDto createPerson() {

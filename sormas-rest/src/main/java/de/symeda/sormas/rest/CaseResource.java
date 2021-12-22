@@ -119,6 +119,14 @@ public class CaseResource extends EntityDtoResource {
 		return FacadeProvider.getCaseFacade().getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
+	/**
+	 * 
+	 * @param criteriaWithSorting
+	 *            - The criteria object inside criteriaWithSorting cannot be null. Use an empty criteria instead.
+	 * @param offset
+	 * @param size
+	 * @return
+	 */
 	@POST
 	@Path("/detailedIndexList")
 	public Page<CaseIndexDetailedDto> getIndexDetailedList(
@@ -137,7 +145,7 @@ public class CaseResource extends EntityDtoResource {
 
 	@POST
 	@Path("/externalData")
-	public Response updateExternalData(List<ExternalDataDto> externalData) {
+	public Response updateExternalData(@Valid List<ExternalDataDto> externalData) {
 		try {
 			FacadeProvider.getCaseFacade().updateExternalData(externalData);
 			return Response.status(Response.Status.OK).build();
@@ -162,6 +170,12 @@ public class CaseResource extends EntityDtoResource {
 	@Experimental
 	public CaseDataDto postUpdate(@PathParam("uuid") String uuid, JsonNode caseDataDtoJson) throws Exception {
 		return FacadeProvider.getCaseFacade().postUpdate(uuid, caseDataDtoJson);
+	}
+
+	@POST
+	@Path("/delete")
+	public List<String> delete(List<String> uuids) {
+		return FacadeProvider.getCaseFacade().deleteCases(uuids);
 	}
 
 }

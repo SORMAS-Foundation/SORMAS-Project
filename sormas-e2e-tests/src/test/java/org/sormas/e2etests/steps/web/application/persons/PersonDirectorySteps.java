@@ -24,6 +24,7 @@ import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
+import javax.inject.Named;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Person;
@@ -35,22 +36,45 @@ public class PersonDirectorySteps implements En {
   protected Person createdPerson;
 
   @Inject
-  public PersonDirectorySteps(WebDriverHelpers webDriverHelpers) {
+  public PersonDirectorySteps(
+      WebDriverHelpers webDriverHelpers, @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
 
+    /** Avoid using this method until Person's performance is fixed */
     Then(
         "I open the last created person",
         () -> {
-          createdPerson = EditContactPersonSteps.fullyDetailedPerson;
-          searchAfterPersonByMultipleOptions(createdPerson.getUuid());
-          openPersonFromResultsByUUID(createdPerson.getUuid());
+          String createdPersonUUID = EditContactPersonSteps.fullyDetailedPerson.getUuid();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+
+          webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, createdPersonUUID);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          By uuidLocator =
+              By.cssSelector(String.format(PERSON_RESULTS_UUID_LOCATOR, createdPersonUUID));
+          webDriverHelpers.isElementVisibleWithTimeout(uuidLocator, 150);
+          webDriverHelpers.clickOnWebElementBySelector(uuidLocator);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
+          webDriverHelpers.isElementVisibleWithTimeout(UUID_INPUT, 20);
+        });
+
+    When(
+        "I navigate to the last created Person page via URL",
+        () -> {
+          String createdPersonUUID = EditContactPersonSteps.fullyDetailedPerson.getUuid();
+          String LAST_CREATED_PERSON_PAGE_URL =
+              environmentUrl + "/sormas-ui/#!persons/data/" + createdPersonUUID;
+          webDriverHelpers.accessWebSite(LAST_CREATED_PERSON_PAGE_URL);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
         });
 
     When(
         "I search for specific person in person directory",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              SEARCH_PERSON_BY_FREE_TEXT, 90);
+              SEARCH_PERSON_BY_FREE_TEXT, 30);
           final String personUuid = EditEventSteps.person.getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(SEARCH_PERSON_BY_FREE_TEXT, personUuid);
         });
@@ -61,18 +85,5 @@ public class PersonDirectorySteps implements En {
           final String personUuid = EditEventSteps.person.getUuid();
           webDriverHelpers.clickOnWebElementBySelector(getByPersonUuid(personUuid));
         });
-  }
-
-  private void searchAfterPersonByMultipleOptions(String idPhoneNameEmail) {
-    webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
-    webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, idPhoneNameEmail);
-    webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-  }
-
-  private void openPersonFromResultsByUUID(String uuid) {
-    By uuidLocator = By.cssSelector(String.format(PERSON_RESULTS_UUID_LOCATOR, uuid));
-    webDriverHelpers.waitUntilIdentifiedElementIsPresent(uuidLocator);
-    webDriverHelpers.clickOnWebElementBySelector(uuidLocator);
-    webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
   }
 }

@@ -24,29 +24,30 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEventParticipant;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 
 @Entity
 @Audited
-public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
+public class EventParticipant extends CoreAdo implements SormasToSormasShareable {
 
 	private static final long serialVersionUID = -9006001699517297107L;
 
@@ -57,11 +58,12 @@ public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 	public static final String PERSON = "person";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	public static final String RESULTING_CASE = "resultingCase";
-	public static final String VACCINATION_INFO = "vaccinationInfo";
 	public static final String SAMPLES = "samples";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
-	public static final String SHARE_INFO_EVENT_PARTICIPANTS = "shareInfoEventParticipants";
+	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
 	private User reportingUser;
 	private Event event;
@@ -71,11 +73,12 @@ public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 	private Set<Sample> samples;
 	private Region region;
 	private District district;
-	private VaccinationInfo vaccinationInfo;
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
-	private List<ShareInfoEventParticipant> shareInfoEventParticipants = new ArrayList<>(0);
+	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
+	private VaccinationStatus vaccinationStatus;
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
+	@JoinColumn(nullable = false)
 	public User getReportingUser() {
 		return reportingUser;
 	}
@@ -84,7 +87,7 @@ public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 		this.reportingUser = reportingUser;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	public Event getEvent() {
 		return event;
 	}
@@ -93,7 +96,7 @@ public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 		this.event = event;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	@JoinColumn(nullable = false)
 	public Person getPerson() {
 		return person;
@@ -117,7 +120,7 @@ public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 		return getPerson().toString();
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	@JoinColumn
 	public Case getResultingCase() {
 		return resultingCase;
@@ -136,7 +139,7 @@ public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 		this.samples = samples;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	public Region getRegion() {
 		return region;
 	}
@@ -145,23 +148,13 @@ public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 		this.region = region;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	public District getDistrict() {
 		return district;
 	}
 
 	public void setDistrict(District district) {
 		this.district = district;
-	}
-
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@AuditedIgnore
-	public VaccinationInfo getVaccinationInfo() {
-		return vaccinationInfo;
-	}
-
-	public void setVaccinationInfo(VaccinationInfo vaccinationInfo) {
-		this.vaccinationInfo = vaccinationInfo;
 	}
 
 	@Override
@@ -176,12 +169,22 @@ public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
 
-	@OneToMany(mappedBy = ShareInfoEventParticipant.EVENT_PARTICIPANT, fetch = FetchType.LAZY)
-	public List<ShareInfoEventParticipant> getShareInfoEventParticipants() {
-		return shareInfoEventParticipants;
+	@OneToMany(mappedBy = SormasToSormasShareInfo.EVENT_PARTICIPANT, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
+		return sormasToSormasShares;
 	}
 
-	public void setShareInfoEventParticipants(List<ShareInfoEventParticipant> shareInfoEventParticipants) {
-		this.shareInfoEventParticipants = shareInfoEventParticipants;
+	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
+		this.sormasToSormasShares = sormasToSormasShares;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
+	}
+
+	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
+		this.vaccinationStatus = vaccinationStatus;
 	}
 }

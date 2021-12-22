@@ -8,28 +8,29 @@ import android.view.View;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.app.component.controls.ControlDateField;
+import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
 import de.symeda.sormas.app.util.ResultCallback;
 
 public class ValidationHelper {
 
-	public static void initDateIntervalValidator(ControlDateField dateFromControl, ControlDateField dateUntilControl) {
+	public static void initDateIntervalValidator(ControlPropertyEditField<Date> dateFromControl, ControlPropertyEditField<Date> dateUntilControl) {
 		initDateIntervalValidator(dateFromControl, dateUntilControl, true);
 	}
 
 	public static void initDateIntervalValidator(
-		ControlDateField dateFromControl,
-		ControlDateField dateUntilControl,
+		ControlPropertyEditField<Date> dateFromControl,
+		ControlPropertyEditField<Date> dateUntilControl,
 		boolean doNotSetForHiddenFields) {
 		if (doNotSetForHiddenFields && (dateFromControl.getVisibility() == View.GONE || dateUntilControl.getVisibility() == View.GONE)) {
 			return;
 		}
 
 		ResultCallback<Boolean> dateFromUntilCallback = () -> {
-			Date dateFromValue = dateFromControl.getValue();
-			Date dateUntilValue = dateUntilControl.getValue();
+			Date dateFromValue = (Date) dateFromControl.getValue();
+			Date dateUntilValue = (Date) dateUntilControl.getValue();
 			if (dateFromValue != null && dateUntilValue != null) {
 				if (DateHelper.getStartOfDay(dateFromValue).after(DateHelper.getStartOfDay(dateUntilValue))) {
 					dateFromControl.enableErrorState(
@@ -70,5 +71,36 @@ public class ValidationHelper {
 
 			return false;
 		});
+	}
+
+	public static void initEmailValidator(ControlTextEditField textEditField) {
+		textEditField.setValidationCallback(() -> {
+			String emailAddress = textEditField.getValue();
+			if (!DataHelper.isValidEmailAddress(emailAddress)) {
+				textEditField.enableErrorState(I18nProperties.getValidationError(Validations.validEmailAddress, textEditField.getCaption()));
+
+				return true;
+			}
+
+			return false;
+		});
+	}
+
+	public static void initPhoneNumberValidator(ControlTextEditField textEditField) {
+		textEditField.setValidationCallback(() -> {
+			String phoneNumber = textEditField.getValue();
+			if (!DataHelper.isValidPhoneNumber(phoneNumber)) {
+				textEditField.enableErrorState(I18nProperties.getValidationError(Validations.validPhoneNumber, textEditField.getCaption()));
+
+				return true;
+			}
+
+			return false;
+		});
+	}
+
+	public static void resetValidator(ControlTextEditField textEditField) {
+		textEditField.disableErrorState();
+		textEditField.setValidationCallback(null);
 	}
 }

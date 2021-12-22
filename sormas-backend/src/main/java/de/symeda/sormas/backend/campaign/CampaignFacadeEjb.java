@@ -22,6 +22,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -157,7 +158,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	}
 
 	@Override
-	public CampaignDto saveCampaign(CampaignDto dto) {
+	public CampaignDto saveCampaign(@Valid CampaignDto dto) {
 
 		Campaign campaign = fromDto(dto, true);
 		campaignService.ensurePersisted(campaign);

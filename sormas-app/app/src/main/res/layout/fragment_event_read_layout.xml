@@ -33,6 +33,7 @@
         <import type="de.symeda.sormas.api.event.MeansOfTransport" />
         <import type="de.symeda.sormas.api.event.TypeOfPlace" />
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+        <import type="de.symeda.sormas.api.disease.DiseaseVariant" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.event.Event"/>
         <variable name="multiDayEvent" type="Boolean"/>
@@ -95,13 +96,13 @@
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_startDate"
                     style="@style/ControlFirstOfTwoColumnsStyle"
-                    app:value="@{data.startDate}" />
+                    app:dateTimeValue="@{data.startDate}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_endDate"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     android:visibility="@{multiDayEvent? View.VISIBLE : View.GONE}"
-                    app:value="@{data.endDate}" />
+                    app:dateTimeValue="@{data.endDate}" />
 
             </LinearLayout>
 
@@ -219,6 +220,14 @@
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_diseaseVariantDetails"
+                app:value="@{data.diseaseVariantDetails}"
+                app:customizableEnumField="@{eventDiseaseVariant}"
+                app:customizableEnumProperty="@{DiseaseVariant.HAS_DETAILS}"
+                app:customizableEnumValue="@{Boolean.TRUE}"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/event_responsibleUser"

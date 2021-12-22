@@ -29,6 +29,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -49,10 +50,10 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import de.symeda.sormas.api.AuthProvider;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -61,8 +62,8 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
 
 public class UserFacadeEjbTest extends AbstractBeanTest {
 
@@ -231,7 +232,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		AuthProvider authProvider = mock(AuthProvider.class);
 
 		MockedStatic<AuthProvider> mockAuthProvider = mockStatic(AuthProvider.class);
-		mockAuthProvider.when(AuthProvider::getProvider).thenReturn(authProvider);
+		Mockito.when(AuthProvider.getProvider(any())).thenReturn(authProvider);
 		when(authProvider.isUsernameCaseSensitive()).thenReturn(true);
 
 		RDCF rdcf = creator.createRDCF();

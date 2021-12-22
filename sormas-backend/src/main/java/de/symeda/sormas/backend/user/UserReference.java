@@ -28,6 +28,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Immutable;
@@ -89,5 +90,10 @@ public class UserReference extends AbstractDomainObject {
 
 	public void setUserRoles(Set<UserRole> userRoles) {
 		this.userRoles = userRoles;
+	}
+
+	@Transient
+	public String getName() {
+		return firstName + " " + lastName;
 	}
 }

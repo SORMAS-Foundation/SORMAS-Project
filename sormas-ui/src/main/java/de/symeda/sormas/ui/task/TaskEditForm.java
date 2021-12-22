@@ -23,10 +23,15 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.vaadin.v7.ui.OptionGroup;
+import de.symeda.sormas.ui.utils.CssStyles;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -38,17 +43,13 @@ import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskType;
@@ -57,7 +58,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -66,12 +67,14 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.TaskStatusValidator;
 
+@SuppressWarnings("deprecation")
 public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 	private static final long serialVersionUID = 1L;
 
 	private static final String SAVE_INFO = "saveInfo";
 	private static final String ASSIGNEE_MISSING_INFO = "assigneeMissingInfo";
+	private static final String OBSERVER_MISSING_INFO = "observerMissingInfo";
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = 
@@ -85,18 +88,24 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			fluidRowLocs(TaskDto.CREATOR_COMMENT) +
 			fluidRowLocs(TaskDto.ASSIGNEE_REPLY) +
 			fluidRowLocs(TaskDto.TASK_STATUS) +
+			fluidRowLocs(TaskDto.OBSERVER_USERS) +
+			fluidRowLocs(OBSERVER_MISSING_INFO) +
 			fluidRowLocs(SAVE_INFO);
 	//@formatter:on
 
 	private UserRight editOrCreateUserRight;
 	private boolean editedFromTaskGrid;
+	private Disease disease;
+	private List<UserReferenceDto> availableUsers;
 
-	public TaskEditForm(boolean create, boolean editedFromTaskGrid) {
+	public TaskEditForm(boolean create, boolean editedFromTaskGrid, Disease disease) {
 
-		super(TaskDto.class, TaskDto.I18N_PREFIX);
+		super(TaskDto.class, TaskDto.I18N_PREFIX, false, FieldVisibilityCheckers.withDisease(disease));
 
 		this.editedFromTaskGrid = editedFromTaskGrid;
 		this.editOrCreateUserRight = editOrCreateUserRight;
+		this.disease = disease;
+		this.availableUsers = new ArrayList<>();
 
 		addValueChangeListener(e -> {
 			updateByTaskContext();
@@ -108,6 +117,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
+
+		addFields();
 	}
 
 	@Override
@@ -137,8 +148,9 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 		ComboBox assigneeUser = addField(TaskDto.ASSIGNEE_USER, ComboBox.class);
 		assigneeUser.addValueChangeListener(e -> {
+			updateObserversList();
 			updateByCreatingAndAssignee();
-			checkIfAssigneeEmailOrPhoneIsProvided((UserReferenceDto) e.getProperty().getValue());
+			checkIfUserEmailOrPhoneIsProvided((UserReferenceDto) e.getProperty().getValue(), Strings.infoAssigneeMissingEmail, Strings.infoAssigneeMissingEmailOrPhoneNumber, ASSIGNEE_MISSING_INFO);
 		});
 		assigneeUser.setImmediate(true);
 
@@ -146,6 +158,17 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		creatorComment.setRows(2);
 		creatorComment.setImmediate(true);
 		addField(TaskDto.ASSIGNEE_REPLY, TextArea.class).setRows(4);
+
+		OptionGroup observerUsers = addField(TaskDto.OBSERVER_USERS, OptionGroup.class);
+		observerUsers.addValueChangeListener(e -> {
+			Collection<UserReferenceDto> userReferences = (Collection<UserReferenceDto>) e.getProperty().getValue();
+			for (UserReferenceDto userReference : userReferences) {
+				checkIfUserEmailOrPhoneIsProvided(userReference, Strings.infoObserverMissingEmail, Strings.infoObserverMissingEmailOrPhoneNumber, OBSERVER_MISSING_INFO);
+			}
+		});
+		observerUsers.setMultiSelect(true);
+		observerUsers.setImmediate(true);
+		CssStyles.style(observerUsers, CssStyles.OPTIONGROUP_MAX_HEIGHT_150);
 
 		setRequired(true, TaskDto.TASK_CONTEXT, TaskDto.TASK_TYPE, TaskDto.ASSIGNEE_USER, TaskDto.DUE_DATE, TaskDto.TASK_STATUS);
 		setReadOnly(true, TaskDto.TASK_CONTEXT, TaskDto.CAZE, TaskDto.CONTACT, TaskDto.EVENT);
@@ -168,42 +191,18 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				}
 			}
 
-			UserDto userDto = UserProvider.getCurrent().getUser();
-			List<DistrictReferenceDto> districts;
-			List<RegionReferenceDto> regions;
+			final UserDto userDto = UserProvider.getCurrent().getUser();
+			availableUsers = new ArrayList<>();
 			if (taskDto.getCaze() != null) {
-				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(taskDto.getCaze().getUuid());
-
-				districts = getCaseDistricts(caseDto);
-				regions = getCaseRegions(caseDto);
+				availableUsers.addAll(FacadeProvider.getUserFacade().getUsersHavingCaseInJurisdiction(taskDto.getCaze()));
 			} else if (taskDto.getContact() != null) {
-				ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(taskDto.getContact().getUuid());
-				if (contactDto.getRegion() != null && contactDto.getDistrict() != null) {
-					districts = DataHelper.asListNullable(contactDto.getDistrict());
-					regions = DataHelper.asListNullable(contactDto.getRegion());
-				} else {
-					CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
-					districts = getCaseDistricts(caseDto);
-					regions = getCaseRegions(caseDto);
-				}
+				availableUsers.addAll(FacadeProvider.getUserFacade().getUsersHavingContactInJurisdiction(taskDto.getContact()));
 			} else if (taskDto.getEvent() != null) {
-				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(taskDto.getEvent().getUuid());
-
-				districts = DataHelper.asListNullable(eventDto.getEventLocation().getDistrict());
-				regions = DataHelper.asListNullable(eventDto.getEventLocation().getRegion());
+				availableUsers.addAll(FacadeProvider.getUserFacade().getUsersHavingEventInJurisdiction(taskDto.getEvent()));
+			} else if (taskDto.getTravelEntry() != null) {
+				availableUsers.addAll(FacadeProvider.getUserFacade().getUsersHavingTravelEntryInJurisdiction(taskDto.getTravelEntry()));
 			} else {
-				districts = DataHelper.asListNullable(userDto.getDistrict());
-				regions = DataHelper.asListNullable(userDto.getRegion());
-			}
-
-			final List<UserReferenceDto> users = new ArrayList<>();
-			if (districts != null) {
-				users.addAll(FacadeProvider.getUserFacade().getUserRefsByDistricts(districts, true));
-			} else if (regions != null) {
-				users.addAll(FacadeProvider.getUserFacade().getUsersByRegionsAndRoles(regions));
-			} else {
-				// fallback - just show all users
-				users.addAll(FacadeProvider.getUserFacade().getAllUserRefs(false));
+				availableUsers.addAll(FacadeProvider.getUserFacade().getAllUserRefs(false));
 			}
 
 			// Allow users to assign tasks to users of the next higher jurisdiction level, when the higher jurisdiction contains the users jurisdiction
@@ -214,7 +213,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 				List<UserReferenceDto> superordinateUsers = FacadeProvider.getUserFacade().getUsersWithSuperiorJurisdiction(userDto);
 				if (superordinateUsers != null) {
-					users.addAll(superordinateUsers);
+					availableUsers.addAll(superordinateUsers);
 				}
 			}
 
@@ -235,40 +234,53 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 					I18nProperties.getValidationError(Validations.afterDate, dueDate.getCaption(), startDate.getCaption())));
 
 			Map<String, Long> userTaskCounts =
-				FacadeProvider.getTaskFacade().getPendingTaskCountPerUser(users.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
-			for (UserReferenceDto user : users) {
+				FacadeProvider.getTaskFacade().getPendingTaskCountPerUser(availableUsers.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
+			for (UserReferenceDto user : availableUsers) {
 				assigneeUser.addItem(user);
 				Long userTaskCount = userTaskCounts.get(user.getUuid());
 				assigneeUser.setItemCaption(user, user.getCaption() + " (" + (userTaskCount != null ? userTaskCount.toString() : "0") + ")");
+
+				if (!user.equals(assigneeUser.getValue())) {
+					// If a user has been assigned to the task, do not make it available for observers field
+					observerUsers.addItem(user);
+					observerUsers.setItemCaption(user, user.getCaption());
+				}
 			}
 		});
 	}
 
-	private List<DistrictReferenceDto> getCaseDistricts(CaseDataDto caseDto) {
-		List<DistrictReferenceDto> districts = new ArrayList<>(2);
+	private void updateObserversList() {
+		ComboBox assigneeField = getField(TaskDto.ASSIGNEE_USER);
+		OptionGroup observersField = getField(TaskDto.OBSERVER_USERS);
 
-		if (caseDto.getDistrict() != null) {
-			districts.add(caseDto.getDistrict());
+		Collection<UserReferenceDto> selectedObservers = (Collection<UserReferenceDto>) observersField.getValue();
+		if (selectedObservers == null) {
+			selectedObservers = Collections.emptyList();
+		} else {
+			// Let's ensure that the collection won't be touched by the following "observersField.removeAllItems()"
+			selectedObservers = new ArrayList<>(selectedObservers);
 		}
 
-		districts.add(caseDto.getResponsibleDistrict());
+		// Let's ensure that every available users is a choice into the observers field (except the assignee user)
+		observersField.removeAllItems();
+		for (UserReferenceDto user : availableUsers) {
+			if (user.equals(assigneeField.getValue())) {
+				// If a user has been assigned to a task, do not make it available for observers field
+				continue;
+			}
 
-		return districts;
-	}
-
-	private List<RegionReferenceDto> getCaseRegions(CaseDataDto caseDto) {
-		List<RegionReferenceDto> regions = new ArrayList<>(2);
-
-		if (caseDto.getRegion() != null) {
-			regions.add(caseDto.getRegion());
+			observersField.addItem(user);
+			observersField.setItemCaption(user, user.getCaption());
 		}
 
-		regions.add(caseDto.getResponsibleRegion());
-
-		return regions;
+		// As we removed everything from observers field, let's apply again its value
+		Set<UserReferenceDto> filteredObservers = selectedObservers.stream()
+			.filter(userReferenceDto -> !userReferenceDto.equals(assigneeField.getValue()))
+			.collect(Collectors.toSet());
+		observersField.setValue(filteredObservers);
 	}
 
-	private void checkIfAssigneeEmailOrPhoneIsProvided(UserReferenceDto assigneeRef) {
+	private void checkIfUserEmailOrPhoneIsProvided(UserReferenceDto assigneeRef, String missingEmailLabel, String missingEmailOrPhoneLabel, String location) {
 
 		if (assigneeRef == null || FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.TASK_NOTIFICATIONS)) {
 			return;
@@ -282,12 +294,12 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 		if (isSmsServiceSetUp && !hasEmail && !hasPhoneNumber) {
 			getContent().addComponent(
-				getMissingInfoComponent(I18nProperties.getString(Strings.infoAssigneeMissingEmailOrPhoneNumber)),
-				ASSIGNEE_MISSING_INFO);
+				getMissingInfoComponent(I18nProperties.getString(missingEmailOrPhoneLabel)),
+				location);
 		} else if (!isSmsServiceSetUp && !hasEmail) {
-			getContent().addComponent(getMissingInfoComponent(I18nProperties.getString(Strings.infoAssigneeMissingEmail)), ASSIGNEE_MISSING_INFO);
+			getContent().addComponent(getMissingInfoComponent(I18nProperties.getString(missingEmailLabel)), location);
 		} else {
-			getContent().removeComponent(ASSIGNEE_MISSING_INFO);
+			getContent().removeComponent(location);
 		}
 	}
 
@@ -346,7 +358,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 		// Task types depending on task context
 		ComboBox taskType = (ComboBox) getFieldGroup().getField(TaskDto.TASK_TYPE);
-		FieldHelper.updateItems(taskType, TaskType.getTaskTypes(taskContext));
+		FieldHelper.updateItems(taskType, TaskType.getTaskTypes(taskContext), FieldVisibilityCheckers.withDisease(disease), TaskType.class);
 
 		// context reference depending on task context
 		ComboBox caseField = (ComboBox) getFieldGroup().getField(TaskDto.CAZE);

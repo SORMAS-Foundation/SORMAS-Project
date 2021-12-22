@@ -37,17 +37,19 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -79,9 +81,10 @@ public class ContactImporter extends DataImporter {
 	private CaseDataDto caze;
 	private UI currentUI;
 
-	public ContactImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze) {
+	public ContactImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze, ValueSeparator csvSeparator)
+		throws IOException {
 
-		super(inputFile, hasEntityClassRow, currentUser);
+		super(inputFile, hasEntityClassRow, currentUser, csvSeparator);
 		this.caze = caze;
 	}
 
@@ -114,7 +117,7 @@ public class ContactImporter extends DataImporter {
 			values[uuidIndex] = DataHelper.createUuid();
 		}
 
-		final PersonDto newPersonTemp = PersonDto.build();
+		final PersonDto newPersonTemp = PersonDto.buildImportEntity();
 		final ContactDto newContactTemp = caze != null ? ContactDto.build(caze) : ContactDto.build();
 		newContactTemp.setReportingUser(currentUser.toReference());
 
@@ -136,8 +139,7 @@ public class ContactImporter extends DataImporter {
 
 		// try to assign the contact to an existing case
 		if (caze == null && newContactTemp.getCaseIdExternalSystem() != null) {
-			CaseDataDto existingCase =
-				FacadeProvider.getCaseFacade().getCaseDataByUuid(newContactTemp.getCaseIdExternalSystem().trim().toUpperCase());
+			CaseDataDto existingCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(newContactTemp.getCaseIdExternalSystem().trim());
 			if (existingCase != null) {
 				newContactTemp.assignCase(existingCase);
 				newContactTemp.setCaseIdExternalSystem(null);
@@ -156,6 +158,9 @@ public class ContactImporter extends DataImporter {
 		}
 
 		PersonDto newPerson = newPersonTemp;
+
+		// Sanitize non-HOME address
+		PersonHelper.sanitizeNonHomeAddress(newPerson);
 
 		// If the contact still does not have any import errors, search for persons similar to the contact person in the database and,
 		// if there are any, display a window to resolve the conflict to the user
@@ -200,7 +205,8 @@ public class ContactImporter extends DataImporter {
 				if (ImportSimilarityResultOption.SKIP.equals(resultOption)) {
 					return ImportLineResult.SKIPPED;
 				} else {
-					final PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
+					boolean skipPersonValidation = ImportSimilarityResultOption.PICK.equals(resultOption);
+					final PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson, skipPersonValidation);
 					newContactTemp.setPerson(savedPerson.toReference());
 
 					ContactDto newContact = newContactTemp;
@@ -399,6 +405,16 @@ public class ContactImporter extends DataImporter {
 				logger.error("Unexpected error when trying to import a contact: " + e.getMessage());
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importUnexpectedError));
 			}
+		}
+
+		ImportLineResultDto<ContactDto> contactErrors = validateConstraints(contact);
+		if (contactErrors.isError()) {
+			throw new ImportErrorException(contactErrors.getMessage());
+		}
+
+		ImportLineResultDto<PersonDto> personErrors = validateConstraints(person);
+		if (personErrors.isError()) {
+			throw new ImportErrorException(personErrors.getMessage());
 		}
 	}
 

@@ -24,6 +24,14 @@ public enum MeansOfImmunization {
 	VACCINATION_RECOVERY,
 	OTHER;
 
+	public static boolean isVaccination(MeansOfImmunization meansOfImmunization) {
+		return meansOfImmunization == VACCINATION || meansOfImmunization == VACCINATION_RECOVERY;
+	}
+
+	public static boolean isRecovery(MeansOfImmunization meansOfImmunization) {
+		return meansOfImmunization == RECOVERY || meansOfImmunization == VACCINATION_RECOVERY;
+	}
+
 	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

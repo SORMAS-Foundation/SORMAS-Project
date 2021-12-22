@@ -19,6 +19,7 @@ import static de.symeda.sormas.api.docgeneneration.DocumentWorkflow.EVENT_HANDOU
 import static de.symeda.sormas.api.docgeneneration.DocumentWorkflow.QUARANTINE_ORDER_CASE;
 import static de.symeda.sormas.api.docgeneneration.DocumentWorkflow.QUARANTINE_ORDER_CONTACT;
 import static de.symeda.sormas.api.docgeneneration.DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT;
+import static de.symeda.sormas.api.docgeneneration.DocumentWorkflow.QUARANTINE_ORDER_TRAVEL_ENTRY;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 
 import com.vaadin.icons.VaadinIcons;
@@ -55,6 +56,8 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 		addTemplateSection(QUARANTINE_ORDER_CONTACT);
 
 		addTemplateSection(QUARANTINE_ORDER_EVENT_PARTICIPANT);
+
+		addTemplateSection(QUARANTINE_ORDER_TRAVEL_ENTRY);
 
 		addTemplateSection(EVENT_HANDOUT);
 
