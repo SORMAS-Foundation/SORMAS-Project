@@ -7,7 +7,6 @@ on:
 
 jobs:
   mergefreeze:
-    name: Skip mergefreeze
     runs-on: ubuntu-latest
     steps:
       - name: Make mergefreeze pass if we want to commit external visits API spec to development
