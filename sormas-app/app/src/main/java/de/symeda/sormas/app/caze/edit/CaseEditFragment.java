@@ -653,7 +653,9 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.facilityOrHome.setValue(TypeOfPlace.HOME);
 		} else {
 			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
-			contentBinding.facilityTypeGroup.setValue(record.getFacilityType().getFacilityTypeGroup());
+			if (record.getFacilityType()!=null){
+				contentBinding.facilityTypeGroup.setValue(record.getFacilityType().getFacilityTypeGroup());
+			}
 		}
 
 		// Swiss fields
