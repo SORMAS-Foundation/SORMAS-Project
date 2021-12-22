@@ -52,7 +52,7 @@ fi
 #AS_JAVA_NATIVE='C:\zulu-11'
 #AS_JAVA_NATIVE='/opt/zulu-11'
 
-PAYARA_VERSION=5.2021.6
+PAYARA_VERSION=5.2021.10
 
 if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
 	LINUX=true
