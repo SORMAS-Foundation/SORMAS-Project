@@ -81,7 +81,7 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
           # needed as codeQL also performs an upload and the clash otherwise
-          category: 'code-scanning/trivy-repo
+          category: 'code-scanning/trivy-repo'
 
       - name: Commit external visits API spec to development
         # Privileged action needing a secret token. Since this only runs on development in our own repo
