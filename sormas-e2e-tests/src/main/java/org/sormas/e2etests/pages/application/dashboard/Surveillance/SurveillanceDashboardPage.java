@@ -19,11 +19,17 @@ import org.openqa.selenium.By;
 
 public class SurveillanceDashboardPage {
 
-	public static final By SURVEILLANCE_DASHBOARD_NAME = By.xpath("//div[contains(text(),'Surveillance Dashboard')]");
-	public static final By SURVEILLANCE_BUTTON = By.xpath("(//div[contains(@class,'v-select-optiongroup')]//span)[1]");
-	public static final By CONTACTS_BUTTON = By.xpath("(//div[contains(@class,'v-select-optiongroup')]//span)[2]");
-	public static final By LOGOUT_BUTTON = By.cssSelector("#actionLogout span.v-menubar-menuitem-caption");
-	public static final By COVID19_DISEASE_COUNTER = By.cssSelector("div.v-verticallayout-background-disease-coronavirus > div > div > div");
-	public static final By CASE_COUNTER = By.cssSelector("[location='case'] > div > div > div > div > div");
-	public static final By TAB_SHEET_CAPTION = By.cssSelector(".v-tabsheet > div > div > div > div");
+  public static final By SURVEILLANCE_DASHBOARD_NAME =
+      By.xpath("//div[contains(text(),'Surveillance Dashboard')]");
+  public static final By SURVEILLANCE_BUTTON =
+      By.xpath("(//div[contains(@class,'v-select-optiongroup')]//span)[1]");
+  public static final By CONTACTS_BUTTON =
+      By.xpath("(//div[contains(@class,'v-select-optiongroup')]//span)[2]");
+  public static final By LOGOUT_BUTTON =
+      By.cssSelector("#actionLogout span.v-menubar-menuitem-caption");
+  public static final By COVID19_DISEASE_COUNTER =
+      By.cssSelector("div.v-verticallayout-background-disease-coronavirus > div > div > div");
+  public static final By CASE_COUNTER =
+      By.cssSelector("[location='case'] > div > div > div > div > div");
+  public static final By TAB_SHEET_CAPTION = By.cssSelector(".v-tabsheet > div > div > div > div");
 }
