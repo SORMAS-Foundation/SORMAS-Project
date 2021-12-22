@@ -80,6 +80,7 @@ jobs:
             mkdir /tmp/openapi
             cp sormas-rest/target/external_visits_API.* /tmp/openapi
             
+            git fetch
             git checkout development
             git pull
 
