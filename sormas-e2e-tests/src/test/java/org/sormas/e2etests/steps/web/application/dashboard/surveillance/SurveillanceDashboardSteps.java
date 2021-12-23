@@ -10,10 +10,10 @@ public class SurveillanceDashboardSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   private final SoftAssertions softly;
-  private Integer covid19DiseaseCounterIntValueBefore;
-  private Integer covid19DiseaseCounterIntValueAfter;
-  private Integer newCasesCounterIntValueBefore;
-  private Integer newCasesCounterIntValueAfter;
+  private int covid19DiseaseCounterIntValueBefore;
+  private int covid19DiseaseCounterIntValueAfter;
+  private int newCasesCounterIntValueBefore;
+  private int newCasesCounterIntValueAfter;
 
   @Inject
   public SurveillanceDashboardSteps(WebDriverHelpers webDriverHelpers, SoftAssertions softly) {
@@ -27,7 +27,7 @@ public class SurveillanceDashboardSteps implements En {
           String covid19DiseaseCounterRawValue =
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.COVID19_DISEASE_COUNTER);
-          covid19DiseaseCounterIntValueBefore = Integer.valueOf(covid19DiseaseCounterRawValue);
+          covid19DiseaseCounterIntValueBefore = Integer.parseInt(covid19DiseaseCounterRawValue);
         });
 
     Then(
@@ -37,12 +37,12 @@ public class SurveillanceDashboardSteps implements En {
 
           String newCasesCounterRawValueAfter =
               webDriverHelpers.getTextFromWebElement(SurveillanceDashboardPage.CASE_COUNTER);
-          newCasesCounterIntValueAfter = Integer.valueOf(newCasesCounterRawValueAfter);
+          newCasesCounterIntValueAfter = Integer.parseInt(newCasesCounterRawValueAfter);
 
           String covid19DiseaseCounterRawValueAfter =
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.COVID19_DISEASE_COUNTER);
-          covid19DiseaseCounterIntValueAfter = Integer.valueOf(covid19DiseaseCounterRawValueAfter);
+          covid19DiseaseCounterIntValueAfter = Integer.parseInt(covid19DiseaseCounterRawValueAfter);
 
           softly.assertThat(newCasesCounterIntValueBefore).isLessThan(newCasesCounterIntValueAfter);
           softly
@@ -68,7 +68,7 @@ public class SurveillanceDashboardSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
           String newCasesCounterValue =
               webDriverHelpers.getTextFromWebElement(SurveillanceDashboardPage.CASE_COUNTER);
-          newCasesCounterIntValueBefore = Integer.valueOf(newCasesCounterValue);
+          newCasesCounterIntValueBefore = Integer.parseInt(newCasesCounterValue);
         });
   }
 }
