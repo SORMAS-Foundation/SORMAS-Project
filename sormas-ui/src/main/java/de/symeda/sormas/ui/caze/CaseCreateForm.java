@@ -117,7 +117,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	// necessary extra data. This variable is expected to be replaced in the implementation of
 	// issue #5910.
 	private TravelEntryDto convertedTravelEntry;
-
 	//@formatter:off
 	private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
 			+ fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER, CaseDataDto.EXTERNAL_ID)
@@ -429,7 +428,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		});
 		facilityType.addValueChangeListener(e -> updateFacility());
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
-
 		JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
 		if (userJurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY) {
 			region.setReadOnly(true);
@@ -440,7 +438,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			responsibleCommunityCombo.setReadOnly(true);
 			differentPlaceOfStayJurisdiction.setVisible(false);
 			differentPlaceOfStayJurisdiction.setEnabled(false);
-
 			facilityOrHome.setImmediate(true);
 			facilityOrHome.setValue(Sets.newHashSet(TypeOfPlace.FACILITY)); // [FACILITY]
 			facilityOrHome.setReadOnly(true);
@@ -451,6 +448,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			facilityCombo.setValue(UserProvider.getCurrent().getUser().getHealthFacility());
 			facilityCombo.setReadOnly(true);
 		}
+		if (UserProvider.getCurrent().hasUserRole(UserRole.SURVEILLANCE_OFFICER)){
+			responsibleRegion.setReadOnly(true);
+			responsibleDistrictCombo.setReadOnly(true);
+		}	
 
 		if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
 			ogCaseOrigin.addValueChangeListener(ev -> {
