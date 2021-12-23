@@ -19,7 +19,7 @@ public class ContactsDashboardSteps implements En {
     this.softly = softly;
 
     When(
-        "^I save value for COVID contacts counter$",
+        "^I save value for COVID-19 contacts counter in Contacts Dashboard$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
           String covid19ContactsCounterRawValue =
@@ -29,7 +29,7 @@ public class ContactsDashboardSteps implements En {
         });
 
     Then(
-        "^I check that previous saved contact counter has been incremented$",
+        "^I check that previous saved Contacts Dashboard contact counter for COVID-19 has been incremented$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
 

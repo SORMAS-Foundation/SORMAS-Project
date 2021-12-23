@@ -21,7 +21,7 @@ public class SurveillanceDashboardSteps implements En {
     this.softly = softly;
 
     When(
-        "^I save value for COVID disease counter$",
+        "^I save value for COVID disease counter in Surveillance Dashboard$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
           String covid19DiseaseCounterRawValue =
@@ -31,7 +31,7 @@ public class SurveillanceDashboardSteps implements En {
         });
 
     Then(
-        "^I check that previous saved counters have been increment$",
+        "^I check that previous saved Surveillance Dashboard counters for COVID-19 have been increment$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
 
@@ -58,13 +58,12 @@ public class SurveillanceDashboardSteps implements En {
         "I select {string} in TabSheet of Surveillance Dashboard",
         (String tabSheetValue) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
-          // webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.TAB_SHEET_CAPTION);
           webDriverHelpers.clickWebElementByText(
               SurveillanceDashboardPage.TAB_SHEET_CAPTION, tabSheetValue);
         });
 
     When(
-        "^I save value for New Cases counter$",
+        "^I save value for New Cases counter in Surveillance Dashboard$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
           String newCasesCounterValue =
