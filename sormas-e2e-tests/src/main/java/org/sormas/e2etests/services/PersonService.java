@@ -22,10 +22,18 @@ import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.util.UUID;
+import org.sormas.e2etests.enums.CommunityValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.GenderValues;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.pojo.web.Person;
 
 public class PersonService {
   private final Faker faker;
+
+  private String firstName;
+  private String lastName;
+  private final String emailDomain = "@PERSON.com";
 
   @Inject
   public PersonService(Faker faker) {
@@ -53,15 +61,20 @@ public class PersonService {
   }
 
   public Person buildGeneratedPerson() {
-    String firstName = faker.name().firstName();
-    String lastName = faker.name().lastName();
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
     return Person.builder()
         .firstName(firstName)
         .lastName(lastName)
         .salutation("Dear Sir")
-        .dateOfBirth(LocalDate.of(1904, 3, 7))
-        .sex("Male")
-        .emailAddress(faker.internet().emailAddress())
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGender())
+        .emailAddress(firstName + "." + lastName + emailDomain)
         .phoneNumber(faker.phoneNumber().phoneNumber())
         .presentConditionOfPerson("Alive")
         .nationalHealthId(UUID.randomUUID().toString())
@@ -71,9 +84,9 @@ public class PersonService {
         .typeOfOccupation("Farmer")
         .staffOfArmedForces("Unknown")
         .education("Primary")
-        .region("Voreingestellte Bundesl\u00E4nder")
-        .district("Voreingestellter Landkreis")
-        .community("Voreingestellte Gemeinde")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .community(CommunityValues.VoreingestellteGemeinde.getName())
         .facilityCategory("Accommodation")
         .facilityType("Campsite")
         .facility("Other facility")
@@ -92,7 +105,7 @@ public class PersonService {
         .motherMaidenName(faker.name().firstName() + " " + faker.name().lastName())
         .motherName(faker.name().firstName() + " " + faker.name().lastName())
         .fatherName(faker.name().firstName() + " " + faker.name().lastName())
-        .nameOfGuardians(faker.name().firstName())
+        .nameOfGuardians(faker.name().firstName() + "Guardian")
         .personContactDetailsTypeOfContactDetails("Other")
         .personContactDetailsContactInformation(faker.funnyName().name())
         .build();
