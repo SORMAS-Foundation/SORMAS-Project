@@ -22,10 +22,11 @@ public class ContactsDashboardSteps implements En {
         "^I save value for COVID-19 contacts counter in Contacts Dashboard$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
-          String covid19ContactsCounterRawValue =
-              webDriverHelpers.getTextFromWebElement(
-                  ContactsDashboardPage.CONTACTS_COVID19_COUNTER);
-          covid19ContactsCounterBefore = Integer.parseInt(covid19ContactsCounterRawValue);
+
+          covid19ContactsCounterBefore =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(
+                      ContactsDashboardPage.CONTACTS_COVID19_COUNTER));
         });
 
     Then(
@@ -33,12 +34,16 @@ public class ContactsDashboardSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
 
-          String covid19ContactsCounterRawValueAfter =
-              webDriverHelpers.getTextFromWebElement(
-                  ContactsDashboardPage.CONTACTS_COVID19_COUNTER);
-          covid19ContactsCounterAfter = Integer.parseInt(covid19ContactsCounterRawValueAfter);
+          covid19ContactsCounterAfter =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(
+                      ContactsDashboardPage.CONTACTS_COVID19_COUNTER));
 
-          softly.assertThat(covid19ContactsCounterBefore).isLessThan(covid19ContactsCounterAfter);
+          softly
+              .assertThat(covid19ContactsCounterBefore)
+              .withFailMessage(
+                  "COVID-19 contacts counter in Contacts dashboard has not been increased")
+              .isLessThan(covid19ContactsCounterAfter);
           softly.assertAll();
         });
   }

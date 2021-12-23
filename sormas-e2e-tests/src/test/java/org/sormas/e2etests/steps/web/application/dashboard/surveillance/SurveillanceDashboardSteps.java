@@ -24,10 +24,11 @@ public class SurveillanceDashboardSteps implements En {
         "^I save value for COVID disease counter in Surveillance Dashboard$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
-          String covid19DiseaseCounterRawValue =
-              webDriverHelpers.getTextFromWebElement(
-                  SurveillanceDashboardPage.COVID19_DISEASE_COUNTER);
-          covid19DiseaseCounterBefore = Integer.parseInt(covid19DiseaseCounterRawValue);
+
+          covid19DiseaseCounterBefore =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(
+                      SurveillanceDashboardPage.COVID19_DISEASE_COUNTER));
         });
 
     Then(
@@ -35,18 +36,30 @@ public class SurveillanceDashboardSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
 
-          String newCasesCounterRawValueAfter =
-              webDriverHelpers.getTextFromWebElement(SurveillanceDashboardPage.CASE_COUNTER);
-          newCasesCounterAfter = Integer.parseInt(newCasesCounterRawValueAfter);
+          newCasesCounterAfter =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(SurveillanceDashboardPage.CASE_COUNTER));
 
-          String covid19DiseaseCounterRawValueAfter =
-              webDriverHelpers.getTextFromWebElement(
-                  SurveillanceDashboardPage.COVID19_DISEASE_COUNTER);
-          covid19DiseaseCounterAfter = Integer.parseInt(covid19DiseaseCounterRawValueAfter);
+          covid19DiseaseCounterAfter =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(
+                      SurveillanceDashboardPage.COVID19_DISEASE_COUNTER));
 
-          softly.assertThat(newCasesCounterBefore).isLessThan(newCasesCounterAfter);
-          softly.assertThat(covid19DiseaseCounterBefore).isLessThan(covid19DiseaseCounterAfter);
-          softly.assertThat(newCasesCounterAfter).isEqualTo(covid19DiseaseCounterAfter);
+          softly
+              .assertThat(newCasesCounterBefore)
+              .withFailMessage(
+                  "New cases counter for COVID-19 in Surveillance Dashboard has not been increased")
+              .isLessThan(newCasesCounterAfter);
+          softly
+              .assertThat(covid19DiseaseCounterBefore)
+              .withFailMessage(
+                  "COVID-19 disease counter in Surveillance Dashboard has not been increased")
+              .isLessThan(covid19DiseaseCounterAfter);
+          softly
+              .assertThat(newCasesCounterAfter)
+              .withFailMessage(
+                  "New cases counter for COVID-19 does not equal COVID-19 disease counter in Surveillance Dashboard")
+              .isEqualTo(covid19DiseaseCounterAfter);
           softly.assertAll();
         });
 
