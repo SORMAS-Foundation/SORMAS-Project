@@ -615,6 +615,7 @@ public class CaseController {
 			createForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE),
 			createForm.getFieldGroup());
+		editView.addFieldGroups(createForm.getHomeAddressForm().getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -766,6 +767,7 @@ public class CaseController {
 		}
 		person.setNationalHealthId(createForm.getNationalHealthId());
 		person.setPassportNumber(createForm.getPassportNumber());
+		person.setAddress(createForm.getHomeAddressForm().getValue());
 	}
 
 	public void selectOrCreateCase(CaseDataDto caseDto, PersonDto person, Consumer<String> selectedCaseUuidConsumer) {
