@@ -70,6 +70,31 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
 
+      When(
+              "^I fill new case form with specific data$",
+              () -> {
+                  caze = caseService.buildGeneratedCase();
+                  selectCaseOrigin(caze.getCaseOrigin());
+                  fillExternalId(caze.getExternalId());
+                  fillDisease(caze.getDisease());
+                  selectResponsibleRegion(caze.getResponsibleRegion());
+                  selectResponsibleDistrict(caze.getResponsibleDistrict());
+                  selectResponsibleCommunity(caze.getResponsibleCommunity());
+                  selectPlaceOfStay(caze.getPlaceOfStay());
+                  fillFirstName(caze.getFirstName());
+                  fillLastName(caze.getLastName());
+                  fillDateOfBirth(caze.getDateOfBirth());
+                  selectSex(caze.getSex());
+                  fillNationalHealthId(caze.getNationalHealthId());
+                  fillPassportNumber(caze.getPassportNumber());
+                  selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+                  fillDateOfSymptomOnset(caze.getDateOfSymptomOnset());
+                  fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+                  fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+                  fillDateOfReport(caze.getDateOfReport());
+                  fillPlaceDescription(caze.getPlaceDescription());
+              });
+
     When(
         "^I create a new case with specific data using line listing feature$",
         () -> {
@@ -93,6 +118,14 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
+      Then(
+              "^I click on save case button$",
+              () -> {
+                  webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+                  webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+                  webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+              });
   }
 
   public void selectCaseOrigin(String caseOrigin) {
