@@ -123,6 +123,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	private LocationEditForm homeAddressForm;
 
+	private final boolean showHomeAddressForm;
+
 	// If a case is created form a TravelEntry, the variable convertedTravelEntry provides the
 	// necessary extra data. This variable is expected to be replaced in the implementation of
 	// issue #5910.
@@ -161,8 +163,15 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
         + divsCss(VSPACE_3, fluidRowLocs(HOME_ADDRESS_LOC));
     //@formatter:on
 
-	public CaseCreateForm(TravelEntryDto convertedTravelEntry) {
+	public CaseCreateForm() {
+		this(true, null);
+	}
 
+	public CaseCreateForm(TravelEntryDto convertedTravelEntry) {
+		this(false, convertedTravelEntry);
+	}
+
+	private CaseCreateForm(Boolean showHomeAddressForm, TravelEntryDto convertedTravelEntry) {
 		super(
 			CaseDataDto.class,
 			CaseDataDto.I18N_PREFIX,
@@ -170,6 +179,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
 			UiFieldAccessCheckers.getNoop());
 		this.convertedTravelEntry = convertedTravelEntry;
+		this.showHomeAddressForm = showHomeAddressForm;
 		addFields();
 		setWidth(720, Unit.PIXELS);
 		hideValidationUntilNextCommit();
@@ -310,7 +320,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		pointOfEntryDistrictCombo.addValueChangeListener(e -> updatePOEs());
 
-		addHomeAddressForm();
+		if (showHomeAddressForm) {
+			addHomeAddressForm();
+		}
 
 		FieldHelper.setVisibleWhen(
 			differentPlaceOfStayJurisdiction,
