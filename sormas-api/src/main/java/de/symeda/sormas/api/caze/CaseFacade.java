@@ -170,6 +170,8 @@ public interface CaseFacade {
 
 	CaseDataDto cloneCase(CaseDataDto existingCaseDto);
 
+	boolean generateCases();
+
 	void archiveAllArchivableCases(int daysAfterCaseGetsArchived);
 
 	/**

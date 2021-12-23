@@ -2272,6 +2272,8 @@ public interface Captions {
 	String User_healthFacility = "User.healthFacility";
 	String User_laboratory = "User.laboratory";
 	String User_limitedDisease = "User.limitedDisease";
+	String User_numberofexaminatedpeople = "User.numberofexaminatedpeople";
+	String User_numberofnonexaminatedpeople = "User.numberofnonexaminatedpeople";
 	String User_phone = "User.phone";
 	String User_pointOfEntry = "User.pointOfEntry";
 	String User_userEmail = "User.userEmail";

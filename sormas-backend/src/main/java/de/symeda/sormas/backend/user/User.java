@@ -83,6 +83,8 @@ public class User extends AbstractDomainObject {
 	public static final String ASSOCIATED_COUNTRY = "associatedCountry";
 	public static final String LANGUAGE = "language";
 	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";
+	public static final String NUMBER_OF_EXAMINATED_PEOPLE = "numberofexaminatedpeople";
+	public static final String NUMBER_OF_NON_EXAMINATED_PEOPLE = "numberofnonexaminatedpeople";
 
 	private String userName;
 	private String password;
@@ -112,6 +114,10 @@ public class User extends AbstractDomainObject {
 	private User associatedOfficer;
 
 	private Country associatedCountry;
+
+	private String numberofexaminatedpeople;
+
+	private String numberofnonexaminatedpeople;
 
 	private Disease limitedDisease;
 
@@ -245,6 +251,22 @@ public class User extends AbstractDomainObject {
 
 	public void setAssociatedCountry(Country associatedCountry) {
 		this.associatedCountry = associatedCountry;
+	}
+
+	public String getNumberofexaminatedpeople() {
+		return numberofexaminatedpeople;
+	}
+
+	public void setNumberofexaminatedpeople(String numberofexaminatedpeople) {
+		this.numberofexaminatedpeople = numberofexaminatedpeople;
+	}
+
+	public String getNumberofnonexaminatedpeople() {
+		return numberofnonexaminatedpeople;
+	}
+
+	public void setNumberofnonexaminatedpeople(String numberofnonexaminatedpeople) {
+		this.numberofnonexaminatedpeople = numberofnonexaminatedpeople;
 	}
 
 	@Override

@@ -8761,4 +8761,10 @@ ALTER TABLE users ADD COLUMN associatedcountry_id bigint;
 ALTER TABLE users_history ADD COLUMN associatedcountry_id bigint;
 ALTER TABLE users ADD CONSTRAINT fk_users_associatedcountry_id FOREIGN KEY (associatedcountry_id) REFERENCES country(id);
 
+-- 2021-12-21 Add number of (non) examinated peoples to create cazes via cron servicce for ich user #19603
+INSERT INTO schema_version (version_number, comment) VALUES (424, 'Add number of (non) examinated peoples #19603');
+ALTER TABLE users ADD COLUMN numberofexaminatedpeople varchar;
+ALTER TABLE users ADD COLUMN numberofnonexaminatedpeople varchar;
+ALTER TABLE users_history ADD COLUMN numberofexaminatedpeople varchar;
+ALTER TABLE users_history ADD COLUMN numberofnonexaminatedpeople varchar;
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

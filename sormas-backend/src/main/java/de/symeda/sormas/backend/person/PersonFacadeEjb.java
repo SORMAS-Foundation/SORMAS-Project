@@ -411,6 +411,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	public PersonDto savePerson(@Valid PersonDto source, boolean checkChangeDate, boolean syncShares) throws ValidationRuntimeException {
 		Person person = personService.getByUuid(source.getUuid());
 
+		boolean system_user = false;
+
 		PersonDto existingPerson = toDto(person);
 
 		restorePseudonymizedDto(source, person, existingPerson);
@@ -424,6 +426,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (source.getLastName().equals("EMPTY_LAST_NAME")){
 			source.setLastName(" ");
 			logger.debug("Updated the person lastname to empty value.....");
+			if (userFacade.getCurrentUser() == null){
+				system_user = true;
+			}
 		}
 
 		if (existingPerson != null && existingPerson.isEnrolledInExternalJournal()) {
@@ -439,10 +444,14 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		onPersonChanged(existingPerson, person, syncShares);
 
-		return convertToDto(
+		if(system_user == true){
+			return toDto(person);
+		}else{
+			return convertToDto(
 			person,
 			Pseudonymizer.getDefault(userService::hasRight),
 			existingPerson == null || personService.inJurisdictionOrOwned(person));
+		}
 	}
 
 	/**

@@ -70,6 +70,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -77,8 +78,18 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import com.vaadin.ui.Notification.Type;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Date;
+import org.apache.commons.lang3.StringUtils;
 
 public class ReportsView extends AbstractView {
+
+	private static final int _60000 = 60000; //5 min
 
 	private static final long serialVersionUID = -226852255434803180L;
 
@@ -92,11 +103,26 @@ public class ReportsView extends AbstractView {
 
 	private final PersonFacade personFacade;
 
+	private final UserFacade userFacade;
+
 	private final CaseFacade caseFacade;
 
 	private final PointOfEntryFacade pointOfEntryFacade;
 
 	private final DistrictFacade districtFacade;
+
+	private int CountnumberOfExCase = 0;
+
+	private int CountnumberOfNotExCase = 0;
+
+	private DistrictReferenceDto activeDistrict = null;
+
+	private RegionReferenceDto region = null;
+
+	private Connection connect = null;
+    private Statement statement = null;
+    private PreparedStatement preparedStatement = null;
+    private ResultSet resultSet = null;
 
 	private Grid grid;
 	private VerticalLayout gridLayout;
@@ -123,6 +149,7 @@ public class ReportsView extends AbstractView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setExpandRatio(grid, 4);
 		personFacade = FacadeProvider.getPersonFacade();
+		userFacade = FacadeProvider.getUserFacade();
 		caseFacade = FacadeProvider.getCaseFacade();
 		pointOfEntryFacade = FacadeProvider.getPointOfEntryFacade();
 		districtFacade = FacadeProvider.getDistrictFacade();
@@ -164,7 +191,7 @@ public class ReportsView extends AbstractView {
 		Runnable confirmCallback = () -> {
 			int nomberOfPeople = 0;
 			int Tested_nomberPeople = 0;
-			PointOfEntryReferenceDto PointOfEntry = (PointOfEntryReferenceDto) pointofentries.getValue();
+			PointOfEntryReferenceDto pointOfEntry = (PointOfEntryReferenceDto) pointofentries.getValue();
 			
 			try {
 				DateHelper.parseDate(date.getValue().toString(), new SimpleDateFormat("dd/MM/yyyy"));
@@ -210,18 +237,13 @@ public class ReportsView extends AbstractView {
 					Strings.DiffPeopleNumberError));
 			}
 			
-			DistrictReferenceDto activeDistrict = null;
-			RegionReferenceDto Region = null;
 			if (currentUser.getDistrict() != null){
-				logger.info("Le district de lutilisateur correspond a {} et la region {}", currentUser.getDistrict(), currentUser.getRegion());
 				activeDistrict = currentUser.getDistrict();
 				// Si dans le formulaire d'utilisateur l'on a renseigné le
 				// district alors la région a étée renseignée au préalabre
-				Region = currentUser.getRegion();
+				region = currentUser.getRegion();
 			}else{
-				logger.info("Recherche via la liste des distrcits");
 				List<String> allDistrcits = districtFacade.getAllUuids();
-				logger.info("Liste des districts {}", allDistrcits);
 				boolean found = false;
 				for (String TheDistrict : allDistrcits){
 					if (found == true){
@@ -229,58 +251,105 @@ public class ReportsView extends AbstractView {
 					}
 					List<PointOfEntryReferenceDto> PointOfEntries = pointOfEntryFacade.getAllActiveByDistrict(TheDistrict, false);
 					for (PointOfEntryReferenceDto pntofentry : PointOfEntries){
-						logger.info("Comparaison de {} et {}", PointOfEntry, pntofentry);
-						if(PointOfEntry.equals(pntofentry)){
-							logger.info("Point trouve : {} pour le district {}", pntofentry, TheDistrict);
+						if(pointOfEntry.equals(pntofentry)){
 							activeDistrict = districtFacade.getByUuid(TheDistrict).toReference();
-							Region = districtFacade.getByUuid(TheDistrict).getRegion();
-							logger.info("La region {} a ete mise a jour par la meme occasion", Region);
+							region = districtFacade.getByUuid(TheDistrict).getRegion();
 							found = true;
 							break;
 						}
 					}
 				}
 			}
-			
-			int i;
-			int CountnumberOfExCase = 0;
-			int CountnumberOfNotExCase = 0;
-			for (i=0; i < nomberOfPeople; i++) {
-				// importResult = caseImportFacade.DirectSaveCaseData(
-				// values, entityClasses, entityProperties, entityPropertyPaths, false);
-				personDto = new PersonDto();
-				personDto.setFirstName("EMPTY_FIRST_NAME");
-				personDto.setLastName("EMPTY_LAST_NAME");
-				personDto.setSex(Sex.UNKNOWN);
-				PersonDto createdPerson = personFacade.savePerson(personDto);
-				logger.debug("Personne cree {} ", createdPerson.getUuid());
 
-				caseDataDto = new CaseDataDto();
-				caseDataDto.setDisease(Disease.UNDEFINED);
-				caseDataDto.setDiseaseDetails(Disease.UNDEFINED.getName());
-				caseDataDto.setPerson(createdPerson.toReference());
-				if (CountnumberOfNotExCase < numberOfNotExCase){
-					caseDataDto.setCaseClassification(CaseClassification.NOT_EXAMINATED);
-					CountnumberOfNotExCase++;
-				}else{
-					caseDataDto.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
-					CountnumberOfExCase++;
-				}
-				caseDataDto.setReportDate(DateHelper.parseDate(date.getValue().toString(), new SimpleDateFormat("dd/MM/yyyy")));
-				caseDataDto.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
-				caseDataDto.setPointOfEntry(PointOfEntry);
-				caseDataDto.setResponsibleDistrict(activeDistrict);
-				caseDataDto.setResponsibleRegion(Region);
-				caseDataDto.setReportingUser(currentUser.toReference());
-				caseDataDto.setInvestigationStatus(InvestigationStatus.PENDING);
-				caseDataDto.setOutcome(CaseOutcome.NO_OUTCOME);
+			UserDto UserToSave = userFacade.getByUuid(currentUser.getUuid());
+			if (UserToSave != null){
+				String strExam = UserToSave.getNumberofexaminatedpeople();
+				String strNotExam = UserToSave.getNumberofnonexaminatedpeople();
+				String chaine = "";
+				String Secondechaine = "";
+				String SecondechaineDeux = "";
+				String chaineDeux = "";
+				logger.debug("La date a sauvegarder {}", date.getValue().toString());
+				chaine = strExam + Tested_nomberPeople + ":" + pointOfEntry.getUuid() + "/" + date.getValue().toString() + ";";
+				chaineDeux = strNotExam + numberOfNotExCase + ":" + pointOfEntry.getUuid() + "/" + date.getValue().toString() + ";";
+				boolean tosave = false;
 				
-				CaseDataDto createdcase = caseFacade.saveCase(caseDataDto);
-				logger.debug("Cas cree {}", createdcase.getUuid());
+				if(Tested_nomberPeople > 0){
+					String NbExted = UserToSave.getNumberofexaminatedpeople();
+					String[] NbExtedArray = NbExted.split(";");
+					if (!StringUtils.isBlank(NbExted)){
+						boolean add = true;
+						for (String valeurEntiere : NbExtedArray){
+							if (valeurEntiere.contains(pointOfEntry.getUuid()+ "/" + date.getValue().toString())){
+								logger.info("{} contenu dans {}", pointOfEntry.getUuid()+"+"+date.getValue().toString(), valeurEntiere);
+								String[] array = valeurEntiere.split(":", 2);
+								int numberPresent = Integer.parseInt(array[0]);
+								logger.debug("Maintenant on a {}", numberPresent);
+								numberPresent+=Tested_nomberPeople;
+								String Newchaine = numberPresent + ":" + pointOfEntry.getUuid() + "/" + date.getValue().toString() + ";";
+								logger.debug("Nous remplacons {} par {}", valeurEntiere, Newchaine);
+								Secondechaine += Newchaine;
+								add = false;
+							}
+							else{
+								Secondechaine+=valeurEntiere + ";";
+							}
+						}
+						if(add == true){
+							Secondechaine+=Tested_nomberPeople + ":" + pointOfEntry.getUuid() + "/" + date.getValue().toString() + ";";
+						}
+						String ChaineFinal = Secondechaine;
+						if (!StringUtils.isBlank(ChaineFinal)){
+							UserToSave.setNumberofexaminatedpeople(ChaineFinal);
+							tosave = true;
+						}
+					}else{
+						logger.info("Enregidtrement de la data {}", chaine);
+						UserToSave.setNumberofexaminatedpeople(chaine);
+						tosave = true;
+					}
+				}
+				if(numberOfNotExCase > 0){
+					String NbNotExted = UserToSave.getNumberofnonexaminatedpeople();
+					String[] NbNotExtedArray = NbNotExted.split(";");
+					if (!StringUtils.isBlank(NbNotExted)){
+						boolean adding = true;
+						for (String valeurEntiere : NbNotExtedArray){
+							if (valeurEntiere.contains(pointOfEntry.getUuid()+ "/" + date.getValue().toString())){
+								logger.info("{} contenu dans {}...", pointOfEntry.getUuid(), valeurEntiere);
+								String[] array = valeurEntiere.split(":", 2);
+								int numberPresent = Integer.parseInt(array[0]);
+								logger.debug("Maintenant on a {}...", numberPresent);
+								numberPresent+=numberOfNotExCase;
+								String Newchaine = numberPresent + ":" + pointOfEntry.getUuid() + "/" + date.getValue().toString() + ";";
+								logger.debug("Nous remplacons {} par {} ...", valeurEntiere, Newchaine);
+								SecondechaineDeux += Newchaine;
+								adding = false;
+							}
+							else{
+								SecondechaineDeux+=valeurEntiere + ";";
+							}
+						}
+						if(adding == true){
+							SecondechaineDeux+=numberOfNotExCase + ":" + pointOfEntry.getUuid() + "/" + date.getValue().toString() + ";";
+						}
+						String ChaineFinal = SecondechaineDeux;
+						if (!StringUtils.isBlank(ChaineFinal)){
+							UserToSave.setNumberofnonexaminatedpeople(ChaineFinal);
+							tosave = true;
+						}
+					}else{
+						logger.info("Enregidtrement de la data {} ...", chaineDeux);
+						UserToSave.setNumberofnonexaminatedpeople(chaineDeux);
+						tosave = true;
+					}
+				}
+				
+				if (tosave == true){
+					userFacade.saveUser(UserToSave);
+				}
+				
 			}
-			logger.debug("Creation des cas terminee. {} cas non examines"+
-			" crees et {} cas examine crees.",
-			CountnumberOfNotExCase, CountnumberOfExCase);
 			
 			Notification.show(I18nProperties.getString(Strings.messageCaseAutoSaved), Type.WARNING_MESSAGE);
 			SormasUI.refreshView();

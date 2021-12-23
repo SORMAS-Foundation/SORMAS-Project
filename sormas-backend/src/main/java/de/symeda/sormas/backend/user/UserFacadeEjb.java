@@ -160,6 +160,8 @@ public class UserFacadeEjb implements UserFacade {
 		target.setLimitedDisease(source.getLimitedDisease());
 		target.setLanguage(source.getLanguage());
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
+		target.setNumberofexaminatedpeople(source.getNumberofexaminatedpeople());
+		target.setNumberofnonexaminatedpeople(source.getNumberofnonexaminatedpeople());
 
 		source.getUserRoles().size();
 		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
@@ -501,6 +503,8 @@ public class UserFacadeEjb implements UserFacade {
 		target.setLimitedDisease(source.getLimitedDisease());
 		target.setLanguage(source.getLanguage());
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
+		target.setNumberofexaminatedpeople(source.getNumberofexaminatedpeople());
+		target.setNumberofnonexaminatedpeople(source.getNumberofnonexaminatedpeople());
 
 		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
 

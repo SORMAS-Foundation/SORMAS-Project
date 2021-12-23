@@ -91,6 +91,17 @@ public class CronService {
 		logger.debug("calculateCaseCompletion finished. {} cases, {} s", casesUpdated, DateHelper.durationSeconds(timeStart));
 	}
 
+	@Schedule(hour = "*", minute = "*/1", second = "0", persistent = false)
+	public void SaveCaseHandler() {
+		try{
+			boolean result = caseFacade.generateCases();
+			logger.debug("Cron for saving cases finished. {}", result);
+		}catch(Exception e){
+			logger.info("Erreur **************" + e);
+		}
+		
+	}
+
 	@Schedule(hour = "1", minute = "0", second = "0", persistent = false)
 	public void deleteAllExpiredFeatureConfigurations() {
 

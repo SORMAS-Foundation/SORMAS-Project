@@ -65,6 +65,8 @@ public class UserDto extends EntityDto {
 	public static final String LIMITED_DISEASE = "limitedDisease";
 	public static final String LANGUAGE = "language";
 	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";
+	public static final String NUMBER_OF_EXAMINATED_PEOPLE = "numberofexaminatedpeople";
+	public static final String NUMBER_OF_NON_EXAMINATED_PEOPLE = "numberofnonexaminatedpeople";
 
 	private boolean active = true;
 
@@ -104,6 +106,10 @@ public class UserDto extends EntityDto {
 	private Language language;
 
 	private boolean hasConsentedToGdpr;
+
+	private String numberofexaminatedpeople;
+
+	private String numberofnonexaminatedpeople;
 
 	public static UserDto build() {
 		UserDto user = new UserDto();
@@ -199,6 +205,22 @@ public class UserDto extends EntityDto {
 
 	public void setAssociatedCountry(CountryReferenceDto associatedCountry) {
 		this.associatedCountry = associatedCountry;
+	}
+
+	public String getNumberofexaminatedpeople() {
+		return numberofexaminatedpeople;
+	}
+
+	public void setNumberofexaminatedpeople(String numberofexaminatedpeople) {
+		this.numberofexaminatedpeople = numberofexaminatedpeople;
+	}
+
+	public String getNumberofnonexaminatedpeople() {
+		return numberofnonexaminatedpeople;
+	}
+
+	public void setNumberofnonexaminatedpeople(String numberofnonexaminatedpeople) {
+		this.numberofnonexaminatedpeople = numberofnonexaminatedpeople;
 	}
 
 	public RegionReferenceDto getRegion() {

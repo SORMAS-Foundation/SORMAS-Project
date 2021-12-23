@@ -20,7 +20,7 @@ package de.symeda.sormas.backend.caze;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
-
+import javax.annotation.security.RolesAllowed;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -155,6 +155,7 @@ import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
@@ -178,6 +179,7 @@ import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.therapy.TreatmentDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.AccessDeniedException;
@@ -262,6 +264,9 @@ import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
@@ -321,7 +326,8 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
 import de.symeda.sormas.utils.CaseJoins;
-
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import java.text.SimpleDateFormat;
 @Stateless(name = "CaseFacade")
 public class CaseFacadeEjb implements CaseFacade {
 
@@ -331,6 +337,12 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
+
+	private DistrictReferenceDto districtReferenceDto = null;
+
+	private RegionReferenceDto regionReferenceDto = null;
+
+	private PointOfEntryReferenceDto pointOfEntry = null;
 
 	@EJB
 	private CaseClassificationFacadeEjbLocal caseClassificationFacade;
@@ -360,6 +372,12 @@ public class CaseFacadeEjb implements CaseFacade {
 	private CommunityFacadeEjbLocal communityFacade;
 	@EJB
 	private CommunityService communityService;
+	@EJB
+	private PointOfEntryFacadeEjbLocal pointOfEntryFacade;
+	@EJB
+	private CaseFacadeEjbLocal caseFacade;
+	@EJB
+	private UserFacadeEjbLocal userFacade;
 	@EJB
 	private FacilityFacadeEjbLocal facilityFacade;
 	@EJB
@@ -1485,6 +1503,11 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		doSave(existingCaze, handleChanges, existingCaseDto, syncShares);
 
+
+		if (StringUtils.isBlank(existingCaze.getPerson().getFirstName())){
+			return toDto(existingCaze);
+		}
+
 		return convertToDto(existingCaze, Pseudonymizer.getDefault(userService::hasRight));
 	}
 
@@ -1762,7 +1785,16 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		// Generate epid number if missing or incomplete
 		FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withCountry(configFacade.getCountryLocale());
-		if (fieldVisibilityCheckers.isVisible(CaseDataDto.class, CaseDataDto.EPID_NUMBER)
+		if (StringUtils.isBlank(newCase.getPerson().getFirstName())){
+			newCase.setEpidNumber(
+			generateEpidNumber(
+				newCase.getEpidNumber(),
+				newCase.getUuid(),
+				newCase.getDisease(),
+				newCase.getReportDate(),
+				newCase.getResponsibleDistrict().getUuid()));
+		}else{
+			if (fieldVisibilityCheckers.isVisible(CaseDataDto.class, CaseDataDto.EPID_NUMBER)
 			&& !CaseLogic.isCompleteEpidNumber(newCase.getEpidNumber())) {
 			newCase.setEpidNumber(
 				generateEpidNumber(
@@ -1771,6 +1803,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					newCase.getDisease(),
 					newCase.getReportDate(),
 					newCase.getResponsibleDistrict().getUuid()));
+			}
 		}
 
 		// update the plague type based on symptoms
@@ -1828,7 +1861,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		// Update case classification if the feature is enabled
 		CaseClassification classification = null;
 		if (configFacade.isFeatureAutomaticCaseClassification()) {
-			if (newCase.getCaseClassification() != CaseClassification.NO_CASE) {
+			if ((newCase.getCaseClassification() != CaseClassification.NO_CASE) && !StringUtils.isBlank(newCase.getPerson().getFirstName())) {
 				// calculate classification
 				CaseDataDto newCaseDto = toDto(newCase);
 
@@ -2774,6 +2807,164 @@ public class CaseFacadeEjb implements CaseFacade {
 				createInvestigationTask(caze);
 			}
 		}
+	}
+
+	@RolesAllowed(UserRole._SYSTEM)
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public boolean generateCases() {
+
+		logger.debug("Debut du cron de generation des cas...");
+
+		List<User> users = userService.getAllByRegionsAndUserRoles(null, UserRole.SURVEILLANCE_OFFICER, UserRole.POE_INFORMANT);
+		for (User usr : users) {
+			if(usr.getPointOfEntry() != null){
+				pointOfEntry = PointOfEntryFacadeEjb.toReferenceDto(usr.getPointOfEntry());
+			}
+			
+			regionReferenceDto = RegionFacadeEjb.toReferenceDto(usr.getRegion());
+			UserDto UserToSave = userFacade.getByUuid(usr.getUuid());
+			
+			districtReferenceDto = DistrictFacadeEjb.toReferenceDto(usr.getDistrict());
+			if(regionReferenceDto != null && districtReferenceDto != null){
+				String NbEx = usr.getNumberofexaminatedpeople();
+				String NbNonEx = usr.getNumberofnonexaminatedpeople();
+				if (NbEx.endsWith(";")){
+					NbEx = StringUtils.chop(NbEx);
+				}
+				if (NbNonEx.endsWith(";")){
+					NbNonEx = StringUtils.chop(NbNonEx);
+				}
+				String[] arrOfStr = NbEx.split(";");
+				String[] NonarrOfStr = NbNonEx.split(";");
+				String chaine = "";
+				String Deuxiemechaine = "";
+				boolean tosave = false;
+				if (!StringUtils.isBlank(NbEx)){
+					for (String valeurEntiere : arrOfStr){
+						
+						String[] array = valeurEntiere.split(":", 2);
+						String PoEUidAndDate = array[1];
+						String[] arrayLast = PoEUidAndDate.split("/", 2);
+						String PoEUid = arrayLast[0];
+						String Thedate = arrayLast[1];
+						logger.info("Voici la fameuse date {}", DateHelper.parseDate(Thedate, new SimpleDateFormat("yyyy-MM-dd")));
+						int limit = 0;
+						int rest = 0;
+						int number = Integer.parseInt(array[0]);
+						logger.info("Number {}", number);
+						if (number < 101){
+							limit = number;
+						}else{
+							limit = 100;
+							rest = number - 100;
+							chaine += rest + ":" + PoEUid + "/" + Thedate + ";";
+						}
+						
+						if (usr.getPointOfEntry() == null){
+							pointOfEntry = pointOfEntryFacade.getByUuid(arrayLast[0]).toReference();
+							logger.debug("pointOfEntry est {}", pointOfEntry);
+						}
+						int i;
+						for (i = 0; i < limit; i++){
+							PersonDto personDto = new PersonDto();
+							personDto.setFirstName("EMPTY_FIRST_NAME");
+							personDto.setLastName("EMPTY_LAST_NAME");
+							personDto.setSex(Sex.UNKNOWN);
+							PersonDto createdPerson = personFacade.savePerson(personDto);
+							logger.debug("Personne cree {} ", createdPerson.getUuid());
+
+							CaseDataDto caseDataDto = new CaseDataDto();
+							caseDataDto.setDisease(Disease.UNDEFINED);
+							caseDataDto.setDiseaseDetails(Disease.UNDEFINED.getName());
+							caseDataDto.setPerson(createdPerson.toReference());
+							caseDataDto.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+							caseDataDto.setReportDate(DateHelper.parseDate(Thedate, new SimpleDateFormat("yyyy-MM-dd")));
+							caseDataDto.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
+							caseDataDto.setPointOfEntry(pointOfEntry);
+							caseDataDto.setResponsibleDistrict(districtReferenceDto);
+							caseDataDto.setResponsibleRegion(regionReferenceDto);
+							caseDataDto.setReportingUser(usr.toReference());
+							caseDataDto.setInvestigationStatus(InvestigationStatus.PENDING);
+							caseDataDto.setOutcome(CaseOutcome.NO_OUTCOME);
+
+							CaseDataDto createdcase = caseFacade.saveCase(caseDataDto);
+							logger.debug("Cas {} cree", createdcase.getUuid());
+							
+						}
+						logger.debug("{} cas non clasifies (USER: {}) point d'entree {}", i, usr.getUserName(), pointOfEntry);
+					}
+					logger.info("Test ch {}", chaine);
+					if (UserToSave != null){
+						UserToSave.setNumberofexaminatedpeople(chaine);
+						tosave = true;
+					}
+					
+				}
+
+				// No examines
+				if (!StringUtils.isBlank(NbNonEx)){
+					for (String valeurEntiere : NonarrOfStr){
+						
+						String[] array = valeurEntiere.split(":", 2);
+						String PoEUidAndDate = array[1];
+						String[] arrayLast = PoEUidAndDate.split("/", 2);
+						String PoEUid = arrayLast[0];
+						String Thedate = arrayLast[1];
+						int limit = 0;
+						int rest = 0;
+						int number = Integer.parseInt(array[0]);
+						if (number < 101){
+							limit = number;
+						}else{
+							limit = 100;
+							rest = number - 100;
+							Deuxiemechaine += rest + ":" + PoEUid + "/" + Thedate + ";";
+						}
+						
+						if (usr.getPointOfEntry() == null){
+							pointOfEntry = pointOfEntryFacade.getByUuid(arrayLast[0]).toReference();
+						}
+						int i;
+						for (i = 0; i < limit; i++){
+							PersonDto personDto = new PersonDto();
+							personDto.setFirstName("EMPTY_FIRST_NAME");
+							personDto.setLastName("EMPTY_LAST_NAME");
+							personDto.setSex(Sex.UNKNOWN);
+							PersonDto createdPerson = personFacade.savePerson(personDto);
+							logger.debug("La Personne {} a ete cree", createdPerson.getUuid());
+
+							CaseDataDto caseDataDto = new CaseDataDto();
+							caseDataDto.setDisease(Disease.UNDEFINED);
+							caseDataDto.setDiseaseDetails(Disease.UNDEFINED.getName());
+							caseDataDto.setPerson(createdPerson.toReference());
+							caseDataDto.setCaseClassification(CaseClassification.NOT_EXAMINATED);
+							caseDataDto.setReportDate(DateHelper.parseDate(Thedate, new SimpleDateFormat("yyyy-MM-dd")));
+							caseDataDto.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
+							caseDataDto.setPointOfEntry(pointOfEntry);
+							caseDataDto.setResponsibleDistrict(districtReferenceDto);
+							caseDataDto.setResponsibleRegion(regionReferenceDto);
+							caseDataDto.setReportingUser(usr.toReference());
+							caseDataDto.setInvestigationStatus(InvestigationStatus.PENDING);
+							caseDataDto.setOutcome(CaseOutcome.NO_OUTCOME);
+
+							CaseDataDto createdcase = caseFacade.saveCase(caseDataDto);
+							logger.debug("Le Cas {} a ete cree", createdcase.getUuid());
+							
+						}
+						logger.debug("{} cas non examine (USER: {}) point d'entree {}", i, usr.getUserName(), pointOfEntry);
+					}
+					if (UserToSave != null){
+						UserToSave.setNumberofnonexaminatedpeople(Deuxiemechaine);
+						tosave = true;
+					}
+					
+				}
+				if (tosave == true && UserToSave != null){
+					userFacade.saveUser(UserToSave);
+				}
+			}
+		}
+		return true;
 	}
 
 	public void updateInvestigationByTask(Case caze) {
