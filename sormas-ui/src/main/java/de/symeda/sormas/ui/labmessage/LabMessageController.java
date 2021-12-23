@@ -1324,10 +1324,7 @@ public class LabMessageController {
 		ComboBoxWithPlaceholder assigneeComboBox = new ComboBoxWithPlaceholder();
 		assigneeComboBox.setCaption(I18nProperties.getCaption(Captions.LabMessage_assignee));
 		assigneeComboBox.addItems(
-			FacadeProvider.getUserFacade()
-				.getUsersByRegionAndRoles(
-					UserProvider.getCurrent().getUser().getRegion(),
-					UserRight.LAB_MESSAGES.getDefaultUserRoles().stream().collect(Collectors.toList())));
+			FacadeProvider.getUserFacade().getUsersByRegionAndRight(UserProvider.getCurrent().getUser().getRegion(), UserRight.LAB_MESSAGES));
 		assigneeComboBox.setNullSelectionAllowed(true);
 		assigneeComboBox.setWidth(300, Sizeable.Unit.PIXELS);
 		if (labMessageDto.getAssignee() != null) {

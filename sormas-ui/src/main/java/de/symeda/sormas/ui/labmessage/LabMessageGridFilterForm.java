@@ -16,7 +16,6 @@
 package de.symeda.sormas.ui.labmessage;
 
 import java.util.Date;
-import java.util.stream.Collectors;
 
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.ui.DateField;
@@ -70,9 +69,7 @@ public class LabMessageGridFilterForm extends AbstractFilterForm<LabMessageCrite
 
 		ComboBoxWithPlaceholder assignee = addField(LabMessageCriteria.ASSIGNEE, ComboBoxWithPlaceholder.class);
 		assignee.addItem(new UserReferenceDto(ReferenceDto.NO_REFERENCE_UUID, I18nProperties.getCaption(Captions.unassigned), "", null));
-		assignee.addItems(
-			FacadeProvider.getUserFacade()
-				.getUsersByRegionAndRoles(user.getRegion(), UserRight.LAB_MESSAGES.getDefaultUserRoles().stream().collect(Collectors.toList())));
+		assignee.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRight(user.getRegion(), UserRight.LAB_MESSAGES));
 		assignee.setNullSelectionAllowed(true);
 
 		DateTimeField messageDateFrom = addField(LabMessageCriteria.MESSAGE_DATE_FROM, DateTimeField.class);

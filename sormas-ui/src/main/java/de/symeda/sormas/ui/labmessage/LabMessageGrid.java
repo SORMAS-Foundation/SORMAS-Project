@@ -26,7 +26,6 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
@@ -184,7 +183,7 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 		} else {
 			Label label = new Label(labMessage.getAssignee().getCaption());
 			layout.addComponent(label);
-			layout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
+			//layout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
 			button.setIcon((VaadinIcons.ELLIPSIS_DOTS_V));
 			CssStyles.style(button, CssStyles.ALIGN_RIGHT);
 		}
