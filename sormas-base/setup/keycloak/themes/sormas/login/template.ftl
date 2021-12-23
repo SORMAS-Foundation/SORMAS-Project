@@ -161,8 +161,8 @@
             <img src="${url.resourcesPath}/img/sormas-logo-big-text.png" alt="Sormas">
             <h2>Surveillance,<br>Outbreak Response Management<br>and Analysis System<br></h2>
             <ul>
-                <li>${msg("LoginSidebar.diseaseDetection")}</li>
                 <li>${msg("LoginSidebar.diseasePrevention")}</li>
+                <li>${msg("LoginSidebar.diseaseDetection")}</li>
                 <li>${msg("LoginSidebar.outbreakResponse")}</li>
             </ul>
         </div>
