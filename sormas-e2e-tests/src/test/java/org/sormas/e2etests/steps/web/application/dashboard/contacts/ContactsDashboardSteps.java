@@ -10,8 +10,8 @@ public class ContactsDashboardSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   private final SoftAssertions softly;
-  private int covid19ContactsCounterIntValueAfter;
-  private int covid19ContactsCounterIntValueBefore;
+  private int covid19ContactsCounterAfter;
+  private int covid19ContactsCounterBefore;
 
   @Inject
   public ContactsDashboardSteps(WebDriverHelpers webDriverHelpers, SoftAssertions softly) {
@@ -25,7 +25,7 @@ public class ContactsDashboardSteps implements En {
           String covid19ContactsCounterRawValue =
               webDriverHelpers.getTextFromWebElement(
                   ContactsDashboardPage.CONTACTS_COVID19_COUNTER);
-          covid19ContactsCounterIntValueBefore = Integer.parseInt(covid19ContactsCounterRawValue);
+          covid19ContactsCounterBefore = Integer.parseInt(covid19ContactsCounterRawValue);
         });
 
     Then(
@@ -36,12 +36,9 @@ public class ContactsDashboardSteps implements En {
           String covid19ContactsCounterRawValueAfter =
               webDriverHelpers.getTextFromWebElement(
                   ContactsDashboardPage.CONTACTS_COVID19_COUNTER);
-          covid19ContactsCounterIntValueAfter =
-              Integer.parseInt(covid19ContactsCounterRawValueAfter);
+          covid19ContactsCounterAfter = Integer.parseInt(covid19ContactsCounterRawValueAfter);
 
-          softly
-              .assertThat(covid19ContactsCounterIntValueBefore)
-              .isLessThan(covid19ContactsCounterIntValueAfter);
+          softly.assertThat(covid19ContactsCounterBefore).isLessThan(covid19ContactsCounterAfter);
           softly.assertAll();
         });
   }

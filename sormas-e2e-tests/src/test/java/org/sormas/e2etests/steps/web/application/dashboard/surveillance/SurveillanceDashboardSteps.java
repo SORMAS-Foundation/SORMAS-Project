@@ -10,10 +10,10 @@ public class SurveillanceDashboardSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   private final SoftAssertions softly;
-  private int covid19DiseaseCounterIntValueBefore;
-  private int covid19DiseaseCounterIntValueAfter;
-  private int newCasesCounterIntValueBefore;
-  private int newCasesCounterIntValueAfter;
+  private int covid19DiseaseCounterBefore;
+  private int covid19DiseaseCounterAfter;
+  private int newCasesCounterBefore;
+  private int newCasesCounterAfter;
 
   @Inject
   public SurveillanceDashboardSteps(WebDriverHelpers webDriverHelpers, SoftAssertions softly) {
@@ -27,7 +27,7 @@ public class SurveillanceDashboardSteps implements En {
           String covid19DiseaseCounterRawValue =
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.COVID19_DISEASE_COUNTER);
-          covid19DiseaseCounterIntValueBefore = Integer.parseInt(covid19DiseaseCounterRawValue);
+          covid19DiseaseCounterBefore = Integer.parseInt(covid19DiseaseCounterRawValue);
         });
 
     Then(
@@ -37,20 +37,16 @@ public class SurveillanceDashboardSteps implements En {
 
           String newCasesCounterRawValueAfter =
               webDriverHelpers.getTextFromWebElement(SurveillanceDashboardPage.CASE_COUNTER);
-          newCasesCounterIntValueAfter = Integer.parseInt(newCasesCounterRawValueAfter);
+          newCasesCounterAfter = Integer.parseInt(newCasesCounterRawValueAfter);
 
           String covid19DiseaseCounterRawValueAfter =
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.COVID19_DISEASE_COUNTER);
-          covid19DiseaseCounterIntValueAfter = Integer.parseInt(covid19DiseaseCounterRawValueAfter);
+          covid19DiseaseCounterAfter = Integer.parseInt(covid19DiseaseCounterRawValueAfter);
 
-          softly.assertThat(newCasesCounterIntValueBefore).isLessThan(newCasesCounterIntValueAfter);
-          softly
-              .assertThat(covid19DiseaseCounterIntValueBefore)
-              .isLessThan(covid19DiseaseCounterIntValueAfter);
-          softly
-              .assertThat(newCasesCounterIntValueAfter)
-              .isEqualTo(covid19DiseaseCounterIntValueAfter);
+          softly.assertThat(newCasesCounterBefore).isLessThan(newCasesCounterAfter);
+          softly.assertThat(covid19DiseaseCounterBefore).isLessThan(covid19DiseaseCounterAfter);
+          softly.assertThat(newCasesCounterAfter).isEqualTo(covid19DiseaseCounterAfter);
           softly.assertAll();
         });
 
@@ -68,7 +64,7 @@ public class SurveillanceDashboardSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
           String newCasesCounterValue =
               webDriverHelpers.getTextFromWebElement(SurveillanceDashboardPage.CASE_COUNTER);
-          newCasesCounterIntValueBefore = Integer.parseInt(newCasesCounterValue);
+          newCasesCounterBefore = Integer.parseInt(newCasesCounterValue);
         });
   }
 }
