@@ -344,6 +344,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private PointOfEntryReferenceDto pointOfEntry = null;
 
+	private int maxi = 101;
+
 	@EJB
 	private CaseClassificationFacadeEjbLocal caseClassificationFacade;
 	@EJB
@@ -2834,6 +2836,14 @@ public class CaseFacadeEjb implements CaseFacade {
 				if (NbNonEx.endsWith(";")){
 					NbNonEx = StringUtils.chop(NbNonEx);
 				}
+				Calendar c = Calendar.getInstance();
+				int heure = c.get(Calendar.HOUR_OF_DAY);
+				logger.info("Voici lheure {}", heure);
+				
+				if ((heure > 5) && (heure < 20)){
+					maxi = 31;
+				}
+				logger.debug("La valeur maximale {} sera utilisee", maxi);
 				String[] arrOfStr = NbEx.split(";");
 				String[] NonarrOfStr = NbNonEx.split(";");
 				String chaine = "";
@@ -2847,22 +2857,19 @@ public class CaseFacadeEjb implements CaseFacade {
 						String[] arrayLast = PoEUidAndDate.split("/", 2);
 						String PoEUid = arrayLast[0];
 						String Thedate = arrayLast[1];
-						logger.info("Voici la fameuse date {}", DateHelper.parseDate(Thedate, new SimpleDateFormat("yyyy-MM-dd")));
 						int limit = 0;
 						int rest = 0;
 						int number = Integer.parseInt(array[0]);
-						logger.info("Number {}", number);
-						if (number < 101){
+						if (number < maxi){
 							limit = number;
 						}else{
-							limit = 100;
-							rest = number - 100;
+							limit = maxi;
+							rest = number - maxi;
 							chaine += rest + ":" + PoEUid + "/" + Thedate + ";";
 						}
 						
 						if (usr.getPointOfEntry() == null){
 							pointOfEntry = pointOfEntryFacade.getByUuid(arrayLast[0]).toReference();
-							logger.debug("pointOfEntry est {}", pointOfEntry);
 						}
 						int i;
 						for (i = 0; i < limit; i++){
@@ -2871,7 +2878,6 @@ public class CaseFacadeEjb implements CaseFacade {
 							personDto.setLastName("EMPTY_LAST_NAME");
 							personDto.setSex(Sex.UNKNOWN);
 							PersonDto createdPerson = personFacade.savePerson(personDto);
-							logger.debug("Personne cree {} ", createdPerson.getUuid());
 
 							CaseDataDto caseDataDto = new CaseDataDto();
 							caseDataDto.setDisease(Disease.UNDEFINED);
@@ -2893,12 +2899,10 @@ public class CaseFacadeEjb implements CaseFacade {
 						}
 						logger.debug("{} cas non clasifies (USER: {}) point d'entree {}", i, usr.getUserName(), pointOfEntry);
 					}
-					logger.info("Test ch {}", chaine);
 					if (UserToSave != null){
 						UserToSave.setNumberofexaminatedpeople(chaine);
 						tosave = true;
 					}
-					
 				}
 
 				// No examines
@@ -2916,8 +2920,8 @@ public class CaseFacadeEjb implements CaseFacade {
 						if (number < 101){
 							limit = number;
 						}else{
-							limit = 100;
-							rest = number - 100;
+							limit = maxi;
+							rest = number - maxi;
 							Deuxiemechaine += rest + ":" + PoEUid + "/" + Thedate + ";";
 						}
 						
@@ -2931,7 +2935,6 @@ public class CaseFacadeEjb implements CaseFacade {
 							personDto.setLastName("EMPTY_LAST_NAME");
 							personDto.setSex(Sex.UNKNOWN);
 							PersonDto createdPerson = personFacade.savePerson(personDto);
-							logger.debug("La Personne {} a ete cree", createdPerson.getUuid());
 
 							CaseDataDto caseDataDto = new CaseDataDto();
 							caseDataDto.setDisease(Disease.UNDEFINED);
