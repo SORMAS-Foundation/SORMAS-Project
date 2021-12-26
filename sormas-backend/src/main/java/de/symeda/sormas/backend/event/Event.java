@@ -14,8 +14,8 @@
  */
 package de.symeda.sormas.backend.event;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -68,16 +68,16 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoEvent;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Entity(name = "events")
 @Audited
-public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalData {
+public class Event extends CoreAdo implements SormasToSormasShareable, HasExternalData {
 
 	private static final long serialVersionUID = 4964495716032049582L;
 
@@ -127,6 +127,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	public static final String TASKS = "tasks";
@@ -144,7 +145,8 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	public static final String PARENTERAL_TRANSMISSION_MODE = "parenteralTransmissionMode";
 	public static final String MEDICALLY_ASSOCIATED_TRANSMISSION_MODE = "medicallyAssociatedTransmissionMode";
 
-	public static final String SHARE_INFO_EVENTS = "shareInfoEvents";
+	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 
 	private Event superordinateEvent;
 	private List<Event> subordinateEvents;
@@ -187,6 +189,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
 	private String diseaseDetails;
+	private String diseaseVariantDetails;
 	private User responsibleUser;
 	private String typeOfPlaceText;
 	private Double reportLat;
@@ -195,7 +198,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	private YesNoUnknown transregionalOutbreak;
 	private DiseaseTransmissionMode diseaseTransmissionMode;
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
-	private List<ShareInfoEvent> shareInfoEvents = new ArrayList<>(0);
+	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 	private EventManagementStatus eventManagementStatus;
 
 	private boolean archived;
@@ -208,7 +211,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	private YesNoUnknown epidemiologicalEvidence;
 	private Map<EpidemiologicalEvidenceDetail, Boolean> epidemiologicalEvidenceDetails;
 	private YesNoUnknown laboratoryDiagnosticEvidence;
-	private Map<LaboratoryDiagnosticEvidenceDetail, Boolean>  laboratoryDiagnosticEvidenceDetails;
+	private Map<LaboratoryDiagnosticEvidenceDetail, Boolean> laboratoryDiagnosticEvidenceDetails;
 
 	private List<Task> tasks;
 	private List<EventGroup> eventGroups;
@@ -282,7 +285,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.eventPersons = eventPersons;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalId() {
 		return externalId;
 	}
@@ -291,7 +294,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.externalId = externalId;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalToken() {
 		return externalToken;
 	}
@@ -300,7 +303,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.externalToken = externalToken;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
+	@Column(length = CHARACTER_LIMIT_DEFAULT, nullable = false)
 	public String getEventTitle() {
 		return eventTitle;
 	}
@@ -309,7 +312,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.eventTitle = eventTitle;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getEventDesc() {
 		return eventDesc;
 	}
@@ -421,7 +424,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.meansOfTransportDetails = meansOfTransportDetails;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getConnectionNumber() {
 		return connectionNumber;
 	}
@@ -465,7 +468,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.srcInstitutionalPartnerType = srcInstitutionalPartnerType;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSrcInstitutionalPartnerTypeDetails() {
 		return srcInstitutionalPartnerTypeDetails;
 	}
@@ -474,7 +477,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.srcInstitutionalPartnerTypeDetails = srcInstitutionalPartnerTypeDetails;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSrcFirstName() {
 		return srcFirstName;
 	}
@@ -483,7 +486,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.srcFirstName = srcFirstName;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSrcLastName() {
 		return srcLastName;
 	}
@@ -492,7 +495,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.srcLastName = srcLastName;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSrcTelNo() {
 		return srcTelNo;
 	}
@@ -501,7 +504,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.srcTelNo = srcTelNo;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSrcEmail() {
 		return srcEmail;
 	}
@@ -510,7 +513,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.srcEmail = srcEmail;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSrcMediaWebsite() {
 		return srcMediaWebsite;
 	}
@@ -519,7 +522,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.srcMediaWebsite = srcMediaWebsite;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSrcMediaName() {
 		return srcMediaName;
 	}
@@ -528,7 +531,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.srcMediaName = srcMediaName;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getSrcMediaDetails() {
 		return srcMediaDetails;
 	}
@@ -556,13 +559,22 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.diseaseVariant = diseaseVariant;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
 
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	@ManyToOne
@@ -574,7 +586,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.responsibleUser = responsibleUser;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTypeOfPlaceText() {
 		return typeOfPlaceText;
 	}
@@ -759,13 +771,14 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.sormasToSormasOriginInfo = originInfo;
 	}
 
-	@OneToMany(mappedBy = ShareInfoEvent.EVENT, fetch = FetchType.LAZY)
-	public List<ShareInfoEvent> getShareInfoEvents() {
-		return shareInfoEvents;
+	@OneToMany(mappedBy = SormasToSormasShareInfo.EVENT, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
+		return sormasToSormasShares;
 	}
 
-	public void setShareInfoEvents(List<ShareInfoEvent> shareInfoEvents) {
-		this.shareInfoEvents = shareInfoEvents;
+	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
+		this.sormasToSormasShares = sormasToSormasShares;
 	}
 
 	@Column(columnDefinition = "text")
@@ -779,7 +792,9 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 
 	@AuditedIgnore
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = EVENTS_EVENT_GROUPS_TABLE_NAME, joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "eventgroup_id"))
+	@JoinTable(name = EVENTS_EVENT_GROUPS_TABLE_NAME,
+		joinColumns = @JoinColumn(name = "event_id"),
+		inverseJoinColumns = @JoinColumn(name = "eventgroup_id"))
 	public List<EventGroup> getEventGroups() {
 		return eventGroups;
 	}

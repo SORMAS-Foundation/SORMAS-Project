@@ -4,12 +4,18 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.EntityDto;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
+
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
-public class PointOfEntryDto extends EntityDto {
+public class PointOfEntryDto extends InfrastructureDto {
 
 	private static final long serialVersionUID = 4124483408068181854L;
 
@@ -35,13 +41,19 @@ public class PointOfEntryDto extends EntityDto {
 	public static final String EXTERNAL_ID = "externalID";
 
 	private PointOfEntryType pointOfEntryType;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String name;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	@Min(value = -90, message = Validations.numberTooSmall)
+	@Max(value = 90, message = Validations.numberTooBig)
 	private Double latitude;
+	@Min(value = -180, message = Validations.numberTooSmall)
+	@Max(value = 180, message = Validations.numberTooBig)
 	private Double longitude;
 	private boolean active;
 	private boolean archived;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
 
 	public PointOfEntryDto(

@@ -18,6 +18,8 @@
 package de.symeda.sormas.backend.common;
 
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -222,6 +224,17 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		}
 	}
 
+	public List<ADO> getByReferenceDtos(Collection<? extends ReferenceDto> dtos) {
+		if (dtos == null || dtos.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<String> uuids = dtos.stream()
+			.map(ReferenceDto::getUuid)
+			.collect(Collectors.toList());
+		return getByUuids(uuids);
+	}
+
 	@Override
 	public ADO getByUuid(String uuid) {
 
@@ -243,7 +256,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	@Override
 	public Boolean exists(@NotNull String uuid) {
 
-		return exists((cb, root) -> cb.equal(root.get(AbstractDomainObject.UUID), uuid));
+		return exists((cb, root, cq) -> cb.equal(root.get(AbstractDomainObject.UUID), uuid));
 	}
 
 	@Override
@@ -264,7 +277,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 
 	@Override
 	public void delete(ADO deleteme) {
-		em.remove(deleteme);
+		em.remove(em.contains(deleteme) ? deleteme : em.merge(deleteme)); // todo: investigate why the entity might be detached (example: AdditionalTest)
 		em.flush();
 	}
 
@@ -273,7 +286,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		em.flush();
 	}
 
-	public Boolean exists(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
+	public boolean exists(ExistsPredicateBuilder<ADO> filterBuilder) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -283,7 +296,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		final Subquery<ADO> subquery = query.subquery(getElementClass());
 		final Root<ADO> subRootEntity = subquery.from(getElementClass());
 		subquery.select(subRootEntity);
-		subquery.where(filterBuilder.apply(cb, subRootEntity));
+		subquery.where(filterBuilder.buildPredicate(cb, subRootEntity, query));
 
 		final Predicate exists = cb.exists(subquery);
 		final Expression<Boolean> trueExpression = cb.literal(true);
@@ -299,6 +312,11 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 			// h2 database entity manager throws "NoResultException" if the entity not found
 			return false;
 		}
+	}
+
+	public interface ExistsPredicateBuilder<ADO extends AbstractDomainObject> {
+
+		Predicate buildPredicate(CriteriaBuilder cb, Root<ADO> root, CriteriaQuery<?> cq);
 	}
 
 	public List<Long> getIdsByReferenceDtos(List<? extends ReferenceDto> references) {

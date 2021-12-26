@@ -25,7 +25,7 @@ import cucumber.api.java8.En;
 import java.util.Arrays;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.sormas.e2etests.enums.LabCaption;
+import org.sormas.e2etests.enums.LaboratoryValues;
 import org.sormas.e2etests.enums.PathogenTestResults;
 import org.sormas.e2etests.enums.SpecimenConditions;
 import org.sormas.e2etests.helpers.AssertHelpers;
@@ -82,7 +82,10 @@ public class SamplesDirectorySteps implements En {
               SEARCH_RESULT_SAMPLE, maximumNumberOfRows);
           Thread.sleep(2000); // reset filter acts chaotic, to be modified in the future
           webDriverHelpers.fillAndSubmitInWebElement(
-              SAMPLE_SEARCH_INPUT, apiState.getLastCreatedPerson().getFirstName());
+              SAMPLE_SEARCH_INPUT,
+              apiState.getLastCreatedPerson().getFirstName()
+                  + " "
+                  + apiState.getLastCreatedPerson().getLastName());
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
           webDriverHelpers.waitUntilNumberOfElementsIsExactlyOrLess(
               SEARCH_RESULT_SAMPLE, apiState.getCreatedSamples().size());
@@ -125,7 +128,7 @@ public class SamplesDirectorySteps implements En {
                       webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
                       webDriverHelpers.waitUntilAListOfElementsHasText(
                           FINAL_LABORATORY_RESULT, aSpecimen.getCondition());
-                      assertHelpers.assertWithPoll15Second(
+                      assertHelpers.assertWithPoll20Second(
                           () ->
                               Truth.assertThat(
                                       apiState.getCreatedSamples().stream()
@@ -143,7 +146,7 @@ public class SamplesDirectorySteps implements En {
     Then(
         "^I check the displayed Laboratory filter dropdown",
         () ->
-            Arrays.stream(LabCaption.values())
+            Arrays.stream(LaboratoryValues.values())
                 .forEach(
                     caption -> {
                       webDriverHelpers.selectFromCombobox(
@@ -151,7 +154,7 @@ public class SamplesDirectorySteps implements En {
                       webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
                       webDriverHelpers.waitUntilAListOfElementsHasText(
                           FINAL_LABORATORY_RESULT, caption.getCaptionEnglish());
-                      assertHelpers.assertWithPoll15Second(
+                      assertHelpers.assertWithPoll20Second(
                           () ->
                               Truth.assertThat(
                                       apiState.getCreatedSamples().stream()
@@ -178,7 +181,7 @@ public class SamplesDirectorySteps implements En {
     Then(
         "I check that number of displayed sample results is {int}",
         (Integer number) ->
-            assertHelpers.assertWithPoll15Second(
+            assertHelpers.assertWithPoll20Second(
                 () ->
                     Truth.assertThat(webDriverHelpers.getNumberOfElements(SAMPLE_GRID_RESULTS_ROWS))
                         .isEqualTo(number)));

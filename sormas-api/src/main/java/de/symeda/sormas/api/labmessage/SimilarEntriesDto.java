@@ -2,7 +2,7 @@ package de.symeda.sormas.api.labmessage;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 
@@ -10,18 +10,18 @@ public class SimilarEntriesDto implements Serializable {
 
 	private static final long serialVersionUID = 5902907041512754766L;
 
-	CaseIndexDto caze;
+	CaseSelectionDto caze;
 	SimilarContactDto contact;
 	SimilarEventParticipantDto eventParticipant;
 	boolean newCase;
 	boolean newContact;
 	boolean newEventParticipant;
 
-	public CaseIndexDto getCaze() {
+	public CaseSelectionDto getCaze() {
 		return caze;
 	}
 
-	public void setCaze(CaseIndexDto caze) {
+	public void setCaze(CaseSelectionDto caze) {
 		this.caze = caze;
 	}
 

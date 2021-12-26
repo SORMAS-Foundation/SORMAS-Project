@@ -18,30 +18,25 @@
 package org.sormas.e2etests.steps.api;
 
 import com.github.javafaker.Faker;
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import javax.inject.Inject;
-import org.sormas.e2etests.enums.CommunityUUIDs;
-import org.sormas.e2etests.enums.ContinentUUIDs;
-import org.sormas.e2etests.enums.CountryUUIDs;
-import org.sormas.e2etests.enums.DistrictUUIDs;
-import org.sormas.e2etests.enums.FacilityUUIDs;
-import org.sormas.e2etests.enums.RegionUUIDs;
-import org.sormas.e2etests.enums.SubcontinentUUIDs;
+import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.helpers.api.PersonsHelper;
 import org.sormas.e2etests.pojo.api.Person;
-import org.sormas.e2etests.pojo.api.chunks.Address;
-import org.sormas.e2etests.pojo.api.chunks.Country;
-import org.sormas.e2etests.pojo.api.chunks.PersonContactDetails;
+import org.sormas.e2etests.services.api.PersonApiService;
 import org.sormas.e2etests.state.ApiState;
 
+@Slf4j
 public class PersonSteps implements En {
 
   @Inject
-  public PersonSteps(PersonsHelper personsHelper, ApiState apiState, Faker faker) {
+  public PersonSteps(
+      PersonsHelper personsHelper,
+      PersonApiService personApiService,
+      ApiState apiState,
+      Faker faker) {
 
     When(
         "API: I receive the person",
@@ -52,81 +47,23 @@ public class PersonSteps implements En {
     When(
         "API: I create a new person",
         () -> {
-          String personUUID = UUID.randomUUID().toString();
-
-          Address address =
-              Address.builder()
-                  .latitude(52.28339547689361)
-                  .longitude(10.5794084300839)
-                  .country(
-                      Country.builder()
-                          .uuid(CountryUUIDs.Germany.toString())
-                          .caption("Deutschland")
-                          .externalId(null)
-                          .isoCode("DEU")
-                          .build())
-                  .region(RegionUUIDs.VoreingestellteBundeslander.toString())
-                  .continent(ContinentUUIDs.Europe.toString())
-                  .subcontinent(SubcontinentUUIDs.WesternEurope.toString())
-                  .district(DistrictUUIDs.VoreingestellterLandkreis.toString())
-                  .community(CommunityUUIDs.VoreingestellteGemeinde.toString())
-                  .city(faker.address().cityName())
-                  .areaType("URBAN")
-                  .postalCode(faker.address().zipCode())
-                  .street(faker.address().streetName())
-                  .houseNumber(faker.address().buildingNumber())
-                  .facilityType("CAMPSITE")
-                  .facility(FacilityUUIDs.OtherFacility.toString())
-                  .facilityDetails("Dummy description")
-                  .details("Dummy text")
-                  .contactPersonFirstName(faker.name().firstName())
-                  .contactPersonLastName(faker.name().lastName())
-                  .contactPersonPhone(faker.phoneNumber().cellPhone())
-                  .contactPersonEmail(faker.internet().emailAddress())
-                  .uuid(personUUID)
-                  .build();
-
-          PersonContactDetails personContactDetails =
-              PersonContactDetails.builder()
-                  .uuid(UUID.randomUUID().toString())
-                  .person(Person.builder().uuid(personUUID).build())
-                  .primaryContact(true)
-                  .thirdParty(false)
-                  .personContactDetailType("PHONE")
-                  .contactInformation(faker.phoneNumber().phoneNumber())
-                  .build();
-
-          Person createPersonObject =
-              Person.builder()
-                  .uuid(personUUID)
-                  .firstName(faker.name().firstName())
-                  .lastName(faker.name().lastName())
-                  .birthdateDD(faker.number().numberBetween(1, 29))
-                  .birthdateMM(faker.number().numberBetween(1, 12))
-                  .birthdateYYYY(faker.number().numberBetween(1900, 2005))
-                  .sex("MALE")
-                  .phone(faker.phoneNumber().phoneNumber())
-                  .address(address)
-                  .personContactDetails(Collections.singletonList(personContactDetails))
-                  .build();
+          Person createPersonObject = personApiService.buildGeneratedPerson();
           apiState.setLastCreatedPerson(createPersonObject);
           personsHelper.createNewPerson(createPersonObject);
         });
 
+    When(
+        "API: I create {int} persons",
+        (Integer numberOfPersons) -> {
+          List<Person> personList = new ArrayList<>();
+          for (int i = 0; i < numberOfPersons; i++) {
+            personList.add(personApiService.buildGeneratedPerson());
+          }
+          log.info("Pushing %s Persons", numberOfPersons);
+          personsHelper.createMultiplePersons(personList);
+          apiState.setLastCreatedPersonsList(personList);
+        });
+
     When("API: I receive all person ids", personsHelper::getAllPersonUuid);
-
-    Then(
-        "API: I check that POST person call body is {string}",
-        (String expectedBody) -> {
-          String responseBody = apiState.getResponse().getBody().toString();
-          Truth.assertThat(expectedBody.equals(String.valueOf(responseBody)));
-        });
-
-    Then(
-        "API: I check that POST person call status code is {int}",
-        (Integer expectedStatus) -> {
-          int responseStatusCode = apiState.getResponse().getStatusCode();
-          Truth.assertThat(expectedStatus).isEqualTo(responseStatusCode);
-        });
   }
 }

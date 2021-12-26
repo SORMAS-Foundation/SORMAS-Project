@@ -48,7 +48,7 @@ public class SubcontinentEditForm extends AbstractEditForm<SubcontinentDto> {
 
 		addField(SubcontinentDto.DEFAULT_NAME, TextField.class);
 		addField(SubcontinentDto.EXTERNAL_ID, TextField.class);
-		ComboBox continent = addField(SubcontinentDto.CONTINENT, ComboBox.class);
+		ComboBox continent = addInfrastructureField(SubcontinentDto.CONTINENT);
 
 		continent.addItems(FacadeProvider.getContinentFacade().getAllActiveAsReference());
 

@@ -9,8 +9,6 @@ import de.symeda.sormas.api.BaseFacade;
 @Remote
 public interface TravelEntryFacade extends BaseFacade<TravelEntryDto, TravelEntryIndexDto, TravelEntryReferenceDto, TravelEntryCriteria> {
 
-	TravelEntryReferenceDto getReferenceByUuid(String uuid);
-
 	void validate(TravelEntryDto travelEntryDto);
 
 	boolean isDeleted(String eventUuid);
@@ -28,4 +26,6 @@ public interface TravelEntryFacade extends BaseFacade<TravelEntryDto, TravelEntr
 	void deleteTravelEntry(String travelEntryUuid);
 
 	List<DeaContentEntry> getDeaContentOfLastTravelEntry();
+
+	List<TravelEntryListEntryDto> getEntriesList(TravelEntryListCriteria criteria, Integer first, Integer max);
 }

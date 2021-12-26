@@ -21,9 +21,10 @@
 package de.symeda.sormas.backend.event;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,6 +37,10 @@ import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.caze.VaccineManufacturer;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
@@ -43,10 +48,15 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
+import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
@@ -80,13 +90,64 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		PersonDto eventPerson1 = creator.createPerson("Event", "Participant");
 		creator.createEventParticipant(event.toReference(), eventPerson1, "event fan", user.toReference());
 
+		ImmunizationDto immunization = creator.createImmunization(
+			event.getDisease(),
+			eventPerson.toReference(),
+			event.getReportingUser(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf,
+			DateHelper.subtractDays(new Date(), 10),
+			DateHelper.subtractDays(new Date(), 5),
+			DateHelper.subtractDays(new Date(), 1),
+			null);
+		creator.createImmunization(
+			event.getDisease(),
+			eventPerson.toReference(),
+			event.getReportingUser(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf,
+			DateHelper.subtractDays(new Date(), 8),
+			DateHelper.subtractDays(new Date(), 7),
+			null,
+			null);
+		VaccinationDto firstVaccination = creator.createVaccination(
+			event.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			DateHelper.subtractDays(new Date(), 7),
+			Vaccine.OXFORD_ASTRA_ZENECA,
+			VaccineManufacturer.ASTRA_ZENECA);
+		creator.createVaccination(
+			event.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			DateHelper.subtractDays(new Date(), 4),
+			Vaccine.MRNA_1273,
+			VaccineManufacturer.MODERNA);
+		VaccinationDto thirdVaccination = creator.createVaccination(
+			event.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			new Date(),
+			Vaccine.COMIRNATY,
+			VaccineManufacturer.BIONTECH_PFIZER);
+
 		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
 		eventParticipantCriteria.withEvent(event.toReference());
 
-		List<EventParticipantExportDto> results = getEventParticipantFacade().getExportList(eventParticipantCriteria, Collections.emptySet(), 0, 100, Language.EN);
+		List<EventParticipantExportDto> results =
+			getEventParticipantFacade().getExportList(eventParticipantCriteria, Collections.emptySet(), 0, 100, Language.EN, null);
 
 		// List should have two entries
 		assertThat(results, Matchers.hasSize(2));
+		assertEquals(VaccinationStatus.VACCINATED, results.get(0).getVaccinationStatus());
+		assertEquals(thirdVaccination.getVaccineName(), results.get(0).getVaccineName());
+		assertEquals(firstVaccination.getVaccinationDate(), results.get(0).getFirstVaccinationDate());
+		assertEquals(thirdVaccination.getVaccinationDate(), results.get(0).getLastVaccinationDate());
 	}
 
 	@Test
@@ -96,6 +157,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		EventParticipantDto eventParticipant = new EventParticipantDto();
 		eventParticipant.setEvent(creator.createEvent(user.toReference()).toReference());
 		eventParticipant.setPerson(creator.createPerson());
+		eventParticipant.setReportingUser(user.toReference());
 
 		EventParticipantDto savedEventParticipant = getEventParticipantFacade().saveEventParticipant(eventParticipant);
 

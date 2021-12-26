@@ -26,7 +26,9 @@ import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import lombok.SneakyThrows;
 import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.FollowUpVisit;
@@ -133,19 +135,23 @@ public class CreateNewVisitSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           String uuid = apiState.getCreatedContact().getUuid();
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MULTIPLE_OPTIONS_SEARCH_INPUT);
+          webDriverHelpers.clearAndFillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, uuid);
           fillDateFrom(followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit());
           fillDateTo(followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit());
-          webDriverHelpers.clearAndFillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, uuid);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
           webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(CONTACT_GRID_RESULTS_ROWS);
           softly
               .assertThat(webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS))
-              .isEqualTo(1);
+              .isEqualTo(1)
+              .withFailMessage("Contact grid results rows are not equal with 1");
           softly.assertAll();
         });
   }
 
+  @SneakyThrows
   public FollowUpVisit collectFollowUpData() {
+    TimeUnit.SECONDS.sleep(2); // time needed to refresh the page
     String dateOfVisit = webDriverHelpers.getValueFromWebElement(DATE_AND_TIME_OF_VISIT_INPUT);
     LocalDate parsedDateOfVisit = LocalDate.parse(dateOfVisit, DATE_FORMATTER);
     String dateOfSymptomOnset =
@@ -196,7 +202,7 @@ public class CreateNewVisitSteps implements En {
         .otherClinicalSymptoms(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(OTHER_CLINICAL_SYMPTOMS))
         .comments(webDriverHelpers.getValueFromWebElement(COMMENTS_INPUT))
-        .firstSymptom(webDriverHelpers.getValueFromCombobox(FIRSTSYMPTOM_COMBOBOX))
+        .firstSymptom(webDriverHelpers.getValueFromCombobox(FIRST_SYMPTOM_COMBOBOX))
         .dateOfSymptomOnset(parsedDateOfSymptomOnset)
         .build();
   }
@@ -230,7 +236,7 @@ public class CreateNewVisitSteps implements En {
   }
 
   public void selectFirstSymptom(String firstSymptom) {
-    webDriverHelpers.selectFromCombobox(FIRSTSYMPTOM_COMBOBOX, firstSymptom);
+    webDriverHelpers.selectFromCombobox(FIRST_SYMPTOM_COMBOBOX, firstSymptom);
   }
 
   public void selectChillsOrSweats(String chillsOrSweats) {

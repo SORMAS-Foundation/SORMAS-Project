@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.dashboard.surveillance.components.statistics.summary;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -26,7 +27,7 @@ public class DiseaseSummaryComponent extends DashboardStatisticsSubComponent {
 	private final DiseaseSummaryElementComponent contactsConvertedToCase;
 
 	// Cases for which Reference definition is Fulfilled
-	private final DiseaseSummaryElementComponent casesWithReferenceDefinitionFulfilled;
+	private DiseaseSummaryElementComponent casesWithReferenceDefinitionFulfilled;
 
 	public DiseaseSummaryComponent() {
 		fatalitiesSummaryElementComponent = new FatalitiesSummaryElementComponent();
@@ -34,6 +35,7 @@ public class DiseaseSummaryComponent extends DashboardStatisticsSubComponent {
 
 		lastReportedDistrict =
 			new DiseaseSummaryElementComponent(Strings.headingLastReportedDistrict, I18nProperties.getString(Strings.none).toUpperCase());
+		lastReportedDistrict.setWidth(100, Unit.PERCENTAGE);
 		addComponent(lastReportedDistrict);
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {
@@ -50,8 +52,10 @@ public class DiseaseSummaryComponent extends DashboardStatisticsSubComponent {
 		contactsConvertedToCase = new DiseaseSummaryElementComponent(Strings.headingCasesResultingFromContacts);
 		addComponent(contactsConvertedToCase);
 
-		casesWithReferenceDefinitionFulfilled = new DiseaseSummaryElementComponent(Strings.headingcasesWithReferenceDefinitionFulfilled);
-		addComponent(casesWithReferenceDefinitionFulfilled);
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			casesWithReferenceDefinitionFulfilled = new DiseaseSummaryElementComponent(Strings.headingcasesWithReferenceDefinitionFulfilled);
+			addComponent(casesWithReferenceDefinitionFulfilled);
+		}
 
 		addStyleName(CssStyles.VSPACE_TOP_4);
 	}
@@ -69,6 +73,8 @@ public class DiseaseSummaryComponent extends DashboardStatisticsSubComponent {
 		casesInQuarantineByDate.updateTotalLabel(dashboardDataProvider.getCasesInQuarantineCount().toString());
 		casesPlacedInQuarantineByDate.updateTotalLabel(dashboardDataProvider.getCasesPlacedInQuarantineCount().toString());
 		contactsConvertedToCase.updateTotalLabel(dashboardDataProvider.getContactsConvertedToCaseCount().toString());
-		casesWithReferenceDefinitionFulfilled.updateTotalLabel(dashboardDataProvider.getCaseWithReferenceDefinitionFulfilledCount().toString());
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			casesWithReferenceDefinitionFulfilled.updateTotalLabel(dashboardDataProvider.getCaseWithReferenceDefinitionFulfilledCount().toString());
+		}
 	}
 }

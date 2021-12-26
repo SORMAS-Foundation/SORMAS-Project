@@ -82,7 +82,7 @@ public class InfrastructureController {
 	}
 
 	public void editArea(String uuid) {
-		AreaDto area = FacadeProvider.getAreaFacade().getAreaByUuid(uuid);
+		AreaDto area = FacadeProvider.getAreaFacade().getByUuid(uuid);
 		CommitDiscardWrapperComponent<AreaEditForm> editComponent = getAreaEditComponent(area);
 		String caption = I18nProperties.getString(Strings.edit) + " " + area.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
@@ -118,7 +118,7 @@ public class InfrastructureController {
 	}
 
 	public void editCountry(String uuid) {
-		CountryDto country = FacadeProvider.getCountryFacade().getCountryByUuid(uuid);
+		CountryDto country = FacadeProvider.getCountryFacade().getByUuid(uuid);
 		CommitDiscardWrapperComponent<CountryEditForm> editComponent = getCountryEditComponent(country);
 		String caption = I18nProperties.getString(Strings.headingEditCountry);
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
@@ -130,7 +130,7 @@ public class InfrastructureController {
 	}
 
 	public void editRegion(String uuid) {
-		RegionDto region = FacadeProvider.getRegionFacade().getRegionByUuid(uuid);
+		RegionDto region = FacadeProvider.getRegionFacade().getByUuid(uuid);
 		CommitDiscardWrapperComponent<RegionEditForm> editComponent = getRegionEditComponent(region);
 		String caption = I18nProperties.getString(Strings.edit) + " " + region.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
@@ -142,7 +142,7 @@ public class InfrastructureController {
 	}
 
 	public void editDistrict(String uuid) {
-		DistrictDto district = FacadeProvider.getDistrictFacade().getDistrictByUuid(uuid);
+		DistrictDto district = FacadeProvider.getDistrictFacade().getByUuid(uuid);
 		CommitDiscardWrapperComponent<DistrictEditForm> editComponent = getDistrictEditComponent(district);
 		String caption = I18nProperties.getString(Strings.edit) + " " + district.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
@@ -192,7 +192,7 @@ public class InfrastructureController {
 
 			@Override
 			public void onCommit() {
-				FacadeProvider.getFacilityFacade().saveFacility(editForm.getValue());
+				FacadeProvider.getFacilityFacade().save(editForm.getValue());
 				Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 				SormasUI.get().getNavigator().navigateTo(FacilitiesView.VIEW_NAME);
 			}
@@ -225,7 +225,7 @@ public class InfrastructureController {
 			editForm.getFieldGroup());
 
 		editComponent.addCommitListener(() -> {
-			FacadeProvider.getAreaFacade().saveArea(editForm.getValue());
+			FacadeProvider.getAreaFacade().save(editForm.getValue());
 			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 			SormasUI.get().getNavigator().navigateTo(AreasView.VIEW_NAME);
 		});
@@ -307,7 +307,7 @@ public class InfrastructureController {
 			editForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
-			FacadeProvider.getCountryFacade().saveCountry(editForm.getValue());
+			FacadeProvider.getCountryFacade().save(editForm.getValue());
 			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 			SormasUI.get().getNavigator().navigateTo(CountriesView.VIEW_NAME);
 		});
@@ -335,7 +335,7 @@ public class InfrastructureController {
 			editForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
-			FacadeProvider.getRegionFacade().saveRegion(editForm.getValue());
+			FacadeProvider.getRegionFacade().save(editForm.getValue());
 			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 			SormasUI.get().getNavigator().navigateTo(RegionsView.VIEW_NAME);
 		});
@@ -366,7 +366,7 @@ public class InfrastructureController {
 
 			@Override
 			public void onCommit() {
-				FacadeProvider.getDistrictFacade().saveDistrict(editForm.getValue());
+				FacadeProvider.getDistrictFacade().save(editForm.getValue());
 				Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 				SormasUI.get().getNavigator().navigateTo(DistrictsView.VIEW_NAME);
 			}
@@ -398,7 +398,7 @@ public class InfrastructureController {
 
 			@Override
 			public void onCommit() {
-				FacadeProvider.getCommunityFacade().saveCommunity(editForm.getValue());
+				FacadeProvider.getCommunityFacade().save(editForm.getValue());
 				Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
 				SormasUI.get().getNavigator().navigateTo(CommunitiesView.VIEW_NAME);
 			}
@@ -634,7 +634,7 @@ public class InfrastructureController {
 						if (archive) {
 							FacadeProvider.getAreaFacade().archive(entityUuid);
 						} else {
-							FacadeProvider.getAreaFacade().deArchive(entityUuid);
+							FacadeProvider.getAreaFacade().dearchive(entityUuid);
 						}
 						SormasUI.get().getNavigator().navigateTo(AreasView.VIEW_NAME);
 						break;
@@ -849,7 +849,7 @@ public class InfrastructureController {
 							if (archive) {
 								FacadeProvider.getAreaFacade().archive(selectedRow.getUuid());
 							} else {
-								FacadeProvider.getAreaFacade().deArchive(selectedRow.getUuid());
+								FacadeProvider.getAreaFacade().dearchive(selectedRow.getUuid());
 							}
 						}
 						break;

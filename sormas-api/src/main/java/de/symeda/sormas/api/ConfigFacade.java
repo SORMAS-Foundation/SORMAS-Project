@@ -38,6 +38,8 @@ public interface ConfigFacade {
 
 	String getUiUrl();
 
+	String getSormasStatsUrl();
+
 	boolean isFeatureAutomaticCaseClassification();
 
 	String getEmailSenderAddress();
@@ -135,4 +137,8 @@ public interface ConfigFacade {
 	boolean isAuditorAttributeLoggingEnabled();
 
 	int getStepSizeForCsvExport();
+
+	long getDocumentUploadSizeLimitMb();
+
+	long getImportFileSizeLimitMb();
 }

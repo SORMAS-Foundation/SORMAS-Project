@@ -18,6 +18,7 @@ package de.symeda.sormas.api.immunization;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -32,6 +33,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 	public static final String PERSON_UUID = "personUuid";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
+	public static final String DISEASE = "disease";
 	public static final String AGE_AND_BIRTH_DATE = "ageAndBirthDate";
 	public static final String SEX = "sex";
 	public static final String DISTRICT = "district";
@@ -42,6 +44,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 	public static final String END_DATE = "endDate";
 	public static final String LAST_VACCINE_TYPE = "lastVaccineType";
 	public static final String RECOVERY_DATE = "recoveryDate";
+	public static final String IMMUNIZATION_PERIOD = "immunizationPeriod";
 
 	private String uuid;
 
@@ -52,6 +55,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 	@PersonalData
 	@SensitiveData
 	private String personLastName;
+	private Disease disease;
 	private AgeAndBirthDateDto ageAndBirthDate;
 	private Sex sex;
 	private String district;
@@ -63,11 +67,14 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 	private String lastVaccineType;
 	private Date recoveryDate;
 
+	private boolean isInJurisdiction;
+
 	public ImmunizationIndexDto(
 		String uuid,
 		String personUuid,
 		String personFirstName,
 		String personLastName,
+		Disease disease,
 		AgeAndBirthDateDto ageAndBirthDate,
 		Sex sex,
 		String district,
@@ -77,12 +84,14 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 		Date startDate,
 		Date endDate,
 		String lastVaccineType,
-		Date recoveryDate) {
+		Date recoveryDate,
+		boolean isInJurisdiction) {
 
 		this.uuid = uuid;
 		this.personUuid = personUuid;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
+		this.disease = disease;
 		this.ageAndBirthDate = ageAndBirthDate;
 		this.sex = sex;
 		this.district = district;
@@ -93,6 +102,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 		this.endDate = endDate;
 		this.lastVaccineType = lastVaccineType;
 		this.recoveryDate = recoveryDate;
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public String getUuid() {
@@ -125,6 +135,14 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 
 	public void setPersonLastName(String personLastName) {
 		this.personLastName = personLastName;
+	}
+
+	public Disease getDisease() {
+		return disease;
+	}
+
+	public void setDisease(Disease disease) {
+		this.disease = disease;
 	}
 
 	public AgeAndBirthDateDto getAgeAndBirthDate() {
@@ -205,5 +223,13 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 
 	public void setRecoveryDate(Date recoveryDate) {
 		this.recoveryDate = recoveryDate;
+	}
+
+	public boolean isInJurisdiction() {
+		return isInJurisdiction;
+	}
+
+	public void setInJurisdiction(boolean inJurisdiction) {
+		isInJurisdiction = inJurisdiction;
 	}
 }

@@ -47,6 +47,7 @@ public class ImmunizationGrid extends FilteredGrid<ImmunizationIndexDto, Immuniz
 			ImmunizationIndexDto.PERSON_UUID,
 			ImmunizationIndexDto.PERSON_FIRST_NAME,
 			ImmunizationIndexDto.PERSON_LAST_NAME,
+			ImmunizationIndexDto.DISEASE,
 			ImmunizationIndexDto.AGE_AND_BIRTH_DATE,
 			ImmunizationIndexDto.SEX,
 			ImmunizationIndexDto.DISTRICT,
@@ -69,8 +70,7 @@ public class ImmunizationGrid extends FilteredGrid<ImmunizationIndexDto, Immuniz
 					value.getAgeType(),
 					value.getDateOfBirthDD(),
 					value.getDateOfBirthMM(),
-					value.getDateOfBirthYYYY(),
-					I18nProperties.getUserLanguage()),
+					value.getDateOfBirthYYYY()),
 			new TextRenderer());
 
 		((Column<ImmunizationIndexDto, Date>) getColumn(ImmunizationIndexDto.START_DATE))

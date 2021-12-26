@@ -1,21 +1,21 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.backend.action;
+
+import static de.symeda.sormas.api.action.ActionContext.EVENT;
 
 import java.util.Collections;
 import java.util.Date;
@@ -33,6 +33,7 @@ import de.symeda.sormas.api.action.ActionCriteria;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionFacade;
 import de.symeda.sormas.api.action.ActionStatEntry;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventActionExportDto;
 import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -84,11 +85,9 @@ public class ActionFacadeEjb implements ActionFacade {
 
 		target.setActionContext(source.getActionContext());
 		if (source.getActionContext() != null) {
-			switch (source.getActionContext()) {
-			case EVENT:
+			if (source.getActionContext() == EVENT) {
 				target.setEvent(eventService.getByReferenceDto(source.getEvent()));
-				break;
-			default:
+			} else {
 				throw new UnsupportedOperationException(source.getActionContext() + " is not implemented");
 			}
 		} else {
@@ -98,14 +97,13 @@ public class ActionFacadeEjb implements ActionFacade {
 		return target;
 	}
 
-	public ActionDto toDto(Action action) {
+	public ActionDto toDto(Action source) {
 
-		if (action == null) {
+		if (source == null) {
 			return null;
 		}
 
 		ActionDto target = new ActionDto();
-		Action source = action;
 
 		DtoHelper.fillDto(target, source);
 
@@ -157,7 +155,7 @@ public class ActionFacadeEjb implements ActionFacade {
 			return Collections.emptyList();
 		}
 
-		return actionService.getAllUuids(user);
+		return actionService.getAllUuids();
 	}
 
 	@Override
@@ -168,17 +166,22 @@ public class ActionFacadeEjb implements ActionFacade {
 			return Collections.emptyList();
 		}
 
-		return actionService.getAllActionsAfter(date, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return actionService.getAllActionsAfter(date, user).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<ActionDto> getByUuids(List<String> uuids) {
-		return actionService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return actionService.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<ActionDto> getActionList(ActionCriteria actionCriteria, Integer first, Integer max) {
-		return actionService.getActionList(actionCriteria, first, max).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return actionService.getActionList(actionCriteria, first, max).stream().map(this::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<ActionDto> getActionList(ActionCriteria actionCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+		return actionService.getActionList(actionCriteria, first, max, sortProperties).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -192,13 +195,36 @@ public class ActionFacadeEjb implements ActionFacade {
 	}
 
 	@Override
+	public Page<EventActionIndexDto> getEventActionIndexPage(
+		EventCriteria criteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+		List<EventActionIndexDto> eventActionIndexList = getEventActionList(criteria, offset, size, sortProperties);
+		long totalElementCount = countEventActions(criteria);
+		return new Page<>(eventActionIndexList, offset, size, totalElementCount);
+
+	}
+
+	public Page<ActionDto> getActionPage(ActionCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<ActionDto> actionList = getActionList(criteria, offset, size, sortProperties);
+		long totalElementCount = countActions(criteria);
+		return new Page<>(actionList, offset, size, totalElementCount);
+	}
+
+	@Override
 	public List<EventActionExportDto> getEventActionExportList(EventCriteria criteria, Integer first, Integer max) {
 		return actionService.getEventActionExportList(criteria, first, max);
 	}
 
 	@Override
-	public long countEventAction(EventCriteria criteria) {
+	public long countEventActions(EventCriteria criteria) {
 		return actionService.countEventActions(criteria);
+	}
+
+	@Override
+	public long countActions(ActionCriteria criteria) {
+		return actionService.countActions(criteria);
 	}
 
 	@LocalBean

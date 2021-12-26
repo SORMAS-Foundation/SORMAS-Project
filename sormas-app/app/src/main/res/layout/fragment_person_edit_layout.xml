@@ -155,12 +155,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/person_placeOfBirthRegion"
                     app:value="@={data.placeOfBirthRegion}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/person_placeOfBirthDistrict"
                     app:value="@={data.placeOfBirthDistrict}"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
@@ -173,7 +173,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/person_placeOfBirthCommunity"
                     app:value="@={data.placeOfBirthCommunity}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
@@ -185,7 +185,7 @@
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                 android:id="@+id/person_placeOfBirthFacility"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.placeOfBirthFacility}" />
@@ -218,7 +218,6 @@
                 android:id="@+id/person_sex"
                 app:required="true"
                 app:value="@={data.sex}"
-                app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
@@ -534,14 +533,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/person_birthCountry"
                     android:nextFocusForward="@+id/person_citizenship"
                     app:value="@={data.birthCountry}"
                     app:imeOptions="actionNext"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/person_citizenship"
                     app:value="@={data.citizenship}"
                     style="@style/ControlSecondOfTwoColumnsStyle" />

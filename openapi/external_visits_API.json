@@ -257,6 +257,9 @@
         "type" : "object",
         "properties" : {
           "personUuid" : {
+            "maxLength" : 36,
+            "minLength" : 20,
+            "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
           "disease" : {
@@ -272,16 +275,22 @@
             "enum" : [ "Unavailable", "Available, but uncooperative", "Available and cooperative" ]
           },
           "visitRemarks" : {
+            "maxLength" : 512,
+            "minLength" : 0,
             "type" : "string"
           },
           "symptoms" : {
             "$ref" : "#/components/schemas/SymptomsDto"
           },
           "reportLat" : {
+            "maximum" : 90,
+            "minimum" : -90,
             "type" : "number",
             "format" : "double"
           },
           "reportLon" : {
+            "maximum" : 180,
+            "minimum" : -180,
             "type" : "number",
             "format" : "double"
           },
@@ -303,6 +312,8 @@
             "format" : "date-time"
           },
           "uuid" : {
+            "maxLength" : 36,
+            "minLength" : 20,
             "pattern" : "^[0-9a-zA-Z-]*$",
             "type" : "string"
           },
@@ -598,6 +609,8 @@
             "format" : "date-time"
           },
           "onsetSymptom" : {
+            "maxLength" : 512,
+            "minLength" : 0,
             "type" : "string"
           },
           "oralUlcers" : {
@@ -609,6 +622,8 @@
             "enum" : [ "Yes", "No", "Unknown" ]
           },
           "otherHemorrhagicSymptomsText" : {
+            "maxLength" : 512,
+            "minLength" : 0,
             "type" : "string"
           },
           "otherNonHemorrhagicSymptoms" : {
@@ -616,6 +631,8 @@
             "enum" : [ "Yes", "No", "Unknown" ]
           },
           "otherNonHemorrhagicSymptomsText" : {
+            "maxLength" : 512,
+            "minLength" : 0,
             "type" : "string"
           },
           "otitisMedia" : {
@@ -635,6 +652,8 @@
             "enum" : [ "Yes", "No", "Unknown" ]
           },
           "patientIllLocation" : {
+            "maxLength" : 512,
+            "minLength" : 0,
             "type" : "string"
           },
           "pharyngealErythema" : {
@@ -697,6 +716,8 @@
             "type" : "boolean"
           },
           "symptomsComments" : {
+            "maxLength" : 512,
+            "minLength" : 0,
             "type" : "string"
           },
           "temperature" : {
@@ -764,6 +785,8 @@
             "enum" : [ "Patent ductus arteriosus (PDA)", "Peripheral pulmonary stenosis (PPS)", "Ventricular septal defect (VSD)", "Other heart defect" ]
           },
           "congenitalHeartDiseaseDetails" : {
+            "maxLength" : 512,
+            "minLength" : 0,
             "type" : "string"
           },
           "unexplainedBleeding" : {
@@ -947,6 +970,8 @@
             "enum" : [ "Yes", "No", "Unknown" ]
           },
           "otherComplicationsText" : {
+            "maxLength" : 512,
+            "minLength" : 0,
             "type" : "string"
           },
           "seizures" : {

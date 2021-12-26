@@ -29,10 +29,12 @@ import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 public class ContactDownloadUtil {
 
@@ -62,6 +64,8 @@ public class ContactDownloadUtil {
 			PersonDto.I18N_PREFIX,
 			LocationDto.I18N_PREFIX,
 			SymptomsDto.I18N_PREFIX,
+			ImmunizationDto.I18N_PREFIX,
+			VaccinationDto.I18N_PREFIX,
 			HospitalizationDto.I18N_PREFIX,
 			EpiDataDto.I18N_PREFIX);
 	}

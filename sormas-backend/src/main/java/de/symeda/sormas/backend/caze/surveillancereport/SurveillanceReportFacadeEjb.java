@@ -28,6 +28,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportCriteria;
@@ -93,7 +94,7 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 	}
 
 	@Override
-	public SurveillanceReportDto saveSurveillanceReport(SurveillanceReportDto dto) {
+	public SurveillanceReportDto saveSurveillanceReport(@Valid SurveillanceReportDto dto) {
 		return saveSurveillanceReport(dto, true);
 	}
 

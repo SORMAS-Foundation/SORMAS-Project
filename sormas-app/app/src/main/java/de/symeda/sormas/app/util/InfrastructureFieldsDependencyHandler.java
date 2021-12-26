@@ -28,11 +28,11 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -83,7 +83,7 @@ public class InfrastructureFieldsDependencyHandler {
 		List<Item> facilities,
 		Facility initialFacility,
 		final ControlTextEditField facilityDetailsField,
-		boolean withLaboratory) {
+		boolean showAllFacilityTypeGroups) {
 		initializeFacilityFields(
 			entity,
 			regionField,
@@ -108,7 +108,7 @@ public class InfrastructureFieldsDependencyHandler {
 			null,
 			null,
 			null,
-			withLaboratory);
+			showAllFacilityTypeGroups);
 	}
 
 	public void initializeFacilityFields(
@@ -135,7 +135,7 @@ public class InfrastructureFieldsDependencyHandler {
 		final ControlSpinnerField pointOfEntryField,
 		List<Item> pointsOfEntry,
 		PointOfEntry initialPointOfEntry,
-		boolean withLaboratory) {
+		boolean showAllFacilityTypeGroups) {
 		initializeFacilityFields(
 			entity,
 			regionField,
@@ -160,7 +160,7 @@ public class InfrastructureFieldsDependencyHandler {
 			pointOfEntryField,
 			pointsOfEntry,
 			initialPointOfEntry,
-			withLaboratory,
+			showAllFacilityTypeGroups,
 			null);
 	}
 
@@ -194,7 +194,7 @@ public class InfrastructureFieldsDependencyHandler {
 		List<Item> facilities,
 		Facility initialFacility,
 		final ControlTextEditField facilityDetailsField,
-		boolean withLaboratory) {
+		boolean showAllFacilityTypeGroups) {
 
 		Item continentItem = initialContinent != null ? DataUtils.toItem(initialContinent) : null;
 		if (continentItem != null && !continents.contains(continentItem)) {
@@ -308,7 +308,7 @@ public class InfrastructureFieldsDependencyHandler {
 			null,
 			null,
 			null,
-			withLaboratory);
+			showAllFacilityTypeGroups);
 	}
 
 	public void initializeFacilityFields(
@@ -335,7 +335,7 @@ public class InfrastructureFieldsDependencyHandler {
 		final ControlSpinnerField pointOfEntryField,
 		List<Item> pointsOfEntry,
 		PointOfEntry initialPointOfEntry,
-		boolean withLaboratory,
+		boolean showAllFacilityTypeGroups,
 		Supplier<Boolean> skipRegionListeners) {
 
 		final Case caze = entity != null && entity.getClass().isAssignableFrom(Case.class) ? (Case) entity : null;
@@ -386,9 +386,10 @@ public class InfrastructureFieldsDependencyHandler {
 					facilityDetailsField.setVisibility(GONE);
 				} else if (TypeOfPlace.HOME.equals(selectedType)) {
 					typeGroupField.setSpinnerData(null);
+					typeField.setSpinnerData(null);
 					Facility noneFacility = DatabaseHelper.getFacilityDao().queryUuid(FacilityDto.NONE_FACILITY_UUID);
-					facilityField.setSpinnerData(DataUtils.toItems(Arrays.asList(noneFacility)));
-					facilityField.setValue(noneFacility);
+					facilityField.setSpinnerData(DataUtils.toItems(Arrays.asList(noneFacility)), noneFacility);
+					facilityDetailsField.setValue(null);
 					if (caze != null) {
 						caze.setHealthFacility(noneFacility);
 						caze.setFacilityType(null);
@@ -403,7 +404,7 @@ public class InfrastructureFieldsDependencyHandler {
 		if (typeGroupField != null) {
 			typeGroupField.initializeSpinner(typeGroups, field -> {
 				FacilityTypeGroup selectedGroup = (FacilityTypeGroup) field.getValue();
-				if (selectedGroup != null && withLaboratory) {
+				if (selectedGroup != null && showAllFacilityTypeGroups) {
 					typeField.setSpinnerData(DataUtils.toItems(FacilityType.getTypes(selectedGroup), true));
 				} else if (selectedGroup != null) {
 					typeField.setSpinnerData(DataUtils.toItems(FacilityType.getAccommodationTypes(selectedGroup), true));
@@ -527,6 +528,9 @@ public class InfrastructureFieldsDependencyHandler {
 					}
 				} else {
 					newFacilities = addUnknownItem(itemsWithEmpty(), unknownFacility);
+					if (initialFacility != null && !newFacilities.contains(facilityItem)) {
+						newFacilities.add(facilityItem);
+					}
 				}
 
 				Facility selectedFacility = (Facility) facilityField.getValue();
@@ -572,12 +576,19 @@ public class InfrastructureFieldsDependencyHandler {
 				District selectedDistrict = (District) districtField.getValue();
 
 				if (selectedType != null && !isEmptyDistrict(selectedDistrict)) {
-					facilityField.setSpinnerData(
-						addUnknownItem(loadFacilities(selectedDistrict, (Community) communityField.getValue(), selectedType), unknownFacility));
+					List<Item> newFacilities = loadFacilities(selectedDistrict, (Community) communityField.getValue(), selectedType);
+					if (facilityItem != null && !newFacilities.contains(facilityItem)) {
+						newFacilities.add(facilityItem);
+					}
+					facilityField.setSpinnerData(addUnknownItem(newFacilities, unknownFacility));
 				} else if (facilityField.getValue() != null) {
 					Facility noneFacility = DatabaseHelper.getFacilityDao().queryUuid(FacilityDto.NONE_FACILITY_UUID);
 					if (!facilityField.getValue().equals(noneFacility)) {
-						facilityField.setSpinnerData(addUnknownItem(itemsWithEmpty(), unknownFacility));
+						List<Item> newFacilities = itemsWithEmpty();
+						if (facilityItem != null) {
+							newFacilities.add(facilityItem);
+						}
+						facilityField.setSpinnerData(addUnknownItem(newFacilities, unknownFacility));
 					}
 				}
 			});
@@ -639,6 +650,9 @@ public class InfrastructureFieldsDependencyHandler {
 				}
 			} else {
 				newFacilities = itemsWithEmpty();
+				if (initialFacility != null && !newFacilities.contains(facilityItem)) {
+					newFacilities.add(facilityItem);
+				}
 			}
 		}
 

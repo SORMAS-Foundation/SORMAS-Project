@@ -50,7 +50,7 @@ import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
-public class FacilityService extends AbstractInfrastructureAdoService<Facility> {
+public class FacilityService extends AbstractInfrastructureAdoService<Facility, FacilityCriteria> {
 
 	@EJB
 	private RegionService regionService;
@@ -226,6 +226,7 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		return null;
 	}
 
+	@Override
 	public Predicate buildCriteriaFilter(FacilityCriteria facilityCriteria, CriteriaBuilder cb, Root<Facility> from) {
 		Predicate filter = null;
 
@@ -300,5 +301,10 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 			noneFacility.setUuid(FacilityDto.NONE_FACILITY_UUID);
 			persist(noneFacility);
 		}
+	}
+
+	@Override
+	public List<Facility> getByExternalId(String externalId, boolean includeArchived) {
+		return getByExternalId(externalId, Facility.EXTERNAL_ID, includeArchived);
 	}
 }

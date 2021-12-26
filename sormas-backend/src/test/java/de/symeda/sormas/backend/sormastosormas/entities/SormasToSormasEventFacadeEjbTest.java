@@ -22,8 +22,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.eq;
 
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -32,17 +30,14 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -64,14 +59,17 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
+import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
+import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.user.UserDto;
@@ -80,15 +78,15 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoEvent;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoEventParticipant;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import de.symeda.sormas.backend.user.User;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
 	@Test
-	public void testShareEvent() throws SormasToSormasException, JsonProcessingException, NoSuchAlgorithmException, KeyManagementException {
+	public void testShareEvent() throws SormasToSormasException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
 
@@ -115,14 +113,17 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setComment("Test comment");
 
-		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any(), Matchers.any()))
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 			.thenAnswer(invocation -> {
 				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_ID));
 				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/events"));
 
-				List<SormasToSormasEventDto> postBody = invocation.getArgument(2, List.class);
-				assertThat(postBody.size(), is(1));
-				SormasToSormasEventDto sharedEventData = postBody.get(0);
+				SormasToSormasDto postBody = invocation.getArgument(2, SormasToSormasDto.class);
+				assertThat(postBody.getEvents().size(), is(1));
+				SormasToSormasEventDto sharedEventData = postBody.getEvents().get(0);
 				EventDto sharedEvent = sharedEventData.getEntity();
 
 				assertThat(sharedEvent.getEventTitle(), is("Test event title"));
@@ -139,14 +140,14 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 				assertThat(sharedEvent.getSrcMediaDetails(), is("Test media details"));
 
 				// share information
-				assertThat(sharedEventData.getOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ID));
-				assertThat(sharedEventData.getOriginInfo().getSenderName(), is("Surv Off"));
-				assertThat(sharedEventData.getOriginInfo().getComment(), is("Test comment"));
+				assertThat(postBody.getOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ID));
+				assertThat(postBody.getOriginInfo().getSenderName(), is("Surv Off"));
+				assertThat(postBody.getOriginInfo().getComment(), is("Test comment"));
 
 				return Response.noContent().build();
 			});
 
-		getSormasToSormasEventFacade().shareEntities(Collections.singletonList(event.getUuid()), options);
+		getSormasToSormasEventFacade().share(Collections.singletonList(event.getUuid()), options);
 
 		List<SormasToSormasShareInfoDto> shareInfoList =
 			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().event(event.toReference()), 0, 100);
@@ -157,8 +158,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 	}
 
 	@Test
-	public void testShareEventWithSamples()
-		throws SormasToSormasException, JsonProcessingException, NoSuchAlgorithmException, KeyManagementException {
+	public void testShareEventWithSamples() throws SormasToSormasException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
 
@@ -170,17 +170,21 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 				e.getEventLocation().setDistrict(rdcf.district);
 			});
 
-		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), creator.createPerson("John", "Doe", p -> {
-			p.setBirthName("Test birth name");
-		}), "Involved", user.toReference(), (ep) -> {
-			ep.setRegion(rdcf.region);
-			ep.setDistrict(rdcf.district);
-			ep.getVaccinationInfo().setVaccination(Vaccination.VACCINATED);
-		});
+		EventParticipantDto eventParticipant = creator.createEventParticipant(
+			event.toReference(),
+			creator.createPerson("John", "Doe", p -> p.setBirthName("Test birth name")),
+			"Involved",
+			user.toReference(),
+			(ep) -> {
+				ep.setRegion(rdcf.region);
+				ep.setDistrict(rdcf.district);
+				ep.setVaccinationStatus(VaccinationStatus.VACCINATED);
+			},
+			null);
 
 		SampleDto sample =
 			creator.createSample(eventParticipant.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
-		PathogenTestDto pathogenTest = creator.createPathogenTest(
+		creator.createPathogenTest(
 			sample.toReference(),
 			PathogenTestType.CULTURE,
 			Disease.CORONAVIRUS,
@@ -191,7 +195,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 			"Test result",
 			true,
 			null);
-		AdditionalTestDto additionalTest = creator.createAdditionalTest(sample.toReference());
+		creator.createAdditionalTest(sample.toReference());
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
@@ -199,19 +203,21 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		options.setWithSamples(true);
 		options.setComment("Test comment");
 
-		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any(), Matchers.any()))
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 			.thenAnswer(invocation -> {
 				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_ID));
 				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/events"));
 
-				List<SormasToSormasEventDto> postBody = invocation.getArgument(2, List.class);
-				assertThat(postBody.size(), is(1));
-				SormasToSormasEventDto sharedEventData = postBody.get(0);
+				SormasToSormasDto postBody = invocation.getArgument(2, SormasToSormasDto.class);
+				assertThat(postBody.getEvents().size(), is(1));
 
-				List<EventParticipantDto> eventParticipants = sharedEventData.getEventParticipants();
+				List<SormasToSormasEventParticipantDto> eventParticipants = postBody.getEventParticipants();
 				assertThat(eventParticipants, hasSize(1));
 
-				List<SormasToSormasSampleDto> samples = sharedEventData.getSamples();
+				List<SormasToSormasSampleDto> samples = postBody.getSamples();
 				assertThat(samples, hasSize(1));
 
 				assertThat(samples.get(0).getPathogenTests(), hasSize(1));
@@ -220,7 +226,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 				return Response.noContent().build();
 			});
 
-		getSormasToSormasEventFacade().shareEntities(Collections.singletonList(event.getUuid()), options);
+		getSormasToSormasEventFacade().share(Collections.singletonList(event.getUuid()), options);
 
 		List<SormasToSormasShareInfoDto> shareInfoList =
 			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().event(event.toReference()), 0, 100);
@@ -231,10 +237,10 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 	}
 
 	@Test
-	public void testSaveSharedEvents() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
+	public void testSaveSharedEvents() throws SormasToSormasException, SormasToSormasValidationException {
 		MappableRdcf rdcf = createRDCF(false);
 
-		EventDto event = createEventDto(rdcf.remoteRdcf);
+		EventDto event = createEventDto(rdcf.centralRdcf);
 		event.setEventDesc("Test description");
 		event.setEventStatus(EventStatus.SCREENING);
 		event.setEventInvestigationStatus(EventInvestigationStatus.ONGOING);
@@ -248,10 +254,12 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		event.setSrcMediaName("Test media website");
 		event.setSrcMediaDetails("Test media details");
 
-		SormasToSormasEncryptedDataDto encryptedData =
-			encryptShareDataAsArray(new SormasToSormasEventDto(event, createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false)));
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
+		shareData.setEvents(Collections.singletonList(new SormasToSormasEventDto(event)));
+		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
 
-		getSormasToSormasEventFacade().saveSharedEntities(encryptedData, null);
+		getSormasToSormasEventFacade().saveSharedEntities(encryptedData);
 
 		EventDto savedEvent = getEventFacade().getEventByUuid(event.getUuid(), false);
 
@@ -270,26 +278,28 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		assertThat(savedEvent.getSrcMediaName(), is("Test media website"));
 		assertThat(savedEvent.getSrcMediaDetails(), is("Test media details"));
 
-		assertThat(savedEvent.getEventLocation().getRegion(), is(rdcf.localRdcf.region));
-		assertThat(savedEvent.getEventLocation().getDistrict(), is(rdcf.localRdcf.district));
+		assertThat(savedEvent.getEventLocation().getRegion(), is(rdcf.centralRdcf.region));
+		assertThat(savedEvent.getEventLocation().getDistrict(), is(rdcf.centralRdcf.district));
 
 		assertThat(savedEvent.getSormasToSormasOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ID));
 		assertThat(savedEvent.getSormasToSormasOriginInfo().getSenderName(), is("John doe"));
 	}
 
 	@Test
-	public void testSaveSharedEventsWithParticipants() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
+	public void testSaveSharedEventsWithParticipants() throws SormasToSormasException, SormasToSormasValidationException {
 		MappableRdcf rdcf = createRDCF(false);
 
-		EventDto event = createEventDto(rdcf.remoteRdcf);
-		EventParticipantDto eventParticipant = createEventParticipantDto(event.toReference(), UserDto.build().toReference(), rdcf);
+		EventDto event = createEventDto(rdcf.centralRdcf);
+		EventParticipantDto eventParticipant = createEventParticipantDto(event.toReference(), UserDto.build().toReference(), rdcf.centralRdcf);
 
-		SormasToSormasEventDto shareData = new SormasToSormasEventDto(event, createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
-		shareData.setEventParticipants(Collections.singletonList(eventParticipant));
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
+		shareData.setEvents(Collections.singletonList(new SormasToSormasEventDto(event)));
+		shareData.setEventParticipants(Collections.singletonList(new SormasToSormasEventParticipantDto(eventParticipant)));
 
-		SormasToSormasEncryptedDataDto encryptedData = encryptShareDataAsArray(shareData);
+		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
 
-		getSormasToSormasEventFacade().saveSharedEntities(encryptedData, null);
+		getSormasToSormasEventFacade().saveSharedEntities(encryptedData);
 
 		EventParticipantDto savedParticipant = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid());
 
@@ -299,23 +309,23 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		assertThat(savedParticipant.getPerson().getFirstName(), is("John"));
 		assertThat(savedParticipant.getPerson().getLastName(), is("Smith"));
 
-		assertThat(savedParticipant.getPerson().getAddress().getRegion(), is(rdcf.localRdcf.region));
-		assertThat(savedParticipant.getPerson().getAddress().getDistrict(), is(rdcf.localRdcf.district));
+		assertThat(savedParticipant.getPerson().getAddress().getRegion(), is(rdcf.centralRdcf.region));
+		assertThat(savedParticipant.getPerson().getAddress().getDistrict(), is(rdcf.centralRdcf.district));
 
 		assertThat(savedParticipant.getSormasToSormasOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ID));
 		assertThat(savedParticipant.getSormasToSormasOriginInfo().getSenderName(), is("John doe"));
 	}
 
 	@Test
-	public void testSaveSharedEventsWithSamples() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
+	public void testSaveSharedEventsWithSamples() throws SormasToSormasException, SormasToSormasValidationException {
 		MappableRdcf rdcf = createRDCF(false);
 		FacilityDto remoteLab = FacilityDto.build();
 		remoteLab.setName("Test Lab");
-		FacilityDto localLab = creator.createFacility("Test Lab", rdcf.localRdcf.region, rdcf.localRdcf.district, null, FacilityType.LABORATORY);
+		FacilityDto localLab = creator.createFacility("Test Lab", rdcf.centralRdcf.region, rdcf.centralRdcf.district, null, FacilityType.LABORATORY);
 
-		EventDto event = createEventDto(rdcf.remoteRdcf);
+		EventDto event = createEventDto(rdcf.centralRdcf);
 		UserDto sampleUser = UserDto.build();
-		EventParticipantDto eventParticipant = createEventParticipantDto(event.toReference(), sampleUser.toReference(), rdcf);
+		EventParticipantDto eventParticipant = createEventParticipantDto(event.toReference(), sampleUser.toReference(), rdcf.centralRdcf);
 
 		SampleDto sample = createSample(eventParticipant.toReference(), sampleUser.toReference(), remoteLab.toReference());
 		sample.setLabSampleID("Test lab sample id");
@@ -331,14 +341,16 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		additionalTest.setHaemoglobin(0.2F);
 		additionalTest.setConjBilirubin(0.3F);
 
-		SormasToSormasEventDto shareData = new SormasToSormasEventDto(event, createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
-		shareData.setEventParticipants(Collections.singletonList(eventParticipant));
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
+		shareData.setEvents(Collections.singletonList(new SormasToSormasEventDto(event)));
+		shareData.setEventParticipants(Collections.singletonList(new SormasToSormasEventParticipantDto(eventParticipant)));
 		shareData.setSamples(
 			Collections.singletonList(
 				new SormasToSormasSampleDto(sample, Collections.singletonList(pathogenTest), Collections.singletonList(additionalTest))));
-		SormasToSormasEncryptedDataDto encryptedData = encryptShareDataAsArray(shareData);
+		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
 
-		getSormasToSormasEventFacade().saveSharedEntities(encryptedData, null);
+		getSormasToSormasEventFacade().saveSharedEntities(encryptedData);
 
 		SampleDto savedSample = getSampleFacade().getSampleByUuid(sample.getUuid());
 		assertThat(savedSample, is(notNullValue()));
@@ -363,7 +375,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 	}
 
 	@Test
-	public void testReturnEvent() throws JsonProcessingException, SormasToSormasException {
+	public void testReturnEvent() throws SormasToSormasException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
 		useSurveillanceOfficerLogin(rdcf);
@@ -390,21 +402,28 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		getSormasToSormasShareRequestFacade().saveShareRequest(shareRequest);
 
 		PersonDto person = creator.createPerson();
-		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, "Involved", officer, (p) -> {
-			p.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo());
-		});
+		EventParticipantDto eventParticipant = creator.createEventParticipant(
+			event.toReference(),
+			person,
+			"Involved",
+			officer,
+			(p) -> p.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo()),
+			null);
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setHandOverOwnership(true);
 		options.setWithEventParticipants(true);
 		options.setComment("Test comment");
 
-		Mockito.when(MockProducer.getSormasToSormasClient().put(Matchers.anyString(), Matchers.anyString(), Matchers.any(), Matchers.any()))
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 			.thenAnswer(invocation -> Response.noContent().build());
 
-		getSormasToSormasEventFacade().returnEntity(event.getUuid(), options);
+		getSormasToSormasEventFacade().share(Collections.singletonList(event.getUuid()), options);
 
-		// contact ownership should be lost
+		// event ownership should be lost
 		EventDto sharedEvent = getEventFacade().getEventByUuid(event.getUuid(), false);
 		assertThat(sharedEvent.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
 
@@ -414,32 +433,29 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 	}
 
 	@Test
-	public void testSaveReturnedEvent() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
+	public void testSaveReturnedEvent() throws SormasToSormasException, SormasToSormasValidationException {
 		MappableRdcf rdcf = createRDCF(false);
 
-		UserReferenceDto officer = creator.createUser(rdcf.localRdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto officer = creator.createUser(rdcf.centralRdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 
 		EventDto event = creator.createEvent(officer);
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), creator.createPerson(), officer);
-		EventParticipantDto newEventParticipant = createEventParticipantDto(event.toReference(), UserDto.build().toReference(), rdcf);
+		EventParticipantDto newEventParticipant = createEventParticipantDto(event.toReference(), UserDto.build().toReference(), rdcf.centralRdcf);
 
-		FacilityDto lab = creator.createFacility("Test Lab", rdcf.localRdcf.region, rdcf.localRdcf.district, null, FacilityType.LABORATORY);
+		FacilityDto lab = creator.createFacility("Test Lab", rdcf.centralRdcf.region, rdcf.centralRdcf.district, null, FacilityType.LABORATORY);
 		SampleDto newSample = createSample(newEventParticipant.toReference(), officer, lab.toReference());
 
 		User officerUser = getUserService().getByReferenceDto(officer);
-		getSormasToSormasShareInfoService().persist(
-			createShareInfo(
-				officerUser,
-				DEFAULT_SERVER_ID,
-				true,
-				i -> i.getEvents().add(new ShareInfoEvent(i, getEventService().getByReferenceDto(event.toReference())))));
-		getSormasToSormasShareInfoService().persist(
-			createShareInfo(
-				officerUser,
-				DEFAULT_SERVER_ID,
-				true,
-				i -> i.getEventParticipants()
-					.add(new ShareInfoEventParticipant(i, getEventParticipantService().getByReferenceDto(eventParticipant.toReference())))));
+		ShareRequestInfo shareRequestInfo =
+			createShareRequestInfo(officerUser, DEFAULT_SERVER_ID, true, i -> i.setEvent(getEventService().getByReferenceDto(event.toReference())));
+		shareRequestInfo.setWithEventParticipants(true);
+		shareRequestInfo.getShares()
+			.add(
+				createShareInfo(
+					DEFAULT_SERVER_ID,
+					true,
+					i -> i.setEventParticipant(getEventParticipantService().getByReferenceDto(eventParticipant.toReference()))));
+		getShareRequestInfoService().persist(shareRequestInfo);
 
 		event.setEventDesc("Test updated description");
 		eventParticipant.getPerson().setBirthName("Test birth name");
@@ -449,13 +465,16 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		calendar.add(Calendar.DAY_OF_MONTH, 1);
 		event.setChangeDate(calendar.getTime());
 
-		SormasToSormasEventDto shareData = new SormasToSormasEventDto(event, createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, true));
-		shareData.setEventParticipants(Arrays.asList(eventParticipant, newEventParticipant));
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, true));
+		shareData.setEvents(Collections.singletonList(new SormasToSormasEventDto(event)));
+		shareData.setEventParticipants(
+			Arrays.asList(new SormasToSormasEventParticipantDto(eventParticipant), new SormasToSormasEventParticipantDto(newEventParticipant)));
 		shareData.setSamples(Collections.singletonList(new SormasToSormasSampleDto(newSample, Collections.emptyList(), Collections.emptyList())));
 
-		SormasToSormasEncryptedDataDto encryptedData = encryptShareDataAsArray(shareData);
+		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
 
-		getSormasToSormasEventFacade().saveReturnedEntity(encryptedData);
+		getSormasToSormasEventFacade().saveSharedEntities(encryptedData);
 
 		EventDto returnedEvent = getEventFacade().getEventByUuid(event.getUuid(), false);
 		assertThat(returnedEvent.getEventDesc(), is("Test updated description"));
@@ -503,44 +522,66 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 			});
 
 		PersonDto person = creator.createPerson();
-		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, "Involved", officer);
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, "Involved", officer, ep -> {
+			SormasToSormasOriginInfoDto originInfo = new SormasToSormasOriginInfoDto();
+			originInfo.setSenderName("Test Name");
+			originInfo.setSenderEmail("test@email.com");
+			originInfo.setOrganizationId(DEFAULT_SERVER_ID);
+			originInfo.setOwnershipHandedOver(true);
+			originInfo.setWithEventParticipants(true);
 
-		getSormasToSormasShareInfoService().persist(createShareInfo(getUserService().getByUuid(officer.getUuid()), SECOND_SERVER_ID, false, i -> {
-			i.getEvents().add(new ShareInfoEvent(i, getEventService().getByUuid(event.getUuid())));
-			i.getEventParticipants().add(new ShareInfoEventParticipant(i, getEventParticipantService().getByUuid(eventParticipant.getUuid())));
-			i.setWithEventParticipants(true);
-		}));
+			ep.setSormasToSormasOriginInfo(originInfo);
+		}, null);
+
+		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			getUserService().getByUuid(officer.getUuid()),
+			SECOND_SERVER_ID,
+			false,
+			ShareRequestStatus.ACCEPTED,
+			i -> i.setEvent(getEventService().getByUuid(event.getUuid())));
+		shareRequestInfo.setWithEventParticipants(true);
+		shareRequestInfo.getShares()
+			.add(
+				createShareInfo(
+					SECOND_SERVER_ID,
+					false,
+					i -> i.setEventParticipant(getEventParticipantService().getByUuid(eventParticipant.getUuid()))));
+		getShareRequestInfoService().persist(shareRequestInfo);
 
 		EventParticipantDto newEventParticipant = creator.createEventParticipant(event.toReference(), person, "Involved", officer);
 
 		Mockito
 			.when(
-				MockProducer.getSormasToSormasClient().post(eq(DEFAULT_SERVER_ID), Matchers.contains("/events/sync"), Matchers.any(), Matchers.any()))
+				MockProducer.getSormasToSormasClient()
+					.post(eq(DEFAULT_SERVER_ID), ArgumentMatchers.contains("/events/sync"), ArgumentMatchers.any(), ArgumentMatchers.any()))
 			.then(invocation -> {
-				SyncDataDto<SormasToSormasEventDto> syncData = invocation.getArgument(2);
+				SyncDataDto syncData = invocation.getArgument(2);
 
 				assertThat(syncData.getCriteria().getEntityUuid(), is(event.getUuid()));
 				assertThat(syncData.getCriteria().getExceptedOrganizationId(), is(DEFAULT_SERVER_ID));
 				assertThat(syncData.getCriteria().isForwardOnly(), is(false));
 
-				assertThat(syncData.getShareData().getEntity().getUuid(), is(event.getUuid()));
-				assertThat(syncData.getShareData().getEventParticipants(), hasSize(2));
+				assertThat(syncData.getShareData().getEvents().get(0).getEntity().getUuid(), is(event.getUuid()));
+				assertThat(syncData.getShareData().getEventParticipants(), hasSize(1)); // new event participant should not be shared
 
 				return Response.noContent().build();
 			});
 
 		Mockito
 			.when(
-				MockProducer.getSormasToSormasClient().post(eq(SECOND_SERVER_ID), Matchers.contains("/events/sync"), Matchers.any(), Matchers.any()))
+				MockProducer.getSormasToSormasClient()
+					.post(eq(SECOND_SERVER_ID), ArgumentMatchers.contains("/events/sync"), ArgumentMatchers.any(), ArgumentMatchers.any()))
 			.then(invocation -> {
-				SyncDataDto<SormasToSormasEventDto> syncData = invocation.getArgument(2);
+				SyncDataDto syncData = invocation.getArgument(2);
 
 				assertThat(syncData.getCriteria().getEntityUuid(), is(event.getUuid()));
 				assertThat(syncData.getCriteria().getExceptedOrganizationId(), is(nullValue()));
 				assertThat(syncData.getCriteria().isForwardOnly(), is(true));
 
-				assertThat(syncData.getShareData().getEntity().getUuid(), is(event.getUuid()));
-				assertThat(syncData.getShareData().getEventParticipants(), hasSize(2));
+				assertThat(syncData.getShareData().getEvents().get(0).getEntity().getUuid(), is(event.getUuid()));
+				// the new event participant should not be shared
+				assertThat(syncData.getShareData().getEventParticipants(), hasSize(1));
+				assertThat(syncData.getShareData().getEventParticipants().get(0).getEntity().getUuid(), is(eventParticipant.getUuid()));
 
 				return Response.noContent().build();
 			});
@@ -550,15 +591,14 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		// new event participant should have share info with ownership handed over
 		List<SormasToSormasShareInfoDto> newEventParticipantShareInfoList = getSormasToSormasShareInfoFacade()
 			.getIndexList(new SormasToSormasShareInfoCriteria().eventParticipant(newEventParticipant.toReference()), 0, 100);
-		assertThat(newEventParticipantShareInfoList, hasSize(1));
-		assertThat(newEventParticipantShareInfoList.get(0).isOwnershipHandedOver(), is(false));
+		assertThat(newEventParticipantShareInfoList, hasSize(0));
 	}
 
 	@Test
 	public void testSaveSyncedEvent() throws SormasToSormasException, SormasToSormasValidationException {
 		MappableRdcf rdcf = createRDCF(false);
 
-		UserReferenceDto officer = creator.createUser(rdcf.localRdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto officer = creator.createUser(rdcf.centralRdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 
 		EventDto event =
 			creator.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", officer, e -> {
@@ -571,12 +611,15 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 				e.setSormasToSormasOriginInfo(originInfo);
 			});
 
-		EventParticipantDto eventParticipant =
-			creator.createEventParticipant(event.toReference(), creator.createPerson(), "Involved", officer, (ep) -> {
-				ep.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo());
-			});
+		EventParticipantDto eventParticipant = creator.createEventParticipant(
+			event.toReference(),
+			creator.createPerson(),
+			"Involved",
+			officer,
+			(ep) -> ep.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo()),
+			null);
 
-		EventParticipantDto newEventParticipant = createEventParticipantDto(event.toReference(), UserDto.build().toReference(), rdcf);
+		EventParticipantDto newEventParticipant = createEventParticipantDto(event.toReference(), UserDto.build().toReference(), rdcf.centralRdcf);
 
 		event.setEventDesc("Test updated description");
 		eventParticipant.getPerson().setBirthName("Test birth name");
@@ -586,31 +629,34 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		calendar.add(Calendar.DAY_OF_MONTH, 1);
 		event.setChangeDate(calendar.getTime());
 
-		SormasToSormasEventDto shareData = new SormasToSormasEventDto(event, createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, true));
-		shareData.setEventParticipants(Arrays.asList(eventParticipant, newEventParticipant));
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
+		shareData.setEvents(Collections.singletonList(new SormasToSormasEventDto(event)));
+		shareData.setEventParticipants(
+			Arrays.asList(new SormasToSormasEventParticipantDto(eventParticipant), new SormasToSormasEventParticipantDto(newEventParticipant)));
 
 		SormasToSormasEncryptedDataDto encryptedData =
-			encryptShareData(new SyncDataDto<>(shareData, new ShareTreeCriteria(event.getUuid(), null, false)));
+			encryptShareData(new SyncDataDto(shareData, new ShareTreeCriteria(event.getUuid(), null, false)));
 
 		getSormasToSormasEventFacade().saveSyncedEntity(encryptedData);
 
 		EventDto syncedEvent = getEventFacade().getEventByUuid(event.getUuid(), false);
 		assertThat(syncedEvent.getEventDesc(), is("Test updated description"));
-		assertThat(syncedEvent.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(true));
+		assertThat(syncedEvent.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
 
 		EventParticipantDto syncedEventParticipant = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid());
 		assertThat(syncedEventParticipant.getPerson().getBirthName(), is("Test birth name"));
-		assertThat(syncedEventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(true));
+		assertThat(syncedEventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
 
 		EventParticipantDto returnedNewEventParticipant = getEventParticipantFacade().getEventParticipantByUuid(newEventParticipant.getUuid());
-		assertThat(returnedNewEventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(true));
+		assertThat(returnedNewEventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
 	}
 
 	@Test
 	public void testSyncRecursively() throws SormasToSormasException, SormasToSormasValidationException {
 		MappableRdcf rdcf = createRDCF(false);
 
-		UserReferenceDto officer = creator.createUser(rdcf.localRdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto officer = creator.createUser(rdcf.centralRdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 
 		EventDto event =
 			creator.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", officer, e -> {
@@ -624,18 +670,30 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 				e.setSormasToSormasOriginInfo(originInfo);
 			});
 
-		EventParticipantDto eventParticipant =
-			creator.createEventParticipant(event.toReference(), creator.createPerson(), "Involved", officer, (ep) -> {
-				ep.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo());
-			});
+		EventParticipantDto eventParticipant = creator.createEventParticipant(
+			event.toReference(),
+			creator.createPerson(),
+			"Involved",
+			officer,
+			(ep) -> ep.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo()),
+			null);
 
-		getSormasToSormasShareInfoService().persist(createShareInfo(getUserService().getByUuid(officer.getUuid()), SECOND_SERVER_ID, false, i -> {
-			i.getEvents().add(new ShareInfoEvent(i, getEventService().getByUuid(event.getUuid())));
-			i.getEventParticipants().add(new ShareInfoEventParticipant(i, getEventParticipantService().getByUuid(eventParticipant.getUuid())));
-			i.setWithEventParticipants(true);
-		}));
+		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			getUserService().getByUuid(officer.getUuid()),
+			SECOND_SERVER_ID,
+			false,
+			ShareRequestStatus.ACCEPTED,
+			i -> i.setEvent(getEventService().getByUuid(event.getUuid())));
+		shareRequestInfo.setWithEventParticipants(true);
+		shareRequestInfo.getShares()
+			.add(
+				createShareInfo(
+					SECOND_SERVER_ID,
+					false,
+					i -> i.setEventParticipant(getEventParticipantService().getByUuid(eventParticipant.getUuid()))));
+		getShareRequestInfoService().persist(shareRequestInfo);
 
-		EventParticipantDto newEventParticipant = createEventParticipantDto(event.toReference(), UserDto.build().toReference(), rdcf);
+		EventParticipantDto newEventParticipant = createEventParticipantDto(event.toReference(), UserDto.build().toReference(), rdcf.centralRdcf);
 
 		event.setEventDesc("Test updated description");
 		eventParticipant.getPerson().setBirthName("Test birth name");
@@ -645,35 +703,44 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		calendar.add(Calendar.DAY_OF_MONTH, 1);
 		event.setChangeDate(calendar.getTime());
 
-		SormasToSormasEventDto shareData = new SormasToSormasEventDto(event, createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, true));
-		shareData.setEventParticipants(Arrays.asList(eventParticipant, newEventParticipant));
+		SormasToSormasDto shareData = new SormasToSormasDto();
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false);
+		originInfo.setWithEventParticipants(true);
+		shareData.setOriginInfo(originInfo);
+		shareData.setEvents(Collections.singletonList(new SormasToSormasEventDto(event)));
+		shareData.setEventParticipants(
+			Arrays.asList(new SormasToSormasEventParticipantDto(eventParticipant), new SormasToSormasEventParticipantDto(newEventParticipant)));
 
 		SormasToSormasEncryptedDataDto encryptedData =
-			encryptShareData(new SyncDataDto<>(shareData, new ShareTreeCriteria(event.getUuid(), null, false)));
+			encryptShareData(new SyncDataDto(shareData, new ShareTreeCriteria(event.getUuid(), null, false)));
 
-		Mockito.when(MockProducer.getManagedScheduledExecutorService().schedule(Matchers.any(Runnable.class), Matchers.anyLong(), Matchers.any()))
+		Mockito
+			.when(
+				MockProducer.getManagedScheduledExecutorService()
+					.schedule(ArgumentMatchers.any(Runnable.class), ArgumentMatchers.anyLong(), ArgumentMatchers.any()))
 			.then(invocation -> {
 				((Runnable) invocation.getArgument(0)).run();
 
 				Mockito.verify(MockProducer.getSormasToSormasClient(), Mockito.times(1))
-					.post(eq(DEFAULT_SERVER_ID), Matchers.contains("/events/sync"), Matchers.any(), Matchers.any());
+					.post(eq(DEFAULT_SERVER_ID), ArgumentMatchers.contains("/events/sync"), ArgumentMatchers.any(), ArgumentMatchers.any());
 				Mockito.verify(MockProducer.getSormasToSormasClient(), Mockito.times(1))
-					.post(eq(SECOND_SERVER_ID), Matchers.contains("/events/sync"), Matchers.any(), Matchers.any());
+					.post(eq(SECOND_SERVER_ID), ArgumentMatchers.contains("/events/sync"), ArgumentMatchers.any(), ArgumentMatchers.any());
 
 				return null;
 			});
 
 		Mockito
 			.when(
-				MockProducer.getSormasToSormasClient().post(eq(DEFAULT_SERVER_ID), Matchers.contains("/events/sync"), Matchers.any(), Matchers.any()))
+				MockProducer.getSormasToSormasClient()
+					.post(eq(DEFAULT_SERVER_ID), ArgumentMatchers.contains("/events/sync"), ArgumentMatchers.any(), ArgumentMatchers.any()))
 			.then(invocation -> {
-				SyncDataDto<SormasToSormasEventDto> syncData = invocation.getArgument(2);
+				SyncDataDto syncData = invocation.getArgument(2);
 
 				assertThat(syncData.getCriteria().getEntityUuid(), is(event.getUuid()));
 				assertThat(syncData.getCriteria().getExceptedOrganizationId(), is(SECOND_SERVER_ID));
 				assertThat(syncData.getCriteria().isForwardOnly(), is(false));
 
-				assertThat(syncData.getShareData().getEntity().getUuid(), is(event.getUuid()));
+				assertThat(syncData.getShareData().getEvents().get(0).getEntity().getUuid(), is(event.getUuid()));
 				assertThat(syncData.getShareData().getEventParticipants(), hasSize(2));
 
 				return Response.noContent().build();
@@ -681,16 +748,17 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
 		Mockito
 			.when(
-				MockProducer.getSormasToSormasClient().post(eq(SECOND_SERVER_ID), Matchers.contains("/events/sync"), Matchers.any(), Matchers.any()))
+				MockProducer.getSormasToSormasClient()
+					.post(eq(SECOND_SERVER_ID), ArgumentMatchers.contains("/events/sync"), ArgumentMatchers.any(), ArgumentMatchers.any()))
 			.then(invocation -> {
-				SyncDataDto<SormasToSormasEventDto> syncData = invocation.getArgument(2);
+				SyncDataDto syncData = invocation.getArgument(2);
 
 				assertThat(syncData.getCriteria().getEntityUuid(), is(event.getUuid()));
 				assertThat(syncData.getCriteria().getExceptedOrganizationId(), is(nullValue()));
 				assertThat(syncData.getCriteria().isForwardOnly(), is(true));
 
-				assertThat(syncData.getShareData().getEntity().getUuid(), is(event.getUuid()));
-				assertThat(syncData.getShareData().getEventParticipants(), hasSize(2));
+				assertThat(syncData.getShareData().getEvents().get(0).getEntity().getUuid(), is(event.getUuid()));
+				assertThat(syncData.getShareData().getEventParticipants(), hasSize(1));
 
 				return Response.noContent().build();
 			});
@@ -708,13 +776,13 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		return eventDto;
 	}
 
-	private EventParticipantDto createEventParticipantDto(EventReferenceDto event, UserReferenceDto user, MappableRdcf rdcf) {
+	private EventParticipantDto createEventParticipantDto(EventReferenceDto event, UserReferenceDto user, TestDataCreator.RDCF rdcf) {
 		EventParticipantDto participantDto = EventParticipantDto.build(event, user);
 		participantDto.setPerson(createPersonDto(rdcf));
 
 		participantDto.setReportingUser(user);
-		participantDto.setRegion(rdcf.remoteRdcf.region);
-		participantDto.setDistrict(rdcf.remoteRdcf.district);
+		participantDto.setRegion(rdcf.region);
+		participantDto.setDistrict(rdcf.district);
 
 		return participantDto;
 	}

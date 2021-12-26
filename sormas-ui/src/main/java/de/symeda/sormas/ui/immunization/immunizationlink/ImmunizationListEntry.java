@@ -1,41 +1,24 @@
 package de.symeda.sormas.ui.immunization.immunizationlink;
 
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 
-public class ImmunizationListEntry extends HorizontalLayout {
+public class ImmunizationListEntry extends SideComponentField {
 
 	public static final String SEPARATOR = ": ";
 
 	private final ImmunizationListEntryDto immunization;
-	private Button editButton;
 
 	public ImmunizationListEntry(ImmunizationListEntryDto immunization) {
 		this.immunization = immunization;
-
-		setMargin(false);
-		setSpacing(true);
-		setWidth(100, Unit.PERCENTAGE);
-		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
-
-		VerticalLayout mainLayout = new VerticalLayout();
-		mainLayout.setWidth(100, Unit.PERCENTAGE);
-		mainLayout.setMargin(false);
-		mainLayout.setSpacing(false);
-		addComponent(mainLayout);
-		setExpandRatio(mainLayout, 1);
 
 		HorizontalLayout uuidReportLayout = new HorizontalLayout();
 		uuidReportLayout.setMargin(false);
@@ -53,7 +36,7 @@ public class ImmunizationListEntry extends HorizontalLayout {
 		uuidReportLayout.setWidthFull();
 		uuidReportLayout.setComponentAlignment(immunizationUuidLabel, Alignment.MIDDLE_LEFT);
 		uuidReportLayout.setComponentAlignment(diseaseLabel, Alignment.MIDDLE_RIGHT);
-		mainLayout.addComponent(uuidReportLayout);
+		addComponentToField(uuidReportLayout);
 
 		HorizontalLayout meansOfImmunizationLayout = new HorizontalLayout();
 		Label meansOfImmunizationLabel = new Label(
@@ -61,7 +44,7 @@ public class ImmunizationListEntry extends HorizontalLayout {
 				+ SEPARATOR
 				+ DataHelper.toStringNullable(immunization.getMeansOfImmunization()));
 		meansOfImmunizationLayout.addComponent(meansOfImmunizationLabel);
-		mainLayout.addComponent(meansOfImmunizationLayout);
+		addComponentToField(meansOfImmunizationLayout);
 
 		HorizontalLayout immunizationStatusLayout = new HorizontalLayout();
 		Label immunizationStatusLabel = new Label(
@@ -69,15 +52,15 @@ public class ImmunizationListEntry extends HorizontalLayout {
 				+ SEPARATOR
 				+ DataHelper.toStringNullable(immunization.getImmunizationStatus()));
 		immunizationStatusLayout.addComponent(immunizationStatusLabel);
-		mainLayout.addComponent(immunizationStatusLayout);
+		addComponentToField(immunizationStatusLayout);
 
 		HorizontalLayout managementStatusLayout = new HorizontalLayout();
 		Label managementStatusLabel = new Label(
-			I18nProperties.getPrefixCaption(ImmunizationListEntryDto.I18N_PREFIX, ImmunizationListEntryDto.MANAGEMENT_STATUS)
+			I18nProperties.getPrefixCaption(ImmunizationListEntryDto.I18N_PREFIX, ImmunizationListEntryDto.IMMUNIZATION_MANAGEMENT_STATUS)
 				+ SEPARATOR
-				+ DataHelper.toStringNullable(immunization.getManagementStatus()));
+				+ DataHelper.toStringNullable(immunization.getImmunizationManagementStatus()));
 		managementStatusLayout.addComponent(managementStatusLabel);
-		mainLayout.addComponent(managementStatusLayout);
+		addComponentToField(managementStatusLayout);
 
 		HorizontalLayout immunizationPeriodLayout = new HorizontalLayout();
 		Label reportDateLabel = new Label(
@@ -85,23 +68,7 @@ public class ImmunizationListEntry extends HorizontalLayout {
 				+ SEPARATOR
 				+ DateFormatHelper.buildPeriodString(immunization.getStartDate(), immunization.getEndDate()));
 		immunizationPeriodLayout.addComponent(reportDateLabel);
-		mainLayout.addComponent(immunizationPeriodLayout);
-	}
-
-	public void addEditListener(Button.ClickListener editClickListener) {
-		if (editButton == null) {
-			editButton = ButtonHelper.createIconButtonWithCaption(
-				"edit-travelEntry-" + immunization.getUuid(),
-				null,
-				VaadinIcons.PENCIL,
-				editClickListener,
-				ValoTheme.BUTTON_LINK,
-				CssStyles.BUTTON_COMPACT);
-
-			addComponent(editButton);
-			setComponentAlignment(editButton, Alignment.TOP_RIGHT);
-			setExpandRatio(editButton, 0);
-		}
+		addComponentToField(immunizationPeriodLayout);
 	}
 
 	public ImmunizationListEntryDto getImmunizationEntry() {

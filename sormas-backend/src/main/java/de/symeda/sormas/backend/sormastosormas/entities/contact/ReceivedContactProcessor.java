@@ -15,83 +15,66 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.contact;
 
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
+import java.util.Optional;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
-import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
-import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessorHelper;
+import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
 public class ReceivedContactProcessor
-	implements ReceivedDataProcessor<ContactDto, SormasToSormasContactDto, ProcessedContactData, SormasToSormasContactPreview> {
+	extends
+	ReceivedDataProcessor<Contact, ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview, Contact, ContactService, SormasToSormasContactDtoValidator> {
 
-	@EJB
-	private ReceivedDataProcessorHelper dataProcessorHelper;
+	public ReceivedContactProcessor() {
+	}
 
-	@Override
-	public ProcessedContactData processReceivedData(SormasToSormasContactDto receivedContact, ContactDto existingContact)
-		throws SormasToSormasValidationException {
-		List<ValidationErrors> validationErrors = new ArrayList<>();
-
-		PersonDto person = receivedContact.getPerson();
-		ContactDto contact = receivedContact.getEntity();
-		List<SormasToSormasSampleDto> samples = receivedContact.getSamples();
-		SormasToSormasOriginInfoDto originInfo = receivedContact.getOriginInfo();
-
-		ValidationErrors contactValidationErrors = new ValidationErrors();
-
-		ValidationErrors originInfoErrors = dataProcessorHelper.processOriginInfo(originInfo, Captions.Contact);
-		contactValidationErrors.addAll(originInfoErrors);
-
-		ValidationErrors contactDataErrors = dataProcessorHelper.processContactData(contact, person, existingContact);
-		contactValidationErrors.addAll(contactDataErrors);
-
-		if (contactValidationErrors.hasError()) {
-			validationErrors.add(new ValidationErrors(buildContactValidationGroupName(contact), contactValidationErrors));
-		}
-
-		if (samples != null && samples.size() > 0) {
-			List<ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
-			validationErrors.addAll(sampleErrors);
-		}
-
-		if (validationErrors.size() > 0) {
-			throw new SormasToSormasValidationException(validationErrors);
-		}
-
-		return new ProcessedContactData(person, contact, samples, originInfo);
+	@Inject
+	protected ReceivedContactProcessor(
+		ContactService service,
+		UserService userService,
+		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade,
+		SormasToSormasContactDtoValidator validator) {
+		super(service, userService, configFacade, validator);
 	}
 
 	@Override
-	public SormasToSormasContactPreview processReceivedPreview(SormasToSormasContactPreview preview) throws SormasToSormasValidationException {
-		List<ValidationErrors> validationErrors = new ArrayList<>();
+	public void handleReceivedData(SormasToSormasContactDto sharedData, Contact existingData) {
+		handleIgnoredProperties(sharedData.getEntity(), ContactFacadeEjb.toDto(existingData));
+		handleIgnoredProperties(
+			sharedData.getPerson(),
+			Optional.ofNullable(existingData).map(c -> PersonFacadeEjb.toDto(c.getPerson())).orElse(null));
 
-		ValidationErrors contactErrors = dataProcessorHelper.processContactPreview(preview);
+		ContactDto contact = sharedData.getEntity();
+		PersonDto person = sharedData.getPerson();
 
-		if (contactErrors.hasError()) {
-			validationErrors.add(new ValidationErrors(buildContactValidationGroupName(preview), contactErrors));
-		}
+		contact.setPerson(person.toReference());
+		updateReportingUser(contact, existingData);
+	}
 
-		if (validationErrors.size() > 0) {
-			throw new SormasToSormasValidationException(validationErrors);
-		}
-
-		return preview;
+	@Override
+	public ValidationErrors existsNotShared(String uuid) {
+		return existsNotShared(
+			uuid,
+			Contact.SORMAS_TO_SORMAS_ORIGIN_INFO,
+			Contact.SORMAS_TO_SORMAS_SHARES,
+			Captions.Contact,
+			Validations.sormasToSormasContactExists);
 	}
 }

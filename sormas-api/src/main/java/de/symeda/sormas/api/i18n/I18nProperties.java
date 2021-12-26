@@ -30,6 +30,7 @@ import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle.Control;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringSubstitutor;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.ResourceBundle;
@@ -274,6 +275,20 @@ public final class I18nProperties {
 			return String.format(result, formatArgs);
 		} else if (formatArgs.length > 0 && formatArgs[0] != null) {
 			return formatArgs[0].toString();
+		} else {
+			return "";
+		}
+	}
+
+	public static String getValidationError(String key, Map<String, Object> formatArgs) {
+
+		String result = getInstance(userLanguage.get()).validationProperties.getString(key, null);
+		if (result != null) {
+			return StringSubstitutor.replace(result, formatArgs, "{", "}");
+		} else if (formatArgs.size() > 0) {
+			Object firstFormatArg = formatArgs.get(formatArgs.keySet().iterator().next());
+
+			return firstFormatArg != null ? firstFormatArg.toString() : "";
 		} else {
 			return "";
 		}

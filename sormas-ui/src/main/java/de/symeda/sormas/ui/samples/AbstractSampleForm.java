@@ -29,13 +29,14 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -70,16 +71,18 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 	protected static final String ADDITIONAL_TESTING_READ_HEADLINE_LOC = "additionalTestingReadHeadlineLoc";
 	protected static final String REQUESTED_PATHOGEN_TESTS_READ_LOC = "requestedPathogenTestsReadLoc";
 	protected static final String REQUESTED_ADDITIONAL_TESTS_READ_LOC = "requestedAdditionalTestsReadLoc";
+	protected static final String REPORT_INFO_LABEL_LOC = "reportInfoLabelLoc";
+	protected static final String REFERRED_FROM_BUTTON_LOC = "referredFromButtonLoc";
 
 	//@formatter:off
     protected static final String SAMPLE_COMMON_HTML_LAYOUT =
-            fluidRowLocs(SampleDto.UUID, SampleDto.REPORTING_USER) +
+            fluidRowLocs(SampleDto.UUID, REPORT_INFO_LABEL_LOC) +
                     fluidRowLocs(SampleDto.SAMPLE_PURPOSE) +
                     fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL) +
                     fluidRowLocs("", SampleDto.SAMPLE_MATERIAL_TEXT) +
                     fluidRowLocs(SampleDto.SAMPLING_REASON, SampleDto.SAMPLING_REASON_DETAILS) +
                     fluidRowLocs(SampleDto.SAMPLE_SOURCE, "") +
-                    fluidRowLocs(SampleDto.FIELD_SAMPLE_ID, "") +
+                    fluidRowLocs(SampleDto.FIELD_SAMPLE_ID, REFERRED_FROM_BUTTON_LOC) +
                     fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS) +
 
                     locCss(VSPACE_TOP_3, SampleDto.PATHOGEN_TESTING_REQUESTED) +
@@ -107,16 +110,12 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
                     fluidRowLocs(SampleDto.PATHOGEN_TEST_RESULT);
     //@formatter:on
 
-	public AbstractSampleForm(Class<SampleDto> type, String propertyI18nPrefix) {
-		super(type, propertyI18nPrefix, FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
-	}
-
-	protected AbstractSampleForm(Class<SampleDto> type, String propertyI18nPrefix, UiFieldAccessCheckers fieldAccessCheckers) {
+	protected AbstractSampleForm(Class<SampleDto> type, String propertyI18nPrefix, Disease disease, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(
 			type,
 			propertyI18nPrefix,
 			true,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
 			fieldAccessCheckers);
 	}
 
@@ -136,7 +135,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		addDateField(SampleDto.SHIPMENT_DATE, DateField.class, 7);
 		addField(SampleDto.SHIPMENT_DETAILS, TextField.class);
 		addField(SampleDto.RECEIVED_DATE, DateField.class);
-		final ComboBox lab = addField(SampleDto.LAB, ComboBox.class);
+		final ComboBox lab = addInfrastructureField(SampleDto.LAB);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
 		final TextField labDetails = addField(SampleDto.LAB_DETAILS, TextField.class);
 		labDetails.setVisible(false);
@@ -242,25 +241,8 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		}
 		Label reportInfoLabel = new Label(reportInfoText.toString());
 		reportInfoLabel.setEnabled(false);
-		getContent().addComponent(reportInfoLabel);
+		getContent().addComponent(reportInfoLabel, REPORT_INFO_LABEL_LOC);
 
-		SampleReferenceDto referredFromRef = FacadeProvider.getSampleFacade().getReferredFrom(getValue().getUuid());
-		if (referredFromRef != null) {
-			SampleDto referredFrom = FacadeProvider.getSampleFacade().getSampleByUuid(referredFromRef.getUuid());
-			FacilityReferenceDto referredFromLab = referredFrom.getLab();
-			String referredButtonCaption = referredFromLab == null
-				? I18nProperties.getCaption(Captions.sampleReferredFromInternal) + " ("
-					+ DateFormatHelper.formatLocalDateTime(referredFrom.getSampleDateTime()) + ")"
-				: I18nProperties.getCaption(Captions.sampleReferredFrom) + " " + referredFromLab.toString();
-			Button referredButton = ButtonHelper.createButton(
-				"referredFrom",
-				referredButtonCaption,
-				event -> ControllerProvider.getSampleController().navigateToData(referredFrom.getUuid()),
-				ValoTheme.BUTTON_LINK,
-				VSPACE_NONE);
-
-			getContent().addComponent(referredButton);
-		}
 	}
 
 	protected void updateLabDetailsVisibility(TextField labDetails, Property.ValueChangeEvent event) {
@@ -408,7 +390,8 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			&& (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT_NOT_OWNED)
 				|| reportingUser != null && UserProvider.getCurrent().getUuid().equals(reportingUser.getUuid()));
 		boolean canOnlyReadRequests = !canEditRequest && showRequestFields;
-		boolean canUseAdditionalTests = UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW);
+		boolean canUseAdditionalTests = UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
+			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ADDITIONAL_TESTS);
 
 		Field<?> pathogenTestingField = getField(SampleDto.PATHOGEN_TESTING_REQUESTED);
 		pathogenTestingField.setVisible(canEditRequest);

@@ -43,7 +43,7 @@ import de.symeda.sormas.backend.infrastructure.area.Area;
 
 @Stateless
 @LocalBean
-public class DistrictService extends AbstractInfrastructureAdoService<District> {
+public class DistrictService extends AbstractInfrastructureAdoService<District, DistrictCriteria> {
 
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
@@ -126,19 +126,7 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 	}
 
 	public List<District> getByExternalId(String externalId, boolean includeArchivedEntities) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<District> cq = cb.createQuery(getElementClass());
-		Root<District> from = cq.from(getElementClass());
-
-		Predicate filter = CriteriaBuilderHelper.ilikePrecise(cb, from.get(District.EXTERNAL_ID), externalId.trim());
-		if (!includeArchivedEntities) {
-			filter = cb.and(filter, createBasicFilter(cb, from));
-		}
-
-		cq.where(filter);
-
-		return em.createQuery(cq).getResultList();
+		return getByExternalId(externalId, District.EXTERNAL_ID, includeArchivedEntities);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -148,6 +136,7 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 		return null;
 	}
 
+	@Override
 	public Predicate buildCriteriaFilter(DistrictCriteria criteria, CriteriaBuilder cb, Root<District> from) {
 
 		Predicate filter = null;

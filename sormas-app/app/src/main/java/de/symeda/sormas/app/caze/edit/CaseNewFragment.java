@@ -19,8 +19,10 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -31,10 +33,12 @@ import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -225,18 +229,18 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		contentBinding.symptomsOnsetDate.initializeDateField(getFragmentManager());
 
 		contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>());
-		contentBinding.personBirthdateMM.initializeSpinner(monthList, field -> {
-			DataUtils.updateListOfDays(
+		contentBinding.personBirthdateMM.initializeSpinner(
+			monthList,
+			field -> DataUtils.updateListOfDays(
 				contentBinding.personBirthdateDD,
 				(Integer) contentBinding.personBirthdateYYYY.getValue(),
-				(Integer) field.getValue());
-		});
-		contentBinding.personBirthdateYYYY.initializeSpinner(yearList, field -> {
-			DataUtils.updateListOfDays(
+				(Integer) field.getValue()));
+		contentBinding.personBirthdateYYYY.initializeSpinner(
+			yearList,
+			field -> DataUtils.updateListOfDays(
 				contentBinding.personBirthdateDD,
 				(Integer) field.getValue(),
-				(Integer) contentBinding.personBirthdateMM.getValue());
-		});
+				(Integer) contentBinding.personBirthdateMM.getValue()));
 
 		int year = Calendar.getInstance().get(Calendar.YEAR);
 		contentBinding.personBirthdateYYYY.setSelectionOnOpen(year - 35);
@@ -249,6 +253,12 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			if (e.getValue() == TypeOfPlace.FACILITY) {
 				contentBinding.facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
 				contentBinding.caseDataFacilityType.setValue(FacilityType.HOSPITAL);
+				User user = ConfigProvider.getUser();
+				boolean userHasFacilityJurisdictionLevel =
+					user.getUserRoles().stream().anyMatch(userRole -> userRole.getJurisdictionLevel().equals(JurisdictionLevel.HEALTH_FACILITY));
+				if (!userHasFacilityJurisdictionLevel) {
+					contentBinding.caseDataHealthFacility.setValue(null);
+				}
 			}
 		});
 	}
@@ -288,6 +298,8 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			contentBinding.facilityOrHome.setEnabled(false);
 			contentBinding.facilityTypeGroup.setEnabled(false);
 			contentBinding.caseDataFacilityType.setEnabled(false);
+			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setEnabled(false);
+			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setVisibility(GONE);
 		}
 
 		if (user.hasUserRole(UserRole.POE_INFORMANT) && user.getPointOfEntry() != null) {

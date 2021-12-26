@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.vaccination;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -39,5 +40,22 @@ public class LastVaccineType implements Serializable {
 
 	public void setVaccineType(String vaccineType) {
 		this.vaccineType = vaccineType;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		}
+		if (!(o instanceof LastVaccineType)) {
+			return false;
+		}
+		LastVaccineType lastVaccineType = (LastVaccineType) o;
+		return Objects.equals(lastVaccineType.immunization, immunization) && Objects.equals(lastVaccineType.vaccineType, vaccineType);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(immunization, vaccineType);
 	}
 }

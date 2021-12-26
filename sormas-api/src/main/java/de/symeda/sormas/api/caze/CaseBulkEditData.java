@@ -20,15 +20,19 @@
 
 package de.symeda.sormas.api.caze;
 
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
 /**
  * @author Christopher Riedel
@@ -57,6 +61,7 @@ public class CaseBulkEditData extends EntityDto {
 
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	private PlagueType plagueType;
 	private DengueFeverType dengueFeverType;
@@ -70,6 +75,7 @@ public class CaseBulkEditData extends EntityDto {
 	private CommunityReferenceDto community;
 	private FacilityType facilityType;
 	private FacilityReferenceDto healthFacility;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
 	private Boolean dontShareWithReportingTool;
 

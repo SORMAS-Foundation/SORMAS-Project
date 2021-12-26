@@ -26,11 +26,13 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.pojo.api.Person;
 import org.sormas.e2etests.pojo.api.Request;
 import org.sormas.e2etests.state.ApiState;
 
+@Slf4j
 public class PersonsHelper {
 
   private final RestAssuredClient restAssuredClient;
@@ -50,7 +52,7 @@ public class PersonsHelper {
         Request.builder().method(Method.GET).path(PERSONS_PATH + UUIDS_PATH).build());
     int totalPersons =
         apiState.getResponse().getBody().asString().replaceAll("\"", "").split(",").length;
-    System.out.println("Total persons: " + totalPersons);
+    log.info("Total persons: " + totalPersons);
   }
 
   public Response getPersonBasedOnUUID(String personUUID) {
@@ -72,10 +74,16 @@ public class PersonsHelper {
             .build());
   }
 
-  // TODO remove this duplicated code and refactor its usage within framework !
-  public void pushPerson(String specificPath, String jsonBody) {
-    final String json = jsonBody;
+  @SneakyThrows
+  public void createMultiplePersons(List<Person> personList) {
+    final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    List<Person> personBody = personList;
+    objectMapper.writeValue(out, personBody);
     restAssuredClient.sendRequest(
-        Request.builder().method(Method.POST).path(PERSONS_PATH + specificPath).body(json).build());
+        Request.builder()
+            .method(Method.POST)
+            .body(out.toString())
+            .path(PERSONS_PATH + POST_PATH)
+            .build());
   }
 }

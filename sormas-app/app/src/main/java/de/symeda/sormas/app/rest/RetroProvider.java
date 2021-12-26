@@ -43,13 +43,13 @@ import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteriaDto
 import de.symeda.sormas.api.caze.classification.ClassificationEventClusterCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationExposureCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestNegativeResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestOtherPositiveResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestPositiveResultCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeBetweenYearsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationVaccinationDateNotInStartDateRangeDto;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -191,7 +191,7 @@ public final class RetroProvider {
 					"ClassificationPathogenTestOtherPositiveResultCriteriaDto")
 				.registerSubtype(ClassificationXOfCriteriaDto.class, "ClassificationXOfCriteriaDto")
 				.registerSubtype(ClassificationEpiDataCriteriaDto.class, "ClassificationEpiDataCriteriaDto")
-				.registerSubtype(ClassificationNotInStartDateRangeCriteriaDto.class, "ClassificationNotInStartDateRangeCriteriaDto")
+				.registerSubtype(ClassificationVaccinationDateNotInStartDateRangeDto.class, "ClassificationVaccinationDateNotInStartDateRangeDto")
 				.registerSubtype(ClassificationSymptomsCriteriaDto.class, "ClassificationSymptomsCriteriaDto")
 				.registerSubtype(ClassificationPathogenTestCriteriaDto.class, "ClassificationPathogenTestCriteriaDto")
 				.registerSubtype(ClassificationExposureCriteriaDto.class, "ClassificationExposureCriteriaDto")

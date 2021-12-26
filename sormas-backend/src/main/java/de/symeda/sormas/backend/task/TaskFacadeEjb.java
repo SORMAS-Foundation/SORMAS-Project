@@ -59,8 +59,8 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
@@ -70,6 +70,7 @@ import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskJurisdictionFlagsDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -85,6 +86,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.CronService;
+import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
@@ -95,13 +97,16 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationJoins;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.infrastructure.community.Community;
-import de.symeda.sormas.backend.infrastructure.district.District;
-import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
+import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -137,6 +142,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	private MessagingService messagingService;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private TravelEntryService travelEntryService;
 
 	public Task fromDto(TaskDto source, boolean checkChangeDate) {
 
@@ -150,6 +157,10 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setAssigneeReply(source.getAssigneeReply());
 		target.setCreatorUser(userService.getByReferenceDto(source.getCreatorUser()));
 		target.setCreatorComment(source.getCreatorComment());
+		if (source.getObserverUsers() != null) {
+			List<User> observerUsers = userService.getByReferenceDtos(source.getObserverUsers());
+			target.setObserverUsers(observerUsers);
+		}
 		target.setPriority(source.getPriority());
 		target.setDueDate(source.getDueDate());
 		target.setSuggestedStart(source.getSuggestedStart());
@@ -174,21 +185,31 @@ public class TaskFacadeEjb implements TaskFacade {
 				target.setCaze(caseService.getByReferenceDto(source.getCaze()));
 				target.setContact(null);
 				target.setEvent(null);
+				target.setTravelEntry(null);
 				break;
 			case CONTACT:
 				target.setCaze(null);
 				target.setContact(contactService.getByReferenceDto(source.getContact()));
 				target.setEvent(null);
+				target.setTravelEntry(null);
 				break;
 			case EVENT:
 				target.setCaze(null);
 				target.setContact(null);
 				target.setEvent(eventService.getByReferenceDto(source.getEvent()));
+				target.setTravelEntry(null);
+				break;
+			case TRAVEL_ENTRY:
+				target.setCaze(null);
+				target.setContact(null);
+				target.setEvent(null);
+				target.setTravelEntry(travelEntryService.getByReferenceDto(source.getTravelEntry()));
 				break;
 			case GENERAL:
 				target.setCaze(null);
 				target.setContact(null);
 				target.setEvent(null);
+				target.setTravelEntry(null);
 				break;
 			default:
 				throw new UnsupportedOperationException(source.getTaskContext() + " is not implemented");
@@ -216,6 +237,9 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setAssigneeReply(source.getAssigneeReply());
 		target.setCreatorUser(UserFacadeEjb.toReferenceDto(source.getCreatorUser()));
 		target.setCreatorComment(source.getCreatorComment());
+		if (source.getObserverUsers() != null) {
+			target.setObserverUsers(source.getObserverUsers().stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toSet()));
+		}
 		target.setPriority(source.getPriority());
 		target.setDueDate(source.getDueDate());
 		target.setSuggestedStart(source.getSuggestedStart());
@@ -227,6 +251,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
 		target.setContact(ContactFacadeEjb.toReferenceDto(source.getContact()));
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
+		target.setTravelEntry(TravelEntryFacadeEjb.toReferenceDto(source.getTravelEntry()));
 
 		target.setClosedLat(source.getClosedLat());
 		target.setClosedLon(source.getClosedLon());
@@ -247,7 +272,15 @@ public class TaskFacadeEjb implements TaskFacade {
 			}
 
 			if (source.getEvent() != null) {
-				pseudonymizer.pseudonymizeDto(EventReferenceDto.class, target.getEvent(), taskJurisdictionFlagsDto.getEvenInJurisdiction(), null);
+				pseudonymizer.pseudonymizeDto(EventReferenceDto.class, target.getEvent(), taskJurisdictionFlagsDto.getEventInJurisdiction(), null);
+			}
+
+			if (source.getTravelEntry() != null) {
+				pseudonymizer.pseudonymizeDto(
+					TravelEntryReferenceDto.class,
+					target.getTravelEntry(),
+					taskJurisdictionFlagsDto.getTravelEntryInJurisdiction(),
+					null);
 			}
 		});
 
@@ -269,29 +302,30 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		if (ado.getTaskType() == TaskType.CONTACT_FOLLOW_UP && ado.getTaskStatus() == TaskStatus.DONE && ado.getContact() != null) {
-			List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
-				JurisdictionHelper.getContactRegions(ado.getContact()),
-				UserRole.SURVEILLANCE_SUPERVISOR,
-				UserRole.CASE_SUPERVISOR,
-				UserRole.CONTACT_SUPERVISOR);
-			for (User recipient : messageRecipients) {
-				try {
-					messagingService.sendMessage(
-						recipient,
-						MessageSubject.VISIT_COMPLETED,
-						String.format(
-							I18nProperties.getString(MessagingService.CONTENT_VISIT_COMPLETED),
-							DataHelper.getShortUuid(ado.getContact().getUuid()),
-							DataHelper.getShortUuid(ado.getAssigneeUser().getUuid())),
-						MessageType.EMAIL,
-						MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format(
-							"NotificationDeliveryFailedException when trying to notify supervisors about the completion of a follow-up visit. "
-								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-							recipient.getUuid()));
-				}
+			try {
+				messagingService.sendMessages(() -> {
+					final List<User> messageRecipients = new ArrayList<>(userService.getAllByRegionsAndUserRoles(
+						JurisdictionHelper.getContactRegions(ado.getContact()),
+						UserRole.SURVEILLANCE_SUPERVISOR,
+						UserRole.CASE_SUPERVISOR,
+						UserRole.CONTACT_SUPERVISOR));
+					if (ado.getObserverUsers() != null) {
+						messageRecipients.addAll(ado.getObserverUsers());
+					}
+					final Map<User, String> mapToReturn = new HashMap<>();
+					messageRecipients.forEach(
+						user -> mapToReturn.put(
+							user,
+							String.format(
+								I18nProperties.getString(MessageContents.CONTENT_VISIT_COMPLETED),
+								DataHelper.getShortUuid(ado.getContact().getUuid()),
+								DataHelper.getShortUuid(ado.getAssigneeUser().getUuid()))));
+					return mapToReturn;
+				}, MessageSubject.VISIT_COMPLETED, MessageType.EMAIL, MessageType.SMS);
+			} catch (NotificationDeliveryFailedException e) {
+				logger.error(
+					String
+						.format("NotificationDeliveryFailedException when trying to notify supervisors about the completion of a follow-up visit."));
 			}
 		}
 
@@ -372,21 +406,30 @@ public class TaskFacadeEjb implements TaskFacade {
 			.otherwise(
 				cb.selectCase()
 					.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.NAME))
-					.otherwise(joins.getEventRegion().get(District.NAME)));
+					.otherwise(
+						cb.selectCase()
+							.when(cb.isNotNull(joins.getEventRegion()), joins.getEventRegion().get(Region.NAME))
+							.otherwise(joins.getTravelEntryResponsibleRegion().get(Region.NAME))));
 
 		Expression<Object> district = cb.selectCase()
 			.when(cb.isNotNull(joins.getCaseDistrict()), joins.getCaseDistrict().get(District.NAME))
 			.otherwise(
 				cb.selectCase()
 					.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.NAME))
-					.otherwise(joins.getEventDistrict().get(District.NAME)));
+					.otherwise(
+						cb.selectCase()
+							.when(cb.isNotNull(joins.getEventDistrict()), joins.getEventDistrict().get(District.NAME))
+							.otherwise(joins.getTravelEntryResponsibleDistrict().get(District.NAME))));
 
 		Expression<Object> community = cb.selectCase()
 			.when(cb.isNotNull(joins.getCaseCommunity()), joins.getCaseCommunity().get(Community.NAME))
 			.otherwise(
 				cb.selectCase()
 					.when(cb.isNotNull(joins.getContactCommunity()), joins.getContactCommunity().get(Community.NAME))
-					.otherwise(joins.getEventCommunity().get(Community.NAME)));
+					.otherwise(
+						cb.selectCase()
+							.when(cb.isNotNull(joins.getEventCommunity()), joins.getEventCommunity().get(Community.NAME))
+							.otherwise(joins.getTravelEntryResponsibleCommunity().get(Community.NAME))));
 
 		List<Selection<?>> selections = new ArrayList<>(
 			Arrays.asList(
@@ -407,11 +450,20 @@ public class TaskFacadeEjb implements TaskFacade {
 				joins.getContactPerson().get(Person.LAST_NAME),
 				joins.getContactCasePerson().get(Person.FIRST_NAME),
 				joins.getContactCasePerson().get(Person.LAST_NAME),
+				joins.getTravelEntry().get(TravelEntry.UUID),
+				joins.getTravelEntry().get(TravelEntry.EXTERNAL_ID),
+				joins.getTravelEntryPerson().get(Person.FIRST_NAME),
+				joins.getTravelEntryPerson().get(Person.LAST_NAME),
 				task.get(Task.TASK_TYPE),
 				task.get(Task.PRIORITY),
 				task.get(Task.DUE_DATE),
 				task.get(Task.SUGGESTED_START),
 				task.get(Task.TASK_STATUS),
+				cb.selectCase()
+					.when(cb.isNotNull(joins.getCaze()), joins.getCaze().get(Case.DISEASE))
+					.when(cb.isNotNull(joins.getContact()), joins.getContact().get(Contact.DISEASE))
+					.when(cb.isNotNull(joins.getEvent()), joins.getEvent().get(Event.DISEASE))
+					.otherwise(joins.getTravelEntry().get(TravelEntry.DISEASE)),
 				joins.getCreator().get(User.UUID),
 				joins.getCreator().get(User.FIRST_NAME),
 				joins.getCreator().get(User.LAST_NAME),
@@ -534,7 +586,15 @@ public class TaskFacadeEjb implements TaskFacade {
 
 					if (t.getEvent() != null) {
 						emptyValuePseudonymizer
-							.pseudonymizeDto(EventReferenceDto.class, t.getEvent(), taskJurisdictionFlagsDto.getEvenInJurisdiction(), null);
+							.pseudonymizeDto(EventReferenceDto.class, t.getEvent(), taskJurisdictionFlagsDto.getEventInJurisdiction(), null);
+					}
+
+					if (t.getTravelEntry() != null) {
+						emptyValuePseudonymizer.pseudonymizeDto(
+							TravelEntryReferenceDto.class,
+							t.getTravelEntry(),
+							taskJurisdictionFlagsDto.getTravelEntryInJurisdiction(),
+							null);
 					}
 				}, true);
 		}
@@ -750,76 +810,90 @@ public class TaskFacadeEjb implements TaskFacade {
 		taskService.delete(task);
 	}
 
+	public List<String> deleteTasks(List<String> tasksUuids) {
+		if (!userService.hasRight(UserRight.TASK_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete tasks.");
+		}
+		List<String> deletedTaskUuids = new ArrayList<>();
+		List<Task> tasksToBeDeleted = taskService.getByUuids(tasksUuids);
+		if (tasksToBeDeleted != null) {
+			tasksToBeDeleted.forEach(taskToBeDeleted -> {
+				taskService.delete(taskToBeDeleted);
+				deletedTaskUuids.add(taskToBeDeleted.getUuid());
+			});
+		}
+		return deletedTaskUuids;
+	}
+
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void sendNewAndDueTaskMessages() {
 
-		Calendar calendar = Calendar.getInstance();
-		Date now = new Date();
+		final Calendar calendar = Calendar.getInstance();
+		final Date now = new Date();
 		calendar.setTime(now);
 		calendar.add(Calendar.MINUTE, CronService.TASK_UPDATE_INTERVAL * -1);
-		Date before = calendar.getTime();
+		final Date before = calendar.getTime();
 
-		List<Task> startingTasks = taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).startDateBetween(before, now), true);
-		for (Task task : startingTasks) {
-			TaskContext context = task.getTaskContext();
-			AbstractDomainObject associatedEntity = context == TaskContext.CASE
-				? task.getCaze()
-				: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
-			if (task.getAssigneeUser() != null) {
-				try {
-					String content = context == TaskContext.GENERAL
-						? String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_START_GENERAL), task.getTaskType().toString())
+		try {
+			messagingService.sendMessages(() -> {
+				final Map<User, String> mapToReturn = new HashMap<>();
+				final List<Task> startingTasks =
+					taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).startDateBetween(before, now), true);
+				for (Task task : startingTasks) {
+					final TaskContext context = task.getTaskContext();
+					final AbstractDomainObject associatedEntity = context == TaskContext.CASE
+						? task.getCaze()
+						: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
+					String message = context == TaskContext.GENERAL
+						? String.format(I18nProperties.getString(MessageContents.CONTENT_TASK_START_GENERAL), task.getTaskType().toString())
 						: String.format(
-							I18nProperties.getString(MessagingService.CONTENT_TASK_START_SPECIFIC),
-							task.getTaskType().toString(),
-							buildAssociatedEntityLinkContent(context, associatedEntity));
-
-					messagingService.sendMessage(
-						userService.getByUuid(task.getAssigneeUser().getUuid()),
-						MessageSubject.TASK_START,
-						content,
-						MessageType.EMAIL,
-						MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format(
-							"EmailDeliveryFailedException when trying to notify a user about a starting task. " + "Failed to send "
-								+ e.getMessageType() + " to user with UUID %s.",
-							task.getAssigneeUser().getUuid()));
+						I18nProperties.getString(MessageContents.CONTENT_TASK_START_SPECIFIC),
+						task.getTaskType().toString(),
+						buildAssociatedEntityLinkContent(context, associatedEntity));
+					if (task.getAssigneeUser() != null) {
+						mapToReturn.put(task.getAssigneeUser(), message);
+					}
+					if (task.getObserverUsers() != null) {
+						for (User observerUser : task.getObserverUsers()) {
+							mapToReturn.put(observerUser, message);
+						}
+					}
 				}
-			}
+				return mapToReturn;
+			}, MessageSubject.TASK_START, MessageType.EMAIL, MessageType.SMS);
+		} catch (NotificationDeliveryFailedException e) {
+			logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a starting task."));
 		}
 
-		List<Task> dueTasks = taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).dueDateBetween(before, now), true);
-		for (Task task : dueTasks) {
-			TaskContext context = task.getTaskContext();
-			AbstractDomainObject associatedEntity = context == TaskContext.CASE
-				? task.getCaze()
-				: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
-			if (task.getAssigneeUser() != null) {
-				try {
-					String content = context == TaskContext.GENERAL
-						? String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString())
+		try {
+			messagingService.sendMessages(() -> {
+				final Map<User, String> mapToReturn = new HashMap<>();
+				final List<Task> dueTasks = taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).dueDateBetween(before, now), true);
+				for (Task task : dueTasks) {
+					final TaskContext context = task.getTaskContext();
+					final AbstractDomainObject associatedEntity = context == TaskContext.CASE
+						? task.getCaze()
+						: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
+					String message = context == TaskContext.GENERAL
+						? String.format(I18nProperties.getString(MessageContents.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString())
 						: String.format(
-							I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_SPECIFIC),
-							task.getTaskType().toString(),
-							buildAssociatedEntityLinkContent(context, associatedEntity));
-
-					messagingService.sendMessage(
-						userService.getByUuid(task.getAssigneeUser().getUuid()),
-						MessageSubject.TASK_DUE,
-						content,
-						MessageType.EMAIL,
-						MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format(
-							"EmailDeliveryFailedException when trying to notify a user about a due task. " + "Failed to send " + e.getMessageType()
-								+ " to user with UUID %s.",
-							task.getAssigneeUser().getUuid()));
+						I18nProperties.getString(MessageContents.CONTENT_TASK_DUE_SPECIFIC),
+						task.getTaskType().toString(),
+						buildAssociatedEntityLinkContent(context, associatedEntity));
+					if (task.getAssigneeUser() != null) {
+						mapToReturn.put(task.getAssigneeUser(), message);
+					}
+					if (task.getObserverUsers() != null) {
+						for (User observerUser : task.getObserverUsers()) {
+							mapToReturn.put(observerUser, message);
+						}
+					}
 				}
-			}
+				return mapToReturn;
+			}, MessageSubject.TASK_START, MessageType.EMAIL, MessageType.SMS);
+		} catch (NotificationDeliveryFailedException e) {
+			logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a due task."));
 		}
 	}
 

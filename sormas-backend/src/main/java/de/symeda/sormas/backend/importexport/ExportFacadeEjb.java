@@ -39,6 +39,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -188,7 +189,7 @@ public class ExportFacadeEjb implements ExportFacade {
 	}
 
 	@Override
-	public void saveExportConfiguration(ExportConfigurationDto exportConfiguration) {
+	public void saveExportConfiguration(@Valid ExportConfigurationDto exportConfiguration) {
 
 		ExportConfiguration entity = fromExportConfigurationDto(exportConfiguration, true);
 		exportConfigurationService.ensurePersisted(entity);

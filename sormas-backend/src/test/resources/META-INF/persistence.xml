@@ -57,18 +57,12 @@
 		<class>de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinition</class>
 		<class>de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo</class>
 		<class>de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo</class>
-		<class>de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoEntity</class>
-		<class>de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoCase</class>
-		<class>de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoContact</class>
-		<class>de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoSample</class>
-		<class>de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoEvent</class>
-		<class>de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoEventParticipant</class>
+		<class>de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo</class>
 		<class>de.symeda.sormas.backend.document.Document</class>
 		<class>de.symeda.sormas.backend.exposure.Exposure</class>
 		<class>de.symeda.sormas.backend.common.messaging.ManualMessageLog</class>
 		<class>de.symeda.sormas.backend.systemevent.SystemEvent</class>
 		<class>de.symeda.sormas.backend.labmessage.LabMessage</class>
-		<class>de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo</class>
 		<class>de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport</class>
 		<class>de.symeda.sormas.backend.activityascase.ActivityAsCase</class>
 		<class>de.symeda.sormas.backend.share.ExternalShareInfo</class>
@@ -77,10 +71,11 @@
 		<class>de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent</class>
 		<class>de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequest</class>
 		<class>de.symeda.sormas.backend.customizableenum.CustomizableEnumValue</class>
+		<class>de.symeda.sormas.backend.immunization.entity.BaseImmunization</class>
 		<class>de.symeda.sormas.backend.immunization.entity.Immunization</class>
 		<class>de.symeda.sormas.backend.immunization.entity.DirectoryImmunization</class>
 		<class>de.symeda.sormas.backend.travelentry.TravelEntry</class>
-		<class>de.symeda.sormas.backend.vaccination.VaccinationEntity</class>
+		<class>de.symeda.sormas.backend.vaccination.Vaccination</class>
 		<class>de.symeda.sormas.backend.vaccination.LastVaccineType</class>
 		<class>de.symeda.sormas.backend.vaccination.LastVaccinationDate</class>
 		<class>de.symeda.sormas.backend.vaccination.FirstVaccinationDate</class>

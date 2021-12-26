@@ -68,6 +68,7 @@
     <string name="action_markAllAsRead">Merkitse kaikki luetuksi</string>
     <string name="action_new">Uusi</string>
     <string name="action_new_case">Uusi Potilas</string>
+    <string name="action_new_immunization">New Immunization</string>
     <string name="action_new_campaign_form_data">New Campaign Form Data</string>
     <string name="action_new_contact">Uusi kontakti</string>
     <string name="action_new_event">Uusi tapahtuma</string>
@@ -79,6 +80,8 @@
     <string name="action_open_prescription">Avaa Lääkemääräys</string>
     <string name="action_open_resulting_case">Avaa tartunnan saanut potilas</string>
     <string name="action_open_source_case">Avaa tartuttava potilas</string>
+    <string name="action_open_linked_case">Open Linked Case</string>
+    <string name="action_link_case">Link Case</string>
     <string name="action_open_syncLog">Synkronisointi ristiriitoja</string>
     <string name="action_options">Valinnat</string>
     <string name="action_pick_gps">Poimi nykyiset GPS-koordinaatit osoitteeksi</string>
@@ -116,6 +119,8 @@
     <string name="action_kex_lbds">LBDS Key Exchange</string>
     <string name="action_sync_person_lbds">LBDS Sync Persons</string>
     <string name="action_sync_case_lbds">LBDS Sync Cases</string>
+    <string name="action_save_vaccination">Save Vaccination</string>
+    <string name="action_edit_vaccination">Edit Vaccination</string>
     <string name="caption_address">Osoite</string>
     <string name="caption_age">Ikä</string>
     <string name="caption_attended_by">Osallistunut</string>
@@ -132,6 +137,8 @@
     <string name="caption_case_samples">Potilaan näytteet</string>
     <string name="caption_case_tasks">Potilastehtävät</string>
     <string name="caption_case_events">Case Events</string>
+    <string name="caption_case_immunizations">Case Immunizations</string>
+    <string name="caption_case_vaccinations">Case Vaccinations</string>
     <string name="caption_case_treatments">Hoidot</string>
     <string name="caption_case_similarity_create">Lisää uusi potilas</string>
     <string name="caption_changed_data_lost">Muutetut tiedot hävinneet uudelleensynkronoinnin aikana.</string>
@@ -147,6 +154,8 @@
     <string name="caption_contact_tasks">Kontaktitehtävät</string>
     <string name="caption_contact_epidemiological_data">Epidemiological info</string>
     <string name="caption_contact_visits">Seurantatiedot</string>
+    <string name="caption_contact_immunizations">Contact Immunizations</string>
+    <string name="caption_contact_vaccinations">Contact Vaccinations</string>
     <string name="caption_converted_to_case">Sairastunut seurannassa</string>
     <string name="caption_date_of_birth">Syntymäpäivä (vuosi / kuukausi / päivä)</string>
     <string name="caption_date_of_sampling">Näytteenottopäivä</string>
@@ -159,6 +168,8 @@
     <string name="caption_event_period">Date of event</string>
     <string name="caption_event_information">Tapahtuman tiedot</string>
     <string name="caption_event_participants">Osallisia henkilöitä</string>
+    <string name="caption_event_participant_immunizations">Event participant Immunizations</string>
+    <string name="caption_event_participant_vaccinations">Event participant Vaccinations</string>
     <string name="caption_event_tasks">Tapahtumatehtävät</string>
     <string name="caption_executed_by">Suorittaja</string>
     <string name="caption_facility_or_home">Place of stay</string>
@@ -231,6 +242,20 @@
     <string name="caption_year">Vuosi</string>
     <string name="caption_latest_submission">Viimeisin lähetys: %1$s</string>
     <string name="caption_settings_debug_url_lbds">LBDS Server Debug URL</string>
+    <string name="caption_immunization_information">Immunization details</string>
+    <string name="caption_immunization_vaccinations">Vaccinations</string>
+    <string name="caption_vaccination_information">Vaccination Information</string>
+    <string name="caption_new_immunization">New Immunization</string>
+    <string name="caption_overwrite_immunization_management_status">Overwrite immunization management status</string>
+    <string name="caption_searchCase">Search case</string>
+    <string name="caption_aggregate_new_cases">New cases</string>
+    <string name="caption_aggregate_lab_confirmations">Lab confirmations</string>
+    <string name="caption_aggregate_deaths">Deaths</string>
+    <string name="caption_aggregate_new_cases_abbr">C</string>
+    <string name="caption_aggregate_lab_confirmations_abbr">L</string>
+    <string name="caption_aggregate_deaths_abbr">D</string>
+    <string name="caption_start_date_existing">Existing start date</string>
+    <string name="caption_end_date_existing">Existing end date</string>
     <string name="confirmation_action">Haluatko varmasti tehdä tämän?</string>
     <string name="confirmation_delete">Oletko varma, että haluat poistaa tämän tietueen?</string>
     <string name="confirmation_pick_gps">Oletteko tässä paikassa juuri nyt?</string>
@@ -306,6 +331,7 @@
     <string name="heading_events_list">Tapahtumalistaus</string>
     <string name="heading_existing_persons">Nykyiset henkilöt</string>
     <string name="heading_existing_cases">Nykyiset potilaat</string>
+    <string name="heading_existing_immunizations">Existing Immunizations</string>
     <string name="heading_existing_events">Existing Events</string>
     <string name="heading_gathering">Kokoontuminen</string>
     <string name="heading_gps_activation">Käynnistä GPS</string>
@@ -327,6 +353,7 @@
     <string name="heading_person_contact_detail">Person contact details</string>
     <string name="heading_pick_or_create_person">Valitse tai lisää henkilö</string>
     <string name="heading_pick_or_create_case">Valitse tai lisää potilas</string>
+    <string name="heading_pick_or_create_immunization">Pick or Create an Immunization</string>
     <string name="heading_pick_or_create_event">Pick or Create a Event</string>
     <string name="heading_prescription">Lääkemääräys</string>
     <string name="heading_prescription_edit">Muokkaa lääkemääräystä</string>
@@ -341,6 +368,10 @@
     <string name="heading_sample_read">Lue näyte</string>
     <string name="heading_sample_summary">Näytteen yhteenveto</string>
     <string name="heading_samples_list">Näytelistaus</string>
+    <string name="heading_immunization_edit">Edit Immunization</string>
+    <string name="heading_immunization_new">New Immunization</string>
+    <string name="heading_immunization_read">Read Immunization</string>
+    <string name="heading_immunizations_list">Immunization Listing</string>
     <string name="heading_pathogen_test_edit">Muokkaa patogeenitestiä</string>
     <string name="heading_pathogen_test_new">Uusi patogeenitesti</string>
     <string name="heading_pathogen_test_read">Lue patogeenitesti</string>
@@ -381,6 +412,10 @@
     <string name="heading_campaign_form_data_summary">Campaign Data Summary</string>
     <string name="heading_campaign_form_meta_select">Select Campaign Form</string>
     <string name="heading_case_place_of_stay">Place of stay</string>
+    <string name="heading_vaccination">Vaccination</string>
+    <string name="heading_vaccination_edit">Edit Vaccination</string>
+    <string name="heading_vaccination_new">New Vaccination</string>
+    <string name="heading_search_for_case">Search specific case</string>
     <string name="hint_add_to_empty_list">Lisää uusi merkintä painamalla \"+\" symbolia oikeassa yläkulmassa.</string>
     <string name="hint_clear">Tyhjennä</string>
     <string name="hint_create_pin">Valitse neljänumeroinen PIN jota käytät vahvistamaan itsesi, kun avaat SORMAS-sovelluksen.</string>
@@ -445,12 +480,14 @@
     <string name="info_case_creation_mark_check_box">Tämä potilas on <b>uusi potilas</b> ja <b>ei kaksoiskappale</b> yhdestä yllä olevista potilaista</string>
     <string name="info_event_creation_mark_check_box">This event is a <b>new event</b> and <b>not a duplicate</b> of one of the events above</string>
     <string name="info_pick_campaign_form_meta">Please select a campaign form for which you want to enter data!</string>
+    <string name="info_immunization_override_mark_check_box">Override existing immunization&gt;</string>
     <string name="main_menu_cases">Potilaat</string>
     <string name="main_menu_contacts">Kontaktit</string>
     <string name="main_menu_dashboard">Hallintatyöpöytä</string>
     <string name="main_menu_events">Ilmoitukset</string>
     <string name="main_menu_reports">Raportit</string>
     <string name="main_menu_samples">Näytteet</string>
+    <string name="main_menu_immunizations">Immunizations</string>
     <string name="main_menu_settings">Asetukset</string>
     <string name="main_menu_tasks">Tehtävät</string>
     <string name="main_menu_aggregate_reports">mSERS</string>
@@ -514,6 +551,7 @@
     <string name="tag_row_item_select_or_create_person">Valitse tai lisää henkilö</string>
     <string name="tag_row_item_select_or_create_event">rowItemSelectOrCreateEvent</string>
     <string name="tag_row_item_case_pick_or_create">Valitse tai lisää potilas</string>
+    <string name="tag_row_item_immunization_pick_or_create">rowItemImmunizationPickOrCreatePerson</string>
     <string name="time_future_almost_two_years">lähes kahden vuoden sisällä</string>
     <string name="time_future_one_day">huomenna</string>
     <string name="time_future_one_hour">noin tunnin kuluessa</string>
@@ -607,4 +645,7 @@
     <string name="scan_field_sample_id">Skannaa kenttänäytteen ID</string>
     <string name="caption_facility_type_group">Facility category</string>
     <string name="caption_facility_type">Facility type</string>
+    <string name="value_vaccine_date_unknown">Vaccination Date N/A</string>
+    <string name="value_vaccine_name_unknown">Vaccine N/A</string>
+    <string name="value_vaccine_manufacturer_unknown">Manufacturer N/A</string>
 </resources>

@@ -3,18 +3,23 @@ package de.symeda.sormas.api.travelentry;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -39,6 +44,7 @@ public class TravelEntryDto extends PseudonymizableDto {
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 
 	public static final String RECOVERED = "recovered";
 	public static final String VACCINATED = "vaccinated";
@@ -68,8 +74,6 @@ public class TravelEntryDto extends PseudonymizableDto {
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
 	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
 
-
-
 	@Required
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
@@ -79,8 +83,12 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private boolean deleted;
 	private Disease disease;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
+	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String diseaseVariantDetails;
 	private RegionReferenceDto responsibleRegion;
 	private DistrictReferenceDto responsibleDistrict;
 	private CommunityReferenceDto responsibleCommunity;
@@ -88,21 +96,26 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private DistrictReferenceDto pointOfEntryDistrict;
 	private PointOfEntryReferenceDto pointOfEntry;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String pointOfEntryDetails;
 	@EmbeddedPersonalData
 	private CaseReferenceDto resultingCase;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String externalId;
 	private boolean recovered;
 	private boolean vaccinated;
 	private boolean testedNegative;
+	@Valid
 	private List<DeaContentEntry> deaContent;
 
 	private QuarantineType quarantine;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String quarantineHelpNeeded;
 	private boolean quarantineOrderedVerbally;
 	private boolean quarantineOrderedOfficialDocument;
@@ -110,9 +123,11 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private Date quarantineOrderedOfficialDocumentDate;
 	private YesNoUnknown quarantineHomePossible;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String quarantineHomePossibleComment;
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@SensitiveData
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String quarantineHomeSupplyEnsuredComment;
 	private boolean quarantineExtended;
 	private boolean quarantineReduced;
@@ -126,6 +141,10 @@ public class TravelEntryDto extends PseudonymizableDto {
 		travelEntry.setPerson(person);
 		travelEntry.setReportDate(new Date());
 		return travelEntry;
+	}
+
+	public TravelEntryReferenceDto toReference() {
+		return new TravelEntryReferenceDto(getUuid(), getExternalId(), getPerson().getFirstName(), getPerson().getLastName());
 	}
 
 	public PersonReferenceDto getPerson() {
@@ -190,6 +209,14 @@ public class TravelEntryDto extends PseudonymizableDto {
 
 	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
+	}
+
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	public RegionReferenceDto getResponsibleRegion() {

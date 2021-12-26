@@ -52,7 +52,7 @@ public class CountryEditForm extends AbstractEditForm<CountryDto> {
 		addField(CountryDto.ISO_CODE, TextField.class).setMaxLength(3);
 		addField(CountryDto.EXTERNAL_ID, TextField.class);
 		addField(CountryDto.UNO_CODE, TextField.class).setMaxLength(3);
-		ComboBox subcontinent = addField(CountryDto.SUBCONTINENT, ComboBox.class);
+		ComboBox subcontinent = addInfrastructureField(CountryDto.SUBCONTINENT);
 
 		subcontinent.addItems(FacadeProvider.getSubcontinentFacade().getAllActiveAsReference());
 

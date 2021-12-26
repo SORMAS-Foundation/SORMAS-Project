@@ -47,6 +47,8 @@ public interface PersonFacade {
 
 	PersonDto savePerson(@Valid PersonDto dto);
 
+	PersonDto savePerson(@Valid PersonDto source, boolean skipValidation);
+
 	DataHelper.Pair<CaseClassification, PersonDto> savePersonWithoutNotifyingExternalJournal(@Valid PersonDto source);
 
 	void validate(PersonDto dto);
@@ -60,12 +62,12 @@ public interface PersonFacade {
 	/**
 	 * Returns a list with the names of all persons that the user has access to and that match the criteria.
 	 * This only includes persons that are associated with an active case, contact or event participant.
+	 * 
+	 * @return
 	 */
-	List<PersonNameDto> getMatchingNameDtos(UserReferenceDto user, PersonSimilarityCriteria criteria);
+	List<SimilarPersonDto> getSimilarPersonDtos(UserReferenceDto user, PersonSimilarityCriteria criteria);
 
 	boolean checkMatchingNameInDatabase(UserReferenceDto userRef, PersonSimilarityCriteria criteria);
-
-	List<SimilarPersonDto> getSimilarPersonsByUuids(List<String> personUuids);
 
 	Boolean isValidPersonUuid(String personUuid);
 
@@ -95,7 +97,9 @@ public interface PersonFacade {
 
 	List<PersonDto> getByExternalIds(List<String> externalIds);
 
-	void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
+	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 
 	void mergePerson(PersonDto leadPerson, PersonDto otherPerson);
+
+	PersonDto getByContext(PersonContext context, String contextUuid);
 }

@@ -171,7 +171,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
                     districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), false) : null);
         });
 
-        ComboBox laboratory = addField(UserDto.LABORATORY, ComboBox.class);
+        ComboBox laboratory = addInfrastructureField(UserDto.LABORATORY);
         laboratory.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false));
 
         region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());

@@ -6,13 +6,14 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
-public class ImmunizationSimilarityCriteria extends BaseCriteria implements Cloneable {
+public final class ImmunizationSimilarityCriteria extends BaseCriteria implements Cloneable {
 
-	private String immunizationUuid;
-	private Disease disease;
-	private Date startDate;
-	private Date endDate;
-	private String personUuid;
+	private final String immunizationUuid;
+	private final Disease disease;
+	private final Date startDate;
+	private final Date endDate;
+	private final String personUuid;
+	private final MeansOfImmunization meansOfImmunization;
 
 	public static class Builder {
 
@@ -21,6 +22,7 @@ public class ImmunizationSimilarityCriteria extends BaseCriteria implements Clon
 		private Date startDate;
 		private Date endDate;
 		private String personUuid;
+		private MeansOfImmunization meansOfImmunization;
 
 		public Builder withImmunization(String immunizationUuid) {
 			this.immunizationUuid = immunizationUuid;
@@ -47,6 +49,11 @@ public class ImmunizationSimilarityCriteria extends BaseCriteria implements Clon
 			return this;
 		}
 
+		public Builder withMeansOfImmunization(MeansOfImmunization meansOfImmunization) {
+			this.meansOfImmunization = meansOfImmunization;
+			return this;
+		}
+
 		public ImmunizationSimilarityCriteria build() {
 			return new ImmunizationSimilarityCriteria(this);
 		}
@@ -58,6 +65,12 @@ public class ImmunizationSimilarityCriteria extends BaseCriteria implements Clon
 		this.startDate = builder.startDate;
 		this.endDate = builder.endDate;
 		this.personUuid = builder.personUuid;
+		this.meansOfImmunization = builder.meansOfImmunization;
+	}
+
+	@IgnoreForUrl
+	public MeansOfImmunization getMeansOfImmunization() {
+		return meansOfImmunization;
 	}
 
 	@IgnoreForUrl

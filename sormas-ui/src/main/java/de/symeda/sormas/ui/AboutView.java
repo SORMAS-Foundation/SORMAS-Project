@@ -187,7 +187,9 @@ public class AboutView extends VerticalLayout implements View {
 					ClassificationHtmlRenderer.createHtmlForDownload(
 						serverUrl,
 						FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true),
-						I18nProperties.getUserLanguage()),
+						I18nProperties.getUserLanguage(),
+						FacadeProvider.getCaseClassificationFacade(),
+						FacadeProvider.getConfigFacade()),
 					"classification_rules.html",
 					"text/html");
 				new FileDownloader(classificationResource).extend(classificationDocumentButton);

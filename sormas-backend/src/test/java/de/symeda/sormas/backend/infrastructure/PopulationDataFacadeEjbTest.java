@@ -20,9 +20,9 @@ public class PopulationDataFacadeEjbTest extends AbstractBeanTest {
 	public void testGetProjectedRegionPopulation() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		RegionDto region = getRegionFacade().getRegionByUuid(rdcf.region.getUuid());
+		RegionDto region = getRegionFacade().getByUuid(rdcf.region.getUuid());
 		region.setGrowthRate(2.7f);
-		getRegionFacade().saveRegion(region);
+		getRegionFacade().save(region);
 		creator
 			.createPopulationData(new RegionReferenceDto(rdcf.region.getUuid(), null, null), null, 450000, DateHelper.subtractYears(new Date(), 3));
 
@@ -33,9 +33,9 @@ public class PopulationDataFacadeEjbTest extends AbstractBeanTest {
 	public void testGetProjectedDistrictPopulation() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		DistrictDto district = getDistrictFacade().getDistrictByUuid(rdcf.district.getUuid());
+		DistrictDto district = getDistrictFacade().getByUuid(rdcf.district.getUuid());
 		district.setGrowthRate(2.7f);
-		getDistrictFacade().saveDistrict(district);
+		getDistrictFacade().save(district);
 		creator.createPopulationData(
 			new RegionReferenceDto(rdcf.region.getUuid(), null, null),
 			new DistrictReferenceDto(rdcf.district.getUuid(), null, null),

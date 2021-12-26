@@ -4,12 +4,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class LabMessageDto extends EntityDto {
 
@@ -46,33 +53,53 @@ public class LabMessageDto extends EntityDto {
 	private Date messageDateTime;
 	private Date sampleDateTime;
 	private Date sampleReceivedDate;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String labSampleId;
 	private SampleMaterial sampleMaterial;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String sampleMaterialText;
 	private SpecimenCondition specimenCondition;
 
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String labName;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String labExternalId;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String labPostalCode;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String labCity;
 
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personFirstName;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personLastName;
 	private Sex personSex;
 	private Integer personBirthDateDD;
 	private Integer personBirthDateMM;
 	private Integer personBirthDateYYYY;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personPostalCode;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personCity;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personStreet;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personHouseNumber;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personPhone;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personEmail;
 
+	private SampleReferenceDto sample;
+
+	@Valid
 	private List<TestReportDto> testReports = new ArrayList<>();
 
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String labMessageDetails;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String reportId;
+	private PathogenTestResultType sampleOverallTestResult;
 
 	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
 
@@ -311,6 +338,14 @@ public class LabMessageDto extends EntityDto {
 		this.reportId = reportId;
 	}
 
+	public PathogenTestResultType getSampleOverallTestResult() {
+		return sampleOverallTestResult;
+	}
+
+	public void setSampleOverallTestResult(PathogenTestResultType sampleOverallTestResult) {
+		this.sampleOverallTestResult = sampleOverallTestResult;
+	}
+
 	public static LabMessageDto build() {
 
 		LabMessageDto labMessage = new LabMessageDto();
@@ -320,5 +355,13 @@ public class LabMessageDto extends EntityDto {
 
 	public LabMessageReferenceDto toReference() {
 		return new LabMessageReferenceDto(getUuid());
+	}
+
+	public SampleReferenceDto getSample() {
+		return sample;
+	}
+
+	public void setSample(SampleReferenceDto sample) {
+		this.sample = sample;
 	}
 }

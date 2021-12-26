@@ -1,8 +1,16 @@
 package de.symeda.sormas.api.campaign.form;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
+
+import javax.validation.constraints.Size;
+
+import de.symeda.sormas.api.i18n.Validations;
 
 public class CampaignFormElement implements Serializable {
 
@@ -50,11 +58,16 @@ public class CampaignFormElement implements Serializable {
 		"h5",
 		"h6" };
 
+	@Size(max = CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String type;
+	@Size(max = CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String id;
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String caption;
+	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String expression;
 	private String[] styles;
+	@Size(max = CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String dependingOn;
 	private String[] dependingOnValues;
 	private boolean important;

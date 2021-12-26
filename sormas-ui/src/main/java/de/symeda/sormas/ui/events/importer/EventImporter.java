@@ -40,6 +40,7 @@ import de.symeda.sormas.api.event.eventimport.EventImportFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.SimilarPersonDto;
@@ -74,8 +75,8 @@ public class EventImporter extends DataImporter {
 	private final EventParticipantFacade eventParticipantFacade;
 	private final PersonFacade personFacade;
 
-	public EventImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
-		super(inputFile, hasEntityClassRow, currentUser);
+	public EventImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator csvSeparator) throws IOException {
+		super(inputFile, hasEntityClassRow, currentUser, csvSeparator);
 
 		eventImportFacade = FacadeProvider.getEventImportFacade();
 		eventFacade = FacadeProvider.getEventFacade();

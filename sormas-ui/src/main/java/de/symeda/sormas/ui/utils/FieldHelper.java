@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -315,10 +316,7 @@ public final class FieldHelper {
 		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyIdsAndValues, clearOnHidden);
 	}
 
-	public static void setVisibleWhen(
-		final Field targetField,
-		Map<Field, ? extends List<?>> sourceFieldsAndValues,
-		final boolean clearOnHidden) {
+	public static void setVisibleWhen(final Field targetField, Map<Field, ? extends List<?>> sourceFieldsAndValues, final boolean clearOnHidden) {
 
 		onValueChangedSetVisible(targetField, sourceFieldsAndValues, clearOnHidden);
 		sourceFieldsAndValues.forEach(
@@ -352,7 +350,7 @@ public final class FieldHelper {
 			}
 		}
 	}
-	
+
 	private static void onValueChangedSetVisible(
 		Field targetField,
 		Map<Field, ? extends List<?>> sourceFieldsAndValues,
@@ -464,6 +462,48 @@ public final class FieldHelper {
 		}
 	}
 
+	public static <T> void setValueWhen(FieldGroup fieldGroup, String sourceFieldId, Object sourceValue, String targetPropertyId, T targetValue) {
+		final Field<?> sourceField = fieldGroup.getField(sourceFieldId);
+		final List<Object> sourceValues = Collections.singletonList(sourceValue);
+		final Field<T> targetFields = (Field<T>) fieldGroup.getField(targetPropertyId);
+
+		setValueWhen(sourceField, sourceValues, targetFields, targetValue);
+	}
+
+	public static <T> void setValueWhen(Field<?> sourceField, final List<?> sourceValues, Field<T> targetField, T targetValue) {
+
+		if (sourceField instanceof AbstractField<?>) {
+			((AbstractField<?>) sourceField).setImmediate(true);
+		}
+
+		// initialize
+		{
+			if (sourceValues.contains(getNullableSourceFieldValue(sourceField))) {
+				targetField.setValue(targetValue);
+			}
+		}
+
+		sourceField.addValueChangeListener(event -> {
+			if (sourceValues.contains(getNullableSourceFieldValue(((Field) event.getProperty())))) {
+				targetField.setValue(targetValue);
+			}
+		});
+	}
+
+	public static void setEnabledWhen(
+		FieldGroup fieldGroup,
+		String sourceFieldId,
+		Object sourceValue,
+		String targetPropertyId,
+		boolean clearOnDisabled) {
+
+		final Field<?> sourceField = fieldGroup.getField(sourceFieldId);
+		final List<Object> sourceValues = Collections.singletonList(sourceValue);
+		final List<Field<?>> targetFields = Collections.singletonList(fieldGroup.getField(targetPropertyId));
+
+		setEnabledWhen(sourceField, sourceValues, targetFields, clearOnDisabled);
+	}
+
 	/**
 	 * Sets the target fields to enabled when the source field has a value that's
 	 * contained in the sourceValues list.
@@ -479,8 +519,7 @@ public final class FieldHelper {
 		setEnabledWhen(sourceField, sourceValues, targetFields, clearOnDisabled);
 	}
 
-	public static void setEnabledWhen(Field<?> sourceField, final List<?> sourceValues, List<Field<?>> targetFields,
-		boolean clearOnDisabled) {
+	public static void setEnabledWhen(Field<?> sourceField, final List<?> sourceValues, List<Field<?>> targetFields, boolean clearOnDisabled) {
 
 		if (sourceField instanceof AbstractField<?>) {
 			((AbstractField<?>) sourceField).setImmediate(true);
@@ -538,6 +577,28 @@ public final class FieldHelper {
 		select.removeAllItems();
 		if (items != null) {
 			select.addItems(items);
+		}
+		select.setValue(value);
+		select.setReadOnly(readOnly);
+	}
+
+	public static void updateItems(
+		AbstractSelect select,
+		List<?> items,
+		FieldVisibilityCheckers fieldVisibilityCheckers,
+		Class<? extends Enum> enumClass) {
+
+		Object value = select.getValue();
+		boolean readOnly = select.isReadOnly();
+		select.setReadOnly(false);
+		select.removeAllItems();
+		if (items != null) {
+			if (fieldVisibilityCheckers != null) {
+				select.addItems(
+					items.stream().filter(i -> fieldVisibilityCheckers.isVisible(enumClass, ((Enum<?>) i).name())).collect(Collectors.toList()));
+			} else {
+				select.addItems(items);
+			}
 		}
 		select.setValue(value);
 		select.setReadOnly(readOnly);

@@ -17,11 +17,11 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -31,14 +31,15 @@ import de.symeda.sormas.ui.exposure.ExposuresField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.LocationsField;
-import de.symeda.sormas.ui.vaccination.VaccinationInfoForm;
+import de.symeda.sormas.ui.utils.components.JsonForm;
+import de.symeda.sormas.ui.vaccination.VaccinationsField;
 
 public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory {
 
 	private static final long serialVersionUID = 471700572643936674L;
 
-	public static final int TEXT_AREA_MAX_LENGTH = EntityDto.COLUMN_LENGTH_BIG;
-	public static final int TEXT_FIELD_MAX_LENGTH = EntityDto.COLUMN_LENGTH_DEFAULT;
+	public static final int TEXT_AREA_MAX_LENGTH = FieldConstraints.CHARACTER_LIMIT_BIG;
+	public static final int TEXT_FIELD_MAX_LENGTH = FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 	private final FieldVisibilityCheckers fieldVisibilityCheckers;
 	private final UiFieldAccessCheckers fieldAccessCheckers;
@@ -124,8 +125,10 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new ActivityAsCaseField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (LocationsField.class.isAssignableFrom(fieldType)) {
 			return (T) new LocationsField(fieldVisibilityCheckers, fieldAccessCheckers);
-		} else if (VaccinationInfoForm.class.isAssignableFrom(fieldType)) {
-			return (T) new VaccinationInfoForm(fieldVisibilityCheckers, fieldAccessCheckers);
+		} else if (VaccinationsField.class.isAssignableFrom(fieldType)) {
+			return (T) new VaccinationsField(fieldAccessCheckers);
+		} else if (JsonForm.class.isAssignableFrom(fieldType)) {
+			return (T) new JsonForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (fieldType.equals(Field.class)) {
 			// no specific field type defined -> fallbacks
 			if (Date.class.isAssignableFrom(type)) {

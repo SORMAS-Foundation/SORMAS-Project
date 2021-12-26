@@ -39,22 +39,23 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.crypt.CmsCertificateConfig;
-import de.symeda.sormas.backend.crypt.CmsPlaintext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptionFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.crypt.CmsCertificateConfig;
 import de.symeda.sormas.backend.crypt.CmsCreator;
+import de.symeda.sormas.backend.crypt.CmsPlaintext;
 import de.symeda.sormas.backend.crypt.CmsReader;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 

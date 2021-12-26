@@ -26,7 +26,8 @@ public enum RootEntityType {
 	ROOT_PATHOGEN_TEST("pathogentest"),
 	ROOT_EVENT("event"),
 	ROOT_EVENT_ACTIONS("eventActions"),
-	ROOT_EVENT_PARTICIPANTS("eventParticipants");
+	ROOT_EVENT_PARTICIPANTS("eventParticipants"),
+	ROOT_TRAVEL_ENTRY("travelEntry");
 
 	private final String entityName;
 
@@ -38,9 +39,9 @@ public enum RootEntityType {
 		return entityName;
 	}
 
-	public static RootEntityType foEntityName(String name) {
+	public static RootEntityType ofEntityName(String name) {
 		for (RootEntityType type : values()) {
-			if (type.entityName.equals(name)) {
+			if (type.entityName.equalsIgnoreCase(name)) {
 				return type;
 			}
 		}

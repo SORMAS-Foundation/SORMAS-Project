@@ -62,6 +62,31 @@
                 app:value="@={data.person.lastName}"
                 style="@style/ControlSingleColumnStyle" />
 
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/eventParticipant_sex"
+                app:required="true"
+                app:value="@={data.person.sex}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
+                    android:id="@+id/eventParticipant_responsibleRegion"
+                    app:value="@={data.responsibleRegion}"
+                    app:required="true"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
+                    android:id="@+id/eventParticipant_responsibleDistrict"
+                    app:value="@={data.responsibleDistrict}"
+                    app:required="true"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </ScrollView>

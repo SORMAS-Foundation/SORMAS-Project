@@ -67,8 +67,10 @@ public class CreateNewUserSteps implements En {
           selectLimitedDisease(user.getLimitedDisease());
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           closeNewPasswordPopUp();
         });
+
     And(
         "^I change user data and save the changes$",
         () -> {
@@ -222,7 +224,7 @@ public class CreateNewUserSteps implements En {
   }
 
   public void closeNewPasswordPopUp() {
-    webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_DIALOG_BUTTON);
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CLOSE_DIALOG_BUTTON, 15);
     webDriverHelpers.clickOnWebElementBySelector(CLOSE_DIALOG_BUTTON);
   }
 

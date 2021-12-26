@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.labmessage;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
@@ -12,40 +13,65 @@ public class LabMessageIndexDto implements Serializable {
 
 	public static final String UUID = "uuid";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
-	public static final String TEST_LAB_NAME = "testLabName";
-	public static final String TEST_LAB_POSTAL_CODE = "testLabPostalCode";
+	public static final String TEST_LAB_NAME = "labName";
+	public static final String TEST_LAB_POSTAL_CODE = "labPostalCode";
 	public static final String TESTED_DISEASE = "testedDisease";
+	public static final String SAMPLE_OVERALL_TEST_RESULT = "sampleOverallTestResult";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
+	public static final String PERSON_BIRTH_DATE = "personBirthDate";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
 	public static final String STATUS = "status";
 
 	private String uuid;
 
 	private Date messageDateTime;
-	private String testLabName;
-	private String testLabPostalCode;
+	private String labName;
+	private String labPostalCode;
 	private Disease testedDisease;
+	private PathogenTestResultType sampleOverallTestResult;
 	private String personFirstName;
 	private String personLastName;
+	private Date personBirthDate;
 	private String personPostalCode;
 	private LabMessageStatus status;
 
-	public LabMessageIndexDto(String uuid, Date messageDateTime, String testLabName, String testLabPostalCode, Disease testedDisease,
+	public LabMessageIndexDto(
+		String uuid,
+		Date messageDateTime,
+		String labName,
+		String labPostalCode,
+		Disease testedDisease,
+		PathogenTestResultType sampleOverallTestResult,
 		String personFirstName,
 		String personLastName,
+		Integer personBirthDateYYYY,
+		Integer personBirthDateMM,
+		Integer personBirthDateDD,
 		String personPostalCode,
 		LabMessageStatus status) {
 
 		this.uuid = uuid;
 		this.messageDateTime = messageDateTime;
-		this.testLabName = testLabName;
-		this.testLabPostalCode = testLabPostalCode;
+		this.labName = labName;
+		this.labPostalCode = labPostalCode;
 		this.testedDisease = testedDisease;
+		this.sampleOverallTestResult = sampleOverallTestResult;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
 		this.personPostalCode = personPostalCode;
 		this.status = status;
+
+		if (personBirthDateYYYY != null && personBirthDateMM != null && personBirthDateDD != null) {
+			Calendar birthdate = Calendar.getInstance();
+			birthdate.setLenient(false);
+			try {
+				birthdate.set(personBirthDateYYYY, personBirthDateMM - 1, personBirthDateDD, 0, 0, 0);
+				personBirthDate = birthdate.getTime();
+			} catch (Exception e) {
+				personBirthDate = null;
+			}
+		}
 	}
 
 	public String getUuid() {
@@ -64,20 +90,20 @@ public class LabMessageIndexDto implements Serializable {
 		this.messageDateTime = messageDateTime;
 	}
 
-	public String getTestLabName() {
-		return testLabName;
+	public String getlabName() {
+		return labName;
 	}
 
-	public void setTestLabName(String testLabName) {
-		this.testLabName = testLabName;
+	public void setTestLabName(String labName) {
+		this.labName = labName;
 	}
 
-	public String getTestLabPostalCode() {
-		return testLabPostalCode;
+	public String getlabPostalCode() {
+		return labPostalCode;
 	}
 
-	public void setTestLabPostalCode(String testLabPostalCode) {
-		this.testLabPostalCode = testLabPostalCode;
+	public void setlabPostalCode(String testLabPostalCode) {
+		this.labPostalCode = testLabPostalCode;
 	}
 
 	public Disease getTestedDisease() {
@@ -86,6 +112,14 @@ public class LabMessageIndexDto implements Serializable {
 
 	public void setTestedDisease(Disease testedDisease) {
 		this.testedDisease = testedDisease;
+	}
+
+	public PathogenTestResultType getSampleOverallTestResult() {
+		return sampleOverallTestResult;
+	}
+
+	public void setSampleOverallTestResult(PathogenTestResultType sampleOverallTestResult) {
+		this.sampleOverallTestResult = sampleOverallTestResult;
 	}
 
 	public String getPersonFirstName() {
@@ -102,6 +136,14 @@ public class LabMessageIndexDto implements Serializable {
 
 	public void setPersonLastName(String personLastName) {
 		this.personLastName = personLastName;
+	}
+
+	public Date getPersonBirthDate() {
+		return personBirthDate;
+	}
+
+	public void setPersonBirthDate(Date personBirthDate) {
+		this.personBirthDate = personBirthDate;
 	}
 
 	public String getPersonPostalCode() {

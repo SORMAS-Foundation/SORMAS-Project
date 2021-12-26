@@ -40,7 +40,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -63,7 +62,10 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolExc
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -78,10 +80,10 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class EventController {
 
@@ -346,7 +348,7 @@ public class EventController {
 
 		Set<String> relatedEventUuids = FacadeProvider.getEventFacade().getAllEventUuidsByEventGroupUuid(eventGroupReference.getUuid());
 
-		EventSelectionField eventSelect = new EventSelectionField(eventGroupReference, relatedEventUuids);
+		EventSelectionField eventSelect = new EventSelectionField(relatedEventUuids);
 		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
@@ -736,12 +738,29 @@ public class EventController {
 		editView.addCommitListener(() -> {
 			if (!eventEditForm.getFieldGroup().isModified()) {
 				EventDto eventDto = eventEditForm.getValue();
-				eventDto = FacadeProvider.getEventFacade().saveEvent(eventDto);
-				Notification.show(I18nProperties.getString(Strings.messageEventSaved), Type.WARNING_MESSAGE);
-				SormasUI.refreshView();
 
-				if (saveCallback != null) {
-					saveCallback.accept(eventDto.getEventStatus());
+				final UserDto user = UserProvider.getCurrent().getUser();
+				final RegionReferenceDto userRegion = user.getRegion();
+				final DistrictReferenceDto userDistrict = user.getDistrict();
+				final RegionReferenceDto epEventRegion = eventDto.getEventLocation().getRegion();
+				final DistrictReferenceDto epEventDistrict = eventDto.getEventLocation().getDistrict();
+				final Boolean eventOutsideJurisdiction =
+					(userRegion != null && !userRegion.equals(epEventRegion) || userDistrict != null && !userDistrict.equals(epEventDistrict));
+
+				if (eventOutsideJurisdiction) {
+					VaadinUiUtil.showConfirmationPopup(
+						I18nProperties.getString(Strings.headingEventJurisdictionUpdated),
+						new Label(I18nProperties.getString(Strings.messageEventJurisdictionUpdated)),
+						I18nProperties.getString(Strings.yes),
+						I18nProperties.getString(Strings.no),
+						500,
+						confirmed -> {
+							if (confirmed) {
+								saveEvent(saveCallback, eventDto);
+							}
+						});
+				} else {
+					saveEvent(saveCallback, eventDto);
 				}
 			}
 		});
@@ -781,6 +800,16 @@ public class EventController {
 		}
 
 		return editView;
+	}
+
+	private void saveEvent(Consumer<EventStatus> saveCallback, EventDto eventDto) {
+		eventDto = FacadeProvider.getEventFacade().saveEvent(eventDto);
+		Notification.show(I18nProperties.getString(Strings.messageEventSaved), Type.WARNING_MESSAGE);
+		SormasUI.refreshView();
+
+		if (saveCallback != null) {
+			saveCallback.accept(eventDto.getEventStatus());
+		}
 	}
 
 	public void showBulkEventDataEditComponent(Collection<EventIndexDto> selectedEvents) {
@@ -1040,31 +1069,24 @@ public class EventController {
 		}
 	}
 
-	public VerticalLayout getEventViewTitleLayout(String uuid) {
+	public TitleLayout getEventViewTitleLayout(String uuid) {
 		EventDto event = findEvent(uuid);
 
-		VerticalLayout titleLayout = new VerticalLayout();
-		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
-		titleLayout.setSpacing(false);
+		TitleLayout titleLayout = new TitleLayout();
 
-		Label statusLabel = new Label(event.getEventStatus().toString());
-		statusLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-		titleLayout.addComponents(statusLabel);
+		titleLayout.addRow(event.getEventStatus().toString());
 
 		if (event.getStartDate() != null) {
-			Label eventStartDateLabel = new Label(
-				event.getEndDate() != null
-					? DateFormatHelper.buildPeriodString(event.getStartDate(), event.getEndDate())
-					: DateFormatHelper.formatDate(event.getStartDate()));
-			eventStartDateLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-			titleLayout.addComponent(eventStartDateLabel);
+			String eventStartDateLabel = event.getEndDate() != null
+				? DateFormatHelper.buildPeriodString(event.getStartDate(), event.getEndDate())
+				: DateFormatHelper.formatDate(event.getStartDate());
+			titleLayout.addRow(eventStartDateLabel);
 		}
 
 		String shortUuid = DataHelper.getShortUuid(event.getUuid());
 		String eventTitle = event.getEventTitle();
-		Label eventLabel = new Label(StringUtils.isNotBlank(eventTitle) ? eventTitle + " (" + shortUuid + ")" : shortUuid);
-		eventLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		titleLayout.addComponent(eventLabel);
+		String mainRowText = StringUtils.isNotBlank(eventTitle) ? eventTitle + " (" + shortUuid + ")" : shortUuid;
+		titleLayout.addMainRow(mainRowText);
 
 		return titleLayout;
 	}

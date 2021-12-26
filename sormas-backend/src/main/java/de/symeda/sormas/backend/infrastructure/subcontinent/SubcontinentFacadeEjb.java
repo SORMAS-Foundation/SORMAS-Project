@@ -1,17 +1,30 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.infrastructure.subcontinent;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -20,8 +33,10 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
@@ -31,28 +46,36 @@ import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentIndexDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import de.symeda.sormas.backend.infrastructure.continent.Continent;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentService;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "SubcontinentFacade")
-public class SubcontinentFacadeEjb implements SubcontinentFacade {
+public class SubcontinentFacadeEjb
+	extends
+	AbstractInfrastructureEjb<Subcontinent, SubcontinentDto, SubcontinentIndexDto, SubcontinentReferenceDto, SubcontinentService, SubcontinentCriteria>
+	implements SubcontinentFacade {
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
-
-	@EJB
-	private SubcontinentService subcontinentService;
 	@EJB
 	private ContinentService continentService;
 	@EJB
 	private CountryService countryService;
+
+	public SubcontinentFacadeEjb() {
+	}
+
+	@Inject
+	protected SubcontinentFacadeEjb(SubcontinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
+		super(Subcontinent.class, SubcontinentDto.class, service, featureConfiguration, userService);
+	}
 
 	public static SubcontinentReferenceDto toReferenceDto(Subcontinent entity) {
 		if (entity == null) {
@@ -70,7 +93,7 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 
 	@Override
 	public List<SubcontinentReferenceDto> getByDefaultName(String name, boolean includeArchivedEntities) {
-		return subcontinentService.getByDefaultName(name, includeArchivedEntities)
+		return service.getByDefaultName(name, includeArchivedEntities)
 			.stream()
 			.map(SubcontinentFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -84,12 +107,16 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 	@Override
 	public List<SubcontinentReferenceDto> getAllActiveByContinent(String uuid) {
 		Continent continent = continentService.getByUuid(uuid);
-		return continent.getSubcontinents().stream().filter(d -> !d.isArchived()).map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return continent.getSubcontinents()
+			.stream()
+			.filter(d -> !d.isArchived())
+			.map(SubcontinentFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
 	}
 
 	@Override
 	public boolean isUsedInOtherInfrastructureData(Collection<String> subcontinentUuids) {
-		return subcontinentService.isUsedInInfrastructureData(subcontinentUuids, Country.SUBCONTINENT, Country.class);
+		return service.isUsedInInfrastructureData(subcontinentUuids, Country.SUBCONTINENT, Country.class);
 	}
 
 	@Override
@@ -108,11 +135,6 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 	}
 
 	@Override
-	public SubcontinentDto getByUuid(String uuid) {
-		return toDto(subcontinentService.getByUuid(uuid));
-	}
-
-	@Override
 	public List<SubcontinentIndexDto> getIndexList(SubcontinentCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Subcontinent> cq = cb.createQuery(Subcontinent.class);
@@ -121,14 +143,14 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 
 		Predicate filter = null;
 		if (criteria != null) {
-			filter = subcontinentService.buildCriteriaFilter(criteria, cb, subcontinent);
+			filter = service.buildCriteriaFilter(criteria, cb, subcontinent);
 		}
 
 		if (filter != null) {
 			cq.where(filter);
 		}
 
-		if (sortProperties != null && sortProperties.size() > 0) {
+		if (CollectionUtils.isNotEmpty(sortProperties)) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
@@ -158,44 +180,15 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 	}
 
 	@Override
-	public void archive(String uuid) {
-		Subcontinent subcontinent = subcontinentService.getByUuid(uuid);
-		if (subcontinent != null) {
-			subcontinent.setArchived(true);
-			subcontinentService.ensurePersisted(subcontinent);
-		}
-	}
-
-	@Override
-	public void dearchive(String uuid) {
-		Subcontinent subcontinent = subcontinentService.getByUuid(uuid);
-		if (subcontinent != null) {
-			subcontinent.setArchived(false);
-			subcontinentService.ensurePersisted(subcontinent);
-		}
-	}
-
-	@Override
-	public List<SubcontinentDto> getAllAfter(Date date) {
-		return subcontinentService.getAll((cb, root) -> subcontinentService.createChangeDateFilter(cb, root, date))
-			.stream()
-			.map(this::toDto)
-			.collect(Collectors.toList());
-	}
-
-	@Override
-	public List<SubcontinentDto> getByUuids(List<String> uuids) {
-		return subcontinentService.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<String> getAllUuids() {
-		return subcontinentService.getAllUuids();
+	public Page<SubcontinentIndexDto> getIndexPage(SubcontinentCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<SubcontinentIndexDto> subcontinentIndexList = getIndexList(criteria, offset, size, sortProperties);
+		long totalElementCount = count(criteria);
+		return new Page<>(subcontinentIndexList, offset, size, totalElementCount);
 	}
 
 	@Override
 	public List<SubcontinentReferenceDto> getAllActiveAsReference() {
-		return subcontinentService.getAllActive(Subcontinent.DEFAULT_NAME, true)
+		return service.getAllActive(Subcontinent.DEFAULT_NAME, true)
 			.stream()
 			.map(SubcontinentFacadeEjb::toReferenceDto)
 			.sorted(Comparator.comparing(SubcontinentReferenceDto::getCaption))
@@ -203,38 +196,19 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 	}
 
 	@Override
-	public SubcontinentDto save(SubcontinentDto dto) {
-		return save(dto, false);
+	public SubcontinentDto save(SubcontinentDto dtoToSave, boolean allowMerge) {
+		checkInfraDataLocked();
+		return save(dtoToSave, allowMerge, Validations.importSubcontinentAlreadyExists);
 	}
 
 	@Override
-	public SubcontinentDto save(SubcontinentDto dto, boolean allowMerge) {
-
-		Subcontinent subcontinent = subcontinentService.getByUuid(dto.getUuid());
-
-		if (subcontinent == null) {
-			List<SubcontinentReferenceDto> duplicates = getByDefaultName(dto.getDefaultName(), true);
-			if (!duplicates.isEmpty()) {
-				if (allowMerge) {
-					String uuid = duplicates.get(0).getUuid();
-					subcontinent = subcontinentService.getByUuid(uuid);
-					SubcontinentDto dtoToMerge = getByUuid(uuid);
-					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
-				} else {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importSubcontinentAlreadyExists));
-				}
-			}
-		}
-
-		subcontinent = fillOrBuildEntity(dto, subcontinent, true);
-		subcontinentService.ensurePersisted(subcontinent);
-
-		return toDto(subcontinent);
+	protected void selectDtoFields(CriteriaQuery<SubcontinentDto> cq, Root<Subcontinent> root) {
+		// we do not select DTO fields in getAllAfter query
 	}
 
 	@Override
-	public long count(SubcontinentCriteria criteria) {
-		return subcontinentService.count((cb, root) -> subcontinentService.buildCriteriaFilter(criteria, cb, root));
+	protected List<Subcontinent> findDuplicates(SubcontinentDto dto) {
+		return service.getByDefaultName(dto.getDefaultName(), true);
 	}
 
 	public SubcontinentDto toDto(Subcontinent entity) {
@@ -251,6 +225,11 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 		dto.setContinent(ContinentFacadeEjb.toReferenceDto(entity.getContinent()));
 
 		return dto;
+	}
+
+	@Override
+	public SubcontinentReferenceDto toRefDto(Subcontinent subcontinent) {
+		return toReferenceDto(subcontinent);
 	}
 
 	public SubcontinentIndexDto toIndexDto(Subcontinent entity) {
@@ -270,28 +249,25 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 		return dto;
 	}
 
+	@Override
 	public List<SubcontinentReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
-		return subcontinentService.getByExternalId(externalId, includeArchived)
-			.stream()
-			.map(SubcontinentFacadeEjb::toReferenceDto)
-			.collect(Collectors.toList());
+		return service.getByExternalId(externalId, includeArchived).stream().map(SubcontinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
+	@Override
 	public List<SubcontinentReferenceDto> getReferencesByName(String caption, boolean includeArchived) {
-		return subcontinentService.getByDefaultName(caption, includeArchived)
-			.stream()
-			.map(SubcontinentFacadeEjb::toReferenceDto)
-			.collect(Collectors.toList());
+		return service.getByDefaultName(caption, includeArchived).stream().map(SubcontinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
-	private Subcontinent fillOrBuildEntity(@NotNull SubcontinentDto source, Subcontinent target, boolean checkChangeDate) {
+	@Override
+	protected Subcontinent fillOrBuildEntity(@NotNull SubcontinentDto source, Subcontinent target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Subcontinent::new, checkChangeDate);
 
 		target.setDefaultName(source.getDefaultName());
 		target.setArchived(source.isArchived());
 		target.setExternalId(source.getExternalId());
 		target.setContinent(continentService.getByReferenceDto(source.getContinent()));
-
+		target.setCentrallyManaged(source.isCentrallyManaged());
 		return target;
 	}
 
@@ -299,5 +275,16 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 	@Stateless
 	public static class SubcontinentFacadeEjbLocal extends SubcontinentFacadeEjb {
 
+		public SubcontinentFacadeEjbLocal() {
+
+		}
+
+		@Inject
+		protected SubcontinentFacadeEjbLocal(
+			SubcontinentService service,
+			FeatureConfigurationFacadeEjbLocal featureConfiguration,
+			UserService userService) {
+			super(service, featureConfiguration, userService);
+		}
 	}
 }

@@ -25,15 +25,15 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -332,6 +332,11 @@ public class LineListingLayout extends VerticalLayout {
 			newLineDto.setFacilityDetails(lastLineDto.getFacilityDetails());
 
 			setEpidNumberPrefix(newLine, lastLineDto.getDateOfReport());
+		} else {
+			Disease defaultDisease = FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease();
+			if (defaultDisease != null) {
+				newLineDto.setDisease(defaultDisease);
+			}
 		}
 
 		newLine.setBean(newLineDto);

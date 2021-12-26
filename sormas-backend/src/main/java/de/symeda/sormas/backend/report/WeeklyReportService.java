@@ -122,7 +122,7 @@ public class WeeklyReportService extends AdoServiceWithUserFilter<WeeklyReport> 
 
 		User currentUser = getCurrentUser();
 		// National users can access all reports in the system
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
 		if (currentUser == null
 			|| (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
 			|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {
@@ -159,7 +159,7 @@ public class WeeklyReportService extends AdoServiceWithUserFilter<WeeklyReport> 
 			return usersStream;
 		}
 
-		final JurisdictionLevel jurisdictionLevel = user.getJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = user.getCalculatedJurisdictionLevel();
 		// National users can access all reports in the system
 		if (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(user.getUserRoles())) {
 			return usersStream;

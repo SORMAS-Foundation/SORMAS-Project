@@ -33,8 +33,10 @@ import javax.ws.rs.core.MediaType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.task.TaskContextIndex;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceWithTaskNumbersDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
@@ -74,5 +76,17 @@ public class UserResource {
 		@QueryParam("offset") int offset,
 		@QueryParam("size") int size) {
 		return FacadeProvider.getUserFacade().getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
+	}
+
+	@GET
+	@Path("/{uuid}")
+	public UserDto getByUuid(@PathParam("uuid") String uuid) {
+		return FacadeProvider.getUserFacade().getByUuid(uuid);
+	}
+
+	@POST
+	@Path("/userReferenceWithNoOfTask")
+	public List<UserReferenceWithTaskNumbersDto> getUsersWithTaskNumbers(@RequestBody TaskContextIndex taskContextIndex) {
+		return FacadeProvider.getUserFacade().getAssignableUsersWithTaskNumbers(taskContextIndex);
 	}
 }

@@ -14,23 +14,24 @@ import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseIndexDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
+import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.ui.caze.components.caseselection.CaseSelectionGrid;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 @SuppressWarnings("serial")
-public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
+public class CasePickOrCreateField extends CustomField<CaseSelectionDto> {
 
 	public static final String CREATE_CASE = "createCase";
 	public static final String PICK_CASE = "pickCase";
 
-	protected List<CaseIndexDto> similarCases;
+	protected List<CaseSelectionDto> similarCases;
 	protected CaseSelectionGrid grid;
 	protected OptionGroup pickCase;
 	protected OptionGroup createCase;
@@ -40,7 +41,7 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 
 	protected VerticalLayout mainLayout;
 
-	public CasePickOrCreateField(CaseDataDto newCase, PersonDto newPerson, List<CaseIndexDto> similarCases) {
+	public CasePickOrCreateField(CaseDataDto newCase, PersonDto newPerson, List<CaseSelectionDto> similarCases) {
 
 		this.similarCases = similarCases;
 		this.newCase = newCase;
@@ -101,8 +102,7 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 					newPerson.getApproximateAgeType(),
 					newPerson.getBirthdateDD(),
 					newPerson.getBirthdateMM(),
-					newPerson.getBirthdateYYYY(),
-					I18nProperties.getUserLanguage()));
+					newPerson.getBirthdateYYYY()));
 			ageAndBirthDateField.setWidthUndefined();
 			caseInfoLayout.addComponent(ageAndBirthDateField);
 
@@ -239,7 +239,7 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 	}
 
 	@Override
-	protected void setInternalValue(CaseIndexDto newValue) {
+	protected void setInternalValue(CaseSelectionDto newValue) {
 
 		super.setInternalValue(newValue);
 
@@ -253,10 +253,10 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 	}
 
 	@Override
-	protected CaseIndexDto getInternalValue() {
+	protected CaseSelectionDto getInternalValue() {
 
 		if (grid != null) {
-			CaseIndexDto value = (CaseIndexDto) grid.getSelectedRow();
+			CaseSelectionDto value = (CaseSelectionDto) grid.getSelectedRow();
 			return value;
 		}
 
@@ -264,8 +264,8 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 	}
 
 	@Override
-	public Class<? extends CaseIndexDto> getType() {
-		return CaseIndexDto.class;
+	public Class<? extends CaseSelectionDto> getType() {
+		return CaseSelectionDto.class;
 	}
 
 	public void setSelectionChangeCallback(Consumer<Boolean> callback) {

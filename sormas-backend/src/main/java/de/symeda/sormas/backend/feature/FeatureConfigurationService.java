@@ -76,8 +76,8 @@ public class FeatureConfigurationService extends AdoServiceWithUserFilter<Featur
 			filter = CriteriaBuilderHelper.and(cb, filter, from.get(FeatureConfiguration.FEATURE_TYPE).in(criteria.getFeatureTypes()));
 		}
 		if (criteria.getRegion() != null) {
-			filter =
-				CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(FeatureConfiguration.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(FeatureConfiguration.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
 		if (criteria.getDistrict() != null) {
 			filter = CriteriaBuilderHelper.and(
@@ -129,6 +129,7 @@ public class FeatureConfigurationService extends AdoServiceWithUserFilter<Featur
 			FeatureConfiguration savedConfiguration = configs.get(featureType);
 			if (savedConfiguration == null) {
 				FeatureConfiguration configuration = FeatureConfiguration.build(featureType, featureType.isEnabledDefault());
+				configuration.setProperties(featureType.getSupportedPropertyDefaults());
 				ensurePersisted(configuration);
 			}
 		});
@@ -152,11 +153,10 @@ public class FeatureConfigurationService extends AdoServiceWithUserFilter<Featur
 	private Map<FeatureType, FeatureConfiguration> getServerFeatureConfigurations() {
 
 		List<FeatureConfiguration> featureConfigurations = getAll();
-		Map<FeatureType, FeatureConfiguration> configurationsMap =
-			featureConfigurations.stream()
-				.filter(e -> e.getFeatureType().isServerFeature())
-				// In case a serverFeature happens not to be unique in the database, take the last one
-				.collect(Collectors.toMap(FeatureConfiguration::getFeatureType, Function.identity(), (e1, e2) -> e2));
+		Map<FeatureType, FeatureConfiguration> configurationsMap = featureConfigurations.stream()
+			.filter(e -> e.getFeatureType().isServerFeature())
+			// In case a serverFeature happens not to be unique in the database, take the last one
+			.collect(Collectors.toMap(FeatureConfiguration::getFeatureType, Function.identity(), (e1, e2) -> e2));
 
 		return configurationsMap;
 	}

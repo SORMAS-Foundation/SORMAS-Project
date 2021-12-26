@@ -22,11 +22,19 @@ import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.util.UUID;
+import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.GenderValues;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.pojo.web.Case;
 
 public class CaseService {
   private final Faker faker;
+
+  private String firstName;
+  private String lastName;
+  private final String emailDomain = "@CASE.com";
 
   @Inject
   public CaseService(Faker faker) {
@@ -34,26 +42,33 @@ public class CaseService {
   }
 
   public Case buildGeneratedCase() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
     return Case.builder()
+        .firstName(firstName)
+        .lastName(lastName)
         .caseOrigin("IN-COUNTRY")
         .dateOfReport(LocalDate.now().minusDays(1))
         .externalId(UUID.randomUUID().toString())
         .disease("COVID-19")
-        .responsibleRegion("Voreingestellte Bundesl\u00E4nder")
-        .responsibleDistrict("Voreingestellter Landkreis")
-        .responsibleCommunity("Voreingestellte Gemeinde")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
         .placeOfStay("HOME")
-        .placeDescription(faker.address().streetAddressNumber())
-        .firstName(faker.name().firstName())
-        .lastName(faker.name().lastName())
-        .dateOfBirth(LocalDate.of(1902, 3, 7))
-        .sex("Male")
+        .placeDescription(faker.harryPotter().location())
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGender())
         .nationalHealthId(UUID.randomUUID().toString())
         .passportNumber(String.valueOf(System.currentTimeMillis()))
         .presentConditionOfPerson("Alive")
         .dateOfSymptomOnset(LocalDate.now().minusDays(1))
         .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
-        .primaryEmailAddress(faker.internet().emailAddress())
+        .primaryEmailAddress(firstName + "." + lastName + emailDomain)
         .build();
   }
 
@@ -71,16 +86,14 @@ public class CaseService {
         .disease("COVID-19")
         .reinfection("NO")
         .outcomeOfCase("RECOVERED")
-        .reportingDistrict("Voreingestellter Landkreis")
+        .reportingDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
         .caseIdentificationSource("Suspicion report")
-        .region("Voreingestellte Bundesländer")
-        .district("Voreingestellter Landkreis")
-        .community("Voreingestellte Gemeinde")
-        .responsibleJurisdiction(
-            "Responsible jurisdiction of this case differs from its place of stay")
-        .responsibleDistrict("Voreingestellter Landkreis")
-        .responsibleCommunity("Voreingestellte Gemeinde")
-        .responsibleRegion("Voreingestellte Bundesländer")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .community(CommunityValues.VoreingestellteGemeinde.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .prohibitionToWork("NO")
         .homeBasedQuarantinePossible("NO")
         .quarantine("None")
@@ -96,24 +109,31 @@ public class CaseService {
         .dateReceivedAtNationalLevel(LocalDate.now().minusDays(3))
         .dateReceivedAtNationalLevel(LocalDate.now().minusDays(3))
         .generalComment(faker.book().title())
-        .placeDescription(faker.business().creditCardExpiry())
+        .placeDescription(faker.harryPotter().location() + "2")
         .build();
   }
 
   public Case buildCaseForLineListingFeature() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
     return Case.builder()
-        .disease(DiseasesValues.MONKEYPOX.getDiseaseName())
+        .disease(DiseasesValues.MONKEYPOX.getDiseaseCaption())
         .region("Voreingestellte")
-        .district("Voreingestellter Landkreis")
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
         .facilityCategory("Accommodation")
         .facilityType("Other Accommodation")
         .dateOfReport(LocalDate.now().minusDays(1))
-        .community("Voreingestellte Gemeinde")
+        .community(CommunityValues.VoreingestellteGemeinde.getName())
         .placeDescription(faker.address().streetAddressNumber()) // used for Facility Name
-        .firstName(faker.name().firstName())
-        .lastName(faker.name().lastName() + LocalDate.now())
-        .dateOfBirth(LocalDate.of(1902, 3, 7))
-        .sex("Male")
+        .firstName(firstName)
+        .lastName(lastName)
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGender())
         .dateOfSymptomOnset(LocalDate.now().minusDays(1))
         .build();
   }

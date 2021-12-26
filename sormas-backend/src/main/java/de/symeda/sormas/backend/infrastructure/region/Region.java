@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.infrastructure.region;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.List;
 
@@ -95,7 +95,7 @@ public class Region extends InfrastructureAdo {
 		this.growthRate = growthRate;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalID() {
 		return externalID;
 	}

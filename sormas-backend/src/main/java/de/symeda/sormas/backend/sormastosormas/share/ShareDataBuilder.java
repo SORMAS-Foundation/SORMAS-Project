@@ -15,20 +15,14 @@
 
 package de.symeda.sormas.backend.sormastosormas.share;
 
-import java.util.List;
-
-import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 
-public interface ShareDataBuilder<T extends AbstractDomainObject, S extends SormasToSormasDto, P> {
+public interface ShareDataBuilder<D extends SormasToSormasShareableDto, T extends AbstractDomainObject, S extends SormasToSormasEntityDto<D>, P> {
 
-	ShareData<T, S> buildShareData(T data, User user, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	S buildShareData(T data, ShareRequestInfo requestInfo);
 
-	ShareData<T, P> buildShareDataPreview(T data, User user, SormasToSormasOptionsDto options) throws SormasToSormasException;
-
-	List<ShareData<T, S>> buildShareData(User user, SormasToSormasShareInfo shareInfo) throws SormasToSormasException;
+	P buildShareDataPreview(T data, ShareRequestInfo requestInfo);
 }

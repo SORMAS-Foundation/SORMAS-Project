@@ -15,6 +15,7 @@
 package de.symeda.sormas.ui.samples;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.vaadin.shared.ui.MarginInfo;
@@ -30,6 +31,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -131,31 +133,29 @@ public class SampleDataView extends AbstractSampleView {
 			layout.addComponent(eventParticipantInfoLayout, EVENT_PARTICIPANT_LOC);
 		}
 
-		editComponent = ControllerProvider.getSampleController().getSampleEditComponent(getSampleRef().getUuid(), sampleDto.isPseudonymized());
+		SampleController sampleController = ControllerProvider.getSampleController();
+		editComponent = sampleController.getSampleEditComponent(getSampleRef().getUuid(), sampleDto.isPseudonymized(), disease, true);
+
+		Consumer<Disease> createReferral = (relatedDisease) -> {
+			// save changes before referral creation
+			editComponent.commit();
+			SampleDto committedSample = editComponent.getWrappedComponent().getValue();
+			sampleController.createReferral(committedSample, relatedDisease);
+		};
+		Consumer<SampleDto> openReferredSample = referredSample -> sampleController.navigateToData(referredSample.getUuid());
+		sampleController.addReferOrLinkToOtherLabButton(editComponent, disease, createReferral, openReferredSample);
+
+		Consumer<SampleDto> navigate = targetSampleDto -> sampleController.navigateToData(targetSampleDto.getUuid());
+		sampleController.addReferredFromButton(editComponent, navigate);
+
 		editComponent.setMargin(new MarginInfo(false, false, true, false));
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, EDIT_LOC);
 
-		Disease finalDisease = disease;
 		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest = (pathogenTestDto, callback) -> {
-			if (pathogenTestDto != null
-				&& pathogenTestDto.getTestResult() != null
-				&& Boolean.TRUE.equals(pathogenTestDto.getTestResultVerified())
-				&& pathogenTestDto.getTestedDisease() == finalDisease) {
-				SampleDto componentSample = editComponent.getWrappedComponent().getValue();
-				if (pathogenTestDto.getTestResult() != componentSample.getPathogenTestResult()) {
-					ControllerProvider.getSampleController()
-						.showChangePathogenTestResultWindow(editComponent, componentSample.getUuid(), pathogenTestDto.getTestResult(), callback);
-				} else {
-					callback.run();
-				}
-			} else {
-				callback.run();
-			}
-
-			editComponent.getWrappedComponent().fillPathogenTestResult();
+			callback.run();
 		};
 
 		// why? if(sampleDto.getSamplePurpose() !=null && sampleDto.getSamplePurpose().equals(SamplePurpose.EXTERNAL)) {
@@ -164,7 +164,10 @@ public class SampleDataView extends AbstractSampleView {
 		pathogenTestList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(pathogenTestList, PATHOGEN_TESTS_LOC);
 
-		if (UserProvider.getCurrent() != null && UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
+		if (UserProvider.getCurrent() != null
+			&& UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
+			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ADDITIONAL_TESTS)) {
+
 			AdditionalTestListComponent additionalTestList = new AdditionalTestListComponent(getSampleRef().getUuid());
 			additionalTestList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(additionalTestList, ADDITIONAL_TESTS_LOC);

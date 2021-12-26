@@ -25,6 +25,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BU
 import static org.sormas.e2etests.pages.application.events.EventActionsPage.CREATE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.*;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.SEX_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 
 import com.github.javafaker.Faker;
@@ -34,6 +35,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.GenderValues;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Event;
 import org.sormas.e2etests.pojo.web.EventGroup;
@@ -131,7 +135,16 @@ public class EditEventSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
           webDriverHelpers.fillInWebElement(PARTICIPANT_FIRST_NAME_INPUT, faker.name().firstName());
           webDriverHelpers.fillInWebElement(PARTICIPANT_LAST_NAME_INPUT, faker.name().lastName());
+          webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, GenderValues.getRandomGender());
+          webDriverHelpers.selectFromCombobox(
+              PARTICIPANT_REGION_COMBOBOX, RegionsValues.VoreingestellteBundeslander.getName());
+          webDriverHelpers.selectFromCombobox(
+              PARTICIPANT_DISTRICT_COMBOBOX, DistrictsValues.VoreingestellterLandkreis.getName());
           webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP, 15)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIO_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+          }
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               PERSON_DATA_ADDED_AS_A_PARTICIPANT_MESSAGE);
           person = collectPersonUuid();

@@ -13,7 +13,20 @@ public abstract class InfrastructureAdo extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 6512756286608581221L;
 
+	// todo this should be included, however, we face problems as externalID used used sometimes in the code. See #6549.
+	//public static final String EXTERNAL_ID = "externalId";
 	public static final String ARCHIVED = "archived";
+
+	private boolean centrallyManaged;
+
+	@Column(name = "centrally_managed")
+	public boolean isCentrallyManaged() {
+		return centrallyManaged;
+	}
+
+	public void setCentrallyManaged(boolean centrallyManaged) {
+		this.centrallyManaged = centrallyManaged;
+	}
 
 	private boolean archived;
 

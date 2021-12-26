@@ -17,114 +17,21 @@
  */
 package org.sormas.e2etests.steps.api;
 
-import static com.google.common.truth.Truth.assertThat;
-
 import cucumber.api.java8.En;
+import java.util.ArrayList;
+import java.util.List;
 import javax.inject.Inject;
-import org.sormas.e2etests.enums.APITestData.POSTCase_ErrorMessages;
+import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.helpers.api.CaseHelper;
-import org.sormas.e2etests.helpers.api.CommunityHelper;
-import org.sormas.e2etests.helpers.api.CountryHelper;
-import org.sormas.e2etests.helpers.api.PersonsHelper;
 import org.sormas.e2etests.pojo.api.Case;
 import org.sormas.e2etests.services.api.CaseApiService;
-import org.sormas.e2etests.services.api.PostCaseBodyService;
-import org.sormas.e2etests.services.api.PostPersonBodyService;
 import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.state.BodyResources;
 
+@Slf4j
 public class CaseSteps implements En {
 
   @Inject
-  public CaseSteps(
-      CaseHelper caseHelper,
-      PersonsHelper personHelper,
-      ApiState apiState,
-      CaseApiService caseApiService,
-      CommunityHelper communityHelper,
-      CountryHelper countryHelper,
-      BodyResources bodyResources,
-      PostCaseBodyService bodyService,
-      PostPersonBodyService personBodyService) {
-
-    Given(
-        "I create a person",
-        () -> {
-          bodyResources.setBody("[" + personBodyService.generatePostPersonBody() + "]");
-          personHelper.pushPerson("push", bodyResources.getBody());
-        });
-
-    Given(
-        "I try to enter invalid user for a new case",
-        () -> {
-          bodyResources.setBody("[" + bodyService.generatePostCaseBodyTooOld() + "]");
-        });
-
-    Given(
-        "I try to enter valid data for a new case",
-        () -> {
-          bodyResources.setBody("[" + bodyService.generatePostCaseBodyValid() + "]");
-        });
-
-    Given(
-        "I try to enter invalid disease for a new case",
-        () -> {
-          bodyResources.setBody("[" + bodyService.generatePostCaseBodyUnknownDisease() + "]");
-        });
-
-    Given(
-        "I try to enter all lower case healthFacility for a new case",
-        () -> {
-          bodyResources.setBody("[" + bodyService.generatePostCaseBodyWithInvalidFacility() + "]");
-        });
-
-    When(
-        "I create a new case",
-        () -> {
-          caseHelper.postCases("push", bodyResources.getBody());
-        });
-
-    Then(
-        "I get the error message TOO_OLD",
-        () -> {
-          assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
-          assertThat(apiState.getResponse().getBody().asString())
-              .ignoringCase()
-              .equals(String.valueOf(POSTCase_ErrorMessages.TOO_OLD));
-        });
-
-    Then(
-        "I get a general error message ERROR",
-        () -> {
-          assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
-          assertThat(apiState.getResponse().getBody().asString())
-              .ignoringCase()
-              .equals(String.valueOf(POSTCase_ErrorMessages.ERROR));
-        });
-
-    Then(
-        "I get 200 OK response back",
-        () -> {
-          assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
-          assertThat(apiState.getResponse().getBody().asString()).contains(String.valueOf("OK"));
-        });
-
-    Then(
-        "I get the error message Unknown disease and all the valid values are shown",
-        () -> {
-          assertThat(apiState.getResponse().getStatusCode()).toString().equalsIgnoreCase("400");
-          assertThat(apiState.getResponse().getBody().asString())
-              .contains(String.valueOf(POSTCase_ErrorMessages.UNKNOWN_DISEASE));
-        });
-
-    Then(
-        "I can query case by UUID",
-        () -> {
-          String caseUUID = bodyResources.getCaseUUID();
-          caseHelper.postCasesQueryByUUID(caseUUID);
-          assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
-          assertThat(apiState.getResponse().jsonPath().get("uuid").toString()).contains(caseUUID);
-        });
+  public CaseSteps(CaseHelper caseHelper, ApiState apiState, CaseApiService caseApiService) {
 
     When(
         "API: I create a new case",
@@ -133,5 +40,20 @@ public class CaseSteps implements En {
           caseHelper.createCase(caze);
           apiState.setCreatedCase(caze);
         });
+
+    When(
+        "API: I create {int} cases",
+        (Integer numberOfCases) -> {
+          List<Case> casesList = new ArrayList<>();
+          for (int i = 0; i < numberOfCases; i++) {
+            casesList.add(
+                caseApiService.buildGeneratedCase(apiState.getLastCreatedPersonsList().get(i)));
+          }
+          log.info("Pushing %s Cases", numberOfCases);
+          caseHelper.createMultipleCases(casesList);
+          apiState.setCreatedCases(casesList);
+        });
+
+    When("API: I receive all cases ids", caseHelper::getAllCasesUuid);
   }
 }

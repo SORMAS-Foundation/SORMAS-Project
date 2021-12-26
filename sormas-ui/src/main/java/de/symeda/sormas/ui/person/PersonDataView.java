@@ -1,19 +1,23 @@
 package de.symeda.sormas.ui.person;
 
-import static de.symeda.sormas.ui.travelentry.travelentrylink.TravelEntryListComponent.TRAVEL_ENTRIES_LOC;
-
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.CustomLayout;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.caselink.CaseListComponent;
 import de.symeda.sormas.ui.contact.contactlink.ContactListComponent;
 import de.symeda.sormas.ui.events.eventParticipantLink.EventParticipantListComponent;
@@ -24,7 +28,8 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.components.SideComponentLayout;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
+import de.symeda.sormas.ui.vaccination.list.VaccinationListComponent;
 
 public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 
@@ -34,7 +39,9 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 	public static final String CASES_LOC = "cases";
 	public static final String CONTACTS_LOC = "contacts";
 	public static final String EVENT_PARTICIPANTS_LOC = "events";
+	public static final String TRAVEL_ENTRIES_LOC = "travelEntries";
 	public static final String IMMUNIZATION_LOC = "immunizations";
+	public static final String VACCINATIONS_LOC = "vaccinations";
 
 	private CommitDiscardWrapperComponent<PersonEditForm> editComponent;
 
@@ -69,7 +76,8 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENT_PARTICIPANTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TRAVEL_ENTRIES_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, IMMUNIZATION_LOC));
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, IMMUNIZATION_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, VACCINATIONS_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -105,10 +113,26 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 			layout.addComponent(new SideComponentLayout(new EventParticipantListComponent(getReference())), EVENT_PARTICIPANTS_LOC);
 		}
 
-		TravelEntryListComponent.addTravelEntryListComponent(layout, getReference());
+		UserProvider currentUser = UserProvider.getCurrent();
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TRAVEL_ENTRIES)
+			&& currentUser != null
+			&& currentUser.hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
+			TravelEntryListCriteria travelEntryListCriteria = new TravelEntryListCriteria.Builder().withPerson(getReference()).build();
+			layout.addComponent(new SideComponentLayout(new TravelEntryListComponent(travelEntryListCriteria)), TRAVEL_ENTRIES_LOC);
+		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)) {
-			layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(getReference().getUuid())), IMMUNIZATION_LOC);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+			&& currentUser != null
+			&& currentUser.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+			if (!FacadeProvider.getFeatureConfigurationFacade()
+				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+				final ImmunizationListCriteria immunizationListCriteria = new ImmunizationListCriteria.Builder(getReference()).build();
+				layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
+			} else {
+				VaccinationListCriteria criteria = new VaccinationListCriteria.Builder(getReference()).build();
+				layout.addComponent(new SideComponentLayout(new VaccinationListComponent(criteria, this)), VACCINATIONS_LOC);
+			}
 		}
 	}
 

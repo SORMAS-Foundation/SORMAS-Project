@@ -168,7 +168,7 @@
                     app:dependencyParentValue="@{Disease.NEW_INFLUENZA}"
                     style="@style/ControlSingleColumnStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/sample_lab"
                     app:required="true"
                     app:dependencyParentField="@{samplePurpose}"

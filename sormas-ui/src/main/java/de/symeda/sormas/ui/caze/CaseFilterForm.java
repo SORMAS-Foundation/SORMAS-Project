@@ -34,18 +34,18 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -56,6 +56,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateTypeHelper;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -81,10 +82,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		CaseDataDto.SURVEILLANCE_OFFICER,
 		CaseCriteria.REPORTING_USER_ROLE,
 		CaseCriteria.REPORTING_USER_LIKE,
+		CaseCriteria.QUARANTINE_TYPE,
 		CaseDataDto.QUARANTINE_TO,
 		CaseCriteria.FOLLOW_UP_UNTIL_TO,
 		ContactCriteria.SYMPTOM_JOURNAL_STATUS,
-		CaseCriteria.VACCINATION,
+		CaseCriteria.VACCINATION_STATUS,
 		CaseCriteria.BIRTHDATE_YYYY,
 		CaseCriteria.BIRTHDATE_MM,
 		CaseCriteria.BIRTHDATE_DD)
@@ -95,6 +97,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER,
 			CaseCriteria.WITH_EXTENDED_QUARANTINE,
 			CaseCriteria.WITH_REDUCED_QUARANTINE,
+			CaseCriteria.ONLY_QUARANTINE_HELP_NEEDED,
 			CaseCriteria.ONLY_CASES_WITH_EVENTS,
 			CaseCriteria.ONLY_CONTACTS_FROM_OTHER_INSTANCES,
 			CaseCriteria.ONLY_CASES_WITH_REINFECTION,
@@ -109,7 +112,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		+ loc(WEEK_AND_DATE_FILTER);
 
 	protected CaseFilterForm() {
-		super(CaseCriteria.class, CaseDataDto.I18N_PREFIX);
+		super(CaseCriteria.class, CaseDataDto.I18N_PREFIX, FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
 	}
 
 	@Override
@@ -122,7 +125,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseDataDto.DISEASE_VARIANT,
 			CaseDataDto.CASE_CLASSIFICATION,
 			CaseDataDto.FOLLOW_UP_STATUS,
-			CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE,
+			CaseCriteria.CASE_LIKE,
+			CaseCriteria.PERSON_LIKE,
 			CaseCriteria.EVENT_LIKE };
 	}
 
@@ -151,9 +155,13 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		addFields(FieldConfiguration.pixelSized(CaseDataDto.FOLLOW_UP_STATUS, 140));
 
 		TextField searchField = addField(
-			FieldConfiguration
-				.withCaptionAndPixelSized(CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE, I18nProperties.getString(Strings.promptCasesSearchField), 200));
+			FieldConfiguration.withCaptionAndPixelSized(CaseCriteria.CASE_LIKE, I18nProperties.getString(Strings.promptCasesSearchField), 200));
 		searchField.setNullRepresentation("");
+
+		TextField personLikeField = addField(
+			FieldConfiguration
+				.withCaptionAndPixelSized(CaseCriteria.PERSON_LIKE, I18nProperties.getString(Strings.promptRelatedPersonLikeField), 200));
+		personLikeField.setNullRepresentation("");
 
 		TextField eventSearchField = addField(
 			FieldConfiguration
@@ -217,10 +225,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					240));
 		}
 
-		addField(
-			moreFiltersContainer,
-			FieldConfiguration
-				.withCaptionAndPixelSized(CaseCriteria.VACCINATION, I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus), 140));
+		addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.VACCINATION_STATUS, 140));
 
 		addField(
 			moreFiltersContainer,
@@ -229,6 +234,13 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		TextField reportingUserField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.REPORTING_USER_LIKE, 200));
 		reportingUserField.setNullRepresentation("");
 		reportingUserField.setInputPrompt(I18nProperties.getPrefixCaption(propertyI18nPrefix, CaseDataDto.REPORTING_USER));
+
+		addField(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				CaseCriteria.QUARANTINE_TYPE,
+				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.QUARANTINE),
+				200));
 
 		Field<?> quarantineTo = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.QUARANTINE_TO, 200));
 		quarantineTo.removeAllValidators();
@@ -300,6 +312,15 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				CaseCriteria.WITH_REDUCED_QUARANTINE,
 				I18nProperties.getCaption(Captions.caseFilterWithReducedQuarantine),
 				I18nProperties.getDescription(Descriptions.descCaseFilterWithReducedQuarantine),
+				CssStyles.CHECKBOX_FILTER_INLINE));
+
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				CaseCriteria.ONLY_QUARANTINE_HELP_NEEDED,
+				I18nProperties.getCaption(Captions.caseFilterOnlyQuarantineHelpNeeded),
+				null,
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
 		addField(
@@ -783,13 +804,13 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	}
 
 	public void disableSearchAndReportingUser() {
-		getField(CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE).setEnabled(false);
+		getField(CaseCriteria.CASE_LIKE).setEnabled(false);
 		getField(CaseCriteria.EVENT_LIKE).setEnabled(false);
 		getField(CaseCriteria.REPORTING_USER_LIKE).setEnabled(false);
 	}
 
 	public void enableSearchAndReportingUser() {
-		getField(CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE).setEnabled(true);
+		getField(CaseCriteria.CASE_LIKE).setEnabled(true);
 		getField(CaseCriteria.EVENT_LIKE).setEnabled(true);
 		getField(CaseCriteria.REPORTING_USER_LIKE).setEnabled(true);
 	}
