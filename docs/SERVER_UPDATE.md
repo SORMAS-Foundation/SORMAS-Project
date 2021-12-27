@@ -56,16 +56,16 @@ These are the default users for most user roles, intended to be used on developm
 
 ### Standalone installation
 
-Upgrading from Keycloak 12 to 16 following the steps from here <https://www.keycloak.org/docs/16.1/upgrading/#_upgrading> and <https://www.keycloak.org/docs/16.1/upgrading/#migrating-to-16-0-0>
+Upgrading from Keycloak 12 to 16 following the steps from here <https://www.keycloak.org/docs/16.1/upgrading/#_upgrading>
 
-*16.1.0 doesn't provide a way to upgrade host based installations as there were a lot of changes due to the Wildfly update https://www.keycloak.org/docs/latest/upgrading/#migrating-to-16-0-0*
+*16.1.0 doesn't provide a way to upgrade host based installations as there were a lot of changes due to the Wildfly update <https://www.keycloak.org/docs/16.1/upgrading/#migrating-to-16-0-0>*
 
 To update follow this steps:
 
 1. Prerequisites
 * Backup the DB
 * Backup the current Keycloak configuration
-* Download 16.1.0 zip from https://www.keycloak.org/downloads
+* Download 16.1.0 zip from <https://www.keycloak.org/downloads>
 * Extract everything from the archive somewhere on your disk (will call this `KEYCLOAK_HOME_16`)
 
 2. From you current installation (will call this `KEYCLOAK_HOME_12`) directory copy the following into the new installation
@@ -74,7 +74,7 @@ To update follow this steps:
 * Copy `KEYCLOAK_HOME_12/standalone/deployments/sormas-keycloak-service-provider-*.jar` over to `KEYCLOAK_HOME_16/standalone/deployments`
 
 3. Edit the `KEYCLOAK_HOME_16/standalone/configuration/standalone.xml`
-* Search for `java:jboss/datasources/KeycloakDS` and you should find something like this 
+* Search for `java:jboss/datasources/KeycloakDS` and you should find something like this
 ```xml
 <datasource jndi-name="java:jboss/datasources/KeycloakDS" pool-name="KeycloakDS" enabled="true" use-java-context="true" statistics-enabled="${wildfly.datasources.statistics-enabled:${wildfly.statistics-enabled:false}}">
 ```
