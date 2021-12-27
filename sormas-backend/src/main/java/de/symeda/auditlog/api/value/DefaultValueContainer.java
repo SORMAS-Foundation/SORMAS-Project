@@ -30,7 +30,7 @@ import de.symeda.auditlog.api.value.format.ValueFormatter;
 
 /**
  * Standard implementation to format and save attributes.
- * 
+ * D02 WC04
  * @author Oliver Milke, Stefan Kock
  */
 public class DefaultValueContainer implements SimpleValueContainer {

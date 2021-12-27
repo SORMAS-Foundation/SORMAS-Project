@@ -65,6 +65,8 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class CampaignDataView extends AbstractCampaignView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigndata";
+	
+	
 
 	private final CampaignSelector campaignSelector;
 	private final CampaignFormDataCriteria criteria;
@@ -73,6 +75,8 @@ public class CampaignDataView extends AbstractCampaignView {
 	private ImportanceFilterSwitcher importanceFilterSwitcher;
 	private PopupButton newFormButton;
 	private PopupButton importCampaignButton;
+	
+	
 
 	@SuppressWarnings("deprecation")
 	public CampaignDataView() {
@@ -234,6 +238,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		if (campaignReferenceDto != null) {
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences =
 				FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid());
+			System.out.println(campaignReferenceDto.getUuid() + " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>___________"+campaignReferenceDto+"____________>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  "+campagaignFormReferences);
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
 				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), e -> {
 					ControllerProvider.getCampaignController().createCampaignDataForm(criteria.getCampaign(), campaignForm);

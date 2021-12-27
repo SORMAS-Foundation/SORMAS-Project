@@ -128,6 +128,8 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 			gridItems.add(campaignDashboardElement);
 			campaignDashboardElement.setOrder(gridItems.indexOf(campaignDashboardElement));
 			grid.setItems(gridItems);
+			
+			grid.getEditor().editRow(gridItems.size() - 1);
 		};
 	}
 

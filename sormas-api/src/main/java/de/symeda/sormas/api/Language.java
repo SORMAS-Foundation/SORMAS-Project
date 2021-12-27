@@ -10,15 +10,14 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum Language {
 
-	EN(new Locale("en"), "M/d/yyyy", "M/d/yyyy h:mm a", "M/d"),
-	EN_AF(new Locale("en", "AF"), "dd/MM/yyyy", "dd/MM/yyyy h:mm a", "dd/MM"),
+	EN(new Locale("en", "AF"), "dd/MM/yyyy", "dd/MM/yyyy h:mm a", "dd/MM"),
 	PS(new Locale("ps", "AF"), "dd/MM/yyyy", "dd/MM/yyyy HH:mm", "dd/MM"),
 	FA(new Locale("fa", "AF"), "dd/MM/yyyy", "dd/MM/yyyy HH:mm", "dd/MM");
 
 	/**
 	 * Links locale strings to Languages
 	 */
-	private static final Map<String, Language> languageLookup;
+	private static final Map<String, Language> languageLookup; //max
 	static {
 		languageLookup = new HashMap<>();
 		for (Language lang : Language.values()) {
@@ -57,7 +56,6 @@ public enum Language {
 	public String getDateFormat() {
 		return dateFormat;
 	}
-
 	public String getDateTimeFormat() {
 		return dateTimeFormat;
 	}

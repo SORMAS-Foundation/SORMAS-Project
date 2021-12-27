@@ -20,20 +20,22 @@ import de.symeda.sormas.ui.utils.AbstractEditableGrid;
 @SuppressWarnings("serial")
 public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFormMetaReferenceDto> {
 
-	public CampaignFormsGridComponent(
-		List<CampaignFormMetaReferenceDto> savedCampaignFormMetas,
-		List<CampaignFormMetaReferenceDto> allCampaignFormMetas) {
+	public CampaignFormsGridComponent(List<CampaignFormMetaReferenceDto> savedCampaignFormMetas,
+			List<CampaignFormMetaReferenceDto> allCampaignFormMetas) {
 
 		super(savedCampaignFormMetas, allCampaignFormMetas);
-		setWidth(40, Unit.PERCENTAGE);
+		setWidth(60, Unit.PERCENTAGE);
 	}
 
 	@Override
 	protected Button.ClickListener newRowEvent() {
 		return event -> {
 			final ArrayList<CampaignFormMetaReferenceDto> gridItems = getItems();
-			gridItems.add(new CampaignFormMetaReferenceDto(null, "Please select an item from the list and save"));
+			gridItems.add(new CampaignFormMetaReferenceDto(null, " --Please select--"));
 			grid.setItems(gridItems);
+			
+			grid.getEditor().editRow(gridItems.size() - 1);
+
 		};
 	}
 
@@ -41,20 +43,23 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 	protected Binder<CampaignFormMetaReferenceDto> addColumnsBinder(List<CampaignFormMetaReferenceDto> allElements) {
 		final Binder<CampaignFormMetaReferenceDto> binder = new Binder<>();
 
-		// This is a bit hacky: The grid is used here to "select" the whole item instead of editing properties
+		// This is a bit hacky: The grid is used here to "select" the whole item instead
+		// of editing properties
 		// This is done by replacing uuid and caption of the item
 
 		ComboBox<CampaignFormMetaReferenceDto> formCombo = new ComboBox<>(Strings.entityCampaignDataForm, allElements);
 
 		Binder.Binding<CampaignFormMetaReferenceDto, CampaignFormMetaReferenceDto> formBind = binder.forField(formCombo)
 				.withValidator(
-						campaignFormMetaReferenceDto -> campaignFormMetaReferenceDto != null && campaignFormMetaReferenceDto.getUuid() != null,
+						campaignFormMetaReferenceDto -> campaignFormMetaReferenceDto != null
+								&& campaignFormMetaReferenceDto.getUuid() != null,
 						I18nProperties.getValidationError(Validations.campaignDashboardDataFormValueNull))
 				.withValidator(campaignFormMetaReferenceDto -> {
 					ArrayList<CampaignFormMetaReferenceDto> items = getItems();
 					return !items.contains(campaignFormMetaReferenceDto);
 				}, I18nProperties.getValidationError(Validations.campaignDashboardDataFormValueDuplicate))
-				.bind(campaignFormMetaReferenceDto -> new CampaignFormMetaReferenceDto(campaignFormMetaReferenceDto.getUuid(), campaignFormMetaReferenceDto.getCaption()),
+				.bind(campaignFormMetaReferenceDto -> new CampaignFormMetaReferenceDto(
+						campaignFormMetaReferenceDto.getUuid(), campaignFormMetaReferenceDto.getCaption()),
 						(bindedCampaignFormMeta, selectedCampaignFormMeta) -> {
 							bindedCampaignFormMeta.setUuid(selectedCampaignFormMeta.getUuid());
 							bindedCampaignFormMeta.setCaption(selectedCampaignFormMeta.getCaption());
@@ -63,9 +68,8 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 						});
 		formCombo.setEmptySelectionAllowed(false);
 
-		Grid.Column<CampaignFormMetaReferenceDto, String> formColumn =
-				grid.addColumn(ReferenceDto::getCaption)
-						.setCaption(I18nProperties.getString(Strings.entityCampaignDataForm));
+		Grid.Column<CampaignFormMetaReferenceDto, String> formColumn = grid.addColumn(ReferenceDto::getCaption)
+				.setCaption(I18nProperties.getString(Strings.entityCampaignDataForm));
 
 		formColumn.setEditorBinding(formBind);
 		return binder;

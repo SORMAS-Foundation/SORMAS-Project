@@ -60,7 +60,6 @@ public class DocumentDto extends PseudonymizableDto {
 	public UserReferenceDto getUploadingUser() {
 		return uploadingUser;
 	}
-
 	public void setUploadingUser(UserReferenceDto uploadingUser) {
 		this.uploadingUser = uploadingUser;
 	}

@@ -29,10 +29,15 @@ public class CampaignSelector extends HorizontalLayout {
 		setComponentAlignment(campaignLabel, Alignment.MIDDLE_CENTER);
 
 		campaignCombo = new ComboBox<>(" ");
+		
 		List<CampaignReferenceDto> campaigns = FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference();
 		campaignCombo.setItems(campaigns);
 		campaignCombo.setEmptySelectionCaption(I18nProperties.getCaption(Captions.campaignAllCampaigns));
 		final CampaignReferenceDto lastStartedCampaign = FacadeProvider.getCampaignFacade().getLastStartedCampaign();
+		
+		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "+campaigns);
+		
+		
 		if (lastStartedCampaign != null) {
 			campaignCombo.setValue(lastStartedCampaign);
 		}

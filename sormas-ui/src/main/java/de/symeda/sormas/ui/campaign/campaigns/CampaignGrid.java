@@ -67,25 +67,29 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 
 		final boolean canEditCampaigns = UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT);
 		final String navigateToCampaignColumnIcon = canEditCampaigns ? VaadinIcons.EDIT.getHtml() : VaadinIcons.EYE.getHtml();
-		final Column<CampaignIndexDto, String> navigateToCampaignColumn = addColumn(entry -> navigateToCampaignColumnIcon, new HtmlRenderer());
+		//final Column<CampaignIndexDto, String> navigateToCampaignColumn = addColumn(entry -> navigateToCampaignColumnIcon, new HtmlRenderer());
 		final String navigateToCampaignColumnId = canEditCampaigns ? EDIT_BTN_ID : OPEN_BTN_ID;
-		navigateToCampaignColumn.setId(navigateToCampaignColumnId);
-		navigateToCampaignColumn.setSortable(false);
-		navigateToCampaignColumn.setWidth(20);
-
+		//navigateToCampaignColumn.setId(navigateToCampaignColumnId);
+		//navigateToCampaignColumn.setSortable(false);
+		//navigateToCampaignColumn.setWidth(20);
+		
+		if(canEditCampaigns){
 		addItemClickListener(new ShowDetailsListener<>(navigateToCampaignColumnId, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())));
+		}
 
-		setColumns(navigateToCampaignColumnId, CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE);
+		//setColumns(navigateToCampaignColumnId, CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE);
+		setColumns(CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE);
 		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<CampaignIndexDto, Date>) getColumn(CampaignIndexDto.START_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));
 		((Column<CampaignIndexDto, Date>) getColumn(CampaignIndexDto.END_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));
-
+		
+		
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(CampaignIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 		}
-		getColumn(navigateToCampaignColumnId).setWidth(40).setStyleGenerator(item -> CssStyles.GRID_CELL_LINK);
+		//getColumn(navigateToCampaignColumnId).setWidth(40).setStyleGenerator(item -> CssStyles.GRID_CELL_LINK);
 	}
 
 	public void setLazyDataProvider() {

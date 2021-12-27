@@ -23,12 +23,12 @@ android {
         setProperty("archivesBaseName", "sormas-$versionName")
         multiDexEnabled true
     }
-    signingConfigs {
+   signingConfigs {
         release {
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
+          //  storeFile file(keystoreProperties['storeFile'])
+           // storePassword keystoreProperties['storePassword']
+          //  keyAlias keystoreProperties['keyAlias']
+           // keyPassword keystoreProperties['keyPassword']
         }
     }
     buildTypes {
@@ -38,7 +38,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
-            signingConfig signingConfigs.release
+          //  signingConfig signingConfigs.release
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -158,10 +158,10 @@ task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) 
         dir: "$buildDir/intermediates/javac/debug/classes/de/symeda/sormas/app",
         excludes: fileFilter
     )
-    classDirectories = files([ javaClasses ])
-    additionalSourceDirs = files(coverageSourceDirs)
-    sourceDirectories = files(coverageSourceDirs)
-    executionData = fileTree(dir: "$buildDir", includes: [
+    classDirectories.from = files([ javaClasses ])
+    additionalSourceDirs.from = files(coverageSourceDirs)
+    sourceDirectories.from = files(coverageSourceDirs)
+    executionData.from = fileTree(dir: "$buildDir", includes: [
             "jacoco/testDebugUnitTest.exec"
     ])
     reports {

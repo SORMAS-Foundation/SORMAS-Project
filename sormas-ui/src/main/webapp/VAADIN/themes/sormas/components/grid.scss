@@ -8,7 +8,12 @@ $v-grid-cell-focused-border: none !default;
 
 
 @mixin sormas-grid {
-  
+  .v-grid-row:hover{
+		background-color: rgb(253, 228, 208);
+		cursor: pointer;
+
+	}
+	
   .v-grid,
   .v-treegrid {
   
@@ -21,6 +26,7 @@ $v-grid-cell-focused-border: none !default;
     .v-treegrid-scroller {
       border-top: none;
     }
+	
     
     .v-grid-row,
     .v-treegrid-row {
