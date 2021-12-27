@@ -42,24 +42,25 @@ public class PersonApiService {
   private final Faker faker;
   private final Random random = new Random();
 
+  private String firstName;
+  private String lastName;
+  private final String emailDomain = "@PERSON-API.com";
+
+  private String contactFirstName;
+  private String contactLastName;
+  private final String contactEmailDomain = "@PERSON-API-CONTACT.com";
+
   @Inject
   public PersonApiService(Faker faker) {
     this.faker = faker;
   }
 
-  // TODO check if this can be changed with the other builder method
-  public Person buildSimpleGeneratedPerson() {
-    return Person.builder()
-        .uuid(UUID.randomUUID().toString())
-        .firstName(faker.name().firstName())
-        .lastName(faker.name().lastName())
-        .sex("Male")
-        .phone(faker.phoneNumber().phoneNumber())
-        .build();
-  }
-
   public Person buildGeneratedPerson() {
     String personUUID = UUID.randomUUID().toString();
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+    contactFirstName = faker.name().firstName();
+    contactLastName = faker.name().lastName();
 
     Address address =
         Address.builder()
@@ -86,10 +87,10 @@ public class PersonApiService {
             .facility(FacilityUUIDs.OtherFacility.toString())
             .facilityDetails("Dummy description")
             .details("Dummy text")
-            .contactPersonFirstName(faker.name().firstName())
-            .contactPersonLastName(faker.name().lastName())
+            .contactPersonFirstName(contactFirstName)
+            .contactPersonLastName(contactLastName)
             .contactPersonPhone(faker.phoneNumber().cellPhone())
-            .contactPersonEmail(faker.internet().emailAddress())
+            .contactPersonEmail(contactFirstName + "." + contactLastName + contactEmailDomain)
             .uuid(personUUID)
             .build();
 
@@ -105,9 +106,10 @@ public class PersonApiService {
 
     return Person.builder()
         .uuid(personUUID)
-        .firstName(faker.name().firstName())
-        .lastName(faker.name().lastName())
-        .birthdateDD(faker.number().numberBetween(1, 29))
+        .firstName(firstName)
+        .lastName(lastName)
+        .emailAddress(firstName + "." + lastName + emailDomain)
+        .birthdateDD(faker.number().numberBetween(1, 27))
         .birthdateMM(faker.number().numberBetween(1, 12))
         .birthdateYYYY(faker.number().numberBetween(1900, 2005))
         .sex(GenderValues.getRandomGender().toUpperCase())
