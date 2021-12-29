@@ -216,14 +216,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>net.minidev</groupId>
-				<artifactId>accessors-smart</artifactId>
-				<version>1.2</version>
-				<scope>provided</scope>
-				<!-- Avoid problems with finding the dependencies in Maven repos fixed by Payara -->
-			</dependency>
-
-			<dependency>
 				<groupId>org.eclipse.microprofile.config</groupId>
 				<artifactId>microprofile-config-api</artifactId>
 				<version>2.0</version>
