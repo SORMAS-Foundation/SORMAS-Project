@@ -265,7 +265,6 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
@@ -344,7 +343,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private PointOfEntryReferenceDto pointOfEntry = null;
 
-	private int maxi = 101;
+	private int maxi = 150;
 
 	@EJB
 	private CaseClassificationFacadeEjbLocal caseClassificationFacade;
@@ -2836,14 +2835,17 @@ public class CaseFacadeEjb implements CaseFacade {
 				if (NbNonEx.endsWith(";")){
 					NbNonEx = StringUtils.chop(NbNonEx);
 				}
+				int cmpt = 0;
 				Calendar c = Calendar.getInstance();
 				int heure = c.get(Calendar.HOUR_OF_DAY);
-				logger.info("Voici lheure {}", heure);
 				
 				if ((heure > 5) && (heure < 20)){
-					maxi = 31;
+					maxi = 100;
 				}
-				logger.debug("La valeur maximale {} sera utilisee", maxi);
+				if ((!StringUtils.isBlank(NbEx)) || (!StringUtils.isBlank(NbNonEx))){
+					logger.debug("L'heure est {} et la valeur maximale {} sera utilisee", heure, maxi);
+				}
+				
 				String[] arrOfStr = NbEx.split(";");
 				String[] NonarrOfStr = NbNonEx.split(";");
 				String chaine = "";
@@ -2864,6 +2866,7 @@ public class CaseFacadeEjb implements CaseFacade {
 							limit = number;
 						}else{
 							limit = maxi;
+							cmpt = maxi;
 							rest = number - maxi;
 							chaine += rest + ":" + PoEUid + "/" + Thedate + ";";
 						}
@@ -2906,7 +2909,11 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 
 				// No examines
+				if (cmpt != 0){
+					maxi = maxi / 2;
+				}
 				if (!StringUtils.isBlank(NbNonEx)){
+					logger.info("Maxi {}", maxi);
 					for (String valeurEntiere : NonarrOfStr){
 						
 						String[] array = valeurEntiere.split(":", 2);
@@ -2917,7 +2924,7 @@ public class CaseFacadeEjb implements CaseFacade {
 						int limit = 0;
 						int rest = 0;
 						int number = Integer.parseInt(array[0]);
-						if (number < 101){
+						if (number < maxi){
 							limit = number;
 						}else{
 							limit = maxi;
