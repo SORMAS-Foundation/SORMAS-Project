@@ -73,7 +73,7 @@ public class SormasOpenIdIdentityStore implements IdentityStore {
 	private TokenController tokenController;
 
 	@Inject
-	private OpenIdConfiguration openIdConfiguration;
+	private OpenIdConfiguration configuration;
 
 	public CredentialValidationResult validate(OpenIdCredential credential) throws InvocationTargetException, IllegalAccessException {
 		HttpMessageContext httpContext = credential.getHttpContext();
@@ -108,13 +108,13 @@ public class SormasOpenIdIdentityStore implements IdentityStore {
 //			context.setClaims(userInfo);
 		}
 
-		context.setCallerName(getCallerName(openIdConfiguration));
+		context.setCallerName(getCallerName(configuration));
 		UserDto user = FacadeProvider.getUserFacade().getByUserName(context.getCallerName());
 		Set<String> groups = getCallerGroups(user);
 		setGroups(groups);
 		updateLocale(accessToken, user);
 
-		return new CredentialValidationResult(getCallerName(openIdConfiguration),	groups);
+		return new CredentialValidationResult(getCallerName(configuration),	groups);
 	}
 
 	private void updateLocale(AccessTokenImpl accessToken, UserDto userDto) {
