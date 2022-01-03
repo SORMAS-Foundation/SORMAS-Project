@@ -77,14 +77,6 @@ import de.symeda.sormas.backend.user.User;
 @RunWith(MockitoJUnitRunner.class)
 public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest {
 
-	private RDCF rdcf;
-
-	@Override
-	public void init() {
-		super.init();
-		rdcf = createRDCF(true).centralRdcf;
-	}
-
 	@Test
 	public void testShareContact() throws SormasToSormasException {
 		RDCF rdcf = creator.createRDCF();
@@ -378,8 +370,8 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 
 		PersonDto contactPerson = creator.createPerson();
-		ContactDto contact = creator
-			.createContact(officer, officer, contactPerson.toReference(), null, new Date(), new Date(), Disease.CORONAVIRUS, rdcf, c -> {
+		ContactDto contact =
+			creator.createContact(officer, officer, contactPerson.toReference(), null, new Date(), new Date(), Disease.CORONAVIRUS, rdcf, c -> {
 				SormasToSormasOriginInfoDto originInfo = new SormasToSormasOriginInfoDto();
 				originInfo.setSenderName("Test Name");
 				originInfo.setSenderEmail("test@email.com");

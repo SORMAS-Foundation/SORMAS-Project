@@ -85,14 +85,6 @@ import de.symeda.sormas.backend.user.User;
 @RunWith(MockitoJUnitRunner.class)
 public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
-	private TestDataCreator.RDCF rdcf;
-
-	@Override
-	public void init() {
-		super.init();
-		rdcf = createRDCF(true).centralRdcf;
-	}
-
 	@Test
 	public void testShareEvent() throws SormasToSormasException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
