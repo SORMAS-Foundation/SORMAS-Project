@@ -52,7 +52,7 @@ import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
-import de.symeda.sormas.backend.sample.services.SampleService;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;

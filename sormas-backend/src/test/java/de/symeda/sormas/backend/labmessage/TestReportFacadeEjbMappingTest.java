@@ -5,7 +5,7 @@ import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.sample.services.PathogenTestService;
+import de.symeda.sormas.backend.sample.PathogenTestService;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;

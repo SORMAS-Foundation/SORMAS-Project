@@ -19,8 +19,6 @@ import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.sample.services.AdditionalTestService;
-import de.symeda.sormas.backend.sample.services.SampleService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;

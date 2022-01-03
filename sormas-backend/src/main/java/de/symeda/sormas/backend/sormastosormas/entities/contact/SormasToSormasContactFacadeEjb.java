@@ -50,7 +50,7 @@ import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
-import de.symeda.sormas.backend.sample.services.SampleService;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;

@@ -108,9 +108,6 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
-import de.symeda.sormas.backend.sample.services.AdditionalTestService;
-import de.symeda.sormas.backend.sample.services.SampleListService;
-import de.symeda.sormas.backend.sample.services.SampleService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
@@ -145,8 +142,6 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@EJB
 	private SampleService sampleService;
-	@EJB
-	private SampleListService sampleListService;
 	@EJB
 	private AdditionalTestService additionalTestService;
 	@EJB
@@ -385,7 +380,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public List<SampleListEntryDto> getEntriesList(SampleListCriteria sampleListCriteria, Integer first, Integer max) {
-		return sampleListService.getEntriesList(sampleListCriteria, first, max);
+		return sampleService.getEntriesList(sampleListCriteria, first, max);
 	}
 
 	public Page<SampleIndexDto> getIndexPage(SampleCriteria sampleCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {

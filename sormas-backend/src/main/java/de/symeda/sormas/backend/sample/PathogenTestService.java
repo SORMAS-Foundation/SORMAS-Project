@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.backend.sample.services;
+package de.symeda.sormas.backend.sample;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -51,8 +51,6 @@ import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.sample.PathogenTest;
-import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.QueryHelper;
 
