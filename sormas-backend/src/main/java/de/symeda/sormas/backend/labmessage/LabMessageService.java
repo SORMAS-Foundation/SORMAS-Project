@@ -135,7 +135,7 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 
 		if (criteria.getAssignee() != null) {
 			if (ReferenceDto.NO_REFERENCE_UUID.equals(criteria.getAssignee().getUuid())) {
-				filter = cb.and(labMessage.get(LabMessage.ASSIGNEE).isNull());
+				filter = cb.and(filter, labMessage.get(LabMessage.ASSIGNEE).isNull());
 			} else {
 				filter = CriteriaBuilderHelper
 					.and(cb, filter, cb.equal(labMessage.join(LabMessage.ASSIGNEE, JoinType.LEFT).get(User.UUID), criteria.getAssignee().getUuid()));
