@@ -1475,9 +1475,7 @@ public class TestDataCreator {
 
 	public Region createRegion(String regionName, String externalId) {
 		Region region = getRegion(regionName, externalId);
-
 		beanTest.getRegionService().persist(region);
-
 		return region;
 	}
 
@@ -1555,7 +1553,6 @@ public class TestDataCreator {
 	}
 
 	public CommunityDto createCommunity(String communityName, DistrictReferenceDto district) {
-
 		CommunityDto community = CommunityDto.build();
 		community.setName(communityName);
 		community.setDistrict(district);
@@ -1572,7 +1569,6 @@ public class TestDataCreator {
 	}
 
 	public Facility createFacility(String facilityName, FacilityType type, Region region, District district, Community community, String externalId) {
-
 		Facility facility = new Facility();
 		facility.setUuid(DataHelper.createUuid());
 		facility.setName(facilityName);
@@ -1617,7 +1613,6 @@ public class TestDataCreator {
 	}
 
 	public PointOfEntry createPointOfEntry(String pointOfEntryName, Region region, District district, String externalId) {
-
 		PointOfEntry pointOfEntry = new PointOfEntry();
 		pointOfEntry.setUuid(DataHelper.createUuid());
 		pointOfEntry.setPointOfEntryType(PointOfEntryType.AIRPORT);
@@ -1632,7 +1627,6 @@ public class TestDataCreator {
 	}
 
 	public PointOfEntryDto createPointOfEntry(String pointOfEntryName, RegionReferenceDto region, DistrictReferenceDto district) {
-
 		PointOfEntryDto pointOfEntry = PointOfEntryDto.build();
 		pointOfEntry.setUuid(DataHelper.createUuid());
 		pointOfEntry.setPointOfEntryType(PointOfEntryType.AIRPORT);
@@ -1645,7 +1639,6 @@ public class TestDataCreator {
 	}
 
 	public PopulationDataDto createPopulationData(RegionReferenceDto region, DistrictReferenceDto district, Integer population, Date collectionDate) {
-
 		PopulationDataDto populationData = PopulationDataDto.build(collectionDate);
 		populationData.setRegion(region);
 		populationData.setDistrict(district);
@@ -1655,7 +1648,6 @@ public class TestDataCreator {
 	}
 
 	public void updateDiseaseConfiguration(Disease disease, Boolean active, Boolean primary, Boolean caseBased) {
-
 		DiseaseConfigurationDto config =
 			DiseaseConfigurationFacadeEjbLocal.toDto(beanTest.getDiseaseConfigurationService().getDiseaseConfiguration(disease));
 		config.setActive(active);

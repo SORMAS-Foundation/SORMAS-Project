@@ -94,15 +94,12 @@ import de.symeda.sormas.backend.user.User;
 @RunWith(MockitoJUnitRunner.class)
 public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 
-	private TestDataCreator.RDCF rdcf;
 
 	@Override
 	public void init() {
 		super.init();
-
 		getFacilityService().createConstantFacilities();
 		getPointOfEntryService().createConstantPointsOfEntry();
-		rdcf = createRDCF(true).centralRdcf;
 	}
 
 	@Test
