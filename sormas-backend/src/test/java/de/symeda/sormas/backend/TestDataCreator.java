@@ -139,6 +139,25 @@ public class TestDataCreator {
 		this.beanTest = beanTest;
 	}
 
+	public UserDto createUser(RDCF rdcf, UserRole userRole, Consumer<UserDto> customConfig) {
+
+		UserDto user = UserDto.build();
+		user.setFirstName("User");
+		user.setLastName("User");
+		user.setUserName("Username");
+		user.setUserRoles(new HashSet<>(Arrays.asList(userRole)));
+		user.setRegion(rdcf.region);
+		user.setDistrict(rdcf.district);
+		user.setCommunity(rdcf.community);
+		user.setHealthFacility(rdcf.facility);
+
+		if (customConfig != null) {
+			customConfig.accept(user);
+		}
+
+		return beanTest.getUserFacade().saveUser(user);
+	}
+
 	public UserDto createUser(RDCFEntities rdcf, UserRole... roles) {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
 	}
