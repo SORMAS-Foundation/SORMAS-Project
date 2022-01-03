@@ -227,16 +227,6 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, List<UserRole> assignableRoles) {
-
-		return userService
-			.getReferenceList(regionRef == null ? null : Arrays.asList(regionRef.getUuid()), null, null, false, true, true, assignableRoles)
-			.stream()
-			.map(UserFacadeEjb::toReferenceDto)
-			.collect(Collectors.toList());
-	}
-
-	@Override
 	public List<UserReferenceDto> getUsersByRegionAndRight(RegionReferenceDto region, UserRight userRight) {
 
 		List<UserRole> userRoles = Arrays.stream(UserRole.values())

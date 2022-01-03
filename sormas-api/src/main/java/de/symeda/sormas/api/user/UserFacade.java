@@ -52,8 +52,6 @@ public interface UserFacade {
 
 	List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles);
 
-	List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, List<UserRole> assignableRoles);
-
 	List<UserReferenceDto> getUsersByRegionsAndRoles(List<RegionReferenceDto> regionRefs, UserRole... assignableRoles);
 
 	List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user);
