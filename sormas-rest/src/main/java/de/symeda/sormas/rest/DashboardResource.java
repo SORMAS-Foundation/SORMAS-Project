@@ -11,6 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.dashboard.DashboardCaseStatisticDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventStatus;
@@ -40,15 +41,21 @@ public class DashboardResource extends EntityDtoResource {
 	}
 
 	@POST
+	@Path("/newCases")
+	public DashboardCaseStatisticDto getDashboardCaseStatistic(@RequestBody DashboardCriteria dashboardCriteria) {
+		return FacadeProvider.getDashboardFacade().getDashboardCaseStatistic(dashboardCriteria);
+	}
+
+	@POST
 	@Path("/newEvents")
-	public Map<EventStatus, Long> getEventCountByStatus(@RequestBody DashboardCriteria criteria) {
-		return FacadeProvider.getDashboardFacade().getEventCountByStatus(criteria);
+	public Map<EventStatus, Long> getEventCountByStatus(@RequestBody DashboardCriteria dashboardCriteria) {
+		return FacadeProvider.getDashboardFacade().getEventCountByStatus(dashboardCriteria);
 	}
 
 	@POST
 	@Path("/testResults")
-	public Map<PathogenTestResultType, Long> getTestResultCountByResultType(@RequestBody DashboardCriteria criteria) {
-		return FacadeProvider.getDashboardFacade().getTestResultCountByResultType(criteria);
+	public Map<PathogenTestResultType, Long> getTestResultCountByResultType(@RequestBody DashboardCriteria dashboardCriteria) {
+		return FacadeProvider.getDashboardFacade().getTestResultCountByResultType(dashboardCriteria);
 	}
 
 }
