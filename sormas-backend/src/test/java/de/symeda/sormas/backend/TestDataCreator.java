@@ -1474,14 +1474,27 @@ public class TestDataCreator {
 	}
 
 	public Region createRegion(String regionName, String externalId) {
+		Region region = getRegion(regionName, externalId);
+
+		beanTest.getRegionService().persist(region);
+
+		return region;
+	}
+
+	public Region createRegionCentrally(String regionName, String externalId) {
+		Region region = getRegion(regionName, externalId);
+		region.setCentrallyManaged(true);
+		beanTest.getRegionService().persist(region);
+		return region;
+	}
+
+	@NotNull
+	private Region getRegion(String regionName, String externalId) {
 		Region region = new Region();
 		region.setUuid(DataHelper.createUuid());
 		region.setName(regionName);
 		region.setEpidCode("COU-REG");
 		region.setExternalID(externalId);
-
-		beanTest.getRegionService().persist(region);
-
 		return region;
 	}
 
@@ -1490,15 +1503,26 @@ public class TestDataCreator {
 	}
 
 	public District createDistrict(String districtName, Region region, String externalId) {
+		District district = getDistrict(districtName, region, externalId);
+		beanTest.getDistrictService().persist(district);
+		return district;
+	}
 
+	public District createDistrictCentrally(String districtName, Region region, String externalId) {
+		District district = getDistrict(districtName, region, externalId);
+		district.setCentrallyManaged(true);
+		beanTest.getDistrictService().persist(district);
+		return district;
+	}
+
+	@NotNull
+	private District getDistrict(String districtName, Region region, String externalId) {
 		District district = new District();
 		district.setUuid(DataHelper.createUuid());
 		district.setName(districtName);
 		district.setRegion(region);
 		district.setEpidCode("DIS");
 		district.setExternalID(externalId);
-		beanTest.getDistrictService().persist(district);
-
 		return district;
 	}
 
@@ -1507,14 +1531,26 @@ public class TestDataCreator {
 	}
 
 	public Community createCommunity(String communityName, District district, String externalId) {
+		Community community = getCommunity(communityName, district, externalId);
+		beanTest.getCommunityService().persist(community);
+		return community;
+	}
 
+	public Community createCommunityCentrally(String communityName, District district, String externalId) {
+		Community community = getCommunity(communityName, district, externalId);
+		community.setCentrallyManaged(true);
+		beanTest.getCommunityService().persist(community);
+		return community;
+
+	}
+
+	@NotNull
+	private Community getCommunity(String communityName, District district, String externalId) {
 		Community community = new Community();
 		community.setUuid(DataHelper.createUuid());
 		community.setName(communityName);
 		community.setDistrict(district);
 		community.setExternalID(externalId);
-		beanTest.getCommunityService().persist(community);
-
 		return community;
 	}
 

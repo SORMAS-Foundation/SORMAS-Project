@@ -85,6 +85,14 @@ import de.symeda.sormas.backend.user.User;
 @RunWith(MockitoJUnitRunner.class)
 public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
+	private TestDataCreator.RDCF rdcf;
+
+	@Override
+	public void init() {
+		super.init();
+		rdcf = createRDCF(true).centralRdcf;
+	}
+
 	@Test
 	public void testShareEvent() throws SormasToSormasException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
@@ -238,9 +246,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
 	@Test
 	public void testSaveSharedEvents() throws SormasToSormasException, SormasToSormasValidationException {
-		MappableRdcf rdcf = createRDCF(false);
-
-		EventDto event = createEventDto(rdcf.centralRdcf);
+		EventDto event = createEventDto(rdcf);
 		event.setEventDesc("Test description");
 		event.setEventStatus(EventStatus.SCREENING);
 		event.setEventInvestigationStatus(EventInvestigationStatus.ONGOING);
@@ -278,8 +284,8 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		assertThat(savedEvent.getSrcMediaName(), is("Test media website"));
 		assertThat(savedEvent.getSrcMediaDetails(), is("Test media details"));
 
-		assertThat(savedEvent.getEventLocation().getRegion(), is(rdcf.centralRdcf.region));
-		assertThat(savedEvent.getEventLocation().getDistrict(), is(rdcf.centralRdcf.district));
+		assertThat(savedEvent.getEventLocation().getRegion(), is(rdcf.region));
+		assertThat(savedEvent.getEventLocation().getDistrict(), is(rdcf.district));
 
 		assertThat(savedEvent.getSormasToSormasOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ID));
 		assertThat(savedEvent.getSormasToSormasOriginInfo().getSenderName(), is("John doe"));
@@ -287,10 +293,8 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
 	@Test
 	public void testSaveSharedEventsWithParticipants() throws SormasToSormasException, SormasToSormasValidationException {
-		MappableRdcf rdcf = createRDCF(false);
-
-		EventDto event = createEventDto(rdcf.centralRdcf);
-		EventParticipantDto eventParticipant = createEventParticipantDto(event.toReference(), UserDto.build().toReference(), rdcf.centralRdcf);
+		EventDto event = createEventDto(rdcf);
+		EventParticipantDto eventParticipant = createEventParticipantDto(event.toReference(), UserDto.build().toReference(), rdcf);
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
 		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
@@ -309,8 +313,8 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		assertThat(savedParticipant.getPerson().getFirstName(), is("John"));
 		assertThat(savedParticipant.getPerson().getLastName(), is("Smith"));
 
-		assertThat(savedParticipant.getPerson().getAddress().getRegion(), is(rdcf.centralRdcf.region));
-		assertThat(savedParticipant.getPerson().getAddress().getDistrict(), is(rdcf.centralRdcf.district));
+		assertThat(savedParticipant.getPerson().getAddress().getRegion(), is(rdcf.region));
+		assertThat(savedParticipant.getPerson().getAddress().getDistrict(), is(rdcf.district));
 
 		assertThat(savedParticipant.getSormasToSormasOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ID));
 		assertThat(savedParticipant.getSormasToSormasOriginInfo().getSenderName(), is("John doe"));
@@ -318,14 +322,13 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
 	@Test
 	public void testSaveSharedEventsWithSamples() throws SormasToSormasException, SormasToSormasValidationException {
-		MappableRdcf rdcf = createRDCF(false);
 		FacilityDto remoteLab = FacilityDto.build();
 		remoteLab.setName("Test Lab");
-		FacilityDto localLab = creator.createFacility("Test Lab", rdcf.centralRdcf.region, rdcf.centralRdcf.district, null, FacilityType.LABORATORY);
+		FacilityDto localLab = creator.createFacility("Test Lab", rdcf.region, rdcf.district, null, FacilityType.LABORATORY);
 
-		EventDto event = createEventDto(rdcf.centralRdcf);
+		EventDto event = createEventDto(rdcf);
 		UserDto sampleUser = UserDto.build();
-		EventParticipantDto eventParticipant = createEventParticipantDto(event.toReference(), sampleUser.toReference(), rdcf.centralRdcf);
+		EventParticipantDto eventParticipant = createEventParticipantDto(event.toReference(), sampleUser.toReference(), rdcf);
 
 		SampleDto sample = createSample(eventParticipant.toReference(), sampleUser.toReference(), remoteLab.toReference());
 		sample.setLabSampleID("Test lab sample id");
@@ -434,15 +437,13 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
 	@Test
 	public void testSaveReturnedEvent() throws SormasToSormasException, SormasToSormasValidationException {
-		MappableRdcf rdcf = createRDCF(false);
-
-		UserReferenceDto officer = creator.createUser(rdcf.centralRdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 
 		EventDto event = creator.createEvent(officer);
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), creator.createPerson(), officer);
-		EventParticipantDto newEventParticipant = createEventParticipantDto(event.toReference(), UserDto.build().toReference(), rdcf.centralRdcf);
+		EventParticipantDto newEventParticipant = createEventParticipantDto(event.toReference(), UserDto.build().toReference(), rdcf);
 
-		FacilityDto lab = creator.createFacility("Test Lab", rdcf.centralRdcf.region, rdcf.centralRdcf.district, null, FacilityType.LABORATORY);
+		FacilityDto lab = creator.createFacility("Test Lab", rdcf.region, rdcf.district, null, FacilityType.LABORATORY);
 		SampleDto newSample = createSample(newEventParticipant.toReference(), officer, lab.toReference());
 
 		User officerUser = getUserService().getByReferenceDto(officer);
@@ -596,9 +597,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
 	@Test
 	public void testSaveSyncedEvent() throws SormasToSormasException, SormasToSormasValidationException {
-		MappableRdcf rdcf = createRDCF(false);
-
-		UserReferenceDto officer = creator.createUser(rdcf.centralRdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 
 		EventDto event =
 			creator.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", officer, e -> {
@@ -619,7 +618,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 			(ep) -> ep.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo()),
 			null);
 
-		EventParticipantDto newEventParticipant = createEventParticipantDto(event.toReference(), UserDto.build().toReference(), rdcf.centralRdcf);
+		EventParticipantDto newEventParticipant = createEventParticipantDto(event.toReference(), UserDto.build().toReference(), rdcf);
 
 		event.setEventDesc("Test updated description");
 		eventParticipant.getPerson().setBirthName("Test birth name");
@@ -654,9 +653,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
 	@Test
 	public void testSyncRecursively() throws SormasToSormasException, SormasToSormasValidationException {
-		MappableRdcf rdcf = createRDCF(false);
-
-		UserReferenceDto officer = creator.createUser(rdcf.centralRdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 
 		EventDto event =
 			creator.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", officer, e -> {
@@ -693,7 +690,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 					i -> i.setEventParticipant(getEventParticipantService().getByUuid(eventParticipant.getUuid()))));
 		getShareRequestInfoService().persist(shareRequestInfo);
 
-		EventParticipantDto newEventParticipant = createEventParticipantDto(event.toReference(), UserDto.build().toReference(), rdcf.centralRdcf);
+		EventParticipantDto newEventParticipant = createEventParticipantDto(event.toReference(), UserDto.build().toReference(), rdcf);
 
 		event.setEventDesc("Test updated description");
 		eventParticipant.getPerson().setBirthName("Test birth name");
