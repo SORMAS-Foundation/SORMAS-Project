@@ -220,6 +220,7 @@ public class ContactListCriteriaBuilder {
 		switch (sortProperty.propertyName) {
 		case ContactIndexDetailedDto.SEX:
 		case ContactIndexDetailedDto.APPROXIMATE_AGE:
+			return Collections.singletonList(joins.getPerson().get(sortProperty.propertyName));
 		case ContactIndexDetailedDto.PHONE:
 			return Collections.singletonList(cb.literal(44));
 		case ContactIndexDetailedDto.DISTRICT_NAME:
