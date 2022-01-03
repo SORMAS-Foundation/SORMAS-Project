@@ -87,20 +87,12 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import de.symeda.sormas.backend.user.User;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
-
-
-	@Override
-	public void init() {
-		super.init();
-		getFacilityService().createConstantFacilities();
-		getPointOfEntryService().createConstantPointsOfEntry();
-	}
+public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareCase() throws SormasToSormasException {
@@ -533,8 +525,6 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 
 	@Test
 	public void testShareCaseWithPseudonymizeSensitiveData() throws SormasToSormasException {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-
 		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson();
@@ -996,8 +986,6 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 
 	@Test
 	public void testGetAllShares() throws SormasToSormasException {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-
 		useSurveillanceOfficerLogin(rdcf);
 
 		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
@@ -1043,8 +1031,6 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 
 	@Test
 	public void testGetAllSharesOnMiddleLevel() throws SormasToSormasException {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-
 		useSurveillanceOfficerLogin(rdcf);
 
 		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
@@ -1135,8 +1121,6 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 
 	@Test
 	public void testGetReShares() throws SormasToSormasException {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-
 		useSurveillanceOfficerLogin(rdcf);
 
 		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();

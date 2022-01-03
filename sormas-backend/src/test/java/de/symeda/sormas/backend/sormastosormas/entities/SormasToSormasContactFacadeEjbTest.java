@@ -70,17 +70,14 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.TestDataCreator.RDCF;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 import de.symeda.sormas.backend.user.User;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest {
+public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareContact() throws SormasToSormasException {
-		RDCF rdcf = creator.createRDCF();
-
 		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson();
@@ -133,8 +130,6 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 
 	@Test
 	public void testShareContactWithSamples() throws SormasToSormasException {
-		RDCF rdcf = creator.createRDCF();
-
 		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson();

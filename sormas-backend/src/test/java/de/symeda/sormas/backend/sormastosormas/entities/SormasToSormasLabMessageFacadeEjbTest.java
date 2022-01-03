@@ -38,9 +38,9 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.backend.MockProducer;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 
-public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeTest {
+public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testSendLabMessage() throws SormasToSormasException {

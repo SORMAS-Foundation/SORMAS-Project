@@ -60,9 +60,7 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPrevi
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactDtoValidator;
