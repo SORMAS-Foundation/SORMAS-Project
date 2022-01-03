@@ -27,7 +27,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.sample.SampleAssociationType;
-import de.symeda.sormas.api.sample.SampleListCriteria;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -39,18 +39,18 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 
 	private static final int MAX_DISPLAYED_ENTRIES = 5;
 
-	private final SampleListCriteria sampleListCriteria;
+	private final SampleCriteria sampleCriteria;
 	private final Label noSamplesLabel;
 
-	public SampleList(SampleListCriteria sampleListCriteria) {
+	public SampleList(SampleCriteria sampleCriteria) {
 		super(MAX_DISPLAYED_ENTRIES);
-		this.sampleListCriteria = sampleListCriteria;
-		noSamplesLabel = new Label(buildNoSamplesCaption(sampleListCriteria.getSampleAssociationType()));
+		this.sampleCriteria = sampleCriteria;
+		noSamplesLabel = new Label(buildNoSamplesCaption(sampleCriteria.getSampleAssociationType()));
 	}
 
 	@Override
 	public void reload() {
-		List<SampleListEntryDto> samples = FacadeProvider.getSampleFacade().getEntriesList(sampleListCriteria, 0, maxDisplayedEntries * 20);
+		List<SampleListEntryDto> samples = FacadeProvider.getSampleFacade().getEntriesList(sampleCriteria, 0, maxDisplayedEntries * 20);
 
 		setEntries(samples);
 		if (!samples.isEmpty()) {

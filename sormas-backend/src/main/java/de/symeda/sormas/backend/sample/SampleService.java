@@ -68,7 +68,6 @@ import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
-import de.symeda.sormas.api.sample.SampleListCriteria;
 import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -378,8 +377,8 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return samples;
 	}
 
-	public List<SampleListEntryDto> getEntriesList(SampleListCriteria sampleListCriteria, Integer first, Integer max) {
-		if (sampleListCriteria == null) {
+	public List<SampleListEntryDto> getEntriesList(SampleCriteria sampleCriteria, Integer first, Integer max) {
+		if (sampleCriteria == null) {
 			return Collections.emptyList();
 		}
 
@@ -424,11 +423,9 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		selections.addAll(getJurisdictionSelections(sampleQueryContext));
 		cq.multiselect(selections);
 
-		SampleCriteria sampleCriteria = new SampleCriteria();
-		sampleCriteria.sampleAssociationType(sampleCriteria.getSampleAssociationType());
 		Predicate filter = createUserFilter(cq, cb, joins, sampleCriteria);
 
-		Predicate criteriaFilter = buildSampleListCriteriaFilter(sampleListCriteria, cb, joins);
+		Predicate criteriaFilter = buildSampleListCriteriaFilter(sampleCriteria, cb, joins);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
 		if (filter != null) {
@@ -897,7 +894,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return filter;
 	}
 
-	private Predicate buildSampleListCriteriaFilter(SampleListCriteria criteria, CriteriaBuilder cb, SampleJoins joins) {
+	private Predicate buildSampleListCriteriaFilter(SampleCriteria criteria, CriteriaBuilder cb, SampleJoins joins) {
 		Predicate filter = null;
 		final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
 		if (sampleAssociationType == SampleAssociationType.CASE) {
@@ -908,18 +905,15 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(joins.getEventParticipant()));
 		}
 
-		if (criteria.getCaseReferenceDto() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaze().get(Case.UUID), criteria.getCaseReferenceDto().getUuid()));
+		if (criteria.getCaze() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaze().get(Case.UUID), criteria.getCaze().getUuid()));
 		}
-		if (criteria.getContactReferenceDto() != null) {
-			filter =
-				CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContact().get(Contact.UUID), criteria.getContactReferenceDto().getUuid()));
+		if (criteria.getContact() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContact().get(Contact.UUID), criteria.getContact().getUuid()));
 		}
-		if (criteria.getEventParticipantReferenceDto() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.equal(joins.getEventParticipant().get(EventParticipant.UUID), criteria.getEventParticipantReferenceDto().getUuid()));
+		if (criteria.getEventParticipant() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getEventParticipant().get(EventParticipant.UUID), criteria.getEventParticipant().getUuid()));
 		}
 
 		return filter;

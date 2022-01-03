@@ -22,19 +22,19 @@ import com.vaadin.ui.Button;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sample.SampleListCriteria;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 @SuppressWarnings("serial")
 public class SampleListComponent extends SideComponent {
 
-	public SampleListComponent(SampleListCriteria sampleListCriteria, Consumer<Button.ClickEvent> clickListener) {
+	public SampleListComponent(SampleCriteria sampleCriteria, Consumer<Button.ClickEvent> clickListener) {
 		super(I18nProperties.getString(Strings.entitySamples));
 
 		addCreateButton(I18nProperties.getCaption(Captions.sampleNewSample), UserRight.SAMPLE_CREATE, clickListener);
 
-		SampleList sampleList = new SampleList(sampleListCriteria);
+		SampleList sampleList = new SampleList(sampleCriteria);
 		addComponent(sampleList);
 		sampleList.reload();
 	}

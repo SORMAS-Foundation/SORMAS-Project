@@ -32,7 +32,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.sample.SampleCriteria;
-import de.symeda.sormas.api.sample.SampleListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -134,7 +133,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			SampleListComponent sampleList = new SampleListComponent(
-				new SampleListCriteria.Builder().withEventParticipant(eventParticipantRef).build(),
+				new SampleCriteria().eventParticipant(eventParticipantRef),
 				e -> showNavigationConfirmPopupIfDirty(
 					() -> ControllerProvider.getSampleController().create(eventParticipantRef, event.getDisease())));
 

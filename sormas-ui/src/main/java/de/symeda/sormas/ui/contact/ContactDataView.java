@@ -35,7 +35,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
-import de.symeda.sormas.api.sample.SampleListCriteria;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
@@ -214,7 +214,7 @@ public class ContactDataView extends AbstractContactView {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			SampleListComponent sampleList = new SampleListComponent(
-				new SampleListCriteria.Builder().withContact(getContactRef()).build(),
+				new SampleCriteria().contact(getContactRef()),
 				e -> showNavigationConfirmPopupIfDirty(
 					() -> ControllerProvider.getSampleController().create(getContactRef(), contactDto.getDisease())));
 
