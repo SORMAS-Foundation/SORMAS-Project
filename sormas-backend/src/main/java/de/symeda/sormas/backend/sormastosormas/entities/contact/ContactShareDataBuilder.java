@@ -29,7 +29,6 @@ import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import net.opengis.ows10.validation.ContactTypeValidator;
 
 @Stateless
 @LocalBean

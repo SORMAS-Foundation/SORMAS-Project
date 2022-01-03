@@ -134,7 +134,6 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 
 	@Override
 	protected void validateEntitiesBeforeShare(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
-		SormasToSormasShareInfo tmp = shares.get(0);
 		validateEntitiesBeforeShare(
 			shares.stream().map(SormasToSormasShareInfo::getCaze).filter(Objects::nonNull).collect(Collectors.toList()),
 			shares.get(0).isOwnershipHandedOver());
