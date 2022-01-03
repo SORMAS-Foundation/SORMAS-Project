@@ -78,6 +78,7 @@ import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
@@ -461,7 +462,7 @@ public class UserFacadeEjb implements UserFacade {
 		final Root<User> root = cq.from(User.class);
 		cq.select(root);
 
-		cq.where(cb.exists(subqueryBuilder.buildSubquery(cb, cq, root)));
+		cq.where(CriteriaBuilderHelper.and(cb, cb.isTrue(root.get(User.ACTIVE)), cb.exists(subqueryBuilder.buildSubquery(cb, cq, root))));
 
 		cq.distinct(true);
 		cq.orderBy(cb.asc(root.get(User.ID)));
