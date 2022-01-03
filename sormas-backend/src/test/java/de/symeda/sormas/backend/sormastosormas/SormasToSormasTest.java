@@ -74,7 +74,7 @@ import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
-public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
+public abstract class SormasToSormasTest extends AbstractBeanTest {
 
 	// values are set in server-list.csv located in serveraccessdefault and serveraccesssecond
 	public static final String DEFAULT_SERVER_ID = "2.sormas.id.sormas_a";
@@ -87,7 +87,6 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		super.init();
 
 		objectMapper = new ObjectMapper();
-
 		objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
 		objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
@@ -98,6 +97,9 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT);
 		// in S2S we use external IDs
 		rdcf = createRDCF(true).centralRdcf;
+
+		getFacilityService().createConstantFacilities();
+		getPointOfEntryService().createConstantPointsOfEntry();
 	}
 
 	protected boolean isAcceptRejectFeatureEnabled() {
@@ -311,11 +313,11 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 				PointOfEntryType.AIRPORT,
 				pointOfEntryExternalId));
 
-		Region region = creator.createRegionCentrally(regionName, regionExternalId);
-		District district = creator.createDistrictCentrally(districtName, region, districtExternalId);
-		Community community = creator.createCommunityCentrally(communityName, district, communityExternalId);
-		Facility facility = creator.createFacility(facilityName, FacilityType.HOSPITAL, region, district, community, facilityExternalId);
-		PointOfEntry pointOfEntry = creator.createPointOfEntry(pointOfEntryName, region, district, pointOfEntryExternalId);
+		Region region = creator.createRegionCentrally(regionName + "Central", regionExternalId);
+		District district = creator.createDistrictCentrally(districtName + "Central", region, districtExternalId);
+		Community community = creator.createCommunityCentrally(communityName + "Central", district, communityExternalId);
+		Facility facility = creator.createFacility(facilityName + "Central", FacilityType.HOSPITAL, region, district, community, facilityExternalId);
+		PointOfEntry pointOfEntry = creator.createPointOfEntry(pointOfEntryName + "Central", region, district, pointOfEntryExternalId);
 
 		rdcf.centralRdcf = new TestDataCreator.RDCF(
 			new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalID()),

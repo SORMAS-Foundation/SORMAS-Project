@@ -22,13 +22,10 @@ import java.util.Date;
 
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
-import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
-import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -47,22 +44,17 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
-import de.symeda.sormas.backend.TestDataCreator;
 
 /**
  * @author Alex Vidrean
  * @since 11-Oct-21
  */
 @RunWith(MockitoJUnitRunner.class)
-public class ReceivedEntitiesProcessorTest extends AbstractBeanTest {
+public class ReceivedEntitiesProcessorTest extends SormasToSormasTest {
 
 	@Test
 	public void testIgnoredPropertiesAreNotOverwrittenWithNewValuesForCase() throws CloneNotSupportedException {
-
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 		CaseDataDto existingCaseDto = creator.createCase(officer, rdcf, dto -> {
@@ -98,8 +90,6 @@ public class ReceivedEntitiesProcessorTest extends AbstractBeanTest {
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 		CaseDataDto existingCaseDto = creator.createCase(officer, rdcf, dto -> {
@@ -129,8 +119,6 @@ public class ReceivedEntitiesProcessorTest extends AbstractBeanTest {
 
 	@Test
 	public void testIgnoredPropertiesAreNotOverwrittenWithNewValuesForContact() throws CloneNotSupportedException {
-
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
@@ -162,8 +150,6 @@ public class ReceivedEntitiesProcessorTest extends AbstractBeanTest {
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 		ContactDto existingContactDto = creator.createContact(officerReferenceDto, personReferenceDto);
@@ -188,8 +174,6 @@ public class ReceivedEntitiesProcessorTest extends AbstractBeanTest {
 
 	@Test
 	public void testIgnoredPropertiesAreNotOverwrittenWithNewValuesForEvent() throws CloneNotSupportedException {
-
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
 		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 		EventDto existingEventDto = creator.createEvent(officerReferenceDto);
@@ -217,8 +201,6 @@ public class ReceivedEntitiesProcessorTest extends AbstractBeanTest {
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
-
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
 		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 		EventDto existingEventDto = creator.createEvent(officerReferenceDto);
@@ -295,8 +277,6 @@ public class ReceivedEntitiesProcessorTest extends AbstractBeanTest {
 	@Test
 	public void testIgnoredPropertiesAreNotOverwrittenWithNewValuesForImmunization() throws CloneNotSupportedException {
 
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 		ImmunizationDto existingImmunizationDto = creator.createImmunization(
@@ -333,8 +313,6 @@ public class ReceivedEntitiesProcessorTest extends AbstractBeanTest {
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 		ImmunizationDto existingImmunizationDto = creator.createImmunization(
@@ -365,8 +343,6 @@ public class ReceivedEntitiesProcessorTest extends AbstractBeanTest {
 
 	@Test
 	public void testIgnoredPropertiesAreNotOverwrittenWithNewValuesForPathogenTest() throws CloneNotSupportedException {
-
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
@@ -402,8 +378,6 @@ public class ReceivedEntitiesProcessorTest extends AbstractBeanTest {
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
-
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();

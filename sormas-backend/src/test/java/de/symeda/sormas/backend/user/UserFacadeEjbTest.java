@@ -200,9 +200,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 			containsInAnyOrder(userR1, userS1, userS2));
 		assertThat(getUserFacade().getUsersWithSuperiorJurisdiction(getUserFacade().getByUuid(userC1.getUuid())), containsInAnyOrder(userD1));
 
-		assertThat(
-			getUserFacade().getUsersWithSuperiorJurisdiction(getUserFacade().getByUuid(userHF1.getUuid())),
-			containsInAnyOrder(userC1));
+		assertThat(getUserFacade().getUsersWithSuperiorJurisdiction(getUserFacade().getByUuid(userHF1.getUuid())), containsInAnyOrder(userC1));
 
 		assertThat(getUserFacade().getAllUserRefs(false), hasSize(16));
 

@@ -78,16 +78,15 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import de.symeda.sormas.backend.user.User;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
+public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareEvent() throws SormasToSormasException {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
 
 		useSurveillanceOfficerLogin(rdcf);
@@ -159,7 +158,6 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
 	@Test
 	public void testShareEventWithSamples() throws SormasToSormasException {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
 
 		useSurveillanceOfficerLogin(rdcf);
@@ -371,8 +369,6 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
 	@Test
 	public void testReturnEvent() throws SormasToSormasException {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-
 		useSurveillanceOfficerLogin(rdcf);
 
 		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
@@ -493,8 +489,6 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
 	@Test
 	public void testSyncEvent() throws SormasToSormasException {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-
 		useSurveillanceOfficerLogin(rdcf);
 
 		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
