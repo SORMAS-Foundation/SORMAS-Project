@@ -25,6 +25,7 @@ import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
+import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
@@ -138,7 +139,7 @@ public class CaseDataView extends AbstractCaseView {
 			&& UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)
 			&& !caze.checkIsUnreferredPortHealthCase()) {
 			SampleListComponent sampleList = new SampleListComponent(
-				new SampleCriteria().caze(getCaseRef()),
+				new SampleCriteria().caze(getCaseRef()).sampleAssociationType(SampleAssociationType.CASE),
 				e -> showNavigationConfirmPopupIfDirty(() -> ControllerProvider.getSampleController().create(getCaseRef(), caze.getDisease())));
 
 			SampleListComponentLayout sampleListComponentLayout =

@@ -186,7 +186,6 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 
 	public SampleCriteria caze(CaseReferenceDto caze) {
 		this.caze = caze;
-		this.sampleAssociationType = SampleAssociationType.CASE;
 		return this;
 	}
 
@@ -196,7 +195,6 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 
 	public SampleCriteria eventParticipant(EventParticipantReferenceDto eventParticipant) {
 		this.eventParticipant = eventParticipant;
-		this.sampleAssociationType = SampleAssociationType.EVENT_PARTICIPANT;
 		return this;
 	}
 
@@ -206,7 +204,6 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 
 	public SampleCriteria contact(ContactReferenceDto contact) {
 		this.contact = contact;
-		this.sampleAssociationType = SampleAssociationType.CONTACT;
 		return this;
 	}
 
