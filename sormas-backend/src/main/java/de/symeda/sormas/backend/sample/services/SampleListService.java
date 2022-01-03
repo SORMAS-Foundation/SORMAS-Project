@@ -2,7 +2,6 @@ package de.symeda.sormas.backend.sample.services;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import javax.ejb.LocalBean;
@@ -16,9 +15,9 @@ import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.sample.SampleAssociationType;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleListCriteria;
 import de.symeda.sormas.api.sample.SampleListEntryDto;
-import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
@@ -29,17 +28,12 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleQueryContext;
 import de.symeda.sormas.backend.sample.transformers.SampleListEntryDtoResultTransformer;
-import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
 public class SampleListService extends BaseSampleService {
 
 	public List<SampleListEntryDto> getEntriesList(SampleListCriteria sampleListCriteria, Integer first, Integer max) {
-		if (sampleListCriteria == null) {
-			return Collections.emptyList();
-		}
-
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Sample> sample = cq.from(Sample.class);
@@ -81,9 +75,14 @@ public class SampleListService extends BaseSampleService {
 		selections.addAll(getJurisdictionSelections(sampleQueryContext));
 		cq.multiselect(selections);
 
-		Predicate filter = createUserFilter(cq, cb, joins, sampleListCriteria.getSampleAssociationType());
-		Predicate criteriaFilter = buildCriteriaFilter(sampleListCriteria, cb, joins);
-		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		SampleCriteria sampleCriteria = new SampleCriteria();
+		sampleCriteria.sampleAssociationType(sampleCriteria.getSampleAssociationType());
+		Predicate filter = createUserFilter(cq, cb, joins, sampleCriteria);
+
+		if (sampleListCriteria != null) {
+			Predicate criteriaFilter = buildSampleListCriteriaFilter(sampleListCriteria, cb, joins);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -96,21 +95,7 @@ public class SampleListService extends BaseSampleService {
 			.getResultList();
 	}
 
-	private Predicate createUserFilter(CriteriaQuery cq, CriteriaBuilder cb, SampleJoins joins, SampleAssociationType sampleAssociationType) {
-		Predicate filter = createUserFilterWithoutAssociations(cb, joins);
-
-		User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
-		if (jurisdictionLevel == JurisdictionLevel.LABORATORY || jurisdictionLevel == JurisdictionLevel.EXTERNAL_LABORATORY) {
-			return filter;
-		}
-
-		filter = getUSerFilterFromSampleAssociations(cq, cb, joins, sampleAssociationType, filter, currentUser);
-
-		return filter;
-	}
-
-	private Predicate buildCriteriaFilter(SampleListCriteria criteria, CriteriaBuilder cb, SampleJoins joins) {
+	private Predicate buildSampleListCriteriaFilter(SampleListCriteria criteria, CriteriaBuilder cb, SampleJoins joins) {
 		Predicate filter = null;
 		final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
 		if (sampleAssociationType == SampleAssociationType.CASE) {
