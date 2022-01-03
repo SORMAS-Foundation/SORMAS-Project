@@ -22,6 +22,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -378,6 +379,10 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	}
 
 	public List<SampleListEntryDto> getEntriesList(SampleListCriteria sampleListCriteria, Integer first, Integer max) {
+		if (sampleListCriteria == null) {
+			return Collections.emptyList();
+		}
+
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Sample> sample = cq.from(Sample.class);
@@ -423,10 +428,8 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		sampleCriteria.sampleAssociationType(sampleCriteria.getSampleAssociationType());
 		Predicate filter = createUserFilter(cq, cb, joins, sampleCriteria);
 
-		if (sampleListCriteria != null) {
-			Predicate criteriaFilter = buildSampleListCriteriaFilter(sampleListCriteria, cb, joins);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-		}
+		Predicate criteriaFilter = buildSampleListCriteriaFilter(sampleListCriteria, cb, joins);
+		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -895,8 +898,6 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	}
 
 	private Predicate buildSampleListCriteriaFilter(SampleListCriteria criteria, CriteriaBuilder cb, SampleJoins joins) {
-		final From<?, ?> sample = joins.getRoot();
-
 		Predicate filter = null;
 		final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
 		if (sampleAssociationType == SampleAssociationType.CASE) {
