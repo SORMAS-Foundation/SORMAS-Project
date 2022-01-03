@@ -363,8 +363,8 @@ public class LabMessage extends CoreAdo {
 		this.sampleOverallTestResult = sampleOverallTestResult;
 	}
 
-	@ManyToOne()
-	@JoinColumn(nullable = false)
+	@ManyToOne
+	@JoinColumn
 	public User getAssignee() {
 		return assignee;
 	}
