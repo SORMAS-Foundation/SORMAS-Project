@@ -266,6 +266,22 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 		}
 	}
 
+	/**
+	 * Retrieves all entities that have been created on the mobile device and haven not been synchronized
+	 * to the server yet. Those entities have their change date set to 0.
+	 */
+	public List<ADO> queryForNew() {
+		return queryForEq(ADO.CHANGE_DATE, new Date(0));
+	}
+
+	/**
+	 * Retrieves all entities that have been modified on the mobile device and for which the modifications
+	 * have not been synchronized to the server yet.
+	 */
+	public List<ADO> queryForModified() {
+		return queryForEq(ADO.MODIFIED, true);
+	}
+
 	public ADO getByReferenceDto(ReferenceDto dto) {
 		if (dto == null) {
 			return null;

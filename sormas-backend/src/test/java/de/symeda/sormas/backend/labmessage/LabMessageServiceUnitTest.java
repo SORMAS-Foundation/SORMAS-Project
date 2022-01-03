@@ -37,17 +37,6 @@ public class LabMessageServiceUnitTest {
 	private Predicate predicate;
 
 	@Test
-	public void testCreateDefaultFilter() {
-
-		LabMessageService sut = new LabMessageService();
-		when(cb.isFalse(any())).thenReturn(predicate);
-
-		Predicate result = sut.createDefaultFilter(cb, labMessage);
-
-		assertEquals(predicate, result);
-	}
-
-	@Test
 	public void testBuildCriteriaFilter() {
 
 		LabMessageService sut = new LabMessageService();
@@ -59,6 +48,17 @@ public class LabMessageServiceUnitTest {
 		when(cb.equal(objectPath, status)).thenReturn(predicate);
 
 		Predicate result = sut.buildCriteriaFilter(cb, labMessage, criteria);
+
+		assertEquals(predicate, result);
+	}
+
+	@Test
+	public void testCreateDefaultFilter() {
+
+		LabMessageService sut = new LabMessageService();
+		when(cb.isFalse(any())).thenReturn(predicate);
+
+		Predicate result = sut.createDefaultFilter(cb, labMessage);
 
 		assertEquals(predicate, result);
 	}

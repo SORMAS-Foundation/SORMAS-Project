@@ -16,6 +16,8 @@
 package de.symeda.sormas.backend.i18n;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nFacade;

@@ -83,6 +83,7 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.popupmenu.PopupMenu;
 
 public class EventsView extends AbstractView {
 
@@ -263,17 +264,36 @@ public class EventsView extends AbstractView {
 			}
 		}
 
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
+			createButton = ButtonHelper.createIconButton(
+				Captions.eventNewEvent,
+				VaadinIcons.PLUS_CIRCLE,
+				e -> ControllerProvider.getEventController().create((CaseReferenceDto) null),
+				ValoTheme.BUTTON_PRIMARY);
+
+			addHeaderComponent(createButton);
+		}
+
+		final PopupMenu moreButton = new PopupMenu(I18nProperties.getCaption(Captions.moreActions));
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_EVENT) && isDefaultViewType()) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
-			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
+			{
+				btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
+				btnEnterBulkEditMode.addStyleName(ValoTheme.BUTTON_PRIMARY);
 
-			addHeaderComponent(btnEnterBulkEditMode);
+				btnEnterBulkEditMode.setWidth(100, Unit.PERCENTAGE);
+				moreButton.addMenuEntry(btnEnterBulkEditMode);
+			}
 
 			Button btnLeaveBulkEditMode =
 				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
-			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
+			{
+				btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
+				btnLeaveBulkEditMode.setWidth(100, Unit.PERCENTAGE);
 
-			addHeaderComponent(btnLeaveBulkEditMode);
+				moreButton.addMenuEntry(btnLeaveBulkEditMode);
+			}
 
 			btnEnterBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(true);
@@ -291,23 +311,18 @@ public class EventsView extends AbstractView {
 			});
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
-			createButton = ButtonHelper.createIconButton(
-				Captions.eventNewEvent,
-				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getEventController().create((CaseReferenceDto) null),
-				ValoTheme.BUTTON_PRIMARY);
-
-			addHeaderComponent(createButton);
-		}
-
 		if (isDefaultViewType()) {
 			Button searchSpecificEventButton = ButtonHelper.createIconButton(
 				Captions.eventSearchSpecificEvent,
 				VaadinIcons.SEARCH,
 				e -> buildAndOpenSearchSpecificEventWindow(),
 				ValoTheme.BUTTON_PRIMARY);
-			addHeaderComponent(searchSpecificEventButton);
+			searchSpecificEventButton.setWidth(100, Unit.PERCENTAGE);
+			moreButton.addMenuEntry(searchSpecificEventButton);
+		}
+
+		if (moreButton.hasMenuEntries()) {
+			addHeaderComponent(moreButton);
 		}
 	}
 

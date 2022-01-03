@@ -29,7 +29,6 @@ import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
-import de.symeda.sormas.backend.sormastosormas.entities.sample.SormasToSormasSampleDtoValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
@@ -81,7 +80,6 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 	protected SormasToSormasEventDtoValidator eventDtoValidator;
 	protected SormasToSormasEventParticipantDtoValidator eventParticipantDtoValidator;
 	protected SormasToSormasImmunizationDtoValidator immunizationDtoValidator;
-	protected SormasToSormasSampleDtoValidator sampleDtoValidator;
 
 	@Override
 	public void init() {
@@ -91,7 +89,6 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 		eventDtoValidator = getSormasToSormasEventDtoValidator();
 		eventParticipantDtoValidator = getSormasToSormasEventParticipantDtoValidator();
 		immunizationDtoValidator = getSormasToSormasImmunizationDtoValidator();
-		sampleDtoValidator = getSormasToSormasSampleDtoValidator();
 	}
 
 	/**
@@ -744,8 +741,7 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 		before();
 		SormasToSormasSampleDto sampleDto = new SormasToSormasSampleDto();
 		SampleDtoRootNode rootNode = new SampleDtoRootNode(sampleDto);
-
-		assertValidationDto(sampleDto, rootNode, sampleDtoValidator);
+		assertValidationDto(sampleDto, rootNode, getSormasToSormasSampleDtoValidator());
 
 	}
 }
