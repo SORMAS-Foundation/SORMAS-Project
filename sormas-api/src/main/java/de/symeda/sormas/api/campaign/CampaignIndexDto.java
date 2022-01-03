@@ -5,23 +5,26 @@ import java.util.Date;
 
 public class CampaignIndexDto implements Serializable {
 
-	private static final long serialVersionUID = 2448753530580084851L;
+	private static final long serialVersionUID = 2448753530580084851L; //.save
 
 	public static final String I18N_PREFIX = "Campaign";
 
 	public static final String UUID = "uuid";
+	public static final String CLUSTER = "cluster";
 	public static final String NAME = "name";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
 
 	private String uuid;
 	private String name;
+	private String cluster;
 	private Date startDate;
 	private Date endDate;
 
-	public CampaignIndexDto(String uuid, String name, Date startDate, Date endDate) {
+	public CampaignIndexDto(String uuid, String name, String cluster, Date startDate, Date endDate) {
 		this.uuid = uuid;
 		this.name = name;
+		this.cluster = cluster;
 		this.startDate = startDate;
 		this.endDate = endDate;
 	}
@@ -40,6 +43,15 @@ public class CampaignIndexDto implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	
+	public String getCluster() {
+		return cluster;
+	}
+
+	public void setCluster(String cluster) {
+		this.cluster = cluster;
 	}
 
 	public Date getStartDate() {

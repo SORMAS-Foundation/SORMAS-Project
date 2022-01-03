@@ -6,8 +6,8 @@ import javax.annotation.Generated;
 public interface Captions {
 
 	/*
-	 * Hint for SonarQube issues:
-	 * 1. java:S115: Violation of name convention for constants of this class is accepted: Close as false positive.
+	 * Hint for SonarQube issues: 1. java:S115: Violation of name convention for
+	 * constants of this class is accepted: Close as false positive.
 	 */
 
 	String about = "APMIS About";
@@ -210,6 +210,8 @@ public interface Captions {
 	String Campaign_open = "Campaign.open";
 	String Campaign_region = "Campaign.region";
 	String Campaign_startDate = "Campaign.startDate";
+	String Campaign_formType = "Campaign.formType";
+	String Campaign_campaignTypes = "Campaign.campaignTypes";
 	String campaignActiveCampaigns = "campaignActiveCampaigns";
 	String campaignAdditionalChart = "campaignAdditionalChart";
 	String campaignAdditionalForm = "campaignAdditionalForm";
@@ -230,6 +232,8 @@ public interface Captions {
 	String CampaignFormData_campaignFormMeta = "CampaignFormData.campaignFormMeta";
 	String CampaignFormData_edit = "CampaignFormData.edit";
 	String CampaignFormData_formDate = "CampaignFormData.formDate";
+	String CampaignFormData_formType = "CampaignFormData.formType";
+	String CampaignFormData_campaignTypes = "CampaignFormData.campaignTypes";
 	String CampaignFormData_formValuesJson = "CampaignFormData.formValuesJson";
 	String campaignNewCampaign = "campaignNewCampaign";
 	String campaignSearch = "campaignSearch";

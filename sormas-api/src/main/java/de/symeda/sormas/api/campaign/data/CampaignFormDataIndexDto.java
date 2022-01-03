@@ -30,6 +30,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String FORM_DATE = "formDate";
+	public static final String FORM_TYPE = "formType";
 
 	private static final long serialVersionUID = -6672198324526771162L;
 
@@ -41,6 +42,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	private String district;
 	private String community;
 	private Date formDate;
+	private String formType;
 
 	public CampaignFormDataIndexDto(
 		String uuid,
@@ -50,7 +52,8 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		String region,
 		String district,
 		String community,
-		Date formDate) {
+		Date formDate,
+		String formType) {
 		this.uuid = uuid;
 		this.campaign = campaign;
 		this.form = form;
@@ -59,7 +62,28 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		this.district = district;
 		this.community = community;
 		this.formDate = formDate;
+		this.formType = formType;
 	}
+	
+	public CampaignFormDataIndexDto(
+			String uuid,
+			String campaign,
+			String form,
+			Object formValues,
+			String region,
+			String district,
+			String community,
+			Date formDate
+			) {
+			this.uuid = uuid;
+			this.campaign = campaign;
+			this.form = form;
+			this.formValues = (List<CampaignFormDataEntry>) formValues;
+			this.region = region;
+			this.district = district;
+			this.community = community;
+			this.formDate = formDate;
+		}
 
 	public String getUuid() {
 		return uuid;
@@ -124,4 +148,14 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	public void setFormDate(Date formDate) {
 		this.formDate = formDate;
 	}
+
+	public String getFormType() {
+		return formType;
+	}
+
+	public void setFormType(String formType) {
+		this.formType = formType;
+	}
+	
+	
 }
