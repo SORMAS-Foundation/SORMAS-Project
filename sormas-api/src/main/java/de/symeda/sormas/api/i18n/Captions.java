@@ -404,6 +404,7 @@ public interface Captions {
 	String CaseData_vaccinationStatus = "CaseData.vaccinationStatus";
 	String CaseData_visits = "CaseData.visits";
 	String CaseData_wasInQuarantineBeforeIsolation = "CaseData.wasInQuarantineBeforeIsolation";
+	String caseDataEnterHomeAddressNow = "caseDataEnterHomeAddressNow";
 	String caseDefaultView = "caseDefaultView";
 	String caseDetailedView = "caseDetailedView";
 	String caseDocuments = "caseDocuments";

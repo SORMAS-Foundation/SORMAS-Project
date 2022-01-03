@@ -60,7 +60,8 @@ public class PatientDiaryClient {
 	public static final String MOBILE_PHONE_QUERY_PARAM = "Mobile phone";
 
 	private static final String PATIENT_DIARY_KEY = "patientDiary";
-	private static final Cache<String, String> authTokenCache = CacheBuilder.newBuilder().expireAfterWrite(6, TimeUnit.HOURS).build();
+	private static final Cache<String, String> backendAuthTokenCache = CacheBuilder.newBuilder().expireAfterWrite(6, TimeUnit.HOURS).build();
+	private static final Cache<String, String> frontendAuthTokenCache = CacheBuilder.newBuilder().expireAfterWrite(6, TimeUnit.HOURS).build();
 
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
@@ -197,7 +198,8 @@ public class PatientDiaryClient {
 			String encodedParams = URLEncoder.encode(queryParam, StandardCharsets.UTF_8.toString());
 			String fullUrl = probandsUrl + "?q=" + encodedParams;
 			Client client = ClientHelper.newBuilderWithProxy().build();
-			Response response = client.target(fullUrl).request(MediaType.APPLICATION_JSON).header("x-access-token", getPatientDiaryAuthToken()).get();
+			Response response =
+				client.target(fullUrl).request(MediaType.APPLICATION_JSON).header("x-access-token", getPatientDiaryAuthToken(false)).get();
 			if (response.getStatus() == HttpStatus.SC_NOT_FOUND) {
 				return Optional.empty();
 			}
@@ -211,31 +213,47 @@ public class PatientDiaryClient {
 	private Invocation.Builder getExternalDataPersonInvocationBuilder(String personUuid) {
 		String externalDataUrl = configFacade.getPatientDiaryConfig().getProbandsUrl() + "/external-data/" + personUuid;
 		Client client = ClientHelper.newBuilderWithProxy().build();
-		return client.target(externalDataUrl).request(MediaType.APPLICATION_JSON).header("x-access-token", getPatientDiaryAuthToken());
+		return client.target(externalDataUrl).request(MediaType.APPLICATION_JSON).header("x-access-token", getPatientDiaryAuthToken(false));
 	}
 
 	/**
 	 * Retrieves a token used for authenticating in the patient diary. The token will be cached.
-	 *
+	 * 
+	 * @param frontendRequest
+	 *            if true && a interface.patientdiary.frontendAuthurl is configured, this url is used to fetch the token.
+	 *            Otherwise, the interface.patientdiary.authurl is used.
 	 * @return the authentication token
 	 */
-	public String getPatientDiaryAuthToken() {
+	public String getPatientDiaryAuthToken(boolean frontendRequest) {
 		try {
-			return authTokenCache.get(PATIENT_DIARY_KEY, this::getPatientDiaryAuthTokenInternal);
+			if (frontendRequest && StringUtils.isNotBlank(configFacade.getPatientDiaryConfig().getFrontendAuthUrl())) {
+				return frontendAuthTokenCache.get(PATIENT_DIARY_KEY, this::getPatientDiaryFrontendAuthTokenInternal);
+			} else {
+				return backendAuthTokenCache.get(PATIENT_DIARY_KEY, this::getPatientDiaryAuthTokenInternal);
+			}
 		} catch (ExecutionException e) {
 			logger.error(e.getMessage());
 			return null;
 		}
 	}
 
+	private String getPatientDiaryFrontendAuthTokenInternal() {
+		String authenticationUrl = configFacade.getPatientDiaryConfig().getFrontendAuthUrl();
+		return executeTokenRequest(authenticationUrl);
+	}
+
 	private String getPatientDiaryAuthTokenInternal() {
 		String authenticationUrl = configFacade.getPatientDiaryConfig().getAuthUrl();
-		String email = configFacade.getPatientDiaryConfig().getEmail();
-		String pass = configFacade.getPatientDiaryConfig().getPassword();
-
 		if (StringUtils.isBlank(authenticationUrl)) {
 			throw new IllegalArgumentException("Property interface.patientdiary.authurl is not defined");
 		}
+		return executeTokenRequest(authenticationUrl);
+	}
+
+	private String executeTokenRequest(String authenticationUrl) {
+		String email = configFacade.getPatientDiaryConfig().getEmail();
+		String pass = configFacade.getPatientDiaryConfig().getPassword();
+
 		if (StringUtils.isBlank(email)) {
 			throw new IllegalArgumentException("Property interface.patientdiary.email is not defined");
 		}
