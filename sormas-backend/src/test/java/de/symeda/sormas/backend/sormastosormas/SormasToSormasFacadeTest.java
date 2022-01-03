@@ -308,23 +308,43 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 				PointOfEntryType.AIRPORT,
 				pointOfEntryExternalId));
 
-		Region region = creator.createRegion(regionName, regionExternalId);
-		District district = creator.createDistrict(districtName, region, districtExternalId);
-		Community community = creator.createCommunity(communityName, district, communityExternalId);
-		Facility facility = creator.createFacility(facilityName, FacilityType.HOSPITAL, region, district, community, facilityExternalId);
-		PointOfEntry pointOfEntry = creator.createPointOfEntry(pointOfEntryName, region, district, pointOfEntryExternalId);
+		{
+			Region region = creator.createRegion(regionName, regionExternalId);
+			District district = creator.createDistrict(districtName, region, districtExternalId);
+			Community community = creator.createCommunity(communityName, district, communityExternalId);
+			Facility facility = creator.createFacility(facilityName, FacilityType.HOSPITAL, region, district, community, facilityExternalId);
+			PointOfEntry pointOfEntry = creator.createPointOfEntry(pointOfEntryName, region, district, pointOfEntryExternalId);
 
-		rdcf.invalidLocalRdcf = new TestDataCreator.RDCF(
-			new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalID()),
-			new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalID()),
-			new CommunityReferenceDto(community.getUuid(), community.getName(), community.getExternalID()),
-			new FacilityReferenceDto(facility.getUuid(), facility.getName(), facility.getExternalID()),
-			new PointOfEntryReferenceDto(pointOfEntry.getUuid(), pointOfEntry.getName(), PointOfEntryType.AIRPORT, pointOfEntry.getExternalID()));
-		rdcf.centralRdcf = rdcf.invalidLocalRdcf;
+			rdcf.invalidLocalRdcf = new TestDataCreator.RDCF(
+				new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalID()),
+				new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalID()),
+				new CommunityReferenceDto(community.getUuid(), community.getName(), community.getExternalID()),
+				new FacilityReferenceDto(facility.getUuid(), facility.getName(), facility.getExternalID()),
+				new PointOfEntryReferenceDto(pointOfEntry.getUuid(), pointOfEntry.getName(), PointOfEntryType.AIRPORT, pointOfEntry.getExternalID()));
+
+		}
+
+		{
+			Region region = creator.createRegionCentrally(regionName, regionExternalId);
+			District district = creator.createDistrictCentrally(districtName, region, districtExternalId);
+			Community community = creator.createCommunityCentrally(communityName, district, communityExternalId);
+			// central management of facilities/poe are not supported yet
+			Facility facility = creator.createFacility(facilityName, FacilityType.HOSPITAL, region, district, community, facilityExternalId);
+			PointOfEntry pointOfEntry = creator.createPointOfEntry(pointOfEntryName, region, district, pointOfEntryExternalId);
+
+			rdcf.centralRdcf = new TestDataCreator.RDCF(
+				new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalID()),
+				new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalID()),
+				new CommunityReferenceDto(community.getUuid(), community.getName(), community.getExternalID()),
+				new FacilityReferenceDto(facility.getUuid(), facility.getName(), facility.getExternalID()),
+				new PointOfEntryReferenceDto(pointOfEntry.getUuid(), pointOfEntry.getName(), PointOfEntryType.AIRPORT, pointOfEntry.getExternalID()));
+		}
+
 		return rdcf;
 	}
 
 	public static class MappableRdcf {
+
 		// IMPORTANT: This is used to simulate a setup where central infra sync is enabled and all instances are
 		// guaranteed to have the same infra with the same global uuids.
 		public TestDataCreator.RDCF centralRdcf;
