@@ -110,6 +110,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
@@ -2074,6 +2075,12 @@ public class CaseFacadeEjb implements CaseFacade {
 		return getCompletenessCheckCaseList.size();
 	}
 
+	@Override
+	public PreviousCaseDto getMostRecentPreviousCase(PersonReferenceDto person, Disease disease, Date startDate) {
+
+		return caseService.getMostRecentPreviousCase(person.getUuid(), disease, startDate);
+	}
+
 	private List<String> getCompletenessCheckNeededCaseList() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -2554,6 +2561,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setReInfection(source.getReInfection());
 		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
+		target.setReinfectionStatus(source.getReinfectionStatus());
+		target.setReinfectionDetails(source.getReinfectionDetails());
 
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 
@@ -2732,6 +2741,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setReInfection(source.getReInfection());
 		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
+		target.setReinfectionStatus(source.getReinfectionStatus());
+		target.setReinfectionDetails(source.getReinfectionDetails());
 
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 

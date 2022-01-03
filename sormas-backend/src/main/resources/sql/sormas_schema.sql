@@ -9418,4 +9418,13 @@ ALTER TABLE eventparticipant ALTER COLUMN reportinguser_id SET NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (433, 'Fill missing reporting users of event participants #7531');
 
+-- 2022-01-03 Add reinfection details and status #7182
+
+ALTER TABLE cases ADD COLUMN reinfectionstatus varchar(255);
+ALTER TABLE cases ADD COLUMN reinfectiondetails jsonb;
+ALTER TABLE cases_history ADD COLUMN reinfectionstatus varchar(255);
+ALTER TABLE cases_history ADD COLUMN reinfectiondetails jsonb;
+
+INSERT INTO schema_version (version_number, comment) VALUES (434, 'Add reinfection details and status #7182');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
