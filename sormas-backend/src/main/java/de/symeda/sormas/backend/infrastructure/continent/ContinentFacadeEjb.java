@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,8 +31,9 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -54,7 +55,6 @@ import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
-import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "ContinentFacade")
 public class ContinentFacadeEjb
@@ -167,6 +167,11 @@ public class ContinentFacadeEjb
 	@Override
 	public ContinentDto save(ContinentDto dtoToSave, boolean allowMerge) {
 		return save(dtoToSave, allowMerge, Validations.importContinentAlreadyExists);
+	}
+
+	@Override
+	public ContinentDto saveUnchecked(ContinentDto dto) {
+		return saveUnchecked(dto, false, Validations.importContinentAlreadyExists);
 	}
 
 	@Override

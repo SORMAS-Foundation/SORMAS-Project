@@ -550,6 +550,11 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
+	public FacilityDto saveUnchecked(FacilityDto dto) {
+		return save(dto);
+	}
+
+	@Override
 	protected List<Facility> findDuplicates(FacilityDto dto) {
 		return service.getFacilitiesByNameAndType(
 			dto.getName(),

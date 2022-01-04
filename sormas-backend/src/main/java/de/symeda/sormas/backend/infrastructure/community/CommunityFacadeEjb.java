@@ -193,6 +193,11 @@ public class CommunityFacadeEjb
 	}
 
 	@Override
+	public CommunityDto saveUnchecked(CommunityDto dto) {
+		return null;
+	}
+
+	@Override
 	protected List<Community> findDuplicates(CommunityDto dto) {
 		return service.getByName(dto.getName(), districtService.getByReferenceDto(dto.getDistrict()), true);
 	}
@@ -214,6 +219,8 @@ public class CommunityFacadeEjb
 			.map(CommunityFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
+
+
 
 	@Override
 	public List<CommunityReferenceDto> getReferencesByName(String name, boolean includeArchived) {

@@ -3,7 +3,6 @@ package de.symeda.sormas.backend.infrastructure;
 import java.io.Serializable;
 import java.util.List;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -40,6 +39,14 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 
 	protected DTO save(DTO dtoToSave, boolean allowMerge, String duplicateErrorMessageProperty) {
 		checkInfraDataLocked();
+		return doSave(dtoToSave, allowMerge, duplicateErrorMessageProperty);
+	}
+
+	protected DTO saveUnchecked(DTO dtoToSave, boolean allowMerge, String duplicateErrorMessageProperty) {
+		return doSave(dtoToSave, allowMerge, duplicateErrorMessageProperty);
+	}
+
+	protected DTO doSave(DTO dtoToSave, boolean allowMerge, String duplicateErrorMessageProperty) {
 		if (dtoToSave == null) {
 			return null;
 		}

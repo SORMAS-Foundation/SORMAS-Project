@@ -14,8 +14,9 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.area.AreaCriteria;
@@ -29,7 +30,6 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
-import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "AreaFacade")
 public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, AreaDto, AreaReferenceDto, AreaService, AreaCriteria>
@@ -86,6 +86,11 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, Area
 	@Override
 	public AreaDto save(AreaDto dtoToSave, boolean allowMerge) {
 		return save(dtoToSave, allowMerge, Validations.importAreaAlreadyExists);
+	}
+
+	@Override
+	public AreaDto saveUnchecked(AreaDto dto) {
+		return saveUnchecked(dto, false, Validations.importAreaAlreadyExists);
 	}
 
 	@Override

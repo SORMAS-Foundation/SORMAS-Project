@@ -207,6 +207,11 @@ public class DistrictFacadeEjb
 	}
 
 	@Override
+	public DistrictDto saveUnchecked(DistrictDto dto) {
+		return saveUnchecked(dto, false, Validations.importDistrictAlreadyExists);
+	}
+
+	@Override
 	protected List<District> findDuplicates(DistrictDto dto) {
 		return service.getByName(dto.getName(), regionService.getByReferenceDto(dto.getRegion()), true);
 	}

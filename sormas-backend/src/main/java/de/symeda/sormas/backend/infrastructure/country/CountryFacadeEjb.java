@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.infrastructure.country;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -166,46 +167,21 @@ public class CountryFacadeEjb
 	}
 
 	@Override
-	public CountryDto save(CountryDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
-		checkInfraDataLocked();
+	public CountryDto save(CountryDto dtoToSave, boolean allowMerge) {
+		return save(dtoToSave, allowMerge, Validations.importCountryAlreadyExists);
+	}
 
-		if (StringUtils.isBlank(dtoToSave.getIsoCode())) {
-			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
-		}
-
-		Country country = service.getByUuid(dtoToSave.getUuid());
-
-		if (userService.getCurrentUser() != null) {
-			if (country != null && !userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
-				throw new UnsupportedOperationException(String.format("User %s is not allowed to edit country.", userService.getCurrentUser().getUuid()));
-			}
-
-			if (country == null && !userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
-				throw new UnsupportedOperationException(String.format("User %s is not allowed to create country.", userService.getCurrentUser().getUuid()));
-			}
-		}
-
-		if (country == null) {
-			Optional<Country> byIsoCode = service.getByIsoCode(dtoToSave.getIsoCode(), true);
-			Optional<Country> byUnoCode = service.getByUnoCode(dtoToSave.getUnoCode(), true);
-			if (byIsoCode.isPresent() || byUnoCode.isPresent()) {
-				if (allowMerge) {
-					// FIXME(#6880) This save method looks fairly nonstandard and does not duplicate merging
-					country = byIsoCode.orElseGet(byUnoCode::get);
-					CountryDto dtoToMerge = getByUuid(country.getUuid());
-					dtoToSave = DtoHelper.copyDtoValues(dtoToMerge, dtoToSave, true);
-				} else {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCountryAlreadyExists));
-				}
-			}
-		}
-
-		return persistEntity(dtoToSave, country);
+	@Override
+	public CountryDto saveUnchecked(CountryDto dto) {
+		return saveUnchecked(dto, false, Validations.importCountryAlreadyExists);
 	}
 
 	@Override
 	protected List<Country> findDuplicates(CountryDto dto) {
-		return Collections.emptyList();
+		Optional<Country> byIsoCode = service.getByIsoCode(dto.getIsoCode(), true);
+		Optional<Country> byUnoCode = service.getByUnoCode(dto.getUnoCode(), true);
+		List<Optional<Country>> tmp = Arrays.asList(byIsoCode, byUnoCode);
+		return tmp.stream().filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
 	}
 
 	public static CountryReferenceDto toReferenceDto(Country entity) {

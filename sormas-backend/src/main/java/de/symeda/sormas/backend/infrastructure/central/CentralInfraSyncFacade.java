@@ -105,7 +105,7 @@ public class CentralInfraSyncFacade {
 		Date newestChangeDate = newDtos.stream().map(DTO::getChangeDate).max(Date::compareTo).orElse(lastSync);
 		logger.info("The newest change date is {}", newestChangeDate);
 
-		newDtos.forEach(facade::save);
+		newDtos.forEach(facade::saveUnchecked);
 		return newestChangeDate;
 	}
 

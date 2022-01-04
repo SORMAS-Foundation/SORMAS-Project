@@ -33,8 +33,9 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -46,6 +47,8 @@ import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentIndexDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import de.symeda.sormas.backend.infrastructure.continent.Continent;
@@ -56,7 +59,6 @@ import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
-import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "SubcontinentFacade")
 public class SubcontinentFacadeEjb
@@ -127,9 +129,9 @@ public class SubcontinentFacadeEjb
 		Root<Subcontinent> root = cq.from(Subcontinent.class);
 		Join<Subcontinent, Continent> continentJoin = root.join(Subcontinent.CONTINENT);
 
-		cq.where(cb.and(cb.isTrue(continentJoin.get(Continent.ARCHIVED)), root.get(Subcontinent.UUID).in(subcontinentUuids)));
+		cq.where(cb.and(cb.isTrue(continentJoin.get(InfrastructureAdo.ARCHIVED)), root.get(AbstractDomainObject.UUID).in(subcontinentUuids)));
 
-		cq.select(root.get(Subcontinent.ID));
+		cq.select(root.get(AbstractDomainObject.ID));
 
 		return QueryHelper.getFirstResult(em, cq) != null;
 	}
@@ -197,8 +199,12 @@ public class SubcontinentFacadeEjb
 
 	@Override
 	public SubcontinentDto save(SubcontinentDto dtoToSave, boolean allowMerge) {
-		checkInfraDataLocked();
 		return save(dtoToSave, allowMerge, Validations.importSubcontinentAlreadyExists);
+	}
+
+	@Override
+	public SubcontinentDto saveUnchecked(SubcontinentDto dto) {
+		return saveUnchecked(dto, false, Validations.importSubcontinentAlreadyExists);
 	}
 
 	@Override
@@ -276,7 +282,6 @@ public class SubcontinentFacadeEjb
 	public static class SubcontinentFacadeEjbLocal extends SubcontinentFacadeEjb {
 
 		public SubcontinentFacadeEjbLocal() {
-
 		}
 
 		@Inject

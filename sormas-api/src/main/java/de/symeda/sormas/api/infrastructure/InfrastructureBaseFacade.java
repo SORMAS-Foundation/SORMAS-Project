@@ -4,13 +4,10 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.ejb.Remote;
-import javax.validation.Valid;
 
 import de.symeda.sormas.api.BaseFacade;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 @Remote
@@ -22,4 +19,12 @@ public interface InfrastructureBaseFacade<DTO extends EntityDto, INDEX_DTO exten
 
 	List<REF_DTO> getByExternalId(String externalId, boolean includeArchivedEntities);
 
+	/**
+	 * Save the given DTO, but skip checks for infrastructure locks etc.
+	 * 
+	 * @param dto
+	 *            The DTO which should be saved.
+	 * @return The saved DTO.
+	 */
+	DTO saveUnchecked(DTO dto);
 }
