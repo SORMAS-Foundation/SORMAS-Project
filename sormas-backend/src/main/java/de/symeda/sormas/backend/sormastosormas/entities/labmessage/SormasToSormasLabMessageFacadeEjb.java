@@ -122,7 +122,7 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 			errors.add(new ValidationErrorGroup(Captions.LabMessage), new ValidationErrorMessage(Validations.sormasToSormasLabMessageExists));
 		}
 
-		errors.addAll(dtoValidator.validateOutgoing(new SormasToSormasLabMessageDto(dto)));
+		errors.addAll(dtoValidator.validateIncoming(new SormasToSormasLabMessageDto(dto)));
 		return errors;
 	}
 
