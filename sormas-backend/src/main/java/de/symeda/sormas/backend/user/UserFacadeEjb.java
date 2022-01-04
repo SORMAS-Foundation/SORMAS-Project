@@ -147,6 +147,8 @@ public class UserFacadeEjb implements UserFacade {
 	private TravelEntryService travelEntryService;
 	@EJB
 	private PointOfEntryService pointOfEntryService;
+	@EJB
+	private UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	@Inject
 	private Event<UserCreateEvent> userCreateEvent;
 	@Inject
@@ -222,6 +224,19 @@ public class UserFacadeEjb implements UserFacade {
 		return userService.getReferenceList(toUuidList(regionRef), null, false, true, true, assignableRoles)
 			.stream()
 			.map(f -> toReferenceDto(f))
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<UserReferenceDto> getUsersByRegionAndRight(RegionReferenceDto region, UserRight userRight) {
+
+		List<UserRole> userRoles = Arrays.stream(UserRole.values())
+			.filter(r -> userRoleConfigFacade.getEffectiveUserRights(r).contains(userRight))
+			.collect(Collectors.toList());
+
+		return userService.getReferenceList(region == null ? null : Arrays.asList(region.getUuid()), null, null, false, true, true, userRoles)
+			.stream()
+			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
 
