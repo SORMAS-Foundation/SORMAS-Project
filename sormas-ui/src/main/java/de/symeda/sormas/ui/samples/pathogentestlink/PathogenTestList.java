@@ -38,6 +38,8 @@ import de.symeda.sormas.ui.utils.PaginationList;
 @SuppressWarnings("serial")
 public class PathogenTestList extends PaginationList<PathogenTestDto> {
 
+	private static final int MAX_DISPLAYED_ENTRIES = 5;
+
 	private final SampleReferenceDto sampleRef;
 	private final BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest;
 	private final Supplier<Boolean> createOrEditAllowedCallback;
@@ -46,7 +48,7 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 		SampleReferenceDto sampleRef,
 		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
 		Supplier<Boolean> createOrEditAllowedCallback) {
-		super(5);
+		super(MAX_DISPLAYED_ENTRIES);
 
 		this.sampleRef = sampleRef;
 		this.onSavedPathogenTest = onSavedPathogenTest;
@@ -74,9 +76,10 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 		for (PathogenTestDto pathogenTest : displayedEntries) {
 			PathogenTestListEntry listEntry = new PathogenTestListEntry(pathogenTest);
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT)) {
-				listEntry.addEditButton("edit-test-" + pathogenTest.getUuid(), (ClickListener) event -> {
+				String pathogenTestUuid = pathogenTest.getUuid();
+				listEntry.addEditButton("edit-test-" + pathogenTestUuid, (ClickListener) event -> {
 					if (createOrEditAllowedCallback.get()) {
-						ControllerProvider.getPathogenTestController().edit(pathogenTest, 0, PathogenTestList.this::reload, onSavedPathogenTest);
+						ControllerProvider.getPathogenTestController().edit(pathogenTestUuid, PathogenTestList.this::reload, onSavedPathogenTest);
 					} else {
 						Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
 					}
