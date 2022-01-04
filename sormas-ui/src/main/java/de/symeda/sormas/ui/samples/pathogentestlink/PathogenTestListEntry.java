@@ -22,20 +22,15 @@ import org.apache.commons.lang3.StringUtils;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
@@ -44,8 +39,6 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 public class PathogenTestListEntry extends SideComponentField {
 
 	private final PathogenTestDto pathogenTest;
-	private Button editButton;
-	private Button viewAssociatedLabMessagesButton;
 
 	public PathogenTestListEntry(PathogenTestDto pathogenTest) {
 
@@ -120,42 +113,6 @@ public class PathogenTestListEntry extends SideComponentField {
 			CssStyles.style(labelResult, CssStyles.LABEL_WARNING);
 		}
 		addComponentToField(labelResult);
-	}
-
-	public void addEditListener(ClickListener editClickListener) {
-
-		if (editButton == null) {
-			editButton = ButtonHelper.createIconButtonWithCaption(
-				"edit-test-" + pathogenTest.getUuid(),
-				null,
-				VaadinIcons.PENCIL,
-				null,
-				ValoTheme.BUTTON_LINK,
-				CssStyles.BUTTON_COMPACT);
-
-			addComponent(editButton);
-			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);
-			setExpandRatio(editButton, 0);
-		}
-
-		editButton.addClickListener(editClickListener);
-	}
-
-	public void addAssociatedLabMessagesListener(ClickListener associatedLabMessagesClickListener) {
-		if (viewAssociatedLabMessagesButton == null) {
-			viewAssociatedLabMessagesButton = ButtonHelper.createIconButtonWithCaption(
-				"see-associated-lab-messages-" + pathogenTest.getUuid(),
-				null,
-				VaadinIcons.NOTEBOOK,
-				associatedLabMessagesClickListener,
-				ValoTheme.BUTTON_LINK,
-				CssStyles.BUTTON_COMPACT);
-
-			addComponent(viewAssociatedLabMessagesButton);
-			setComponentAlignment(viewAssociatedLabMessagesButton, Alignment.MIDDLE_RIGHT);
-			setExpandRatio(viewAssociatedLabMessagesButton, 0);
-			viewAssociatedLabMessagesButton.setDescription(I18nProperties.getDescription(Descriptions.Sample_associatedLabMessages));
-		}
 	}
 
 	public PathogenTestDto getPathogenTest() {

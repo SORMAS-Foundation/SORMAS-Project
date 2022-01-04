@@ -73,21 +73,16 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 		List<PathogenTestDto> displayedEntries = getDisplayedEntries();
 		for (PathogenTestDto pathogenTest : displayedEntries) {
 			PathogenTestListEntry listEntry = new PathogenTestListEntry(pathogenTest);
-			addEditButton(pathogenTest, listEntry);
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT)) {
+				listEntry.addEditButton("edit-test-" + pathogenTest.getUuid(), (ClickListener) event -> {
+					if (createOrEditAllowedCallback.get()) {
+						ControllerProvider.getPathogenTestController().edit(pathogenTest, 0, PathogenTestList.this::reload, onSavedPathogenTest);
+					} else {
+						Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
+					}
+				});
+			}
 			listLayout.addComponent(listEntry);
 		}
 	}
-
-	private void addEditButton(PathogenTestDto pathogenTest, PathogenTestListEntry listEntry) {
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT)) {
-			listEntry.addEditListener((ClickListener) event -> {
-				if (createOrEditAllowedCallback.get()) {
-					ControllerProvider.getPathogenTestController().edit(pathogenTest, 0, PathogenTestList.this::reload, onSavedPathogenTest);
-				} else {
-					Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
-				}
-			});
-		}
-	}
-
 }
