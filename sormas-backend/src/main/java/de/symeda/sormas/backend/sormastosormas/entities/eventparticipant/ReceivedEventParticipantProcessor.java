@@ -57,6 +57,7 @@ public class ReceivedEventParticipantProcessor
 		handleIgnoredProperties(
 			sharedData.getEntity().getPerson(),
 			Optional.ofNullable(existingData).map(c -> PersonFacadeEjb.toDto(c.getPerson())).orElse(null));
+		updateReportingUser(sharedData.getEntity(), existingData);
 	}
 
 	@Override

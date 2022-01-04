@@ -868,10 +868,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		EventParticipant target =
 			DtoHelper.fillOrBuildEntity(source, eventParticipantService.getByUuid(source.getUuid()), EventParticipant::new, checkChangeDate);
 
-		if (source.getReportingUser() != null) {
-			target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
-		}
-
+		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setEvent(eventService.getByReferenceDto(source.getEvent()));
 		target.setPerson(personService.getByUuid(source.getPerson().getUuid()));
 		target.setInvolvementDescription(source.getInvolvementDescription());
@@ -941,10 +938,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		EventParticipantDto target = new EventParticipantDto();
 		DtoHelper.fillDto(target, source);
 
-		if (source.getReportingUser() != null) {
-			target.setReportingUser(source.getReportingUser().toReference());
-		}
-
+		target.setReportingUser(source.getReportingUser().toReference());
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
 		target.setPerson(PersonFacadeEjb.toDto(source.getPerson()));
 		target.setInvolvementDescription(source.getInvolvementDescription());

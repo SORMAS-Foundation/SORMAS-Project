@@ -93,6 +93,9 @@ public interface Captions {
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
 	String actionSaveAndContinue = "actionSaveAndContinue";
+	String actionSaveAndOpenCase = "actionSaveAndOpenCase";
+	String actionSaveAndOpenContact = "actionSaveAndOpenContact";
+	String actionSaveAndOpenEventParticipant = "actionSaveAndOpenEventParticipant";
 	String actionSaveAndOpenHospitalization = "actionSaveAndOpenHospitalization";
 	String actionSaveChanges = "actionSaveChanges";
 	String actionSearch = "actionSearch";
@@ -401,6 +404,7 @@ public interface Captions {
 	String CaseData_vaccinationStatus = "CaseData.vaccinationStatus";
 	String CaseData_visits = "CaseData.visits";
 	String CaseData_wasInQuarantineBeforeIsolation = "CaseData.wasInQuarantineBeforeIsolation";
+	String caseDataEnterHomeAddressNow = "caseDataEnterHomeAddressNow";
 	String caseDefaultView = "caseDefaultView";
 	String caseDetailedView = "caseDetailedView";
 	String caseDocuments = "caseDocuments";
@@ -1394,6 +1398,7 @@ public interface Captions {
 	String LabMessageCriteria_messageDateTo = "LabMessageCriteria.messageDateTo";
 	String labMessageFetch = "labMessageFetch";
 	String labMessageForwardedMessageFound = "labMessageForwardedMessageFound";
+	String labMessageLabMessagesList = "labMessageLabMessagesList";
 	String labMessageNoDisease = "labMessageNoDisease";
 	String labMessageNoNewMessages = "labMessageNoNewMessages";
 	String labMessageProcess = "labMessageProcess";

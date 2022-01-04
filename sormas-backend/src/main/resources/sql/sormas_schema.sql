@@ -7919,6 +7919,9 @@ ALTER TABLE vaccination_history DROP COLUMN vaccinemanufacturerdetails;
 INSERT INTO schema_version (version_number, comment) VALUES (405, 'Vaccination drop details columns #5843');
 
 -- 2021-09-03 Vaccination refactoring #5909
+/* Fix event participants without a missing reporting user before starting the migration (#7531) */
+UPDATE eventparticipant SET reportinguser_id = (SELECT reportinguser_id FROM events WHERE events.id = eventparticipant.event_id) WHERE reportinguser_id IS NULL;
+
 /* Vaccination refactoring */
 /* Step 1: Create a temporary table containing the latest vaccination information for each disease of each person */
 DROP TABLE IF EXISTS tmp_vaccinated_entities;
@@ -9408,5 +9411,11 @@ ALTER TABLE region ADD COLUMN centrally_managed boolean DEFAULT false;
 ALTER TABLE subcontinent ADD COLUMN centrally_managed boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (432, ' [S2S] Implement outgoing S2S entity validation #7070');
+
+-- 2021-12-16 Fill missing reporting users of event participants #7531
+UPDATE eventparticipant SET reportinguser_id = (SELECT reportinguser_id FROM events WHERE events.id = eventparticipant.event_id) WHERE reportinguser_id IS NULL;
+ALTER TABLE eventparticipant ALTER COLUMN reportinguser_id SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (433, 'Fill missing reporting users of event participants #7531');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
