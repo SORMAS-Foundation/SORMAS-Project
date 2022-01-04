@@ -42,33 +42,42 @@ public class EditImmunizationSteps implements En {
 
                     softly
                             .assertThat(aImmunization.getDisease())
+                            .withFailMessage("Immunization Disease: %s is not equal with %s", aImmunization.getDisease(), CreateNewImmunizationSteps.immunization.getDisease())
                             .isEqualToIgnoringCase(CreateNewImmunizationSteps.immunization.getDisease());
                     softly
                             .assertThat(aImmunization.getDateOfReport())
+                            .withFailMessage("Immunization Date of Report: %s is not equal with %s", aImmunization.getDateOfReport(), CreateNewImmunizationSteps.immunization.getDateOfReport())
                             .isEqualTo(CreateNewImmunizationSteps.immunization.getDateOfReport());
                     softly
                             .assertThat(aImmunization.getResponsibleRegion())
+                            .withFailMessage("Immunization Responsible Region: %s is not equal with %s", aImmunization.getResponsibleRegion(), CreateNewImmunizationSteps.immunization.getResponsibleRegion())
                             .isEqualToIgnoringCase(
                                     CreateNewImmunizationSteps.immunization.getResponsibleRegion());
                     softly
                             .assertThat(aImmunization.getResponsibleDistrict())
+                            .withFailMessage("Immunization Responsible District: %s is not equal with %s", aImmunization.getResponsibleDistrict(), CreateNewImmunizationSteps.immunization.getResponsibleDistrict())
                             .isEqualToIgnoringCase(
                                     CreateNewImmunizationSteps.immunization.getResponsibleDistrict());
                     softly
                             .assertThat(aImmunization.getResponsibleCommunity())
+                            .withFailMessage("Immunization Responsible Community: %s is not equal with %s", aImmunization.getResponsibleCommunity(), CreateNewImmunizationSteps.immunization.getResponsibleCommunity())
                             .isEqualToIgnoringCase(
                                     CreateNewImmunizationSteps.immunization.getResponsibleCommunity());
                     softly
                             .assertThat(aImmunization.getFacilityCategory())
+                            .withFailMessage("Immunization Facility Category: %s is not equal with %s", aImmunization.getFacilityCategory(), CreateNewImmunizationSteps.immunization.getFacilityCategory())
                             .isEqualToIgnoringCase(CreateNewImmunizationSteps.immunization.getFacilityCategory());
                     softly
                             .assertThat(aImmunization.getFacilityType())
+                            .withFailMessage("Immunization Facility Type: %s is not equal with %s", aImmunization.getFacilityType(), CreateNewImmunizationSteps.immunization.getFacilityType())
                             .isEqualToIgnoringCase(CreateNewImmunizationSteps.immunization.getFacilityType());
                     softly
                             .assertThat(aImmunization.getFacility())
+                            .withFailMessage("Immunization Facility: %s is not equal with %s", aImmunization.getFacility(), CreateNewImmunizationSteps.immunization.getFacility())
                             .isEqualToIgnoringCase(CreateNewImmunizationSteps.immunization.getFacility());
                     softly
                             .assertThat(aImmunization.getFacilityDescription())
+                            .withFailMessage("Immunization Facility Description: %s is not equal with %s", aImmunization.getFacilityDescription(), CreateNewImmunizationSteps.immunization.getFacilityDescription())
                             .isEqualToIgnoringCase(
                                     CreateNewImmunizationSteps.immunization.getFacilityDescription());
                     softly.assertAll();

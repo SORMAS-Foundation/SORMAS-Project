@@ -9,6 +9,15 @@ Feature: Case end to end tests
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
 
+  Scenario:Check that double clicking NEW CASE button does not cause a redundant action
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill new case form with specific data
+    And I click on the NEW CASE button
+    Then I click on save case button
+    Then I check the created data is correctly displayed on Edit case page
+    And I check the created data is correctly displayed on Edit case person page
 
   Scenario: Edit, save and check all fields of a new case
     Given I log in with National User

@@ -1,15 +1,16 @@
 package org.sormas.e2etests.steps.web.application.immunizations;
 
-import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.IMMUNIZATION_PERSON_TAB;
-import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPersonPage.*;
-
 import cucumber.api.java8.En;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import javax.inject.Inject;
 import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Immunization;
+
+import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.IMMUNIZATION_PERSON_TAB;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPersonPage.*;
 
 public class EditImmunizationPersonSteps implements En {
 
@@ -28,30 +29,35 @@ public class EditImmunizationPersonSteps implements En {
                     aImmunization = collectImmunizationPersonData();
                     softly
                             .assertThat(aImmunization.getFirstName())
+                            .withFailMessage("Immunization Person First Name: %s is not equal with %s", aImmunization.getFirstName(), CreateNewImmunizationSteps.immunization.getFirstName())
                             .isEqualTo(CreateNewImmunizationSteps.immunization.getFirstName());
                     softly
                             .assertThat(aImmunization.getLastName())
+                            .withFailMessage("Immunization Person Last Name: %s is not equal with %s", aImmunization.getLastName(), CreateNewImmunizationSteps.immunization.getLastName())
                             .isEqualTo(CreateNewImmunizationSteps.immunization.getLastName());
                     softly
                             .assertThat(aImmunization.getPresentConditionOfPerson())
+                            .withFailMessage("Immunization Presented Condition of Person: %s is not equal with %s", aImmunization.getPresentConditionOfPerson(), CreateNewImmunizationSteps.immunization.getPresentConditionOfPerson())
                             .isEqualTo(CreateNewImmunizationSteps.immunization.getPresentConditionOfPerson());
                     softly
                             .assertThat(aImmunization.getSex())
+                            .withFailMessage("Immunization Person Sex: %s is not equal with %s", aImmunization.getSex(), CreateNewImmunizationSteps.immunization.getSex())
                             .isEqualTo(CreateNewImmunizationSteps.immunization.getSex());
                     softly
                             .assertThat(aImmunization.getPassportNumber())
+                            .withFailMessage("Immunization Person Passport Number: %s is not equal with %s", aImmunization.getPassportNumber(), CreateNewImmunizationSteps.immunization.getPassportNumber())
                             .isEqualTo(CreateNewImmunizationSteps.immunization.getPassportNumber());
                     softly
                             .assertThat(aImmunization.getNationalHealthId())
+                            .withFailMessage("Immunization Person National Health Id: %s is not equal with %s", aImmunization.getNationalHealthId(), CreateNewImmunizationSteps.immunization.getNationalHealthId())
                             .isEqualTo(CreateNewImmunizationSteps.immunization.getNationalHealthId());
                     softly
                             .assertThat(aImmunization.getPrimaryEmailAddress())
-                            .isEqualTo(CreateNewImmunizationSteps.immunization.getPrimaryEmailAddress());
-                    softly
-                            .assertThat(aImmunization.getPrimaryEmailAddress())
+                            .withFailMessage("Immunization Primary Email Address: %s is not equal with %s", aImmunization.getPrimaryEmailAddress(), CreateNewImmunizationSteps.immunization.getPrimaryEmailAddress())
                             .isEqualTo(CreateNewImmunizationSteps.immunization.getPrimaryEmailAddress());
                     softly
                             .assertThat(aImmunization.getDateOfBirth())
+                            .withFailMessage("Immunization Person Date od Birth: %s is not equal with %s", aImmunization.getDateOfBirth(), CreateNewImmunizationSteps.immunization.getDateOfBirth())
                             .isEqualTo(CreateNewImmunizationSteps.immunization.getDateOfBirth());
                     softly.assertAll();
                 });
