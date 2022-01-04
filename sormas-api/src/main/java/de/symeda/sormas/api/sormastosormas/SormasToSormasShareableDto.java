@@ -15,18 +15,46 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
+import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+
+import javax.validation.Valid;
 
 public abstract class SormasToSormasShareableDto extends PseudonymizableDto {
 
-	public abstract SormasToSormasOriginInfoDto getSormasToSormasOriginInfo();
+	public static final String REPORTING_USER = "reportingUser";
+	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
+	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
+	@Valid
+	protected SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
+	protected boolean ownershipHandedOver;
+	@Required
+	protected UserReferenceDto reportingUser;
 
-	public abstract void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto originInfo);
+	public UserReferenceDto getReportingUser() {
+		return reportingUser;
+	}
 
-	public abstract boolean isOwnershipHandedOver();
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
+	}
 
-	public abstract UserReferenceDto getReportingUser();
+	@ImportIgnore
+	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
 
-	public abstract void setReportingUser(UserReferenceDto user);
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
+		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
+	}
+
+	public boolean isOwnershipHandedOver() {
+		return ownershipHandedOver;
+	}
+
+	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
+		this.ownershipHandedOver = ownershipHandedOver;
+	}
 }

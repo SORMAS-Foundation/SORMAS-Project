@@ -34,9 +34,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -45,7 +43,6 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 public class ImmunizationDto extends SormasToSormasShareableDto {
@@ -76,7 +73,6 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	public static final String POSITIVE_TEST_RESULT_DATE = "positiveTestResultDate";
 	public static final String PREVIOUS_INFECTION = "previousInfection";
 	public static final String RECOVERY_DATE = "recoveryDate";
-	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
 	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
@@ -97,7 +93,6 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	private PersonReferenceDto person;
 	@Required
 	private Date reportDate;
-	private UserReferenceDto reportingUser;
 	private boolean archived;
 	@Required
 	private ImmunizationStatus immunizationStatus;
@@ -156,10 +151,6 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	@Valid
 	private List<VaccinationDto> vaccinations = new ArrayList<>();
 
-	@Valid
-	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
-	private boolean ownershipHandedOver;
-
 	public static ImmunizationDto build(PersonReferenceDto person) {
 
 		final ImmunizationDto immunizationDto = new ImmunizationDto();
@@ -205,14 +196,6 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
-	}
-
-	public UserReferenceDto getReportingUser() {
-		return reportingUser;
-	}
-
-	public void setReportingUser(UserReferenceDto reportingUser) {
-		this.reportingUser = reportingUser;
 	}
 
 	public boolean isArchived() {
@@ -423,19 +406,4 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 		this.vaccinations = vaccinations;
 	}
 
-	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
-		return sormasToSormasOriginInfo;
-	}
-
-	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
-		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
-	}
-
-	public boolean isOwnershipHandedOver() {
-		return ownershipHandedOver;
-	}
-
-	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
-		this.ownershipHandedOver = ownershipHandedOver;
-	}
 }

@@ -53,7 +53,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
@@ -111,7 +110,6 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
-	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String INVESTIGATED_DATE = "investigatedDate";
 	public static final String DISTRICT_LEVEL_DATE = "districtLevelDate";
@@ -248,8 +246,6 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@Required
 	private Date reportDate;
 	@Outbreaks
-	@Required
-	private UserReferenceDto reportingUser;
 	private Date regionLevelDate;
 	private Date nationalLevelDate;
 	@Outbreaks
@@ -478,9 +474,6 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private String followUpComment;
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
-	@Valid
-	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
-	private boolean ownershipHandedOver;
 
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	private Integer caseIdIsm;
@@ -664,14 +657,6 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	 */
 	public boolean checkIsUnreferredPortHealthCase() {
 		return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
-	}
-
-	public UserReferenceDto getReportingUser() {
-		return reportingUser;
-	}
-
-	public void setReportingUser(UserReferenceDto reportingUser) {
-		this.reportingUser = reportingUser;
 	}
 
 	public Date getReportDate() {
@@ -1485,17 +1470,6 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
 	}
 
-	@Override
-	@ImportIgnore
-	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
-		return sormasToSormasOriginInfo;
-	}
-
-	@Override
-	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
-		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
-	}
-
 	public YesNoUnknown getProhibitionToWork() {
 		return prohibitionToWork;
 	}
@@ -1542,15 +1516,6 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 
 	public void setBloodOrganOrTissueDonated(YesNoUnknown bloodOrganOrTissueDonated) {
 		this.bloodOrganOrTissueDonated = bloodOrganOrTissueDonated;
-	}
-
-	@Override
-	public boolean isOwnershipHandedOver() {
-		return ownershipHandedOver;
-	}
-
-	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
-		this.ownershipHandedOver = ownershipHandedOver;
 	}
 
 	public boolean isNotACaseReasonNegativeTest() {

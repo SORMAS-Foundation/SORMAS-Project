@@ -18,14 +18,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -46,13 +44,10 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 	public static final String PERSON = "person";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	public static final String RESULTING_CASE = "resultingCase";
-	public static final String REPORTING_USER = "reportingUser";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
-	@Required
-	private UserReferenceDto reportingUser;
 	@Required
 	private EventReferenceDto event;
 	@Required
@@ -65,10 +60,6 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 	private CaseReferenceDto resultingCase; // read-only
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
-
-	@Valid
-	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
-	private boolean ownershipHandedOver;
 
 	@Diseases({
 		Disease.AFP,
@@ -112,14 +103,6 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 		eventParticipantDto.setPerson(person);
 
 		return eventParticipantDto;
-	}
-
-	public UserReferenceDto getReportingUser() {
-		return reportingUser;
-	}
-
-	public void setReportingUser(UserReferenceDto reportingUser) {
-		this.reportingUser = reportingUser;
 	}
 
 	public EventReferenceDto getEvent() {
@@ -175,26 +158,6 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 
 	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
-	}
-
-	@Override
-	@ImportIgnore
-	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
-		return sormasToSormasOriginInfo;
-	}
-
-	@Override
-	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
-		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
-	}
-
-	@Override
-	public boolean isOwnershipHandedOver() {
-		return ownershipHandedOver;
-	}
-
-	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
-		this.ownershipHandedOver = ownershipHandedOver;
 	}
 
 	public VaccinationStatus getVaccinationStatus() {
