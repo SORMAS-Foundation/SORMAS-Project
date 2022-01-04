@@ -83,7 +83,8 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 		addShowColumn(e -> ControllerProvider.getLabMessageController().showLabMessage(e.getUuid(), true, this::reload));
 
 		addComponentColumn(this::buildAssigneeLayout).setId(EDIT_ASSIGNEE)
-			.setCaption(I18nProperties.getPrefixCaption(LabMessageDto.I18N_PREFIX, LabMessageDto.ASSIGNEE));
+			.setCaption(I18nProperties.getPrefixCaption(LabMessageDto.I18N_PREFIX, LabMessageDto.ASSIGNEE))
+			.setSortable(false);
 
 		addComponentColumn(
 			indexDto -> indexDto.getStatus().isProcessable()
@@ -183,7 +184,6 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 		} else {
 			Label label = new Label(labMessage.getAssignee().getCaption());
 			layout.addComponent(label);
-			//layout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
 			button.setIcon((VaadinIcons.ELLIPSIS_DOTS_V));
 			CssStyles.style(button, CssStyles.ALIGN_RIGHT);
 		}
