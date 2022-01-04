@@ -28,13 +28,15 @@ public class CheckBoxTree<ENUM extends Enum<?>> extends VerticalLayout {
 	private List<CheckBoxElement<ENUM>> checkBoxElements;
 	private Map<ENUM, CheckBox> enumToggles = new HashMap<>();
 	private Map<ENUM, Boolean> values;
+	private Runnable valueChangeCallback;
 
 	public CheckBoxTree(List<CheckBoxElement<ENUM>> checkBoxElements) {
-		this(checkBoxElements, false);
+		this(checkBoxElements, false, null);
 	}
 
-	public CheckBoxTree(List<CheckBoxElement<ENUM>> checkBoxElements, boolean addVerticalSpaces) {
+	public CheckBoxTree(List<CheckBoxElement<ENUM>> checkBoxElements, boolean addVerticalSpaces, Runnable valueChangeCallback) {
 		this.checkBoxElements = checkBoxElements;
+		this.valueChangeCallback = valueChangeCallback;
 		this.setMargin(false);
 		this.setSpacing(false);
 		this.setWidth(100, Unit.PERCENTAGE);
@@ -74,7 +76,12 @@ public class CheckBoxTree<ENUM extends Enum<?>> extends VerticalLayout {
 			final ENUM enumValue = (ENUM) checkBoxElement.getEnumElement();
 			final CheckBox checkBox = enumToggles.get(enumValue);
 			checkBox.setValue(values.containsKey(enumValue) && values.get(enumValue) != null ? values.get(enumValue) : false);
-			checkBox.addValueChangeListener(valueChangeEvent -> values.put(enumValue, (Boolean) valueChangeEvent.getProperty().getValue()));
+			checkBox.addValueChangeListener(valueChangeEvent -> {
+				values.put(enumValue, (Boolean) valueChangeEvent.getProperty().getValue());
+				if (valueChangeCallback != null) {
+					valueChangeCallback.run();
+				}
+			});
 		}
 	}
 

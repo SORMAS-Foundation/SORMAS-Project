@@ -461,7 +461,11 @@ public final class DataHelper {
 		return StringUtils.isBlank(emailAddress) || emailAddress.matches(VALID_EMAIL_REGEX);
 	}
 
-	public static String buildStringFromBooleanMap(Map<? extends Enum<?>, Boolean> map) {
-		return map.keySet().stream().filter(map::get).map(I18nProperties::getEnumCaption).collect(joining(", "));
+	public static String buildStringFromTrueValues(Map<? extends Enum<?>, Boolean> map) {
+		if (map != null) {
+			return map.keySet().stream().filter(map::get).map(I18nProperties::getEnumCaption).collect(joining(", "));
+		} else {
+			return "";
+		}
 	}
 }

@@ -24,7 +24,7 @@ public class CaseReinfectionCheckBoxTree extends CheckBoxTree<ReinfectionDetail>
 
 	private static final long serialVersionUID = -616241015036432230L;
 
-	public CaseReinfectionCheckBoxTree(List<CheckBoxElement<ReinfectionDetail>> checkBoxElements) {
-		super(checkBoxElements, true);
+	public CaseReinfectionCheckBoxTree(List<CheckBoxElement<ReinfectionDetail>> checkBoxElements, Runnable valueChangeCallback) {
+		super(checkBoxElements, true, valueChangeCallback);
 	}
 }

@@ -360,7 +360,7 @@ public class CaseExportDto implements Serializable {
 						 FollowUpStatus followUpStatus, Date followUpUntil,
 						 Boolean nosocomialOutbreak, InfectionSetting infectionSetting,
 						 YesNoUnknown prohibitionToWork, Date prohibitionToWorkFrom, Date prohibitionToWorkUntil,
-						 YesNoUnknown reInfection, Date previousInfectionDate, ReinfectionStatus reinfectionStatus, Map<ReinfectionDetail, Boolean> reinfectionDetails,
+						 YesNoUnknown reInfection, Date previousInfectionDate, ReinfectionStatus reinfectionStatus, Object reinfectionDetails,
 						 // Quarantine
 						 QuarantineType quarantine, String quarantineTypeDetails, Date quarantineFrom, Date quarantineTo,
 						 String quarantineHelpNeeded,
@@ -441,7 +441,7 @@ public class CaseExportDto implements Serializable {
 		this.reInfection = reInfection;
 		this.previousInfectionDate = previousInfectionDate;
 		this.reinfectionStatus = reinfectionStatus;
-		this.reinfectionDetails = DataHelper.buildStringFromBooleanMap(reinfectionDetails);
+		this.reinfectionDetails = DataHelper.buildStringFromTrueValues((Map<ReinfectionDetail, Boolean>) reinfectionDetails);
 		this.quarantine = quarantine;
 		this.quarantineTypeDetails = quarantineTypeDetails;
 		this.quarantineFrom = quarantineFrom;

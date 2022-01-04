@@ -605,6 +605,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		// Reinfection
 		{
 			NullableOptionGroup ogReinfection = addField(CaseDataDto.RE_INFECTION, NullableOptionGroup.class);
+
 			addField(CaseDataDto.PREVIOUS_INFECTION_DATE);
 			ComboBox tfReinfectionStatus = addField(CaseDataDto.REINFECTION_STATUS, ComboBox.class);
 			tfReinfectionStatus.setReadOnly(true);
@@ -622,7 +623,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CssStyles.style(reinfectionDetailsRightLayout, CssStyles.VSPACE_3);
 			for (ReinfectionDetailGroup group : ReinfectionDetailGroup.values()) {
 				CaseReinfectionCheckBoxTree reinfectionTree = new CaseReinfectionCheckBoxTree(
-					ReinfectionDetail.values(group).stream().map(e -> new CheckBoxTree.CheckBoxElement<>(null, e)).collect(Collectors.toList()));
+					ReinfectionDetail.values(group).stream().map(e -> new CheckBoxTree.CheckBoxElement<>(null, e)).collect(Collectors.toList()),
+					() -> {
+						tfReinfectionStatus.setReadOnly(false);
+						tfReinfectionStatus.setValue(CaseLogic.calculateReinfectionStatus(mergeReinfectionTrees()));
+						tfReinfectionStatus.setReadOnly(true);
+					});
 				reinfectionTrees.put(group, reinfectionTree);
 
 				if (StringUtils.isNotBlank(group.toString())) {
@@ -668,14 +674,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 								? DateHelper.formatLocalDate(previousCase.getOnsetDate(), I18nProperties.getUserLanguage())
 								: "");
 						reinfectionInfoLabel.setDescription(reinfectionInfo, ContentMode.HTML);
-						reinfectionInfoLabel.setVisible(true);
+						reinfectionInfoLabel.setVisible(isVisibleAllowed(CaseDataDto.RE_INFECTION));
 					} else {
 						reinfectionInfoLabel.setDescription(null);
 						reinfectionInfoLabel.setVisible(false);
 					}
 
-					reinfectionDetailsLeftLayout.setVisible(true);
-					reinfectionDetailsRightLayout.setVisible(true);
+					reinfectionDetailsLeftLayout.setVisible(isVisibleAllowed(CaseDataDto.RE_INFECTION));
+					reinfectionDetailsRightLayout.setVisible(isVisibleAllowed(CaseDataDto.RE_INFECTION));
 				} else {
 					reinfectionInfoLabel.setDescription(null);
 					reinfectionInfoLabel.setVisible(false);
@@ -688,7 +694,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					reinfectionDetailsRightLayout.setVisible(false);
 				}
 			});
-
 		}
 
 		addField(CaseDataDto.QUARANTINE_HOME_POSSIBLE, NullableOptionGroup.class);
@@ -1609,21 +1614,26 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 	}
 
-	@Override
-	public CaseDataDto getValue() {
-		final CaseDataDto caze = super.getValue();
+	private Map<ReinfectionDetail, Boolean> mergeReinfectionTrees() {
 		Map<ReinfectionDetail, Boolean> reinfectionDetails = new EnumMap<>(ReinfectionDetail.class);
 		reinfectionTrees.values().forEach(t -> {
 			if (t.getValues() != null) {
 				reinfectionDetails.putAll(t.getValues());
 			}
 		});
-		caze.setReinfectionDetails(reinfectionDetails);
+		return reinfectionDetails;
+	}
+
+	@Override
+	public CaseDataDto getValue() {
+		final CaseDataDto caze = super.getValue();
+		caze.setReinfectionDetails(mergeReinfectionTrees());
 		return caze;
 	}
 
 	@Override
 	public void setValue(CaseDataDto newFieldValue) throws ReadOnlyException, ConversionException {
+
 		for (ReinfectionDetailGroup group : reinfectionTrees.keySet()) {
 			if (newFieldValue.getReinfectionDetails() != null) {
 				reinfectionTrees.get(group)

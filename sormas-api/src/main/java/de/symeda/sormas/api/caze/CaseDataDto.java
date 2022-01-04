@@ -520,13 +520,13 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		Disease.CORONAVIRUS })
 	@HideForCountriesExcept
 	private Date previousInfectionDate;
-	@HideForCountriesExcept
 	@Diseases({
 		Disease.CORONAVIRUS })
+	@HideForCountriesExcept
 	private ReinfectionStatus reinfectionStatus;
-	@HideForCountriesExcept
 	@Diseases({
 		Disease.CORONAVIRUS })
+	@HideForCountriesExcept
 	private Map<ReinfectionDetail, Boolean> reinfectionDetails;
 
 	@HideForCountriesExcept
