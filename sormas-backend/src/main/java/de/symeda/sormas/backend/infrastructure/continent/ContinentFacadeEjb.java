@@ -71,7 +71,7 @@ public class ContinentFacadeEjb
 
 	@Inject
 	protected ContinentFacadeEjb(ContinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(Continent.class, ContinentDto.class, service, featureConfiguration, userService);
+		super(Continent.class, ContinentDto.class, service, featureConfiguration, userService, Validations.importContinentAlreadyExists);
 	}
 
 	public static ContinentReferenceDto toReferenceDto(Continent entity) {
@@ -164,15 +164,6 @@ public class ContinentFacadeEjb
 			.collect(Collectors.toList());
 	}
 
-	@Override
-	public ContinentDto save(ContinentDto dtoToSave, boolean allowMerge) {
-		return save(dtoToSave, allowMerge, Validations.importContinentAlreadyExists);
-	}
-
-	@Override
-	public ContinentDto saveUnchecked(ContinentDto dto) {
-		return saveUnchecked(dto, false, Validations.importContinentAlreadyExists);
-	}
 
 	@Override
 	protected void selectDtoFields(CriteriaQuery<ContinentDto> cq, Root<Continent> root) {

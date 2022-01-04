@@ -38,6 +38,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -84,7 +86,7 @@ public class CountryFacadeEjb
 
 	@Inject
 	protected CountryFacadeEjb(CountryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(Country.class, CountryDto.class, service, featureConfiguration, userService);
+		super(Country.class, CountryDto.class, service, featureConfiguration, userService, Validations.importCountryAlreadyExists);
 	}
 
 	@Override
@@ -164,16 +166,6 @@ public class CountryFacadeEjb
 		List<CountryIndexDto> countryIndexList = getIndexList(countryCriteria, offset, size, sortProperties);
 		long totalElementCount = count(countryCriteria);
 		return new Page<>(countryIndexList, offset, size, totalElementCount);
-	}
-
-	@Override
-	public CountryDto save(CountryDto dtoToSave, boolean allowMerge) {
-		return save(dtoToSave, allowMerge, Validations.importCountryAlreadyExists);
-	}
-
-	@Override
-	public CountryDto saveUnchecked(CountryDto dto) {
-		return saveUnchecked(dto, false, Validations.importCountryAlreadyExists);
 	}
 
 	@Override
@@ -300,9 +292,9 @@ public class CountryFacadeEjb
 		Root<Country> root = cq.from(Country.class);
 		Join<Country, Subcontinent> subcontinentJoin = root.join(Country.SUBCONTINENT);
 
-		cq.where(cb.and(cb.isTrue(subcontinentJoin.get(Subcontinent.ARCHIVED)), root.get(Country.UUID).in(countryUuids)));
+		cq.where(cb.and(cb.isTrue(subcontinentJoin.get(InfrastructureAdo.ARCHIVED)), root.get(AbstractDomainObject.UUID).in(countryUuids)));
 
-		cq.select(root.get(Country.ID));
+		cq.select(root.get(AbstractDomainObject.ID));
 
 		return QueryHelper.getFirstResult(em, cq) != null;
 	}
@@ -312,15 +304,15 @@ public class CountryFacadeEjb
 		Join<Country, Subcontinent> subcontinent = root.join(Country.SUBCONTINENT, JoinType.LEFT);
 		// Need to be in the same order as in the constructor
 		cq.multiselect(
-			root.get(Country.CREATION_DATE),
+			root.get(AbstractDomainObject.CREATION_DATE),
 			root.get(Country.CHANGE_DATE),
-			root.get(Country.UUID),
-			root.get(Country.ARCHIVED),
+			root.get(AbstractDomainObject.UUID),
+			root.get(InfrastructureAdo.ARCHIVED),
 			root.get(Country.DEFAULT_NAME),
 			root.get(Country.EXTERNAL_ID),
 			root.get(Country.ISO_CODE),
 			root.get(Country.UNO_CODE),
-			subcontinent.get(Subcontinent.UUID),
+			subcontinent.get(AbstractDomainObject.UUID),
 			subcontinent.get(Subcontinent.DEFAULT_NAME),
 			subcontinent.get(Subcontinent.EXTERNAL_ID));
 	}

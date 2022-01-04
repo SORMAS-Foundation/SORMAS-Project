@@ -76,7 +76,7 @@ public class SubcontinentFacadeEjb
 
 	@Inject
 	protected SubcontinentFacadeEjb(SubcontinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(Subcontinent.class, SubcontinentDto.class, service, featureConfiguration, userService);
+		super(Subcontinent.class, SubcontinentDto.class, service, featureConfiguration, userService, Validations.importSubcontinentAlreadyExists);
 	}
 
 	public static SubcontinentReferenceDto toReferenceDto(Subcontinent entity) {
@@ -195,16 +195,6 @@ public class SubcontinentFacadeEjb
 			.map(SubcontinentFacadeEjb::toReferenceDto)
 			.sorted(Comparator.comparing(SubcontinentReferenceDto::getCaption))
 			.collect(Collectors.toList());
-	}
-
-	@Override
-	public SubcontinentDto save(SubcontinentDto dtoToSave, boolean allowMerge) {
-		return save(dtoToSave, allowMerge, Validations.importSubcontinentAlreadyExists);
-	}
-
-	@Override
-	public SubcontinentDto saveUnchecked(SubcontinentDto dto) {
-		return saveUnchecked(dto, false, Validations.importSubcontinentAlreadyExists);
 	}
 
 	@Override

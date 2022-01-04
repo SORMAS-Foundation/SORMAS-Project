@@ -85,7 +85,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 
 	@Inject
 	protected RegionFacadeEjb(RegionService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(Region.class, RegionDto.class, service, featureConfiguration, userService);
+		super(Region.class, RegionDto.class, service, featureConfiguration, userService, Validations.importRegionAlreadyExists);
 	}
 
 	@Override
@@ -263,16 +263,6 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 		dto.setCountry(CountryFacadeEjb.toReferenceDto(entity.getCountry()));
 
 		return dto;
-	}
-
-	@Override
-	public RegionDto save(RegionDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
-		return save(dtoToSave, allowMerge, Validations.importRegionAlreadyExists);
-	}
-
-	@Override
-	public RegionDto saveUnchecked(RegionDto dto) {
-		return saveUnchecked(dto, false, Validations.importRegionAlreadyExists);
 	}
 
 	@Override

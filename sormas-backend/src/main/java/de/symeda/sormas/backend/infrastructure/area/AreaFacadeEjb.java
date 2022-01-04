@@ -40,7 +40,7 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, Area
 
 	@Inject
 	protected AreaFacadeEjb(AreaService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(Area.class, AreaDto.class, service, featureConfiguration, userService);
+		super(Area.class, AreaDto.class, service, featureConfiguration, userService, Validations.importAreaAlreadyExists);
 	}
 
 	@Override
@@ -81,16 +81,6 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, Area
 		cq.select(areaRoot);
 
 		return QueryHelper.getResultList(em, cq, first, max, this::toDto);
-	}
-
-	@Override
-	public AreaDto save(AreaDto dtoToSave, boolean allowMerge) {
-		return save(dtoToSave, allowMerge, Validations.importAreaAlreadyExists);
-	}
-
-	@Override
-	public AreaDto saveUnchecked(AreaDto dto) {
-		return saveUnchecked(dto, false, Validations.importAreaAlreadyExists);
 	}
 
 	@Override

@@ -22,6 +22,7 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA> {
 
 	protected FeatureConfigurationFacadeEjb featureConfiguration;
+	private String duplicateErrorMessageProperty;
 
 	protected AbstractInfrastructureEjb() {
 		super();
@@ -32,18 +33,20 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 		Class<DTO> dtoClass,
 		SRV service,
 		FeatureConfigurationFacadeEjb featureConfiguration,
-		UserService userService) {
+		UserService userService,
+		String duplicateErrorMessageProperty) {
 		super(adoClass, dtoClass, service, userService);
 		this.featureConfiguration = featureConfiguration;
+		this.duplicateErrorMessageProperty = duplicateErrorMessageProperty;
 	}
 
-	protected DTO save(DTO dtoToSave, boolean allowMerge, String duplicateErrorMessageProperty) {
+	public DTO save(DTO dto, boolean allowMerge) {
 		checkInfraDataLocked();
-		return doSave(dtoToSave, allowMerge, duplicateErrorMessageProperty);
+		return doSave(dto, allowMerge, duplicateErrorMessageProperty);
 	}
 
-	protected DTO saveUnchecked(DTO dtoToSave, boolean allowMerge, String duplicateErrorMessageProperty) {
-		return doSave(dtoToSave, allowMerge, duplicateErrorMessageProperty);
+	public DTO saveUnchecked(DTO dtoToSave) {
+		return doSave(dtoToSave, false, duplicateErrorMessageProperty);
 	}
 
 	protected DTO doSave(DTO dtoToSave, boolean allowMerge, String duplicateErrorMessageProperty) {
