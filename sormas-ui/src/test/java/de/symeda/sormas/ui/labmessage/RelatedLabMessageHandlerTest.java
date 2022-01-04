@@ -31,9 +31,11 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -83,7 +85,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 	private CratePathogenTestHandler createPathogenTestHandler;
 	private Supplier<CompletionStage<Boolean>> correctionFlowConfirmation;
 	private Function<Boolean, CompletionStage<Boolean>> shortcutConfirmation;
-	private Function<LabMessageDto, CompletionStage<Boolean>> continueProcessingConfirmation;
+	private BiFunction<LabMessageDto, SampleReferenceDto, CompletionStage<Boolean>> continueProcessingConfirmation;
 	private ShortcutHandler shortcutHandler;
 
 	private RelatedLabMessageHandler handler;
@@ -132,8 +134,10 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		shortcutConfirmation = Mockito.mock(Function.class);
 		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(true)).when(shortcutConfirmation).apply(Mockito.any());
 
-		continueProcessingConfirmation = Mockito.mock(Function.class);
-		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(true)).when(continueProcessingConfirmation).apply(Mockito.any());
+		continueProcessingConfirmation = Mockito.mock(BiFunction.class);
+		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(true))
+			.when(continueProcessingConfirmation)
+			.apply(Mockito.any(), Mockito.any());
 
 		shortcutHandler = Mockito.mock(ShortcutHandler.class);
 		Mockito.doAnswer(invocation -> {
@@ -960,7 +964,9 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		labMessageToProcess.setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName("Updated");
 
-		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(false)).when(continueProcessingConfirmation).apply(Mockito.any());
+		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(false))
+			.when(continueProcessingConfirmation)
+			.apply(Mockito.any(), Mockito.any());
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
