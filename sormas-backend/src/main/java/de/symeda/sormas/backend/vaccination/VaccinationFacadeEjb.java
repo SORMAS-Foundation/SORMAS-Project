@@ -438,7 +438,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return vaccinationService.getLastVaccinationType();
 	}
 
-	private Vaccination fillOrBuildEntity(@NotNull VaccinationDto source, Vaccination target, boolean checkChangeDate) {
+	public Vaccination fillOrBuildEntity(@NotNull VaccinationDto source, Vaccination target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Vaccination::new, checkChangeDate);
 
 		target.setImmunization(immunizationService.getByReferenceDto(source.getImmunization()));

@@ -1678,9 +1678,10 @@ public class PersonFacadeEjb implements PersonFacade {
 				contactDetailDto.setPrimaryContact(false);
 			}
 		}
-		for (ImmunizationDto immunizationDto : immunizationFacade.getByPersonUuids(Collections.singletonList(otherPerson.getUuid()))) {
-			immunizationDto.setPerson(leadPerson.toReference());
-			immunizationFacade.save(immunizationDto);
+		if (!leadPerson.getUuid().equals(otherPerson.getUuid())) {
+			for (ImmunizationDto immunizationDto : immunizationFacade.getByPersonUuids(Collections.singletonList(otherPerson.getUuid()))) {
+				immunizationFacade.copyImmunizationsToLeadPerson(immunizationDto, leadPerson);
+			}
 		}
 
 		DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
