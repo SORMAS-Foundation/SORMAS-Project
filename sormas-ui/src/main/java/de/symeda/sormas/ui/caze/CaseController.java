@@ -543,7 +543,11 @@ public class CaseController {
 			|| (convertedEventParticipant == null && convertedTravelEntry == null));
 		assert (unrelatedDisease == null || (convertedEventParticipant == null && convertedTravelEntry == null));
 
-		CaseCreateForm createForm = new CaseCreateForm(convertedTravelEntry);
+		CaseCreateForm createForm = convertedContact == null
+			&& convertedEventParticipant == null
+			&& convertedTravelEntry == null
+			&& unrelatedDisease == null
+			&& !createdFromLabMessage ? new CaseCreateForm() : new CaseCreateForm(convertedTravelEntry);
 
 		CaseDataDto caze;
 		PersonDto person;
@@ -615,6 +619,9 @@ public class CaseController {
 			createForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE),
 			createForm.getFieldGroup());
+		if (createForm.getHomeAddressForm() != null) {
+			editView.addFieldGroups(createForm.getHomeAddressForm().getFieldGroup());
+		}
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -766,6 +773,9 @@ public class CaseController {
 		}
 		person.setNationalHealthId(createForm.getNationalHealthId());
 		person.setPassportNumber(createForm.getPassportNumber());
+		if (createForm.getHomeAddressForm() != null) {
+			person.setAddress(createForm.getHomeAddressForm().getValue());
+		}
 	}
 
 	public void selectOrCreateCase(CaseDataDto caseDto, PersonDto person, Consumer<String> selectedCaseUuidConsumer) {

@@ -28,8 +28,8 @@ public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 	}
 
 	@Override
-	public String getPatientDiaryAuthToken() {
-		return patientDiaryClient.getPatientDiaryAuthToken();
+	public String getPatientDiaryAuthToken(boolean frontendRequest) {
+		return patientDiaryClient.getPatientDiaryAuthToken(frontendRequest);
 	}
 
 	@Override
