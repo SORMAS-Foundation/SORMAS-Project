@@ -27,15 +27,23 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinServletService;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasErrorHandler;
 import de.symeda.sormas.ui.login.LoginScreen.LoginListener;
 import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
+import fish.payara.security.openid.api.OpenIdContext;
 
+import javax.inject.Inject;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.HttpConstraint;
 import javax.servlet.annotation.ServletSecurity;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Main UI class of the application that shows either the login screen or the
@@ -81,5 +89,21 @@ public class LoginUI extends UI {
 	@ServletSecurity(@HttpConstraint)
 	public static class SormasLoginServlet extends VaadinServlet {
 
+	}
+
+	@WebServlet(urlPatterns = {"/logout/*"}, asyncSupported = true)
+	@ServletSecurity(@HttpConstraint)
+	public static class OidcLogoutServlet extends HttpServlet {
+
+		@Inject
+		private OpenIdContext openIdContext;
+
+		@Override
+		protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+			AuthProvider authProvider = AuthProvider.getProvider(FacadeProvider.getConfigFacade());
+			if (AuthProvider.KEYCLOAK.equals(authProvider.getName()) && request != null && response != null) {
+				openIdContext.logout(request, response);
+			}
+		}
 	}
 }
