@@ -449,6 +449,7 @@ public interface Strings {
 	String headingEditAction = "headingEditAction";
 	String headingEditAdditionalTest = "headingEditAdditionalTest";
 	String headingEditAggregateReport = "headingEditAggregateReport";
+	String headingEditAssignee = "headingEditAssignee";
 	String headingEditCampaign = "headingEditCampaign";
 	String headingEditCases = "headingEditCases";
 	String headingEditClinicalVisit = "headingEditClinicalVisit";

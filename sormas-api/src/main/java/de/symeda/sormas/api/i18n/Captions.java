@@ -178,6 +178,8 @@ public interface Captions {
 	String areaActiveAreas = "areaActiveAreas";
 	String areaAllAreas = "areaAllAreas";
 	String areaArchivedAreas = "areaArchivedAreas";
+	String assign = "assign";
+	String assignToMe = "assignToMe";
 	String BAGExport = "BAGExport";
 	String bulkActionCreatDocuments = "bulkActionCreatDocuments";
 	String bulkActions = "bulkActions";
@@ -1363,6 +1365,7 @@ public interface Captions {
 	String info = "info";
 	String infrastructureImportAllowOverwrite = "infrastructureImportAllowOverwrite";
 	String LabMessage = "LabMessage";
+	String LabMessage_assignee = "LabMessage.assignee";
 	String labMessage_deleteNewlyCreatedCase = "labMessage.deleteNewlyCreatedCase";
 	String labMessage_deleteNewlyCreatedContact = "labMessage.deleteNewlyCreatedContact";
 	String labMessage_deleteNewlyCreatedEventParticipant = "labMessage.deleteNewlyCreatedEventParticipant";
@@ -2285,6 +2288,7 @@ public interface Captions {
 	String TreatmentExport_caseUuid = "TreatmentExport.caseUuid";
 	String treatmentNewTreatment = "treatmentNewTreatment";
 	String treatmentOpenPrescription = "treatmentOpenPrescription";
+	String unassigned = "unassigned";
 	String unknown = "unknown";
 	String User = "User";
 	String User_active = "User.active";
