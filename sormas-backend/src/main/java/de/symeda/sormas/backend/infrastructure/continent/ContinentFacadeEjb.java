@@ -233,6 +233,7 @@ public class ContinentFacadeEjb
 		target.setDefaultName(source.getDefaultName());
 		target.setArchived(source.isArchived());
 		target.setExternalId(source.getExternalId());
+		target.setCentrallyManaged(source.isCentrallyManaged());
 		return target;
 	}
 

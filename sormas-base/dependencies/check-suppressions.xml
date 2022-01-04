@@ -77,13 +77,6 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
-    Not relevant at the moment because we do not use SocketServer to receive logs.
-    ]]></notes>
-	<filePath regex="true">.*\blogback-.*\.jar</filePath>
-    <cve>CVE-2017-5929</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
     maven-ant-tasks is not part of the release and is not relied on by the code
     ]]></notes>
 	<filePath regex="true">.*\bmaven-ant-tasks.*\.jar/META-INF/.*\bplexus-utils.*</filePath>

@@ -56,6 +56,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateTypeHelper;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -81,6 +82,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		CaseDataDto.SURVEILLANCE_OFFICER,
 		CaseCriteria.REPORTING_USER_ROLE,
 		CaseCriteria.REPORTING_USER_LIKE,
+		CaseCriteria.QUARANTINE_TYPE,
 		CaseDataDto.QUARANTINE_TO,
 		CaseCriteria.FOLLOW_UP_UNTIL_TO,
 		ContactCriteria.SYMPTOM_JOURNAL_STATUS,
@@ -95,6 +97,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER,
 			CaseCriteria.WITH_EXTENDED_QUARANTINE,
 			CaseCriteria.WITH_REDUCED_QUARANTINE,
+			CaseCriteria.ONLY_QUARANTINE_HELP_NEEDED,
 			CaseCriteria.ONLY_CASES_WITH_EVENTS,
 			CaseCriteria.ONLY_CONTACTS_FROM_OTHER_INSTANCES,
 			CaseCriteria.ONLY_CASES_WITH_REINFECTION,
@@ -109,7 +112,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		+ loc(WEEK_AND_DATE_FILTER);
 
 	protected CaseFilterForm() {
-		super(CaseCriteria.class, CaseDataDto.I18N_PREFIX);
+		super(CaseCriteria.class, CaseDataDto.I18N_PREFIX, FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
 	}
 
 	@Override
@@ -152,8 +155,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		addFields(FieldConfiguration.pixelSized(CaseDataDto.FOLLOW_UP_STATUS, 140));
 
 		TextField searchField = addField(
-			FieldConfiguration
-				.withCaptionAndPixelSized(CaseCriteria.CASE_LIKE, I18nProperties.getString(Strings.promptCasesSearchField), 200));
+			FieldConfiguration.withCaptionAndPixelSized(CaseCriteria.CASE_LIKE, I18nProperties.getString(Strings.promptCasesSearchField), 200));
 		searchField.setNullRepresentation("");
 
 		TextField personLikeField = addField(
@@ -233,6 +235,13 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		reportingUserField.setNullRepresentation("");
 		reportingUserField.setInputPrompt(I18nProperties.getPrefixCaption(propertyI18nPrefix, CaseDataDto.REPORTING_USER));
 
+		addField(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				CaseCriteria.QUARANTINE_TYPE,
+				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.QUARANTINE),
+				200));
+
 		Field<?> quarantineTo = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.QUARANTINE_TO, 200));
 		quarantineTo.removeAllValidators();
 		ComboBox birthDateYYYY = addField(moreFiltersContainer, CaseCriteria.BIRTHDATE_YYYY, ComboBox.class);
@@ -303,6 +312,15 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				CaseCriteria.WITH_REDUCED_QUARANTINE,
 				I18nProperties.getCaption(Captions.caseFilterWithReducedQuarantine),
 				I18nProperties.getDescription(Descriptions.descCaseFilterWithReducedQuarantine),
+				CssStyles.CHECKBOX_FILTER_INLINE));
+
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				CaseCriteria.ONLY_QUARANTINE_HELP_NEEDED,
+				I18nProperties.getCaption(Captions.caseFilterOnlyQuarantineHelpNeeded),
+				null,
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
 		addField(
