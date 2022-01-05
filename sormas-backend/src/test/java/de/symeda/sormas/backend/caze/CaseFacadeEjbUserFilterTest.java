@@ -22,7 +22,6 @@ import static org.hamcrest.Matchers.is;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.user.UserReferenceDto;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +34,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -100,8 +100,7 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 			"Inf2",
 			UserRole.HOSPITAL_INFORMANT);
 
-		labUser = creator
-				.createUser(null, null, null, "Lab", "Off", UserRole.LAB_USER);
+		labUser = creator.createUser(null, null, null, "Lab", "Off", UserRole.LAB_USER);
 		labUser.setLaboratory(rdcf1.facility);
 		getUserFacade().saveUser(labUser);
 
@@ -148,11 +147,14 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 
 		CaseDataDto caze = createCase(rdcf1, districtUser1);
 
+		UserDto inactiveUser = creator.createUser(rdcf1, UserRole.SURVEILLANCE_SUPERVISOR, user -> user.setActive(false));
+
 		List<UserReferenceDto> usersHavingCaseInJurisdiction = getUserFacade().getUsersHavingCaseInJurisdiction(caze.toReference());
 		Assert.assertNotNull(usersHavingCaseInJurisdiction);
 		Assert.assertEquals(3, usersHavingCaseInJurisdiction.size()); // contains also admin as test admin user is also national user
 		Assert.assertTrue(usersHavingCaseInJurisdiction.contains(nationalUser));
 		Assert.assertTrue(usersHavingCaseInJurisdiction.contains(districtUser1));
+		Assert.assertFalse(usersHavingCaseInJurisdiction.contains(inactiveUser));
 	}
 
 	@Test
@@ -189,7 +191,6 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 		List<CaseIndexDto> indexList = getCaseFacade().getIndexList(new CaseCriteria(), 0, 100, null);
 		assertThat(indexList, hasSize(2));
 	}
-
 
 	@Test
 	public void testGetCasesOnLaboratoryLevel() {
@@ -243,7 +244,6 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 		List<CaseIndexDto> indexList = getCaseFacade().getIndexList(new CaseCriteria(), 0, 100, null);
 		assertThat(indexList, hasSize(0));
 	}
-
 
 	@Test
 	public void testGetCasesWithPlaceOfStayOnRegionLevel() {
