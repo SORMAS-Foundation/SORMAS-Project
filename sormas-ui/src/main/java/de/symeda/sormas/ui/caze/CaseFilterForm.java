@@ -87,6 +87,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		CaseCriteria.FOLLOW_UP_UNTIL_TO,
 		ContactCriteria.SYMPTOM_JOURNAL_STATUS,
 		CaseCriteria.VACCINATION_STATUS,
+		CaseCriteria.REINFECTION_STATUS,
 		CaseCriteria.BIRTHDATE_YYYY,
 		CaseCriteria.BIRTHDATE_MM,
 		CaseCriteria.BIRTHDATE_DD)
@@ -226,6 +227,10 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 
 		addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.VACCINATION_STATUS, 140));
+
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.REINFECTION_STATUS, 140));
+		}
 
 		addField(
 			moreFiltersContainer,
