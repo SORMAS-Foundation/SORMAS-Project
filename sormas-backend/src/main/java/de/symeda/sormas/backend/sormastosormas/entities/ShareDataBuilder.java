@@ -156,7 +156,7 @@ public class ShareDataBuilder {
 		return dto;
 	}
 
-	public ShareRequestPreviews buildShareDataPreview(ShareRequestInfo requestInfo) {
+	public ShareRequestPreviews buildShareDataPreview(ShareRequestInfo requestInfo) throws SormasToSormasException {
 		List<SormasToSormasCasePreview> cases = new ArrayList<>();
 		List<SormasToSormasContactPreview> contacts = new ArrayList<>();
 		List<SormasToSormasEventPreview> events = new ArrayList<>();
@@ -197,6 +197,10 @@ public class ShareDataBuilder {
 				}
 			}
 		});
+
+		if (!validationErrors.isEmpty()) {
+			throw SormasToSormasException.fromStringProperty(validationErrors, Strings.errorSormasToSormasShare);
+		}
 
 		return new ShareRequestPreviews(cases, contacts, events, eventParticipants);
 	}
