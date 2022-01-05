@@ -9425,4 +9425,12 @@ ALTER TABLE labmessage ADD CONSTRAINT fk_labmessage_assignee_id FOREIGN KEY (ass
 
 INSERT INTO schema_version (version_number, comment) VALUES (434, 'Added assignee to labmassage #7310');
 
+-- 2022-01-03 Add reinfection details and status #7182
+
+ALTER TABLE cases ADD COLUMN reinfectionstatus varchar(255);
+ALTER TABLE cases ADD COLUMN reinfectiondetails jsonb;
+ALTER TABLE cases_history ADD COLUMN reinfectionstatus varchar(255);
+ALTER TABLE cases_history ADD COLUMN reinfectiondetails jsonb;
+
+INSERT INTO schema_version (version_number, comment) VALUES (435, 'Add reinfection details and status #7182');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
