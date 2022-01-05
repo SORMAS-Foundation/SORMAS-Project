@@ -1203,6 +1203,8 @@
 		</repository>
 
 		<repository>
+			<!-- Needed for patched dependencies from Payara -->
+			<!-- It's readonly since 2021 and only listed for artifacts that are not found elsewhere -->
 			<id>payara-patched-externals</id>
 			<name>Payara Patched Externals</name>
 			<url>https://raw.github.com/payara/Payara_PatchedProjects/master</url>
