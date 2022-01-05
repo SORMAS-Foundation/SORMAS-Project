@@ -32,6 +32,7 @@ import org.sormas.e2etests.pojo.api.chunks.Address;
 public class Person {
   String firstName;
   String lastName;
+  String emailAddress;
   Integer birthdateDD;
   Integer birthdateMM;
   Integer birthdateYYYY;

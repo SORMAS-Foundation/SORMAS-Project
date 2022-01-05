@@ -217,7 +217,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 		throws DaoException, ServerConnectionException, ServerCommunicationException, NoConnectionException {
 		final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
-		final List<ADO> modifiedAdos = onlyNewEntities ? dao.queryForNull(ADO.CHANGE_DATE) : dao.queryForEq(ADO.MODIFIED, true);
+		final List<ADO> modifiedAdos = onlyNewEntities ? dao.queryForNew() : dao.queryForModified();
 
 		List<DTO> modifiedDtos = new ArrayList<>(modifiedAdos.size());
 		for (ADO ado : modifiedAdos) {

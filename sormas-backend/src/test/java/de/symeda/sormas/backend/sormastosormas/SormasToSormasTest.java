@@ -74,19 +74,19 @@ import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
-public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
+public abstract class SormasToSormasTest extends AbstractBeanTest {
 
 	// values are set in server-list.csv located in serveraccessdefault and serveraccesssecond
 	public static final String DEFAULT_SERVER_ID = "2.sormas.id.sormas_a";
 	public static final String SECOND_SERVER_ID = "2.sormas.id.sormas_b";
 	private ObjectMapper objectMapper;
+	protected TestDataCreator.RDCF rdcf;
 
 	@Override
 	public void init() {
 		super.init();
 
 		objectMapper = new ObjectMapper();
-
 		objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
 		objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
@@ -95,6 +95,11 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		FeatureConfigurationIndexDto featureConfiguration =
 			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, isAcceptRejectFeatureEnabled(), null);
 		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT);
+		// in S2S we use external IDs
+		rdcf = createRDCF(true).centralRdcf;
+
+		getFacilityService().createConstantFacilities();
+		getPointOfEntryService().createConstantPointsOfEntry();
 	}
 
 	protected boolean isAcceptRejectFeatureEnabled() {
@@ -297,7 +302,7 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		}
 
 		MappableRdcf rdcf = new MappableRdcf();
-		rdcf.invalidRemoteRdcf = new TestDataCreator.RDCF(
+		rdcf.invalidLocalRdcf = new TestDataCreator.RDCF(
 			new RegionReferenceDto(DataHelper.createUuid(), withExternalId ? null : regionName, regionExternalId),
 			new DistrictReferenceDto(DataHelper.createUuid(), withExternalId ? null : districtName, districtExternalId),
 			new CommunityReferenceDto(DataHelper.createUuid(), withExternalId ? null : communityName, communityExternalId),
@@ -308,29 +313,29 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 				PointOfEntryType.AIRPORT,
 				pointOfEntryExternalId));
 
-		Region region = creator.createRegion(regionName, regionExternalId);
-		District district = creator.createDistrict(districtName, region, districtExternalId);
-		Community community = creator.createCommunity(communityName, district, communityExternalId);
-		Facility facility = creator.createFacility(facilityName, FacilityType.HOSPITAL, region, district, community, facilityExternalId);
-		PointOfEntry pointOfEntry = creator.createPointOfEntry(pointOfEntryName, region, district, pointOfEntryExternalId);
+		Region region = creator.createRegionCentrally(regionName + "Central", regionExternalId);
+		District district = creator.createDistrictCentrally(districtName + "Central", region, districtExternalId);
+		Community community = creator.createCommunityCentrally(communityName + "Central", district, communityExternalId);
+		Facility facility = creator.createFacility(facilityName + "Central", FacilityType.HOSPITAL, region, district, community, facilityExternalId);
+		PointOfEntry pointOfEntry = creator.createPointOfEntry(pointOfEntryName + "Central", region, district, pointOfEntryExternalId);
 
-		rdcf.invalidLocalRdcf = new TestDataCreator.RDCF(
+		rdcf.centralRdcf = new TestDataCreator.RDCF(
 			new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalID()),
 			new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalID()),
 			new CommunityReferenceDto(community.getUuid(), community.getName(), community.getExternalID()),
 			new FacilityReferenceDto(facility.getUuid(), facility.getName(), facility.getExternalID()),
 			new PointOfEntryReferenceDto(pointOfEntry.getUuid(), pointOfEntry.getName(), PointOfEntryType.AIRPORT, pointOfEntry.getExternalID()));
-		rdcf.centralRdcf = rdcf.invalidLocalRdcf;
+
 		return rdcf;
 	}
 
 	public static class MappableRdcf {
+
 		// IMPORTANT: This is used to simulate a setup where central infra sync is enabled and all instances are
 		// guaranteed to have the same infra with the same global uuids.
 		public TestDataCreator.RDCF centralRdcf;
 
-		// These two will only be used in the future to simulate and test for sync errors and recovery.
-		public TestDataCreator.RDCF invalidRemoteRdcf;
+		// This will only be used in the future to simulate and test for sync errors and recovery.
 		public TestDataCreator.RDCF invalidLocalRdcf;
 	}
 }

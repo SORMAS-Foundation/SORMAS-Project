@@ -38,7 +38,6 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventCriteriaDateType;
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventHelper;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -104,7 +103,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		initializeGrid();
 	}
 
-	public EventSelectionField(EventGroupReferenceDto eventGroupReference, Set<String> excludedUuids) {
+	public EventSelectionField(Set<String> excludedUuids) {
 		this.searchField = new TextField();
 		this.infoPickOrCreateEvent = I18nProperties.getString(Strings.infoPickOrCreateEventGroupForEvent);
 		this.allowCreation = false;
@@ -127,9 +126,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		}
 		rbSelectEvent = new RadioButtonGroup<>();
 		rbSelectEvent.setItems(SELECT_EVENT);
-		rbSelectEvent.setItemCaptionGenerator((item) -> {
-			return I18nProperties.getCaption(Captions.eventSelect);
-		});
+		rbSelectEvent.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.eventSelect));
 		CssStyles.style(rbSelectEvent, CssStyles.VSPACE_NONE);
 		rbSelectEvent.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
@@ -227,8 +224,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 	public EventIndexDto getValue() {
 
 		if (eventGrid != null) {
-			EventIndexDto value = eventGrid.getSelectedItems().stream().findFirst().orElse(null);
-			return value;
+			return eventGrid.getSelectedItems().stream().findFirst().orElse(null);
 		}
 
 		return null;
@@ -290,7 +286,6 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 			if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 				applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
 				criteria.eventDateBetween(fromDate, toDate, EventCriteriaDateType.EVENT_DATE, dateFilterOption);
-
 			} else {
 				weekAndDateFilter.setNotificationsForMissingFilters();
 			}

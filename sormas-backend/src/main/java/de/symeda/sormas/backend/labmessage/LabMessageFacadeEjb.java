@@ -20,12 +20,19 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.backend.sample.Sample;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +59,8 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -85,6 +94,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	private SyncFacadeEjb.SyncFacadeEjbLocal syncFacadeEjb;
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private UserService userService;
 
 	LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target, boolean checkChangeDate) {
 
@@ -126,7 +137,9 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		}
 		target.setReportId(source.getReportId());
 		target.setSampleOverallTestResult(source.getSampleOverallTestResult());
-
+		if (source.getAssignee() != null) {
+			target.setAssignee(userService.getByReferenceDto(source.getAssignee()));
+		}
 		if (source.getSample() != null) {
 			target.setSample(sampleService.getByReferenceDto(source.getSample()));
 		}
@@ -185,6 +198,9 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setSampleOverallTestResult(source.getSampleOverallTestResult());
 		if (source.getSample() != null) {
 			target.setSample(source.getSample().toReference());
+		}
+		if (source.getAssignee() != null) {
+			target.setAssignee(source.getAssignee().toReference());
 		}
 
 		return target;
@@ -259,6 +275,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<LabMessageIndexDto> cq = cb.createQuery(LabMessageIndexDto.class);
 		Root<LabMessage> labMessage = cq.from(LabMessage.class);
+		Join<LabMessage, User> userJoin = labMessage.join(LabMessage.ASSIGNEE, JoinType.LEFT);
 
 		cq.multiselect(
 			labMessage.get(LabMessage.UUID),
@@ -273,15 +290,16 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			labMessage.get(LabMessage.PERSON_BIRTH_DATE_MM),
 			labMessage.get(LabMessage.PERSON_BIRTH_DATE_DD),
 			labMessage.get(LabMessage.PERSON_POSTAL_CODE),
-			labMessage.get(LabMessage.STATUS));
+			labMessage.get(LabMessage.STATUS),
+			userJoin.get(User.UUID),
+			userJoin.get(User.FIRST_NAME),
+			userJoin.get(User.LAST_NAME));
 
 		Predicate whereFilter = null;
 		if (criteria != null) {
 			whereFilter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
 		}
 
-		// remove deleted entities from result
-		whereFilter = CriteriaBuilderHelper.and(cb, whereFilter, labMessageService.createDefaultFilter(cb, labMessage));
 		cq.where(whereFilter);
 
 		// Distinct is necessary here to avoid duplicate results due to the user role join in taskService.createAssigneeFilter
@@ -380,6 +398,19 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@Override
 	public boolean exists(String uuid) {
 		return labMessageService.exists(uuid);
+	}
+
+	@Override
+	public boolean existsLabMessageForEntity(ReferenceDto entityRef) {
+		if (CaseReferenceDto.class.equals(entityRef.getClass())) {
+			return labMessageService.countForCase(entityRef.getUuid()) > 0;
+		} else if (ContactReferenceDto.class.equals(entityRef.getClass())) {
+			return labMessageService.countForContact(entityRef.getUuid()) > 0;
+		} else if (EventParticipantReferenceDto.class.equals(entityRef.getClass())) {
+			return labMessageService.countForEventParticipant(entityRef.getUuid()) > 0;
+		} else {
+			throw new UnsupportedOperationException("Reference class" + entityRef.getClass() + " is not supported.");
+		}
 	}
 
 	@Override
