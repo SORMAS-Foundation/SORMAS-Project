@@ -22,12 +22,14 @@ import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
@@ -83,7 +85,7 @@ public class RelatedLabMessageHandler {
 	private final CorrectedEntityHandler<SampleDto> sampleHandler;
 	private final CorrectedEntityHandler<PathogenTestDto> pathogenTestHandler;
 	private final CratePathogenTestHandler cratePathogenTestHandler;
-	private final Function<LabMessageDto, CompletionStage<Boolean>> continueProcessingConfirmation;
+	private final BiFunction<LabMessageDto, SampleReferenceDto, CompletionStage<Boolean>> continueProcessingConfirmation;
 	private final ShortcutHandler shortcutHandler;
 
 	public RelatedLabMessageHandler(
@@ -93,7 +95,7 @@ public class RelatedLabMessageHandler {
 		CorrectedEntityHandler<SampleDto> sampleHandler,
 		CorrectedEntityHandler<PathogenTestDto> pathogenTestHandler,
 		CratePathogenTestHandler cratePathogenTestHandler,
-		Function<LabMessageDto, CompletionStage<Boolean>> continueProcessingConfirmation,
+		BiFunction<LabMessageDto, SampleReferenceDto, CompletionStage<Boolean>> continueProcessingConfirmation,
 		ShortcutHandler shortcutHandler) {
 		this.correctionFlowConfirmation = correctionFlowConfirmation;
 		this.shortcutFlowConfirmation = shortcutFlowConfirmation;
@@ -154,27 +156,21 @@ public class RelatedLabMessageHandler {
 			}
 
 			for (TestReportDto r : relatedEntities.unmatchedTestReports) {
-				correctionFlow = correctionFlow.thenCompose(
-					(result) -> {
-						if (result == HandlerResult.HANDLED) {
-							// do not handle pathogen test creation if there were no corrections in the lab message
-							return handlePathogenTestCreation(
-								labMessage,
-								r,
-								relatedEntities.sample,
-								correctionFlowConfirmationSupplier,
-								chainHandler);
-						}
+				correctionFlow = correctionFlow.thenCompose((result) -> {
+					if (result == HandlerResult.HANDLED) {
+						// do not handle pathogen test creation if there were no corrections in the lab message
+						return handlePathogenTestCreation(labMessage, r, relatedEntities.sample, correctionFlowConfirmationSupplier, chainHandler);
+					}
 
-						return CompletableFuture.completedFuture(result);
-					});
+					return CompletableFuture.completedFuture(result);
+				});
 			}
 		}
 
 		return correctionFlow.thenCompose((result) -> {
 			if (result == HandlerResult.HANDLED) {
 				// ask to continue post processing
-				return continueProcessingConfirmation.apply(labMessage)
+				return continueProcessingConfirmation.apply(labMessage, relatedEntities.sample.toReference())
 					.thenCompose((doPostProcess) -> CompletableFuture.completedFuture(CorrectionResult.of(result, doPostProcess)));
 			}
 
