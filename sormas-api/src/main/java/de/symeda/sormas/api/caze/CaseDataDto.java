@@ -20,6 +20,7 @@ import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -1559,7 +1560,15 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	}
 
 	public void setReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
-		this.reinfectionDetails = reinfectionDetails;
+		Map<ReinfectionDetail, Boolean> onlyTrueReinfectionDetails = new HashMap<>();
+		if (reinfectionDetails != null) {
+			reinfectionDetails.forEach((key, value) -> {
+				if (value) {
+					onlyTrueReinfectionDetails.put(key, value);
+				}
+			});
+		}
+		this.reinfectionDetails = onlyTrueReinfectionDetails;
 	}
 
 	public YesNoUnknown getBloodOrganOrTissueDonated() {
