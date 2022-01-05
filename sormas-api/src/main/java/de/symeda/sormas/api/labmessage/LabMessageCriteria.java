@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class LabMessageCriteria extends BaseCriteria implements Serializable {
@@ -15,6 +16,7 @@ public class LabMessageCriteria extends BaseCriteria implements Serializable {
 	public static final String MESSAGE_DATE_TO = "messageDateTo";
 	public static final String BIRTH_DATE_FROM = "birthDateFrom";
 	public static final String BIRTH_DATE_TO = "birthDateTo";
+	public static final String ASSIGNEE = "assignee";
 
 	private String uuid;
 	private LabMessageStatus labMessageStatus;
@@ -25,6 +27,7 @@ public class LabMessageCriteria extends BaseCriteria implements Serializable {
 	private Date birthDateFrom;
 	private Date birthDateTo;
 	private Boolean deleted = Boolean.FALSE;
+	private UserReferenceDto assignee;
 
 	public String getUuid() {
 		return uuid;
@@ -97,5 +100,13 @@ public class LabMessageCriteria extends BaseCriteria implements Serializable {
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
+	}
+
+	public UserReferenceDto getAssignee() {
+		return assignee;
+	}
+
+	public void setAssignee(UserReferenceDto assignee) {
+		this.assignee = assignee;
 	}
 }

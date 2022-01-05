@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.labmessage;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -13,6 +14,8 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 
@@ -61,6 +64,8 @@ public class LabMessageFacadeEjbUnitTest {
 	@Mock
 	private TypedQuery<LabMessageIndexDto> labMessageIndexDtoTypedQuery;
 	@Mock
+	Join<Object, Object> userJoin;
+	@Mock
 	private TypedQuery<Long> longTypedQuery;
 	@Mock
 	private Expression<Long> longExpression;
@@ -96,6 +101,8 @@ public class LabMessageFacadeEjbUnitTest {
 		when(labMessageIndexDtoTypedQuery.setMaxResults(max)).thenReturn(labMessageIndexDtoTypedQuery);
 		ArrayList<LabMessageIndexDto> expectedResult = new ArrayList<>();
 		when(labMessageIndexDtoTypedQuery.getResultList()).thenReturn(expectedResult);
+		when(labMessage.join(LabMessage.ASSIGNEE, JoinType.LEFT)).thenReturn(userJoin);
+		when(userJoin.get((String) any())).thenReturn(null);
 		ArrayList<SortProperty> sortProperties = new ArrayList<>();
 		sortProperties.add(new SortProperty(LabMessageIndexDto.UUID));
 		sortProperties.add(new SortProperty("No Valid Property"));
