@@ -377,6 +377,7 @@ public interface Captions {
 	String CaseData_region = "CaseData.region";
 	String CaseData_regionLevelDate = "CaseData.regionLevelDate";
 	String CaseData_reInfection = "CaseData.reInfection";
+	String CaseData_reinfectionStatus = "CaseData.reinfectionStatus";
 	String CaseData_reportDate = "CaseData.reportDate";
 	String CaseData_reportingDistrict = "CaseData.reportingDistrict";
 	String CaseData_reportingUser = "CaseData.reportingUser";
