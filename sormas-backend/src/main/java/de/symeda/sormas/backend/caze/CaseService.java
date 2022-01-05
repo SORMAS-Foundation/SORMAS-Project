@@ -36,6 +36,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -72,6 +73,7 @@ import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
@@ -618,6 +620,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 		if (caseCriteria.getVaccinationStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.VACCINATION_STATUS), caseCriteria.getVaccinationStatus()));
+		}
+		if (caseCriteria.getReinfectionStatus() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.REINFECTION_STATUS), caseCriteria.getReinfectionStatus()));
 		}
 		if (caseCriteria.getReportDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), caseCriteria.getReportDateTo()));
@@ -1751,6 +1756,38 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		cu.set(root.get(Case.COMPLETENESS), completeness);
 		cu.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
 		em.createQuery(cu).executeUpdate();
+	}
+
+	public PreviousCaseDto getMostRecentPreviousCase(String personUuid, Disease disease, Date startDate) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PreviousCaseDto> cq = cb.createQuery(PreviousCaseDto.class);
+		Root<Case> root = cq.from(Case.class);
+		Join<Case, Person> personJoin = root.join(Case.PERSON, JoinType.LEFT);
+		Join<Case, Symptoms> symptomsJoin = root.join(Case.SYMPTOMS, JoinType.LEFT);
+
+		cq.multiselect(
+			root.get(AbstractDomainObject.UUID),
+			root.get(Case.REPORT_DATE),
+			root.get(Case.EXTERNAL_TOKEN),
+			root.get(Case.DISEASE_VARIANT),
+			symptomsJoin.get(Symptoms.ONSET_DATE));
+
+		cq.where(
+			CriteriaBuilderHelper.and(
+				cb,
+				cb.equal(personJoin.get(AbstractDomainObject.UUID), personUuid),
+				cb.equal(root.get(Case.DISEASE), disease),
+				cb.or(
+					cb.lessThan(symptomsJoin.get(Symptoms.ONSET_DATE), startDate),
+					cb.and(cb.isNull(symptomsJoin.get(Symptoms.ONSET_DATE)), cb.lessThan(root.get(Case.REPORT_DATE), startDate)))));
+		cq.orderBy(cb.desc(symptomsJoin.get(Symptoms.ONSET_DATE)), cb.desc(root.get(Case.REPORT_DATE)));
+
+		try {
+			return em.createQuery(cq).setMaxResults(1).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	/**
