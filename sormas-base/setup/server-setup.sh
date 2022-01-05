@@ -266,10 +266,21 @@ fi
 # Set up the database
 echo "Starting database setup..."
 
+echo "--- Are you connecting to an already existing DB?"
+select LS in "YES" "NO"; do
+  case $LS in
+    YES ) DB_EXISTS=true; break;;
+    NO ) DB_EXISTS=false; break;;
+  esac
+done
+
 while [[ -z "${DB_PW}" ]]; do
 	read -p "--- Enter a password for the new database user '${DB_USER}': " DB_PW
 done
 
+if [[ ${DB_EXISTS} = true ]]; then
+  read -p "Before connecting to the existing DB, please make sure to backup all the data. Press [Enter] to continue or [Ctrl+C] to cancel."
+else
 cat > setup.sql <<-EOF
 CREATE USER $DB_USER WITH PASSWORD '$DB_PW' CREATEDB;
 CREATE DATABASE $DB_NAME WITH OWNER = '$DB_USER' ENCODING = 'UTF8';
@@ -289,27 +300,28 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO $DB_USER;
 ALTER TABLE IF EXISTS schema_version OWNER TO $DB_USER;
 EOF
 
-if [[ ${LINUX} = true ]]; then
-	# no host is specified as by default the postgres user has only local access
-	su postgres -c "psql -p ${DB_PORT} < setup.sql"
-else
-	PSQL_DEFAULT="${PROGRAMFILES//\\/\/}/PostgreSQL/10/"
-	echo "--- Enter the name install path of Postgres on your system (default: \"${PSQL_DEFAULT}\":"
-	read -r PSQL_DIR
-	if [[ -z "${PSQL_DIR}" ]]; then
-		PSQL_DIR="${PSQL_DEFAULT}"
-	fi
-	PSQL="${PSQL_DIR}/bin/psql.exe"
-	while [[ -z "${DB_PG_PW}" ]]; do
-		read -r -p "--- Enter the password for the 'postgres' user of your database: " DB_PG_PW
-	done
-	"${PSQL}" --no-password --file=setup.sql "postgresql://postgres:${DB_PG_PW}@${DB_HOST}:${DB_PORT}/postgres"
+  if [[ ${LINUX} = true ]]; then
+    # no host is specified as by default the postgres user has only local access
+    su postgres -c "psql -p ${DB_PORT} < setup.sql"
+  else
+    PSQL_DEFAULT="${PROGRAMFILES//\\/\/}/PostgreSQL/10/"
+    echo "--- Enter the name install path of Postgres on your system (default: \"${PSQL_DEFAULT}\":"
+    read -r PSQL_DIR
+    if [[ -z "${PSQL_DIR}" ]]; then
+      PSQL_DIR="${PSQL_DEFAULT}"
+    fi
+    PSQL="${PSQL_DIR}/bin/psql.exe"
+    while [[ -z "${DB_PG_PW}" ]]; do
+      read -r -p "--- Enter the password for the 'postgres' user of your database: " DB_PG_PW
+    done
+    "${PSQL}" --no-password --file=setup.sql "postgresql://postgres:${DB_PG_PW}@${DB_HOST}:${DB_PORT}/postgres"
+  fi
+
+  rm setup.sql
+
+  echo "---"
+  read -p "Database setup completed. Please check the output for any error. Press [Enter] to continue or [Ctrl+C] to cancel."
 fi
-
-rm setup.sql
-
-echo "---"
-read -p "Database setup completed. Please check the output for any error. Press [Enter] to continue or [Ctrl+C] to cancel."
 
 # Setting ASADMIN_CALL and creating domain
 echo "Creating domain for Payara..."
