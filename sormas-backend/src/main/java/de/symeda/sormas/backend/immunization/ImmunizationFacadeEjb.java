@@ -656,18 +656,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 		newImmunization.setPerson(personService.getByReferenceDto(leadPerson.toReference()));
 
-		List<Vaccination> vaccinationEntities = new ArrayList<>();
-		for (VaccinationDto vaccinationDto : immunizationDto.getVaccinations()) {
-			Vaccination vaccination = new Vaccination();
-			vaccination.setUuid(DataHelper.createUuid());
-			vaccination = vaccinationFacade.fillOrBuildEntity(vaccinationDto, vaccination, false);
-
-			vaccination.setImmunization(newImmunization);
-			vaccinationEntities.add(vaccination);
-		}
-		newImmunization.getVaccinations().clear();
-		newImmunization.getVaccinations().addAll(vaccinationEntities);
-
+		vaccinationFacade.copyExistingVaccinationsToNewImmunization(immunizationDto, newImmunization);
 		immunizationService.ensurePersisted(newImmunization);
 	}
 
