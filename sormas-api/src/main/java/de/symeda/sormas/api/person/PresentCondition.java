@@ -17,9 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
+import de.symeda.sormas.api.caze.CaseClassificationInterface;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum PresentCondition {
+public enum PresentCondition
+	implements
+	CaseClassificationInterface {
 
 	ALIVE,
 	DEAD,

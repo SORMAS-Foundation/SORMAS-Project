@@ -26,7 +26,8 @@ import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
 public enum CaseClassification
 	implements
-	StatisticsGroupingKey {
+	StatisticsGroupingKey,
+	CaseClassificationInterface {
 
 	NOT_CLASSIFIED(1),
 	SUSPECT(2),
@@ -77,11 +78,7 @@ public enum CaseClassification
 	}
 
 	public static Set<CaseClassification> getConfirmedClassifications() {
-		return Collections
-				.unmodifiableSet(EnumSet.of(
-						CaseClassification.CONFIRMED,
-						CaseClassification.CONFIRMED_NO_SYMPTOMS,
-						CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS
-				));
+		return Collections.unmodifiableSet(
+			EnumSet.of(CaseClassification.CONFIRMED, CaseClassification.CONFIRMED_NO_SYMPTOMS, CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS));
 	}
 }

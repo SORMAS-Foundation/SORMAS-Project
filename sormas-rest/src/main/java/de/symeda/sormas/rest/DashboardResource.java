@@ -1,5 +1,6 @@
 package de.symeda.sormas.rest;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseClassificationInterface;
 import de.symeda.sormas.api.dashboard.DashboardCaseStatisticDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
@@ -56,6 +58,13 @@ public class DashboardResource extends EntityDtoResource {
 	@Path("/testResults")
 	public Map<PathogenTestResultType, Long> getTestResultCountByResultType(@RequestBody DashboardCriteria dashboardCriteria) {
 		return FacadeProvider.getDashboardFacade().getTestResultCountByResultType(dashboardCriteria);
+	}
+
+	@POST
+	@Path("/epidemiologicalCurveData")
+	public Map<Date, Map<? extends CaseClassificationInterface, Integer>> getEpidemiologicalCurveData(
+		@RequestBody DashboardCriteria dashboardCriteria) {
+		return FacadeProvider.getDashboardFacade().getEpiCurveSeriesElements(dashboardCriteria);
 	}
 
 }

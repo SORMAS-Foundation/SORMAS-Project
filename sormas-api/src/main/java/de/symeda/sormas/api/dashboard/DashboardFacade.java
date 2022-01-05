@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseClassificationInterface;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -37,6 +38,8 @@ public interface DashboardFacade {
 	DashboardCaseStatisticDto getDashboardCaseStatistic(DashboardCriteria dashboardCriteria);
 
 	Map<PathogenTestResultType, Long> getTestResultCountByResultType(DashboardCriteria dashboardCriteria);
+
+	Map<Date, Map<? extends CaseClassificationInterface, Integer>> getEpiCurveSeriesElements(DashboardCriteria dashboardCriteria);
 
 	List<DiseaseBurdenDto> getDiseaseBurden(
 		RegionReferenceDto region,
