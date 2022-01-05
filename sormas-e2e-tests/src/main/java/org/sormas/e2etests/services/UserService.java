@@ -21,6 +21,10 @@ package org.sormas.e2etests.services;
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalTime;
+import org.sormas.e2etests.enums.CommunityValues;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.pojo.User;
 
 public class UserService {
@@ -31,17 +35,23 @@ public class UserService {
     this.faker = faker;
   }
 
+  private String firstName;
+  private String lastName;
+  private final String emailDomain = "@USER.com";
+
   public User buildGeneratedUser() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
     return User.builder()
-        .firstName(faker.name().firstName())
-        .lastName(faker.name().lastName())
-        .emailAddress(faker.internet().emailAddress())
-        .phoneNumber("+49-4178-24704421")
+        .firstName(firstName)
+        .lastName(lastName)
+        .emailAddress(firstName + "." + lastName + emailDomain)
+        .phoneNumber(faker.phoneNumber().phoneNumber())
         .language("English")
         .country("Germany")
-        .region("Voreingestellte Bundesl\u00E4nder")
-        .district("Voreingestellter Landkreis")
-        .community("Voreingestellte Gemeinde")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .community(CommunityValues.VoreingestellteGemeinde.getName())
         .facilityCategory("Accommodation")
         .facilityType("Campsite")
         .facility("Other facility")
@@ -58,22 +68,24 @@ public class UserService {
         .gpsAccuracy("1")
         .active("Active?")
         .userName("userName".concat(LocalTime.now().toString()))
-        .limitedDisease("Anthrax")
+        .limitedDisease(DiseasesValues.getRandomDiseaseCaption())
         .build();
   }
 
   public User buildEditUser() {
     long currentTimeMillis = System.currentTimeMillis();
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
     return User.builder()
-        .firstName(faker.name().firstName())
-        .lastName(faker.name().lastName())
-        .emailAddress(faker.internet().emailAddress())
-        .phoneNumber("+49-4178-12345678")
+        .firstName(firstName)
+        .lastName(lastName)
+        .emailAddress(firstName + "." + lastName + emailDomain)
+        .phoneNumber(faker.phoneNumber().phoneNumber())
         .language("Deutsch")
         .country("Germany")
-        .region("Voreingestellte Bundesl\u00E4nder")
-        .district("Voreingestellter Landkreis")
-        .community("Voreingestellte Gemeinde")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .community(CommunityValues.VoreingestellteGemeinde.getName())
         .facilityCategory("Care facility")
         .facilityType("Elderly day care")
         .facility("Other facility")
@@ -90,7 +102,7 @@ public class UserService {
         .active("Active?")
         .userRole("ReST User")
         .userName("userName" + currentTimeMillis)
-        .limitedDisease("COVID-19")
+        .limitedDisease(DiseasesValues.getRandomDiseaseCaption())
         .build();
   }
 }

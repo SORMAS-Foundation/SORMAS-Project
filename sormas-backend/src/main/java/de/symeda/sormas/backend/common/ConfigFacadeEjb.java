@@ -108,6 +108,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String INTERFACE_PATIENT_DIARY_URL = "interface.patientdiary.url";
 	public static final String INTERFACE_PATIENT_DIARY_PROBANDS_URL = "interface.patientdiary.probandsurl";
 	public static final String INTERFACE_PATIENT_DIARY_AUTH_URL = "interface.patientdiary.authurl";
+	public static final String INTERFACE_PATIENT_DIARY_FRONTEND_AUTH_URL = "interface.patientdiary.frontendAuthurl";
 	public static final String INTERFACE_PATIENT_DIARY_EMAIL = "interface.patientdiary.email";
 	public static final String INTERFACE_PATIENT_DIARY_PASSWORD = "interface.patientdiary.password";
 	public static final String INTERFACE_PATIENT_DIARY_DEFAULT_USER_USERNAME = "interface.patientdiary.defaultuser.username";
@@ -133,7 +134,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String CENTRAL_ETCD_CLIENT_NAME = "central.etcd.clientName";
 	private static final String CENTRAL_ETCD_CLIENT_PASSWORD = "central.etcd.clientPassword";
 	private static final String CENTRAL_ETCD_CA_PATH = "central.etcd.caPath";
-	private static final String CENTRAL_LOCATION_SYNC= "central.location.sync";
+	private static final String CENTRAL_LOCATION_SYNC = "central.location.sync";
 
 	public static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
 	public static final String SORMAS2SORMAS_ID = "sormas2sormas.id";
@@ -499,6 +500,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setUrl(getProperty(INTERFACE_PATIENT_DIARY_URL, null));
 		config.setProbandsUrl(getProperty(INTERFACE_PATIENT_DIARY_PROBANDS_URL, null));
 		config.setAuthUrl(getProperty(INTERFACE_PATIENT_DIARY_AUTH_URL, null));
+		config.setFrontendAuthUrl(getProperty(INTERFACE_PATIENT_DIARY_FRONTEND_AUTH_URL, null));
 		config.setEmail(getProperty(INTERFACE_PATIENT_DIARY_EMAIL, null));
 		config.setPassword(getProperty(INTERFACE_PATIENT_DIARY_PASSWORD, null));
 		config.setAcceptPhoneContact(getBoolean(INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT, true));
@@ -555,6 +557,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			getPatientDiaryConfig().getUrl(),
 			getPatientDiaryConfig().getProbandsUrl(),
 			getPatientDiaryConfig().getAuthUrl(),
+			getPatientDiaryConfig().getFrontendAuthUrl(),
 			getSormasStatsUrl());
 
 		SormasToSormasConfig s2sConfig = getS2SConfig();
@@ -671,7 +674,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getProperty(CENTRAL_ETCD_CA_PATH, null);
 	}
 
-	public boolean isCentralLocationSync(){
+	public boolean isCentralLocationSync() {
 		return getBoolean(CENTRAL_LOCATION_SYNC, false);
 	}
 
