@@ -221,9 +221,21 @@ public class LabMessageController {
 		});
 	}
 
+	public void assignAllSelectedItems(Collection<LabMessageIndexDto> selectedRows, Runnable callback) {
+		if (selectedRows.isEmpty()) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoLabMessagesSelected),
+				I18nProperties.getString(Strings.messageNoLabMessagesSelected),
+				Notification.Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+			bulkEditAssignee(selectedRows, callback);
+		}
+	}
+
 	public void deleteAllSelectedItems(Collection<LabMessageIndexDto> selectedRows, Runnable callback) {
 
-		if (selectedRows.size() == 0) {
+		if (selectedRows.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(Strings.headingNoLabMessagesSelected),
 				I18nProperties.getString(Strings.messageNoLabMessagesSelected),
@@ -1328,6 +1340,33 @@ public class LabMessageController {
 		components.getWrapperComponent()
 			.addCommitListener(
 				() -> saveAssignee(labMessageDto, (UserReferenceDto) components.getAssigneeComboBox().getValue(), components.getWindow()));
+
+		UI.getCurrent().addWindow(components.getWindow());
+	}
+
+	private void bulkEditAssignee(Collection<LabMessageIndexDto> selectedRows, Runnable callback) {
+
+		EditAssigneeComponentContainer components = new EditAssigneeComponentContainer();
+
+		components.getAssignMeButton().addClickListener(e -> {
+			FacadeProvider.getLabMessageFacade()
+				.bulkAssignLabMessages(
+					selectedRows.stream().map(LabMessageIndexDto::getUuid).collect(Collectors.toList()),
+					UserProvider.getCurrent().getUserReference());
+			components.getWindow().close();
+			Notification.show(I18nProperties.getString(Strings.messageLabMessagesAssigned), Notification.Type.HUMANIZED_MESSAGE);
+			callback.run();
+		});
+
+		components.getWrapperComponent().addCommitListener(() -> {
+			FacadeProvider.getLabMessageFacade()
+				.bulkAssignLabMessages(
+					selectedRows.stream().map(LabMessageIndexDto::getUuid).collect(Collectors.toList()),
+					(UserReferenceDto) components.getAssigneeComboBox().getValue());
+			components.getWindow().close();
+			Notification.show(I18nProperties.getString(Strings.messageLabMessagesAssigned), Notification.Type.HUMANIZED_MESSAGE);
+			callback.run();
+		});
 
 		UI.getCurrent().addWindow(components.getWindow());
 	}
