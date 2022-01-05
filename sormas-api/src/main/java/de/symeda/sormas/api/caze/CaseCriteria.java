@@ -71,6 +71,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
+	public static final String REINFECTION_STATUS = "reinfectionStatus";
 	public static final String FACILITY_TYPE_GROUP = "facilityTypeGroup";
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String INCLUDE_CASES_FROM_OTHER_JURISDICTIONS = "includeCasesFromOtherJurisdictions";
@@ -133,6 +134,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Integer followUpVisitsInterval;
 	private SymptomJournalStatus symptomJournalStatus;
 	private VaccinationStatus vaccinationStatus;
+	private ReinfectionStatus reinfectionStatus;
 	private Date reportDateTo;
 	private FacilityTypeGroup facilityTypeGroup;
 	private FacilityType facilityType;
@@ -622,6 +624,14 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 
 	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
 		this.vaccinationStatus = vaccinationStatus;
+	}
+
+	public ReinfectionStatus getReinfectionStatus() {
+		return reinfectionStatus;
+	}
+
+	public void setReinfectionStatus(ReinfectionStatus reinfectionStatus) {
+		this.reinfectionStatus = reinfectionStatus;
 	}
 
 	public Date getReportDateTo() {

@@ -104,6 +104,7 @@ import de.symeda.sormas.ui.samples.SampleCreateForm;
 import de.symeda.sormas.ui.samples.SampleEditForm;
 import de.symeda.sormas.ui.samples.SampleSelectionField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxWithPlaceholder;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -876,7 +877,6 @@ public class LabMessageController {
 	}
 
 	/**
-	 *
 	 * @param component
 	 *            that holds a reference to the current state of processing a labMessage
 	 * @param entityCreated
@@ -901,7 +901,6 @@ public class LabMessageController {
 	}
 
 	/**
-	 *
 	 * @param component
 	 *            component is expected to not be null, as it should never be null in a correct call of this method. Calling this method
 	 *            with a null component will result in a NPE.
@@ -1309,5 +1308,46 @@ public class LabMessageController {
 		warningLayout.addComponent(infoLabel);
 		popupWindow.addCloseListener(e -> popupWindow.close());
 		popupWindow.setWidth(400, Sizeable.Unit.PIXELS);
+	}
+
+	public void editAssignee(String labMessageUuid) {
+
+		// get fresh data
+		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
+
+		VerticalLayout form = new VerticalLayout();
+		form.setSpacing(false);
+
+		ComboBoxWithPlaceholder assigneeComboBox = new ComboBoxWithPlaceholder();
+		assigneeComboBox.setCaption(I18nProperties.getCaption(Captions.LabMessage_assignee));
+		assigneeComboBox.addItems(
+			FacadeProvider.getUserFacade().getUsersByRegionAndRight(UserProvider.getCurrent().getUser().getRegion(), UserRight.LAB_MESSAGES));
+		assigneeComboBox.setNullSelectionAllowed(true);
+		assigneeComboBox.setWidth(300, Sizeable.Unit.PIXELS);
+		if (labMessageDto.getAssignee() != null) {
+			assigneeComboBox.setValue(labMessageDto.getAssignee());
+		}
+
+		Button assignMeButton = new Button(I18nProperties.getCaption(Captions.assignToMe));
+		CssStyles.style(assignMeButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+
+		form.addComponents(assigneeComboBox, assignMeButton);
+
+		final CommitDiscardWrapperComponent<VerticalLayout> wrapperComponent = new CommitDiscardWrapperComponent<VerticalLayout>(form);
+
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(wrapperComponent, I18nProperties.getString(Strings.headingEditAssignee));
+
+		assignMeButton.addClickListener(e -> saveAssignee(labMessageDto, UserProvider.getCurrent().getUserReference(), popupWindow));
+
+		wrapperComponent.addCommitListener(() -> saveAssignee(labMessageDto, (UserReferenceDto) assigneeComboBox.getValue(), popupWindow));
+
+		wrapperComponent.addDiscardListener(() -> popupWindow.close());
+	}
+
+	private void saveAssignee(LabMessageDto labMessageDto, UserReferenceDto assignee, Window popupWindow) {
+		labMessageDto.setAssignee(assignee);
+		FacadeProvider.getLabMessageFacade().save(labMessageDto);
+		popupWindow.close();
+		SormasUI.refreshView();
 	}
 }
