@@ -127,7 +127,7 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 			}
 		}
 
-		if (validationErrors.size() > 0) {
+		if (!validationErrors.isEmpty()) {
 			throw SormasToSormasException.fromStringProperty(validationErrors, Strings.errorSormasToSormasShare);
 		}
 	}
