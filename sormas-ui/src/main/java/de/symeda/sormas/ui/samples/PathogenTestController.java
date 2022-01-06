@@ -51,7 +51,6 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -108,7 +107,7 @@ public class PathogenTestController {
 
 		Window popupWindow = VaadinUiUtil.createPopupWindow();
 
-		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_DELETE)) {
 			editView.addDeleteListener(() -> {
 				FacadeProvider.getPathogenTestFacade().deletePathogenTest(pathogenTestUuid);
 				UI.getCurrent().removeWindow(popupWindow);
@@ -276,9 +275,7 @@ public class PathogenTestController {
 			} else if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				if (equalDisease) {
 					if (!ContactStatus.CONVERTED.equals(contact.getContactStatus())) {
-						showConvertContactToCaseDialog(contact, converted -> {
-							handleCaseCreationFromContactOrEventParticipant(converted, dto);
-						});
+						showConvertContactToCaseDialog(contact, converted -> handleCaseCreationFromContactOrEventParticipant(converted, dto));
 					} else {
 						showChangeAssociatedSampleResultDialog(dto, handleChanges -> {
 						});
@@ -325,9 +322,10 @@ public class PathogenTestController {
 			} else if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				if (equalDisease) {
 					if (eventParticipant.getResultingCase() == null) {
-						showConvertEventParticipantToCaseDialog(eventParticipant, dto.getTestedDisease(), caseCreated -> {
-							handleCaseCreationFromContactOrEventParticipant(caseCreated, dto);
-						});
+						showConvertEventParticipantToCaseDialog(
+							eventParticipant,
+							dto.getTestedDisease(),
+							caseCreated -> handleCaseCreationFromContactOrEventParticipant(caseCreated, dto));
 					} else {
 						showChangeAssociatedSampleResultDialog(dto, handleChanges -> {
 						});
