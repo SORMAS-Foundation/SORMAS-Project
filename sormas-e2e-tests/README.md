@@ -50,13 +50,15 @@ issues that might block successful web development.
   Alternatively go to IDea Preferences and search for `gradle`
 
   ![config](./images/sc2.png)
+  
 * Open `Preferences` -> `Plugins` and install `Cucumber for Java` plugin
 
    ![config](./images/sc4.png)
+   
 * Open `Preferences` -> `Compiler` and enable checkbox `Annotation processing`
 
   ![config](./images/sc6.png)
-
+  
 * Open `Preferences` -> `Plugins` and install `Lombok` plugin
 
    ![config](./images/sc7.png)
