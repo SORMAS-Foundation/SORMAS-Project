@@ -57,8 +57,7 @@ public class SampleResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}/{size}/{lastUUID}")
 	public List<SampleDto> getAllSamples(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastUUID") String lastUuid) {
-		// TODO #7303: implement batching
-		return FacadeProvider.getSampleFacade().getAllActiveSamplesAfter(new Date(since));
+		return FacadeProvider.getSampleFacade().getAllActiveSamplesAfter(new Date(since), size, lastUuid);
 	}
 
 	@GET

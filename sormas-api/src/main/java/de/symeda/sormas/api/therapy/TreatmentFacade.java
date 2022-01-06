@@ -22,6 +22,8 @@ public interface TreatmentFacade {
 
 	List<TreatmentDto> getAllActiveTreatmentsAfter(Date date);
 
+	List<TreatmentDto> getAllActiveTreatmentsAfter(Date date, Integer batchSize, String lastUuid);
+
 	List<TreatmentDto> getByUuids(List<String> uuids);
 
 	List<String> getAllActiveUuids();

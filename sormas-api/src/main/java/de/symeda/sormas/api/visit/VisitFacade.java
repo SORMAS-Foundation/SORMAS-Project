@@ -47,6 +47,8 @@ public interface VisitFacade {
 
 	List<String> getAllActiveUuids();
 
+	List<VisitDto> getAllActiveVisitsAfter(Date date, Integer batchSize, String lastUuid);
+
 	List<VisitDto> getByUuids(List<String> uuids);
 
 	void deleteVisit(String visitUuid);

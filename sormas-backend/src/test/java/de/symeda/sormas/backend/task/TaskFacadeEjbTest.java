@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -169,6 +170,12 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		// getAllActiveTasks and getAllUuids should return length 4+1+1 (case investigation & contact investigation)
 		assertEquals(6, getTaskFacade().getAllActiveTasksAfter(null).size());
 		assertEquals(6, getTaskFacade().getAllActiveUuids().size());
+
+		// getAllActiveTasks batched
+		List<TaskDto> allActiveTasksAfterBatched = getTaskFacade().getAllActiveTasksAfter(null, 3, null);
+		assertEquals(3, allActiveTasksAfterBatched.size());
+		assertTrue(allActiveTasksAfterBatched.get(0).getChangeDate().getTime() <= allActiveTasksAfterBatched.get(1).getChangeDate().getTime());
+		assertTrue(allActiveTasksAfterBatched.get(1).getChangeDate().getTime() <= allActiveTasksAfterBatched.get(2).getChangeDate().getTime());
 
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
 		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), true);

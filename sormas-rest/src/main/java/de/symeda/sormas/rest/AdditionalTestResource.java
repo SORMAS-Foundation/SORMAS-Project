@@ -59,8 +59,7 @@ public class AdditionalTestResource extends EntityDtoResource {
 		@PathParam("since") long since,
 		@PathParam("size") int size,
 		@PathParam("lastUUID") String lastUuid) {
-		// TODO #7303: implement batching
-		return FacadeProvider.getAdditionalTestFacade().getAllActiveAdditionalTestsAfter(new Date(since));
+		return FacadeProvider.getAdditionalTestFacade().getAllActiveAdditionalTestsAfter(new Date(since), size, lastUuid);
 	}
 
 	@POST

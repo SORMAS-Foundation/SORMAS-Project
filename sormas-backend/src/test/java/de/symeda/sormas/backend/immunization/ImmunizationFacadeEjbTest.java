@@ -112,6 +112,11 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			rdcf1);
 		List<ImmunizationDto> allAfter = getImmunizationFacade().getAllAfter(new DateTime(new Date()).minusDays(1).toDate());
 		assertEquals(2, allAfter.size());
+
+		List<ImmunizationDto> allAfterBatched = getImmunizationFacade().getAllAfter(new DateTime(new Date()).minusDays(1).toDate(), 1, null);
+		assertEquals(1, allAfterBatched.size());
+		assertEquals(Disease.CORONAVIRUS, allAfterBatched.get(0).getDisease());
+
 		List<PersonDto> allPersonsAfter = getPersonFacade().getPersonsAfter(new DateTime(new Date()).minusDays(1).toDate());
 		assertEquals(1, allPersonsAfter.size());
 	}

@@ -174,6 +174,11 @@ public class EventFacadeEjb implements EventFacade {
 
 	@Override
 	public List<EventDto> getAllActiveEventsAfter(Date date) {
+		return getAllActiveEventsAfter(date, null, null);
+	}
+
+	@Override
+	public List<EventDto> getAllActiveEventsAfter(Date date, Integer batchSize, String lastUuid) {
 
 		User user = userService.getCurrentUser();
 		if (user == null) {
@@ -181,7 +186,10 @@ public class EventFacadeEjb implements EventFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return eventService.getAllActiveEventsAfter(date).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
+		return eventService.getAllActiveEventsAfter(date, batchSize, lastUuid)
+			.stream()
+			.map(e -> convertToDto(e, pseudonymizer))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -615,7 +623,8 @@ public class EventFacadeEjb implements EventFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(EventIndexDto.class, indexList, EventIndexDto::getInJurisdictionOrOwned, (c, isInJurisdiction) -> {});
+		pseudonymizer.pseudonymizeDtoCollection(EventIndexDto.class, indexList, EventIndexDto::getInJurisdictionOrOwned, (c, isInJurisdiction) -> {
+		});
 
 		return indexList;
 	}

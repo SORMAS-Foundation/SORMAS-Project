@@ -59,5 +59,7 @@ public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, Immuniza
 
 	boolean linkRecoveryImmunizationToSearchedCase(String specificCaseSearchValue, ImmunizationDto immunization);
 
-    List<ImmunizationDto> getByPersonUuids(List<String> uuids);
+	List<ImmunizationDto> getByPersonUuids(List<String> uuids);
+
+	List<ImmunizationDto> getAllAfter(Date date, Integer batchSize, String lastUuid);
 }

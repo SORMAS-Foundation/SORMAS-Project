@@ -24,12 +24,17 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
+import de.symeda.sormas.api.EntityDto;
+
 public class ChangeDateFilterBuilder {
 
 	private final CriteriaBuilder cb;
 	private final Stream.Builder<Predicate> filters;
 	private Date date;
 	private Expression<? extends Date> dateExpression;
+
+	private From<?, ?> root;
+	private String lastUuid;
 
 	private ChangeDateFilterBuilder(CriteriaBuilder cb) {
 		this.cb = cb;
@@ -39,6 +44,12 @@ public class ChangeDateFilterBuilder {
 	public ChangeDateFilterBuilder(CriteriaBuilder cb, Date date) {
 		this(cb);
 		this.date = date;
+	}
+
+	public ChangeDateFilterBuilder(CriteriaBuilder cb, Date date, From<?, ?> root, String lastUuid) {
+		this(cb, date);
+		this.root = root;
+		this.lastUuid = lastUuid;
 	}
 
 	public ChangeDateFilterBuilder(CriteriaBuilder cb, Expression<? extends Date> dateExpression) {
@@ -61,10 +72,23 @@ public class ChangeDateFilterBuilder {
 			parent = parent.join(joinField, JoinType.LEFT);
 		}
 
+		Predicate filter;
 		if (dateExpression == null) {
-			return CriteriaBuilderHelper.greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), date);
+			filter = CriteriaBuilderHelper.greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), date);
 		} else {
-			return CriteriaBuilderHelper.greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), dateExpression);
+			filter = CriteriaBuilderHelper.greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), dateExpression);
 		}
+
+		if (root != null && lastUuid != null && !EntityDto.NO_LAST_SYNCED_UUID.equals(lastUuid)) {
+			Predicate filterUuid = cb.greaterThanOrEqualTo(root.get(AbstractDomainObject.UUID), lastUuid);
+			if (dateExpression == null) {
+				filterUuid = cb.and(cb.equal(parent.get(AbstractDomainObject.CHANGE_DATE), date), filterUuid);
+			} else {
+				filterUuid = cb.and(cb.equal(parent.get(AbstractDomainObject.CHANGE_DATE), dateExpression), filterUuid);
+			}
+			filter = cb.or(filter, filterUuid);
+		}
+
+		return filter;
 	}
 }

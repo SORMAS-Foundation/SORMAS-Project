@@ -183,6 +183,11 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public List<SampleDto> getAllActiveSamplesAfter(Date date) {
+		return getAllActiveSamplesAfter(date, null, null);
+	}
+
+	@Override
+	public List<SampleDto> getAllActiveSamplesAfter(Date date, Integer batchSize, String lastUuid) {
 
 		User user = userService.getCurrentUser();
 		if (user == null) {
@@ -190,7 +195,10 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return sampleService.getAllActiveSamplesAfter(date, user).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
+		return sampleService.getAllActiveSamplesAfter(date, user, batchSize, lastUuid)
+			.stream()
+			.map(e -> convertToDto(e, pseudonymizer))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -393,18 +401,22 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return sampleService.findBy(criteria, userService.getCurrentUser(), Sample.CREATION_DATE, false)
 			.stream()
-			.collect(Collectors.toMap(s -> associatedObjectFn.apply(s).getUuid(), (s) -> s, (s1, s2) -> {
+			.collect(
+				Collectors.toMap(
+					s -> associatedObjectFn.apply(s).getUuid(),
+					(s) -> s,
+					(s1, s2) -> {
 
-				// keep the positive one
-				if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-					return s1;
-				} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-					return s2;
-				}
+						// keep the positive one
+						if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+							return s1;
+						} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+							return s2;
+						}
 
-				// ordered by creation date by default, so always keep the first one
-				return s1;
-			}))
+						// ordered by creation date by default, so always keep the first one
+						return s1;
+					}))
 			.values()
 			.stream()
 			.map(s -> convertToDto(s, pseudonymizer))

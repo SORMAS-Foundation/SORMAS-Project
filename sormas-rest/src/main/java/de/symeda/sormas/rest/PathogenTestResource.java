@@ -59,8 +59,7 @@ public class PathogenTestResource extends EntityDtoResource {
 		@PathParam("since") long since,
 		@PathParam("size") int size,
 		@PathParam("lastUUID") String lastUuid) {
-		// TODO #7303: implement batching
-		return FacadeProvider.getPathogenTestFacade().getAllActivePathogenTestsAfter(new Date(since));
+		return FacadeProvider.getPathogenTestFacade().getAllActivePathogenTestsAfter(new Date(since), size, lastUuid);
 	}
 
 	@POST

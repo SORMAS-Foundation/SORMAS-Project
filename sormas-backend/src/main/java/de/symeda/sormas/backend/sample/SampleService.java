@@ -435,7 +435,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 			.getResultList();
 	}
 
-	public List<Sample> getAllActiveSamplesAfter(Date date, User user) {
+	public List<Sample> getAllActiveSamplesAfter(Date date, User user, Integer batchSize, String lastUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Sample> cq = cb.createQuery(getElementClass());
@@ -449,15 +449,14 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date);
+			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastUuid);
 			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		}
 
 		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(Sample.CHANGE_DATE)));
 		cq.distinct(true);
 
-		return em.createQuery(cq).getResultList();
+		return getBatchedQueryResults(cb, cq, from, batchSize);
 	}
 
 	public List<String> getAllActiveUuids(User user) {

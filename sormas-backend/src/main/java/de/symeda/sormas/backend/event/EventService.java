@@ -117,7 +117,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		super(Event.class);
 	}
 
-	public List<Event> getAllActiveEventsAfter(Date date) {
+	public List<Event> getAllActiveEventsAfter(Date date, Integer batchSize, String lastUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
@@ -137,15 +137,14 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
+			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), lastUuid);
 			filter = cb.and(filter, dateFilter);
 		}
 
 		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(Event.CHANGE_DATE)));
 		cq.distinct(true);
 
-		return em.createQuery(cq).getResultList();
+		return getBatchedQueryResults(cb, cq, from, batchSize);
 	}
 
 	public List<String> getAllActiveUuids() {
@@ -477,8 +476,15 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Event> eventPath, Timestamp date) {
-
 		return addChangeDateFilter(new ChangeDateFilterBuilder(cb, date), eventPath).build();
+	}
+
+	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Event> eventPath, Timestamp date, String lastUuid) {
+
+		ChangeDateFilterBuilder changeDateFilterBuilder =
+			lastUuid == null ? new ChangeDateFilterBuilder(cb, date) : new ChangeDateFilterBuilder(cb, date, eventPath, lastUuid);
+
+		return addChangeDateFilter(changeDateFilterBuilder, eventPath).build();
 	}
 
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Event> eventPath, Expression<? extends Date> dateExpression) {

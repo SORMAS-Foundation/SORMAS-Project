@@ -46,6 +46,7 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.user.CurrentUser;
@@ -143,16 +144,19 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	}
 
 	public List<ADO> getAll(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
+		return getAll(filterBuilder, null);
+	}
+
+	public List<ADO> getAll(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder, Integer batchSize) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
-		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
 		Predicate filter = filterBuilder.apply(cb, from);
 		if (filter != null) {
 			cq.where(filter);
 		}
-		return em.createQuery(cq).getResultList();
+		return getBatchedQueryResults(cb, cq, from, batchSize);
 	}
 
 	public List<ADO> getAll(String orderProperty, boolean asc) {
@@ -163,6 +167,16 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		cq.orderBy(asc ? cb.asc(from.get(orderProperty)) : cb.desc(from.get(orderProperty)));
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public List<ADO> getBatchedQueryResults(CriteriaBuilder cb, CriteriaQuery<ADO> cq, From<?, ADO> from, Integer batchSize) {
+
+		if (batchSize != null) {
+			cq.orderBy(cb.asc(from.get(AbstractDomainObject.CHANGE_DATE)), cb.asc(from.get(AbstractDomainObject.UUID)));
+		} else {
+			cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
+		}
+		return createQuery(cq, 0, batchSize).getResultList();
 	}
 
 	public long countAfter(Date since) {
@@ -202,6 +216,20 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
 	}
 
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from, Date date, String lastUuid) {
+		if (lastUuid == null || EntityDto.NO_LAST_SYNCED_UUID.equals(lastUuid)) {
+			return createChangeDateFilter(cb, from, date);
+		} else {
+			Timestamp timestamp = DateHelper.toTimestampUpper(date);
+			Predicate predicate = cb.or(
+				cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), timestamp),
+				cb.and(
+					cb.equal(from.get(AbstractDomainObject.CHANGE_DATE), timestamp),
+					cb.greaterThan(from.get(AbstractDomainObject.UUID), lastUuid)));
+			return predicate;
+		}
+	}
+
 	public Predicate recentDateFilter(CriteriaBuilder cb, Date date, Path<Date> datePath, int amountOfDays) {
 		return date != null ? cb.between(datePath, DateHelper.subtractDays(date, amountOfDays), DateHelper.addDays(date, amountOfDays)) : null;
 	}
@@ -229,9 +257,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 			return Collections.emptyList();
 		}
 
-		List<String> uuids = dtos.stream()
-			.map(ReferenceDto::getUuid)
-			.collect(Collectors.toList());
+		List<String> uuids = dtos.stream().map(ReferenceDto::getUuid).collect(Collectors.toList());
 		return getByUuids(uuids);
 	}
 

@@ -38,8 +38,7 @@ public class TreatmentResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}/{size}/{lastUUID}")
 	public List<TreatmentDto> getAllTreatments(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastUUID") String lastUuid) {
-		// TODO #7303: implement batching
-		return FacadeProvider.getTreatmentFacade().getAllActiveTreatmentsAfter(new Date(since));
+		return FacadeProvider.getTreatmentFacade().getAllActiveTreatmentsAfter(new Date(since), size, lastUuid);
 	}
 
 	@POST

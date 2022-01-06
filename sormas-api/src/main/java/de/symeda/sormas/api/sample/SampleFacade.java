@@ -57,6 +57,8 @@ public interface SampleFacade {
 
 	List<String> getAllActiveUuids();
 
+	List<SampleDto> getAllActiveSamplesAfter(Date date, Integer batchSize, String lastUuid);
+
 	List<SampleDto> getByUuids(List<String> uuids);
 
 	void deleteSample(SampleReferenceDto sampleRef);
