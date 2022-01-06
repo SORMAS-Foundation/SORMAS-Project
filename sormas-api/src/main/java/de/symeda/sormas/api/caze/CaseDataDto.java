@@ -247,6 +247,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@Required
 	private Date reportDate;
 	@Outbreaks
+	@Required
 	private UserReferenceDto reportingUser;
 	private Date regionLevelDate;
 	private Date nationalLevelDate;
@@ -669,10 +670,6 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
 	}
 
-	public Date getReportDate() {
-		return reportDate;
-	}
-
 	@Override
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
@@ -680,6 +677,10 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 
 	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
+	}
+
+	public Date getReportDate() {
+		return reportDate;
 	}
 
 	public void setReportDate(Date reportDate) {
