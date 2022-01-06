@@ -1335,12 +1335,12 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public CaseDataDto saveCase(@Valid CaseDataDto dto) throws ValidationRuntimeException {
-		return saveCase(dto, true, true, false, false);
+		return saveCase(dto, true, true, true, false);
 	}
 
 	@Override
 	public CaseDataDto saveCase(@Valid CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException {
-		return saveCase(dto, true, true, false, systemSave);
+		return saveCase(dto, true, true, true, systemSave);
 	}
 
 	public void saveBulkCase(
@@ -3172,7 +3172,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		// 1.1 Case
 
 		copyDtoValues(leadCaseData, otherCaseData, cloning);
-		saveCase(leadCaseData, !cloning, true, false, false);
+		saveCase(leadCaseData, !cloning, true, true, false);
 
 		// 1.2 Person - Only merge when the persons have different UUIDs
 		if (!cloning && !DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid())) {
