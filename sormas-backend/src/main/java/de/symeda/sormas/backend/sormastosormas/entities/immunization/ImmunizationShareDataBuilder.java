@@ -18,10 +18,12 @@ package de.symeda.sormas.backend.sormastosormas.entities.immunization;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
@@ -31,15 +33,25 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
 @LocalBean
-public class ImmunizationShareDataBuilder implements ShareDataBuilder<ImmunizationDto, Immunization, SormasToSormasImmunizationDto, Void> {
+public class ImmunizationShareDataBuilder
+	extends
+	ShareDataBuilder<ImmunizationDto, Immunization, SormasToSormasImmunizationDto, PreviewNotImplementedDto, SormasToSormasImmunizationDtoValidator> {
 
 	@EJB
 	private ImmunizationFacadeEjbLocal immunizationFacade;
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
 
+	@Inject
+	public ImmunizationShareDataBuilder(SormasToSormasImmunizationDtoValidator validator) {
+		super(validator);
+	}
+
+	public ImmunizationShareDataBuilder() {
+	}
+
 	@Override
-	public SormasToSormasImmunizationDto buildShareData(Immunization immunization, ShareRequestInfo requestInfo) {
+	protected SormasToSormasImmunizationDto doBuildShareData(Immunization immunization, ShareRequestInfo requestInfo) {
 		Pseudonymizer pseudonymizer =
 			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 
@@ -52,7 +64,7 @@ public class ImmunizationShareDataBuilder implements ShareDataBuilder<Immunizati
 	}
 
 	@Override
-	public Void buildShareDataPreview(Immunization data, ShareRequestInfo requestInfo) {
+	public PreviewNotImplementedDto doBuildShareDataPreview(Immunization data, ShareRequestInfo requestInfo) {
 		throw new RuntimeException("Immunizations preview not yet implemented");
 	}
 }
