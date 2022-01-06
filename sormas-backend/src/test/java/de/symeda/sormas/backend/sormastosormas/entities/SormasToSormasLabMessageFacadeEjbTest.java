@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.sormastosormas.labmessage.SormasToSormasLabMessageDto;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -56,9 +57,9 @@ public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasTest {
 				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_ID));
 				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/labmessages"));
 
-				List<LabMessageDto> postBody = invocation.getArgument(2, List.class);
+				List<SormasToSormasLabMessageDto> postBody = invocation.getArgument(2, List.class);
 				assertThat(postBody.size(), is(1));
-				LabMessageDto sharedLabMessage = postBody.get(0);
+				LabMessageDto sharedLabMessage = postBody.get(0).getEntity();
 
 				assertThat(sharedLabMessage.getUuid(), is(labMessage.getUuid()));
 				assertLabMessageFields(sharedLabMessage, dateNow);

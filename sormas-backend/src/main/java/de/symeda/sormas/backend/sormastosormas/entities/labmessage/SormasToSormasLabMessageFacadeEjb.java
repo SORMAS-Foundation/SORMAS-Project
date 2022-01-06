@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -75,7 +75,9 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (SormasToSormasLabMessageDto dto : dtos) {
 			ValidationErrors labMessageError = dtoValidator.validateOutgoing(dto);
-			validationErrors.add(new ValidationErrors(ValidationHelper.buildLabMessageValidationGroupName(dto.getEntity()), labMessageError));
+			if (labMessageError.hasError()) {
+				validationErrors.add(new ValidationErrors(ValidationHelper.buildLabMessageValidationGroupName(dto.getEntity()), labMessageError));
+			}
 		}
 
 		if (!validationErrors.isEmpty()) {
@@ -92,19 +94,19 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 
 	@Override
 	public void saveLabMessages(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
-		LabMessageDto[] sharedLabMessages = sormasToSormasEncryptionEjb.decryptAndVerify(encryptedData, LabMessageDto[].class);
+		SormasToSormasLabMessageDto[] sharedLabMessages =
+			sormasToSormasEncryptionEjb.decryptAndVerify(encryptedData, SormasToSormasLabMessageDto[].class);
 
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 		List<LabMessageDto> labMessagesToSave = new ArrayList<>(sharedLabMessages.length);
 
-		for (LabMessageDto labMessage : sharedLabMessages) {
+		for (SormasToSormasLabMessageDto labMessage : sharedLabMessages) {
 			ValidationErrors errors = validateSharedLabMessage(labMessage);
 			if (errors.hasError()) {
-				errors.setGroup(buildLabMessageValidationGroupName(labMessage));
+				errors.setGroup(buildLabMessageValidationGroupName(labMessage.getEntity()));
 				validationErrors.add(errors);
 			}
-
-			labMessagesToSave.add(labMessage);
+			labMessagesToSave.add(labMessage.getEntity());
 		}
 
 		if (!validationErrors.isEmpty()) {
@@ -116,13 +118,13 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 		}
 	}
 
-	private ValidationErrors validateSharedLabMessage(LabMessageDto dto) throws ValidationRuntimeException {
+	private ValidationErrors validateSharedLabMessage(SormasToSormasLabMessageDto dto) throws ValidationRuntimeException {
 		ValidationErrors errors = new ValidationErrors();
-		if (labMessageFacade.exists(dto.getUuid())) {
+		if (labMessageFacade.exists(dto.getEntity().getUuid())) {
 			errors.add(new ValidationErrorGroup(Captions.LabMessage), new ValidationErrorMessage(Validations.sormasToSormasLabMessageExists));
 		}
 
-		errors.addAll(dtoValidator.validateIncoming(new SormasToSormasLabMessageDto(dto)));
+		errors.addAll(dtoValidator.validateIncoming(dto));
 		return errors;
 	}
 
