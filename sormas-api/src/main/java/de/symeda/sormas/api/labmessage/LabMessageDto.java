@@ -377,4 +377,9 @@ public class LabMessageDto extends SormasToSormasShareableDto {
 	public void setSample(SampleReferenceDto sample) {
 		this.sample = sample;
 	}
+
+	@Override
+	public UserReferenceDto getReportingUser() {
+		return null;
+	}
 }
