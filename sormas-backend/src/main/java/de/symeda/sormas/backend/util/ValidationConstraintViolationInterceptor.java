@@ -21,14 +21,19 @@ import javax.validation.ConstraintViolationException;
 
 import de.symeda.sormas.api.utils.ConstrainValidationHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ValidationConstraintViolationInterceptor {
+
+	private static final Logger logger = LoggerFactory.getLogger(ValidationConstraintViolationInterceptor.class);
 
 	@AroundInvoke
 	public Object handleValidationConstraintViolation(InvocationContext context) throws Exception {
 		try {
 			return context.proceed();
 		} catch (ConstraintViolationException e) {
+			logger.error(String.valueOf(e));
 			throw new ValidationRuntimeException(ConstrainValidationHelper.getPropertyErrors(e.getConstraintViolations()));
 		}
 	}

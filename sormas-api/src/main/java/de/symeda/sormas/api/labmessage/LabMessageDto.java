@@ -15,6 +15,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
@@ -48,6 +49,7 @@ public class LabMessageDto extends EntityDto {
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String PROCESSED = "processed";
 	public static final String REPORT_ID = "reportId";
+	public static final String ASSIGNEE = "assignee";
 
 	private Disease testedDisease;
 	private Date messageDateTime;
@@ -102,6 +104,8 @@ public class LabMessageDto extends EntityDto {
 	private PathogenTestResultType sampleOverallTestResult;
 
 	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
+
+	private UserReferenceDto assignee;
 
 	public Disease getTestedDisease() {
 		return testedDisease;
@@ -344,6 +348,14 @@ public class LabMessageDto extends EntityDto {
 
 	public void setSampleOverallTestResult(PathogenTestResultType sampleOverallTestResult) {
 		this.sampleOverallTestResult = sampleOverallTestResult;
+	}
+
+	public UserReferenceDto getAssignee() {
+		return assignee;
+	}
+
+	public void setAssignee(UserReferenceDto assignee) {
+		this.assignee = assignee;
 	}
 
 	public static LabMessageDto build() {
