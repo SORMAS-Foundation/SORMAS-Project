@@ -1627,7 +1627,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	@Override
 	public CaseDataDto getValue() {
 		final CaseDataDto caze = super.getValue();
-		caze.setReinfectionDetails(FacadeProvider.getCaseFacade().cleanUpReinfectionDetails(mergeReinfectionTrees()));
+		caze.setReinfectionDetails(mergeReinfectionTrees());
 		return caze;
 	}
 
