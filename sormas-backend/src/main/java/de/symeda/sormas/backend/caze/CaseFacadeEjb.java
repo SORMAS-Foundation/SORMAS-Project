@@ -110,6 +110,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
@@ -725,7 +726,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.FOLLOW_UP_STATUS), caseRoot.get(Case.FOLLOW_UP_UNTIL),
 				caseRoot.get(Case.NOSOCOMIAL_OUTBREAK), caseRoot.get(Case.INFECTION_SETTING),
 				caseRoot.get(Case.PROHIBITION_TO_WORK), caseRoot.get(Case.PROHIBITION_TO_WORK_FROM), caseRoot.get(Case.PROHIBITION_TO_WORK_UNTIL),
-				caseRoot.get(Case.RE_INFECTION), caseRoot.get(Case.PREVIOUS_INFECTION_DATE),
+				caseRoot.get(Case.RE_INFECTION), caseRoot.get(Case.PREVIOUS_INFECTION_DATE), caseRoot.get(Case.REINFECTION_STATUS), caseRoot.get(Case.REINFECTION_DETAILS),
 				// quarantine
 				caseRoot.get(Case.QUARANTINE), caseRoot.get(Case.QUARANTINE_TYPE_DETAILS), caseRoot.get(Case.QUARANTINE_FROM), caseRoot.get(Case.QUARANTINE_TO),
 				caseRoot.get(Case.QUARANTINE_HELP_NEEDED),
@@ -1335,7 +1336,12 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public CaseDataDto saveCase(@Valid CaseDataDto dto) throws ValidationRuntimeException {
-		return saveCase(dto, true, true);
+		return saveCase(dto, true, true, true, false);
+	}
+
+	@Override
+	public CaseDataDto saveCase(@Valid CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException {
+		return saveCase(dto, true, true, true, systemSave);
 	}
 
 	public void saveBulkCase(
@@ -1447,16 +1453,16 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
-	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate) {
-		return saveCase(dto, handleChanges, checkChangeDate, true);
+	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, Boolean systemSave) {
+		return saveCase(dto, handleChanges, checkChangeDate, true, systemSave);
 	}
 
-	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal)
+	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal, Boolean systemSave)
 		throws ValidationRuntimeException {
 
 		Case existingCase = caseService.getByUuid(dto.getUuid());
 
-		if (internal && existingCase != null && !caseService.isCaseEditAllowed(existingCase)) {
+		if (!systemSave && internal && existingCase != null && !caseService.isCaseEditAllowed(existingCase)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorCaseNotEditable));
 		}
 
@@ -2074,6 +2080,12 @@ public class CaseFacadeEjb implements CaseFacade {
 		return getCompletenessCheckCaseList.size();
 	}
 
+	@Override
+	public PreviousCaseDto getMostRecentPreviousCase(PersonReferenceDto person, Disease disease, Date startDate) {
+
+		return caseService.getMostRecentPreviousCase(person.getUuid(), disease, startDate);
+	}
+
 	private List<String> getCompletenessCheckNeededCaseList() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -2554,6 +2566,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setReInfection(source.getReInfection());
 		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
+		target.setReinfectionStatus(source.getReinfectionStatus());
+		target.setReinfectionDetails(source.getReinfectionDetails());
 
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 
@@ -2732,6 +2746,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setReInfection(source.getReInfection());
 		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
+		target.setReinfectionStatus(source.getReinfectionStatus());
+		target.setReinfectionDetails(source.getReinfectionDetails());
 
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 
@@ -3167,7 +3183,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		// 1.1 Case
 
 		copyDtoValues(leadCaseData, otherCaseData, cloning);
-		saveCase(leadCaseData, !cloning, true);
+		saveCase(leadCaseData, !cloning, true, true, false);
 
 		// 1.2 Person - Only merge when the persons have different UUIDs
 		if (!cloning && !DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid())) {

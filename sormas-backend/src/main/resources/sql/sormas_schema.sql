@@ -9418,4 +9418,19 @@ ALTER TABLE eventparticipant ALTER COLUMN reportinguser_id SET NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (433, 'Fill missing reporting users of event participants #7531');
 
+-- 2021-12-07 Added assignee to labmassage #7310
+ALTER TABLE labmessage ADD COLUMN assignee_id bigint;
+ALTER TABLE labmessage_history ADD COLUMN assignee_id bigint;
+ALTER TABLE labmessage ADD CONSTRAINT fk_labmessage_assignee_id FOREIGN KEY (assignee_id) REFERENCES users(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (434, 'Added assignee to labmassage #7310');
+
+-- 2022-01-03 Add reinfection details and status #7182
+
+ALTER TABLE cases ADD COLUMN reinfectionstatus varchar(255);
+ALTER TABLE cases ADD COLUMN reinfectiondetails jsonb;
+ALTER TABLE cases_history ADD COLUMN reinfectionstatus varchar(255);
+ALTER TABLE cases_history ADD COLUMN reinfectiondetails jsonb;
+
+INSERT INTO schema_version (version_number, comment) VALUES (435, 'Add reinfection details and status #7182');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

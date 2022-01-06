@@ -232,9 +232,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		// Tests count subquery
 		Subquery<Long> testCountSq = cq.subquery(Long.class);
 		Root<PathogenTest> testCountRoot = testCountSq.from(PathogenTest.class);
-		testCountSq.where(
-			cb.equal(testCountRoot.join(PathogenTest.SAMPLE, JoinType.LEFT).get(Sample.ID), sample.get(Sample.ID)),
-			cb.isFalse(testCountRoot.get(PathogenTest.DELETED)));
+		testCountSq.where(cb.equal(testCountRoot.get(PathogenTest.SAMPLE), sample), cb.isFalse(testCountRoot.get(PathogenTest.DELETED)));
 		testCountSq.select(cb.countDistinct(testCountRoot.get(PathogenTest.ID)));
 		selections.add(testCountSq.getSelection());
 
@@ -414,9 +412,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		// Tests count subquery
 		Subquery<Long> testCountSq = cq.subquery(Long.class);
 		Root<PathogenTest> testCountRoot = testCountSq.from(PathogenTest.class);
-		testCountSq.where(
-			cb.equal(testCountRoot.join(PathogenTest.SAMPLE, JoinType.LEFT).get(Sample.ID), sample.get(Sample.ID)),
-			cb.isFalse(testCountRoot.get(PathogenTest.DELETED)));
+		testCountSq.where(cb.equal(testCountRoot.get(PathogenTest.SAMPLE), sample), cb.isFalse(testCountRoot.get(PathogenTest.DELETED)));
 		testCountSq.select(cb.countDistinct(testCountRoot.get(PathogenTest.ID)));
 		selections.add(testCountSq.getSelection());
 
