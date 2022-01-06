@@ -101,7 +101,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 				Call<List<DTO>> dtoCall = pullAllSince(
 					lastSyncedEntityDate.getTime(),
 					batchSize,
-					lastSyncedEntityDate.equals(lastChangeDate) ? lastSyncedEntityUuid : null);
+					lastSyncedEntityDate.equals(lastChangeDate) ? lastSyncedEntityUuid : EntityDto.NO_LAST_SYNCED_UUID);
 
 				lastChangeDate = lastSyncedEntityDate;
 				if (dtoCall == null) {
@@ -135,9 +135,11 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
 			while (lastBatchSize == batchSize) {
 				Call<List<DTO>> dtoCall = pullAllSince(
-					lastSyncedEntityDate.getTime(),
+					lastSyncedEntityDate != null ? lastSyncedEntityDate.getTime() : 0,
 					batchSize,
-					lastSyncedEntityDate.equals(lastChangeDate) ? lastSyncedEntityUuid : null);
+					lastSyncedEntityDate != null
+						? lastSyncedEntityDate.equals(lastChangeDate) ? lastSyncedEntityUuid : EntityDto.NO_LAST_SYNCED_UUID
+						: EntityDto.NO_LAST_SYNCED_UUID);
 
 				lastChangeDate = lastSyncedEntityDate;
 				if (dtoCall == null) {
