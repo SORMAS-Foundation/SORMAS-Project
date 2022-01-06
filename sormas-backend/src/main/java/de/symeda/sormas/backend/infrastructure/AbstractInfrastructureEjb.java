@@ -116,4 +116,5 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}
 
+	// todo implement toDto() here
 }

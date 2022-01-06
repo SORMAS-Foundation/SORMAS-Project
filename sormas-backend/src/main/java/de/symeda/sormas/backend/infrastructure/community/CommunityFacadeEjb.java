@@ -264,6 +264,7 @@ public class CommunityFacadeEjb
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getDistrict().getRegion()));
 		dto.setArchived(entity.isArchived());
 		dto.setExternalID(entity.getExternalID());
+		dto.setCentrallyManaged(entity.isCentrallyManaged());
 
 		return dto;
 	}

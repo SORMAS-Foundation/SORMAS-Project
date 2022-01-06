@@ -18,7 +18,6 @@ package de.symeda.sormas.backend.infrastructure.country;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -38,10 +37,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.InfrastructureAdo;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -52,11 +48,10 @@ import de.symeda.sormas.api.infrastructure.country.CountryFacade;
 import de.symeda.sormas.api.infrastructure.country.CountryIndexDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import de.symeda.sormas.backend.infrastructure.continent.Continent;
@@ -211,6 +206,7 @@ public class CountryFacadeEjb
 		dto.setUnoCode(entity.getUnoCode());
 		dto.setUuid(entity.getUuid());
 		dto.setSubcontinent(SubcontinentFacadeEjb.toReferenceDto(entity.getSubcontinent()));
+		dto.setCentrallyManaged(entity.isCentrallyManaged());
 
 		return dto;
 	}

@@ -324,6 +324,7 @@ public class PointOfEntryFacadeEjb
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 		dto.setArchived(entity.isArchived());
 		dto.setExternalID(entity.getExternalID());
+		dto.setCentrallyManaged(entity.isCentrallyManaged());
 
 		return dto;
 	}
