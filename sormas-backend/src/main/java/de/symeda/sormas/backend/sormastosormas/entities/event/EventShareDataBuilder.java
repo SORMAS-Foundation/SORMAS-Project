@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.sormastosormas.entities.event;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
@@ -32,15 +33,24 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
 @LocalBean
-public class EventShareDataBuilder implements ShareDataBuilder<EventDto, Event, SormasToSormasEventDto, SormasToSormasEventPreview> {
+public class EventShareDataBuilder
+	extends ShareDataBuilder<EventDto, Event, SormasToSormasEventDto, SormasToSormasEventPreview, SormasToSormasEventDtoValidator> {
 
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
 	@EJB
 	private EventFacadeEjbLocal eventFacade;
 
+	@Inject
+	public EventShareDataBuilder(SormasToSormasEventDtoValidator validator) {
+		super(validator);
+	}
+
+	public EventShareDataBuilder() {
+	}
+
 	@Override
-	public SormasToSormasEventDto buildShareData(Event data, ShareRequestInfo requestInfo) {
+	protected SormasToSormasEventDto doBuildShareData(Event data, ShareRequestInfo requestInfo) {
 		Pseudonymizer pseudonymizer =
 			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 
@@ -50,7 +60,7 @@ public class EventShareDataBuilder implements ShareDataBuilder<EventDto, Event, 
 	}
 
 	@Override
-	public SormasToSormasEventPreview buildShareDataPreview(Event event, ShareRequestInfo requestInfo) {
+	public SormasToSormasEventPreview doBuildShareDataPreview(Event event, ShareRequestInfo requestInfo) {
 		Pseudonymizer pseudonymizer =
 			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 

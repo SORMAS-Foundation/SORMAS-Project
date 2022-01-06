@@ -192,6 +192,8 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 
 	public static final String RE_INFECTION = "reInfection";
 	public static final String PREVIOUS_INFECTION_DATE = "previousInfectionDate";
+	public static final String REINFECTION_STATUS = "reinfectionStatus";
+	public static final String REINFECTION_DETAILS = "reinfectionDetails";
 
 	public static final String BLOOD_ORGAN_OR_TISSUE_DONATED = "bloodOrganOrTissueDonated";
 
@@ -511,6 +513,14 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		Disease.CORONAVIRUS })
 	@HideForCountriesExcept
 	private Date previousInfectionDate;
+	@Diseases({
+		Disease.CORONAVIRUS })
+	@HideForCountriesExcept
+	private ReinfectionStatus reinfectionStatus;
+	@Diseases({
+		Disease.CORONAVIRUS })
+	@HideForCountriesExcept
+	private Map<ReinfectionDetail, Boolean> reinfectionDetails;
 
 	@HideForCountriesExcept
 	private YesNoUnknown bloodOrganOrTissueDonated;
@@ -1508,6 +1518,22 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 
 	public void setPreviousInfectionDate(Date previousInfectionDate) {
 		this.previousInfectionDate = previousInfectionDate;
+	}
+
+	public ReinfectionStatus getReinfectionStatus() {
+		return reinfectionStatus;
+	}
+
+	public void setReinfectionStatus(ReinfectionStatus reinfectionStatus) {
+		this.reinfectionStatus = reinfectionStatus;
+	}
+
+	public Map<ReinfectionDetail, Boolean> getReinfectionDetails() {
+		return reinfectionDetails;
+	}
+
+	public void setReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
+		this.reinfectionDetails = reinfectionDetails;
 	}
 
 	public YesNoUnknown getBloodOrganOrTissueDonated() {

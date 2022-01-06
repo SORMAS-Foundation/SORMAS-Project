@@ -192,6 +192,7 @@ public interface Captions {
 	String bulkDelete = "bulkDelete";
 	String bulkDisease = "bulkDisease";
 	String bulkEdit = "bulkEdit";
+	String bulkEditAssignee = "bulkEditAssignee";
 	String bulkEventInvestigationStatus = "bulkEventInvestigationStatus";
 	String bulkEventManagementStatus = "bulkEventManagementStatus";
 	String bulkEventParticipantsToContacts = "bulkEventParticipantsToContacts";
@@ -376,6 +377,7 @@ public interface Captions {
 	String CaseData_region = "CaseData.region";
 	String CaseData_regionLevelDate = "CaseData.regionLevelDate";
 	String CaseData_reInfection = "CaseData.reInfection";
+	String CaseData_reinfectionStatus = "CaseData.reinfectionStatus";
 	String CaseData_reportDate = "CaseData.reportDate";
 	String CaseData_reportingDistrict = "CaseData.reportingDistrict";
 	String CaseData_reportingUser = "CaseData.reportingUser";
