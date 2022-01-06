@@ -62,6 +62,13 @@ public class CaseResource extends EntityDtoResource {
 		return FacadeProvider.getCaseFacade().getAllActiveCasesAfter(new Date(since));
 	}
 
+	@GET
+	@Path("/all/{since}/{size}/{lastUUID}")
+	public List<CaseDataDto> getAllCases(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastUUID") String lastUuid) {
+		// TODO #7303: implement batching
+		return FacadeProvider.getCaseFacade().getAllActiveCasesAfter(new Date(since));
+	}
+
 	@POST
 	@Path("/query")
 	public List<CaseDataDto> getByUuids(List<String> uuids) {

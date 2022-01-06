@@ -54,6 +54,13 @@ public class ClinicalVisitResource extends EntityDtoResource {
 		return FacadeProvider.getClinicalVisitFacade().getAllActiveClinicalVisitsAfter(new Date(since));
 	}
 
+	@GET
+	@Path("/all/{since}/{size}/{lastUUID}")
+	public List<ClinicalVisitDto> getAllVisits(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastUUID") String lastUuid) {
+		// TODO #7303: implement batching
+		return FacadeProvider.getClinicalVisitFacade().getAllActiveClinicalVisitsAfter(new Date(since));
+	}
+
 	@POST
 	@Path("/query")
 	public List<ClinicalVisitDto> getByUuids(List<String> uuids) {

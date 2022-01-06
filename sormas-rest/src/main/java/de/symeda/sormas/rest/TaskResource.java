@@ -62,6 +62,13 @@ public class TaskResource extends EntityDtoResource {
 		return FacadeProvider.getTaskFacade().getAllActiveTasksAfter(new Date(since));
 	}
 
+	@GET
+	@Path("/all/{since}/{size}/{lastUUID}")
+	public List<TaskDto> getAll(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastUUID") String lastUuid) {
+		// TODO #7303: implement batching
+		return FacadeProvider.getTaskFacade().getAllActiveTasksAfter(new Date(since));
+	}
+
 	@POST
 	@Path("/query")
 	public List<TaskDto> getByUuids(List<String> uuids) {

@@ -48,6 +48,17 @@ public class WeeklyReportResource extends EntityDtoResource {
 		return FacadeProvider.getWeeklyReportFacade().getAllWeeklyReportsAfter(new Date(since));
 	}
 
+	@GET
+	@Path("/all/{since}/{size}/{lastUUID}")
+	public List<WeeklyReportDto> getAllWeeklyReports(
+		@Context SecurityContext sc,
+		@PathParam("since") long since,
+		@PathParam("size") int size,
+		@PathParam("lastUUID") String lastUuid) {
+		// TODO #7303: implement batching
+		return FacadeProvider.getWeeklyReportFacade().getAllWeeklyReportsAfter(new Date(since));
+	}
+
 	@POST
 	@Path("/query")
 	public List<WeeklyReportDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {

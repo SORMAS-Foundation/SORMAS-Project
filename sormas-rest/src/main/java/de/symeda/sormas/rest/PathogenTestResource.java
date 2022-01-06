@@ -53,6 +53,16 @@ public class PathogenTestResource extends EntityDtoResource {
 		return FacadeProvider.getPathogenTestFacade().getAllActivePathogenTestsAfter(new Date(since));
 	}
 
+	@GET
+	@Path("/all/{since}/{size}/{lastUUID}")
+	public List<PathogenTestDto> getAllPathogenTests(
+		@PathParam("since") long since,
+		@PathParam("size") int size,
+		@PathParam("lastUUID") String lastUuid) {
+		// TODO #7303: implement batching
+		return FacadeProvider.getPathogenTestFacade().getAllActivePathogenTestsAfter(new Date(since));
+	}
+
 	@POST
 	@Path("/query")
 	public List<PathogenTestDto> getByUuids(List<String> uuids) {

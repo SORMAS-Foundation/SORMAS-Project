@@ -57,6 +57,13 @@ public class ImmunizationResource extends EntityDtoResource {
 		return FacadeProvider.getImmunizationFacade().getAllAfter(new Date(since));
 	}
 
+	@GET
+	@Path("/all/{since}/{size}/{lastUUID}")
+	public List<ImmunizationDto> getAllAfter(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastUUID") String lastUuid) {
+		// TODO #7303: implement batching
+		return FacadeProvider.getImmunizationFacade().getAllAfter(new Date(since));
+	}
+
 	@POST
 	@Path("/query")
 	public List<ImmunizationDto> getByUuids(List<String> uuids) {

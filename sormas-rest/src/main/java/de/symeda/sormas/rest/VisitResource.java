@@ -66,6 +66,13 @@ public class VisitResource extends EntityDtoResource {
 		return FacadeProvider.getVisitFacade().getAllActiveVisitsAfter(new Date(since));
 	}
 
+	@GET
+	@Path("/all/{since}/{size}/{lastUUID}")
+	public List<VisitDto> getAllVisits(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastUUID") String lastUuid) {
+		// TODO #7303: implement batching
+		return FacadeProvider.getVisitFacade().getAllActiveVisitsAfter(new Date(since));
+	}
+
 	@POST
 	@Path("/query")
 	public List<VisitDto> getByUuids(List<String> uuids) {
