@@ -57,6 +57,13 @@ public class EventResource extends EntityDtoResource {
 		return FacadeProvider.getEventFacade().getAllActiveEventsAfter(new Date(since));
 	}
 
+	@GET
+	@Path("/all/{since}/{size}/{lastUUID}")
+	public List<EventDto> getAllEvents(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastUUID") String lastUuid) {
+		// TODO #7303: implement batching
+		return FacadeProvider.getEventFacade().getAllActiveEventsAfter(new Date(since));
+	}
+
 	/**
 	 * This method returns the eventDto that correspond to the given uuid.
 	 * The return eventDto has the superordinateEvent of type EventDetailedReferenceDto.

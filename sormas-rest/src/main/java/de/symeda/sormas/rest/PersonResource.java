@@ -65,6 +65,13 @@ public class PersonResource extends EntityDtoResource {
 		return FacadeProvider.getPersonFacade().getPersonsAfter(new Date(since));
 	}
 
+	@GET
+	@Path("/all/{since}/{size}/{lastUUID}")
+	public List<PersonDto> getAllPersons(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastUUID") String lastUuid) {
+		// TODO #7303: implement batching
+		return FacadeProvider.getPersonFacade().getPersonsAfter(new Date(since));
+	}
+
 	@POST
 	@Path("/query")
 	public List<PersonDto> getByUuids(List<String> uuids) {

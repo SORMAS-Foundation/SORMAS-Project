@@ -63,6 +63,17 @@ public class EventParticipantResource extends EntityDtoResource {
 	}
 
 	@GET
+	@Path("/all/{since}/{size}/{lastUUID}")
+	public List<EventParticipantDto> getAllEventParticipantsAfter(
+		@PathParam("since") long since,
+		@PathParam("size") int size,
+		@PathParam("lastUUID") String lastUuid) {
+		// TODO #7303: implement batching
+		List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsAfter(new Date(since));
+		return result;
+	}
+
+	@GET
 	@Path("/{uuid}")
 	public EventParticipantDto getByUuid(@PathParam("uuid") String uuid) {
 		return FacadeProvider.getEventParticipantFacade().getByUuid(uuid);
