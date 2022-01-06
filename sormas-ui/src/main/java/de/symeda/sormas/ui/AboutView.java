@@ -28,6 +28,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.vaadin.icons.VaadinIcons;
@@ -125,9 +126,17 @@ public class AboutView extends VerticalLayout implements View {
 		infoLayout.addComponent(infoLabel);
 
 		Label versionLabel =
-			new Label(I18nProperties.getCaption(Captions.aboutSormasVersion) + ": " + InfoProvider.get().getVersion(), ContentMode.HTML);
+			new Label(I18nProperties.getCaption(Captions.aboutVersion) + ": " + InfoProvider.get().getVersion(), ContentMode.HTML);
 		CssStyles.style(versionLabel, CssStyles.VSPACE_3);
 		infoLayout.addComponent(versionLabel);
+
+		if(FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LAB_MESSAGES)) {
+			addExternalServiceVersion(Captions.aboutLabMessageAdapter, () -> FacadeProvider.getLabMessageFacade().getLabResultsFacadeVersion(), infoLayout);
+		}
+
+		if(FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()){
+			addExternalServiceVersion(Captions.aboutExternalSurveillanceToolGateway, () -> FacadeProvider.getExternalSurveillanceToolFacade().getVersion(), infoLayout);
+		}
 
 		Link whatsNewLink = new Link(
 			I18nProperties.getCaption(Captions.aboutWhatsNew),
@@ -151,6 +160,35 @@ public class AboutView extends VerticalLayout implements View {
 		infoLayout.addComponent(changelogLink);
 
 		return infoLayout;
+	}
+
+	interface ExternalServiceVersionSupplier {
+		String get() throws Exception;
+	}
+	private void addExternalServiceVersion(String captionTag, ExternalServiceVersionSupplier versionSupplier, VerticalLayout infoLayout){
+		String version;
+		Label availabilityLabel;
+
+		try {
+			version = versionSupplier.get();
+			availabilityLabel = new Label(VaadinIcons.CHECK.getHtml(), ContentMode.HTML);
+			availabilityLabel.addStyleName(CssStyles.LABEL_POSITIVE);
+		} catch (Exception e) {
+			version = I18nProperties.getCaption(Captions.aboutServiceNotAvailable);
+			availabilityLabel = new Label(VaadinIcons.CLOSE.getHtml(), ContentMode.HTML);
+			availabilityLabel.addStyleName(CssStyles.LABEL_CRITICAL);
+		}
+
+		availabilityLabel.addStyleName(CssStyles.HSPACE_LEFT_4);
+
+		Label caption = new Label(I18nProperties.getCaption(captionTag));
+		HorizontalLayout captionLayout = new HorizontalLayout(caption, availabilityLabel);
+		captionLayout.setSpacing(false);
+		infoLayout.addComponent(captionLayout);
+
+		Label versionLabel = new Label(I18nProperties.getCaption(Captions.aboutVersion) + ": " + version, ContentMode.HTML);
+		CssStyles.style(versionLabel, CssStyles.VSPACE_3);
+		infoLayout.addComponent(versionLabel);
 	}
 
 	private VerticalLayout createDocumentsSection() {

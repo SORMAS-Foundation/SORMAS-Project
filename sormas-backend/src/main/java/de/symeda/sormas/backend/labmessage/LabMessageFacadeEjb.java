@@ -28,15 +28,14 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.backend.sample.Sample;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -56,7 +55,6 @@ import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import de.symeda.sormas.backend.user.User;
@@ -372,6 +370,11 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	protected ExternalMessageResult<List<LabMessageDto>> fetchExternalMessages(Date since) throws NamingException {
+		ExternalLabResultsFacade labResultsFacade = getExternalLabResultsFacade();
+		return labResultsFacade.getExternalLabMessages(since);
+	}
+
+	private ExternalLabResultsFacade getExternalLabResultsFacade() throws NamingException {
 		InitialContext ic = new InitialContext();
 		String jndiName = configFacade.getDemisJndiName();
 
@@ -379,8 +382,13 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			throw new CannotProceedException(I18nProperties.getValidationError(Validations.externalMessageConfigError));
 		}
 
-		ExternalLabResultsFacade labResultsFacade = (ExternalLabResultsFacade) ic.lookup(jndiName);
-		return labResultsFacade.getExternalLabMessages(since);
+		return (ExternalLabResultsFacade) ic.lookup(jndiName);
+	}
+
+	@Override
+	public String getLabResultsFacadeVersion() throws NamingException {
+		ExternalLabResultsFacade labResultsFacade = getExternalLabResultsFacade();
+		return labResultsFacade.getVersion();
 	}
 
 	private LabMessageFetchResult getSuccessfulFetchResult(ExternalMessageResult<List<LabMessageDto>> externalMessageResult) {
