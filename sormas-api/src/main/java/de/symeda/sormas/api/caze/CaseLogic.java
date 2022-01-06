@@ -201,6 +201,10 @@ public final class CaseLogic {
 
 	public static ReinfectionStatus calculateReinfectionStatus(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
 
+		if (reinfectionDetails == null) {
+			return null;
+		}
+
 		if (reinfectionDetails.getOrDefault(ReinfectionDetail.GENOME_SEQUENCE_PREVIOUS_INFECTION_KNOWN, false)
 			&& reinfectionDetails.getOrDefault(ReinfectionDetail.GENOME_SEQUENCE_CURRENT_INFECTION_KNOWN, false)
 			&& reinfectionDetails.getOrDefault(ReinfectionDetail.GENOME_SEQUENCES_NOT_MATCHING, false)) {
