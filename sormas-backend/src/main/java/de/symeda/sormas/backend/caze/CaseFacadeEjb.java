@@ -111,6 +111,7 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.PreviousCaseDto;
+import de.symeda.sormas.api.caze.ReinfectionDetail;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
@@ -1954,6 +1955,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (existingCase == null) {
 			vaccinationFacade.updateVaccinationStatuses(newCase);
 		}
+
+		// On German systems, correct and clean up reinfection data
+		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			newCase.setReinfectionDetails(cleanUpReinfectionDetails(newCase.getReinfectionDetails()));
+		}
 	}
 
 	public boolean evaluateFulfilledCondition(CaseDataDto newCase, CaseClassification caseClassification) {
@@ -2766,6 +2772,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		return target;
+	}
+
+	public Map<ReinfectionDetail, Boolean> cleanUpReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
+		Map<ReinfectionDetail, Boolean> onlyTrueReinfectionDetails = new HashMap<>();
+		if (reinfectionDetails != null && reinfectionDetails.containsValue(Boolean.FALSE)) {
+			onlyTrueReinfectionDetails =
+				reinfectionDetails.entrySet().stream().filter(Map.Entry::getValue).collect(Collectors.toMap(Map.Entry::getKey, entry -> true));
+		}
+		return onlyTrueReinfectionDetails;
 	}
 
 	public void updateInvestigationByStatus(CaseDataDto existingCase, Case caze) {
