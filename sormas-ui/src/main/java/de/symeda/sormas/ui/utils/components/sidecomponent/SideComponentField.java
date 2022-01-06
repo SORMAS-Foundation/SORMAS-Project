@@ -13,7 +13,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 public class SideComponentField extends HorizontalLayout {
 
-	protected final VerticalLayout mainLayout;
+	private final VerticalLayout mainLayout;
 
 	public SideComponentField() {
 		setMargin(false);
@@ -40,5 +40,9 @@ public class SideComponentField extends HorizontalLayout {
 		addComponent(editButton);
 		setComponentAlignment(editButton, Alignment.TOP_RIGHT);
 		setExpandRatio(editButton, 0);
+	}
+
+	public void setEnabled(boolean enabled) {
+		mainLayout.setEnabled(enabled);
 	}
 }

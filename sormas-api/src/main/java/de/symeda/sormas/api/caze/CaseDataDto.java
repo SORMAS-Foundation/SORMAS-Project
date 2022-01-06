@@ -1530,6 +1530,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		this.previousInfectionDate = previousInfectionDate;
 	}
 
+	@ImportIgnore
 	public ReinfectionStatus getReinfectionStatus() {
 		return reinfectionStatus;
 	}
@@ -1538,6 +1539,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		this.reinfectionStatus = reinfectionStatus;
 	}
 
+	@ImportIgnore
 	public Map<ReinfectionDetail, Boolean> getReinfectionDetails() {
 		return reinfectionDetails;
 	}
