@@ -9,7 +9,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import de.symeda.sormas.backend.infrastructure.country.Country;
+import javax.validation.ConstraintViolationException;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -18,9 +20,9 @@ import de.symeda.sormas.api.infrastructure.country.CountryCriteria;
 import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.api.infrastructure.country.CountryIndexDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
-import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 
 public class CountryFacadeEjbTest extends AbstractBeanTest {
 
@@ -116,7 +118,8 @@ public class CountryFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(entityIsEqualToDto(actual, expected));
 	}
 
-	@Test(expected = EmptyValueException.class)
+	@Test(expected = ConstraintViolationException.class)
+	@Ignore("See #7611")
 	public void testSaveCountryIsoCodeEmpty() {
 		CountryDto country = new CountryDto();
 		country.setDefaultName("Romania");

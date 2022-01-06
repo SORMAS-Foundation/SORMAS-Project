@@ -22,13 +22,14 @@ import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.importer.CountryImportProgressLayout;
 import de.symeda.sormas.ui.importer.ImportErrorException;
 import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportProgressLayout;
 import de.symeda.sormas.ui.importer.InfrastructureImporter;
+
+import javax.validation.ConstraintViolationException;
 
 public class CountryImporter extends InfrastructureImporter {
 
@@ -70,7 +71,7 @@ public class CountryImporter extends InfrastructureImporter {
 			try {
 				FacadeProvider.getCountryFacade().save(newEntityDto, allowOverwrite);
 				return ImportLineResult.SUCCESS;
-			} catch (EmptyValueException e) {
+			} catch (ConstraintViolationException e) {
 				writeImportError(values, e.getMessage());
 				return ImportLineResult.ERROR;
 			} catch (ValidationRuntimeException e) {
