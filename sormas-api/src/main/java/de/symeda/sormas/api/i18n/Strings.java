@@ -449,6 +449,7 @@ public interface Strings {
 	String headingEditAction = "headingEditAction";
 	String headingEditAdditionalTest = "headingEditAdditionalTest";
 	String headingEditAggregateReport = "headingEditAggregateReport";
+	String headingEditAssignee = "headingEditAssignee";
 	String headingEditCampaign = "headingEditCampaign";
 	String headingEditCases = "headingEditCases";
 	String headingEditClinicalVisit = "headingEditClinicalVisit";
@@ -1020,6 +1021,7 @@ public interface Strings {
 	String messageIncompleteGpsCoordinates = "messageIncompleteGpsCoordinates";
 	String messageInfrastructureLocked = "messageInfrastructureLocked";
 	String messageInvalidDatesLineListing = "messageInvalidDatesLineListing";
+	String messageLabMessagesAssigned = "messageLabMessagesAssigned";
 	String messageLabMessagesDeleted = "messageLabMessagesDeleted";
 	String messageLabMessagesDeleteProcessed = "messageLabMessagesDeleteProcessed";
 	String messageLaboratoriesArchived = "messageLaboratoriesArchived";
