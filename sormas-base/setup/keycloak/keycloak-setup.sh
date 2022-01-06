@@ -98,7 +98,7 @@ fi
 ASADMIN="${PAYARA_HOME}/bin/asadmin --port ${PORT_ADMIN}"
 
 # Keycloak settings
-KEYCLOAK_VERSION=11.0.0
+KEYCLOAK_VERSION=16.1.0
 KEYCLOAK_PORT=7080
 
 DB_HOST=localhost
