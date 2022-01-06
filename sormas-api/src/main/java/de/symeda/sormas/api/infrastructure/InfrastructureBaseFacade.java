@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.BaseFacade;
 import de.symeda.sormas.api.EntityDto;
@@ -23,5 +24,5 @@ public interface InfrastructureBaseFacade<DTO extends EntityDto, INDEX_DTO exten
 	 *            The DTO which should be saved.
 	 * @return The saved DTO.
 	 */
-	DTO saveUnchecked(DTO dto);
+	DTO saveUnchecked(@Valid DTO dto);
 }
