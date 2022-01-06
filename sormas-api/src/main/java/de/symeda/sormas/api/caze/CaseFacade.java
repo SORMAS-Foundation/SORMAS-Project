@@ -95,6 +95,8 @@ public interface CaseFacade {
 
 	CaseDataDto saveCase(@Valid CaseDataDto dto) throws ValidationRuntimeException;
 
+	CaseDataDto saveCase(@Valid CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException;
+
 	void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef);
 
 	void setSampleAssociations(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef);

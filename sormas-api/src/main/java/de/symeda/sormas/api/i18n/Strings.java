@@ -1022,6 +1022,7 @@ public interface Strings {
 	String messageIncompleteGpsCoordinates = "messageIncompleteGpsCoordinates";
 	String messageInfrastructureLocked = "messageInfrastructureLocked";
 	String messageInvalidDatesLineListing = "messageInvalidDatesLineListing";
+	String messageLabMessagesAssigned = "messageLabMessagesAssigned";
 	String messageLabMessagesDeleted = "messageLabMessagesDeleted";
 	String messageLabMessagesDeleteProcessed = "messageLabMessagesDeleteProcessed";
 	String messageLaboratoriesArchived = "messageLaboratoriesArchived";
