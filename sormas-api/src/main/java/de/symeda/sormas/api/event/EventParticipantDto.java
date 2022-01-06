@@ -44,10 +44,13 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 	public static final String PERSON = "person";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	public static final String RESULTING_CASE = "resultingCase";
+	public static final String REPORTING_USER = "reportingUser";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
+	@Required
+	private UserReferenceDto reportingUser;
 	@Required
 	private EventReferenceDto event;
 	@Required
@@ -103,6 +106,15 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 		eventParticipantDto.setPerson(person);
 
 		return eventParticipantDto;
+	}
+
+	@Override
+	public UserReferenceDto getReportingUser() {
+		return reportingUser;
+	}
+
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 
 	public EventReferenceDto getEvent() {

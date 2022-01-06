@@ -24,22 +24,13 @@ import javax.validation.Valid;
 
 public abstract class SormasToSormasShareableDto extends PseudonymizableDto {
 
-	public static final String REPORTING_USER = "reportingUser";
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
 	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
 	@Valid
 	protected SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
 	protected boolean ownershipHandedOver;
-	@Required
-	protected UserReferenceDto reportingUser;
 
-	public UserReferenceDto getReportingUser() {
-		return reportingUser;
-	}
-
-	public void setReportingUser(UserReferenceDto reportingUser) {
-		this.reportingUser = reportingUser;
-	}
+	public abstract UserReferenceDto getReportingUser();
 
 	@ImportIgnore
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {

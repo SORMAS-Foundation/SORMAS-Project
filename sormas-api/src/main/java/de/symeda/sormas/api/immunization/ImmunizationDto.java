@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -35,6 +35,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -73,6 +74,7 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	public static final String POSITIVE_TEST_RESULT_DATE = "positiveTestResultDate";
 	public static final String PREVIOUS_INFECTION = "previousInfection";
 	public static final String RECOVERY_DATE = "recoveryDate";
+	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
 	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
@@ -93,6 +95,7 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	private PersonReferenceDto person;
 	@Required
 	private Date reportDate;
+	private UserReferenceDto reportingUser;
 	private boolean archived;
 	@Required
 	private ImmunizationStatus immunizationStatus;
@@ -196,6 +199,15 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
+	}
+
+	@Override
+	public UserReferenceDto getReportingUser() {
+		return reportingUser;
+	}
+
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 
 	public boolean isArchived() {

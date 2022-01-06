@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -124,6 +124,7 @@ public class ContactDto extends SormasToSormasShareableDto {
 	public static final String RELATION_DESCRIPTION = "relationDescription";
 	public static final String RELATION_TO_CASE = "relationToCase";
 	public static final String REPORTING_DISTRICT = "reportingDistrict";
+	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -151,6 +152,8 @@ public class ContactDto extends SormasToSormasShareableDto {
 
 	@Required
 	private Date reportDateTime;
+	@Required
+	private UserReferenceDto reportingUser;
 	@SensitiveData
 	@Pseudonymizer(LatitudePseudonymizer.class)
 	@Min(value = -90, message = Validations.numberTooSmall)
@@ -399,6 +402,15 @@ public class ContactDto extends SormasToSormasShareableDto {
 
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
+	}
+
+	@Override
+	public UserReferenceDto getReportingUser() {
+		return reportingUser;
+	}
+
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 
 	public boolean isMultiDayContact() {

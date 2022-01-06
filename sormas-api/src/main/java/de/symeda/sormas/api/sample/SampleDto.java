@@ -45,6 +45,7 @@ public class SampleDto extends SormasToSormasShareableDto {
 	public static final String FIELD_SAMPLE_ID = "fieldSampleID";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
+	public static final String REPORTING_USER = "reportingUser";
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
 	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";
 	public static final String LAB = "lab";
@@ -82,6 +83,8 @@ public class SampleDto extends SormasToSormasShareableDto {
 
 	@Required
 	private Date reportDateTime;
+	@Required
+	private UserReferenceDto reportingUser;
 	@SensitiveData
 	@Min(value = -90, message = Validations.numberTooSmall)
 	@Max(value = 90, message = Validations.numberTooBig)
@@ -194,6 +197,15 @@ public class SampleDto extends SormasToSormasShareableDto {
 
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
+	}
+
+	@Override
+	public UserReferenceDto getReportingUser() {
+		return reportingUser;
+	}
+
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 
 	public SampleMaterial getSampleMaterial() {

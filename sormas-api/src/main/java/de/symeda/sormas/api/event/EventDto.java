@@ -66,6 +66,7 @@ public class EventDto extends SormasToSormasShareableDto {
 	public static final String END_DATE = "endDate";
 	public static final String MULTI_DAY_EVENT = "multiDayEvent";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
+	public static final String REPORTING_USER = "reportingUser";
 	public static final String EVOLUTION_DATE = "evolutionDate";
 	public static final String EVOLUTION_COMMENT = "evolutionComment";
 	public static final String EVENT_LOCATION = "eventLocation";
@@ -134,6 +135,8 @@ public class EventDto extends SormasToSormasShareableDto {
 	private Date endDate;
 	@Required
 	private Date reportDateTime;
+	@Required
+	private UserReferenceDto reportingUser;
 	private Date evolutionDate;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String evolutionComment;
@@ -345,6 +348,15 @@ public class EventDto extends SormasToSormasShareableDto {
 
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
+	}
+
+	@Override
+	public UserReferenceDto getReportingUser() {
+		return reportingUser;
+	}
+
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 
 	public Date getEvolutionDate() {
