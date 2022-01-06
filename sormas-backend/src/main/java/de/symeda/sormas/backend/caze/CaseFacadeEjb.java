@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -69,6 +70,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.caze.ReinfectionDetail;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -2766,6 +2768,17 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		return target;
+	}
+
+	public Map<ReinfectionDetail, Boolean> cleanUpReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
+		Map<ReinfectionDetail, Boolean> onlyTrueReinfectionDetails = new HashMap<>();
+		if (reinfectionDetails != null) {
+			onlyTrueReinfectionDetails = reinfectionDetails.entrySet()
+				.stream()
+				.filter(Map.Entry::getValue)
+				.collect(Collectors.toMap(Map.Entry::getKey, entry -> true));
+		}
+		return onlyTrueReinfectionDetails;
 	}
 
 	public void updateInvestigationByStatus(CaseDataDto existingCase, Case caze) {

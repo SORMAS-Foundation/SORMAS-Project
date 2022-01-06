@@ -1560,15 +1560,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	}
 
 	public void setReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
-		Map<ReinfectionDetail, Boolean> onlyTrueReinfectionDetails = new HashMap<>();
-		if (reinfectionDetails != null) {
-			reinfectionDetails.forEach((key, value) -> {
-				if (value) {
-					onlyTrueReinfectionDetails.put(key, value);
-				}
-			});
-		}
-		this.reinfectionDetails = onlyTrueReinfectionDetails;
+		this.reinfectionDetails = reinfectionDetails;
 	}
 
 	public YesNoUnknown getBloodOrganOrTissueDonated() {
