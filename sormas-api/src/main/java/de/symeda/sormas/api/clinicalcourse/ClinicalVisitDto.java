@@ -17,7 +17,7 @@ public class ClinicalVisitDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -8220449896773019721L;
 
-	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 8781;
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 7613;
 
 	public static final String I18N_PREFIX = "ClinicalVisit";
 

@@ -56,7 +56,7 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class PersonDto extends PseudonymizableDto {
 
-	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 25799082;
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 42953;
 
 	public static final String I18N_PREFIX = "Person";
 	public static final String SEX = "sex";

@@ -64,7 +64,7 @@ public class ContactDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
-	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 60060930;
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 96657;
 
 	public static final String I18N_PREFIX = "Contact";
 

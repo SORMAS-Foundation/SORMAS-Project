@@ -17,8 +17,10 @@ package de.symeda.sormas.api.utils;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
 
-import java.nio.charset.Charset;
-import java.util.Random;
+import java.lang.annotation.Annotation;
+import java.util.List;
+
+import javax.validation.constraints.Size;
 
 import org.junit.Assert;
 
@@ -27,7 +29,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Utf8;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -44,11 +45,11 @@ import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.visit.VisitDto;
-import uk.co.jemos.podam.api.AttributeMetadata;
+import uk.co.jemos.podam.api.ObjectStrategy;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
-import uk.co.jemos.podam.typeManufacturers.StringTypeManufacturerImpl;
-import uk.co.jemos.podam.typeManufacturers.TypeManufacturer;
+import uk.co.jemos.podam.api.PodamUtils;
+import uk.co.jemos.podam.api.RandomDataProviderStrategyImpl;
 
 public class SizeGenerator {
 
@@ -68,22 +69,26 @@ public class SizeGenerator {
 		AggregateReportDto.class,
 		PrescriptionDto.class,
 		TreatmentDto.class,
-		ClinicalVisitDto.class};
+		ClinicalVisitDto.class
+	};
 
 	public static void main(String[] args) throws Exception {
 		final PodamFactory factory = new PodamFactoryImpl();
-		final TypeManufacturer<String> stringManufacturer = new StringTypeManufacturerImpl() {
 
+		RandomDataProviderStrategyImpl strategy = (RandomDataProviderStrategyImpl) factory.getStrategy();
+		strategy.addOrReplaceAttributeStrategy(Size.class, new ObjectStrategy(){
 			@Override
-			public String getStringValue(AttributeMetadata attributeMetadata) {
+			public Object getValue(Class<?> attrType, List<Annotation> attrAnnotations) {
+				long length = CHARACTER_LIMIT_SMALL;
 
-				byte[] array = new byte[CHARACTER_LIMIT_SMALL];
-				new Random().nextBytes(array);
-				String generatedString = new String(array, Charset.forName("UTF-8"));
-				return generatedString;
+				StringBuilder sb = new StringBuilder();
+				while (sb.length() < length) {
+					sb.append(PodamUtils.getNiceCharacter());
+				}
+				return sb.toString();
 			}
-		};
-		factory.getStrategy().addOrReplaceTypeManufacturer(String.class, stringManufacturer);
+		});
+		factory.setStrategy(strategy);
 
 		for (Class<? extends EntityDto> dtoClass : dtoClasses) {
 			getSizeOfFilledDto(factory, dtoClass);

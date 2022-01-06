@@ -15,7 +15,7 @@ public class AdditionalTestDto extends EntityDto {
 
 	private static final long serialVersionUID = -7306267901413644171L;
 
-	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 5211;
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 1171;
 
 	public static final String I18N_PREFIX = "AdditionalTest";
 
