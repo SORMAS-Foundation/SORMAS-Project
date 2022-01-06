@@ -15,58 +15,40 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.samples;
+package de.symeda.sormas.ui.samples.pathogentestlink;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.DiseaseHelper;
-import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 
 @SuppressWarnings("serial")
-public class PathogenTestListEntry extends HorizontalLayout {
+public class PathogenTestListEntry extends SideComponentField {
 
 	private final PathogenTestDto pathogenTest;
-	private Button editButton;
-	private Button viewAssociatedLabMessagesButton;
 
 	public PathogenTestListEntry(PathogenTestDto pathogenTest) {
 
-		setSpacing(true);
-		setMargin(false);
-		setWidth(100, Unit.PERCENTAGE);
-		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
 		this.pathogenTest = pathogenTest;
-
-		VerticalLayout labelLayout = new VerticalLayout();
-		labelLayout.setSpacing(false);
-		labelLayout.setMargin(false);
-		labelLayout.setWidth(100, Unit.PERCENTAGE);
-		addComponent(labelLayout);
-		setExpandRatio(labelLayout, 1);
 
 		HorizontalLayout topLabelLayout = new HorizontalLayout();
 		topLabelLayout.setSpacing(false);
 		topLabelLayout.setMargin(false);
 		topLabelLayout.setWidth(100, Unit.PERCENTAGE);
-		labelLayout.addComponent(topLabelLayout);
+		addComponentToField(topLabelLayout);
 		Label labelTopLeft = new Label(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
 		CssStyles.style(labelTopLeft, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 		topLabelLayout.addComponent(labelTopLeft);
@@ -84,14 +66,14 @@ public class PathogenTestListEntry extends HorizontalLayout {
 			Label resultTextLabel = new Label(StringUtils.abbreviate(pathogenTest.getTestResultText(), 125));
 			resultTextLabel.setDescription(pathogenTest.getTestResultText());
 			resultTextLabel.setWidthFull();
-			labelLayout.addComponent(resultTextLabel);
+			addComponentToField(resultTextLabel);
 		}
 
 		HorizontalLayout middleLabelLayout = new HorizontalLayout();
 		middleLabelLayout.setSpacing(false);
 		middleLabelLayout.setMargin(false);
 		middleLabelLayout.setWidth(100, Unit.PERCENTAGE);
-		labelLayout.addComponent(middleLabelLayout);
+		addComponentToField(middleLabelLayout);
 
 		Label labelMiddleLeft =
 			new Label(DataHelper.toStringNullable(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails())));
@@ -107,7 +89,7 @@ public class PathogenTestListEntry extends HorizontalLayout {
 			bottomLabelLayout.setSpacing(false);
 			bottomLabelLayout.setMargin(false);
 			bottomLabelLayout.setWidth(100, Unit.PERCENTAGE);
-			labelLayout.addComponent(bottomLabelLayout);
+			addComponentToField(bottomLabelLayout);
 
 			if (pathogenTest.getTestedDiseaseVariant() != null) {
 				Label labelBottomLeft = new Label(pathogenTest.getTestedDiseaseVariant().toString());
@@ -130,43 +112,7 @@ public class PathogenTestListEntry extends HorizontalLayout {
 		} else {
 			CssStyles.style(labelResult, CssStyles.LABEL_WARNING);
 		}
-		labelLayout.addComponent(labelResult);
-	}
-
-	public void addEditListener(ClickListener editClickListener) {
-
-		if (editButton == null) {
-			editButton = ButtonHelper.createIconButtonWithCaption(
-				"edit-test-" + pathogenTest.getUuid(),
-				null,
-				VaadinIcons.PENCIL,
-				null,
-				ValoTheme.BUTTON_LINK,
-				CssStyles.BUTTON_COMPACT);
-
-			addComponent(editButton);
-			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);
-			setExpandRatio(editButton, 0);
-		}
-
-		editButton.addClickListener(editClickListener);
-	}
-
-	public void addAssociatedLabMessagesListener(ClickListener associatedLabMessagesClickListener) {
-		if (viewAssociatedLabMessagesButton == null) {
-			viewAssociatedLabMessagesButton = ButtonHelper.createIconButtonWithCaption(
-				"see-associated-lab-messages-" + pathogenTest.getUuid(),
-				null,
-				VaadinIcons.NOTEBOOK,
-				associatedLabMessagesClickListener,
-				ValoTheme.BUTTON_LINK,
-				CssStyles.BUTTON_COMPACT);
-
-			addComponent(viewAssociatedLabMessagesButton);
-			setComponentAlignment(viewAssociatedLabMessagesButton, Alignment.MIDDLE_RIGHT);
-			setExpandRatio(viewAssociatedLabMessagesButton, 0);
-			viewAssociatedLabMessagesButton.setDescription(I18nProperties.getDescription(Descriptions.Sample_associatedLabMessages));
-		}
+		addComponentToField(labelResult);
 	}
 
 	public PathogenTestDto getPathogenTest() {
