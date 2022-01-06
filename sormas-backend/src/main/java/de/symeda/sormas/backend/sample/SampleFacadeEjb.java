@@ -25,9 +25,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -38,15 +35,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
-import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -68,13 +59,13 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
+import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
@@ -106,7 +97,6 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
-import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -161,8 +151,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	private CaseService caseService;
 	@EJB
 	private ContactService contactService;
-	@EJB
-	private EventService eventService;
 	@EJB
 	private EventParticipantService eventParticipantService;
 	@EJB
@@ -324,7 +312,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			cb.equal(sampleRoot.get(Sample.LAB_SAMPLE_ID), labSampleId));
 		cq.where(filter);
 
-		return em.createQuery(cq).getResultList().stream().distinct().map(sample -> toDto(sample)).collect(Collectors.toList());
+		return em.createQuery(cq).getResultList().stream().distinct().map(SampleFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -386,230 +374,12 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public List<SampleIndexDto> getIndexList(SampleCriteria sampleCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
-		final Root<Sample> sample = cq.from(Sample.class);
-
-		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sample);
-		SampleJoins<Sample> joins = (SampleJoins<Sample>) sampleQueryContext.getJoins();
-
-		final Join<Sample, Case> caze = joins.getCaze();
-		final Join<Case, District> caseDistrict = joins.getCaseDistrict();
-
-		final Join<Sample, Contact> contact = joins.getContact();
-		final Join<Contact, District> contactDistrict = joins.getContactDistrict();
-		final Join<Case, District> contactCaseDistrict = joins.getContactCaseDistrict();
-
-		final Join<EventParticipant, Event> event = joins.getEvent();
-		final Join<Location, District> eventDistrict = joins.getEventDistrict();
-
-		Expression<Object> diseaseSelect = cb.selectCase()
-			.when(cb.isNotNull(caze), caze.get(Case.DISEASE))
-			.otherwise(cb.selectCase().when(cb.isNotNull(contact), contact.get(Contact.DISEASE)).otherwise(event.get(Event.DISEASE)));
-		Expression<Object> diseaseDetailsSelect = cb.selectCase()
-			.when(cb.isNotNull(caze), caze.get(Case.DISEASE_DETAILS))
-			.otherwise(cb.selectCase().when(cb.isNotNull(contact), contact.get(Contact.DISEASE_DETAILS)).otherwise(event.get(Event.DISEASE_DETAILS)));
-
-		Expression<Object> districtSelect = cb.selectCase()
-			.when(cb.isNotNull(caseDistrict), caseDistrict.get(District.NAME))
-			.otherwise(
-				cb.selectCase()
-					.when(cb.isNotNull(contactDistrict), contactDistrict.get(District.NAME))
-					.otherwise(
-						cb.selectCase()
-							.when(cb.isNotNull(contactCaseDistrict), contactCaseDistrict.get(District.NAME))
-							.otherwise(eventDistrict.get(District.NAME))));
-
-		cq.distinct(true);
-
-		List<Selection<?>> selections = new ArrayList<>(
-			Arrays.asList(
-				sample.get(Sample.UUID),
-				caze.get(Case.EPID_NUMBER),
-				sample.get(Sample.LAB_SAMPLE_ID),
-				sample.get(Sample.SAMPLE_DATE_TIME),
-				sample.get(Sample.SHIPPED),
-				sample.get(Sample.SHIPMENT_DATE),
-				sample.get(Sample.RECEIVED),
-				sample.get(Sample.RECEIVED_DATE),
-				sample.get(Sample.SAMPLE_MATERIAL),
-				sample.get(Sample.SAMPLE_PURPOSE),
-				sample.get(Sample.SPECIMEN_CONDITION),
-				joins.getLab().get(Facility.NAME),
-				joins.getReferredSample().get(Sample.UUID),
-				sample.get(Sample.SAMPLING_REASON),
-				sample.get(Sample.SAMPLING_REASON_DETAILS),
-				caze.get(Case.UUID),
-				joins.getCasePerson().get(Person.FIRST_NAME),
-				joins.getCasePerson().get(Person.LAST_NAME),
-				joins.getContact().get(Contact.UUID),
-				joins.getContactPerson().get(Person.FIRST_NAME),
-				joins.getContactPerson().get(Person.LAST_NAME),
-				joins.getEventParticipant().get(EventParticipant.UUID),
-				joins.getEventParticipantPerson().get(Person.FIRST_NAME),
-				joins.getEventParticipantPerson().get(Person.LAST_NAME),
-				diseaseSelect,
-				diseaseDetailsSelect,
-				sample.get(Sample.PATHOGEN_TEST_RESULT),
-				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED),
-				cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)),
-				districtSelect,
-				joins.getLab().get(Facility.UUID)));
-
-		// Tests count subquery
-		Subquery<Long> testCountSq = cq.subquery(Long.class);
-		Root<PathogenTest> testCountRoot = testCountSq.from(PathogenTest.class);
-		testCountSq.where(
-			cb.equal(testCountRoot.join(PathogenTest.SAMPLE, JoinType.LEFT).get(Sample.ID), sample.get(Sample.ID)),
-			cb.isFalse(testCountRoot.get(PathogenTest.DELETED)));
-		testCountSq.select(cb.countDistinct(testCountRoot.get(PathogenTest.ID)));
-		selections.add(testCountSq.getSelection());
-
-		selections.addAll(sampleService.getJurisdictionSelections(sampleQueryContext));
-		cq.multiselect(selections);
-
-		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
-
-		if (sampleCriteria != null) {
-			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<>(sortProperties.size());
-			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
-				switch (sortProperty.propertyName) {
-				case SampleIndexDto.UUID:
-				case SampleIndexDto.LAB_SAMPLE_ID:
-				case SampleIndexDto.SHIPPED:
-				case SampleIndexDto.RECEIVED:
-				case SampleIndexDto.REFERRED:
-				case SampleIndexDto.SAMPLE_DATE_TIME:
-				case SampleIndexDto.SHIPMENT_DATE:
-				case SampleIndexDto.RECEIVED_DATE:
-				case SampleIndexDto.SAMPLE_MATERIAL:
-				case SampleIndexDto.SAMPLE_PURPOSE:
-				case SampleIndexDto.PATHOGEN_TEST_RESULT:
-				case SampleIndexDto.ADDITIONAL_TESTING_STATUS:
-					expression = sample.get(sortProperty.propertyName);
-					break;
-				case SampleIndexDto.DISEASE:
-					expression = diseaseSelect;
-					break;
-				case SampleIndexDto.EPID_NUMBER:
-					expression = caze.get(Case.EPID_NUMBER);
-					break;
-				case SampleIndexDto.ASSOCIATED_CASE:
-					expression = joins.getCasePerson().get(Person.LAST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = joins.getCasePerson().get(Person.FIRST_NAME);
-					break;
-				case SampleIndexDto.ASSOCIATED_CONTACT:
-					expression = joins.getContactPerson().get(Person.LAST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = joins.getContactPerson().get(Person.FIRST_NAME);
-					break;
-				case SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT:
-					expression = joins.getEventParticipantPerson().get(Person.LAST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = joins.getEventParticipantPerson().get(Person.FIRST_NAME);
-					break;
-				case SampleIndexDto.DISTRICT:
-					expression = districtSelect;
-					break;
-				case SampleIndexDto.LAB:
-					expression = joins.getLab().get(Facility.NAME);
-					break;
-				default:
-					throw new IllegalArgumentException(sortProperty.propertyName);
-				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-			}
-			cq.orderBy(order);
-		} else {
-			cq.orderBy(cb.desc(sample.get(Sample.SAMPLE_DATE_TIME)));
-		}
-
-		List<SampleIndexDto> samples = QueryHelper.getResultList(em, cq, first, max);
-
-		if (!samples.isEmpty()) {
-			CriteriaQuery<Object[]> testCq = cb.createQuery(Object[].class);
-			Root<PathogenTest> testRoot = testCq.from(PathogenTest.class);
-			Expression<String> sampleIdExpr = testRoot.get(PathogenTest.SAMPLE).get(Sample.UUID);
-
-			Path<Long> testType = testRoot.get(PathogenTest.TEST_TYPE);
-			Path<Date> cqValue = testRoot.get(PathogenTest.CQ_VALUE);
-			testCq.select(cb.array(testType, cqValue, sampleIdExpr));
-
-			testCq.where(
-				cb.isFalse(testRoot.get(PathogenTest.DELETED)),
-				sampleIdExpr.in(samples.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList())));
-			testCq.orderBy(cb.desc(testRoot.get(PathogenTest.CHANGE_DATE)));
-
-			List<Object[]> testList = em.createQuery(testCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-
-			Map<String, Object[]> tests = testList.stream()
-				.filter(distinctByKey(pathogenTest -> pathogenTest[2]))
-				.collect(Collectors.toMap(pathogenTest -> pathogenTest[2].toString(), Function.identity()));
-
-			if (tests != null) {
-				for (SampleIndexDto indexDto : samples) {
-					Optional.ofNullable(tests.get(indexDto.getUuid())).ifPresent(test -> {
-						indexDto.setTypeOfLastTest((PathogenTestType) test[0]);
-						indexDto.setLastTestCqValue((Float) test[1]);
-					});
-				}
-			}
-		}
-
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		Pseudonymizer emptyValuePseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		pseudonymizer
-			.pseudonymizeDtoCollection(SampleIndexDto.class, samples, s -> s.getSampleJurisdictionFlagsDto().getInJurisdiction(), (s, ignored) -> {
-				final SampleJurisdictionFlagsDto sampleJurisdictionFlagsDto = s.getSampleJurisdictionFlagsDto();
-				if (s.getAssociatedCase() != null) {
-					emptyValuePseudonymizer
-						.pseudonymizeDto(CaseReferenceDto.class, s.getAssociatedCase(), sampleJurisdictionFlagsDto.getCaseInJurisdiction(), null);
-				}
-
-				ContactReferenceDto associatedContact = s.getAssociatedContact();
-				if (associatedContact != null) {
-					emptyValuePseudonymizer.pseudonymizeDto(
-						ContactReferenceDto.PersonName.class,
-						associatedContact.getContactName(),
-						sampleJurisdictionFlagsDto.getContactInJurisdiction(),
-						null);
-
-					if (associatedContact.getCaseName() != null) {
-						pseudonymizer.pseudonymizeDto(
-							ContactReferenceDto.PersonName.class,
-							associatedContact.getCaseName(),
-							sampleJurisdictionFlagsDto.getContactCaseInJurisdiction(),
-							null);
-					}
-				}
-
-				if (s.getAssociatedEventParticipant() != null) {
-					emptyValuePseudonymizer.pseudonymizeDto(
-						EventParticipantReferenceDto.class,
-						s.getAssociatedEventParticipant(),
-						sampleJurisdictionFlagsDto.getEvenParticipantInJurisdiction(),
-						null);
-				}
-			}, true);
-
-		return samples;
+		return sampleService.getIndexList(sampleCriteria, first, max, sortProperties);
 	}
 
-	public <T> java.util.function.Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-		Set<Object> seen = ConcurrentHashMap.newKeySet();
-		return t -> seen.add(keyExtractor.apply(t));
+	@Override
+	public List<SampleListEntryDto> getEntriesList(SampleCriteria sampleCriteria, Integer first, Integer max) {
+		return sampleService.getEntriesList(sampleCriteria, first, max);
 	}
 
 	public Page<SampleIndexDto> getIndexPage(SampleCriteria sampleCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
@@ -623,22 +393,18 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return sampleService.findBy(criteria, userService.getCurrentUser(), Sample.CREATION_DATE, false)
 			.stream()
-			.collect(
-				Collectors.toMap(
-					s -> associatedObjectFn.apply(s).getUuid(),
-					(s) -> s,
-					(s1, s2) -> {
+			.collect(Collectors.toMap(s -> associatedObjectFn.apply(s).getUuid(), (s) -> s, (s1, s2) -> {
 
-						// keep the positive one
-						if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-							return s1;
-						} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-							return s2;
-						}
+				// keep the positive one
+				if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+					return s1;
+				} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+					return s2;
+				}
 
-						// ordered by creation date by default, so always keep the first one
-						return s1;
-					}))
+				// ordered by creation date by default, so always keep the first one
+				return s1;
+			}))
 			.values()
 			.stream()
 			.map(s -> convertToDto(s, pseudonymizer))
