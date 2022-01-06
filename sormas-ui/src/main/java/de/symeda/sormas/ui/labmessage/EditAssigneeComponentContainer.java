@@ -25,6 +25,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxWithPlaceholder;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -49,7 +50,7 @@ public class EditAssigneeComponentContainer {
 		assigneeComboBox.setNullSelectionAllowed(true);
 		assigneeComboBox.setWidth(300, Sizeable.Unit.PIXELS);
 
-		assignMeButton = new Button(I18nProperties.getCaption(Captions.assignToMe));
+		assignMeButton = ButtonHelper.createButton(Captions.assignToMe);
 		CssStyles.style(assignMeButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 
 		form.addComponents(assigneeComboBox, assignMeButton);
