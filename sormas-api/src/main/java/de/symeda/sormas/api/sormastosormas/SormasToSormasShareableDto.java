@@ -17,7 +17,6 @@ package de.symeda.sormas.api.sormastosormas;
 
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 import javax.validation.Valid;
@@ -31,6 +30,8 @@ public abstract class SormasToSormasShareableDto extends PseudonymizableDto {
 	protected boolean ownershipHandedOver;
 
 	public abstract UserReferenceDto getReportingUser();
+
+	public abstract void setReportingUser(UserReferenceDto reportingUser);
 
 	@ImportIgnore
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {

@@ -204,6 +204,7 @@ public class SampleDto extends SormasToSormasShareableDto {
 		return reportingUser;
 	}
 
+	@Override
 	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
 	}

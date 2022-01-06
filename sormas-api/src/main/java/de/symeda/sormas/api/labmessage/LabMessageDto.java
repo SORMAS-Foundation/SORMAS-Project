@@ -107,6 +107,10 @@ public class LabMessageDto extends SormasToSormasShareableDto {
 	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
 
 	private UserReferenceDto assignee;
+	/**
+	 * Used in S2S context
+	 */
+	private UserReferenceDto reportingUser;
 
 	public Disease getTestedDisease() {
 		return testedDisease;
@@ -380,6 +384,11 @@ public class LabMessageDto extends SormasToSormasShareableDto {
 
 	@Override
 	public UserReferenceDto getReportingUser() {
-		return null;
+		return reportingUser;
+	}
+
+	@Override
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 }
