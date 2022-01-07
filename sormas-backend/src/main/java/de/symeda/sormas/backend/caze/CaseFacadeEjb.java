@@ -1959,6 +1959,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		// On German systems, correct and clean up reinfection data
 		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			newCase.setReinfectionDetails(cleanUpReinfectionDetails(newCase.getReinfectionDetails()));
+			newCase.setReinfectionStatus(CaseLogic.calculateReinfectionStatus(newCase.getReinfectionDetails()));
 		}
 	}
 
@@ -2775,12 +2776,15 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	public Map<ReinfectionDetail, Boolean> cleanUpReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
-		Map<ReinfectionDetail, Boolean> onlyTrueReinfectionDetails = new HashMap<>();
 		if (reinfectionDetails != null && reinfectionDetails.containsValue(Boolean.FALSE)) {
+			Map<ReinfectionDetail, Boolean> onlyTrueReinfectionDetails = new HashMap<>();
 			onlyTrueReinfectionDetails =
 				reinfectionDetails.entrySet().stream().filter(Map.Entry::getValue).collect(Collectors.toMap(Map.Entry::getKey, entry -> true));
+
+			return onlyTrueReinfectionDetails;
+		} else {
+			return reinfectionDetails;
 		}
-		return onlyTrueReinfectionDetails;
 	}
 
 	public void updateInvestigationByStatus(CaseDataDto existingCase, Case caze) {
