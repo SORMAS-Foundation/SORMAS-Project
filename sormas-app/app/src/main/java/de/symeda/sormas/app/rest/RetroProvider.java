@@ -304,7 +304,8 @@ public final class RetroProvider {
 	}
 
 	public static Integer getNumberOfEntitiesToBePulledInOneBatch(long approximateJsonSizeInBytes, Context context) throws ServerConnectionException {
-		return Math.toIntExact(getNetworkDownloadSpeedInKbps(context) * ASSUMED_TRANSFER_TIME_IN_SECONDS * 1024 / (approximateJsonSizeInBytes * 8));
+		int batchSize = Math.toIntExact(getNetworkDownloadSpeedInKbps(context) * ASSUMED_TRANSFER_TIME_IN_SECONDS * 1024 / (approximateJsonSizeInBytes * 8));
+		return batchSize < 10 ? 10 : batchSize;
 	}
 
 	public static long getNetworkDownloadSpeedInKbps(Context context) throws ServerConnectionException {
