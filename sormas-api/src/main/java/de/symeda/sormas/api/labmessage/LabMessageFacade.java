@@ -49,7 +49,7 @@ public interface LabMessageFacade {
 	 */
 	LabMessageFetchResult fetchAndSaveExternalLabMessages(Date since);
 
-	String getLabResultsFacadeVersion() throws NamingException;
+	String getLabMessagesAdapterVersion() throws NamingException;
 
 	boolean exists(String uuid);
 
