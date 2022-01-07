@@ -104,7 +104,6 @@ import de.symeda.sormas.ui.samples.SampleCreateForm;
 import de.symeda.sormas.ui.samples.SampleEditForm;
 import de.symeda.sormas.ui.samples.SampleSelectionField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.ComboBoxWithPlaceholder;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -221,9 +220,21 @@ public class LabMessageController {
 		});
 	}
 
+	public void assignAllSelectedItems(Collection<LabMessageIndexDto> selectedRows, Runnable callback) {
+		if (selectedRows.isEmpty()) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoLabMessagesSelected),
+				I18nProperties.getString(Strings.messageNoLabMessagesSelected),
+				Notification.Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+			bulkEditAssignee(selectedRows, callback);
+		}
+	}
+
 	public void deleteAllSelectedItems(Collection<LabMessageIndexDto> selectedRows, Runnable callback) {
 
-		if (selectedRows.size() == 0) {
+		if (selectedRows.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(Strings.headingNoLabMessagesSelected),
 				I18nProperties.getString(Strings.messageNoLabMessagesSelected),
@@ -1312,36 +1323,49 @@ public class LabMessageController {
 
 	public void editAssignee(String labMessageUuid) {
 
+		EditAssigneeComponentContainer components = new EditAssigneeComponentContainer();
+
 		// get fresh data
 		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
 
-		VerticalLayout form = new VerticalLayout();
-		form.setSpacing(false);
-
-		ComboBoxWithPlaceholder assigneeComboBox = new ComboBoxWithPlaceholder();
-		assigneeComboBox.setCaption(I18nProperties.getCaption(Captions.LabMessage_assignee));
-		assigneeComboBox.addItems(
-			FacadeProvider.getUserFacade().getUsersByRegionAndRight(UserProvider.getCurrent().getUser().getRegion(), UserRight.LAB_MESSAGES));
-		assigneeComboBox.setNullSelectionAllowed(true);
-		assigneeComboBox.setWidth(300, Sizeable.Unit.PIXELS);
 		if (labMessageDto.getAssignee() != null) {
-			assigneeComboBox.setValue(labMessageDto.getAssignee());
+			components.getAssigneeComboBox().setValue(labMessageDto.getAssignee());
 		}
 
-		Button assignMeButton = new Button(I18nProperties.getCaption(Captions.assignToMe));
-		CssStyles.style(assignMeButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+		components.getAssignMeButton()
+			.addClickListener(e -> saveAssignee(labMessageDto, UserProvider.getCurrent().getUserReference(), components.getWindow()));
+		components.getWrapperComponent()
+			.addCommitListener(
+				() -> saveAssignee(labMessageDto, (UserReferenceDto) components.getAssigneeComboBox().getValue(), components.getWindow()));
 
-		form.addComponents(assigneeComboBox, assignMeButton);
+		UI.getCurrent().addWindow(components.getWindow());
+	}
 
-		final CommitDiscardWrapperComponent<VerticalLayout> wrapperComponent = new CommitDiscardWrapperComponent<VerticalLayout>(form);
+	private void bulkEditAssignee(Collection<LabMessageIndexDto> selectedRows, Runnable callback) {
 
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(wrapperComponent, I18nProperties.getString(Strings.headingEditAssignee));
+		EditAssigneeComponentContainer components = new EditAssigneeComponentContainer();
 
-		assignMeButton.addClickListener(e -> saveAssignee(labMessageDto, UserProvider.getCurrent().getUserReference(), popupWindow));
+		components.getAssignMeButton().addClickListener(e -> {
+			FacadeProvider.getLabMessageFacade()
+				.bulkAssignLabMessages(
+					selectedRows.stream().map(LabMessageIndexDto::getUuid).collect(Collectors.toList()),
+					UserProvider.getCurrent().getUserReference());
+			components.getWindow().close();
+			Notification.show(I18nProperties.getString(Strings.messageLabMessagesAssigned), Notification.Type.HUMANIZED_MESSAGE);
+			callback.run();
+		});
 
-		wrapperComponent.addCommitListener(() -> saveAssignee(labMessageDto, (UserReferenceDto) assigneeComboBox.getValue(), popupWindow));
+		components.getWrapperComponent().addCommitListener(() -> {
+			FacadeProvider.getLabMessageFacade()
+				.bulkAssignLabMessages(
+					selectedRows.stream().map(LabMessageIndexDto::getUuid).collect(Collectors.toList()),
+					(UserReferenceDto) components.getAssigneeComboBox().getValue());
+			components.getWindow().close();
+			Notification.show(I18nProperties.getString(Strings.messageLabMessagesAssigned), Notification.Type.HUMANIZED_MESSAGE);
+			callback.run();
+		});
 
-		wrapperComponent.addDiscardListener(() -> popupWindow.close());
+		UI.getCurrent().addWindow(components.getWindow());
 	}
 
 	private void saveAssignee(LabMessageDto labMessageDto, UserReferenceDto assignee, Window popupWindow) {

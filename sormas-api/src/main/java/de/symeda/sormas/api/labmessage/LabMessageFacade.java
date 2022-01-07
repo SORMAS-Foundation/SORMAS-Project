@@ -9,6 +9,7 @@ import javax.validation.Valid;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
@@ -23,6 +24,8 @@ public interface LabMessageFacade {
 	void deleteLabMessage(String uuid);
 
 	void deleteLabMessages(List<String> uuids);
+
+	void bulkAssignLabMessages(List<String> uuids, UserReferenceDto userRef);
 
 	// Does not return deleted lab messages
 	List<LabMessageDto> getForSample(SampleReferenceDto sample);

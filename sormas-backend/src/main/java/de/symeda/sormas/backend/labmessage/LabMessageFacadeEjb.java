@@ -36,6 +36,12 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.backend.sample.Sample;
+import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -222,6 +228,16 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			if (labMessage.getStatus() != LabMessageStatus.PROCESSED) {
 				labMessageService.delete(labMessage);
 			}
+		}
+	}
+
+	@Override
+	public void bulkAssignLabMessages(List<String> uuids, UserReferenceDto userRef) {
+		List<LabMessage> labMessages = labMessageService.getByUuids(uuids);
+		User user = userService.getByReferenceDto(userRef);
+		for (LabMessage labMessage : labMessages) {
+			labMessage.setAssignee(user);
+			labMessageService.ensurePersisted(labMessage);
 		}
 	}
 

@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.symeda.sormas.api.sormastosormas.labmessage.SormasToSormasLabMessageDto;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.common.DefaultEntitiesCreator;
@@ -29,6 +30,7 @@ import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
+import de.symeda.sormas.backend.sormastosormas.entities.labmessage.SormasToSormasLabMessageDtoValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
@@ -78,6 +80,7 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 	protected SormasToSormasEventDtoValidator eventDtoValidator;
 	protected SormasToSormasEventParticipantDtoValidator eventParticipantDtoValidator;
 	protected SormasToSormasImmunizationDtoValidator immunizationDtoValidator;
+	protected SormasToSormasLabMessageDtoValidator labMessageDtoValidator;
 
 	@Override
 	public void init() {
@@ -87,6 +90,7 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 		eventDtoValidator = getSormasToSormasEventDtoValidator();
 		eventParticipantDtoValidator = getSormasToSormasEventParticipantDtoValidator();
 		immunizationDtoValidator = getSormasToSormasImmunizationDtoValidator();
+		labMessageDtoValidator = getSormasToSormasLabMessageDtoValidator();
 	}
 
 	/**
@@ -511,9 +515,8 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 	}
 
 	private void assertValidation(Set<String> expected, Set<String> foundFields) {
-		// smoke test, in case both are empty for some reason this will blow up
-		assertFalse(foundFields.isEmpty());
-		assertFalse(expected.isEmpty());
+		// smoke test, we allow both to be empty though, as lab messages currently don't have relevant fields
+		assertFalse(foundFields.isEmpty() ^ expected.isEmpty());
 		final Collection disjunction = CollectionUtils.disjunction(foundFields, expected);
 		assertTrue(disjunction.isEmpty(), "The following fields are not validated in the DTO: " + disjunction);
 	}
@@ -712,9 +715,27 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 	}
 
 	@Test
-	@Ignore("lab messages are handled in a nonstandard way")
-	public void testShareLabMessageValidation() {
+	public void testShareLabMessageValidation()
+		throws NoSuchFieldException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 
+		class LabMessageDtoRootNode extends DtoRootNode<SormasToSormasLabMessageDto> {
+
+			public LabMessageDtoRootNode(SormasToSormasLabMessageDto dtoUnderTest) {
+				super(dtoUnderTest);
+			}
+		}
+
+		class LabMessagePreviewRootNode extends DtoRootNode<PreviewNotImplementedDto> {
+
+			// todo add test once preview is available for this entity
+			public LabMessagePreviewRootNode(PreviewNotImplementedDto dtoUnderTest) {
+				super(dtoUnderTest);
+			}
+		}
+		before();
+		SormasToSormasLabMessageDto labMessageDto = new SormasToSormasLabMessageDto();
+		LabMessageDtoRootNode rootNode = new LabMessageDtoRootNode(labMessageDto);
+		assertValidationDto(labMessageDto, rootNode, labMessageDtoValidator);
 	}
 
 	@Test
