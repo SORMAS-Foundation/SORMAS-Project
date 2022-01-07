@@ -131,7 +131,7 @@ public class AboutView extends VerticalLayout implements View {
 		infoLayout.addComponent(versionLabel);
 
 		if(FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LAB_MESSAGES)) {
-			addExternalServiceVersion(Captions.aboutLabMessageAdapter, () -> FacadeProvider.getLabMessageFacade().getLabResultsFacadeVersion(), infoLayout);
+			addExternalServiceVersion(Captions.aboutLabMessageAdapter, () -> FacadeProvider.getLabMessageFacade().getLabMessagesAdapterVersion(), infoLayout);
 		}
 
 		if(FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()){
