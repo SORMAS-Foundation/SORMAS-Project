@@ -19,6 +19,8 @@ public class DashboardCriteria extends BaseCriteria implements Serializable {
 	private Date dateTo;
 	private Date previousDateFrom;
 	private Date previousDateTo;
+	private EpiCurveGrouping epiCurveGrouping;
+	private boolean showMinimumEntries;
 
 	private boolean includeNotACaseClassification;
 
@@ -87,5 +89,17 @@ public class DashboardCriteria extends BaseCriteria implements Serializable {
 
 	public Date getPreviousDateTo() {
 		return previousDateTo;
+	}
+
+	public EpiCurveGrouping getEpiCurveGrouping() {
+		return epiCurveGrouping;
+	}
+
+	public boolean isIncludeNotACaseClassification() {
+		return includeNotACaseClassification;
+	}
+
+	public boolean isShowMinimumEntries() {
+		return showMinimumEntries;
 	}
 }
