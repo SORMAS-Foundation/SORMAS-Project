@@ -51,7 +51,6 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -102,15 +101,15 @@ public class PathogenTestController {
 		return editView;
 	}
 
-	public void edit(PathogenTestDto dto, int caseSampleCount, Runnable doneCallback, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
+	public void edit(String pathogenTestUuid, Runnable doneCallback, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
-			getPathogenTestEditComponent(dto, caseSampleCount, doneCallback, onSavedPathogenTest);
+			getPathogenTestEditComponent(pathogenTestUuid, doneCallback, onSavedPathogenTest);
 
 		Window popupWindow = VaadinUiUtil.createPopupWindow();
 
-		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_DELETE)) {
 			editView.addDeleteListener(() -> {
-				FacadeProvider.getPathogenTestFacade().deletePathogenTest(dto.getUuid());
+				FacadeProvider.getPathogenTestFacade().deletePathogenTest(pathogenTestUuid);
 				UI.getCurrent().removeWindow(popupWindow);
 				doneCallback.run();
 			}, I18nProperties.getCaption(PathogenTestDto.I18N_PREFIX));
@@ -124,15 +123,14 @@ public class PathogenTestController {
 	}
 
 	public CommitDiscardWrapperComponent<PathogenTestForm> getPathogenTestEditComponent(
-		PathogenTestDto dto,
-		int caseSampleCount,
+		String pathogenTestUuid,
 		Runnable doneCallback,
 		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
 
 		// get fresh data
-		PathogenTestDto pathogenTest = facade.getByUuid(dto.getUuid());
-		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid());
-		PathogenTestForm form = new PathogenTestForm(sample, false, caseSampleCount, pathogenTest.isPseudonymized());
+		PathogenTestDto pathogenTest = facade.getByUuid(pathogenTestUuid);
+		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(pathogenTest.getSample().getUuid());
+		PathogenTestForm form = new PathogenTestForm(sample, false, 0, pathogenTest.isPseudonymized());
 		form.setValue(pathogenTest);
 
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
@@ -277,9 +275,7 @@ public class PathogenTestController {
 			} else if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				if (equalDisease) {
 					if (!ContactStatus.CONVERTED.equals(contact.getContactStatus())) {
-						showConvertContactToCaseDialog(contact, converted -> {
-							handleCaseCreationFromContactOrEventParticipant(converted, dto);
-						});
+						showConvertContactToCaseDialog(contact, converted -> handleCaseCreationFromContactOrEventParticipant(converted, dto));
 					} else {
 						showChangeAssociatedSampleResultDialog(dto, handleChanges -> {
 						});
@@ -326,9 +322,10 @@ public class PathogenTestController {
 			} else if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				if (equalDisease) {
 					if (eventParticipant.getResultingCase() == null) {
-						showConvertEventParticipantToCaseDialog(eventParticipant, dto.getTestedDisease(), caseCreated -> {
-							handleCaseCreationFromContactOrEventParticipant(caseCreated, dto);
-						});
+						showConvertEventParticipantToCaseDialog(
+							eventParticipant,
+							dto.getTestedDisease(),
+							caseCreated -> handleCaseCreationFromContactOrEventParticipant(caseCreated, dto));
 					} else {
 						showChangeAssociatedSampleResultDialog(dto, handleChanges -> {
 						});

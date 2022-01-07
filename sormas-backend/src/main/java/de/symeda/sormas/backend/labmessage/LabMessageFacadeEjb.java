@@ -20,6 +20,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -30,6 +32,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.sample.Sample;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
@@ -57,6 +60,8 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -90,6 +95,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	private SyncFacadeEjb.SyncFacadeEjbLocal syncFacadeEjb;
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private UserService userService;
 
 	LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target, boolean checkChangeDate) {
 
@@ -131,7 +138,9 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		}
 		target.setReportId(source.getReportId());
 		target.setSampleOverallTestResult(source.getSampleOverallTestResult());
-
+		if (source.getAssignee() != null) {
+			target.setAssignee(userService.getByReferenceDto(source.getAssignee()));
+		}
 		if (source.getSample() != null) {
 			target.setSample(sampleService.getByReferenceDto(source.getSample()));
 		}
@@ -191,6 +200,9 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		if (source.getSample() != null) {
 			target.setSample(source.getSample().toReference());
 		}
+		if (source.getAssignee() != null) {
+			target.setAssignee(source.getAssignee().toReference());
+		}
 
 		return target;
 	}
@@ -213,6 +225,16 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			if (labMessage.getStatus() != LabMessageStatus.PROCESSED) {
 				labMessageService.delete(labMessage);
 			}
+		}
+	}
+
+	@Override
+	public void bulkAssignLabMessages(List<String> uuids, UserReferenceDto userRef) {
+		List<LabMessage> labMessages = labMessageService.getByUuids(uuids);
+		User user = userService.getByReferenceDto(userRef);
+		for (LabMessage labMessage : labMessages) {
+			labMessage.setAssignee(user);
+			labMessageService.ensurePersisted(labMessage);
 		}
 	}
 
@@ -264,6 +286,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<LabMessageIndexDto> cq = cb.createQuery(LabMessageIndexDto.class);
 		Root<LabMessage> labMessage = cq.from(LabMessage.class);
+		Join<LabMessage, User> userJoin = labMessage.join(LabMessage.ASSIGNEE, JoinType.LEFT);
 
 		cq.multiselect(
 			labMessage.get(LabMessage.UUID),
@@ -278,7 +301,10 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			labMessage.get(LabMessage.PERSON_BIRTH_DATE_MM),
 			labMessage.get(LabMessage.PERSON_BIRTH_DATE_DD),
 			labMessage.get(LabMessage.PERSON_POSTAL_CODE),
-			labMessage.get(LabMessage.STATUS));
+			labMessage.get(LabMessage.STATUS),
+			userJoin.get(User.UUID),
+			userJoin.get(User.FIRST_NAME),
+			userJoin.get(User.LAST_NAME));
 
 		Predicate whereFilter = null;
 		if (criteria != null) {

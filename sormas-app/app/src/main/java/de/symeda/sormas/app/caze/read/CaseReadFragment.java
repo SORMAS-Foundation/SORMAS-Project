@@ -18,6 +18,8 @@ package de.symeda.sormas.app.caze.read;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import java.util.Arrays;
+
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
@@ -72,13 +74,6 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
 		InfrastructureDaoHelper
 			.initializePointOfEntryDetailsFieldVisibility(contentBinding.caseDataPointOfEntry, contentBinding.caseDataPointOfEntryDetails);
-
-		// Pregnancy
-		if (record.getPerson().getSex() != Sex.FEMALE) {
-			contentBinding.caseDataPregnant.setVisibility(GONE);
-			contentBinding.caseDataPostpartum.setVisibility(GONE);
-			contentBinding.caseDataTrimester.setVisibility(GONE);
-		}
 
 		// Port Health fields
 		if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {

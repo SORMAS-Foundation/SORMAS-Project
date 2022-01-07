@@ -23,6 +23,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -196,5 +197,38 @@ public final class CaseLogic {
 		}
 
 		return caze.getCommunity();
+	}
+
+	public static ReinfectionStatus calculateReinfectionStatus(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
+
+		if (reinfectionDetails == null) {
+			return null;
+		}
+
+		if (reinfectionDetails.getOrDefault(ReinfectionDetail.GENOME_SEQUENCE_PREVIOUS_INFECTION_KNOWN, false)
+			&& reinfectionDetails.getOrDefault(ReinfectionDetail.GENOME_SEQUENCE_CURRENT_INFECTION_KNOWN, false)
+			&& reinfectionDetails.getOrDefault(ReinfectionDetail.GENOME_SEQUENCES_NOT_MATCHING, false)) {
+			return ReinfectionStatus.CONFIRMED;
+		}
+
+		if (!(reinfectionDetails.getOrDefault(ReinfectionDetail.GENOME_SEQUENCE_PREVIOUS_INFECTION_KNOWN, false)
+			&& reinfectionDetails.getOrDefault(ReinfectionDetail.GENOME_SEQUENCE_CURRENT_INFECTION_KNOWN, false))
+			&& (reinfectionDetails.getOrDefault(ReinfectionDetail.ACUTE_RESPIRATORY_ILLNESS_OVERCOME, false)
+				|| reinfectionDetails.getOrDefault(ReinfectionDetail.PREVIOUS_ASYMPTOMATIC_INFECTION, false))
+			&& (reinfectionDetails.getOrDefault(ReinfectionDetail.TESTED_NEGATIVE_AFTER_PREVIOUS_INFECTION, false)
+				|| reinfectionDetails.getOrDefault(ReinfectionDetail.LAST_PCR_DETECTION_NOT_RECENT, false))
+			&& reinfectionDetails.getOrDefault(ReinfectionDetail.GENOME_COPY_NUMBER_ABOVE_THRESHOLD, false)) {
+			return ReinfectionStatus.PROBABLE;
+		}
+
+		if ((reinfectionDetails.getOrDefault(ReinfectionDetail.ACUTE_RESPIRATORY_ILLNESS_OVERCOME, false)
+			|| reinfectionDetails.getOrDefault(ReinfectionDetail.PREVIOUS_ASYMPTOMATIC_INFECTION, false))
+			&& (reinfectionDetails.getOrDefault(ReinfectionDetail.TESTED_NEGATIVE_AFTER_PREVIOUS_INFECTION, false)
+				|| reinfectionDetails.getOrDefault(ReinfectionDetail.LAST_PCR_DETECTION_NOT_RECENT, false))
+			&& reinfectionDetails.getOrDefault(ReinfectionDetail.GENOME_COPY_NUMBER_BELOW_THRESHOLD, false)) {
+			return ReinfectionStatus.POSSIBLE;
+		}
+
+		return null;
 	}
 }

@@ -109,7 +109,7 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 			}
 		}
 
-		if (validationErrors.size() > 0) {
+		if (!validationErrors.isEmpty()) {
 			throw SormasToSormasException.fromStringProperty(validationErrors, Strings.errorSormasToSormasShare);
 		}
 	}
