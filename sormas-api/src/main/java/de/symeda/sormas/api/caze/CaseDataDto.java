@@ -70,7 +70,6 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
@@ -195,6 +194,8 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 
 	public static final String RE_INFECTION = "reInfection";
 	public static final String PREVIOUS_INFECTION_DATE = "previousInfectionDate";
+	public static final String REINFECTION_STATUS = "reinfectionStatus";
+	public static final String REINFECTION_DETAILS = "reinfectionDetails";
 
 	public static final String BLOOD_ORGAN_OR_TISSUE_DONATED = "bloodOrganOrTissueDonated";
 
@@ -406,7 +407,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private String pointOfEntryDetails;
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
 	@SensitiveData
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String additionalDetails;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
@@ -519,6 +520,14 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		Disease.CORONAVIRUS })
 	@HideForCountriesExcept
 	private Date previousInfectionDate;
+	@Diseases({
+		Disease.CORONAVIRUS })
+	@HideForCountriesExcept
+	private ReinfectionStatus reinfectionStatus;
+	@Diseases({
+		Disease.CORONAVIRUS })
+	@HideForCountriesExcept
+	private Map<ReinfectionDetail, Boolean> reinfectionDetails;
 
 	@HideForCountriesExcept
 	private YesNoUnknown bloodOrganOrTissueDonated;
@@ -1535,6 +1544,24 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 
 	public void setPreviousInfectionDate(Date previousInfectionDate) {
 		this.previousInfectionDate = previousInfectionDate;
+	}
+
+	@ImportIgnore
+	public ReinfectionStatus getReinfectionStatus() {
+		return reinfectionStatus;
+	}
+
+	public void setReinfectionStatus(ReinfectionStatus reinfectionStatus) {
+		this.reinfectionStatus = reinfectionStatus;
+	}
+
+	@ImportIgnore
+	public Map<ReinfectionDetail, Boolean> getReinfectionDetails() {
+		return reinfectionDetails;
+	}
+
+	public void setReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
+		this.reinfectionDetails = reinfectionDetails;
 	}
 
 	public YesNoUnknown getBloodOrganOrTissueDonated() {

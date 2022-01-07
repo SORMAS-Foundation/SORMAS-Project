@@ -7,13 +7,13 @@ import java.util.Map;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 
 @Remote
 public interface DashboardFacade {
@@ -34,6 +34,14 @@ public interface DashboardFacade {
 
 	Map<EventStatus, Long> getEventCountByStatus(DashboardCriteria dashboardCriteria);
 
+	DashboardCaseStatisticDto getDashboardCaseStatistic(DashboardCriteria dashboardCriteria);
+
+	Map<PathogenTestResultType, Long> getTestResultCountByResultType(DashboardCriteria dashboardCriteria);
+
+	Map<Date, Map<CaseClassification, Integer>> getEpiCurveSeriesElementsPerCaseClassification(DashboardCriteria dashboardCriteria);
+
+	Map<Date, Map<PresentCondition, Integer>> getEpiCurveSeriesElementsPerPresentCondition(DashboardCriteria dashboardCriteria);
+
 	List<DiseaseBurdenDto> getDiseaseBurden(
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
@@ -41,5 +49,5 @@ public interface DashboardFacade {
 		Date toDate,
 		Date previousFromDate,
 		Date previousToDate,
-		NewCaseDateType newCaseDateType);
+		CriteriaDateType newCaseDateType);
 }

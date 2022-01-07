@@ -157,6 +157,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		EventParticipantDto eventParticipant = new EventParticipantDto();
 		eventParticipant.setEvent(creator.createEvent(user.toReference()).toReference());
 		eventParticipant.setPerson(creator.createPerson());
+		eventParticipant.setReportingUser(user.toReference());
 
 		EventParticipantDto savedEventParticipant = getEventParticipantFacade().saveEventParticipant(eventParticipant);
 

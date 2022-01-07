@@ -33,15 +33,12 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 
-public class SormasToSormasEncryptionServiceTest extends SormasToSormasFacadeTest {
+public class SormasToSormasEncryptionServiceTest extends SormasToSormasTest {
 
 	@Test
 	public void testEncryptDecrypt() throws SormasToSormasException {
-		// create test data
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		useSurveillanceOfficerLogin(rdcf);
 		PersonDto person = creator.createPerson("FirstName", "LastName");
 		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();

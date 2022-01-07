@@ -23,17 +23,21 @@ import java.util.stream.Collectors;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.components.grid.MultiSelectionModelImpl;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -151,6 +155,15 @@ public class ContactVisitsView extends AbstractContactView {
 
 			topLayout.addComponent(newButton);
 			topLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
+
+			final ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(this.getContactRef().getUuid());
+			if (contactDto.getResultingCase() != null) {
+				newButton.setEnabled(false);
+				final Label label = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+				label.setDescription(I18nProperties.getString(Strings.infoContactAlreadyConvertedToCase));
+				topLayout.addComponent(label);
+				topLayout.setComponentAlignment(label, Alignment.MIDDLE_RIGHT);
+			}
 		}
 
 		return topLayout;

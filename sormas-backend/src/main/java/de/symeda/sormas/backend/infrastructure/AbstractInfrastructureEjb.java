@@ -8,6 +8,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
@@ -18,7 +19,7 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
-public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AbstractInfrastructureAdoService<ADO, CRITERIA>, CRITERIA extends BaseCriteria>
+public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, DTO extends InfrastructureDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AbstractInfrastructureAdoService<ADO, CRITERIA>, CRITERIA extends BaseCriteria>
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA> {
 
 	protected FeatureConfigurationFacadeEjb featureConfiguration;
@@ -104,4 +105,6 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 	public long count(CRITERIA criteria) {
 		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}
+
+	// todo implement toDto() here
 }

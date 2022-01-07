@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.utils;
 
+import static java.util.stream.Collectors.joining;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -457,5 +459,13 @@ public final class DataHelper {
 
 	public static boolean isValidEmailAddress(String emailAddress) {
 		return StringUtils.isBlank(emailAddress) || emailAddress.matches(VALID_EMAIL_REGEX);
+	}
+
+	public static String buildStringFromTrueValues(Map<? extends Enum<?>, Boolean> map) {
+		if (map != null) {
+			return map.keySet().stream().filter(map::get).map(I18nProperties::getEnumCaption).collect(joining(", "));
+		} else {
+			return "";
+		}
 	}
 }

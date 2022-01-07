@@ -7919,9 +7919,14 @@ ALTER TABLE vaccination_history DROP COLUMN vaccinemanufacturerdetails;
 INSERT INTO schema_version (version_number, comment) VALUES (405, 'Vaccination drop details columns #5843');
 
 -- 2021-09-03 Vaccination refactoring #5909
+/* Fix event participants without a missing reporting user before starting the migration (#7531) */
+UPDATE eventparticipant SET reportinguser_id = (SELECT reportinguser_id FROM events WHERE events.id = eventparticipant.event_id) WHERE reportinguser_id IS NULL;
+
 /* Vaccination refactoring */
 /* Step 1: Create a temporary table containing the latest vaccination information for each disease of each person */
 DROP TABLE IF EXISTS tmp_vaccinated_entities;
+DROP TABLE IF EXISTS tmp_healthconditions;
+CREATE TEMP TABLE tmp_healthconditions (LIKE healthconditions);
 CREATE TEMP TABLE tmp_vaccinated_entities AS
 (
     SELECT DISTINCT ON (person.id, cases.disease)
@@ -8106,7 +8111,7 @@ UNION
              LEFT JOIN events ON eventparticipant.event_id = events.id
              LEFT JOIN location ON events.eventlocation_id = location.id
              LEFT JOIN vaccinationinfo ON eventparticipant.vaccinationinfo_id = vaccinationinfo.id
-    WHERE vaccinationinfo.vaccination = 'VACCINATED' AND eventparticipant.deleted = false
+    WHERE vaccinationinfo.vaccination = 'VACCINATED' AND eventparticipant.deleted = false AND events.disease IS NOT NULL
     ORDER BY person.id, events.disease, relevancedate DESC
 );
 
@@ -8196,6 +8201,7 @@ UNION
              LEFT JOIN vaccinationinfo ON eventparticipant.vaccinationinfo_id = vaccinationinfo.id
     WHERE vaccinationinfo.vaccination = 'VACCINATED'
       AND eventparticipant.deleted = false
+      AND events.disease IS NOT NULL
 
     ORDER BY person.id, events.disease, relevancedate ASC
 );
@@ -8471,11 +8477,9 @@ CREATE OR REPLACE FUNCTION clone_healthconditions(healthconditions_id bigint)
 $BODY$
 DECLARE new_id bigint;
 BEGIN
-    DROP TABLE IF EXISTS tmp_healthconditions;
-    CREATE TEMP TABLE tmp_healthconditions AS SELECT * FROM healthconditions WHERE id = healthconditions_id;
-    UPDATE tmp_healthconditions SET id = nextval('entity_seq'), uuid = generate_base32_uuid(), changedate = now(), creationdate = now(), sys_period = tstzrange(now(), null);
-    INSERT INTO healthconditions SELECT * FROM tmp_healthconditions RETURNING id INTO new_id;
-    DROP TABLE IF EXISTS tmp_healthconditions;
+    INSERT INTO tmp_healthconditions SELECT * FROM healthconditions WHERE id = healthconditions_id;
+    UPDATE tmp_healthconditions SET id = nextval('entity_seq'), uuid = generate_base32_uuid(), changedate = now(), creationdate = now(), sys_period = tstzrange(now(), null) WHERE id = healthconditions_id RETURNING id INTO new_id;
+    INSERT INTO healthconditions SELECT * FROM tmp_healthconditions WHERE id = new_id;
     RETURN new_id;
 END;
 $BODY$;
@@ -8627,8 +8631,8 @@ DO $$
                             rec.reportdate, rec.reportinguser_id, coalesce(rec.lastvaccinationdate, rec.firstvaccinationdate),
                             CASE
                                 WHEN
-                                        rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
-                                        rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                            rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
+                                            rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
                                     THEN
                                     'OXFORD_ASTRA_ZENECA'
                                 ELSE
@@ -8637,8 +8641,8 @@ DO $$
                             rec.othervaccinename,
                             CASE
                                 WHEN
-                                        rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
-                                        rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                            rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
+                                            rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
                                     THEN
                                     'ASTRA_ZENECA'
                                 ELSE
@@ -8770,7 +8774,7 @@ DROP TABLE IF EXISTS tmp_latest_vaccinebatchnumber;
 DROP TABLE IF EXISTS tmp_latest_vaccineuniicode;
 DROP TABLE IF EXISTS tmp_latest_vaccineatccode;
 DROP TABLE IF EXISTS tmp_latest_vaccinationinfosource;
-
+DROP TABLE IF EXISTS tmp_healthconditions;
 
 DROP FUNCTION IF EXISTS clone_healthconditions(bigint);
 DROP FUNCTION IF EXISTS create_healthconditions();
@@ -9393,4 +9397,40 @@ ALTER TABLE testreport_history ADD COLUMN preliminary boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (431, '[DEMIS2SORMAS] Handle New Profile: Preliminary Test Results #5551');
 
+-- 2021-12-03 [S2S] Implement outgoing S2S entity validation #7070
+ALTER TABLE areas ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE areas_history ADD COLUMN centrally_managed boolean DEFAULT false;
+
+ALTER TABLE community ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE continent ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE country ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE district ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE facility ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE pointofentry ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE region ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE subcontinent ADD COLUMN centrally_managed boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (432, ' [S2S] Implement outgoing S2S entity validation #7070');
+
+-- 2021-12-16 Fill missing reporting users of event participants #7531
+UPDATE eventparticipant SET reportinguser_id = (SELECT reportinguser_id FROM events WHERE events.id = eventparticipant.event_id) WHERE reportinguser_id IS NULL;
+ALTER TABLE eventparticipant ALTER COLUMN reportinguser_id SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (433, 'Fill missing reporting users of event participants #7531');
+
+-- 2021-12-07 Added assignee to labmassage #7310
+ALTER TABLE labmessage ADD COLUMN assignee_id bigint;
+ALTER TABLE labmessage_history ADD COLUMN assignee_id bigint;
+ALTER TABLE labmessage ADD CONSTRAINT fk_labmessage_assignee_id FOREIGN KEY (assignee_id) REFERENCES users(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (434, 'Added assignee to labmassage #7310');
+
+-- 2022-01-03 Add reinfection details and status #7182
+
+ALTER TABLE cases ADD COLUMN reinfectionstatus varchar(255);
+ALTER TABLE cases ADD COLUMN reinfectiondetails jsonb;
+ALTER TABLE cases_history ADD COLUMN reinfectionstatus varchar(255);
+ALTER TABLE cases_history ADD COLUMN reinfectiondetails jsonb;
+
+INSERT INTO schema_version (version_number, comment) VALUES (435, 'Add reinfection details and status #7182');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

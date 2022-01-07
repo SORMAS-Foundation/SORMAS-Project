@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.vaccination;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +31,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -43,6 +45,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
@@ -54,6 +57,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
@@ -258,7 +262,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			.map(
 				v -> toVaccinationListEntryDto(
 					v,
-					VaccinationService.isVaccinationRelevant(caze, v),
+					vaccinationService.isVaccinationRelevant(caze, v),
 					I18nProperties.getString(
 						v.getVaccinationDate() != null
 							? Strings.messageVaccinationNotRelevantForCase
@@ -279,7 +283,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			.map(
 				v -> toVaccinationListEntryDto(
 					v,
-					VaccinationService.isVaccinationRelevant(contact, v),
+					vaccinationService.isVaccinationRelevant(contact, v),
 					I18nProperties.getString(
 						v.getVaccinationDate() != null
 							? Strings.messageVaccinationNotRelevantForContact
@@ -300,11 +304,11 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			.map(
 				v -> toVaccinationListEntryDto(
 					v,
-					VaccinationService.isVaccinationRelevant(eventParticipant.getEvent(), v),
+					vaccinationService.isVaccinationRelevant(eventParticipant.getEvent(), v),
 					I18nProperties.getString(
-							v.getVaccinationDate() != null
-									? Strings.messageVaccinationNotRelevantForEventParticipant
-									: Strings.messageVaccinationNoDateNotRelevantForEventParticipant)))
+						v.getVaccinationDate() != null
+							? Strings.messageVaccinationNotRelevantForEventParticipant
+							: Strings.messageVaccinationNoDateNotRelevantForEventParticipant)))
 			.collect(Collectors.toList());
 	}
 
@@ -358,6 +362,54 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			caseService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
 			contactService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
 			eventParticipantService.updateVaccinationStatuses(personId, disease, newVaccinationDate);
+		}
+	}
+
+	public void updateVaccinationStatuses(Case caze) {
+		List<Immunization> casePersonImmunizations = immunizationService.getByPersonAndDisease(caze.getPerson().getUuid(), caze.getDisease(), true);
+
+		boolean hasValidVaccinations = casePersonImmunizations.stream()
+			.anyMatch(
+				immunization -> immunization.getVaccinations()
+					.stream()
+					.anyMatch(vaccination -> vaccinationService.isVaccinationRelevant(caze, vaccination)));
+
+		if (hasValidVaccinations) {
+			caze.setVaccinationStatus(VaccinationStatus.VACCINATED);
+		}
+	}
+
+	public void updateVaccinationStatuses(Contact contact) {
+		List<Immunization> contactPersonImmunizations =
+			immunizationService.getByPersonAndDisease(contact.getPerson().getUuid(), contact.getDisease(), true);
+
+		boolean hasValidVaccinations = contactPersonImmunizations.stream()
+			.anyMatch(
+				immunization -> immunization.getVaccinations()
+					.stream()
+					.anyMatch(vaccination -> vaccinationService.isVaccinationRelevant(contact, vaccination)));
+
+		if (hasValidVaccinations) {
+			contact.setVaccinationStatus(VaccinationStatus.VACCINATED);
+		}
+	}
+
+	public void updateVaccinationStatuses(EventParticipant eventParticipant) {
+		if (eventParticipant.getEvent().getDisease() == null) {
+			return;
+		}
+		List<Immunization> eventParticipantImmunizations =
+			immunizationService.getByPersonAndDisease(eventParticipant.getPerson().getUuid(), eventParticipant.getEvent().getDisease(), true);
+		Event event = eventParticipant.getEvent();
+
+		boolean hasValidVaccinations = eventParticipantImmunizations.stream()
+			.anyMatch(
+				immunization -> immunization.getVaccinations()
+					.stream()
+					.anyMatch(vaccination -> vaccinationService.isVaccinationRelevant(event, vaccination)));
+
+		if (hasValidVaccinations) {
+			eventParticipant.setVaccinationStatus(VaccinationStatus.VACCINATED);
 		}
 	}
 
@@ -444,6 +496,20 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 	public Vaccination fromDto(@NotNull VaccinationDto source, boolean checkChangeDate) {
 		return fillOrBuildEntity(source, vaccinationService.getByUuid(source.getUuid()), checkChangeDate);
+	}
+
+	public void copyExistingVaccinationsToNewImmunization(ImmunizationDto immunizationDto, Immunization newImmunization) {
+		List<Vaccination> vaccinationEntities = new ArrayList<>();
+		for (VaccinationDto vaccinationDto : immunizationDto.getVaccinations()) {
+			Vaccination vaccination = new Vaccination();
+			vaccination.setUuid(DataHelper.createUuid());
+			vaccination = fillOrBuildEntity(vaccinationDto, vaccination, false);
+
+			vaccination.setImmunization(newImmunization);
+			vaccinationEntities.add(vaccination);
+		}
+		newImmunization.getVaccinations().clear();
+		newImmunization.getVaccinations().addAll(vaccinationEntities);
 	}
 
 	@LocalBean

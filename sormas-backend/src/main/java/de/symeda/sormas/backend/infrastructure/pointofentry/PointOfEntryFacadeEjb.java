@@ -298,6 +298,7 @@ public class PointOfEntryFacadeEjb
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
+		target.setCentrallyManaged(source.isCentrallyManaged());
 		return target;
 	}
 
@@ -319,6 +320,7 @@ public class PointOfEntryFacadeEjb
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 		dto.setArchived(entity.isArchived());
 		dto.setExternalID(entity.getExternalID());
+		dto.setCentrallyManaged(entity.isCentrallyManaged());
 
 		return dto;
 	}
