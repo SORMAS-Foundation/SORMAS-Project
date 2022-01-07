@@ -3,7 +3,7 @@
 Open Source Identity and Access Management.
 In SORMAS Keycloak is available as an alternative authentication provider to the default authentication method.
 
-Current version is: Keycloak 12
+Current version is: Keycloak 16.1.0
 
 ## Setup
 
@@ -27,7 +27,7 @@ admin support for some users, in which case the admin will use her own email add
   * At least 1 lower case letter
   * At least 1 digit
   * At least 1 special character
-* **OTP** is supported by default trough the *Google Authenticator* or *Free OTP* by has to be activated from the
+* **OTP** is supported by default through the *Google Authenticator* or *Free OTP* by has to be activated from the
   Keycloak Admin console
 * **Forgot Password** is enabled by default
 * **sormas-sha256** is an encryption algorithm which comes packaged with Keycloak to support transition of existing
@@ -66,10 +66,10 @@ configuration might render the system unusable.
 
 The following configurations are most likely to be environment specific:
 
-* **[Email Settings](https://www.keycloak.org/docs/12.0/server_admin/#_email)**
+* **[Email Settings](https://www.keycloak.org/docs/16.1/server_admin/#_email)**
   * make sure to set an email for the admin user, so the **Test connection** feature works
-* **[Password Policies](https://www.keycloak.org/docs/latest/server_admin/#_password-policies)**
+* **[Password Policies](https://www.keycloak.org/docs/16.1/server_admin/#_password-policies)**
   * The **Password Blacklist** policy can only be configured with access to the host machine
-* **[OTP Policies](https://www.keycloak.org/docs/latest/server_admin/#otp-policies)**
+* **[OTP Policies](https://www.keycloak.org/docs/16.1/server_admin/#otp-policies)**
   * Can be activated by default for all user by marking **Basic Auth Password+OTP** as required in the
     **Authentication>Flows** section, then mark it as default in the **Authentication>Required** section
