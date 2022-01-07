@@ -1,28 +1,26 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package org.sormas.e2etests.helpers;
 
-import static com.google.common.truth.Truth.*;
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 import static java.time.Duration.ofSeconds;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
-import static org.sormas.e2etests.helpers.AssertHelpers.*;
+import static org.sormas.e2etests.helpers.AssertHelpers.takeScreenshot;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -33,7 +31,15 @@ import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.core.ConditionTimeoutException;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.NotFoundException;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
 
@@ -670,7 +676,8 @@ public class WebDriverHelpers {
 
   public void waitForPageLoadingSpinnerToDisappear(int maxWaitingTime) {
     By loadingSpinner =
-        By.xpath("//div[@class='v-loading-indicator third v-loading-indicator-wait']");
+        By.xpath(
+            "//div[@class='v-loading-indicator third v-loading-indicator-wait' or contains(@class, 'v-loading-indicator')]");
     try {
       if (isElementVisibleWithTimeout(loadingSpinner, 3))
         assertHelpers.assertWithPoll(

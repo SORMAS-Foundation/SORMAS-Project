@@ -27,7 +27,9 @@ import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -192,6 +194,70 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(person.getUuid(), personDto.getUuid());
 		assertEquals("John", personDto.getFirstName());
 		assertEquals("Doe", personDto.getLastName());
+	}
+
+	@Test
+	public void testOverdueImmunizationsFilterEnabled() {
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+		final Date now = new Date();
+		final ImmunizationDto ongoingImmunizationThatEndedYesterday =
+			createOngoingImmunizationWithEndDate(person, new DateTime(now).minusDays(1).toDate());
+		createOngoingImmunizationWithEndDate(person, now);
+
+		final ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
+		immunizationCriteria.setOnlyPersonsWithOverdueImmunization(true);
+		final List<ImmunizationIndexDto> onlyOverdueImmunizations = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
+		Assert.assertEquals(1, onlyOverdueImmunizations.size());
+		Assert.assertEquals(ongoingImmunizationThatEndedYesterday.getUuid(), onlyOverdueImmunizations.get(0).getUuid());
+	}
+
+	@Test
+	public void testOverdueImmunizationsFilterEnabledAtStartOfDay() {
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+		final Date startOfDay = DateHelper.getStartOfDay(new Date());
+		final ImmunizationDto ongoingImmunizationThatEndedYesterday =
+			createOngoingImmunizationWithEndDate(person, new DateTime(startOfDay).minusDays(1).toDate());
+		createOngoingImmunizationWithEndDate(person, startOfDay);
+
+		final ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
+		immunizationCriteria.setOnlyPersonsWithOverdueImmunization(true);
+		final List<ImmunizationIndexDto> onlyOverdueImmunizations = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
+		Assert.assertEquals(1, onlyOverdueImmunizations.size());
+		Assert.assertEquals(ongoingImmunizationThatEndedYesterday.getUuid(), onlyOverdueImmunizations.get(0).getUuid());
+	}
+
+	@Test
+	public void testOverdueImmunizationsFilterDisabled() {
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+		final Date now = new Date();
+		createOngoingImmunizationWithEndDate(person, new DateTime(now).minusDays(1).toDate());
+		createOngoingImmunizationWithEndDate(person, now);
+
+		final ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
+		immunizationCriteria.setOnlyPersonsWithOverdueImmunization(false);
+		final List<ImmunizationIndexDto> allImmunizations = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
+		Assert.assertEquals(2, allImmunizations.size());
+	}
+
+	private ImmunizationDto createOngoingImmunizationWithEndDate(PersonDto person, Date endDate) {
+		return creator.createImmunization(
+			Disease.CORONAVIRUS,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.ONGOING,
+			rdcf2,
+			new DateTime(new Date()).minusDays(10).toDate(),
+			endDate,
+			null,
+			new DateTime(new Date()).plusDays(1).toDate());
 	}
 
 	@Test

@@ -24,10 +24,10 @@ import java.util.Date;
 
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -46,9 +46,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
-import de.symeda.sormas.backend.TestDataCreator;
 
 /**
  * @author Alex Vidrean
@@ -56,13 +54,10 @@ import de.symeda.sormas.backend.TestDataCreator;
  */
 
 @RunWith(MockitoJUnitRunner.class)
-public class ShareDataBuilderHelperTest extends AbstractBeanTest {
+public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 
 	@Test
 	public void testClearIgnoredPropertiesForCase() {
-
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 		CaseDataDto caseDataDto = creator.createCase(officerReferenceDto, rdcf, dto -> {
@@ -92,8 +87,6 @@ public class ShareDataBuilderHelperTest extends AbstractBeanTest {
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 		CaseDataDto caseDataDto = creator.createCase(officerReferenceDto, rdcf, dto -> {
@@ -117,8 +110,6 @@ public class ShareDataBuilderHelperTest extends AbstractBeanTest {
 
 	@Test
 	public void testClearIgnoredPropertiesForContact() {
-
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
@@ -145,8 +136,6 @@ public class ShareDataBuilderHelperTest extends AbstractBeanTest {
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 		ContactDto contactDto = creator.createContact(officerReferenceDto, personReferenceDto);
@@ -166,8 +155,6 @@ public class ShareDataBuilderHelperTest extends AbstractBeanTest {
 
 	@Test
 	public void testClearIgnoredPropertiesForEvent() {
-
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
 		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 		EventDto eventDto = creator.createEvent(officerReferenceDto);
@@ -191,8 +178,6 @@ public class ShareDataBuilderHelperTest extends AbstractBeanTest {
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
-
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
 		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 		EventDto eventDto = creator.createEvent(officerReferenceDto);
@@ -252,8 +237,6 @@ public class ShareDataBuilderHelperTest extends AbstractBeanTest {
 	@Test
 	public void testClearIgnoredPropertiesForImmunization() {
 
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 		ImmunizationDto immunizationDto = creator.createImmunization(
@@ -287,8 +270,6 @@ public class ShareDataBuilderHelperTest extends AbstractBeanTest {
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 		ImmunizationDto immunizationDto = creator.createImmunization(
@@ -316,8 +297,6 @@ public class ShareDataBuilderHelperTest extends AbstractBeanTest {
 
 	@Test
 	public void testClearIgnoredPropertiesForPathogenTest() {
-
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
@@ -349,8 +328,6 @@ public class ShareDataBuilderHelperTest extends AbstractBeanTest {
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID, Boolean.FALSE.toString());
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
-
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
