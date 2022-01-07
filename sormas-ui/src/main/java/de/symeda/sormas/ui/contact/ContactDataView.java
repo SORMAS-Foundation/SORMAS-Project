@@ -272,13 +272,14 @@ public class ContactDataView extends AbstractContactView {
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
+		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
-			DocumentListComponent documentList =
+			documentList =
 				new DocumentListComponent(DocumentRelatedEntityType.CONTACT, getContactRef(), UserRight.CONTACT_EDIT, contactDto.isPseudonymized());
 			layout.addComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
-		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, getContactRef());
+		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, getContactRef(), documentList);
 
 		setContactEditPermission(container);
 	}

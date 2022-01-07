@@ -2,7 +2,10 @@ package de.symeda.sormas.backend.docgeneration;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.ejb.EJB;
@@ -10,6 +13,7 @@ import javax.ejb.Stateless;
 
 import org.apache.commons.io.IOUtils;
 
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.action.ActionCriteria;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
@@ -22,7 +26,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.backend.action.ActionFacadeEjb.ActionFacadeEjbLocal;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
+import de.symeda.sormas.backend.document.DocumentFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserService;
 
 @Stateless(name = "EventDocumentFacade")
 public class EventDocumentFacadeEjb implements EventDocumentFacade {
@@ -40,8 +46,18 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 	@EJB
 	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 
+	@EJB
+	private UserService userService;
+
+	@EJB
+	private DocumentFacadeEjb.DocumentFacadeEjbLocal documentFacade;
+
 	@Override
-	public String getGeneratedDocument(String templateName, EventReferenceDto eventReference, Properties extraProperties)
+	public String getGeneratedDocument(
+		String templateName,
+		EventReferenceDto eventReference,
+		Properties extraProperties,
+		Boolean shouldUploadGeneratedDoc)
 		throws DocumentTemplateException {
 		DocumentTemplateEntities entities = new DocumentTemplateEntities();
 		entities.addEntity(RootEntityType.ROOT_EVENT, eventReference);
@@ -53,7 +69,40 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 			.addEntity(RootEntityType.ROOT_EVENT_PARTICIPANTS, eventParticipantFacade.getAllActiveEventParticipantsByEvent(eventReference.getUuid()));
 
 		String body = documentTemplateFacade.generateDocumentTxtFromEntities(DOCUMENT_WORKFLOW, templateName, entities, extraProperties);
-		return createStyledHtml(templateName, body);
+		String styledHtml = createStyledHtml(templateName, body);
+		if (shouldUploadGeneratedDoc) {
+			byte[] documentToSave = styledHtml.getBytes(StandardCharsets.UTF_8);//mandatory UTF_8
+			try {
+				DocGenerationHelper helper = new DocGenerationHelper(userService, documentFacade);
+				helper.saveDocument(
+					helper.getDocumentFileName(eventReference, templateName),
+					null,// default type will be applied: "application/octet-stream" for /*"text/html"*/ it will work as well in the same way.
+					documentToSave.length,
+					helper.getDocumentRelatedEntityType(eventReference),
+					eventReference.getUuid(),
+					documentToSave);
+			} catch (Exception e) {
+				throw new DocumentTemplateException(I18nProperties.getString(Strings.errorProcessingTemplate));
+			}
+		}
+		return styledHtml;
+	}
+
+	@Override
+	public Map<ReferenceDto, String> getGeneratedDocuments(
+		String templateName,
+		List<EventReferenceDto> eventReferences,
+		Properties extraProperties,
+		Boolean shouldUploadGeneratedDoc)
+		throws DocumentTemplateException {
+		Map<ReferenceDto, String> documents = new HashMap<>(eventReferences.size());
+
+		for (EventReferenceDto referenceDto : eventReferences) {
+			String documentContent = getGeneratedDocument(templateName, referenceDto, extraProperties, shouldUploadGeneratedDoc);
+			documents.put(referenceDto, documentContent);
+		}
+
+		return documents;
 	}
 
 	@Override

@@ -29,38 +29,32 @@ import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
-import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
-import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
-import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
+import de.symeda.sormas.backend.document.DocumentFacadeEjb;
+import de.symeda.sormas.backend.user.UserService;
 
 @Stateless(name = "QuarantineOrderFacade")
 public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
-
-	@EJB
-	private CaseFacadeEjbLocal caseFacade;
-
-	@EJB
-	private ContactFacadeEjbLocal contactFacade;
-
-	@EJB
-	private EventParticipantFacadeEjbLocal eventParticipantFacade;
-
-	@EJB
-	private SampleFacadeEjbLocal sampleFacadeEjb;
-
-	@EJB
-	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 
 	@EJB
 	private DocumentTemplateFacadeEjbLocal documentTemplateFacade;
 
 	@EJB
 	private DocumentTemplateEntitiesBuilder entitiesBuilder;
+
+	@EJB
+	private UserService userService;
+
+	@EJB
+	private DocumentFacadeEjb.DocumentFacadeEjbLocal documentFacade;
+
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@Override
 	public byte[] getGeneratedDocument(
@@ -69,13 +63,45 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		ReferenceDto rootEntityReference,
 		SampleReferenceDto sampleReference,
 		PathogenTestReferenceDto pathogenTestReference,
-		Properties extraProperties)
+		Properties extraProperties,
+		Boolean shouldUploadGeneratedDoc)
 		throws DocumentTemplateException {
 
 		DocumentTemplateEntities entities =
 			entitiesBuilder.getQuarantineOrderEntities(workflow, rootEntityReference, sampleReference, pathogenTestReference);
+		byte[] documentToSave = documentTemplateFacade.generateDocumentDocxFromEntities(workflow, templateName, entities, extraProperties);
+		if (shouldUploadGeneratedDoc) {
+			uploadDocument(templateName, rootEntityReference, documentToSave);
+		}
+		return documentToSave;
+	}
 
-		return documentTemplateFacade.generateDocumentDocxFromEntities(workflow, templateName, entities, extraProperties);
+	private void uploadDocument(String templateName, ReferenceDto rootEntityReference, byte[] documentToSave) throws DocumentTemplateException {
+		try {
+			if (isFileSizeLimitExceeded(documentToSave.length)) {
+				return;
+			}
+
+			DocGenerationHelper helper = new DocGenerationHelper(userService, documentFacade);
+			helper.saveDocument(
+				helper.getDocumentFileName(rootEntityReference, templateName),
+				null,// default type will be applied: "application/octet-stream"
+				documentToSave.length,
+				helper.getDocumentRelatedEntityType(rootEntityReference),
+				rootEntityReference.getUuid(),
+				documentToSave);
+		} catch (Exception e) {
+			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorProcessingTemplate));
+		}
+	}
+
+	private boolean isFileSizeLimitExceeded(int length) {
+		long fileSizeLimitMb = configFacade.getDocumentUploadSizeLimitMb();
+		fileSizeLimitMb = fileSizeLimitMb * 1_000_000;
+		if (length > fileSizeLimitMb) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -83,7 +109,8 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		String templateName,
 		DocumentWorkflow workflow,
 		List<ReferenceDto> rootEntityReferences,
-		Properties extraProperties)
+		Properties extraProperties,
+		Boolean shouldUploadGeneratedDoc)
 		throws DocumentTemplateException {
 
 		Map<ReferenceDto, byte[]> documents = new HashMap<>(rootEntityReferences.size());
@@ -93,7 +120,9 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		for (Map.Entry<ReferenceDto, DocumentTemplateEntities> entities : quarantineOrderEntities.entrySet()) {
 			byte[] documentContent =
 				documentTemplateFacade.generateDocumentDocxFromEntities(workflow, templateName, entities.getValue(), extraProperties);
-
+			if (shouldUploadGeneratedDoc) {
+				uploadDocument(templateName, entities.getKey(), documentContent);
+			}
 			documents.put(entities.getKey(), documentContent);
 		}
 

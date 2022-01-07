@@ -40,6 +40,10 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class DocumentListComponent extends SideComponent {
 
+	public DocumentList getDocumentList() {
+		return documentList;
+	}
+
 	private final DocumentList documentList;
 
 	public DocumentListComponent(DocumentRelatedEntityType relatedEntityType, ReferenceDto entityRef, UserRight editRight, boolean pseudonymized) {
