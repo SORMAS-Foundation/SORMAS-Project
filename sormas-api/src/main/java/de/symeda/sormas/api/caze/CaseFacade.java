@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.ejb.Remote;
@@ -94,6 +95,8 @@ public interface CaseFacade {
 	CaseDataDto getCaseDataByUuid(String uuid);
 
 	CaseDataDto saveCase(@Valid CaseDataDto dto) throws ValidationRuntimeException;
+
+	CaseDataDto saveCase(@Valid CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException;
 
 	void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef);
 
@@ -239,4 +242,6 @@ public interface CaseFacade {
 	int updateCompleteness();
 
 	PreviousCaseDto getMostRecentPreviousCase(PersonReferenceDto person, Disease disease, Date startDate);
+
+	Map<ReinfectionDetail, Boolean> cleanUpReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails);
 }
