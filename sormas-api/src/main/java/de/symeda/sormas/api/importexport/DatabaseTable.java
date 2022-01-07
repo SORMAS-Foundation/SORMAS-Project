@@ -79,7 +79,18 @@ public enum DatabaseTable {
 	EXTERNAL_SHARE_INFO(DatabaseTableType.SORMAS, null, "external_share_info"),
 
 	USERS(DatabaseTableType.SORMAS, null, "users"),
-	USER_ROLES(DatabaseTableType.SORMAS, USERS, "user_roles");
+	USER_ROLES(DatabaseTableType.SORMAS, USERS, "user_roles"),
+
+	POPULATION_DATA(DatabaseTableType.INFRASTRUCTURE, null, "population_data"),
+	SURVEILLANCE_REPORTS(DatabaseTableType.SORMAS, null, "surveillance_reports"),
+	AGGREGATE_REPORTS(DatabaseTableType.SORMAS, null, "aggregate_reports"),
+	WEEKLY_REPORTS(DatabaseTableType.SORMAS, null, "weekly_reports"),
+	WEEKLY_REPORT_ENTRIES(DatabaseTableType.SORMAS, null, "weekly_report_entries"),
+	DOCUMENTS(DatabaseTableType.SORMAS, null, "documents"),
+
+	EXPORT_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, null, "export_configurations"),
+	FEATURE_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, null, "feature_configurations"),
+	DISEASE_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, null, "disease_configurations");
 
 	private final DatabaseTableType databaseTableType;
 	private final DatabaseTable parentTable;

@@ -32,6 +32,8 @@ public class WeeklyReportEntry extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -4161597011857710604L;
 
+	public static final String TABLE_NAME = "weeklyreportentry";
+
 	public static final String WEEKLY_REPORT = "weeklyReport";
 	public static final String DISEASE = "disease";
 	public static final String NUMBER_OF_CASES = "numberOfCases";

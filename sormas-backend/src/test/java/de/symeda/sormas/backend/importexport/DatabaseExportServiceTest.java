@@ -23,16 +23,8 @@ import com.tngtech.archunit.core.importer.ClassFileImporter;
 
 import de.symeda.sormas.api.importexport.DatabaseTable;
 import de.symeda.sormas.backend.auditlog.AuditLogEntry;
-import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.messaging.ManualMessageLog;
-import de.symeda.sormas.backend.disease.DiseaseConfiguration;
-import de.symeda.sormas.backend.document.Document;
-import de.symeda.sormas.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
-import de.symeda.sormas.backend.infrastructure.PopulationData;
-import de.symeda.sormas.backend.report.AggregateReport;
-import de.symeda.sormas.backend.report.WeeklyReport;
-import de.symeda.sormas.backend.report.WeeklyReportEntry;
 import de.symeda.sormas.backend.systemevent.SystemEvent;
 import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.user.UserRoleConfig;
@@ -70,22 +62,13 @@ public class DatabaseExportServiceTest {
 
 	private static final List<Class<?>> NOT_EXPORTED_ENTITIES = Arrays.asList(
 		DirectoryImmunization.class,
-		PopulationData.class,
 		LastVaccinationDate.class,
 		ManualMessageLog.class,
-		SurveillanceReport.class,
-		ExportConfiguration.class,
 		UserReference.class,
-		FeatureConfiguration.class,
-		Document.class,
 		LastVaccineType.class,
-		DiseaseConfiguration.class,
 		SystemEvent.class,
-		WeeklyReportEntry.class,
 		FirstVaccinationDate.class,
 		AuditLogEntry.class,
-		AggregateReport.class,
-		WeeklyReport.class,
 		UserRoleConfig.class);
 
 	@Test
