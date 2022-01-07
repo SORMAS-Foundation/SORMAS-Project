@@ -12,11 +12,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseClassificationInterface;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.dashboard.DashboardCaseStatisticDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
@@ -61,10 +62,17 @@ public class DashboardResource extends EntityDtoResource {
 	}
 
 	@POST
-	@Path("/epidemiologicalCurveData")
-	public Map<Date, Map<? extends CaseClassificationInterface, Integer>> getEpidemiologicalCurveData(
+	@Path("/epiCurveDataPerCaseClassification")
+	public Map<Date, Map<CaseClassification, Integer>> getEpidemiologicalCurveDataPerCaseClassification(
 		@RequestBody DashboardCriteria dashboardCriteria) {
-		return FacadeProvider.getDashboardFacade().getEpiCurveSeriesElements(dashboardCriteria);
+		return FacadeProvider.getDashboardFacade().getEpiCurveSeriesElementsPerCaseClassification(dashboardCriteria);
+	}
+
+	@POST
+	@Path("/epiCurveDataPerPresentCondition")
+	public Map<Date, Map<PresentCondition, Integer>> getEpidemiologicalCurveDataPerPresentCondition(
+		@RequestBody DashboardCriteria dashboardCriteria) {
+		return FacadeProvider.getDashboardFacade().getEpiCurveSeriesElementsPerPresentCondition(dashboardCriteria);
 	}
 
 }

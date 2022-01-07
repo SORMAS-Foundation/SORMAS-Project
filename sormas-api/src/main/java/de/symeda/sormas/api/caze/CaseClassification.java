@@ -26,8 +26,7 @@ import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
 public enum CaseClassification
 	implements
-	StatisticsGroupingKey,
-	CaseClassificationInterface {
+	StatisticsGroupingKey {
 
 	NOT_CLASSIFIED(1),
 	SUSPECT(2),

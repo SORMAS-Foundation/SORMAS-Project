@@ -18,7 +18,6 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseClassificationInterface;
 import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseStatisticDto;
@@ -93,8 +92,8 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		return getTestResultCountByResultType(getCases(dashboardCriteria));
 	}
 
-	public Map<Date, Map<? extends CaseClassificationInterface, Integer>> getEpiCurveSeriesElements(DashboardCriteria dashboardCriteria) {
-		Map<Date, Map<? extends CaseClassificationInterface, Integer>> epiCurveSeriesElements = new TreeMap<>();
+	public Map<Date, Map<CaseClassification, Integer>> getEpiCurveSeriesElementsPerCaseClassification(DashboardCriteria dashboardCriteria) {
+		Map<Date, Map<CaseClassification, Integer>> epiCurveSeriesElements = new TreeMap<>();
 		List<Date> dates = buildListOfFilteredDates(
 			dashboardCriteria.getDateFrom(),
 			dashboardCriteria.getDateTo(),
@@ -102,15 +101,26 @@ public class DashboardFacadeEjb implements DashboardFacade {
 			dashboardCriteria.isShowMinimumEntries());
 		for (int i = 0; i < dates.size(); i++) {
 			dashboardCriteria = setNewCaseDatesInCaseCriteria(dates.get(i), dashboardCriteria);
-			Map<? extends CaseClassificationInterface, Integer> caseCounts;
-			switch (dashboardCriteria.getSurveillanceEpiCurveMode()) {
-			case ALIVE_OR_DEAD:
-				caseCounts = getCasesCountPerPersonCondition(dashboardCriteria);
-				break;
-			default:
-				caseCounts = getCasesCountByClassification(dashboardCriteria);
-				break;
-			}
+			Map<CaseClassification, Integer> caseCounts = getCasesCountByClassification(dashboardCriteria);
+			epiCurveSeriesElements.put(dates.get(i), caseCounts);
+
+		}
+
+		return epiCurveSeriesElements;
+	}
+
+	public Map<Date, Map<PresentCondition, Integer>> getEpiCurveSeriesElementsPerPresentCondition(DashboardCriteria dashboardCriteria) {
+		Map<Date, Map<PresentCondition, Integer>> epiCurveSeriesElements = new TreeMap<>();
+		List<Date> dates = buildListOfFilteredDates(
+			dashboardCriteria.getDateFrom(),
+			dashboardCriteria.getDateTo(),
+			dashboardCriteria.getEpiCurveGrouping(),
+			dashboardCriteria.isShowMinimumEntries());
+		for (int i = 0; i < dates.size(); i++) {
+			dashboardCriteria = setNewCaseDatesInCaseCriteria(dates.get(i), dashboardCriteria);
+
+			Map<PresentCondition, Integer> caseCounts = getCasesCountPerPersonCondition(dashboardCriteria);
+
 			epiCurveSeriesElements.put(dates.get(i), caseCounts);
 
 		}
