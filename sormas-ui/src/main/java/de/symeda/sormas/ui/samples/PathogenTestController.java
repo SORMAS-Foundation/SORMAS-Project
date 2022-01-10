@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
@@ -161,8 +160,7 @@ public class PathogenTestController {
 					existingCaseDto.getDiseaseVariant() == null
 						? "[" + I18nProperties.getCaption(Captions.caseNoDiseaseVariant) + "]"
 						: existingCaseDto.getDiseaseVariant().toString(),
-					diseaseVariant.toString()),
-				ContentMode.HTML),
+					diseaseVariant.toString())),
 			I18nProperties.getString(Strings.yes),
 			I18nProperties.getString(Strings.no),
 			800,
