@@ -6,8 +6,8 @@ public enum SampleDateType {
 
 	REPORT,
 	COLLECTION,
-	SHIPPED,
-	RECEIVED,
+	SHIPMENT,
+	RECIPIENT,
 	RESULT;
 
 	@Override
