@@ -18,9 +18,8 @@
 package de.symeda.sormas.ui.dashboard.samples;
 
 import com.vaadin.navigator.ViewChangeListener;
+
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardType;
@@ -30,7 +29,7 @@ public class SamplesDashboardView extends AbstractDashboardView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/samples";
 
-	protected CountsTileViewLayout countsTileViewLayout;
+	protected SampleCountsTileViewLayout countsTileViewLayout;
 	protected DashboardSampleFilterLayout filterLayout;
 	protected DashboardDataProvider dashboardDataProvider;
 
@@ -55,7 +54,7 @@ public class SamplesDashboardView extends AbstractDashboardView {
 		});
 
 		//add samples
-		countsTileViewLayout = new CountsTileViewLayout(dashboardDataProvider);
+		countsTileViewLayout = new SampleCountsTileViewLayout(dashboardDataProvider);
 		dashboardLayout.addComponent(countsTileViewLayout);
 		dashboardLayout.setExpandRatio(countsTileViewLayout, 1);
 	}
