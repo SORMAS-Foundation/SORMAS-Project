@@ -4,16 +4,18 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import javax.validation.Valid;
+
 
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import jakarta.validation.Valid;
+
 
 public interface BaseFacade<DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, CRITERIA extends BaseCriteria> {
 
 	DTO save(@Valid DTO dto);
 
-	DTO save(@Valid DTO dtoToSave, boolean allowMerge);
+	DTO save(DTO dtoToSave, boolean allowMerge);
 
 	void archive(String uuid);
 

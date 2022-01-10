@@ -2,13 +2,13 @@ package de.symeda.sormas.api.infrastructure.country;
 
 import java.util.Date;
 
-import javax.validation.constraints.Size;
-
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import jakarta.validation.constraints.Size;
+
 
 public class CountryDto extends InfrastructureDto {
 

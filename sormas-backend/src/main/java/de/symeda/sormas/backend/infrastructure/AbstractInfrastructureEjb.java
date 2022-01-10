@@ -19,8 +19,11 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
+import javax.validation.Valid;
+
 public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, DTO extends InfrastructureDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, SRV extends AbstractInfrastructureAdoService<ADO, CRITERIA>, CRITERIA extends BaseCriteria>
-	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA> implements InfrastructureBaseFacade<DTO,INDEX_DTO,REF_DTO,CRITERIA> {
+	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA>
+	implements InfrastructureBaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
 
 	protected FeatureConfigurationFacadeEjb featureConfiguration;
 	private String duplicateErrorMessageProperty;
@@ -41,16 +44,18 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 		this.duplicateErrorMessageProperty = duplicateErrorMessageProperty;
 	}
 
+	@Override
 	public DTO save(DTO dto, boolean allowMerge) {
 		checkInfraDataLocked();
 		return doSave(dto, allowMerge, duplicateErrorMessageProperty);
 	}
 
+	@Override
 	public DTO saveUnchecked(DTO dtoToSave) {
 		return doSave(dtoToSave, false, duplicateErrorMessageProperty);
 	}
 
-	protected DTO doSave(DTO dtoToSave, boolean allowMerge, String duplicateErrorMessageProperty) {
+	protected DTO doSave(@Valid DTO dtoToSave, boolean allowMerge, String duplicateErrorMessageProperty) {
 		if (dtoToSave == null) {
 			return null;
 		}
@@ -96,6 +101,7 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 		}
 	}
 
+	@Override
 	public void dearchive(String uuid) {
 		checkInfraDataLocked();
 
@@ -113,6 +119,7 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 	}
 
 	// todo this can be moved up later
+	@Override
 	public long count(CRITERIA criteria) {
 		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}

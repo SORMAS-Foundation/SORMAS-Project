@@ -104,13 +104,7 @@
 				<scope>provided</scope>
 				<!-- Payara module: jakarta.servlet-api -->
 			</dependency>
-			<dependency>
-				<groupId>javax.validation</groupId>
-				<artifactId>validation-api</artifactId>
-				<version>2.0.1.Final</version>
-				<scope>provided</scope>
-				<!-- Payara module: jakarta.validation-api -->
-			</dependency>
+
 
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
@@ -199,8 +193,22 @@
 			<dependency>
 				<groupId>jakarta.validation</groupId>
 				<artifactId>jakarta.validation-api</artifactId>
-				<version>2.0.2</version>
-				<scope>provided</scope>
+				<version>3.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate.validator</groupId>
+				<artifactId>hibernate-validator</artifactId>
+				<version>7.0.2.Final</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate.validator</groupId>
+				<artifactId>hibernate-validator-cdi</artifactId>
+				<version>7.0.2.Final</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-validator-annotation-processor</artifactId>
+				<version>7.0.2.Final</version>
 			</dependency>
 			<dependency>
 				<groupId>jakarta.ws.rs</groupId>
@@ -806,12 +814,6 @@
 				<scope>test</scope>
 			</dependency>
 
-			<dependency>
-				<groupId>org.hibernate.validator</groupId>
-				<artifactId>hibernate-validator</artifactId>
-				<version>6.1.6.Final</version>
-				<scope>test</scope>
-			</dependency>
 
 			<dependency>
 				<groupId>org.mockito</groupId>

@@ -29,7 +29,7 @@ import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportProgressLayout;
 import de.symeda.sormas.ui.importer.InfrastructureImporter;
 
-import javax.validation.ConstraintViolationException;
+import org.hibernate.exception.ConstraintViolationException;
 
 public class CountryImporter extends InfrastructureImporter {
 

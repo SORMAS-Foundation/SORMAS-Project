@@ -694,7 +694,7 @@ public abstract class DataImporter {
 		Validator validator = factory.getValidator();
 
 		Set<ConstraintViolation<T>> constraintViolations = validator.validate(object);
-		if (constraintViolations.size() > 0) {
+		if (!constraintViolations.isEmpty()) {
 			return ImportLineResultDto.errorResult(
 				ConstrainValidationHelper.getPropertyErrors(constraintViolations)
 					.entrySet()
