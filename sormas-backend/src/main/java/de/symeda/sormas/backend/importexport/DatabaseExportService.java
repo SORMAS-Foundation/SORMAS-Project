@@ -161,7 +161,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.DISTRICTS, new DatabaseExportConfiguration(District.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.COMMUNITIES, new DatabaseExportConfiguration(Community.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.FACILITIES, new DatabaseExportConfiguration(Facility.TABLE_NAME));
-		EXPORT_CONFIGS.put(DatabaseTable.POINT_OF_ENTRIES, new DatabaseExportConfiguration(PointOfEntry.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.POINTS_OF_ENTRY, new DatabaseExportConfiguration(PointOfEntry.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.OUTBREAKS, new DatabaseExportConfiguration(Outbreak.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.CASE_SYMPTOMS, new DatabaseExportConfiguration(Symptoms.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.CUSTOMIZABLE_ENUM_VALUES, new DatabaseExportConfiguration(CustomizableEnumValue.TABLE_NAME));
@@ -177,7 +177,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.TEST_REPORTS, new DatabaseExportConfiguration(TestReport.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.SORMAS_TO_SORMAS_ORIGIN_INFO, new DatabaseExportConfiguration(SormasToSormasOriginInfo.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.SORMAS_TO_SORMAS_SHARE_INFO, new DatabaseExportConfiguration(SormasToSormasShareInfo.TABLE_NAME));
-		EXPORT_CONFIGS.put(DatabaseTable.SORMAS_TO_SORMAS_SHARE_REQUEST, new DatabaseExportConfiguration(SormasToSormasShareRequest.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.SORMAS_TO_SORMAS_SHARE_REQUESTS, new DatabaseExportConfiguration(SormasToSormasShareRequest.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.SHARE_REQUEST_INFO, new DatabaseExportConfiguration(ShareRequestInfo.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.EXTERNAL_SHARE_INFO, new DatabaseExportConfiguration(ExternalShareInfo.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.USERS, new DatabaseExportConfiguration(User.TABLE_NAME));
