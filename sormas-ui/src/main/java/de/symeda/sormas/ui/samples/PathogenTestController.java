@@ -194,7 +194,7 @@ public class PathogenTestController {
 			handleAssociatedCase(dto, onSavedPathogenTest, associatedCase, suppressSampleResultUpdatePopup);
 		}
 		if (associatedContact != null) {
-			handleAssociatedContact(dto, onSavedPathogenTest, associatedContact);
+			handleAssociatedContact(dto, onSavedPathogenTest, associatedContact, suppressSampleResultUpdatePopup);
 		}
 		if (associatedEventParticipant != null) {
 			handleAssociatedEventParticipant(dto, onSavedPathogenTest, associatedEventParticipant);
@@ -277,7 +277,8 @@ public class PathogenTestController {
 	private void handleAssociatedContact(
 		PathogenTestDto dto,
 		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
-		ContactReferenceDto associatedContact) {
+		ContactReferenceDto associatedContact,
+		boolean suppressSampleResultUpdatePopup) {
 
 		// Negative test result AND test result verified
 		// a) Tested disease == contact disease AND test result != sample pathogen test result: Ask user whether to update the sample pathogen test result
@@ -293,7 +294,10 @@ public class PathogenTestController {
 		final boolean equalDisease = dto.getTestedDisease() == contact.getDisease();
 
 		Runnable callback = () -> {
-			if (equalDisease && PathogenTestResultType.NEGATIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
+			if (equalDisease
+				&& PathogenTestResultType.NEGATIVE.equals(dto.getTestResult())
+				&& dto.getTestResultVerified()
+				&& !suppressSampleResultUpdatePopup) {
 				showChangeAssociatedSampleResultDialog(dto, null);
 			} else if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				if (equalDisease) {
@@ -301,7 +305,7 @@ public class PathogenTestController {
 						showConvertContactToCaseDialog(contact, converted -> {
 							handleCaseCreationFromContactOrEventParticipant(converted, dto);
 						});
-					} else {
+					} else if (!suppressSampleResultUpdatePopup) {
 						showChangeAssociatedSampleResultDialog(dto, null);
 					}
 				} else {
