@@ -70,6 +70,8 @@ public interface SampleFacade {
 
 	List<String> getDeletedUuidsSince(Date since);
 
+	Map<SampleCountType, Long> getSampleCounts(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
+
 	boolean isDeleted(String sampleUuid);
 
 	Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds);
@@ -86,6 +88,5 @@ public interface SampleFacade {
 
 	List<SampleDto> getByEventParticipantUuids(List<String> asList);
 
-	Map<SampleCountType, Long> getSampleCount(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 	List<SampleDto> getByLabSampleId(String labSampleId);
 }
