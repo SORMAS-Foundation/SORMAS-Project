@@ -29,6 +29,7 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HasComponents;
@@ -44,6 +45,7 @@ import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -56,8 +58,9 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 	protected final VerticalLayout additionalParametersComponent;
 	protected FileDownloader fileDownloader;
 	protected DocumentVariables documentVariables;
+	protected CheckBox checkBoxUploadGeneratedDoc;
 
-	public AbstractDocgenerationLayout(String captionTemplateSelector, Function<String, String> fileNameFunction) {
+	public AbstractDocgenerationLayout(String captionTemplateSelector, Function<String, String> fileNameFunction, boolean isMultiFilesMode) {
 		additionalVariablesComponent = new VerticalLayout();
 		additionalVariablesComponent.setSpacing(false);
 		additionalVariablesComponent.setMargin(new MarginInfo(false, false, true, false));
@@ -68,6 +71,19 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 
 		hideTextfields();
 		hideAdditionalParameters();
+
+		if (isMultiFilesMode) {
+			checkBoxUploadGeneratedDoc = new CheckBox(
+				I18nProperties.getPrefixCaption(ExportConfigurationDto.I18N_PREFIX, Captions.DocumentTemplate_uploadGeneratedDocumentsToEntities));
+		} else {
+			checkBoxUploadGeneratedDoc = new CheckBox(
+				I18nProperties.getPrefixCaption(ExportConfigurationDto.I18N_PREFIX, Captions.DocumentTemplate_uploadGeneratedDocumentToEntity));
+		}
+		checkBoxUploadGeneratedDoc.setValue(false);
+		checkBoxUploadGeneratedDoc.setEnabled(true);
+		checkBoxUploadGeneratedDoc.setStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
+		checkBoxUploadGeneratedDoc.setWidth(400, Unit.PIXELS);
+		addComponent(checkBoxUploadGeneratedDoc);
 
 		createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionCreate));
 		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);

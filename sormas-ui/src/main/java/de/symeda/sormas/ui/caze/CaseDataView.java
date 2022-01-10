@@ -199,14 +199,14 @@ public class CaseDataView extends AbstractCaseView {
 
 			layout.addComponent(surveillanceReportListLocLayout, SURVEILLANCE_REPORTS_LOC);
 		}
-
+		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
-			DocumentListComponent documentList =
+			documentList =
 				new DocumentListComponent(DocumentRelatedEntityType.CASE, getCaseRef(), UserRight.CASE_EDIT, caze.isPseudonymized());
 			layout.addComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
-		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, getCaseRef());
+		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, getCaseRef(), documentList);
 
 		setCaseEditPermission(container);
 	}

@@ -128,14 +128,15 @@ public class EventDataView extends AbstractEventView {
 		actionList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(actionList, ACTIONS_LOC);
 
+		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
 			// TODO: user rights?
-			DocumentListComponent documentList =
+			documentList =
 				new DocumentListComponent(DocumentRelatedEntityType.EVENT, getEventRef(), UserRight.EVENT_EDIT, event.isPseudonymized());
 			layout.addComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
-		EventDocumentsComponent eventDocuments = new EventDocumentsComponent(getEventRef());
+		EventDocumentsComponent eventDocuments = new EventDocumentsComponent(getEventRef(), documentList);
 		eventDocuments.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(eventDocuments, EventDocumentsComponent.DOCGENERATION_LOC);
 
