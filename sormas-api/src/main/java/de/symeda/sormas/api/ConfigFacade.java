@@ -120,6 +120,8 @@ public interface ConfigFacade {
 
 	String getExternalSurveillanceToolGatewayUrl();
 
+	String getExternalSurveillanceToolVersionEndpoint();
+
 	String getAuthenticationProvider();
 
 	boolean isAuthenticationProviderUserSyncAtStartupEnabled();

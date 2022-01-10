@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.naming.NamingException;
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -50,6 +51,8 @@ public interface LabMessageFacade {
 	 *         object.
 	 */
 	LabMessageFetchResult fetchAndSaveExternalLabMessages(Date since);
+
+	String getLabMessagesAdapterVersion() throws NamingException;
 
 	boolean exists(String uuid);
 

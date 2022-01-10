@@ -18,9 +18,12 @@ public interface Captions {
 	String aboutCopyright = "aboutCopyright";
 	String aboutDataDictionary = "aboutDataDictionary";
 	String aboutDocuments = "aboutDocuments";
-	String aboutSormasVersion = "aboutSormasVersion";
+	String aboutExternalSurveillanceToolGateway = "aboutExternalSurveillanceToolGateway";
+	String aboutLabMessageAdapter = "aboutLabMessageAdapter";
+	String aboutServiceNotAvailable = "aboutServiceNotAvailable";
 	String aboutSormasWebsite = "aboutSormasWebsite";
 	String aboutTechnicalManual = "aboutTechnicalManual";
+	String aboutVersion = "aboutVersion";
 	String aboutWhatsNew = "aboutWhatsNew";
 	String Action = "Action";
 	String Action_actionContext = "Action.actionContext";
