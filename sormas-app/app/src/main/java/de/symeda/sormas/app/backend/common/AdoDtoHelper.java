@@ -44,7 +44,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
 	private static final Logger logger = LoggerFactory.getLogger(AdoDtoHelper.class);
 
-	private Date lastChangeDate;
+	private Date previousLastSyncedEntityDate;
 	private Date lastSyncedEntityDate;
 	private String lastSyncedEntityUuid;
 
@@ -101,9 +101,9 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 				Call<List<DTO>> dtoCall = pullAllSince(
 					lastSyncedEntityDate.getTime(),
 					batchSize,
-					lastSyncedEntityDate.equals(lastChangeDate) ? lastSyncedEntityUuid : EntityDto.NO_LAST_SYNCED_UUID);
+					lastSyncedEntityDate.equals(previousLastSyncedEntityDate) ? EntityDto.NO_LAST_SYNCED_UUID : lastSyncedEntityUuid);
 
-				lastChangeDate = lastSyncedEntityDate;
+				previousLastSyncedEntityDate = lastSyncedEntityDate;
 				if (dtoCall == null) {
 					return;
 				}
@@ -138,10 +138,10 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 					lastSyncedEntityDate != null ? lastSyncedEntityDate.getTime() : 0,
 					batchSize,
 					lastSyncedEntityDate != null
-						? lastSyncedEntityDate.equals(lastChangeDate) ? lastSyncedEntityUuid : EntityDto.NO_LAST_SYNCED_UUID
+						? lastSyncedEntityDate.equals(previousLastSyncedEntityDate) ? EntityDto.NO_LAST_SYNCED_UUID : lastSyncedEntityUuid
 						: EntityDto.NO_LAST_SYNCED_UUID);
 
-				lastChangeDate = lastSyncedEntityDate;
+				previousLastSyncedEntityDate = lastSyncedEntityDate;
 				if (dtoCall == null) {
 					return;
 				}
