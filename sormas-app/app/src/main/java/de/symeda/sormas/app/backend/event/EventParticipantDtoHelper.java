@@ -21,9 +21,10 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDependentDtoHelper;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
@@ -35,7 +36,7 @@ import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
-public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, EventParticipantDto> {
+public class EventParticipantDtoHelper extends PersonDependentDtoHelper<EventParticipant, EventParticipantDto> {
 
 	private PersonDtoHelper personHelper = new PersonDtoHelper();
 
@@ -165,5 +166,10 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 		EventParticipantReferenceDto dto = new EventParticipantReferenceDto(ado.getUuid());
 
 		return dto;
+	}
+
+	@Override
+	protected PersonReferenceDto getPerson(EventParticipantDto dto) {
+		return dto.getPerson().toReference();
 	}
 }

@@ -67,7 +67,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
 	protected abstract void fillInnerFromAdo(DTO dto, ADO ado);
 
-	protected void preparePulledResult(List<DTO> result) {
+	protected void preparePulledResult(List<DTO> result) throws NoConnectionException, ServerCommunicationException, ServerConnectionException, DaoException {
 	}
 
 	protected abstract long getApproximateJsonSizeInBytes();
@@ -166,7 +166,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 	 * @return Number of pulled entities
 	 */
 	protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<ADO> dao, Response<List<DTO>> response)
-		throws ServerCommunicationException, DaoException, ServerConnectionException {
+			throws ServerCommunicationException, DaoException, ServerConnectionException, NoConnectionException {
 		if (!response.isSuccessful()) {
 			RetroProvider.throwException(response);
 		}
@@ -178,7 +178,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 		return 0;
 	}
 
-	public int handlePulledList(AbstractAdoDao<ADO> dao, List<DTO> result) throws DaoException {
+	public int handlePulledList(AbstractAdoDao<ADO> dao, List<DTO> result) throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
 		preparePulledResult(result);
 		dao.callBatchTasks((Callable<Void>) () -> {
 // 		boolean empty = dao.countOf() == 0;

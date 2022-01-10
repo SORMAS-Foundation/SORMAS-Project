@@ -21,13 +21,14 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.app.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.app.backend.clinicalcourse.HealthConditionsDtoHelper;
-import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataDtoHelper;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDependentDtoHelper;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
@@ -42,7 +43,7 @@ import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
-public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
+public class ContactDtoHelper extends PersonDependentDtoHelper<Contact, ContactDto> {
 
 	private EpiDataDtoHelper epiDataDtoHelper = new EpiDataDtoHelper();
 	private HealthConditionsDtoHelper healthConditionsDtoHelper = new HealthConditionsDtoHelper();
@@ -329,5 +330,10 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		ContactReferenceDto dto = new ContactReferenceDto(ado.getUuid());
 
 		return dto;
+	}
+
+	@Override
+	protected PersonReferenceDto getPerson(ContactDto dto) {
+		return dto.getPerson();
 	}
 }
