@@ -38,12 +38,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.PathogenTestFacade;
-import de.symeda.sormas.api.sample.PathogenTestCriteria;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +46,11 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.messaging.MessageType;
+import de.symeda.sormas.api.sample.PathogenTestCriteria;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestFacade;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -343,22 +342,18 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return pathogenTestService.getBySampleUuids(sampleUuids, true)
 			.stream()
-			.collect(
-				Collectors.toMap(
-					s -> s.getSample().getUuid(),
-					(s) -> s,
-					(s1, s2) -> {
+			.collect(Collectors.toMap(s -> s.getSample().getUuid(), (s) -> s, (s1, s2) -> {
 
-						// keep the positive one
-						if (s1.getTestResult() == PathogenTestResultType.POSITIVE) {
-							return s1;
-						} else if (s2.getTestResult() == PathogenTestResultType.POSITIVE) {
-							return s2;
-						}
+				// keep the positive one
+				if (s1.getTestResult() == PathogenTestResultType.POSITIVE) {
+					return s1;
+				} else if (s2.getTestResult() == PathogenTestResultType.POSITIVE) {
+					return s2;
+				}
 
-						// ordered by creation date by default, so always keep the first one
-						return s1;
-					}))
+				// ordered by creation date by default, so always keep the first one
+				return s1;
+			}))
 			.values()
 			.stream()
 			.map(s -> convertToDto(s, pseudonymizer))
