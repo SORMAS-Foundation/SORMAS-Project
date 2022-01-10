@@ -50,13 +50,11 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.sample.*;
-import de.symeda.sormas.api.utils.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -74,19 +72,24 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleCountType;
 import de.symeda.sormas.api.sample.SampleCriteria;
+import de.symeda.sormas.api.sample.SampleDateType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -628,22 +631,18 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return sampleService.findBy(criteria, userService.getCurrentUser(), Sample.CREATION_DATE, false)
 			.stream()
-			.collect(
-				Collectors.toMap(
-					s -> associatedObjectFn.apply(s).getUuid(),
-					(s) -> s,
-					(s1, s2) -> {
+			.collect(Collectors.toMap(s -> associatedObjectFn.apply(s).getUuid(), (s) -> s, (s1, s2) -> {
 
-						// keep the positive one
-						if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-							return s1;
-						} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-							return s2;
-						}
+				// keep the positive one
+				if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+					return s1;
+				} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+					return s2;
+				}
 
-						// ordered by creation date by default, so always keep the first one
-						return s1;
-					}))
+				// ordered by creation date by default, so always keep the first one
+				return s1;
+			}))
 			.values()
 			.stream()
 			.map(s -> convertToDto(s, pseudonymizer))
@@ -974,112 +973,89 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public Map<SampleCountType, Long> getSampleCount(
-			RegionReferenceDto regionRef,
-			DistrictReferenceDto districtRef,
-			Disease disease,
-			Date from,
-			Date to) {
-		
+	public Map<SampleCountType, Long> getSampleCounts(
+		RegionReferenceDto regionRef,
+		DistrictReferenceDto districtRef,
+		Disease disease,
+		Date from,
+		Date to) {
 		long total = count(
-			new SampleCriteria()
-				.region(regionRef)
+			new SampleCriteria().region(regionRef)
 				.district(districtRef)
 				.disease(disease)
-				.sampleDateBetween(from, to, SampleDateType.COLLECTION, DateFilterOption.DATE)
-		);
+				.sampleDateBetween(from, to, SampleDateType.COLLECTION, DateFilterOption.DATE));
 
 		long indeterminateCount = count(
-			new SampleCriteria()
-				.region(regionRef)
+			new SampleCriteria().region(regionRef)
 				.district(districtRef)
 				.disease(disease)
 				.sampleDateBetween(from, to, SampleDateType.RESULT, DateFilterOption.DATE)
-				.pathogenTestResult(PathogenTestResultType.INDETERMINATE)
-		);
-		
+				.pathogenTestResult(PathogenTestResultType.INDETERMINATE));
+
 		long pendingCount = count(
-			new SampleCriteria()
-				.region(regionRef)
+			new SampleCriteria().region(regionRef)
 				.district(districtRef)
 				.disease(disease)
 				.sampleDateBetween(from, to, SampleDateType.RESULT, DateFilterOption.DATE)
-				.pathogenTestResult(PathogenTestResultType.PENDING)
-		);
-		
+				.pathogenTestResult(PathogenTestResultType.PENDING));
+
 		long negativeCount = count(
-			new SampleCriteria()
-				.region(regionRef)
+			new SampleCriteria().region(regionRef)
 				.district(districtRef)
 				.disease(disease)
 				.sampleDateBetween(from, to, SampleDateType.RESULT, DateFilterOption.DATE)
-				.pathogenTestResult(PathogenTestResultType.NEGATIVE)
-		);
-		
+				.pathogenTestResult(PathogenTestResultType.NEGATIVE));
+
 		long positiveCount = count(
-			new SampleCriteria()
-				.region(regionRef)
+			new SampleCriteria().region(regionRef)
 				.district(districtRef)
 				.disease(disease)
 				.sampleDateBetween(from, to, SampleDateType.RESULT, DateFilterOption.DATE)
-				.pathogenTestResult(PathogenTestResultType.POSITIVE)
-		);
+				.pathogenTestResult(PathogenTestResultType.POSITIVE));
 
 		long adequateCount = count(
-			new SampleCriteria()
-				.region(regionRef)
+			new SampleCriteria().region(regionRef)
 				.district(districtRef)
 				.disease(disease)
-				.sampleDateBetween(from, to, SampleDateType.RECEIVED, DateFilterOption.DATE)
-				.specimenCondition(SpecimenCondition.ADEQUATE)
-		);
-		
+				.sampleDateBetween(from, to, SampleDateType.RECIPIENT, DateFilterOption.DATE)
+				.specimenCondition(SpecimenCondition.ADEQUATE));
+
 		long inadequateCount = count(
-			new SampleCriteria()
-				.region(regionRef)
+			new SampleCriteria().region(regionRef)
 				.district(districtRef)
 				.disease(disease)
-				.sampleDateBetween(from, to, SampleDateType.RECEIVED, DateFilterOption.DATE)
-				.specimenCondition(SpecimenCondition.NOT_ADEQUATE)
-		);
+				.sampleDateBetween(from, to, SampleDateType.RECIPIENT, DateFilterOption.DATE)
+				.specimenCondition(SpecimenCondition.NOT_ADEQUATE));
 
 		long shippedCount = count(
-			new SampleCriteria()
-				.region(regionRef)
+			new SampleCriteria().region(regionRef)
 				.district(districtRef)
 				.disease(disease)
-				.sampleDateBetween(from, to, SampleDateType.SHIPPED, DateFilterOption.DATE)
-				.shipped(true)
-		);
-		
+				.sampleDateBetween(from, to, SampleDateType.SHIPMENT, DateFilterOption.DATE)
+				.shipped(true));
+
 		long notShippedCount = count(
-			new SampleCriteria()
-				.region(regionRef)
+			new SampleCriteria().region(regionRef)
 				.district(districtRef)
 				.disease(disease)
 				.sampleDateBetween(from, to, SampleDateType.COLLECTION, DateFilterOption.DATE)
 				.samplePurpose(SamplePurpose.EXTERNAL)
-				.shipped(false)
-		);
-		
+				.shipped(false));
+
 		long receivedCount = count(
-			new SampleCriteria()
-				.region(regionRef)
+			new SampleCriteria().region(regionRef)
 				.district(districtRef)
 				.disease(disease)
-				.sampleDateBetween(from, to, SampleDateType.RECEIVED, DateFilterOption.DATE)
-				.received(true)
-		);
-		
+				.sampleDateBetween(from, to, SampleDateType.RECIPIENT, DateFilterOption.DATE)
+				.received(true));
+
 		long notReceivedCount = count(
-			new SampleCriteria()
-				.region(regionRef)
+			new SampleCriteria().region(regionRef)
 				.district(districtRef)
 				.disease(disease)
-				.sampleDateBetween(from, to, SampleDateType.SHIPPED, DateFilterOption.DATE)
+				.sampleDateBetween(from, to, SampleDateType.SHIPMENT, DateFilterOption.DATE)
 				.shipped(true)
-				.received(false)
-		);
+				.received(false));
 
 		Map<SampleCountType, Long> map = new HashMap<SampleCountType, Long>();
 		map.put(SampleCountType.COLLECTED, total);
@@ -1282,14 +1258,11 @@ public class SampleFacadeEjb implements SampleFacade {
 	private void onSampleChanged(SampleDto existingSample, Sample newSample, boolean syncShares) {
 
 		// Change pathogenTestResultChangeDate if the pathogen test result has changed
-		if (existingSample == null
-				|| existingSample.getPathogenTestResult() != newSample.getPathogenTestResult()) {
-			
+		if (existingSample == null || existingSample.getPathogenTestResult() != newSample.getPathogenTestResult()) {
+
 			Date latestPathogenTestDate = pathogenTestFacade.getLatestPathogenTestDate(newSample.getUuid());
-			Date changeDate = latestPathogenTestDate != null
-									? latestPathogenTestDate
-									: newSample.getSampleDateTime();
-			
+			Date changeDate = latestPathogenTestDate != null ? latestPathogenTestDate : newSample.getSampleDateTime();
+
 			newSample.setPathogenTestResultChangeDate(changeDate);
 		}
 
