@@ -622,7 +622,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			CaseDataDto caze = CaseFacadeEjb.toDto(newVisit.getCaze());
 			SymptomsDto caseSymptoms = caze.getSymptoms();
 			SymptomsHelper.updateSymptoms(toDto(newVisit).getSymptoms(), caseSymptoms);
-			caseFacade.saveCase(caze);
+			caseFacade.saveCase(caze, true);
 		}
 	}
 

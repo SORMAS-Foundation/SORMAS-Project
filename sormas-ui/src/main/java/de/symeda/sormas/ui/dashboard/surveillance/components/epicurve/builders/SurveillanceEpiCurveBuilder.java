@@ -6,10 +6,10 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
+import de.symeda.sormas.api.dashboard.EpiCurveGrouping;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 public abstract class SurveillanceEpiCurveBuilder {
