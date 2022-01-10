@@ -504,6 +504,7 @@ public interface Captions {
 	String caseMinusDays = "caseMinusDays";
 	String caseNewCase = "caseNewCase";
 	String caseNewCaseDate = "caseNewCaseDate";
+	String caseNoDiseaseVariant = "caseNoDiseaseVariant";
 	String caseNumberOfDuplicatesDetected = "caseNumberOfDuplicatesDetected";
 	String caseOpenCasesGuide = "caseOpenCasesGuide";
 	String caseOpenMergeGuide = "caseOpenMergeGuide";

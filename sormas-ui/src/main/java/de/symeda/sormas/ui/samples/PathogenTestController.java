@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
@@ -152,24 +153,30 @@ public class PathogenTestController {
 		CaseDataDto existingCaseDto,
 		DiseaseVariant diseaseVariant,
 		String diseaseVariantDetails,
-		Runnable callback) {
+		Consumer<Boolean> callback) {
 
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingUpdateCaseWithNewDiseaseVariant),
-			new Label(I18nProperties.getString(Strings.messageUpdateCaseWithNewDiseaseVariant)),
+			new Label(
+				String.format(
+					I18nProperties.getString(Strings.messageUpdateCaseWithNewDiseaseVariant),
+					existingCaseDto.getDiseaseVariant() == null
+						? "[" + I18nProperties.getCaption(Captions.caseNoDiseaseVariant) + "]"
+						: existingCaseDto.getDiseaseVariant().toString(),
+					diseaseVariant.toString()),
+				ContentMode.HTML),
 			I18nProperties.getString(Strings.yes),
 			I18nProperties.getString(Strings.no),
 			800,
-			e -> {
-				if (e) {
+			yes -> {
+				if (yes) {
 					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(existingCaseDto.getUuid());
 					caseDataByUuid.setDiseaseVariant(diseaseVariant);
 					caseDataByUuid.setDiseaseVariantDetails(diseaseVariantDetails);
 					FacadeProvider.getCaseFacade().saveCase(caseDataByUuid);
-					ControllerProvider.getCaseController().navigateToCase(caseDataByUuid.getUuid());
 				}
 				if (callback != null) {
-					callback.run();
+					callback.accept(yes);
 				}
 			});
 	}
@@ -225,7 +232,10 @@ public class PathogenTestController {
 									caze,
 									dto.getTestedDiseaseVariant(),
 									dto.getTestedDiseaseVariantDetails(),
-									() -> {
+									yes -> {
+										if (yes) {
+											ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
+										}
 										// Retrieve the case again because it might have changed
 										showConfirmCaseDialog(FacadeProvider.getCaseFacade().getByUuid(caze.getUuid()));
 									});

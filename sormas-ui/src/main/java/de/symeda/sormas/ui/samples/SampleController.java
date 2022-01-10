@@ -182,7 +182,7 @@ public class SampleController {
 		// validate pathogen test create component before saving the sample
 		sampleComponent.addFieldGroups(pathogenTestForm.getFieldGroup());
 		CommitDiscardWrapperComponent.CommitListener savePathogenTest =
-			() -> FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTestForm.getValue());
+			() -> ControllerProvider.getPathogenTestController().savePathogenTest(pathogenTestForm.getValue(), null);
 		sampleComponent.addCommitListener(savePathogenTest);
 		// Discard button configuration
 		Button discardButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.pathogenTestRemove));
