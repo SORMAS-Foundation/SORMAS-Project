@@ -61,7 +61,7 @@ public enum DatabaseTable {
 	DISTRICTS(DatabaseTableType.INFRASTRUCTURE, null, "districts"),
 	COMMUNITIES(DatabaseTableType.INFRASTRUCTURE, null, "communities"),
 	FACILITIES(DatabaseTableType.INFRASTRUCTURE, null, "facilities"),
-	POINT_OF_ENTRIES(DatabaseTableType.INFRASTRUCTURE, null, "point_of_entries"),
+	POINTS_OF_ENTRY(DatabaseTableType.INFRASTRUCTURE, null, "points_of_entry"),
 	CUSTOMIZABLE_ENUM_VALUES(DatabaseTableType.CONFIGURATION, null, "customizable_enum_values"),
 
 	CAMPAIGNS(DatabaseTableType.SORMAS, null, "campaigns"),
@@ -74,7 +74,7 @@ public enum DatabaseTable {
 
 	SORMAS_TO_SORMAS_ORIGIN_INFO(DatabaseTableType.SORMAS, null, "sormas_to_sormas_origin_infoß"),
 	SORMAS_TO_SORMAS_SHARE_INFO(DatabaseTableType.SORMAS, null, "sormas_to_sormas_share_info"),
-	SORMAS_TO_SORMAS_SHARE_REQUEST(DatabaseTableType.SORMAS, null, "sormas_to_sormas_share_request"),
+	SORMAS_TO_SORMAS_SHARE_REQUESTS(DatabaseTableType.SORMAS, null, "sormas_to_sormas_share_requests"),
 	SHARE_REQUEST_INFO(DatabaseTableType.SORMAS, null, "share_request_info"),
 	EXTERNAL_SHARE_INFO(DatabaseTableType.SORMAS, null, "external_share_info"),
 
