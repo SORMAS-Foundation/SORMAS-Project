@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.vaccination;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -44,6 +45,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
@@ -494,6 +496,20 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 	public Vaccination fromDto(@NotNull VaccinationDto source, boolean checkChangeDate) {
 		return fillOrBuildEntity(source, vaccinationService.getByUuid(source.getUuid()), checkChangeDate);
+	}
+
+	public void copyExistingVaccinationsToNewImmunization(ImmunizationDto immunizationDto, Immunization newImmunization) {
+		List<Vaccination> vaccinationEntities = new ArrayList<>();
+		for (VaccinationDto vaccinationDto : immunizationDto.getVaccinations()) {
+			Vaccination vaccination = new Vaccination();
+			vaccination.setUuid(DataHelper.createUuid());
+			vaccination = fillOrBuildEntity(vaccinationDto, vaccination, false);
+
+			vaccination.setImmunization(newImmunization);
+			vaccinationEntities.add(vaccination);
+		}
+		newImmunization.getVaccinations().clear();
+		newImmunization.getVaccinations().addAll(vaccinationEntities);
 	}
 
 	@LocalBean
