@@ -28,29 +28,29 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.sample.SampleCountType;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class CountTileComponent extends VerticalLayout {
+public class SampleCountTileComponent extends VerticalLayout {
 
 	private static final long serialVersionUID = 6582975657305031105L;
 
-	public CountTileComponent(SampleCountType sampleCountType, Long count, Long countDifference) {
+	public SampleCountTileComponent(SampleCountType sampleCountType, Long count, Long countDifference) {
 		createLayout(sampleCountType, count, countDifference);
 		setMargin(false);
 		setSpacing(false);
 	}
 
-	private void createLayout (SampleCountType sampleCountType, Long count, Long countDifference) {
+	private void createLayout(SampleCountType sampleCountType, Long count, Long countDifference) {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(false);
 		layout.setSpacing(false);
 		CssStyles.style(layout, CssStyles.getSampleCountColor(sampleCountType));
 		layout.setHeight(80, Unit.PIXELS);
 		layout.setWidth(100, Unit.PERCENTAGE);
-		
+
 		addCountLayout(layout, count, countDifference);
 		addLabelLayout(layout, sampleCountType);
 	}
-	
-	private void addCountLayout (VerticalLayout layout, Long count, Long countDifference) {
+
+	private void addCountLayout(VerticalLayout layout, Long count, Long countDifference) {
 		VerticalLayout countLayout = new VerticalLayout();
 		countLayout.setMargin(false);
 		countLayout.setSpacing(false);
@@ -97,7 +97,7 @@ public class CountTileComponent extends VerticalLayout {
 		layout.setExpandRatio(countLayout, 1);
 	}
 
-	private void addLabelLayout (VerticalLayout layout, SampleCountType sampleCountType) {
+	private void addLabelLayout(VerticalLayout layout, SampleCountType sampleCountType) {
 		VerticalLayout nameAndOutbreakLayout = new VerticalLayout();
 		nameAndOutbreakLayout.setMargin(new MarginInfo(1));
 		nameAndOutbreakLayout.setSpacing(false);
