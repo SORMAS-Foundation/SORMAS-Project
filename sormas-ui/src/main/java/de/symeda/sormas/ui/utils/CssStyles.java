@@ -419,30 +419,30 @@ public final class CssStyles {
 	 */
 	public static String getSampleCountColor(SampleCountType count) {
 		switch (count) {
-			case COLLECTED:
-				return "background-sample-count-total";
-			case INDETERMINATE:
-				return "background-sample-count-indeterminate";
-			case ADEQUATE:
-				return "background-sample-count-adequate";
-			case INADEQUATE:
-				return "background-sample-count-inadequate";
-			case POSITIVE:
-				return "background-sample-count-positives";
-			case NEGATIVE:
-				return "background-sample-count-negatives";
-			case PENDING:
-				return "background-sample-count-pendings";
-			case SHIPPED:
-				return "background-sample-count-shipped";
-			case NOT_SHIPED:
-				return "background-sample-count-not-shipped";
-			case RECEIVED:
-				return "background-sample-count-received";
-			case NOT_RECEIVED:
-				return "background-sample-count-not-received";
-			default:
-				throw new IllegalArgumentException(count.toString());
+		case COLLECTED:
+			return "background-sample-count-total";
+		case INDETERMINATE:
+			return "background-sample-count-indeterminate";
+		case ADEQUATE:
+			return "background-sample-count-adequate";
+		case INADEQUATE:
+			return "background-sample-count-inadequate";
+		case POSITIVE:
+			return "background-sample-count-positive";
+		case NEGATIVE:
+			return "background-sample-count-negative";
+		case PENDING:
+			return "background-sample-count-pending";
+		case SHIPPED:
+			return "background-sample-count-shipped";
+		case NOT_SHIPED:
+			return "background-sample-count-not-shipped";
+		case RECEIVED:
+			return "background-sample-count-received";
+		case NOT_RECEIVED:
+			return "background-sample-count-not-received";
+		default:
+			throw new IllegalArgumentException(count.toString());
 		}
 	}
 }
