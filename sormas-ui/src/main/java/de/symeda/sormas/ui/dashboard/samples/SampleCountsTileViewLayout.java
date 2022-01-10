@@ -48,8 +48,8 @@ public class SampleCountsTileViewLayout extends CssLayout {
 	}
 
 	public void refresh() {
-		Map<SampleCountType, Long> sampleCount = dashboardDataProvider.getSampleCounts();
-		Map<SampleCountType, Long> previousSampleCount = dashboardDataProvider.getPreviousSampleCounts();
+		Map<SampleCountType, Long> sampleCount = dashboardDataProvider.getSampleCount();
+		Map<SampleCountType, Long> previousSampleCount = dashboardDataProvider.getPreviousSampleCount();
 		this.removeAllComponents();
 
 		SampleCountType[] totalCol = {
