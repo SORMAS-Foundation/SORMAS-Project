@@ -503,7 +503,7 @@ public class SampleController {
 				popupWindow.close();
 				SormasUI.refreshView();
 				if (callback != null) {
-					callback.accept(false);
+					callback.accept(true);
 				}
 			}
 		});
@@ -515,7 +515,7 @@ public class SampleController {
 			public void buttonClick(ClickEvent event) {
 				popupWindow.close();
 				if (callback != null) {
-					callback.accept(true);
+					callback.accept(false);
 				}
 			}
 		});
