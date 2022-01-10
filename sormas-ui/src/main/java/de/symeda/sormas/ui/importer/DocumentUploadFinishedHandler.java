@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.importer;
 
+import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isFileSizeLimitExceeded;
+
 import java.io.InputStream;
 import java.util.Objects;
 
@@ -110,8 +112,11 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 		String relatedEntityUuid,
 		byte[] bytes)
 		throws Exception {
-		if (isFileSizeLimitExceeded(length))
+		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getDocumentUploadSizeLimitMb();
+		if (isFileSizeLimitExceeded(length, fileSizeLimitMb)) {
+			Notification.show(I18nProperties.getValidationError(Validations.fileTooBig, fileSizeLimitMb));
 			return;
+		}
 		DocumentDto document = DocumentDto.build();
 		document.setUploadingUser(Objects.requireNonNull(UserProvider.getCurrent()).getUserReference());
 		document.setName(fileName);
@@ -123,13 +128,4 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 		FacadeProvider.getDocumentFacade().saveDocument(document, bytes);
 	}
 
-	private boolean isFileSizeLimitExceeded(Long length) {
-		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getDocumentUploadSizeLimitMb();
-		fileSizeLimitMb = fileSizeLimitMb * 1_000_000;
-		if (length > fileSizeLimitMb) {
-			Notification.show(I18nProperties.getValidationError(Validations.fileTooBig, fileSizeLimitMb));
-			return true;
-		}
-		return false;
-	}
 }

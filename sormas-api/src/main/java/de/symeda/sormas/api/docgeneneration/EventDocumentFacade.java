@@ -30,7 +30,7 @@ public interface EventDocumentFacade {
 	String getGeneratedDocument(String templateName, EventReferenceDto eventReference, Properties extraProperties, Boolean shouldUploadGeneratedDoc)
 		throws DocumentTemplateException;
 
-	Map<ReferenceDto, String> getGeneratedDocuments(
+	Map<ReferenceDto, byte[]> getGeneratedDocuments(
 		String templateName,
 		List<EventReferenceDto> eventReferences,
 		Properties extraProperties,

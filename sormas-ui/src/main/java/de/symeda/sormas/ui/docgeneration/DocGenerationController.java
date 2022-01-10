@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.docgeneration;
 
+import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isFileSizeLimitExceeded;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -66,60 +68,73 @@ public class DocGenerationController {
 				sampleCriteria,
 				documentListComponent,
 				(templateFile, sample, pathogenTest, extraProperties, shouldUploadGeneratedDoc) -> {
-			QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
+					QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
 
-			return new ByteArrayInputStream(
-				quarantineOrderFacade
-					.getGeneratedDocument(templateFile, workflow, referenceDto, sample, pathogenTest, extraProperties, shouldUploadGeneratedDoc));
-		}, (templateFile) -> getDocumentFileName(referenceDto, templateFile)));
+					return new ByteArrayInputStream(
+						quarantineOrderFacade.getGeneratedDocument(
+							templateFile,
+							workflow,
+							referenceDto,
+							sample,
+							pathogenTest,
+							extraProperties,
+							shouldUploadGeneratedDoc));
+				},
+				(templateFile) -> getDocumentFileName(referenceDto, templateFile)));
 	}
 
 	public void showQuarantineOrderDocumentDialog(List<ReferenceDto> referenceDtos, DocumentWorkflow workflow) {
 		String filename = DownloadUtil.createFileNameWithCurrentDate(ExportEntityName.DOCUMENTS, ".zip");
 		showDialog(
 			new QuarantineOrderLayout(workflow, null, null, (templateFile, sample, pathogenTest, extraProperties, shouldUploadGeneratedDoc) -> {
-			QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
+				QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
 
-			Map<ReferenceDto, byte[]> generatedDocumentContents =
+				Map<ReferenceDto, byte[]> generatedDocumentContents =
 					quarantineOrderFacade.getGeneratedDocuments(templateFile, workflow, referenceDtos, extraProperties, shouldUploadGeneratedDoc);
 
-				long fileSizeLimitMb = FacadeProvider.getConfigFacade().getDocumentUploadSizeLimitMb();
-				fileSizeLimitMb = fileSizeLimitMb * 1_000_000;
-				List<String> fileSizeLimitExceeded = new ArrayList<>();
+				return generateZip(templateFile, shouldUploadGeneratedDoc, generatedDocumentContents);
 
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-			try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-
-				for (Map.Entry<ReferenceDto, byte[]> referenceDocumentContent : generatedDocumentContents.entrySet()) {
-						ReferenceDto referenceDto = referenceDocumentContent.getKey();
-						ZipEntry entry = new ZipEntry(getDocumentFileName(referenceDto, templateFile));
-					zos.putNextEntry(entry);
-
-						byte[] document = referenceDocumentContent.getValue();
-						zos.write(document);
-					zos.closeEntry();
-						if (shouldUploadGeneratedDoc && document.length > fileSizeLimitMb) {
-							fileSizeLimitExceeded.add(referenceDto.getUuid());
-						}
-				}
-
-				zos.finish();
-				zos.flush();
-
-				return new ByteArrayInputStream(baos.toByteArray());
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-				} finally {
-					if (shouldUploadGeneratedDoc && fileSizeLimitExceeded.size() > 0) {
-						buildDocumentUploadWarningWindow(fileSizeLimitExceeded);
-					}
-			}
-
-		}, (templateFile) -> filename));
+			}, (templateFile) -> filename));
 	}
 
-	private void buildDocumentUploadWarningWindow(List<String> fileSizeLimitExceededCases) {
+	private ByteArrayInputStream generateZip(
+		String templateFile,
+		Boolean shouldUploadGeneratedDoc,
+		Map<ReferenceDto, byte[]> generatedDocumentContents) {
+		long fileSizeLimitMB = FacadeProvider.getConfigFacade().getDocumentUploadSizeLimitMb();
+		List<String> fileSizeLimitExceeded = new ArrayList<>();
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+		try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+
+			for (Map.Entry<ReferenceDto, byte[]> referenceDocumentContent : generatedDocumentContents.entrySet()) {
+				ReferenceDto referenceDto = referenceDocumentContent.getKey();
+				ZipEntry entry = new ZipEntry(getDocumentFileName(referenceDto, templateFile));
+				zos.putNextEntry(entry);
+
+				byte[] document = referenceDocumentContent.getValue();
+				zos.write(document);
+				zos.closeEntry();
+				if (shouldUploadGeneratedDoc && isFileSizeLimitExceeded(document.length, fileSizeLimitMB)) {
+					fileSizeLimitExceeded.add(referenceDto.getUuid());
+				}
+			}
+
+			zos.finish();
+			zos.flush();
+
+			return new ByteArrayInputStream(baos.toByteArray());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (shouldUploadGeneratedDoc && fileSizeLimitExceeded.size() > 0) {
+				buildDocumentUploadWarningWindow(fileSizeLimitExceeded, fileSizeLimitMB);
+			}
+		}
+	}
+
+	private void buildDocumentUploadWarningWindow(List<String> fileSizeLimitExceededCases, long fileSizeLimitMb) {
 
 		VerticalLayout textAreaLayout = new VerticalLayout();
 		Label docsNotUploadedLabel = new Label(I18nProperties.getCaption(Captions.DocumentTemplate_notUploaded));
@@ -136,7 +151,6 @@ public class DocGenerationController {
 		Button okButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionOkay));
 		buttonBar.addComponents(okButton);
 
-		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getDocumentUploadSizeLimitMb();
 		HorizontalLayout fileTooBig = new HorizontalLayout();
 		Label fileTooBigLabel = new Label(String.format(I18nProperties.getCaption(Captions.DocumentTemplate_fileTooBig), fileSizeLimitMb));
 		fileTooBig.addComponent(fileTooBigLabel);
@@ -159,57 +173,26 @@ public class DocGenerationController {
 				documentListComponent,
 				(templateFileName) -> getDocumentFileName(eventReferenceDto, templateFileName),
 				(templateFile, properties, shouldUploadGeneratedDoc) -> {
-				EventDocumentFacade eventDocumentFacade = FacadeProvider.getEventDocumentFacade();
+					EventDocumentFacade eventDocumentFacade = FacadeProvider.getEventDocumentFacade();
 
-				return new ByteArrayInputStream(
+					return new ByteArrayInputStream(
 						eventDocumentFacade.getGeneratedDocument(templateFile, eventReferenceDto, properties, shouldUploadGeneratedDoc)
 							.getBytes(StandardCharsets.UTF_8));
-			}));
+				}));
 	}
 
 	public void showEventDocumentDialog(List<EventReferenceDto> referenceDtos) {
 		String filename = DownloadUtil.createFileNameWithCurrentDate(ExportEntityName.EVENTS, ".zip");
 
-		showDialog(new EventDocumentLayout((templateFile, properties, shouldUploadGeneratedDoc) -> {
+		showDialog(new EventDocumentLayout(null, (templateFile) -> filename, (templateFile, properties, shouldUploadGeneratedDoc) -> {
 			EventDocumentFacade eventDocumentFacade = FacadeProvider.getEventDocumentFacade();
 
-			Map<ReferenceDto, String> generatedDocumentContents =
+			Map<ReferenceDto, byte[]> generatedDocumentContents =
 				eventDocumentFacade.getGeneratedDocuments(templateFile, referenceDtos, properties, shouldUploadGeneratedDoc);
 
-			long fileSizeLimitMb = FacadeProvider.getConfigFacade().getDocumentUploadSizeLimitMb();
-			fileSizeLimitMb = fileSizeLimitMb * 1_000_000;
-			List<String> fileSizeLimitExceeded = new ArrayList<>();
+			return generateZip(templateFile, shouldUploadGeneratedDoc, generatedDocumentContents);
 
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-			try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-
-				for (Map.Entry<ReferenceDto, String> referenceDocumentContent : generatedDocumentContents.entrySet()) {
-					ReferenceDto referenceDto = referenceDocumentContent.getKey();
-					ZipEntry entry = new ZipEntry(getDocumentFileName(referenceDto, templateFile));
-					zos.putNextEntry(entry);
-
-					String document = referenceDocumentContent.getValue();
-					zos.write(document.getBytes(StandardCharsets.UTF_8));
-					zos.closeEntry();
-					if (shouldUploadGeneratedDoc && (document.length() > fileSizeLimitMb)) {
-						fileSizeLimitExceeded.add(referenceDto.getUuid());
-					}
-				}
-
-				zos.finish();
-				zos.flush();
-
-				return new ByteArrayInputStream(baos.toByteArray());
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			} finally {
-				if (shouldUploadGeneratedDoc && fileSizeLimitExceeded.size() > 0) {
-					buildDocumentUploadWarningWindow(fileSizeLimitExceeded);
-				}
-			}
-
-		}, (templateFile) -> filename));
+		}));
 	}
 
 	private void showDialog(AbstractDocgenerationLayout docgenerationLayout) {

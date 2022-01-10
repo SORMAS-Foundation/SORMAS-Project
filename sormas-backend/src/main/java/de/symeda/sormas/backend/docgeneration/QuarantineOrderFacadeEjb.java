@@ -35,8 +35,6 @@ import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
-import de.symeda.sormas.backend.document.DocumentFacadeEjb;
-import de.symeda.sormas.backend.user.UserService;
 
 @Stateless(name = "QuarantineOrderFacade")
 public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
@@ -48,10 +46,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	private DocumentTemplateEntitiesBuilder entitiesBuilder;
 
 	@EJB
-	private UserService userService;
-
-	@EJB
-	private DocumentFacadeEjb.DocumentFacadeEjbLocal documentFacade;
+	private DocGenerationHelper helper;
 
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
@@ -82,7 +77,6 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 				return;
 			}
 
-			DocGenerationHelper helper = new DocGenerationHelper(userService, documentFacade);
 			helper.saveDocument(
 				helper.getDocumentFileName(rootEntityReference, templateName),
 				null,// default type will be applied: "application/octet-stream"
@@ -98,10 +92,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	private boolean isFileSizeLimitExceeded(int length) {
 		long fileSizeLimitMb = configFacade.getDocumentUploadSizeLimitMb();
 		fileSizeLimitMb = fileSizeLimitMb * 1_000_000;
-		if (length > fileSizeLimitMb) {
-			return true;
-		}
-		return false;
+		return length > fileSizeLimitMb;
 	}
 
 	@Override

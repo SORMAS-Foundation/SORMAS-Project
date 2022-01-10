@@ -52,14 +52,6 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 		init();
 	}
 
-	public EventDocumentLayout(DocumentInputStreamSupplier documentInputStreamSupplier, Function<String, String> fileNameFunction) {
-		super(I18nProperties.getCaption(Captions.DocumentTemplate_EventHandout), fileNameFunction, true);
-
-		this.documentInputStreamSupplier = documentInputStreamSupplier;
-
-		init();
-	}
-
 	@Override
 	protected List<String> getAvailableTemplates() {
 		return FacadeProvider.getEventDocumentFacade().getAvailableTemplates();
@@ -81,7 +73,7 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 				return null;
 			} finally {
 				if (nonNull(documentListComponent)) {
-					documentListComponent.getDocumentList().reload();
+					documentListComponent.reload();
 				}
 			}
 		}, filename);

@@ -26,9 +26,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.backend.action.ActionFacadeEjb.ActionFacadeEjbLocal;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
-import de.symeda.sormas.backend.document.DocumentFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserService;
 
 @Stateless(name = "EventDocumentFacade")
 public class EventDocumentFacadeEjb implements EventDocumentFacade {
@@ -47,10 +45,7 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 
 	@EJB
-	private UserService userService;
-
-	@EJB
-	private DocumentFacadeEjb.DocumentFacadeEjbLocal documentFacade;
+	private DocGenerationHelper helper;
 
 	@Override
 	public String getGeneratedDocument(
@@ -73,7 +68,6 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 		if (shouldUploadGeneratedDoc) {
 			byte[] documentToSave = styledHtml.getBytes(StandardCharsets.UTF_8);//mandatory UTF_8
 			try {
-				DocGenerationHelper helper = new DocGenerationHelper(userService, documentFacade);
 				helper.saveDocument(
 					helper.getDocumentFileName(eventReference, templateName),
 					null,// default type will be applied: "application/octet-stream" for /*"text/html"*/ it will work as well in the same way.
@@ -89,17 +83,17 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 	}
 
 	@Override
-	public Map<ReferenceDto, String> getGeneratedDocuments(
+	public Map<ReferenceDto, byte[]> getGeneratedDocuments(
 		String templateName,
 		List<EventReferenceDto> eventReferences,
 		Properties extraProperties,
 		Boolean shouldUploadGeneratedDoc)
 		throws DocumentTemplateException {
-		Map<ReferenceDto, String> documents = new HashMap<>(eventReferences.size());
+		Map<ReferenceDto, byte[]> documents = new HashMap<>(eventReferences.size());
 
 		for (EventReferenceDto referenceDto : eventReferences) {
 			String documentContent = getGeneratedDocument(templateName, referenceDto, extraProperties, shouldUploadGeneratedDoc);
-			documents.put(referenceDto, documentContent);
+			documents.put(referenceDto, documentContent.getBytes(StandardCharsets.UTF_8));
 		}
 
 		return documents;

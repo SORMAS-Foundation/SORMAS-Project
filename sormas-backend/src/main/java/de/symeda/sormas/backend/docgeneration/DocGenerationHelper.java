@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.action.ActionReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -15,18 +19,17 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 
+@Stateless
+@LocalBean
 public class DocGenerationHelper {
 
+	@EJB
 	private UserService userService;
 
+	@EJB
 	private DocumentFacadeEjb.DocumentFacadeEjbLocal documentFacade;
 
-	public DocGenerationHelper(UserService userService, DocumentFacadeEjb.DocumentFacadeEjbLocal documentFacade) {
-		this.userService = userService;
-		this.documentFacade = documentFacade;
-	}
-
-	protected DocumentRelatedEntityType getDocumentRelatedEntityType(ReferenceDto rootEntityReference) {
+	public DocumentRelatedEntityType getDocumentRelatedEntityType(ReferenceDto rootEntityReference) {
 		if (rootEntityReference instanceof CaseReferenceDto) {
 			return DocumentRelatedEntityType.CASE;
 		} else if (rootEntityReference instanceof ContactReferenceDto) {
@@ -40,7 +43,7 @@ public class DocGenerationHelper {
 		}
 	}
 
-	protected String getDocumentFileName(ReferenceDto rootEntityReference, String templateFileName) {
+	public String getDocumentFileName(ReferenceDto rootEntityReference, String templateFileName) {
 		List<DocumentDto> docs =
 			documentFacade.getDocumentsRelatedToEntity(getDocumentRelatedEntityType(rootEntityReference), rootEntityReference.getUuid());
 		return generateNewFileName(
@@ -51,20 +54,21 @@ public class DocGenerationHelper {
 
 	private String generateNewFileName(List<String> docs, String shortUuid, String templateFileName) {
 		int i = 1;
-		String forCompare = shortUuid + templateFileName;
-		while (new ArrayList<>(docs).contains(forCompare)) {
-			forCompare = generateFileName(shortUuid, templateFileName, i);
+		String newFileName = shortUuid + templateFileName;
+		ArrayList<String> docsArray = new ArrayList<>(docs);
+		while (docsArray.contains(newFileName)) {
+			newFileName = generateFileName(shortUuid, templateFileName, i);
 			i++;
 		}
-		return forCompare;
+		return newFileName;
 	}
 
-	private static String generateFileName(String shortUuid, String templateFileName, int i) {
-		shortUuid += "(" + i + ")";
+	private String generateFileName(String shortUuid, String templateFileName, int index) {
+		shortUuid += "(" + index + ")";
 		return shortUuid + templateFileName;
 	}
 
-	protected void saveDocument(
+	public void saveDocument(
 		String fileName,
 		String mimeType,
 		int length,

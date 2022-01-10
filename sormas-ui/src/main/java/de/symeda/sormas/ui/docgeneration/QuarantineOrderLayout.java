@@ -152,8 +152,9 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 					false).show(Page.getCurrent());
 
 				if (nonNull(documentListComponent)) {
-					documentListComponent.getDocumentList().reload();
+					documentListComponent.reload();
 				}
+
 				return stream;
 			} catch (Exception e) {
 				e.printStackTrace();
