@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.sample.SampleCountType;
 import org.apache.commons.lang3.time.DateUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -40,9 +39,9 @@ import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.dashboard.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCountType;
@@ -216,8 +215,8 @@ public class DashboardDataProvider {
 
 		if (getDashboardType() == DashboardType.SAMPLES) {
 			//Samples counts
-			setSampleCount(FacadeProvider.getSampleFacade().getSampleCount(region, district, disease, fromDate, toDate));
-			setPreviousSampleCount(FacadeProvider.getSampleFacade().getSampleCount(region, district, disease, previousFromDate, previousToDate));
+			setSampleCount(FacadeProvider.getSampleFacade().getSampleCounts(region, district, disease, fromDate, toDate));
+			setPreviousSampleCount(FacadeProvider.getSampleFacade().getSampleCounts(region, district, disease, previousFromDate, previousToDate));
 		}
 
 		if (this.disease == null || getDashboardType() == DashboardType.CONTACTS) {
@@ -468,7 +467,7 @@ public class DashboardDataProvider {
 	public void setCaseWithReferenceDefinitionFulfilledCount(Long caseWithReferenceDefinitionFulfilledCount) {
 		this.caseWithReferenceDefinitionFulfilledCount = caseWithReferenceDefinitionFulfilledCount;
 	}
-	
+
 	public Map<SampleCountType, Long> getSampleCount() {
 		return sampleCount;
 	}
