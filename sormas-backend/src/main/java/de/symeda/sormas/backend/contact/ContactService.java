@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+*/
 package de.symeda.sormas.backend.contact;
 
 import java.sql.Timestamp;
@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,6 +67,8 @@ import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -75,6 +78,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -91,8 +95,7 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.exposure.ExposureService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
-import de.symeda.sormas.backend.immunization.ImmunizationService;
-import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -112,7 +115,6 @@ import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 
@@ -145,7 +147,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	@EJB
 	private UserService userService;
 	@EJB
-	private ImmunizationService immunizationService;
+	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public ContactService() {
 		super(Contact.class);
@@ -531,7 +533,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			List<DashboardContactDto> dashboardContacts = em.createQuery(cq).getResultList();
 
 			if (!dashboardContacts.isEmpty()) {
-				List<Long> dashboardContactIds = dashboardContacts.stream().map(d -> d.getId()).collect(Collectors.toList());
+				List<Long> dashboardContactIds = dashboardContacts.stream().map(DashboardContactDto::getId).collect(Collectors.toList());
 
 				CriteriaQuery<DashboardVisit> visitsCq = cb.createQuery(DashboardVisit.class);
 				Root<Contact> visitsCqRoot = visitsCq.from(getElementClass());
@@ -560,8 +562,15 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 						dashboardContact.setLastVisitDateTime(lastVisit.getVisitDateTime());
 						dashboardContact.setLastVisitStatus(lastVisit.getVisitStatus());
 						dashboardContact.setSymptomatic(lastVisit.isSymptomatic());
-						dashboardContact
-							.setVisitStatusMap(visits.stream().collect(Collectors.groupingBy(DashboardVisit::getVisitStatus, Collectors.counting())));
+
+						List<VisitStatus> visitStatuses = visits.stream().map(DashboardVisit::getVisitStatus).collect(Collectors.toList());
+						Map<VisitStatus, Integer> frequency = new EnumMap<>(VisitStatus.class);
+						for (VisitStatus status : VisitStatus.values()) {
+							int freq = Collections.frequency(visitStatuses, status);
+							frequency.put(status, freq);
+						}
+
+						dashboardContact.setVisitStatusMap(frequency);
 					}
 				}
 
@@ -808,7 +817,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 						ContactLogic.getFollowUpStartDate(contact.getLastContactDate(), contact.getReportDateTime(), earliestSampleDate),
 						contact.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
 						diseaseConfigurationFacade.getFollowUpDuration(contact.getDisease()),
-						false)
+						false,
+						featureConfigurationFacade
+							.isPropertyValueTrue(FeatureType.CONTACT_TRACING, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE))
 					.getFollowUpEndDate();
 			contact.setFollowUpUntil(untilDate);
 			if (DateHelper.getStartOfDay(currentFollowUpUntil).before(DateHelper.getStartOfDay(untilDate))) {
@@ -1449,6 +1460,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	 */
 	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
 
+		// Only consider contacts with relevance date at least one day after the vaccination date
+		if (vaccinationDate == null) {
+			return;
+		} else {
+			vaccinationDate = DateHelper.getEndOfDay(vaccinationDate);
+		}
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Contact> cu = cb.createCriteriaUpdate(Contact.class);
 		Root<Contact> root = cu.from(Contact.class);
@@ -1458,29 +1476,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		Predicate datePredicate = vaccinationDate != null
 			? cb.or(
-				cb.greaterThanOrEqualTo(root.get(Contact.LAST_CONTACT_DATE), vaccinationDate),
-				cb.and(cb.isNull(root.get(Contact.LAST_CONTACT_DATE)), cb.greaterThanOrEqualTo(root.get(Contact.REPORT_DATE_TIME), vaccinationDate)))
+				cb.greaterThan(root.get(Contact.LAST_CONTACT_DATE), vaccinationDate),
+				cb.and(cb.isNull(root.get(Contact.LAST_CONTACT_DATE)), cb.greaterThan(root.get(Contact.REPORT_DATE_TIME), vaccinationDate)))
 			: null;
 
 		cu.where(
 			CriteriaBuilderHelper.and(cb, cb.equal(root.get(Contact.PERSON), personId), cb.equal(root.get(Contact.DISEASE), disease), datePredicate));
 
 		em.createQuery(cu).executeUpdate();
-	}
-
-	public void updateVaccinationStatuses(Contact contact) {
-		List<Immunization> contactPersonImmunizations =
-			immunizationService.getByPersonAndDisease(contact.getPerson().getUuid(), contact.getDisease(), true);
-
-		boolean hasValidVaccinations = contactPersonImmunizations.stream()
-			.anyMatch(
-				immunization -> immunization.getVaccinations()
-					.stream()
-					.anyMatch(vaccination -> VaccinationService.isVaccinationRelevant(contact, vaccination)));
-
-		if (hasValidVaccinations) {
-			contact.setVaccinationStatus(VaccinationStatus.VACCINATED);
-		}
 	}
 
 	public List<ContactListEntryDto> getEntriesList(Long personId, Integer first, Integer max) {

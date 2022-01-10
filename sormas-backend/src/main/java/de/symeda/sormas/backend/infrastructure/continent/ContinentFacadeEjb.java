@@ -191,6 +191,7 @@ public class ContinentFacadeEjb
 		dto.setArchived(entity.isArchived());
 		dto.setExternalId(entity.getExternalId());
 		dto.setUuid(entity.getUuid());
+		dto.setCentrallyManaged(entity.isCentrallyManaged());
 
 		return dto;
 	}
@@ -233,6 +234,7 @@ public class ContinentFacadeEjb
 		target.setDefaultName(source.getDefaultName());
 		target.setArchived(source.isArchived());
 		target.setExternalId(source.getExternalId());
+		target.setCentrallyManaged(source.isCentrallyManaged());
 		return target;
 	}
 

@@ -382,6 +382,7 @@ public class FacilityFacadeEjb
 		dto.setLongitude(entity.getLongitude());
 		dto.setArchived(entity.isArchived());
 		dto.setExternalID(entity.getExternalID());
+		dto.setCentrallyManaged(entity.isCentrallyManaged());
 
 		return dto;
 	}
@@ -608,6 +609,7 @@ public class FacilityFacadeEjb
 		target.setType(source.getType());
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
+		target.setCentrallyManaged(source.isCentrallyManaged());
 		return target;
 	}
 

@@ -7919,9 +7919,14 @@ ALTER TABLE vaccination_history DROP COLUMN vaccinemanufacturerdetails;
 INSERT INTO schema_version (version_number, comment) VALUES (405, 'Vaccination drop details columns #5843');
 
 -- 2021-09-03 Vaccination refactoring #5909
+/* Fix event participants without a missing reporting user before starting the migration (#7531) */
+UPDATE eventparticipant SET reportinguser_id = (SELECT reportinguser_id FROM events WHERE events.id = eventparticipant.event_id) WHERE reportinguser_id IS NULL;
+
 /* Vaccination refactoring */
 /* Step 1: Create a temporary table containing the latest vaccination information for each disease of each person */
 DROP TABLE IF EXISTS tmp_vaccinated_entities;
+DROP TABLE IF EXISTS tmp_healthconditions;
+CREATE TEMP TABLE tmp_healthconditions (LIKE healthconditions);
 CREATE TEMP TABLE tmp_vaccinated_entities AS
 (
     SELECT DISTINCT ON (person.id, cases.disease)
@@ -8106,7 +8111,7 @@ UNION
              LEFT JOIN events ON eventparticipant.event_id = events.id
              LEFT JOIN location ON events.eventlocation_id = location.id
              LEFT JOIN vaccinationinfo ON eventparticipant.vaccinationinfo_id = vaccinationinfo.id
-    WHERE vaccinationinfo.vaccination = 'VACCINATED' AND eventparticipant.deleted = false
+    WHERE vaccinationinfo.vaccination = 'VACCINATED' AND eventparticipant.deleted = false AND events.disease IS NOT NULL
     ORDER BY person.id, events.disease, relevancedate DESC
 );
 
@@ -8121,96 +8126,331 @@ SELECT DISTINCT ON (person_id, disease) person_id,
 FROM tmp_vaccinated_entities
 ORDER BY person_id, disease, relevancedate DESC;
 
-DROP TABLE IF EXISTS tmp_earliest_vaccinated_entities;
-CREATE TEMP TABLE tmp_earliest_vaccinated_entities AS
+DROP TABLE IF EXISTS tmp_earlier_vaccinated_entities;
+CREATE TEMP TABLE tmp_earlier_vaccinated_entities AS
 (
-    SELECT DISTINCT ON (person.id, cases.disease) person.id                  AS person_id,
-                                                  cases.disease,
-                                                  coalesce(cases.firstvaccinationdate, symptoms.onsetdate,
-                                                           cases.reportdate) AS relevancedate
+    SELECT person.id                      AS person_id,
+           cases.disease                  AS disease,
+           cases.firstvaccinationdate     AS firstvaccinationdate,
+           cases.lastvaccinationdate      AS lastvaccinationdate,
+           cases.reportdate               AS reportdate,
+           cases.vaccineName              AS vaccineName,
+           cases.otherVaccineName         AS otherVaccineName,
+           cases.vaccineManufacturer      AS vaccineManufacturer,
+           cases.otherVaccineManufacturer AS otherVaccineManufacturer,
+           cases.vaccineInn               AS vaccineInn,
+           cases.vaccineBatchNumber       AS vaccineBatchNumber,
+           cases.vaccineUniiCode          AS vaccineUniiCode,
+           cases.vaccineAtcCode           AS vaccineAtcCode,
+           cases.vaccinationInfoSource    AS vaccinationInfoSource,
+           coalesce(symptoms.onsetdate,
+                    cases.reportdate)     AS relevancedate
     FROM person
              LEFT JOIN cases ON cases.person_id = person.id
              LEFT JOIN symptoms ON cases.symptoms_id = symptoms.id
     WHERE cases.vaccination = 'VACCINATED'
       AND cases.deleted = false
-      AND EXISTS (SELECT * from tmp_vaccinated_persons
-           WHERE tmp_vaccinated_persons.person_id = person_id
-             AND tmp_vaccinated_persons.disease = cases.disease
-             AND tmp_vaccinated_persons.firstvaccinationdate IS NULL)
-      AND cases.vaccinationdoses ~ '^(10|[1-9])$'
-      AND EXISTS (SELECT * from tmp_vaccinated_persons
-           WHERE tmp_vaccinated_persons.person_id = person_id
-             AND tmp_vaccinated_persons.disease = cases.disease
-             AND tmp_vaccinated_persons.vaccinationdoses >= CAST(cases.vaccinationdoses AS int))
     ORDER BY person.id, cases.disease, relevancedate ASC
 )
 UNION
 (
-    SELECT DISTINCT ON (person.id, contact.disease) person.id                                                 AS person_id,
-                                                    contact.disease,
-                                                    coalesce(vaccinationinfo.firstvaccinationdate,
-                                                             contact.lastcontactdate,
-                                                             contact.reportdatetime)                          AS relevancedate
+    SELECT person.id                                AS person_id,
+           contact.disease                          AS disease,
+           vaccinationinfo.firstvaccinationdate     AS firstvaccinationdate,
+           vaccinationinfo.lastvaccinationdate      AS lastvaccinationdate,
+           contact.reportdatetime                   AS reportdate,
+           vaccinationinfo.vaccineName              AS vaccineName,
+           vaccinationinfo.otherVaccineName         AS otherVaccineName,
+           vaccinationinfo.vaccineManufacturer      AS vaccineManufacturer,
+           vaccinationinfo.otherVaccineManufacturer AS otherVaccineManufacturer,
+           vaccinationinfo.vaccineInn               AS vaccineInn,
+           vaccinationinfo.vaccineBatchNumber       AS vaccineBatchNumber,
+           vaccinationinfo.vaccineUniiCode          AS vaccineUniiCode,
+           vaccinationinfo.vaccineAtcCode           AS vaccineAtcCode,
+           vaccinationinfo.vaccinationInfoSource    AS vaccinationInfoSource,
+           coalesce(contact.lastcontactdate,
+                    contact.reportdatetime)         AS relevancedate
     FROM person
              LEFT JOIN contact ON contact.person_id = person.id
              LEFT JOIN vaccinationinfo ON contact.vaccinationinfo_id = vaccinationinfo.id
     WHERE vaccinationinfo.vaccination = 'VACCINATED'
       AND contact.deleted = false
-      AND EXISTS (SELECT * from tmp_vaccinated_persons
-           WHERE tmp_vaccinated_persons.person_id = person_id
-             AND tmp_vaccinated_persons.disease = contact.disease
-             AND tmp_vaccinated_persons.firstvaccinationdate IS NULL)
-      AND vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
-      AND EXISTS (SELECT * from tmp_vaccinated_persons
-                  WHERE tmp_vaccinated_persons.person_id = person_id
-                    AND tmp_vaccinated_persons.disease = contact.disease
-                    AND tmp_vaccinated_persons.vaccinationdoses >= CAST(vaccinationinfo.vaccinationdoses AS int))
     ORDER BY person.id, contact.disease, relevancedate ASC
 )
 UNION
 (
-    SELECT DISTINCT ON (person.id, events.disease) person.id                                       AS person_id,
-                                                   events.disease,
-                                                   coalesce(vaccinationinfo.firstvaccinationdate, events.startdate,
-                                                            events.enddate, events.reportdatetime) AS relevancedate
+    SELECT person.id                                AS person_id,
+           events.disease                           AS disease,
+           vaccinationinfo.firstvaccinationdate     AS firstvaccinationdate,
+           vaccinationinfo.lastvaccinationdate      AS lastvaccinationdate,
+           events.reportdatetime                    AS reportdate,
+           vaccinationinfo.vaccineName              AS vaccineName,
+           vaccinationinfo.otherVaccineName         AS otherVaccineName,
+           vaccinationinfo.vaccineManufacturer      AS vaccineManufacturer,
+           vaccinationinfo.otherVaccineManufacturer AS otherVaccineManufacturer,
+           vaccinationinfo.vaccineInn               AS vaccineInn,
+           vaccinationinfo.vaccineBatchNumber       AS vaccineBatchNumber,
+           vaccinationinfo.vaccineUniiCode          AS vaccineUniiCode,
+           vaccinationinfo.vaccineAtcCode           AS vaccineAtcCode,
+           vaccinationinfo.vaccinationInfoSource    AS vaccinationInfoSource,
+           coalesce(events.startdate,
+                    events.enddate, events.reportdatetime) AS relevancedate
     FROM person
              LEFT JOIN eventparticipant ON eventparticipant.person_id = person.id
              LEFT JOIN events ON eventparticipant.event_id = events.id
              LEFT JOIN vaccinationinfo ON eventparticipant.vaccinationinfo_id = vaccinationinfo.id
     WHERE vaccinationinfo.vaccination = 'VACCINATED'
       AND eventparticipant.deleted = false
-      AND EXISTS (SELECT *
-           from tmp_vaccinated_persons
-           WHERE tmp_vaccinated_persons.person_id = person_id
-             AND tmp_vaccinated_persons.disease = events.disease
-             AND tmp_vaccinated_persons.firstvaccinationdate IS NULL)
-      AND vaccinationinfo.vaccinationdoses ~ '^(10|[1-9])$'
-      AND EXISTS (SELECT * from tmp_vaccinated_persons
-                  WHERE tmp_vaccinated_persons.person_id = person_id
-                    AND tmp_vaccinated_persons.disease = events.disease
-                    AND tmp_vaccinated_persons.vaccinationdoses >= CAST(vaccinationinfo.vaccinationdoses AS int))
+      AND events.disease IS NOT NULL
+
     ORDER BY person.id, events.disease, relevancedate ASC
 );
 
-DROP TABLE IF EXISTS tmp_earliest_vaccinated_persons;
-CREATE TEMP TABLE tmp_earliest_vaccinated_persons AS
-SELECT DISTINCT ON (person_id, disease) person_id, disease, relevancedate
-FROM tmp_earliest_vaccinated_entities
-ORDER BY person_id, disease, relevancedate ASC;
+/* set earliest report date  */
+DROP TABLE IF EXISTS tmp_earliest_reported_vaccinated_persons;
+CREATE TEMP TABLE tmp_earliest_reported_vaccinated_persons AS
+SELECT DISTINCT ON (person_id, disease) person_id, disease, reportdate
+FROM tmp_earlier_vaccinated_entities
+ORDER BY person_id, disease, reportdate ASC;
 
-/* set earliest date  */
 DO
 $$
     DECLARE
         rec RECORD;
     BEGIN
-        FOR rec IN SELECT * FROM tmp_earliest_vaccinated_persons
+        FOR rec IN SELECT * FROM tmp_earliest_reported_vaccinated_persons
             LOOP
                 UPDATE tmp_vaccinated_persons
-                SET firstvaccinationdate = rec.relevancedate
+                SET reportdate = rec.reportdate
+                WHERE tmp_vaccinated_persons.person_id = rec.person_id
+                  AND tmp_vaccinated_persons.disease = rec.disease;
+            end loop;
+    END;
+$$ LANGUAGE plpgsql;
+
+/* set earliest first vaccination date  */
+DROP TABLE IF EXISTS tmp_earliest_firstvaccinationdate_vaccinated_persons;
+CREATE TEMP TABLE tmp_earliest_firstvaccinationdate_vaccinated_persons AS
+SELECT DISTINCT ON (person_id, disease) person_id, disease, firstvaccinationdate
+FROM tmp_earlier_vaccinated_entities
+WHERE tmp_earlier_vaccinated_entities.firstvaccinationdate IS NOT NULL
+ORDER BY person_id, disease, firstvaccinationdate ASC;
+
+DO
+$$
+    DECLARE
+        rec RECORD;
+    BEGIN
+        FOR rec IN SELECT * FROM tmp_earliest_firstvaccinationdate_vaccinated_persons
+            LOOP
+                UPDATE tmp_vaccinated_persons
+                SET firstvaccinationdate = rec.firstvaccinationdate
                 WHERE tmp_vaccinated_persons.person_id = rec.person_id
                   AND tmp_vaccinated_persons.disease = rec.disease
-                  AND firstvaccinationdate IS NULL;
+                  AND firstvaccinationdate IS NULL
+                  AND rec.firstvaccinationdate IS NOT NULL;
+            end loop;
+    END;
+$$ LANGUAGE plpgsql;
+
+/* set latest last vaccination date  */
+DROP TABLE IF EXISTS tmp_latest_lastvaccinationdate_vaccinated_persons;
+CREATE TEMP TABLE tmp_latest_lastvaccinationdate_vaccinated_persons AS
+SELECT DISTINCT ON (person_id, disease) person_id, disease, lastvaccinationdate
+FROM tmp_earlier_vaccinated_entities
+WHERE tmp_earlier_vaccinated_entities.lastvaccinationdate IS NOT NULL
+ORDER BY person_id, disease, lastvaccinationdate DESC;
+
+DO
+$$
+    DECLARE
+        rec RECORD;
+    BEGIN
+        FOR rec IN SELECT * FROM tmp_latest_lastvaccinationdate_vaccinated_persons
+            LOOP
+                UPDATE tmp_vaccinated_persons
+                SET lastvaccinationdate = rec.lastvaccinationdate
+                WHERE tmp_vaccinated_persons.person_id = rec.person_id
+                  AND tmp_vaccinated_persons.disease = rec.disease
+                  AND lastvaccinationdate IS NULL
+                  AND rec.lastvaccinationdate IS NOT NULL;
+            end loop;
+    END;
+$$ LANGUAGE plpgsql;
+
+/* set latest available vaccine name  */
+DROP TABLE IF EXISTS tmp_latest_vaccinename;
+CREATE TEMP TABLE tmp_latest_vaccinename AS
+SELECT DISTINCT ON (person_id, disease) person_id, disease, vaccineName, otherVaccineName, relevancedate
+FROM tmp_earlier_vaccinated_entities
+WHERE tmp_earlier_vaccinated_entities.vaccineName IS NOT NULL
+ORDER BY person_id, disease, relevancedate DESC;
+
+DO
+$$
+    DECLARE
+        rec RECORD;
+    BEGIN
+        FOR rec IN SELECT * FROM tmp_latest_vaccinename
+            LOOP
+                UPDATE tmp_vaccinated_persons
+                SET vaccineName      = rec.vaccineName,
+                    otherVaccineName = rec.otherVaccineName
+                WHERE tmp_vaccinated_persons.person_id = rec.person_id
+                  AND tmp_vaccinated_persons.disease = rec.disease
+                  AND vaccineName IS NULL
+                  AND rec.vaccineName IS NOT NULL;
+            end loop;
+    END;
+$$ LANGUAGE plpgsql;
+
+/* set latest available vaccine manufacturer  */
+DROP TABLE IF EXISTS tmp_latest_vaccinemanufacturer;
+CREATE TEMP TABLE tmp_latest_vaccinemanufacturer AS
+SELECT DISTINCT ON (person_id, disease) person_id, disease, vaccineManufacturer, otherVaccineManufacturer, relevancedate
+FROM tmp_earlier_vaccinated_entities
+WHERE tmp_earlier_vaccinated_entities.vaccineManufacturer IS NOT NULL
+ORDER BY person_id, disease, relevancedate DESC;
+
+DO
+$$
+    DECLARE
+        rec RECORD;
+    BEGIN
+        FOR rec IN SELECT * FROM tmp_latest_vaccinemanufacturer
+            LOOP
+                UPDATE tmp_vaccinated_persons
+                SET vaccineManufacturer      = rec.vaccineManufacturer,
+                    otherVaccineManufacturer = rec.otherVaccineManufacturer
+                WHERE tmp_vaccinated_persons.person_id = rec.person_id
+                  AND tmp_vaccinated_persons.disease = rec.disease
+                  AND vaccineManufacturer IS NULL
+                  AND rec.vaccineManufacturer IS NOT NULL;
+            end loop;
+    END;
+$$ LANGUAGE plpgsql;
+
+/* set latest available vaccineInn  */
+DROP TABLE IF EXISTS tmp_latest_vaccineinn;
+CREATE TEMP TABLE tmp_latest_vaccineinn AS
+SELECT DISTINCT ON (person_id, disease) person_id, disease, vaccineInn, relevancedate
+FROM tmp_earlier_vaccinated_entities
+WHERE tmp_earlier_vaccinated_entities.vaccineInn IS NOT NULL
+ORDER BY person_id, disease, relevancedate DESC;
+
+DO
+$$
+    DECLARE
+        rec RECORD;
+    BEGIN
+        FOR rec IN SELECT * FROM tmp_latest_vaccineinn
+            LOOP
+                UPDATE tmp_vaccinated_persons
+                SET vaccineInn = rec.vaccineInn
+                WHERE tmp_vaccinated_persons.person_id = rec.person_id
+                  AND tmp_vaccinated_persons.disease = rec.disease
+                  AND vaccineInn IS NULL
+                  AND rec.vaccineInn IS NOT NULL;
+            end loop;
+    END;
+$$ LANGUAGE plpgsql;
+
+/* set latest available vaccineBatchNumber  */
+DROP TABLE IF EXISTS tmp_latest_vaccinebatchnumber;
+CREATE TEMP TABLE tmp_latest_vaccinebatchnumber AS
+SELECT DISTINCT ON (person_id, disease) person_id, disease, vaccineBatchNumber, relevancedate
+FROM tmp_earlier_vaccinated_entities
+WHERE tmp_earlier_vaccinated_entities.vaccineBatchNumber IS NOT NULL
+ORDER BY person_id, disease, relevancedate DESC;
+
+DO
+$$
+    DECLARE
+        rec RECORD;
+    BEGIN
+        FOR rec IN SELECT * FROM tmp_latest_vaccinebatchnumber
+            LOOP
+                UPDATE tmp_vaccinated_persons
+                SET vaccineBatchNumber = rec.vaccineBatchNumber
+                WHERE tmp_vaccinated_persons.person_id = rec.person_id
+                  AND tmp_vaccinated_persons.disease = rec.disease
+                  AND vaccineBatchNumber IS NULL
+                  AND rec.vaccineBatchNumber IS NOT NULL;
+            end loop;
+    END;
+$$ LANGUAGE plpgsql;
+
+/* set latest available vaccineUniiCode  */
+DROP TABLE IF EXISTS tmp_latest_vaccineuniicode;
+CREATE TEMP TABLE tmp_latest_vaccineuniicode AS
+SELECT DISTINCT ON (person_id, disease) person_id, disease, vaccineUniiCode, relevancedate
+FROM tmp_earlier_vaccinated_entities
+WHERE tmp_earlier_vaccinated_entities.vaccineUniiCode IS NOT NULL
+ORDER BY person_id, disease, relevancedate DESC;
+
+DO
+$$
+    DECLARE
+        rec RECORD;
+    BEGIN
+        FOR rec IN SELECT * FROM tmp_latest_vaccineuniicode
+            LOOP
+                UPDATE tmp_vaccinated_persons
+                SET vaccineUniiCode = rec.vaccineUniiCode
+                WHERE tmp_vaccinated_persons.person_id = rec.person_id
+                  AND tmp_vaccinated_persons.disease = rec.disease
+                  AND vaccineUniiCode IS NULL
+                  AND rec.vaccineUniiCode IS NOT NULL;
+            end loop;
+    END;
+$$ LANGUAGE plpgsql;
+
+/* set latest available vaccineAtcCode  */
+DROP TABLE IF EXISTS tmp_latest_vaccineatccode;
+CREATE TEMP TABLE tmp_latest_vaccineatccode AS
+SELECT DISTINCT ON (person_id, disease) person_id, disease, vaccineAtcCode, relevancedate
+FROM tmp_earlier_vaccinated_entities
+WHERE tmp_earlier_vaccinated_entities.vaccineAtcCode IS NOT NULL
+ORDER BY person_id, disease, relevancedate DESC;
+
+DO
+$$
+    DECLARE
+        rec RECORD;
+    BEGIN
+        FOR rec IN SELECT * FROM tmp_latest_vaccineatccode
+            LOOP
+                UPDATE tmp_vaccinated_persons
+                SET vaccineAtcCode = rec.vaccineAtcCode
+                WHERE tmp_vaccinated_persons.person_id = rec.person_id
+                  AND tmp_vaccinated_persons.disease = rec.disease
+                  AND vaccineAtcCode IS NULL
+                  AND rec.vaccineAtcCode IS NOT NULL;
+            end loop;
+    END;
+$$ LANGUAGE plpgsql;
+
+/* set latest available vaccinationInfoSource  */
+DROP TABLE IF EXISTS tmp_latest_vaccinationinfosource;
+CREATE TEMP TABLE tmp_latest_vaccinationinfosource AS
+SELECT DISTINCT ON (person_id, disease) person_id, disease, vaccinationInfoSource, relevancedate
+FROM tmp_earlier_vaccinated_entities
+WHERE tmp_earlier_vaccinated_entities.vaccinationInfoSource IS NOT NULL
+ORDER BY person_id, disease, relevancedate DESC;
+
+DO
+$$
+    DECLARE
+        rec RECORD;
+    BEGIN
+        FOR rec IN SELECT * FROM tmp_latest_vaccinationinfosource
+            LOOP
+                UPDATE tmp_vaccinated_persons
+                SET vaccinationInfoSource = rec.vaccinationInfoSource
+                WHERE tmp_vaccinated_persons.person_id = rec.person_id
+                  AND tmp_vaccinated_persons.disease = rec.disease
+                  AND vaccinationInfoSource IS NULL
+                  AND rec.vaccinationInfoSource IS NOT NULL;
             end loop;
     END;
 $$ LANGUAGE plpgsql;
@@ -8237,11 +8477,9 @@ CREATE OR REPLACE FUNCTION clone_healthconditions(healthconditions_id bigint)
 $BODY$
 DECLARE new_id bigint;
 BEGIN
-    DROP TABLE IF EXISTS tmp_healthconditions;
-    CREATE TEMP TABLE tmp_healthconditions AS SELECT * FROM healthconditions WHERE id = healthconditions_id;
-    UPDATE tmp_healthconditions SET id = nextval('entity_seq'), uuid = generate_base32_uuid(), changedate = now(), creationdate = now(), sys_period = tstzrange(now(), null);
-    INSERT INTO healthconditions SELECT * FROM tmp_healthconditions RETURNING id INTO new_id;
-    DROP TABLE IF EXISTS tmp_healthconditions;
+    INSERT INTO tmp_healthconditions SELECT * FROM healthconditions WHERE id = healthconditions_id;
+    UPDATE tmp_healthconditions SET id = nextval('entity_seq'), uuid = generate_base32_uuid(), changedate = now(), creationdate = now(), sys_period = tstzrange(now(), null) WHERE id = healthconditions_id RETURNING id INTO new_id;
+    INSERT INTO healthconditions SELECT * FROM tmp_healthconditions WHERE id = new_id;
     RETURN new_id;
 END;
 $BODY$;
@@ -8309,7 +8547,7 @@ DO $$
                                     WHEN rec.healthconditions_id IS NOT NULL
                                         THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id))
                                     ELSE (SELECT * FROM create_healthconditions()) END,
-                                rec.reportdate, rec.reportinguser_id, coalesce(rec.firstvaccinationdate, rec.relevancedate),
+                                rec.reportdate, rec.reportinguser_id, rec.firstvaccinationdate,
                                 CASE
                                     WHEN
                                                 rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
@@ -8347,7 +8585,7 @@ DO $$
                                     WHEN rec.healthconditions_id IS NOT NULL
                                         THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id))
                                     ELSE (SELECT * FROM create_healthconditions()) END,
-                                rec.reportdate, rec.reportinguser_id, coalesce(rec.lastvaccinationdate, rec.relevancedate),
+                                rec.reportdate, rec.reportinguser_id, rec.lastvaccinationdate,
                                 CASE
                                     WHEN
                                             rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY'
@@ -8390,11 +8628,11 @@ DO $$
                                 WHEN rec.healthconditions_id IS NOT NULL
                                     THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id))
                                 ELSE (SELECT * FROM create_healthconditions()) END,
-                            rec.reportdate, rec.reportinguser_id, coalesce(rec.lastvaccinationdate, rec.firstvaccinationdate, rec.relevancedate),
+                            rec.reportdate, rec.reportinguser_id, coalesce(rec.lastvaccinationdate, rec.firstvaccinationdate),
                             CASE
                                 WHEN
-                                        rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
-                                        rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                            rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
+                                            rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
                                     THEN
                                     'OXFORD_ASTRA_ZENECA'
                                 ELSE
@@ -8403,8 +8641,8 @@ DO $$
                             rec.othervaccinename,
                             CASE
                                 WHEN
-                                        rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
-                                        rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
+                                            rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR
+                                            rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
                                     THEN
                                     'ASTRA_ZENECA'
                                 ELSE
@@ -8423,7 +8661,7 @@ DO $$
                     PERFORM create_vaccination(
                             rec.immunization_id,
                             CASE WHEN rec.healthconditions_id IS NOT NULL THEN (SELECT * FROM clone_healthconditions(rec.healthconditions_id)) ELSE (SELECT * FROM create_healthconditions()) END,
-                            rec.reportdate, rec.reportinguser_id, coalesce(rec.firstvaccinationdate, rec.relevancedate),
+                            rec.reportdate, rec.reportinguser_id, rec.firstvaccinationdate,
                             CASE
                                 WHEN
                                             rec.vaccinename = 'ASTRA_ZENECA_COMIRNATY' OR rec.vaccinename = 'ASTRA_ZENECA_MRNA_1273'
@@ -8523,8 +8761,21 @@ $$ LANGUAGE plpgsql;
 
 DROP TABLE IF EXISTS tmp_vaccinated_entities;
 DROP TABLE IF EXISTS tmp_vaccinated_persons;
-DROP TABLE IF EXISTS tmp_earliest_vaccinated_entities;
-DROP TABLE IF EXISTS tmp_earliest_vaccinated_persons;
+DROP TABLE IF EXISTS tmp_earlier_vaccinated_entities;
+DROP TABLE IF EXISTS tmp_earliest_reported_vaccinated_persons;
+DROP TABLE IF EXISTS tmp_earliest_firstvaccinationdate_vaccinated_persons;
+DROP TABLE IF EXISTS tmp_latest_lastvaccinationdate_vaccinated_persons;
+DROP TABLE IF EXISTS tmp_latest_vaccinename;
+DROP TABLE IF EXISTS tmp_latest_othervaccinename;
+DROP TABLE IF EXISTS tmp_latest_vaccinemanufacturer;
+DROP TABLE IF EXISTS tmp_latest_othervaccinemanufacturer;
+DROP TABLE IF EXISTS tmp_latest_vaccineinn;
+DROP TABLE IF EXISTS tmp_latest_vaccinebatchnumber;
+DROP TABLE IF EXISTS tmp_latest_vaccineuniicode;
+DROP TABLE IF EXISTS tmp_latest_vaccineatccode;
+DROP TABLE IF EXISTS tmp_latest_vaccinationinfosource;
+DROP TABLE IF EXISTS tmp_healthconditions;
+
 DROP FUNCTION IF EXISTS clone_healthconditions(bigint);
 DROP FUNCTION IF EXISTS create_healthconditions();
 DROP FUNCTION IF EXISTS create_vaccination(bigint, bigint, timestamp, bigint, timestamp, varchar(255), text, varchar(255), text, text, text, text, text, varchar(255), varchar(255), varchar(255));
@@ -9146,4 +9397,40 @@ ALTER TABLE testreport_history ADD COLUMN preliminary boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (431, '[DEMIS2SORMAS] Handle New Profile: Preliminary Test Results #5551');
 
+-- 2021-12-03 [S2S] Implement outgoing S2S entity validation #7070
+ALTER TABLE areas ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE areas_history ADD COLUMN centrally_managed boolean DEFAULT false;
+
+ALTER TABLE community ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE continent ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE country ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE district ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE facility ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE pointofentry ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE region ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE subcontinent ADD COLUMN centrally_managed boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (432, ' [S2S] Implement outgoing S2S entity validation #7070');
+
+-- 2021-12-16 Fill missing reporting users of event participants #7531
+UPDATE eventparticipant SET reportinguser_id = (SELECT reportinguser_id FROM events WHERE events.id = eventparticipant.event_id) WHERE reportinguser_id IS NULL;
+ALTER TABLE eventparticipant ALTER COLUMN reportinguser_id SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (433, 'Fill missing reporting users of event participants #7531');
+
+-- 2021-12-07 Added assignee to labmassage #7310
+ALTER TABLE labmessage ADD COLUMN assignee_id bigint;
+ALTER TABLE labmessage_history ADD COLUMN assignee_id bigint;
+ALTER TABLE labmessage ADD CONSTRAINT fk_labmessage_assignee_id FOREIGN KEY (assignee_id) REFERENCES users(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (434, 'Added assignee to labmassage #7310');
+
+-- 2022-01-03 Add reinfection details and status #7182
+
+ALTER TABLE cases ADD COLUMN reinfectionstatus varchar(255);
+ALTER TABLE cases ADD COLUMN reinfectiondetails jsonb;
+ALTER TABLE cases_history ADD COLUMN reinfectionstatus varchar(255);
+ALTER TABLE cases_history ADD COLUMN reinfectiondetails jsonb;
+
+INSERT INTO schema_version (version_number, comment) VALUES (435, 'Add reinfection details and status #7182');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

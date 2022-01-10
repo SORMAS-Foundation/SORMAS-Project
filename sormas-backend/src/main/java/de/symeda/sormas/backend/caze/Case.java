@@ -62,6 +62,8 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
+import de.symeda.sormas.api.caze.ReinfectionDetail;
+import de.symeda.sormas.api.caze.ReinfectionStatus;
 import de.symeda.sormas.api.caze.ScreeningType;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.VaccinationStatus;
@@ -216,6 +218,8 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	public static final String END_OF_ISOLATION_REASON_DETAILS = "endOfIsolationReasonDetails";
 
 	public static final String RE_INFECTION = "reInfection";
+	public static final String REINFECTION_STATUS = "reinfectionStatus";
+	public static final String REINFECTION_DETAILS = "reinfectionDetails";
 	public static final String PREVIOUS_INFECTION_DATE = "previousInfectionDate";
 
 	public static final String BLOOD_ORGAN_OR_TISSUE_DONATED = "bloodOrganOrTissueDonated";
@@ -377,6 +381,8 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	private YesNoUnknown reInfection;
 	private Date previousInfectionDate;
+	private ReinfectionStatus reinfectionStatus;
+	private Map<ReinfectionDetail, Boolean> reinfectionDetails;
 
 	private boolean notACaseReasonNegativeTest;
 	private boolean notACaseReasonPhysicianInformation;
@@ -1550,6 +1556,25 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	public void setPreviousInfectionDate(Date previousInfectionDate) {
 		this.previousInfectionDate = previousInfectionDate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ReinfectionStatus getReinfectionStatus() {
+		return reinfectionStatus;
+	}
+
+	public void setReinfectionStatus(ReinfectionStatus reinfectionStatus) {
+		this.reinfectionStatus = reinfectionStatus;
+	}
+
+	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
+	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
+	public Map<ReinfectionDetail, Boolean> getReinfectionDetails() {
+		return reinfectionDetails;
+	}
+
+	public void setReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
+		this.reinfectionDetails = reinfectionDetails;
 	}
 
 	@Column

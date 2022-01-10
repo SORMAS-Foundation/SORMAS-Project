@@ -223,6 +223,7 @@ public class SubcontinentFacadeEjb
 		dto.setExternalId(entity.getExternalId());
 		dto.setUuid(entity.getUuid());
 		dto.setContinent(ContinentFacadeEjb.toReferenceDto(entity.getContinent()));
+		dto.setCentrallyManaged(entity.isCentrallyManaged());
 
 		return dto;
 	}
@@ -267,6 +268,7 @@ public class SubcontinentFacadeEjb
 		target.setArchived(source.isArchived());
 		target.setExternalId(source.getExternalId());
 		target.setContinent(continentService.getByReferenceDto(source.getContinent()));
+		target.setCentrallyManaged(source.isCentrallyManaged());
 		return target;
 	}
 

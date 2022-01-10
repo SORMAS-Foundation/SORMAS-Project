@@ -240,6 +240,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 		dto.setExternalID(entity.getExternalID());
 		dto.setArea(AreaFacadeEjb.toReferenceDto(entity.getArea()));
 		dto.setCountry(CountryFacadeEjb.toReferenceDto(entity.getCountry()));
+		dto.setCentrallyManaged(entity.isCentrallyManaged());
 
 		return dto;
 	}
@@ -320,6 +321,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 		target.setExternalID(source.getExternalID());
 		target.setArea(areaService.getByReferenceDto(source.getArea()));
 		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
+		target.setCentrallyManaged(source.isCentrallyManaged());
 
 		return target;
 	}

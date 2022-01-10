@@ -16,11 +16,8 @@ package de.symeda.sormas.ui.events;
 
 import static de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent.QUARANTINE_LOC;
 
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -34,17 +31,19 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
+import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.ContactListComponent;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
+import de.symeda.sormas.ui.labmessage.LabMessagesView;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
+import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -134,24 +133,14 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
-			VerticalLayout sampleLocLayout = new VerticalLayout();
-			sampleLocLayout.setMargin(false);
-			sampleLocLayout.setSpacing(false);
+			SampleListComponent sampleList = new SampleListComponent(
+				new SampleCriteria().eventParticipant(eventParticipantRef).sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT),
+				e -> showNavigationConfirmPopupIfDirty(
+					() -> ControllerProvider.getSampleController().create(eventParticipantRef, event.getDisease())));
 
-			SampleListComponent sampleList = new SampleListComponent(eventParticipantRef, event.getDisease());
-			sampleList.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.VSPACE_NONE);
-			sampleLocLayout.addComponent(sampleList);
-
-			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
-				Label infoSample = new Label(
-					VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesEventParticipant),
-					ContentMode.HTML);
-				infoSample.addStyleNames(CssStyles.VSPACE_3, CssStyles.VSPACE_TOP_4);
-
-				sampleLocLayout.addComponent(infoSample);
-			}
-
-			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
+			SampleListComponentLayout sampleListComponentLayout =
+				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesEventParticipant));
+			layout.addComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
@@ -208,8 +197,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 							criteria,
 							eventParticipant.getRegion() != null ? eventParticipant.getRegion() : event.getEventLocation().getRegion(),
 							eventParticipant.getDistrict() != null ? eventParticipant.getDistrict() : event.getEventLocation().getDistrict(),
-							true,
-							() -> SormasUI.refreshView())),
+							this)),
 					VACCINATIONS_LOC);
 			}
 		}
@@ -230,6 +218,12 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			I18nProperties.getCaption(Captions.eventEventParticipants),
 			eventParticipantDto.getEvent().getUuid(),
 			true);
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LAB_MESSAGES)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)
+			&& FacadeProvider.getLabMessageFacade().existsLabMessageForEntity(getReference())) {
+			menu.addView(LabMessagesView.VIEW_NAME, I18nProperties.getCaption(Captions.labMessageLabMessagesList));
+		}
 
 		menu.addView(EventParticipantDataView.VIEW_NAME, I18nProperties.getCaption(EventParticipantDto.I18N_PREFIX), params);
 

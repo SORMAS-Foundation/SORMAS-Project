@@ -111,10 +111,10 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, Area
 	@Override
 	public Area fillOrBuildEntity(@NotNull AreaDto source, Area target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Area::new, checkChangeDate);
-
 		target.setName(source.getName());
 		target.setExternalId(source.getExternalId());
 		target.setArchived(source.isArchived());
+		target.setCentrallyManaged(source.isCentrallyManaged());
 		return target;
 	}
 
@@ -125,18 +125,18 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, Area
 	}
 
 	@Override
-	public AreaDto toDto(Area source) {
-		if (source == null) {
+	public AreaDto toDto(Area entity) {
+		if (entity == null) {
 			return null;
 		}
-		AreaDto target = new AreaDto();
-		DtoHelper.fillDto(target, source);
+		AreaDto dto = new AreaDto();
+		DtoHelper.fillDto(dto, entity);
 
-		target.setName(source.getName());
-		target.setExternalId(source.getExternalId());
-		target.setArchived(source.isArchived());
-
-		return target;
+		dto.setName(entity.getName());
+		dto.setExternalId(entity.getExternalId());
+		dto.setArchived(entity.isArchived());
+		dto.setCentrallyManaged(entity.isCentrallyManaged());
+		return dto;
 	}
 
 	@Override

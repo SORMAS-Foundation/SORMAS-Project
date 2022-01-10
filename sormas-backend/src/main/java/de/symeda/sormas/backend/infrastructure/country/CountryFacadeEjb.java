@@ -177,11 +177,13 @@ public class CountryFacadeEjb
 
 		if (userService.getCurrentUser() != null) {
 			if (country != null && !userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
-				throw new UnsupportedOperationException(String.format("User %s is not allowed to edit country.", userService.getCurrentUser().getUuid()));
+				throw new UnsupportedOperationException(
+					String.format("User %s is not allowed to edit country.", userService.getCurrentUser().getUuid()));
 			}
 
 			if (country == null && !userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
-				throw new UnsupportedOperationException(String.format("User %s is not allowed to create country.", userService.getCurrentUser().getUuid()));
+				throw new UnsupportedOperationException(
+					String.format("User %s is not allowed to create country.", userService.getCurrentUser().getUuid()));
 			}
 		}
 
@@ -243,6 +245,7 @@ public class CountryFacadeEjb
 		dto.setUnoCode(entity.getUnoCode());
 		dto.setUuid(entity.getUuid());
 		dto.setSubcontinent(SubcontinentFacadeEjb.toReferenceDto(entity.getSubcontinent()));
+		dto.setCentrallyManaged(entity.isCentrallyManaged());
 
 		return dto;
 	}
@@ -292,6 +295,7 @@ public class CountryFacadeEjb
 		target.setExternalId(source.getExternalId());
 		target.setIsoCode(source.getIsoCode());
 		target.setUnoCode(source.getUnoCode());
+		target.setCentrallyManaged(source.isCentrallyManaged());
 		final SubcontinentReferenceDto subcontinent = source.getSubcontinent();
 		if (subcontinent != null) {
 			target.setSubcontinent(subcontinentService.getByUuid(subcontinent.getUuid()));

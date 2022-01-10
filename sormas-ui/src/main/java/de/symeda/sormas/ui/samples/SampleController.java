@@ -102,20 +102,20 @@ public class SampleController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
-	public void create(CaseReferenceDto caseRef, Disease disease, Runnable callback) {
-		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef), disease);
+	public void create(CaseReferenceDto caseRef, Disease disease) {
+		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef), disease);
 	}
 
-	public void create(ContactReferenceDto contactRef, Disease disease, Runnable callback) {
-		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef), disease);
+	public void create(ContactReferenceDto contactRef, Disease disease) {
+		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef), disease);
 	}
 
-	public void create(EventParticipantReferenceDto eventParticipantRef, Disease disease, Runnable callback) {
-		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef), disease);
+	public void create(EventParticipantReferenceDto eventParticipantRef, Disease disease) {
+		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef), disease);
 	}
 
-	private void createSample(Runnable callback, SampleDto sampleDto, Disease disease) {
-		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, disease, callback);
+	private void createSample(SampleDto sampleDto, Disease disease) {
+		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, disease, SormasUI::refreshView);
 		// add option to create additional pathogen tests
 		addPathogenTestButton(editView, false);
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
@@ -129,16 +129,19 @@ public class SampleController {
 	 *
 	 * @param sampleComponent
 	 *            to add the pathogen test create component to.
-	 * @param pathogenTest
-	 *            the preset values to insert. May be null.
 	 * @return the pathogen test create component added.
 	 */
-	public PathogenTestForm addPathogenTestComponent(
-		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
-		PathogenTestDto pathogenTest) {
+	public PathogenTestForm addPathogenTestComponent(CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent) {
 
 		int caseSampleCount = caseSampleCountOf(sampleComponent.getWrappedComponent().getValue());
-		return addPathogenTestComponent(sampleComponent, pathogenTest, caseSampleCount);
+		return addPathogenTestComponent(sampleComponent, null, caseSampleCount, SormasUI::refreshView);
+	}
+
+	public PathogenTestForm addPathogenTestComponent(
+		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
+		PathogenTestDto pathogenTest,
+		int caseSampleCount) {
+		return addPathogenTestComponent(sampleComponent, pathogenTest, caseSampleCount, null);
 	}
 
 	/**
@@ -150,12 +153,15 @@ public class SampleController {
 	 * @param caseSampleCount
 	 *            describes how many samples already exist for a case related to the pathogen test's sample (if a case exists, otherwise 0
 	 *            is valid).
+	 * @param callback
+	 *            use it to define additional actions that need to be taken after the pathogen test is saved (e.g. refresh the UI)
 	 * @return the pathogen test create component added.
 	 */
 	public PathogenTestForm addPathogenTestComponent(
 		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
 		PathogenTestDto pathogenTest,
-		int caseSampleCount) {
+		int caseSampleCount,
+		Runnable callback) {
 		// add horizontal rule to clearly distinguish the component
 		Label horizontalRule = new Label("<br><hr /><br>", ContentMode.HTML);
 		horizontalRule.setWidth(100f, Unit.PERCENTAGE);
@@ -181,8 +187,12 @@ public class SampleController {
 		}
 		// validate pathogen test create component before saving the sample
 		sampleComponent.addFieldGroups(pathogenTestForm.getFieldGroup());
-		CommitDiscardWrapperComponent.CommitListener savePathogenTest =
-			() -> FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTestForm.getValue());
+		CommitDiscardWrapperComponent.CommitListener savePathogenTest = () -> {
+			FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTestForm.getValue());
+			if (callback != null) {
+				callback.run();
+			}
+		};
 		sampleComponent.addCommitListener(savePathogenTest);
 		// Discard button configuration
 		Button discardButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.pathogenTestRemove));
@@ -241,7 +251,7 @@ public class SampleController {
 	public void addPathogenTestButton(CommitDiscardWrapperComponent<? extends AbstractSampleForm> editView, boolean viaLims) {
 		Button addPathogenTestButton = new Button(I18nProperties.getCaption(Captions.pathogenTestAdd));
 		addPathogenTestButton.addClickListener((e) -> {
-			PathogenTestForm pathogenTestForm = addPathogenTestComponent(editView, null);
+			PathogenTestForm pathogenTestForm = addPathogenTestComponent(editView);
 			if (viaLims) {
 				setViaLimsFieldChecked(pathogenTestForm);
 			}

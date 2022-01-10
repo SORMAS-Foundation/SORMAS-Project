@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.backend.common.DefaultEntitiesCreator;
 import de.symeda.sormas.backend.labmessage.LabMessageService;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.ReceivedCaseProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseDtoValidator;
@@ -33,6 +34,8 @@ import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEven
 import de.symeda.sormas.backend.sormastosormas.entities.eventparticipant.SormasToSormasEventParticipantDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.immunization.ReceivedImmunizationProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.immunization.SormasToSormasImmunizationDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.entities.labmessage.SormasToSormasLabMessageDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.entities.labmessage.SormasToSormasLabMessageFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.entities.sample.ReceivedSampleProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.sample.SormasToSormasSampleDtoValidator;
 import org.junit.Before;
@@ -774,5 +777,13 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public SormasToSormasSampleDtoValidator getSormasToSormasSampleDtoValidator() {
 		return getBean(SormasToSormasSampleDtoValidator.class);
+	}
+
+	public SormasToSormasLabMessageDtoValidator getSormasToSormasLabMessageDtoValidator(){
+		return getBean(SormasToSormasLabMessageDtoValidator.class);
+	}
+
+	public DefaultEntitiesCreator getDefaultEntitiesCreator() {
+		return getBean(DefaultEntitiesCreator.class);
 	}
 }

@@ -27,13 +27,13 @@
 		<!-- *** Other dependency versions *** -->
 		<glassfish.jaxb.version>2.3.3</glassfish.jaxb.version>
 		<slf4j.version>1.7.30</slf4j.version>
-		<logback.version>1.1.7</logback.version>
+		<logback.version>1.2.9</logback.version>
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
 		<vaadin.version>8.14.1</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<swagger.version>2.1.6</swagger.version>
 		<bouncycastle.version>1.67</bouncycastle.version>
-		<keycloak.version>12.0.4</keycloak.version>
+		<keycloak.version>16.1.0</keycloak.version>
 		<resteasy.version>3.15.1.Final</resteasy.version>
 		<xdocreport.version>2.0.2</xdocreport.version>
 		<docx4j.version>8.3.1</docx4j.version>

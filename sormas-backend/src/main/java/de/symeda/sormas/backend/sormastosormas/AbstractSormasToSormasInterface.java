@@ -33,12 +33,10 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -58,12 +56,13 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareTree;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
+import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
@@ -113,7 +112,7 @@ import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormas
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
-public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomainObject & SormasToSormasShareable, DTO extends EntityDto & SormasToSormasShareableDto, S extends SormasToSormasEntityDto<DTO>>
+public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomainObject & SormasToSormasShareable, DTO extends SormasToSormasShareableDto, S extends SormasToSormasEntityDto<DTO>>
 	implements SormasToSormasEntityInterface {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSormasToSormasInterface.class);
@@ -203,6 +202,16 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		}
 	}
 
+	/**
+	 * Send a S2S share request for the ADOs identified by the given UUIDs to a remote S2S instance specified by options.
+	 * 
+	 * @param entityUuids
+	 *            The entities for which should be delivered to the remote as preview.
+	 * @param options
+	 *            S2S request options also including the receiver.
+	 * @throws SormasToSormasException
+	 *             Errors out in case validation fails or request cannot be sent.
+	 */
 	private void sendShareRequest(List<String> entityUuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
 
 		User currentUser = userService.getCurrentUser();
@@ -216,10 +225,11 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		validateEntitiesBeforeShare(entities, options.isHandOverOwnership());
 
 		String requestUuid = DataHelper.createUuid();
+
 		ShareRequestInfo shareRequestInfo =
 			createShareRequestInfoForEntities(requestUuid, ShareRequestStatus.PENDING, options, entities, currentUser, false);
-		ShareRequestPreviews previewsToSend = shareDataBuilder.buildShareDataPreview(shareRequestInfo);
 
+		ShareRequestPreviews previewsToSend = shareDataBuilder.buildShareDataPreview(shareRequestInfo);
 		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, options);
 
 		sormasToSormasRestClient
@@ -322,7 +332,9 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	@Override
 	public void saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
-		decryptAndPersist(encryptedData, (data, existingData) -> processedEntitiesPersister.persistSharedData(data, data.getOriginInfo(), existingData));
+		decryptAndPersist(
+			encryptedData,
+			(data, existingData) -> processedEntitiesPersister.persistSharedData(data, data.getOriginInfo(), existingData));
 	}
 
 	@Override
