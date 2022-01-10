@@ -153,6 +153,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String SORMAS2SORMAS_ETCD_KEY_PREFIX = "sormas2sormas.etcd.keyPrefix";
 
 	private static final String EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL = "survnet.url";
+	private static final String EXTERNAL_SURVEILLANCE_TOOL_VERSION_ENDPOINT = "survnet.versionEndpoint";
 
 	private static final String DASHBOARD_MAP_MARKER_LIMIT = "dashboardMapMarkerLimit";
 	private static final String AUDITOR_ATTRIBUTE_LOGGING = "auditor.attribute.logging";
@@ -546,6 +547,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getExternalSurveillanceToolGatewayUrl() {
 		return getProperty(EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL, null);
+	}
+
+	@Override
+	public String getExternalSurveillanceToolVersionEndpoint() {
+		return getProperty(EXTERNAL_SURVEILLANCE_TOOL_VERSION_ENDPOINT, "version");
 	}
 
 	@Override
