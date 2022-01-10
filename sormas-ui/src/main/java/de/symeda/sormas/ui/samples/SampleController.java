@@ -182,7 +182,7 @@ public class SampleController {
 		// validate pathogen test create component before saving the sample
 		sampleComponent.addFieldGroups(pathogenTestForm.getFieldGroup());
 		CommitDiscardWrapperComponent.CommitListener savePathogenTest =
-			() -> ControllerProvider.getPathogenTestController().savePathogenTest(pathogenTestForm.getValue(), null);
+			() -> ControllerProvider.getPathogenTestController().savePathogenTest(pathogenTestForm.getValue(), null, true);
 		sampleComponent.addCommitListener(savePathogenTest);
 		// Discard button configuration
 		Button discardButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.pathogenTestRemove));
@@ -493,7 +493,7 @@ public class SampleController {
 				popupWindow.close();
 				SormasUI.refreshView();
 				if (callback != null) {
-					callback.accept(true);
+					callback.accept(false);
 				}
 			}
 		});
@@ -505,7 +505,7 @@ public class SampleController {
 			public void buttonClick(ClickEvent event) {
 				popupWindow.close();
 				if (callback != null) {
-					callback.accept(false);
+					callback.accept(true);
 				}
 			}
 		});

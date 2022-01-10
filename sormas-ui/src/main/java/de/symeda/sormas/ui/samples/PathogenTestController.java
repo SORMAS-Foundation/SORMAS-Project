@@ -96,7 +96,7 @@ public class PathogenTestController {
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
-				savePathogenTest(createForm.getValue(), onSavedPathogenTest);
+				savePathogenTest(createForm.getValue(), onSavedPathogenTest, false);
 				callback.run();
 			}
 		});
@@ -141,7 +141,7 @@ public class PathogenTestController {
 
 		editView.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
-				savePathogenTest(form.getValue(), onSavedPathogenTest);
+				savePathogenTest(form.getValue(), onSavedPathogenTest, false);
 				doneCallback.run();
 			}
 		});
@@ -181,14 +181,17 @@ public class PathogenTestController {
 			});
 	}
 
-	public PathogenTestDto savePathogenTest(PathogenTestDto dto, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
+	public PathogenTestDto savePathogenTest(
+		PathogenTestDto dto,
+		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
+		boolean suppressSampleResultUpdatePopup) {
 		PathogenTestDto savedDto = facade.savePathogenTest(dto);
 		final SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid());
 		final CaseReferenceDto associatedCase = sample.getAssociatedCase();
 		final ContactReferenceDto associatedContact = sample.getAssociatedContact();
 		final EventParticipantReferenceDto associatedEventParticipant = sample.getAssociatedEventParticipant();
 		if (associatedCase != null) {
-			handleAssociatedCase(dto, onSavedPathogenTest, associatedCase);
+			handleAssociatedCase(dto, onSavedPathogenTest, associatedCase, suppressSampleResultUpdatePopup);
 		}
 		if (associatedContact != null) {
 			handleAssociatedContact(dto, onSavedPathogenTest, associatedContact);
@@ -203,7 +206,8 @@ public class PathogenTestController {
 	private void handleAssociatedCase(
 		PathogenTestDto dto,
 		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
-		CaseReferenceDto associatedCase) {
+		CaseReferenceDto associatedCase,
+		boolean suppressSampleResultUpdatePopup) {
 
 		// Negative test result AND test result verified
 		// a) Tested disease == case disease AND test result != sample pathogen test result: Ask user whether to update the sample pathogen test result
@@ -220,29 +224,38 @@ public class PathogenTestController {
 		final boolean equalDisease = dto.getTestedDisease() == caze.getDisease();
 
 		Runnable callback = () -> {
-			if (equalDisease && PathogenTestResultType.NEGATIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
+			if (equalDisease
+				&& PathogenTestResultType.NEGATIVE.equals(dto.getTestResult())
+				&& dto.getTestResultVerified()
+				&& !suppressSampleResultUpdatePopup) {
 				showChangeAssociatedSampleResultDialog(dto, null);
 			} else if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
-				if (equalDisease) {
-					showChangeAssociatedSampleResultDialog(dto, handleChanges -> {
-						if (handleChanges) {
-							if (dto.getTestedDiseaseVariant() != null && !DataHelper.equal(dto.getTestedDiseaseVariant(), caze.getDiseaseVariant())) {
-								showCaseUpdateWithNewDiseaseVariantDialog(
-									caze,
-									dto.getTestedDiseaseVariant(),
-									dto.getTestedDiseaseVariantDetails(),
-									yes -> {
-										if (yes) {
-											ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
-										}
-										// Retrieve the case again because it might have changed
-										showConfirmCaseDialog(FacadeProvider.getCaseFacade().getByUuid(caze.getUuid()));
-									});
-							} else {
-								showConfirmCaseDialog(caze);
-							}
+
+				// the check is supposed to be skipped when a sample result update is denied
+				Consumer<Boolean> checkForDiseaseVariantUpdate = (skip) -> {
+					if (!skip) {
+						if (dto.getTestedDiseaseVariant() != null && !DataHelper.equal(dto.getTestedDiseaseVariant(), caze.getDiseaseVariant())) {
+							showCaseUpdateWithNewDiseaseVariantDialog(
+								caze,
+								dto.getTestedDiseaseVariant(),
+								dto.getTestedDiseaseVariantDetails(),
+								yes -> {
+									if (yes) {
+										ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
+									}
+									// Retrieve the case again because it might have changed
+									showConfirmCaseDialog(FacadeProvider.getCaseFacade().getByUuid(caze.getUuid()));
+								});
+						} else {
+							showConfirmCaseDialog(caze);
 						}
-					});
+					}
+				};
+
+				if (equalDisease && suppressSampleResultUpdatePopup) {
+					checkForDiseaseVariantUpdate.accept(false);
+				} else if (equalDisease) {
+					showChangeAssociatedSampleResultDialog(dto, checkForDiseaseVariantUpdate);
 				} else {
 					showCaseCloningWithNewDiseaseDialog(
 						caze,
@@ -372,7 +385,7 @@ public class PathogenTestController {
 			ControllerProvider.getSampleController()
 				.showChangePathogenTestResultWindow(null, dto.getSample().getUuid(), dto.getTestResult(), callback);
 		} else if (callback != null) {
-			callback.accept(true);
+			callback.accept(false);
 		}
 	}
 
