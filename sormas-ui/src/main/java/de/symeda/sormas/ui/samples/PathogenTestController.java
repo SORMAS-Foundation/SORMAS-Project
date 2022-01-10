@@ -197,7 +197,7 @@ public class PathogenTestController {
 			handleAssociatedContact(dto, onSavedPathogenTest, associatedContact, suppressSampleResultUpdatePopup);
 		}
 		if (associatedEventParticipant != null) {
-			handleAssociatedEventParticipant(dto, onSavedPathogenTest, associatedEventParticipant);
+			handleAssociatedEventParticipant(dto, onSavedPathogenTest, associatedEventParticipant, suppressSampleResultUpdatePopup);
 		}
 		Notification.show(I18nProperties.getString(Strings.messagePathogenTestSavedShort), TRAY_NOTIFICATION);
 		return savedDto;
@@ -324,7 +324,8 @@ public class PathogenTestController {
 	private void handleAssociatedEventParticipant(
 		PathogenTestDto dto,
 		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
-		EventParticipantReferenceDto associatedEventParticipant) {
+		EventParticipantReferenceDto associatedEventParticipant,
+		boolean suppressSampleResultUpdatePopup) {
 
 		// Negative test result AND test result verified
 		// a) Tested disease == event disease AND test result != sample pathogen test result: Ask user whether to update the sample pathogen test result
@@ -344,7 +345,10 @@ public class PathogenTestController {
 		final boolean equalDisease = eventDisease != null && eventDisease.equals(dto.getTestedDisease());
 
 		Runnable callback = () -> {
-			if (equalDisease && PathogenTestResultType.NEGATIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
+			if (equalDisease
+				&& PathogenTestResultType.NEGATIVE.equals(dto.getTestResult())
+				&& dto.getTestResultVerified()
+				&& !suppressSampleResultUpdatePopup) {
 				showChangeAssociatedSampleResultDialog(dto, null);
 			} else if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				if (equalDisease) {
@@ -352,7 +356,7 @@ public class PathogenTestController {
 						showConvertEventParticipantToCaseDialog(eventParticipant, dto.getTestedDisease(), caseCreated -> {
 							handleCaseCreationFromContactOrEventParticipant(caseCreated, dto);
 						});
-					} else {
+					} else if (!suppressSampleResultUpdatePopup) {
 						showChangeAssociatedSampleResultDialog(dto, null);
 					}
 				} else {
