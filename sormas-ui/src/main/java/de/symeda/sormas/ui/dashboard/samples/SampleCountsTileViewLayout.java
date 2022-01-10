@@ -33,88 +33,88 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 public class SampleCountsTileViewLayout extends CssLayout {
 
-    private static final long serialVersionUID = 6582975657305031105L;
+	private static final long serialVersionUID = 6582975657305031105L;
 
-    private DashboardDataProvider dashboardDataProvider;
+	private DashboardDataProvider dashboardDataProvider;
 
-    public SampleCountsTileViewLayout(DashboardDataProvider dashboardDataProvider) {
-        this.dashboardDataProvider = dashboardDataProvider;
-    }
+	public SampleCountsTileViewLayout(DashboardDataProvider dashboardDataProvider) {
+		this.dashboardDataProvider = dashboardDataProvider;
+	}
 
-    @Override
-    protected String getCss(Component c) {
-        c.setId("sample-card-wrapper");
-        return "display: flex !important; flex-wrap: wrap !important; flex-direction: column; white-space: normal !important";
-    }
+	@Override
+	protected String getCss(Component c) {
+		c.setId("sample-card-wrapper");
+		return "display: flex !important; flex-wrap: wrap !important; flex-direction: column; white-space: normal !important";
+	}
 
-    public void refresh() {
-        Map<SampleCountType, Long> sampleCount = dashboardDataProvider.getSampleCounts();
-        Map<SampleCountType, Long> previousSampleCount = dashboardDataProvider.getPreviousSampleCounts();
-        this.removeAllComponents();
+	public void refresh() {
+		Map<SampleCountType, Long> sampleCount = dashboardDataProvider.getSampleCounts();
+		Map<SampleCountType, Long> previousSampleCount = dashboardDataProvider.getPreviousSampleCounts();
+		this.removeAllComponents();
 
-        SampleCountType[] totalCol = {
-                SampleCountType.COLLECTED};
+		SampleCountType[] totalCol = {
+			SampleCountType.COLLECTED };
 
-        SampleCountType[] resultTypeCol = {
-                SampleCountType.INDETERMINATE,
-                SampleCountType.PENDING,
-                SampleCountType.NEGATIVE,
-                SampleCountType.POSITIVE};
+		SampleCountType[] resultTypeCol = {
+			SampleCountType.INDETERMINATE,
+			SampleCountType.PENDING,
+			SampleCountType.NEGATIVE,
+			SampleCountType.POSITIVE };
 
-        SampleCountType[] conditionCol = {
-                SampleCountType.ADEQUATE,
-                SampleCountType.INADEQUATE};
+		SampleCountType[] conditionCol = {
+			SampleCountType.ADEQUATE,
+			SampleCountType.INADEQUATE };
 
-        SampleCountType[] shipmentCol = {
-                SampleCountType.SHIPPED,
-                SampleCountType.NOT_SHIPED,
-                SampleCountType.RECEIVED,
-                SampleCountType.NOT_RECEIVED};
+		SampleCountType[] shipmentCol = {
+			SampleCountType.SHIPPED,
+			SampleCountType.NOT_SHIPED,
+			SampleCountType.RECEIVED,
+			SampleCountType.NOT_RECEIVED };
 
-        SampleCountType[] recievedCol = {
-                SampleCountType.RECEIVED,
-                SampleCountType.NOT_SHIPED};
+		SampleCountType[] recievedCol = {
+			SampleCountType.RECEIVED,
+			SampleCountType.NOT_SHIPED };
 
-        HorizontalLayout totalHorizontalLayout = new HorizontalLayout();
-        totalHorizontalLayout.setWidth(500, Unit.PIXELS);
-        totalHorizontalLayout.addComponent(createCountRow(totalCol, sampleCount, previousSampleCount, Captions.SampleSamples));
-        addComponent(totalHorizontalLayout);
+		HorizontalLayout totalHorizontalLayout = new HorizontalLayout();
+		totalHorizontalLayout.setWidth(500, Unit.PIXELS);
+		totalHorizontalLayout.addComponent(createCountRow(totalCol, sampleCount, previousSampleCount, Captions.SampleSamples));
+		addComponent(totalHorizontalLayout);
 
-        HorizontalLayout conditionHorizontalLayout = new HorizontalLayout();
-        conditionHorizontalLayout.addComponent(createCountRow(conditionCol, sampleCount, previousSampleCount, Captions.Sample_specimenCondition));
-        addComponent(conditionHorizontalLayout);
+		HorizontalLayout conditionHorizontalLayout = new HorizontalLayout();
+		conditionHorizontalLayout.addComponent(createCountRow(conditionCol, sampleCount, previousSampleCount, Captions.Sample_specimenCondition));
+		addComponent(conditionHorizontalLayout);
 
-        HorizontalLayout sampleTestResultHorizontalLayout = new HorizontalLayout();
-        sampleTestResultHorizontalLayout.setWidth(100, Unit.PERCENTAGE);
-        sampleTestResultHorizontalLayout.addComponent(createCountRow(resultTypeCol, sampleCount, previousSampleCount, Captions.Sample_testResult));
-        addComponent(sampleTestResultHorizontalLayout);
+		HorizontalLayout sampleTestResultHorizontalLayout = new HorizontalLayout();
+		sampleTestResultHorizontalLayout.setWidth(100, Unit.PERCENTAGE);
+		sampleTestResultHorizontalLayout.addComponent(createCountRow(resultTypeCol, sampleCount, previousSampleCount, Captions.Sample_testResult));
+		addComponent(sampleTestResultHorizontalLayout);
 
-        HorizontalLayout shipmentHorizontalLayout = new HorizontalLayout();
-        shipmentHorizontalLayout.setWidth(100, Unit.PERCENTAGE);
-        shipmentHorizontalLayout.addComponent(createCountRow(shipmentCol, sampleCount, previousSampleCount, Captions.SampleShipmentStatus));
-        addComponent(shipmentHorizontalLayout);
-    }
+		HorizontalLayout shipmentHorizontalLayout = new HorizontalLayout();
+		shipmentHorizontalLayout.setWidth(100, Unit.PERCENTAGE);
+		shipmentHorizontalLayout.addComponent(createCountRow(shipmentCol, sampleCount, previousSampleCount, Captions.SampleShipmentStatus));
+		addComponent(shipmentHorizontalLayout);
+	}
 
-    private VerticalLayout createCountRow(
-            SampleCountType[] cTypes,
-            Map<SampleCountType, Long> sampleCount,
-            Map<SampleCountType, Long> previousSampleCount,
-            String label) {
-        VerticalLayout verticalLayout = new VerticalLayout();
+	private VerticalLayout createCountRow(
+		SampleCountType[] cTypes,
+		Map<SampleCountType, Long> sampleCount,
+		Map<SampleCountType, Long> previousSampleCount,
+		String label) {
+		VerticalLayout verticalLayout = new VerticalLayout();
 
-        Label title = new Label(I18nProperties.getCaption(label));
-        CssStyles.style(title, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+		Label title = new Label(I18nProperties.getCaption(label));
+		CssStyles.style(title, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 
-        verticalLayout.addComponent(title);
+		verticalLayout.addComponent(title);
 
-        HorizontalLayout countColorHorizontalLayout = new HorizontalLayout();
-        for (SampleCountType type : cTypes) {
-            SampleCountTileComponent tile = new SampleCountTileComponent(type, sampleCount.get(type), previousSampleCount.get(type));
-            tile.setWidth(230, Unit.PIXELS);
-            countColorHorizontalLayout.addComponent(tile);
-        }
-        verticalLayout.addComponent(countColorHorizontalLayout);
-        return verticalLayout;
-    }
+		HorizontalLayout countColorHorizontalLayout = new HorizontalLayout();
+		for (SampleCountType type : cTypes) {
+			SampleCountTileComponent tile = new SampleCountTileComponent(type, sampleCount.get(type), previousSampleCount.get(type));
+			tile.setWidth(230, Unit.PIXELS);
+			countColorHorizontalLayout.addComponent(tile);
+		}
+		verticalLayout.addComponent(countColorHorizontalLayout);
+		return verticalLayout;
+	}
 
 }
