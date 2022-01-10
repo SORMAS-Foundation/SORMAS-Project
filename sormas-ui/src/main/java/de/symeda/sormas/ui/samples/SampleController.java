@@ -492,7 +492,9 @@ public class SampleController {
 				FacadeProvider.getSampleFacade().saveSample(sample);
 				popupWindow.close();
 				SormasUI.refreshView();
-				callback.accept(true);
+				if (callback != null) {
+					callback.accept(true);
+				}
 			}
 		});
 		confirmationComponent.getCancelButton().addClickListener(new ClickListener() {
@@ -502,7 +504,9 @@ public class SampleController {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				popupWindow.close();
-				callback.accept(false);
+				if (callback != null) {
+					callback.accept(false);
+				}
 			}
 		});
 	}

@@ -221,8 +221,7 @@ public class PathogenTestController {
 
 		Runnable callback = () -> {
 			if (equalDisease && PathogenTestResultType.NEGATIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
-				showChangeAssociatedSampleResultDialog(dto, handleChanges -> {
-				});
+				showChangeAssociatedSampleResultDialog(dto, null);
 			} else if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				if (equalDisease) {
 					showChangeAssociatedSampleResultDialog(dto, handleChanges -> {
@@ -282,8 +281,7 @@ public class PathogenTestController {
 
 		Runnable callback = () -> {
 			if (equalDisease && PathogenTestResultType.NEGATIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
-				showChangeAssociatedSampleResultDialog(dto, handleChanges -> {
-				});
+				showChangeAssociatedSampleResultDialog(dto, null);
 			} else if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				if (equalDisease) {
 					if (!ContactStatus.CONVERTED.equals(contact.getContactStatus())) {
@@ -291,8 +289,7 @@ public class PathogenTestController {
 							handleCaseCreationFromContactOrEventParticipant(converted, dto);
 						});
 					} else {
-						showChangeAssociatedSampleResultDialog(dto, handleChanges -> {
-						});
+						showChangeAssociatedSampleResultDialog(dto, null);
 					}
 				} else {
 					showCreateContactCaseDialog(contact, dto.getTestedDisease());
@@ -331,8 +328,7 @@ public class PathogenTestController {
 
 		Runnable callback = () -> {
 			if (equalDisease && PathogenTestResultType.NEGATIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
-				showChangeAssociatedSampleResultDialog(dto, handleChanges -> {
-				});
+				showChangeAssociatedSampleResultDialog(dto, null);
 			} else if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				if (equalDisease) {
 					if (eventParticipant.getResultingCase() == null) {
@@ -340,8 +336,7 @@ public class PathogenTestController {
 							handleCaseCreationFromContactOrEventParticipant(caseCreated, dto);
 						});
 					} else {
-						showChangeAssociatedSampleResultDialog(dto, handleChanges -> {
-						});
+						showChangeAssociatedSampleResultDialog(dto, null);
 					}
 				} else {
 					showConvertEventParticipantToCaseDialog(eventParticipant, dto.getTestedDisease(), caseCreated -> {
@@ -368,8 +363,7 @@ public class PathogenTestController {
 				FacadeProvider.getSampleFacade().saveSample(sample);
 			}
 		} else {
-			showChangeAssociatedSampleResultDialog(pathogenTest, handleChanges -> {
-			});
+			showChangeAssociatedSampleResultDialog(pathogenTest, null);
 		}
 	}
 
@@ -377,7 +371,7 @@ public class PathogenTestController {
 		if (dto.getTestResult() != FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid()).getPathogenTestResult()) {
 			ControllerProvider.getSampleController()
 				.showChangePathogenTestResultWindow(null, dto.getSample().getUuid(), dto.getTestResult(), callback);
-		} else {
+		} else if (callback != null) {
 			callback.accept(true);
 		}
 	}
