@@ -1201,23 +1201,12 @@
 			<name>Open Source Geospatial Foundation Repository</name>
 			<url>https://repo.osgeo.org/repository/release/</url>
 		</repository>
-
 		<repository>
 			<!-- Needed for patched dependencies from Payara -->
 			<!-- It's readonly since 2021 and only listed for artifacts that are not found elsewhere -->
 			<id>payara-patched-externals</id>
 			<name>Payara Patched Externals</name>
 			<url>https://raw.github.com/payara/Payara_PatchedProjects/master</url>
-		</repository>
-
-		<repository>
-			<!-- this repo is readOnly since 2021 and only listed for older artifacts that may not be found elsewhere -->
-			<id>bintray</id>
-			<name>bintray</name>
-			<url>https://jcenter.bintray.com</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
 		</repository>
 	</repositories>
 

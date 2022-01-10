@@ -79,8 +79,7 @@ android {
 repositories {
     mavenLocal()
     google()
-    maven { url "https://maven.repository.redhat.com/ga/" }
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
@@ -115,7 +114,7 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.11'
     implementation 'org.apache.commons:commons-text:1.9'
     implementation 'org.jsoup:jsoup:1.14.2'
-    implementation 'com.googlecode:openbeans:1.0'
+    implementation 'me.champeau.openbeans:openbeans:1.0.2'
     implementation files('libs/MPAndroidChart-v3.0.2.jar')
     implementation(name: 'CircleProgress-v1.2.1', ext: 'aar')
     implementation 'io.reactivex:rxandroid:1.0.1'
@@ -134,7 +133,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'me.dm7.barcodescanner:zxing:1.9.13'
+    implementation 'me.dm7.barcodescanner:zxing:1.9.8'
     implementation 'io.crowdcode.sormas.lbds:lbds-android-messaging:1.4.6'
 }
 
