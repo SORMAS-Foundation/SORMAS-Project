@@ -72,7 +72,7 @@ public enum DatabaseTable {
 	LAB_MESSAGES(DatabaseTableType.SORMAS, null, "lab_messages"),
 	TEST_REPORTS(DatabaseTableType.SORMAS, LAB_MESSAGES, "test_reports"),
 
-	SORMAS_TO_SORMAS_ORIGIN_INFO(DatabaseTableType.SORMAS, null, "sormas_to_sormas_origin_infoß"),
+	SORMAS_TO_SORMAS_ORIGIN_INFO(DatabaseTableType.SORMAS, null, "sormas_to_sormas_origin_info"),
 	SORMAS_TO_SORMAS_SHARE_INFO(DatabaseTableType.SORMAS, null, "sormas_to_sormas_share_info"),
 	SORMAS_TO_SORMAS_SHARE_REQUESTS(DatabaseTableType.SORMAS, null, "sormas_to_sormas_share_requests"),
 	SHARE_REQUEST_INFO(DatabaseTableType.SORMAS, null, "share_request_info"),
