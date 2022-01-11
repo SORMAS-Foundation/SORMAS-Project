@@ -37,6 +37,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.utils.EmptyValueException;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.common.Page;
@@ -62,6 +63,7 @@ import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
+import org.apache.commons.lang3.StringUtils;
 
 @Stateless(name = "CountryFacade")
 public class CountryFacadeEjb
@@ -82,6 +84,14 @@ public class CountryFacadeEjb
 	@Inject
 	protected CountryFacadeEjb(CountryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
 		super(Country.class, CountryDto.class, service, featureConfiguration, userService, Validations.importCountryAlreadyExists);
+	}
+
+	@Override
+	protected CountryDto doSave(CountryDto dtoToSave, boolean allowMerge, String duplicateErrorMessageProperty) {
+		if (StringUtils.isBlank(dtoToSave.getIsoCode())) {
+			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
+		}
+		return super.doSave(dtoToSave, allowMerge, duplicateErrorMessageProperty);
 	}
 
 	@Override
