@@ -27,22 +27,23 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class QuarantineOrderDocumentsComponent extends AbstractDocumentGenerationComponent {
 
 	public static final String QUARANTINE_LOC = "quarantine";
 
-	public static void addComponentToLayout(CustomLayout targetLayout, CaseReferenceDto caze) {
-		addComponentToLayout(targetLayout, caze, DocumentWorkflow.QUARANTINE_ORDER_CASE, new SampleCriteria().caze(caze));
+	public static void addComponentToLayout(CustomLayout targetLayout, CaseReferenceDto caze, DocumentListComponent documentList) {
+		addComponentToLayout(targetLayout, caze, DocumentWorkflow.QUARANTINE_ORDER_CASE, new SampleCriteria().caze(caze), documentList);
 	}
 
-	public static void addComponentToLayout(CustomLayout targetLayout, ContactReferenceDto contact) {
-		addComponentToLayout(targetLayout, contact, DocumentWorkflow.QUARANTINE_ORDER_CONTACT, new SampleCriteria().contact(contact));
+	public static void addComponentToLayout(CustomLayout targetLayout, ContactReferenceDto contact, DocumentListComponent documentList) {
+		addComponentToLayout(targetLayout, contact, DocumentWorkflow.QUARANTINE_ORDER_CONTACT, new SampleCriteria().contact(contact), documentList);
 	}
 
-	public static void addComponentToLayout(CustomLayout targetLayout, TravelEntryReferenceDto contact) {
-		addComponentToLayout(targetLayout, contact, DocumentWorkflow.QUARANTINE_ORDER_TRAVEL_ENTRY, null);
+	public static void addComponentToLayout(CustomLayout targetLayout, TravelEntryReferenceDto travelEntry, DocumentListComponent documentList) {
+		addComponentToLayout(targetLayout, travelEntry, DocumentWorkflow.QUARANTINE_ORDER_TRAVEL_ENTRY, null, documentList);
 	}
 
 	public static void addComponentToLayout(
@@ -51,16 +52,42 @@ public class QuarantineOrderDocumentsComponent extends AbstractDocumentGeneratio
 		DocumentWorkflow workflow,
 		SampleCriteria sampleCriteria) {
 		if (isDocGenerationAllowed()) {
-			QuarantineOrderDocumentsComponent docgenerationComponent = new QuarantineOrderDocumentsComponent(referenceDto, workflow, sampleCriteria);
-			docgenerationComponent.addStyleName(CssStyles.SIDE_COMPONENT);
-			targetLayout.addComponent(docgenerationComponent, QUARANTINE_LOC);
+			QuarantineOrderDocumentsComponent docGenerationComponent = new QuarantineOrderDocumentsComponent(referenceDto, workflow, sampleCriteria);
+			docGenerationComponent.addStyleName(CssStyles.SIDE_COMPONENT);
+			targetLayout.addComponent(docGenerationComponent, QUARANTINE_LOC);
+		}
+	}
+
+	public static void addComponentToLayout(
+		CustomLayout targetLayout,
+		ReferenceDto referenceDto,
+		DocumentWorkflow workflow,
+		SampleCriteria sampleCriteria,
+		DocumentListComponent documentListComponent) {
+		if (isDocGenerationAllowed()) {
+			QuarantineOrderDocumentsComponent docGenerationComponent =
+				new QuarantineOrderDocumentsComponent(referenceDto, workflow, sampleCriteria, documentListComponent);
+			docGenerationComponent.addStyleName(CssStyles.SIDE_COMPONENT);
+			targetLayout.addComponent(docGenerationComponent, QUARANTINE_LOC);
 		}
 	}
 
 	public QuarantineOrderDocumentsComponent(ReferenceDto referenceDto, DocumentWorkflow workflow, SampleCriteria sampleCriteria) {
 		super();
 		addDocumentBar(
-			() -> ControllerProvider.getDocGenerationController().showQuarantineOrderDocumentDialog(referenceDto, workflow, sampleCriteria),
+			() -> ControllerProvider.getDocGenerationController().showQuarantineOrderDocumentDialog(referenceDto, workflow, sampleCriteria, null),
+			Captions.DocumentTemplate_QuarantineOrder);
+	}
+
+	public QuarantineOrderDocumentsComponent(
+		ReferenceDto referenceDto,
+		DocumentWorkflow workflow,
+		SampleCriteria sampleCriteria,
+		DocumentListComponent documentListComponent) {
+		super();
+		addDocumentBar(
+			() -> ControllerProvider.getDocGenerationController()
+				.showQuarantineOrderDocumentDialog(referenceDto, workflow, sampleCriteria, documentListComponent),
 			Captions.DocumentTemplate_QuarantineOrder);
 	}
 }

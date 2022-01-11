@@ -134,7 +134,8 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 		for (File testCaseHtml : testCasesHtml) {
 			String testcaseBasename = FilenameUtils.getBaseName(testCaseHtml.getName());
 
-			String htmlText = eventDocumentFacade.getGeneratedDocument(testcaseBasename + ".html", eventDto.toReference(), new Properties());
+			String htmlText =
+				eventDocumentFacade.getGeneratedDocument(testcaseBasename + ".html", eventDto.toReference(), new Properties(), Boolean.FALSE);
 			String actual = cleanLineSeparators(
 				htmlText.replaceAll("<p>Event-ID: <b>[A-Z0-9-]*</b></p>", "<p>Event-ID: <b>STN3WX-5JTGYV-IU2LRM-4UHCSOEE</b></p>"));
 
