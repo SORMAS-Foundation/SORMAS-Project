@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -2583,7 +2584,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setReInfection(source.getReInfection());
 		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
 		target.setReinfectionStatus(source.getReinfectionStatus());
-		target.setReinfectionDetails(source.getReinfectionDetails());
+		if (source.getReinfectionDetails() != null) {
+			target.setReinfectionDetails(new HashMap<>(source.getReinfectionDetails()));
+		}
 
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 
@@ -2603,7 +2606,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
 		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
 
-		target.setExternalData(source.getExternalData());
+		if (source.getExternalData() != null) {
+			target.setExternalData(new HashMap<>(source.getExternalData()));
+		}
 
 		return target;
 	}
