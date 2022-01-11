@@ -327,7 +327,9 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(birthDate);
 				person.setBirthdateDD(calendar.get(Calendar.DAY_OF_MONTH));
-				person.setBirthdateMM(calendar.get(Calendar.MONTH));
+				// In calendar API months are indexed from 0 @see https://docs.oracle.com/javase/7/docs/api/java/util/Calendar.html#MONTH
+				int birthdateMonth = calendar.get(Calendar.MONTH) + 1;
+				person.setBirthdateMM(birthdateMonth);
 				person.setBirthdateYYYY(calendar.get(Calendar.YEAR));
 				return;
 			} else if (PHONE_PRIVATE.equals(personProperty)) {
