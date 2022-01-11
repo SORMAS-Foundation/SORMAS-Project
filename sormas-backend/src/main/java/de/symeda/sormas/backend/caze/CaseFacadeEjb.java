@@ -2576,7 +2576,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
 		target.setReinfectionStatus(source.getReinfectionStatus());
 		if (source.getReinfectionDetails() != null) {
-			target.setReinfectionDetails(new EnumMap<>(source.getReinfectionDetails()));
+			target.setReinfectionDetails(new HashMap<>(source.getReinfectionDetails()));
 		}
 
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
