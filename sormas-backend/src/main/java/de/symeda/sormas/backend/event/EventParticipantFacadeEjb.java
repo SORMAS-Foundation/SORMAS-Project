@@ -89,6 +89,8 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
@@ -398,6 +400,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Join<EventParticipant, Case> resultingCase = joins.getResultingCase();
 		Join<EventParticipant, Event> event = joins.getEvent();
 		final Join<EventParticipant, Sample> samples = eventParticipant.join(EventParticipant.SAMPLES, JoinType.LEFT);
+		samples.on(
+			cb.and(
+				cb.isFalse(samples.get(CoreAdo.DELETED)),
+				cb.equal(samples.get(Sample.ASSOCIATED_EVENT_PARTICIPANT), eventParticipant.get(AbstractDomainObject.ID))));
 
 		Expression<Object> inJurisdictionSelector = JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdiction(queryContext));
 		Expression<Object> inJurisdictionOrOwnedSelector =
@@ -439,30 +445,16 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			inJurisdictionSelector,
 			inJurisdictionOrOwnedSelector);
 
-		Subquery<Date> dateSubquery = cq.subquery(Date.class);
-		Root<Sample> subRoot = dateSubquery.from(Sample.class);
-		final Expression<Date> maxSampleDateTime = cb.<Date> greatest(subRoot.get(Sample.SAMPLE_DATE_TIME));
-
 		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, queryContext);
-		Predicate pathogenTestResultWhereCondition = CriteriaBuilderHelper.and(
-			cb,
-			cb.isFalse(subRoot.get(Sample.DELETED)),
-			cb.equal(subRoot.get(Sample.ASSOCIATED_EVENT_PARTICIPANT), eventParticipant.get(EventParticipant.ID)));
+
 		if (eventParticipantCriteria.getPathogenTestResult() != null) {
-			pathogenTestResultWhereCondition = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				pathogenTestResultWhereCondition,
-				cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
 		}
-		final Predicate nullOrMaxSampleDateTime = CriteriaBuilderHelper.or(
-			cb,
-			cb.isNull(samples.get(Sample.SAMPLE_DATE_TIME)),
-			CriteriaBuilderHelper.and(
-				cb,
-				cb.isFalse(samples.get(Sample.DELETED)),
-				cb.equal(samples.get(Sample.SAMPLE_DATE_TIME), dateSubquery.select(maxSampleDateTime).where(pathogenTestResultWhereCondition))));
-		cq.where(CriteriaBuilderHelper.and(cb, nullOrMaxSampleDateTime, filter));
+
+		if (filter != null) {
+			cq.where(filter);
+		}
 
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<>(sortProperties.size());

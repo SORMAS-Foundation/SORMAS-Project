@@ -419,8 +419,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		selections.addAll(getJurisdictionSelections(sampleQueryContext));
 		cq.multiselect(selections);
 
-		Predicate filter = createUserFilter(cq, cb, joins, sampleCriteria);
-
+		Predicate filter = CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, sample), createUserFilter(cq, cb, joins, sampleCriteria));
 		Predicate criteriaFilter = buildSampleListCriteriaFilter(sampleCriteria, cb, joins);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
