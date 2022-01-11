@@ -95,8 +95,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 	private Label pathogenTestHeadingLabel;
 
-	private TextField typingIdField;
 	private TextField testTypeTextField;
+	private ComboBox pcrTestSpecification;
+	private TextField typingIdField;
 
 	public PathogenTestForm(SampleDto sample, boolean create, int caseSampleCount, boolean isPseudonymized) {
 		super(
@@ -134,7 +135,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		ComboBox testTypeField = addField(PathogenTestDto.TEST_TYPE, ComboBox.class);
 		testTypeField.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		testTypeField.setImmediate(true);
-		ComboBox pcrTestSpecification = addField(PathogenTestDto.PCR_TEST_SPECIFICATION, ComboBox.class);
+		pcrTestSpecification = addField(PathogenTestDto.PCR_TEST_SPECIFICATION, ComboBox.class);
 		testTypeTextField = addField(PathogenTestDto.TEST_TYPE_TEXT, TextField.class);
 		FieldHelper.addSoftRequiredStyle(testTypeTextField);
 		DateTimeField sampleTestDateField = addField(PathogenTestDto.TEST_DATE_TIME, DateTimeField.class);
@@ -316,6 +317,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	@Override
 	public void setValue(PathogenTestDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
+		pcrTestSpecification.setValue(newFieldValue.getPcrTestSpecification());
 		testTypeTextField.setValue(newFieldValue.getTestTypeText());
 		typingIdField.setValue(newFieldValue.getTypingId());
 	}
