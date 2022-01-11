@@ -54,7 +54,9 @@ public class EditSampleSteps implements En {
         "I open the last created sample via API",
         () -> {
           String LAST_CREATED_SAMPLE_URL =
-              environmentUrl + "/sormas-ui/#!samples/data/" + apiState.getCreatedSample().getUuid();
+              environmentUrl
+                  + "/sormas-webdriver/#!samples/data/"
+                  + apiState.getCreatedSample().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_SAMPLE_URL);
         });
 

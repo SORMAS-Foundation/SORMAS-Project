@@ -50,64 +50,76 @@ public class CaseDetailedTableViewSteps implements En {
           Map<String, String> detailedCaseDTableRow = tableRowsData.get(0);
           softly
               .assertThat(detailedCaseDTableRow.size())
-              .isEqualTo(41)
-              .withFailMessage("Detailed view table wasn't correctly displayed");
+              .withFailMessage("Detailed view table wasn't correctly displayed")
+              .isEqualTo(41);
           softly
               .assertThat(
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.CASE_ID.toString()))
+              .withFailMessage("Partial UUID is not correctly displayed")
               .containsIgnoringCase(
                   dataOperations.getPartialUuidFromAssociatedLink(
                       apiState.getCreatedCase().getUuid()));
           softly
               .assertThat(
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.DISEASE.toString()))
+              .withFailMessage("Disease is not correctly displayed")
               .containsIgnoringCase(DiseasesValues.CORONAVIRUS.getDiseaseCaption());
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
                       CaseDetailedTableViewHeaders.CASE_CLASSIFICATION.toString()))
+              .withFailMessage("Case classification is not correctly displayed")
               .containsIgnoringCase(CaseOutcome.NOT_YET_CLASSIFIED.getName());
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
                       CaseDetailedTableViewHeaders.OUTCOME_OF_CASE.toString()))
+              .withFailMessage("Outcome of case is not correctly displayed")
               .containsIgnoringCase(CaseOutcome.NO_OUTCOME.getName());
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
                       CaseDetailedTableViewHeaders.INVESTIGATION_STATUS.toString()))
+              .withFailMessage("Investigation status is not correctly displayed")
               .containsIgnoringCase(apiState.getCreatedCase().getInvestigationStatus());
           softly
               .assertThat(
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.FIRST_NAME.toString()))
+              .withFailMessage("First name is not correctly displayed")
               .containsIgnoringCase(apiState.getLastCreatedPerson().getFirstName());
           softly
               .assertThat(
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.LAST_NAME.toString()))
+              .withFailMessage("Last name is not correctly displayed")
               .containsIgnoringCase(apiState.getLastCreatedPerson().getLastName());
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
                       CaseDetailedTableViewHeaders.NUMBER_OF_EVENTS.toString()))
+              .withFailMessage("Number of events is not correctly displayed")
               .containsIgnoringCase("0");
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
                       CaseDetailedTableViewHeaders.RESPONSIBLE_REGION.toString()))
+              .withFailMessage("Responsible region is not correctly displayed")
               .containsIgnoringCase(RegionsValues.VoreingestellteBundeslander.getName());
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
                       CaseDetailedTableViewHeaders.RESPONSIBLE_DISTRICT.toString()))
+              .withFailMessage("Responsible district is not correctly displayed")
               .containsIgnoringCase(DistrictsValues.VoreingestellterLandkreis.getName());
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
                       CaseDetailedTableViewHeaders.HEALTH_FACILITY.toString()))
+              .withFailMessage("Health facility is not correctly displayed")
               .containsIgnoringCase("Standard Einrichtung - Details");
           softly
               .assertThat(
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.DATE_OF_REPORT.toString()))
+              .withFailMessage("Report date is not correctly displayed")
               .containsIgnoringCase(
                   getDateOfReportDateTime(apiState.getCreatedCase().getReportDate().toString())
                       .replace(
@@ -117,11 +129,13 @@ public class CaseDetailedTableViewSteps implements En {
               .assertThat(
                   detailedCaseDTableRow.get(
                       CaseDetailedTableViewHeaders.FOLLOW_UP_STATUS.toString()))
+              .withFailMessage("Follow up status is not correctly displayed")
               .containsIgnoringCase(ContactOutcome.FOLLOW_UP.getOutcome());
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
                       CaseDetailedTableViewHeaders.FOLLOW_UP_UNTIL.toString()))
+              .withFailMessage("Follow up until date is not correctly displayed")
               .containsIgnoringCase(
                   getFollowUpUntilCaseDate(
                       getDateOfReportDateTime(
@@ -130,6 +144,7 @@ public class CaseDetailedTableViewSteps implements En {
               .assertThat(
                   detailedCaseDTableRow.get(
                       CaseDetailedTableViewHeaders.NUMBER_OF_VISITS.toString()))
+              .withFailMessage("Number of visits is not correctly displayed")
               .containsIgnoringCase("0 (0 missed)");
           String completenessValue =
               detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.COMPLETENESS.toString());
@@ -137,11 +152,13 @@ public class CaseDetailedTableViewSteps implements En {
             softly
                 .assertThat(
                     detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.COMPLETENESS.toString()))
+                .withFailMessage("Completeness is not correctly displayed")
                 .containsIgnoringCase("10 %");
           }
           softly
               .assertThat(
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.REPORTING_USER.toString()))
+              .withFailMessage("Reporting user is not correctly displayed")
               .containsIgnoringCase(TestDataUser.REST_AUTOMATION.getUserRole());
           softly.assertAll();
         });
@@ -200,7 +217,7 @@ public class CaseDetailedTableViewSteps implements En {
   <parameter> dateTimeString: represents the date time value read from Case created through API <parameter>
   */
 
-  public String getDateOfReportDateTime(String dateTimeString) {
+  private String getDateOfReportDateTime(String dateTimeString) {
     SimpleDateFormat outputFormat = new SimpleDateFormat("M/dd/yyyy h:mm a");
     // because API request is sending local GMT and UI displays GMT+2 (server GMT)
     outputFormat.setTimeZone(TimeZone.getTimeZone("GMT+1"));
@@ -217,7 +234,7 @@ public class CaseDetailedTableViewSteps implements En {
     return outputFormat.format(parsedDate);
   }
 
-  public String getFollowUpUntilCaseDate(String dateOfReportDateDateTime) {
+  private String getFollowUpUntilCaseDate(String dateOfReportDateDateTime) {
     SimpleDateFormat outputFormat = new SimpleDateFormat("M/dd/yyyy");
     DateFormat inputFormat = new SimpleDateFormat("MM/dd/yyyy h:mm a");
     ZoneId defaultZoneId = ZoneId.systemDefault();

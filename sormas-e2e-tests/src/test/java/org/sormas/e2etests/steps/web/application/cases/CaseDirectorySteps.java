@@ -88,17 +88,17 @@ public class CaseDirectorySteps implements En {
           String caseUUID = apiState.getCreatedCase().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);
           By caseLocator = By.cssSelector(String.format(CASE_RESULTS_UUID_LOCATOR, caseUUID));
-          assertHelpers.assertWithPoll20Second(
-              () -> Truth.assertThat(webDriverHelpers.isElementVisibleWithTimeout(caseLocator, 5)));
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(caseLocator);
           webDriverHelpers.clickOnWebElementBySelector(caseLocator);
         });
 
     Then(
-        "I check that number of displayed cas" + "es results is {int}",
+        "I check that number of displayed cases results is {int}",
         (Integer number) ->
             assertHelpers.assertWithPoll20Second(
                 () ->
-                    Truth.assertThat(webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS))
+                    Truth.assertWithMessage("Number of displayed cases is not correct")
+                        .that(webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS))
                         .isEqualTo(number)));
 
     When(
@@ -117,7 +117,9 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilAListOfElementsIsPresent(
               NAME_UUID_EPID_NUMBER_LIKE_INPUT, apiState.getCreatedCases().size());
-          Truth.assertThat(apiState.getCreatedCases().size())
+          Truth.assertWithMessage(
+                  "Total number of displyed cases doesn't match with the number of cases created via api")
+              .that(apiState.getCreatedCases().size())
               .isEqualTo(
                   Integer.parseInt(
                       webDriverHelpers.getTextFromPresentWebElement(TOTAL_CASES_COUNTER)));
@@ -138,7 +140,10 @@ public class CaseDirectorySteps implements En {
               CASE_GRID_RESULTS_ROWS, CaseOutcome.getValueFor(expectedValue));
           assertHelpers.assertWithPoll20Second(
               () ->
-                  Truth.assertThat(
+                  Truth.assertWithMessage(
+                          expectedValue
+                              + " value is not displayed in grid Case Classification column")
+                      .that(
                           apiState.getCreatedCases().stream()
                               .filter(sample -> sample.getOutcome().contentEquals("NO_OUTCOME"))
                               .count())
@@ -163,7 +168,9 @@ public class CaseDirectorySteps implements En {
               CASE_GRID_RESULTS_ROWS, DiseasesValues.getCaptionFor(expectedValue));
           assertHelpers.assertWithPoll20Second(
               () ->
-                  Truth.assertThat(
+                  Truth.assertWithMessage(
+                          expectedValue + " value is not displayed in grid Disease column")
+                      .that(
                           apiState.getCreatedCases().stream()
                               .filter(
                                   sample ->

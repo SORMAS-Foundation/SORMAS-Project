@@ -68,7 +68,9 @@ public class SamplesDirectorySteps implements En {
         "I am accessing the created sample via api",
         () -> {
           String CREATED_SAMPLE_VIA_API_URL =
-              environmentUrl + "/sormas-ui/#!samples/data/" + apiState.getCreatedSample().getUuid();
+              environmentUrl
+                  + "/sormas-webdriver/#!samples/data/"
+                  + apiState.getCreatedSample().getUuid();
           webDriverHelpers.accessWebSite(CREATED_SAMPLE_VIA_API_URL);
           webDriverHelpers.waitForPageLoaded();
         });

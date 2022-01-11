@@ -25,12 +25,13 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.util.List;
 import java.util.Locale;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.openqa.selenium.ElementClickInterceptedException;
-import org.sormas.e2etests.comparators.PersonComparator;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Person;
 import org.sormas.e2etests.services.PersonService;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -49,7 +50,6 @@ public class EditPersonSteps implements En {
       WebDriverHelpers webDriverHelpers,
       PersonService personService,
       BaseSteps baseSteps,
-      PersonComparator personComparator,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -58,14 +58,36 @@ public class EditPersonSteps implements En {
         () -> {
           previousCreatedPerson = EditContactPersonSteps.fullyDetailedPerson;
           collectedPerson = collectPersonData();
-          personComparator.comparePersonsAreEqual(previousCreatedPerson, collectedPerson);
+          ComparisonHelper.compareEqualEntities(previousCreatedPerson, collectedPerson);
         });
 
     When(
         "I check that previous edited person is correctly displayed in Edit Person page",
         () -> {
           collectedPerson = collectPersonData();
-          personComparator.checkPersonAreDifferent(previousCreatedPerson, collectedPerson);
+          ComparisonHelper.compareDifferentFieldsOfEntities(
+              previousCreatedPerson,
+              collectedPerson,
+              List.of(
+                  "firstName",
+                  "lastName",
+                  "passportNumber",
+                  "nationalHealthId",
+                  "externalId",
+                  "externalToken",
+                  "street",
+                  "houseNumber",
+                  "city",
+                  "postalCode",
+                  "contactPersonFirstName",
+                  "contactPersonLastName",
+                  "communityContactPerson",
+                  "birthName",
+                  "nickname",
+                  "motherMaidenName",
+                  "motherName",
+                  "fatherName",
+                  "nameOfGuardians"));
         });
 
     Then(
@@ -132,7 +154,7 @@ public class EditPersonSteps implements En {
         () -> {
           final String personUuid = EditEventSteps.person.getUuid();
           webDriverHelpers.accessWebSite(
-              environmentUrl + "/sormas-ui/#!persons/data/" + personUuid);
+              environmentUrl + "/sormas-webdriver/#!persons/data/" + personUuid);
         });
   }
 

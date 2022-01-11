@@ -35,7 +35,7 @@ public class HospitalizationTabSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               NavBarPage.SAMPLE_BUTTON);
-          String caseHospitalizationPath = "/sormas-ui/#!cases/hospitalization/";
+          String caseHospitalizationPath = "/sormas-webdriver/#!cases/hospitalization/";
           String uuid = apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(environmentUrl + caseHospitalizationPath + uuid);
         });

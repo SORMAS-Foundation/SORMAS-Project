@@ -193,7 +193,9 @@ public class EditEventSteps implements En {
         "I open the last created event via api",
         () -> {
           String LAST_CREATED_EVENT_URL =
-              environmentUrl + "/sormas-ui/#!events/data/" + apiState.getCreatedEvent().getUuid();
+              environmentUrl
+                  + "/sormas-webdriver/#!events/data/"
+                  + apiState.getCreatedEvent().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_URL);
         });
 
@@ -209,7 +211,7 @@ public class EditEventSteps implements En {
         () -> {
           String LAST_CREATED_EVENT_ACTIONS_URL =
               environmentUrl
-                  + "/sormas-ui/#!events/eventactions/"
+                  + "/sormas-webdriver/#!events/eventactions/"
                   + apiState.getCreatedEvent().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_ACTIONS_URL);
           webDriverHelpers.waitForPageLoaded();

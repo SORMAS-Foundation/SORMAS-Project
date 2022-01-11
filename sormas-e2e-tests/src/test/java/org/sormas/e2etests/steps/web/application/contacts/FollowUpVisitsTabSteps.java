@@ -47,7 +47,7 @@ public class FollowUpVisitsTabSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               NavBarPage.CONTACTS_BUTTON);
-          String visitLinkPath = "/sormas-ui/#!contacts/visits/";
+          String visitLinkPath = "/sormas-webdriver/#!contacts/visits/";
           String uuid = apiState.getCreatedContact().getUuid();
           String URL = environmentUrl + visitLinkPath + uuid;
           webDriverHelpers.accessWebSite(URL);

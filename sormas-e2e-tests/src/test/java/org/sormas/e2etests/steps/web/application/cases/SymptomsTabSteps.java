@@ -63,7 +63,7 @@ public class SymptomsTabSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               NavBarPage.SAMPLE_BUTTON);
-          String caseLinkPath = "/sormas-ui/#!cases/symptoms/";
+          String caseLinkPath = "/sormas-webdriver/#!cases/symptoms/";
           String uuid = apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(environmentUrl + caseLinkPath + uuid);
         });

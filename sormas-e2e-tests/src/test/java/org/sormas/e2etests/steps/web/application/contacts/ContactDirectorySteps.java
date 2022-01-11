@@ -51,7 +51,7 @@ public class ContactDirectorySteps implements En {
         () -> {
           String LAST_CREATED_CONTACT_URL =
               environmentUrl
-                  + "/sormas-ui/#!contacts/data/"
+                  + "/sormas-webdriver/#!contacts/data/"
                   + apiState.getCreatedContact().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CONTACT_URL);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);

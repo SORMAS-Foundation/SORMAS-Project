@@ -91,7 +91,7 @@ public class EventDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.EVENTS_BUTTON);
           final String eventUuid = apiState.getCreatedEvent().getUuid();
-          final String eventLinkPath = "/sormas-ui/#!events/data/";
+          final String eventLinkPath = "/sormas-webdriver/#!events/data/";
           webDriverHelpers.accessWebSite(environmentUrl + eventLinkPath + eventUuid);
         });
 

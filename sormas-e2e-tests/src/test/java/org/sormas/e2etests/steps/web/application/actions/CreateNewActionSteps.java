@@ -22,6 +22,7 @@ import static org.sormas.e2etests.pages.application.actions.CreateNewActionPage.
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
@@ -57,7 +58,7 @@ public class CreateNewActionSteps implements En {
           selectPriority(action.getPriority());
           selectMeasure(action.getMeasure());
           fillTitle(action.getTitle());
-          fillDescription("Dummy description for automated test");
+          fillDescription("Dummy description " + ZonedDateTime.now().toInstant().toEpochMilli());
           selectActionStatus(action.getActionStatus());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });

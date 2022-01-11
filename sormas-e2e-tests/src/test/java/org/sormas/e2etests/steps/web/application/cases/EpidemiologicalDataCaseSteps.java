@@ -1,4 +1,4 @@
-package org.sormas.e2etests.steps.web;
+package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.*;
@@ -22,30 +22,31 @@ import org.sormas.e2etests.pojo.web.epidemiologicalData.Exposure;
 import org.sormas.e2etests.services.EpidemiologicalDataService;
 import org.sormas.e2etests.state.ApiState;
 
-public class EpidemiologicalDataSteps implements En {
+public class EpidemiologicalDataCaseSteps implements En {
 
   final WebDriverHelpers webDriverHelpers;
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
   private static EpidemiologicalData epidemiologicalData;
 
   @Inject
-  public EpidemiologicalDataSteps(
+  public EpidemiologicalDataCaseSteps(
       WebDriverHelpers webDriverHelpers,
       ApiState apiState,
       EpidemiologicalDataService epidemiologicalDataService,
-      @Named("ENVIRONMENT_URL") String environmentUrl)
-      throws InterruptedException {
+      @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
         "I am accessing via URL the Epidemiological data tab of the created case",
         () -> {
           String uuid = apiState.getCreatedCase().getUuid();
-          webDriverHelpers.accessWebSite(environmentUrl + "/sormas-ui/#!cases/epidata/" + uuid);
+          webDriverHelpers.accessWebSite(
+              environmentUrl + "/sormas-webdriver/#!cases/epidata/" + uuid);
+          webDriverHelpers.waitForPageLoaded();
         });
 
     Then(
-        "I create a new Exposure fro Epidemiological data tab and fill all the data",
+        "I create a new Exposure for Epidemiological data tab and fill all the data",
         () -> {
           epidemiologicalData =
               epidemiologicalDataService.buildGeneratedEpidemiologicalData(
@@ -123,7 +124,7 @@ public class EpidemiologicalDataSteps implements En {
         });
   }
 
-  public void fillExposure(Exposure exposureData) {
+  private void fillExposure(Exposure exposureData) {
     webDriverHelpers.waitForPageLoaded();
     webDriverHelpers.fillInWebElement(
         START_OF_EXPOSURE_INPUT, formatter.format(exposureData.getStartOfExposure()));
@@ -163,7 +164,7 @@ public class EpidemiologicalDataSteps implements En {
     webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
   }
 
-  public void fillActivity(Activity activityData) {
+  private void fillActivity(Activity activityData) {
     webDriverHelpers.waitForPageLoaded();
     webDriverHelpers.fillInWebElement(
         ACTIVITY_START_OF_ACTIVITY_INPUT, formatter.format(activityData.getStartOfActivity()));
@@ -180,7 +181,7 @@ public class EpidemiologicalDataSteps implements En {
     webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_DONE_BUTTON);
   }
 
-  public Exposure collectExposureData() {
+  private Exposure collectExposureData() {
     return Exposure.builder()
         .startOfExposure(
             LocalDate.parse(
@@ -240,7 +241,7 @@ public class EpidemiologicalDataSteps implements En {
         .build();
   }
 
-  public Activity collectActivityData() {
+  private Activity collectActivityData() {
     return Activity.builder()
         .startOfActivity(
             LocalDate.parse(

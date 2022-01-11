@@ -22,7 +22,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import cucumber.api.guice.CucumberModules;
 import cucumber.runtime.java.guice.InjectorSource;
-import org.sormas.e2etests.ui.DriverModule;
+import org.sormas.e2etests.webdriver.DriverModule;
 
 public class CommonInjectorSource implements InjectorSource {
   @Override

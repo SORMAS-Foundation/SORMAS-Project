@@ -39,7 +39,7 @@ public class ExposureInContactEpiDataSteps implements En {
         () -> {
           EPIDATA_FOR_LAST_CREATED_CONTACT_URL =
               environmentUrl
-                  + "/sormas-ui/#!contacts/epidata/"
+                  + "/sormas-webdriver/#!contacts/epidata/"
                   + apiState.getCreatedContact().getUuid();
           webDriverHelpers.accessWebSite(EPIDATA_FOR_LAST_CREATED_CONTACT_URL);
           webDriverHelpers.waitForPageLoaded();
