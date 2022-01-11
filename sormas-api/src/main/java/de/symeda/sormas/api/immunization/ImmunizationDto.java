@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,7 +34,6 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -157,10 +156,6 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	@Valid
 	private List<VaccinationDto> vaccinations = new ArrayList<>();
 
-	@Valid
-	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
-	private boolean ownershipHandedOver;
-
 	public static ImmunizationDto build(PersonReferenceDto person) {
 
 		final ImmunizationDto immunizationDto = new ImmunizationDto();
@@ -208,10 +203,12 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 		this.reportDate = reportDate;
 	}
 
+	@Override
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
 	}
 
+	@Override
 	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
 	}
@@ -424,19 +421,4 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 		this.vaccinations = vaccinations;
 	}
 
-	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
-		return sormasToSormasOriginInfo;
-	}
-
-	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
-		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
-	}
-
-	public boolean isOwnershipHandedOver() {
-		return ownershipHandedOver;
-	}
-
-	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
-		this.ownershipHandedOver = ownershipHandedOver;
-	}
 }
