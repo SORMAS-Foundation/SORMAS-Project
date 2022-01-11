@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isDocGenerationAllowed;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -29,6 +31,7 @@ import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -36,6 +39,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -55,6 +59,7 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
@@ -575,6 +580,33 @@ public class EventsView extends AbstractView {
 									eventGrid.asMultiSelect().getSelectedItems(),
 									() -> navigateTo(eventCriteria))),
 						FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
+
+				if (isDocGenerationAllowed()) {
+					bulkActions.add(
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkActionCreatDocuments), VaadinIcons.FILE_TEXT, mi -> {
+							grid.bulkActionHandler(items -> {
+
+								EventGrid eventGrid1 = (EventGrid) this.grid;
+								List<EventReferenceDto> references = eventGrid1.asMultiSelect()
+									.getSelectedItems()
+									.stream()
+									.map(EventIndexDto::toReference)
+									.collect(Collectors.toList());
+								if (references.size() == 0) {
+									new Notification(
+										I18nProperties.getString(Strings.headingNoEventsSelected),
+										I18nProperties.getString(Strings.headingNoEventsSelected),
+										Notification.Type.WARNING_MESSAGE,
+										false).show(Page.getCurrent());
+
+									return;
+								}
+
+								ControllerProvider.getDocGenerationController().showEventDocumentDialog(references);
+							});
+						}));
+				}
+
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);
 
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
