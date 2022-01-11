@@ -132,11 +132,6 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 			return importResult;
 		}
 
-		if (travelEntry.getPointOfEntry() == null && configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			travelEntry.setPointOfEntry(pointOfEntryFacade.getByUuid(PointOfEntryDto.OTHER_POE_UUID).toReference());
-			travelEntry.setPointOfEntryDetails(I18nProperties.getString(Strings.messageTravelEntryPOEFilledBySystem));
-		}
-
 		ImportLineResultDto<TravelEntryImportEntities> validationResult = validateEntities(entities);
 		if (validationResult.isError()) {
 			return validationResult;
@@ -238,7 +233,7 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 		boolean ignoreEmptyEntries,
 		TravelEntryImportEntities entities) {
 
-		return insertRowIntoData(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, cellData -> {
+		ImportLineResultDto<TravelEntryImportEntities> importResult = insertRowIntoData(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, cellData -> {
 			try {
 				TravelEntryDto travelEntry = entities.getTravelEntry();
 				if (StringUtils.isNotEmpty(cellData.getValue())) {
@@ -251,6 +246,16 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 
 			return null;
 		});
+
+		if(!importResult.isError()) {
+			TravelEntryDto travelEntry = entities.getTravelEntry();
+			if (travelEntry.getPointOfEntry() == null && configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+				travelEntry.setPointOfEntry(pointOfEntryFacade.getByUuid(PointOfEntryDto.OTHER_POE_UUID).toReference());
+				travelEntry.setPointOfEntryDetails(I18nProperties.getString(Strings.messageTravelEntryPOEFilledBySystem));
+			}
+		}
+
+		return importResult;
 	}
 
 	private ImportLineResultDto<TravelEntryImportEntities> insertRowIntoData(
