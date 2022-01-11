@@ -57,6 +57,8 @@ public interface ContactFacade {
 
 	void generateContactFollowUpTasks();
 
+	List<ContactDto> getAllActiveContactsAfter(Date date, Integer batchSize, String lastUuid);
+
 	List<ContactDto> getByUuids(List<String> uuids);
 
 	Long countContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);

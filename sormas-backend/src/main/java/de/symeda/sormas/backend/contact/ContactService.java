@@ -1,20 +1,17 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 package de.symeda.sormas.backend.contact;
 
 import java.sql.Timestamp;
@@ -52,6 +49,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -173,7 +171,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Contact> getAllActiveContactsAfter(Date date) {
+	public List<Contact> getAllActiveContactsAfter(Date date, Integer batchSize, String lastUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
@@ -187,29 +185,52 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date);
+			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastUuid);
 			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		}
 
 		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(Contact.CHANGE_DATE)));
 		cq.distinct(true);
 
-		return em.createQuery(cq).getResultList();
+		return getBatchedQueryResults(cb, cq, from, batchSize);
 	}
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Date date) {
-		return createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
+		return createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), null);
 	}
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Timestamp date) {
+		return createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), null);
+	}
 
-		Predicate dateFilter = changeDateFilter(cb, date, from);
+	@Override
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Date date, String lastUuid) {
+		return createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), null);
+	}
+
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Timestamp date, String lastUuid) {
+
+		Predicate dateFilter;
+		if (lastUuid == null || EntityDto.NO_LAST_SYNCED_UUID.equals(lastUuid)) {
+			dateFilter = changeDateFilter(cb, date, from);
+		} else {
+			Timestamp timestamp = DateHelper.toTimestampUpper(date);
+			dateFilter = cb.or(
+				cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), timestamp),
+				cb.and(
+					cb.equal(from.get(AbstractDomainObject.CHANGE_DATE), timestamp),
+					cb.greaterThan(from.get(AbstractDomainObject.UUID), lastUuid)));
+		}
+
+		// TODO #7303: extend change date filter for sub-entities
 		dateFilter = cb.or(dateFilter, epiDataService.createChangeDateFilter(cb, from.join(Contact.EPI_DATA, JoinType.LEFT), date));
 		dateFilter = cb.or(dateFilter, healthConditionsService.createChangeDateFilter(cb, from.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT), date));
-		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SORMAS_TO_SORMAS_ORIGIN_INFO));
+		dateFilter = cb.or(
+			dateFilter,
+
+			changeDateFilter(cb, date, from, Contact.SORMAS_TO_SORMAS_ORIGIN_INFO));
 		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SORMAS_TO_SORMAS_SHARES));
 
 		return dateFilter;

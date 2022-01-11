@@ -252,11 +252,16 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public List<PersonDto> getPersonsAfter(Date date) {
+		return getPersonsAfter(date, null, null);
+	}
+
+	@Override
+	public List<PersonDto> getPersonsAfter(Date date, Integer batchSize, String lastUuid) {
 		final User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}
-		return toPseudonymizedDtos(personService.getAllAfter(date, user));
+		return toPseudonymizedDtos(personService.getAllAfter(date, user, batchSize, lastUuid));
 	}
 
 	@Override

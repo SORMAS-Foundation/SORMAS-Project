@@ -65,8 +65,7 @@ public class CaseResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}/{size}/{lastUUID}")
 	public List<CaseDataDto> getAllCases(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastUUID") String lastUuid) {
-		// TODO #7303: implement batching
-		return FacadeProvider.getCaseFacade().getAllActiveCasesAfter(new Date(since));
+		return FacadeProvider.getCaseFacade().getAllActiveCasesAfter(new Date(since), size, lastUuid);
 	}
 
 	@POST
