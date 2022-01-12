@@ -30,8 +30,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.vaadin.v7.ui.OptionGroup;
-import de.symeda.sormas.ui.utils.CssStyles;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -41,6 +39,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.Disease;
@@ -61,6 +60,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -103,7 +103,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		super(TaskDto.class, TaskDto.I18N_PREFIX, false, FieldVisibilityCheckers.withDisease(disease));
 
 		this.editedFromTaskGrid = editedFromTaskGrid;
-		this.editOrCreateUserRight = editOrCreateUserRight;
+		this.editOrCreateUserRight = create ? UserRight.TASK_CREATE : UserRight.TASK_EDIT;
 		this.disease = disease;
 		this.availableUsers = new ArrayList<>();
 
@@ -150,7 +150,11 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		assigneeUser.addValueChangeListener(e -> {
 			updateObserversList();
 			updateByCreatingAndAssignee();
-			checkIfUserEmailOrPhoneIsProvided((UserReferenceDto) e.getProperty().getValue(), Strings.infoAssigneeMissingEmail, Strings.infoAssigneeMissingEmailOrPhoneNumber, ASSIGNEE_MISSING_INFO);
+			checkIfUserEmailOrPhoneIsProvided(
+				(UserReferenceDto) e.getProperty().getValue(),
+				Strings.infoAssigneeMissingEmail,
+				Strings.infoAssigneeMissingEmailOrPhoneNumber,
+				ASSIGNEE_MISSING_INFO);
 		});
 		assigneeUser.setImmediate(true);
 
@@ -163,7 +167,11 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		observerUsers.addValueChangeListener(e -> {
 			Collection<UserReferenceDto> userReferences = (Collection<UserReferenceDto>) e.getProperty().getValue();
 			for (UserReferenceDto userReference : userReferences) {
-				checkIfUserEmailOrPhoneIsProvided(userReference, Strings.infoObserverMissingEmail, Strings.infoObserverMissingEmailOrPhoneNumber, OBSERVER_MISSING_INFO);
+				checkIfUserEmailOrPhoneIsProvided(
+					userReference,
+					Strings.infoObserverMissingEmail,
+					Strings.infoObserverMissingEmailOrPhoneNumber,
+					OBSERVER_MISSING_INFO);
 			}
 		});
 		observerUsers.setMultiSelect(true);
@@ -233,8 +241,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 					false,
 					I18nProperties.getValidationError(Validations.afterDate, dueDate.getCaption(), startDate.getCaption())));
 
-			Map<String, Long> userTaskCounts =
-				FacadeProvider.getTaskFacade().getPendingTaskCountPerUser(availableUsers.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
+			Map<String, Long> userTaskCounts = FacadeProvider.getTaskFacade()
+				.getPendingTaskCountPerUser(availableUsers.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
 			for (UserReferenceDto user : availableUsers) {
 				assigneeUser.addItem(user);
 				Long userTaskCount = userTaskCounts.get(user.getUuid());
@@ -274,13 +282,16 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		}
 
 		// As we removed everything from observers field, let's apply again its value
-		Set<UserReferenceDto> filteredObservers = selectedObservers.stream()
-			.filter(userReferenceDto -> !userReferenceDto.equals(assigneeField.getValue()))
-			.collect(Collectors.toSet());
+		Set<UserReferenceDto> filteredObservers =
+			selectedObservers.stream().filter(userReferenceDto -> !userReferenceDto.equals(assigneeField.getValue())).collect(Collectors.toSet());
 		observersField.setValue(filteredObservers);
 	}
 
-	private void checkIfUserEmailOrPhoneIsProvided(UserReferenceDto assigneeRef, String missingEmailLabel, String missingEmailOrPhoneLabel, String location) {
+	private void checkIfUserEmailOrPhoneIsProvided(
+		UserReferenceDto assigneeRef,
+		String missingEmailLabel,
+		String missingEmailOrPhoneLabel,
+		String location) {
 
 		if (assigneeRef == null || FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.TASK_NOTIFICATIONS)) {
 			return;
@@ -293,9 +304,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		boolean isSmsServiceSetUp = FacadeProvider.getConfigFacade().isSmsServiceSetUp();
 
 		if (isSmsServiceSetUp && !hasEmail && !hasPhoneNumber) {
-			getContent().addComponent(
-				getMissingInfoComponent(I18nProperties.getString(missingEmailOrPhoneLabel)),
-				location);
+			getContent().addComponent(getMissingInfoComponent(I18nProperties.getString(missingEmailOrPhoneLabel)), location);
 		} else if (!isSmsServiceSetUp && !hasEmail) {
 			getContent().addComponent(getMissingInfoComponent(I18nProperties.getString(missingEmailLabel)), location);
 		} else {
