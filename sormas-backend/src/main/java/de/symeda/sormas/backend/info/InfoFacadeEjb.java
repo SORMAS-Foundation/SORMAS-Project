@@ -76,6 +76,8 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentDto;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -148,6 +150,8 @@ public class InfoFacadeEjb implements InfoFacade {
 		createEntitySheet(workbook, FacilityDto.class, FacilityDto.I18N_PREFIX);
 		createEntitySheet(workbook, PointOfEntryDto.class, PointOfEntryDto.I18N_PREFIX);
 		createEntitySheet(workbook, UserDto.class, UserDto.I18N_PREFIX);
+		createEntitySheet(workbook, LabMessageDto.class, LabMessageDto.I18N_PREFIX);
+		createEntitySheet(workbook, TestReportDto.class, TestReportDto.I18N_PREFIX);
 
 		XssfHelper.addAboutSheet(workbook);
 
