@@ -84,6 +84,7 @@ public final class RetroProvider {
 	private static boolean connecting = false;
 
 	private static final Integer ASSUMED_TRANSFER_TIME_IN_SECONDS = 60;
+	public static final double JSON_COMPRESSION_FACTOR = 5.7; // number derived using https://dafrok.github.io/gzip-size-online/
 
 	private final Context context;
 	private final Retrofit retrofit;
@@ -304,7 +305,8 @@ public final class RetroProvider {
 	}
 
 	public static Integer getNumberOfEntitiesToBePulledInOneBatch(long approximateJsonSizeInBytes, Context context) throws ServerConnectionException {
-		int batchSize = Math.toIntExact(getNetworkDownloadSpeedInKbps(context) * ASSUMED_TRANSFER_TIME_IN_SECONDS * 1024 / (approximateJsonSizeInBytes * 8));
+		double compressedJsonSizeInBits = approximateJsonSizeInBytes * 8 / JSON_COMPRESSION_FACTOR;
+		int batchSize = Math.toIntExact(Math.round(getNetworkDownloadSpeedInKbps(context) * ASSUMED_TRANSFER_TIME_IN_SECONDS * 1024 / compressedJsonSizeInBits));
 		return batchSize < 10 ? 10 : batchSize;
 	}
 

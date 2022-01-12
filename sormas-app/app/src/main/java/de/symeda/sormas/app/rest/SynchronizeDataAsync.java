@@ -15,18 +15,18 @@
 
 package de.symeda.sormas.app.rest;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.AddTrace;
 import com.google.firebase.perf.metrics.Trace;
 
-import android.content.Context;
-import android.os.AsyncTask;
-import android.util.Log;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
@@ -79,8 +79,6 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
-
-	public static final double JSON_COMPRESSION_FACTOR = 5.7; // number derived using https://dafrok.github.io/gzip-size-online/
 
 	/**
 	 * Should be set to true when the synchronization fails and reset to false as soon
