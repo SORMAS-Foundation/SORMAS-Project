@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.common;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.stream.Stream;
 
@@ -30,7 +31,7 @@ public class ChangeDateFilterBuilder {
 
 	private final CriteriaBuilder cb;
 	private final Stream.Builder<Predicate> filters;
-	private Date date;
+	private Timestamp date;
 	private Expression<? extends Date> dateExpression;
 
 	private From<?, ?> root;
@@ -43,7 +44,7 @@ public class ChangeDateFilterBuilder {
 
 	public ChangeDateFilterBuilder(CriteriaBuilder cb, Date date) {
 		this(cb);
-		this.date = date;
+		this.date = new Timestamp(date.getTime());
 	}
 
 	public ChangeDateFilterBuilder(CriteriaBuilder cb, Date date, From<?, ?> root, String lastSynchronizedUuid) {
@@ -80,7 +81,7 @@ public class ChangeDateFilterBuilder {
 		}
 
 		if (root != null && lastSynchronizedUuid != null && !EntityDto.NO_LAST_SYNCED_UUID.equals(lastSynchronizedUuid)) {
-			Predicate filterUuid = cb.greaterThanOrEqualTo(root.get(AbstractDomainObject.UUID), lastSynchronizedUuid);
+			Predicate filterUuid = cb.greaterThan(root.get(AbstractDomainObject.UUID), lastSynchronizedUuid);
 			if (dateExpression == null) {
 				filterUuid = cb.and(cb.equal(parent.get(AbstractDomainObject.CHANGE_DATE), date), filterUuid);
 			} else {

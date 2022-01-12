@@ -378,7 +378,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		Predicate lgaFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, personsRoot, DateHelper.toTimestampUpper(date));
+			Predicate dateFilter = createChangeDateFilter(cb, personsRoot, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
 			lgaFilter = cb.and(lgaFilter, dateFilter);
 		}
 		personsQuery.where(lgaFilter);
@@ -393,7 +393,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot);
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, casePersonsSelect, DateHelper.toTimestampUpper(date));
+			Predicate dateFilter = createChangeDateFilter(cb, casePersonsSelect, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
 			if (batchSize == null) {
 				// include case change dates: When a case is relocated it may become available to another user and this will have to include the person as-well
 				Predicate caseDateFilter = caseService.createChangeDateFilter(cb, casePersonsRoot, DateHelper.toTimestampUpper(date));
@@ -420,7 +420,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		Predicate contactPersonsFilter = contactService.createUserFilter(cb, contactPersonsQuery, contactPersonsRoot);
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, contactPersonsSelect, DateHelper.toTimestampUpper(date));
+			Predicate dateFilter = createChangeDateFilter(cb, contactPersonsSelect, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
 			if (batchSize == null) {
 				Predicate contactDateFilter = contactService.createChangeDateFilter(cb, contactPersonsRoot, date);
 				dateFilter = cb.or(dateFilter, contactDateFilter);
@@ -442,7 +442,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		Predicate eventPersonsFilter = eventParticipantService.createUserFilter(cb, eventPersonsQuery, eventPersonsRoot);
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, eventPersonsSelect, DateHelper.toTimestampUpper(date));
+			Predicate dateFilter = createChangeDateFilter(cb, eventPersonsSelect, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
 			if (batchSize == null) {
 				Predicate eventParticipantDateFilter =
 					eventParticipantService.createChangeDateFilter(cb, eventPersonsRoot, DateHelper.toTimestampUpper(date));
@@ -467,7 +467,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			Predicate immunizationPersonsFilter = immunizationService.createUserFilter(cb, immunizationPersonsQuery, immunizationPersonsRoot);
 			// date range
 			if (date != null) {
-				Predicate dateFilter = createChangeDateFilter(cb, immunizationPersonsSelect, DateHelper.toTimestampUpper(date));
+				Predicate dateFilter = createChangeDateFilter(cb, immunizationPersonsSelect, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
 				if (batchSize == null) {
 					Predicate immunizationDateFilter =
 						immunizationService.createChangeDateFilter(cb, immunizationPersonsRoot, DateHelper.toTimestampUpper(date));
@@ -808,8 +808,9 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		Join<Person, Location> address = persons.join(Person.ADDRESS);
 
 		// TODO #7303: Include change date of addresses, personContactDetails?
-		ChangeDateFilterBuilder changeDateFilterBuilder =
-			lastSynchronizedUuid == null ? new ChangeDateFilterBuilder(cb, date) : new ChangeDateFilterBuilder(cb, date, persons, lastSynchronizedUuid);
+		ChangeDateFilterBuilder changeDateFilterBuilder = lastSynchronizedUuid == null
+			? new ChangeDateFilterBuilder(cb, date)
+			: new ChangeDateFilterBuilder(cb, date, persons, lastSynchronizedUuid);
 		return changeDateFilterBuilder.add(persons).add(address).build();
 	}
 

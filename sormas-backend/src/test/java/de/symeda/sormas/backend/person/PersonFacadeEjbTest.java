@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -20,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -421,7 +421,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	public void testIsValidPersonUuid() {
 		final PersonDto person = creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1);
 		assertTrue(getPersonFacade().isValidPersonUuid(person.getUuid()));
-		Assert.assertFalse(getPersonFacade().isValidPersonUuid("2341235234534"));
+		assertFalse(getPersonFacade().isValidPersonUuid("2341235234534"));
 	}
 
 	@Test
@@ -635,7 +635,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetPersonsAfter() {
+	public void testGetPersonsAfter() throws InterruptedException {
 		UserDto natUser = useNationalUserLogin();
 
 		Date t1 = new Date();
@@ -676,19 +676,32 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		personsAfterT1 = getPersonFacade().getPersonsAfter(t1, 4, EntityDto.NO_LAST_SYNCED_UUID);
 		assertEquals(2, personsAfterT1.size());
 
+		PersonDto personRead1 = personsAfterT1.get(0);
+		PersonDto personRead2 = personsAfterT1.get(1);
+
 		personsAfterT1 = getPersonFacade().getPersonsAfter(t1, 1, EntityDto.NO_LAST_SYNCED_UUID);
 		assertEquals(1, personsAfterT1.size());
 
-		PersonDto personRead = getPersonFacade().getPersonByUuid(personsAfterT1.get(0).getUuid());
-		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead.getChangeDate(), 4, EntityDto.NO_LAST_SYNCED_UUID);
+		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead1.getChangeDate(), 4, null);
 		assertEquals(1, personsAfterT1.size());
 
-		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead.getChangeDate(), 4, "AAAAAA-AAAAAA-AAAAAA-AAAAAA");
+		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead1.getChangeDate(), 4, EntityDto.NO_LAST_SYNCED_UUID);
 		assertEquals(1, personsAfterT1.size());
 
-		// TODO #7303: Fix date handling for equal dates
-		//		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead.getChangeDate(), 4, personRead.getUuid());
-		//		assertEquals(0, personsAfterT1.size());
+		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), 4, null);
+		assertEquals(0, personsAfterT1.size());
+
+		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), 4, EntityDto.NO_LAST_SYNCED_UUID);
+		assertEquals(0, personsAfterT1.size());
+
+		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), 4, "AAAAAA-AAAAAA-AAAAAA-AAAAAA");
+		assertEquals(1, personsAfterT1.size());
+
+		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), 4, "ZZZZZZ-ZZZZZZ-ZZZZZZ-ZZZZZZ");
+		assertEquals(0, personsAfterT1.size());
+
+		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), 4, personRead2.getUuid());
+		assertEquals(0, personsAfterT1.size());
 	}
 
 	@Test

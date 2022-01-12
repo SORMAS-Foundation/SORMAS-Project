@@ -30,7 +30,8 @@ public class ChangeDateUuidComparator<T extends AbstractDomainObject> implements
 		if (o1.getChangeDate() == null) {
 			dateComparison = o2.getChangeDate() == null ? 0 : 1;
 		} else {
-			dateComparison = o1.getChangeDate().compareTo(o2.getChangeDate());
+			// compare timestamps with precision millisecond
+			dateComparison = Long.compare(o1.getChangeDate().getTime(), o2.getChangeDate().getTime());
 		}
 		if (dateComparison != 0) {
 			return dateComparison;
