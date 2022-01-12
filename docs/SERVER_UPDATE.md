@@ -2,6 +2,33 @@
 
 SORMAS releases starting from 1.21.0 contain a script that automatically updates and deploys the server. If you are using an older version and therefore need to do a manual server update, please download the 1.21.0 release files and use the commands specified in the server-update.sh script.
 
+## Migrate to new Payara Server
+At some versions it is mandatory to switch to a new Payara Server:
+* Switching from <=v1.66.4 to v1.67.0 or newer
+
+If your version bump does not apply to the listing above, please proceed with [Preparations](SERVER_UPDATE.md#preparations).
+
+### Step 1: Shutdown existing domain
+    ```bash
+    # Stop domain
+    service payara-sormas stop
+
+    # Move existing domain
+    DOMAIN_PATH=/opt/domains
+    DOMAIN_NAME="sormas"
+    DOMAIN_BACKUP_NAME="sormas_backup"
+    mv $DOMAIN_PATH/$DOMAIN_NAME $DOMAIN_PATH/$DOMAIN_BACKUP_NAME
+    ```
+
+### Step 2: Setup Payara domain
+Please follow the [server setup](SERVER_SETUP.md#sormas-server): Create the payara domain under the same path as before, use the same directory paths and the same database settings.
+
+### Step 3: Apply your config file changes
+Transfer your settings from `sormas.properties`, `logback.xml` or changes in the domain setup. Use the new provided files and copy your changes in, don't reuse old files!
+
+### Step 4: Install new SORMAS version
+To install the new SORMAS version in the Payara domain, proceed with the [automatic update](SERVER_UPDATE.md#automatic-server-update) or for developers: Deploy SORMAS via the IDE as usual.
+
 ## Preparations
 Note: You can skip this step if you've just set up your SORMAS server and have already downloaded the latest release.
 
