@@ -14,8 +14,9 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.area.AreaCriteria;
@@ -29,7 +30,6 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
-import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "AreaFacade")
 public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, AreaDto, AreaReferenceDto, AreaService, AreaCriteria>
@@ -40,7 +40,7 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, Area
 
 	@Inject
 	protected AreaFacadeEjb(AreaService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(Area.class, AreaDto.class, service, featureConfiguration, userService);
+		super(Area.class, AreaDto.class, service, featureConfiguration, userService, Validations.importAreaAlreadyExists);
 	}
 
 	@Override
@@ -81,11 +81,6 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, Area
 		cq.select(areaRoot);
 
 		return QueryHelper.getResultList(em, cq, first, max, this::toDto);
-	}
-
-	@Override
-	public AreaDto save(AreaDto dtoToSave, boolean allowMerge) {
-		return save(dtoToSave, allowMerge, Validations.importAreaAlreadyExists);
 	}
 
 	@Override
