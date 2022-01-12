@@ -64,8 +64,8 @@ public class ImmunizationDtoHelper extends PersonDependentDtoHelper<Immunization
 	}
 
 	@Override
-	protected Call<List<ImmunizationDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
-		return RetroProvider.getImmunizationFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
+	protected Call<List<ImmunizationDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+		return RetroProvider.getImmunizationFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
 	@Override

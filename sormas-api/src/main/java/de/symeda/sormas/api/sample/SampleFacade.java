@@ -57,7 +57,7 @@ public interface SampleFacade {
 
 	List<String> getAllActiveUuids();
 
-	List<SampleDto> getAllActiveSamplesAfter(Date date, Integer batchSize, String lastUuid);
+	List<SampleDto> getAllActiveSamplesAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
 
 	List<SampleDto> getByUuids(List<String> uuids);
 

@@ -367,7 +367,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 	@Override
 	// todo refactor this to use the create user filter form persons
-	public List<Person> getAllAfter(Date date, User user, Integer batchSize, String lastUuid) {
+	public List<Person> getAllAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -804,12 +804,12 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		return createChangeDateFilter(cb, from, date, null);
 	}
 
-	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Person> persons, Timestamp date, String lastUuid) {
+	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Person> persons, Timestamp date, String lastSynchronizedUuid) {
 		Join<Person, Location> address = persons.join(Person.ADDRESS);
 
 		// TODO #7303: Include change date of addresses, personContactDetails?
 		ChangeDateFilterBuilder changeDateFilterBuilder =
-			lastUuid == null ? new ChangeDateFilterBuilder(cb, date) : new ChangeDateFilterBuilder(cb, date, persons, lastUuid);
+			lastSynchronizedUuid == null ? new ChangeDateFilterBuilder(cb, date) : new ChangeDateFilterBuilder(cb, date, persons, lastSynchronizedUuid);
 		return changeDateFilterBuilder.add(persons).add(address).build();
 	}
 

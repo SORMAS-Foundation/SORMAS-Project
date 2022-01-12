@@ -42,7 +42,7 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 		super(AdditionalTest.class);
 	}
 
-	public List<AdditionalTest> getAllActiveAdditionalTestsAfter(Date date, User user, Integer batchSize, String lastUuid) {
+	public List<AdditionalTest> getAllActiveAdditionalTestsAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<AdditionalTest> cq = cb.createQuery(getElementClass());
@@ -56,7 +56,7 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastUuid);
+			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastSynchronizedUuid);
 			filter = cb.and(filter, dateFilter);
 		}
 

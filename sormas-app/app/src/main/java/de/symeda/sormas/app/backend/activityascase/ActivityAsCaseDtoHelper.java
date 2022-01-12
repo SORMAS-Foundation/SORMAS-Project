@@ -34,7 +34,7 @@ public class ActivityAsCaseDtoHelper extends AdoDtoHelper<ActivityAsCase, Activi
 	@Override
 	protected Call<List<ActivityAsCaseDto>> pullAllSince(long since,
 														 Integer size,
-														 String lastSynchronizedUuidSameTimestamp) throws NoConnectionException {
+														 String lastSynchronizedUuid) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 

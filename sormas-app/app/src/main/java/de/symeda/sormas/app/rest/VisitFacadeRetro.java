@@ -27,11 +27,11 @@ import retrofit2.http.Path;
 
 public interface VisitFacadeRetro {
 
-	@GET("visits/all/{since}/{size}/{lastUUID}")
+	@GET("visits/all/{since}/{size}/{lastSynchronizedUuid}")
 	Call<List<VisitDto>> pullAllSince(
 			@Path("since") long since,
 			@Path("size") int size,
-			@Path("lastUUID") String lastSynchronizedUuidSameTimestamp);
+			@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
 
 	@POST("visits/query")
 	Call<List<VisitDto>> pullByUuids(@Body List<String> uuids);

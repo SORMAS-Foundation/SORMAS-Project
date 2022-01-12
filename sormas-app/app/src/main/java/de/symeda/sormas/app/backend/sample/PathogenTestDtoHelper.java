@@ -42,8 +42,8 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
 	}
 
 	@Override
-	protected Call<List<PathogenTestDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
-		return RetroProvider.getSampleTestFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
+	protected Call<List<PathogenTestDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+		return RetroProvider.getSampleTestFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
 	@Override

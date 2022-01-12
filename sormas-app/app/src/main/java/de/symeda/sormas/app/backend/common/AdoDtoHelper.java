@@ -52,7 +52,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
 	protected abstract Class<DTO> getDtoClass();
 
-	protected abstract Call<List<DTO>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp) throws NoConnectionException;
+	protected abstract Call<List<DTO>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException;
 
 	/**
 	 * Explicitly pull missing entities.
@@ -101,7 +101,9 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 				Call<List<DTO>> dtoCall = pullAllSince(
 					lastSyncedEntityDate.getTime(),
 					batchSize,
-					lastSyncedEntityDate.equals(previousLastSyncedEntityDate) ? EntityDto.NO_LAST_SYNCED_UUID : lastSyncedEntityUuid);
+					lastSyncedEntityDate != null && lastSyncedEntityUuid != null
+						? lastSyncedEntityDate.equals(previousLastSyncedEntityDate) ? EntityDto.NO_LAST_SYNCED_UUID : lastSyncedEntityUuid
+						: EntityDto.NO_LAST_SYNCED_UUID);
 
 				previousLastSyncedEntityDate = lastSyncedEntityDate;
 				if (dtoCall == null) {
@@ -137,7 +139,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 				Call<List<DTO>> dtoCall = pullAllSince(
 					lastSyncedEntityDate != null ? lastSyncedEntityDate.getTime() : 0,
 					batchSize,
-					lastSyncedEntityDate != null
+					lastSyncedEntityDate != null && lastSyncedEntityUuid != null
 						? lastSyncedEntityDate.equals(previousLastSyncedEntityDate) ? EntityDto.NO_LAST_SYNCED_UUID : lastSyncedEntityUuid
 						: EntityDto.NO_LAST_SYNCED_UUID);
 

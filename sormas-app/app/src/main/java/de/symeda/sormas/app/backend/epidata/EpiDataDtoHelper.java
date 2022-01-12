@@ -51,7 +51,7 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
 	}
 
 	@Override
-	protected Call<List<EpiDataDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+	protected Call<List<EpiDataDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 

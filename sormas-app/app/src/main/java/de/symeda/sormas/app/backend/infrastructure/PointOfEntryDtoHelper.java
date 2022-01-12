@@ -43,7 +43,7 @@ public class PointOfEntryDtoHelper extends AdoDtoHelper<PointOfEntry, PointOfEnt
 	}
 
 	@Override
-	protected Call<List<PointOfEntryDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+	protected Call<List<PointOfEntryDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		return RetroProvider.getPointOfEntryFacade().pullAllSince(since);
 	}
 

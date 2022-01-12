@@ -78,7 +78,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		super(EventParticipant.class);
 	}
 
-	public List<EventParticipant> getAllActiveEventParticipantsAfter(Date date, User user, Integer batchSize, String lastUuid) {
+	public List<EventParticipant> getAllActiveEventParticipantsAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventParticipant> cq = cb.createQuery(getElementClass());
@@ -95,7 +95,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastUuid);
+			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastSynchronizedUuid);
 			filter = cb.and(filter, dateFilter);
 		}
 

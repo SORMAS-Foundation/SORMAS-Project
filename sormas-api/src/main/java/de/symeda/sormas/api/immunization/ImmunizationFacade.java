@@ -61,5 +61,5 @@ public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, Immuniza
 
 	List<ImmunizationDto> getByPersonUuids(List<String> uuids);
 
-	List<ImmunizationDto> getAllAfter(Date date, Integer batchSize, String lastUuid);
+	List<ImmunizationDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
 }

@@ -63,9 +63,9 @@ public class TaskResource extends EntityDtoResource {
 	}
 
 	@GET
-	@Path("/all/{since}/{size}/{lastUUID}")
-	public List<TaskDto> getAll(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastUUID") String lastUuid) {
-		return FacadeProvider.getTaskFacade().getAllActiveTasksAfter(new Date(since), size, lastUuid);
+	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
+	public List<TaskDto> getAll(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		return FacadeProvider.getTaskFacade().getAllActiveTasksAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
 	@POST

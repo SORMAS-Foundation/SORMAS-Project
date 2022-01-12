@@ -36,9 +36,9 @@ public class TreatmentResource extends EntityDtoResource {
 	}
 
 	@GET
-	@Path("/all/{since}/{size}/{lastUUID}")
-	public List<TreatmentDto> getAllTreatments(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastUUID") String lastUuid) {
-		return FacadeProvider.getTreatmentFacade().getAllActiveTreatmentsAfter(new Date(since), size, lastUuid);
+	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
+	public List<TreatmentDto> getAllTreatments(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		return FacadeProvider.getTreatmentFacade().getAllActiveTreatmentsAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
 	@POST

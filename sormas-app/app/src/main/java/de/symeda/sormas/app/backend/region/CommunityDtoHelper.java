@@ -49,7 +49,7 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
 	}
 
 	@Override
-	protected Call<List<CommunityDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+	protected Call<List<CommunityDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		return RetroProvider.getCommunityFacade().pullAllSince(since);
 	}
 

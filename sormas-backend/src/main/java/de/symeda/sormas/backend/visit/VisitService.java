@@ -142,16 +142,16 @@ public class VisitService extends BaseAdoService<Visit> {
 	/**
 	 * Attention: For now this only returns the visits of contacts, since case visits are not yet implemented in the mobile app
 	 */
-	public List<Visit> getAllActiveVisitsAfter(Date date, Integer batchSize, String lastUuid) {
+	public List<Visit> getAllActiveVisitsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 		List<Visit> result = new ArrayList<>();
-		result.addAll(getAllActiveVisitsInContactsAfter(date, batchSize, lastUuid));
+		result.addAll(getAllActiveVisitsInContactsAfter(date, batchSize, lastSynchronizedUuid));
 		// include when case visits are implemented for the mobile app
 //		result.addAll(getAllActiveVisitsInCasesAfter(date));
 
 		return result.stream().distinct().sorted(Comparator.comparing(AbstractDomainObject::getId)).collect(Collectors.toList());
 	}
 
-	private List<Visit> getAllActiveVisitsInContactsAfter(Date date, Integer batchSize, String lastUuid) {
+	private List<Visit> getAllActiveVisitsInContactsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Visit> visitsQuery = cb.createQuery(Visit.class);
@@ -165,7 +165,7 @@ public class VisitService extends BaseAdoService<Visit> {
 			.and(cb, contactService.createUserFilter(cb, visitsQuery, contactRoot), contactService.createActiveContactsFilter(cb, contactRoot));
 
 		if (date != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, visitJoin, DateHelper.toTimestampUpper(date), lastUuid));
+			filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, visitJoin, DateHelper.toTimestampUpper(date), lastSynchronizedUuid));
 		}
 
 		visitsQuery.select(visitJoin);
@@ -282,12 +282,12 @@ public class VisitService extends BaseAdoService<Visit> {
 		return createChangeDateFilter(cb, visitPath, date);
 	}
 
-	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Visit> visitPath, Timestamp date, String lastUuid) {
+	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Visit> visitPath, Timestamp date, String lastSynchronizedUuid) {
 
 		Join<Visit, Symptoms> symptoms = visitPath.join(Visit.SYMPTOMS, JoinType.LEFT);
 
 		ChangeDateFilterBuilder changeDateFilterBuilder =
-			lastUuid == null ? new ChangeDateFilterBuilder(cb, date) : new ChangeDateFilterBuilder(cb, date, visitPath, lastUuid);
+				lastSynchronizedUuid == null ? new ChangeDateFilterBuilder(cb, date) : new ChangeDateFilterBuilder(cb, date, visitPath, lastSynchronizedUuid);
 		return changeDateFilterBuilder.add(visitPath).add(symptoms).build();
 	}
 }

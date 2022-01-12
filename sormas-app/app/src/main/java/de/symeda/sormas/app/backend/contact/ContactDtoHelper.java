@@ -63,8 +63,8 @@ public class ContactDtoHelper extends PersonDependentDtoHelper<Contact, ContactD
 	}
 
 	@Override
-	protected Call<List<ContactDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
-		return RetroProvider.getContactFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
+	protected Call<List<ContactDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+		return RetroProvider.getContactFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
 	@Override

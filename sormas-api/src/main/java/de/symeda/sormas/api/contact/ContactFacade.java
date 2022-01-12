@@ -57,7 +57,7 @@ public interface ContactFacade {
 
 	void generateContactFollowUpTasks();
 
-	List<ContactDto> getAllActiveContactsAfter(Date date, Integer batchSize, String lastUuid);
+	List<ContactDto> getAllActiveContactsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
 
 	List<ContactDto> getByUuids(List<String> uuids);
 

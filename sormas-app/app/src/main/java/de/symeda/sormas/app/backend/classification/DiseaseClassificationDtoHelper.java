@@ -42,7 +42,7 @@ public class DiseaseClassificationDtoHelper extends AdoDtoHelper<DiseaseClassifi
 	}
 
 	@Override
-	protected Call<List<DiseaseClassificationCriteriaDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+	protected Call<List<DiseaseClassificationCriteriaDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		return RetroProvider.getClassificationFacade().pullAllSince(since);
 	}
 

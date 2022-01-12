@@ -41,8 +41,8 @@ public class TreatmentDtoHelper extends AdoDtoHelper<Treatment, TreatmentDto> {
 	}
 
 	@Override
-	protected Call<List<TreatmentDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
-		return RetroProvider.getTreatmentFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
+	protected Call<List<TreatmentDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+		return RetroProvider.getTreatmentFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
 	@Override

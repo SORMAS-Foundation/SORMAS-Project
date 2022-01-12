@@ -54,12 +54,12 @@ public class AdditionalTestResource extends EntityDtoResource {
 	}
 
 	@GET
-	@Path("/all/{since}/{size}/{lastUUID}")
+	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
 	public List<AdditionalTestDto> getAllAdditionalTests(
 		@PathParam("since") long since,
 		@PathParam("size") int size,
-		@PathParam("lastUUID") String lastUuid) {
-		return FacadeProvider.getAdditionalTestFacade().getAllActiveAdditionalTestsAfter(new Date(since), size, lastUuid);
+		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		return FacadeProvider.getAdditionalTestFacade().getAllActiveAdditionalTestsAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
 	@POST

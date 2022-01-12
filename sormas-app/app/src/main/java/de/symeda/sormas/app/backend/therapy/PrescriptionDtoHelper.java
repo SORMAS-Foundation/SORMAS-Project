@@ -41,8 +41,8 @@ public class PrescriptionDtoHelper extends AdoDtoHelper<Prescription, Prescripti
 	}
 
 	@Override
-	protected Call<List<PrescriptionDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
-		return RetroProvider.getPrescriptionFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
+	protected Call<List<PrescriptionDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+		return RetroProvider.getPrescriptionFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
 	@Override

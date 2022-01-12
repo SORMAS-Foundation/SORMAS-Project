@@ -77,8 +77,8 @@ public class CaseDtoHelper extends PersonDependentDtoHelper<Case, CaseDataDto> {
 	}
 
 	@Override
-	protected Call<List<CaseDataDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
-		return RetroProvider.getCaseFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
+	protected Call<List<CaseDataDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+		return RetroProvider.getCaseFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
 	@Override

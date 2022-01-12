@@ -39,7 +39,7 @@ public class DistrictDtoHelper extends AdoDtoHelper<District, DistrictDto> {
 	}
 
 	@Override
-	protected Call<List<DistrictDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+	protected Call<List<DistrictDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		return RetroProvider.getDistrictFacade().pullAllSince(since);
 	}
 
