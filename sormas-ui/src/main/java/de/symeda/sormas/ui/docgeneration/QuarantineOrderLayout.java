@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.ui.docgeneration;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
@@ -43,6 +46,7 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.ui.document.DocumentListComponent;
 
 public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
@@ -51,15 +55,22 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
 	private ComboBox<SampleIndexDto> sampleSelector;
 	private ComboBox<PathogenTestDto> pathogenTestSelector;
+	private DocumentListComponent documentListComponent;
 
 	public QuarantineOrderLayout(
 		DocumentWorkflow workflow,
 		@Nullable SampleCriteria sampleCriteria,
+		DocumentListComponent documentListComponent,
 		DocumentStreamSupplier documentStreamSupplier,
 		Function<String, String> fileNameFunction) {
-		super(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder), fileNameFunction);
+		super(
+			I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder),
+			fileNameFunction,
+			isNull(sampleCriteria) && isNull(documentListComponent));
 		this.workflow = workflow;
 		this.documentStreamSupplier = documentStreamSupplier;
+
+		this.documentListComponent = documentListComponent;
 
 		init();
 
@@ -127,13 +138,22 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
 			try {
 				InputStream stream =
-					documentStreamSupplier.getStream(templateFile, sampleReference, pathogenTestReference, readAdditionalVariables());
+					documentStreamSupplier.getStream(
+						templateFile,
+						sampleReference,
+						pathogenTestReference,
+						readAdditionalVariables(),
+						checkBoxUploadGeneratedDoc.getValue());
 
 				new Notification(
 					I18nProperties.getString(Strings.headingDocumentCreated),
 					I18nProperties.getString(Strings.messageQuarantineOrderDocumentCreated),
 					Notification.Type.TRAY_NOTIFICATION,
 					false).show(Page.getCurrent());
+
+				if (nonNull(documentListComponent)) {
+					documentListComponent.reload();
+				}
 
 				return stream;
 			} catch (Exception e) {
@@ -163,7 +183,12 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
 	interface DocumentStreamSupplier {
 
-		InputStream getStream(String templateFile, SampleReferenceDto sample, PathogenTestReferenceDto pathogenTest, Properties extraProperties)
+		InputStream getStream(
+			String templateFile,
+			SampleReferenceDto sample,
+			PathogenTestReferenceDto pathogenTest,
+			Properties extraProperties,
+			Boolean shouldUploadGeneratedDoc)
 			throws DocumentTemplateException;
 	}
 }
