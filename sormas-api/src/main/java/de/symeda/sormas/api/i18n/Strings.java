@@ -323,6 +323,7 @@ public interface Strings {
 	String ExternalSurveillanceToolGateway_notificationErrorSending = "ExternalSurveillanceToolGateway.notificationErrorSending";
 	String ExternalSurveillanceToolGateway_sharedAt = "ExternalSurveillanceToolGateway.sharedAt";
 	String ExternalSurveillanceToolGateway_unableToSend = "ExternalSurveillanceToolGateway.unableToSend";
+	String ExternalSurveillanceToolGateway_versionRequestError = "ExternalSurveillanceToolGateway.versionRequestError";
 	String fileName = "fileName";
 	String forCase = "forCase";
 	String forContact = "forContact";

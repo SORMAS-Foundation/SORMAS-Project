@@ -23,6 +23,8 @@ public class CampaignDiagramDefinition extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 7360131476160449930L;
 
+	public static final String TABLE_NAME = "campaigndiagramdefinition";
+
 	public static final String DIAGRAM_ID = "diagramId";
 
 	private String diagramId;

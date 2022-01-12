@@ -168,6 +168,10 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 			deselectAll();
 		}
 
+		if (ViewModelProviders.of(LabMessagesView.class).get(ViewConfiguration.class).isInEagerMode()) {
+			setEagerDataProvider();
+		}
+
 		getDataProvider().refreshAll();
 	}
 

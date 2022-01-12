@@ -18,9 +18,12 @@ public interface Captions {
 	String aboutCopyright = "aboutCopyright";
 	String aboutDataDictionary = "aboutDataDictionary";
 	String aboutDocuments = "aboutDocuments";
-	String aboutSormasVersion = "aboutSormasVersion";
+	String aboutExternalSurveillanceToolGateway = "aboutExternalSurveillanceToolGateway";
+	String aboutLabMessageAdapter = "aboutLabMessageAdapter";
+	String aboutServiceNotAvailable = "aboutServiceNotAvailable";
 	String aboutSormasWebsite = "aboutSormasWebsite";
 	String aboutTechnicalManual = "aboutTechnicalManual";
+	String aboutVersion = "aboutVersion";
 	String aboutWhatsNew = "aboutWhatsNew";
 	String Action = "Action";
 	String Action_actionContext = "Action.actionContext";
@@ -505,6 +508,7 @@ public interface Captions {
 	String caseMinusDays = "caseMinusDays";
 	String caseNewCase = "caseNewCase";
 	String caseNewCaseDate = "caseNewCaseDate";
+	String caseNoDiseaseVariant = "caseNoDiseaseVariant";
 	String caseNumberOfDuplicatesDetected = "caseNumberOfDuplicatesDetected";
 	String caseOpenCasesGuide = "caseOpenCasesGuide";
 	String caseOpenMergeGuide = "caseOpenMergeGuide";
@@ -953,6 +957,7 @@ public interface Captions {
 	String DocumentTemplate = "DocumentTemplate";
 	String DocumentTemplate_buttonUploadTemplate = "DocumentTemplate.buttonUploadTemplate";
 	String DocumentTemplate_documentTemplateGuide = "DocumentTemplate.documentTemplateGuide";
+	String DocumentTemplate_documentUploadWarning = "DocumentTemplate.documentUploadWarning";
 	String DocumentTemplate_EventHandout = "DocumentTemplate.EventHandout";
 	String DocumentTemplate_EventHandout_create = "DocumentTemplate.EventHandout.create";
 	String DocumentTemplate_exampleTemplateCases = "DocumentTemplate.exampleTemplateCases";
@@ -960,10 +965,14 @@ public interface Captions {
 	String DocumentTemplate_exampleTemplateEventHandout = "DocumentTemplate.exampleTemplateEventHandout";
 	String DocumentTemplate_exampleTemplateEventParticipants = "DocumentTemplate.exampleTemplateEventParticipants";
 	String DocumentTemplate_exampleTemplateTravelEntries = "DocumentTemplate.exampleTemplateTravelEntries";
+	String DocumentTemplate_fileTooBig = "DocumentTemplate.fileTooBig";
+	String DocumentTemplate_notUploaded = "DocumentTemplate.notUploaded";
 	String DocumentTemplate_plural = "DocumentTemplate.plural";
 	String DocumentTemplate_QuarantineOrder = "DocumentTemplate.QuarantineOrder";
 	String DocumentTemplate_QuarantineOrder_create = "DocumentTemplate.QuarantineOrder.create";
 	String DocumentTemplate_QuarantineOrder_templates = "DocumentTemplate.QuarantineOrder.templates";
+	String DocumentTemplate_uploadGeneratedDocumentsToEntities = "DocumentTemplate.uploadGeneratedDocumentsToEntities";
+	String DocumentTemplate_uploadGeneratedDocumentToEntity = "DocumentTemplate.uploadGeneratedDocumentToEntity";
 	String DocumentTemplate_uploadTemplate = "DocumentTemplate.uploadTemplate";
 	String DocumentTemplate_uploadWorkflowTemplate = "DocumentTemplate.uploadWorkflowTemplate";
 	String documentUploadDocument = "documentUploadDocument";
