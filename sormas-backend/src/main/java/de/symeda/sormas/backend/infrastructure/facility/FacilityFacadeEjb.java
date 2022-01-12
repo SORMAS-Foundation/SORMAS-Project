@@ -34,7 +34,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -87,7 +86,7 @@ public class FacilityFacadeEjb
 
 	@Inject
 	protected FacilityFacadeEjb(FacilityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(Facility.class, FacilityDto.class, service, featureConfiguration, userService);
+		super(Facility.class, FacilityDto.class, service, featureConfiguration, userService, Validations.importFacilityAlreadyExists);
 	}
 
 	@Override
@@ -545,9 +544,14 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
-	public FacilityDto save(FacilityDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
-		validateFacilityDto(dtoToSave);
-		return save(dtoToSave, allowMerge, Validations.importFacilityAlreadyExists);
+	public FacilityDto save(FacilityDto dto, boolean allowMerge) {
+		validate(dto);
+		return super.save(dto, allowMerge);
+	}
+
+	@Override
+	public FacilityDto saveUnchecked(FacilityDto dto) {
+		return save(dto);
 	}
 
 	@Override
@@ -565,7 +569,7 @@ public class FacilityFacadeEjb
 		// facilities are excluded from infra. data locking for now...
 	}
 
-	private void validateFacilityDto(FacilityDto dto) {
+	private void validate(FacilityDto dto) {
 		if (dto.getType() == null
 			&& !FacilityDto.OTHER_FACILITY_UUID.equals(dto.getUuid())
 			&& !FacilityDto.NONE_FACILITY_UUID.equals(dto.getUuid())) {
