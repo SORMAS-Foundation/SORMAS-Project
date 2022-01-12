@@ -3,7 +3,6 @@ package org.sormas.e2etests.steps.web.application.cases;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.*;
 
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -16,6 +15,7 @@ import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.EpidemiologicalData;
 import org.sormas.e2etests.pojo.web.epidemiologicalData.Activity;
 import org.sormas.e2etests.pojo.web.epidemiologicalData.Exposure;
@@ -100,7 +100,7 @@ public class EpidemiologicalDataCaseSteps implements En {
                   .findFirst()
                   .orElse(Exposure.builder().build());
           Exposure actualExposureData = collectExposureData();
-          Truth.assertThat(generatedExposureData).isEqualTo(actualExposureData);
+          ComparisonHelper.compareEqualEntities(generatedExposureData, actualExposureData);
         });
 
     Then(
@@ -119,7 +119,7 @@ public class EpidemiologicalDataCaseSteps implements En {
                   .findFirst()
                   .orElse(Activity.builder().build());
           Activity actualActivityData = collectActivityData();
-          Truth.assertThat(generatedActivityData).isEqualTo(actualActivityData);
+          ComparisonHelper.compareEqualEntities(generatedActivityData, actualActivityData);
           webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_DISCARD_BUTTON);
         });
   }

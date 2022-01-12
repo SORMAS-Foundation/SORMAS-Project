@@ -118,7 +118,7 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitUntilAListOfElementsIsPresent(
               NAME_UUID_EPID_NUMBER_LIKE_INPUT, apiState.getCreatedCases().size());
           Truth.assertWithMessage(
-                  "Total number of displyed cases doesn't match with the number of cases created via api")
+                  "Total number of displayed cases doesn't match with the number of cases created via api")
               .that(apiState.getCreatedCases().size())
               .isEqualTo(
                   Integer.parseInt(

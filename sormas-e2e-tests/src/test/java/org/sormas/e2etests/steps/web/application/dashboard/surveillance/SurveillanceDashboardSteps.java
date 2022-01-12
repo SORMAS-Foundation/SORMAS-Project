@@ -20,18 +20,19 @@ import javax.inject.Inject;
 import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
+import org.testng.asserts.SoftAssert;
 
 public class SurveillanceDashboardSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
-  private final SoftAssertions softly;
+  private final SoftAssert softly;
   private int covid19DiseaseCounterBefore;
   private int covid19DiseaseCounterAfter;
   private int newCasesCounterBefore;
   private int newCasesCounterAfter;
 
   @Inject
-  public SurveillanceDashboardSteps(WebDriverHelpers webDriverHelpers, SoftAssertions softly) {
+  public SurveillanceDashboardSteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
     this.softly = softly;
 
@@ -61,20 +62,11 @@ public class SurveillanceDashboardSteps implements En {
                       SurveillanceDashboardPage.COVID19_DISEASE_COUNTER));
 
           softly
-              .assertThat(newCasesCounterBefore)
-              .withFailMessage(
-                  "New cases counter for COVID-19 in Surveillance Dashboard has not been increased")
-              .isLessThan(newCasesCounterAfter);
+              .assertTrue(newCasesCounterBefore < newCasesCounterAfter, "New cases counter for COVID-19 in Surveillance Dashboard has not been increased");
           softly
-              .assertThat(covid19DiseaseCounterBefore)
-              .withFailMessage(
-                  "COVID-19 disease counter in Surveillance Dashboard has not been increased")
-              .isLessThan(covid19DiseaseCounterAfter);
+              .assertTrue(covid19DiseaseCounterBefore < covid19DiseaseCounterAfter, "COVID-19 disease counter in Surveillance Dashboard has not been increased");
           softly
-              .assertThat(newCasesCounterAfter)
-              .withFailMessage(
-                  "New cases counter for COVID-19 does not equal COVID-19 disease counter in Surveillance Dashboard")
-              .isEqualTo(covid19DiseaseCounterAfter);
+              .assertEquals(newCasesCounterAfter, covid19DiseaseCounterAfter, "New cases counter for COVID-19 does not equal COVID-19 disease counter in Surveillance Dashboard" );
           softly.assertAll();
         });
 

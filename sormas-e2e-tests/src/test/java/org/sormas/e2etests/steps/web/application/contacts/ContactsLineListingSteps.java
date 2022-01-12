@@ -25,10 +25,10 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
-import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.ContactsLineListing;
 import org.sormas.e2etests.services.ContactsLineListingService;
+import org.testng.asserts.SoftAssert;
 
 public class ContactsLineListingSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
@@ -39,8 +39,7 @@ public class ContactsLineListingSteps implements En {
   public ContactsLineListingSteps(
       WebDriverHelpers webDriverHelpers,
       ContactsLineListingService contactsLineListingService,
-      final SoftAssertions softly)
-      throws InterruptedException {
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -73,87 +72,94 @@ public class ContactsLineListingSteps implements En {
         "I check that contact created from Line Listing is saved and displayed in results grid",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(DISEASE_COLUMNS);
-          softly.assertThat(contactsLineListing.getDisease()).isEqualTo(getDiseaseDirectoryPage());
-          softly
-              .assertThat(contactsLineListing.getTypeOfContact())
-              .isEqualTo(getTypeOfContactDirectoryPage());
-          softly
-              .assertThat(contactsLineListing.getFirstName())
-              .isEqualTo(getFirstNameDirectoryPage());
-          softly
-              .assertThat(contactsLineListing.getLastName())
-              .isEqualTo(getLastNameDirectoryPage());
+          softly.assertEquals(
+              contactsLineListing.getDisease(),
+              getDiseaseDirectoryPage(),
+              "Disease value is not correct");
+          softly.assertEquals(
+              contactsLineListing.getTypeOfContact(),
+              getTypeOfContactDirectoryPage(),
+              "Type of contact is not correct");
+          softly.assertEquals(
+              contactsLineListing.getFirstName(),
+              getFirstNameDirectoryPage(),
+              "First name is not correct");
+          softly.assertEquals(
+              contactsLineListing.getLastName(),
+              getLastNameDirectoryPage(),
+              "Last name is not correct");
+          softly.assertAll();
         });
   }
 
-  public void selectDisease(String disease) {
+  private void selectDisease(String disease) {
     webDriverHelpers.selectFromCombobox(LINE_LISTING_DISEASE_COMBOBOX, disease);
   }
 
-  public void selectRegion(String region) {
+  private void selectRegion(String region) {
     webDriverHelpers.selectFromCombobox(LINE_LISTING_REGION_COMBOBOX, region);
   }
 
-  public void selectDistrict(String district) {
+  private void selectDistrict(String district) {
     webDriverHelpers.selectFromCombobox(LINE_LISTING_DISTRICT_COMBOBOX, district);
   }
 
-  public void fillDateOfReport(LocalDate dateOfReport) {
+  private void fillDateOfReport(LocalDate dateOfReport) {
     webDriverHelpers.clearAndFillInWebElement(
         LINE_LISTING_DATE_REPORT_INPUT, DATE_FORMATTER.format(dateOfReport));
   }
 
-  public void fillDateOfLastContact(LocalDate dateOfLastContact) {
+  private void fillDateOfLastContact(LocalDate dateOfLastContact) {
     webDriverHelpers.clearAndFillInWebElement(
         LINE_LISTING_DATE_LAST_CONTACT_INPUT, DATE_FORMATTER.format(dateOfLastContact));
   }
 
-  public void selectTypeOfContact(String typeOfContact) {
+  private void selectTypeOfContact(String typeOfContact) {
     webDriverHelpers.selectFromCombobox(LINE_LISTING_TYPE_OF_CONTACT_COMBOBOX, typeOfContact);
   }
 
-  public void selectRelationshipWithCase(String relationshipWithCase) {
+  private void selectRelationshipWithCase(String relationshipWithCase) {
     webDriverHelpers.selectFromCombobox(
         LINE_LISTING_RELATIONSHIP_TO_CASE_COMBOBOX, relationshipWithCase);
   }
 
-  public void fillFirstName(String firstName) {
+  private void fillFirstName(String firstName) {
     webDriverHelpers.fillInWebElement(LINE_LISTING_FIRST_NAME_INPUT, firstName);
   }
 
-  public void fillLastName(String lastName) {
+  private void fillLastName(String lastName) {
     webDriverHelpers.fillInWebElement(LINE_LISTING_LAST_NAME_INPUT, lastName);
   }
 
-  public void selectBirthYear(String year) {
+  private void selectBirthYear(String year) {
     webDriverHelpers.selectFromCombobox(LINE_LISTING_BIRTHDATE_YEAR_COMBOBOX, year);
   }
 
-  public void selectBirthMonth(String month) {
+  private void selectBirthMonth(String month) {
     webDriverHelpers.selectFromCombobox(LINE_LISTING_BIRTHDATE_MONTH_COMBOBOX, month);
   }
 
-  public void selectBirthDay(String day) {
+  private void selectBirthDay(String day) {
     webDriverHelpers.selectFromCombobox(LINE_LISTING_BIRTHDATE_DAY_COMBOBOX, day);
   }
 
-  public void selectSex(String sex) {
+  private void selectSex(String sex) {
     webDriverHelpers.selectFromCombobox(LINE_LISTING_SEX_COMBOBOX, sex);
   }
 
-  public String getDiseaseDirectoryPage() {
+  private String getDiseaseDirectoryPage() {
     return webDriverHelpers.getTextFromListElement(DISEASE_COLUMNS, 0);
   }
 
-  public String getTypeOfContactDirectoryPage() {
+  private String getTypeOfContactDirectoryPage() {
     return webDriverHelpers.getTextFromListElement(FIRST_NAME_COLUMNS, 0);
   }
 
-  public String getFirstNameDirectoryPage() {
+  private String getFirstNameDirectoryPage() {
     return webDriverHelpers.getTextFromListElement(LAST_NAME_COLUMNS, 0);
   }
 
-  public String getLastNameDirectoryPage() {
+  private String getLastNameDirectoryPage() {
     return webDriverHelpers.getTextFromListElement(TYPE_OF_CONTACT_COLUMNS, 0);
   }
 }

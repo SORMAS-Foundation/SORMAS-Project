@@ -51,7 +51,7 @@ public class EditActionSteps implements En {
         });
   }
 
-  public Action collectActionData() {
+  private Action collectActionData() {
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(DATE_INPUT);
     WebElement descriptionIFrame = baseSteps.getDriver().findElement(DESCRIPTION_IFRAME);
     baseSteps.getDriver().switchTo().frame(descriptionIFrame);

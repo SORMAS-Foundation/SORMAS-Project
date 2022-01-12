@@ -39,13 +39,13 @@ import java.util.List;
 import java.util.Locale;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Contact;
 import org.sormas.e2etests.services.ContactService;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class EditContactsSteps implements En {
 
@@ -61,7 +61,7 @@ public class EditContactsSteps implements En {
       WebDriverHelpers webDriverHelpers,
       ApiState apiState,
       ContactService contactService,
-      SoftAssertions softly,
+      SoftAssert softly,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -115,7 +115,7 @@ public class EditContactsSteps implements En {
         () -> {
           openContactFromResultsByUUID(contactUUID);
           collectedContact = collectContactData();
-          
+
           ComparisonHelper.compareEqualFieldsOfEntities(
               contact,
               collectedContact,
@@ -156,21 +156,26 @@ public class EditContactsSteps implements En {
           String lastName =
               webDriverHelpers.getValueFromTableRowUsingTheHeader("Last name of contact person", 1);
 
-          softly
-              .assertThat(apiState.getCreatedContact().getUuid().substring(0, 6))
-              .isEqualToIgnoringCase(contactId);
-          softly
-              .assertThat(apiState.getCreatedContact().getDisease())
-              .isEqualToIgnoringCase(contactDisease);
-          softly
-              .assertThat(apiState.getCreatedContact().getContactClassification())
-              .isEqualToIgnoringCase(contactClassification);
-          softly
-              .assertThat(apiState.getCreatedContact().getPerson().getFirstName())
-              .isEqualToIgnoringCase(firstName);
-          softly
-              .assertThat(apiState.getCreatedContact().getPerson().getLastName())
-              .isEqualToIgnoringCase(lastName);
+          softly.assertTrue(
+              apiState.getCreatedContact().getUuid().substring(0, 6).equalsIgnoreCase(contactId),
+              "UUID doesn't match");
+          softly.assertTrue(
+              apiState.getCreatedContact().getDisease().equalsIgnoreCase(contactDisease),
+              "Disease doesn't match");
+          softly.assertTrue(
+              apiState
+                  .getCreatedContact()
+                  .getContactClassification()
+                  .equalsIgnoreCase(contactClassification),
+              "Classification doesn't match");
+
+          softly.assertTrue(
+              apiState.getCreatedContact().getPerson().getFirstName().equalsIgnoreCase(firstName),
+              "First name doesn't match");
+
+          softly.assertTrue(
+              apiState.getCreatedContact().getPerson().getLastName().equalsIgnoreCase(lastName),
+              "Last name doesn't match");
           softly.assertAll();
         });
   }

@@ -31,8 +31,6 @@ import org.sormas.e2etests.state.ApiState;
 
 public class FollowUpVisitsTabSteps implements En {
 
-  private final WebDriverHelpers webDriverHelpers;
-  public static FollowUpVisit followUpVisit;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
   @Inject
@@ -40,7 +38,6 @@ public class FollowUpVisitsTabSteps implements En {
       WebDriverHelpers webDriverHelpers,
       ApiState apiState,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
-    this.webDriverHelpers = webDriverHelpers;
 
     When(
         "^I am accessing the Follow-up visits tab using of created contact via api$",

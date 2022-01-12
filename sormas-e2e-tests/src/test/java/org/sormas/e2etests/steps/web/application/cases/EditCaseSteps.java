@@ -28,13 +28,11 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.SneakyThrows;
-import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Case;
 import org.sormas.e2etests.services.CaseService;
-import org.sormas.e2etests.state.ApiState;
 
 public class EditCaseSteps implements En {
 
@@ -49,8 +47,6 @@ public class EditCaseSteps implements En {
   public EditCaseSteps(
       WebDriverHelpers webDriverHelpers,
       CaseService caseService,
-      ApiState apiState,
-      SoftAssertions softly,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
 

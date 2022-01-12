@@ -9,10 +9,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import javax.inject.Inject;
-import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Case;
 import org.sormas.e2etests.services.CaseService;
+import org.testng.asserts.SoftAssert;
 
 public class CaseLineListingSteps implements En {
 
@@ -21,7 +21,7 @@ public class CaseLineListingSteps implements En {
 
   @Inject
   public CaseLineListingSteps(
-      WebDriverHelpers webDriverHelpers, CaseService caseService, final SoftAssertions softly) {
+      WebDriverHelpers webDriverHelpers, CaseService caseService, final SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -59,26 +59,23 @@ public class CaseLineListingSteps implements En {
         "I check that case created from Line Listing is saved and displayed in results grid",
         () -> {
           webDriverHelpers.waitForPageLoaded();
-          softly
-              .assertThat(getCaseDiseaseFromGridResults())
-              .withFailMessage("Disease value doesn't match")
-              .isEqualToIgnoringCase(caze.getDisease());
-          softly
-              .assertThat(getCaseFirstNameFromGridResults())
-              .withFailMessage("First name value doesn't match")
-              .isEqualToIgnoringCase(caze.getFirstName());
-          softly
-              .assertThat(getCaseLastNameFromGridResults())
-              .withFailMessage("Last name value doesn't match")
-              .isEqualToIgnoringCase(caze.getLastName());
-          softly
-              .assertThat(getCaseDistrictFromGridResults())
-              .withFailMessage("District value doesn't match")
-              .isEqualToIgnoringCase(caze.getDistrict());
-          softly
-              .assertThat(getCaseHealthFacilityFromGridResults())
-              .withFailMessage("Health Facility value doesn't match")
-              .isEqualToIgnoringCase("Other Facility - " + caze.getPlaceDescription());
+
+          softly.assertEquals(
+              getCaseDiseaseFromGridResults(), caze.getDisease(), "Disease value doesn't match");
+          softly.assertEquals(
+              getCaseFirstNameFromGridResults(),
+              caze.getFirstName(),
+              "First name value doesn't match");
+          softly.assertEquals(
+              getCaseLastNameFromGridResults(),
+              caze.getLastName(),
+              "Last name value doesn't match");
+          softly.assertEquals(
+              getCaseDistrictFromGridResults(), caze.getDistrict(), "District value doesn't match");
+          softly.assertEquals(
+              getCaseHealthFacilityFromGridResults(),
+              "Other facility - " + caze.getPlaceDescription(),
+              "Health facility value doesn't match");
           softly.assertAll();
         });
   }
