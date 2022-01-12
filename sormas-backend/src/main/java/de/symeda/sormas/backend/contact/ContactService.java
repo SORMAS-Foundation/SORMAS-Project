@@ -49,7 +49,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -81,13 +80,16 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditionsService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.transformers.ContactListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -212,28 +214,15 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Timestamp date, String lastUuid) {
 
-		Predicate dateFilter;
-		if (lastUuid == null || EntityDto.NO_LAST_SYNCED_UUID.equals(lastUuid)) {
-			dateFilter = changeDateFilter(cb, date, from);
-		} else {
-			Timestamp timestamp = DateHelper.toTimestampUpper(date);
-			dateFilter = cb.or(
-				cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), timestamp),
-				cb.and(
-					cb.equal(from.get(AbstractDomainObject.CHANGE_DATE), timestamp),
-					cb.greaterThan(from.get(AbstractDomainObject.UUID), lastUuid)));
-		}
+		ChangeDateFilterBuilder changeDateFilterBuilder = new ChangeDateFilterBuilder(cb, date, from, lastUuid);
+		Join<Object, EpiData> epiData = from.join(Contact.EPI_DATA, JoinType.LEFT);
+		Join<Object, HealthConditions> healthCondition = from.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT);
 
-		// TODO #7303: extend change date filter for sub-entities
-		dateFilter = cb.or(dateFilter, epiDataService.createChangeDateFilter(cb, from.join(Contact.EPI_DATA, JoinType.LEFT), date));
-		dateFilter = cb.or(dateFilter, healthConditionsService.createChangeDateFilter(cb, from.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT), date));
-		dateFilter = cb.or(
-			dateFilter,
+		changeDateFilterBuilder.add(from);
+		epiDataService.addChangeDateFilters(changeDateFilterBuilder, epiData);
+		changeDateFilterBuilder.add(healthCondition).add(from, Contact.SORMAS_TO_SORMAS_ORIGIN_INFO).add(from, Contact.SORMAS_TO_SORMAS_SHARES);
 
-			changeDateFilter(cb, date, from, Contact.SORMAS_TO_SORMAS_ORIGIN_INFO));
-		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SORMAS_TO_SORMAS_SHARES));
-
-		return dateFilter;
+		return changeDateFilterBuilder.build();
 	}
 
 	public List<String> getAllActiveUuids(User user) {
