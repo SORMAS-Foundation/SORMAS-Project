@@ -38,8 +38,11 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Sets;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.validator.EmailValidator;
@@ -73,6 +76,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -83,18 +87,23 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
+import de.symeda.sormas.ui.person.PersonSearchField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String PERSON_SEARCH_LOC = "personSearchLoc";
 	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
 	private static final String FACILITY_TYPE_GROUP_LOC = "typeGroupLoc";
 	private static final String DONT_SHARE_WARNING_LOC = "dontShareWithReportingToolWarnLoc";
@@ -152,7 +161,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
         + fluidRowLocs(DIFFERENT_POINT_OF_ENTRY_JURISDICTION)
         + fluidRowLocs(POINT_OF_ENTRY_REGION, POINT_OF_ENTRY_DISTRICT)
         + fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
-        + fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME)
+        + fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC)
         + fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
         fluidRowLocs(PersonDto.SEX))
         + fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
@@ -216,6 +225,37 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
 		addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
+
+		Button searchPersonButton = ButtonHelper.createIconButtonWithCaption(PERSON_SEARCH_LOC, StringUtils.EMPTY, VaadinIcons.SEARCH, clickEvent -> {
+			VaadinIcons icon = (VaadinIcons) clickEvent.getButton().getIcon();
+			if (icon == VaadinIcons.SEARCH) {
+				PersonSearchField personSearchField = new PersonSearchField(null, I18nProperties.getString(Strings.infoSearchPerson));
+				personSearchField.setWidth(1280, Unit.PIXELS);
+
+				final CommitDiscardWrapperComponent<PersonSearchField> component = new CommitDiscardWrapperComponent<>(personSearchField);
+				component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+				component.getCommitButton().setEnabled(false);
+				component.addCommitListener(() -> {
+					SimilarPersonDto pickedPerson = personSearchField.getValue();
+					if (pickedPerson != null) {
+						// add consumer
+						setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(pickedPerson.getUuid()));
+						clickEvent.getButton().setIcon(VaadinIcons.CLOSE);
+					}
+				});
+
+				personSearchField.setSelectionChangeCallback((commitAllowed) -> {
+					component.getCommitButton().setEnabled(commitAllowed);
+				});
+
+				VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSelectPerson));
+			} else {
+				setPerson(null);
+				clickEvent.getButton().setIcon(VaadinIcons.SEARCH);
+			}
+		}, CssStyles.FORCE_CAPTION);
+		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
+
 		addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
 		addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
 
