@@ -53,8 +53,8 @@ public class EventParticipantDtoHelper extends PersonDependentDtoHelper<EventPar
 	}
 
 	@Override
-	protected Call<List<EventParticipantDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
-		return RetroProvider.getEventParticipantFacade().pullAllSince(since, size, lastSynchronizedUuid);
+	protected Call<List<EventParticipantDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+		return RetroProvider.getEventParticipantFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
 	}
 
 	@Override

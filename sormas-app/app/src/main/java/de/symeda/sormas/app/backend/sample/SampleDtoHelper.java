@@ -48,8 +48,8 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
 	}
 
 	@Override
-	protected Call<List<SampleDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
-		return RetroProvider.getSampleFacade().pullAllSince(since, size, lastSynchronizedUuid);
+	protected Call<List<SampleDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+		return RetroProvider.getSampleFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
 	}
 
 	@Override

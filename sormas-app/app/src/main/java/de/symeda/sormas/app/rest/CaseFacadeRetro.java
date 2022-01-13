@@ -31,7 +31,7 @@ public interface CaseFacadeRetro {
 	Call<List<CaseDataDto>> pullAllSince(
 		@Path("since") long since,
 		@Path("size") int size,
-		@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
+		@Path("lastSynchronizedUuid") String lastSynchronizedUuidSameTimestamp);
 
 	@POST("cases/query")
 	Call<List<CaseDataDto>> pullByUuids(@Body List<String> uuids);

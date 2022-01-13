@@ -350,7 +350,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	public List<TaskDto> getAllActiveTasksAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<TaskDto> getAllActiveTasksAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
 
 		User user = userService.getCurrentUser();
 		if (user == null) {
@@ -358,7 +358,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return taskService.getAllActiveTasksAfter(date, user, batchSize, lastSynchronizedUuid)
+		return taskService.getAllActiveTasksAfter(date, user, batchSize, lastSynchronizedUuidSameTimestamp)
 			.stream()
 			.map(c -> toDto(c, pseudonymizer))
 			.collect(Collectors.toList());

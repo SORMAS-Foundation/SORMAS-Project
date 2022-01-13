@@ -31,7 +31,7 @@ public interface ClinicalVisitFacadeRetro {
 	Call<List<ClinicalVisitDto>> pullAllSince(
 			@Path("since") long since,
 			@Path("size") int size,
-			@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
+			@Path("lastSynchronizedUuid") String lastSynchronizedUuidSameTimestamp);
 
 	@POST("clinicalvisits/query")
 	Call<List<ClinicalVisitDto>> pullByUuids(@Body List<String> uuids);

@@ -153,9 +153,9 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	public List<VisitDto> getAllActiveVisitsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<VisitDto> getAllActiveVisitsAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return visitService.getAllActiveVisitsAfter(date, batchSize, lastSynchronizedUuid)
+		return visitService.getAllActiveVisitsAfter(date, batchSize, lastSynchronizedUuidSameTimestamp)
 			.stream()
 			.map(c -> convertToDto(c, pseudonymizer))
 			.collect(Collectors.toList());

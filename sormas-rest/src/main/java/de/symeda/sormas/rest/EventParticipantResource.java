@@ -67,9 +67,9 @@ public class EventParticipantResource extends EntityDtoResource {
 	public List<EventParticipantDto> getAllEventParticipantsAfter(
 		@PathParam("since") long since,
 		@PathParam("size") int size,
-		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuidSameTimestamp) {
 		List<EventParticipantDto> result =
-			FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsAfter(new Date(since), size, lastSynchronizedUuid);
+			FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsAfter(new Date(since), size, lastSynchronizedUuidSameTimestamp);
 		return result;
 	}
 

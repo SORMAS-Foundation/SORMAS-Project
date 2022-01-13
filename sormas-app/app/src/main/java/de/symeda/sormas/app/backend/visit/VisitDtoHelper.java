@@ -47,8 +47,8 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
 	}
 
 	@Override
-	protected Call<List<VisitDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
-		return RetroProvider.getVisitFacade().pullAllSince(since, size, lastSynchronizedUuid);
+	protected Call<List<VisitDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp) throws NoConnectionException {
+		return RetroProvider.getVisitFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
 	}
 
 	@Override

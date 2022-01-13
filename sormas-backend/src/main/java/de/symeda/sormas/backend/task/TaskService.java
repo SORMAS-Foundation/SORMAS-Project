@@ -91,7 +91,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		super(Task.class);
 	}
 
-	public List<Task> getAllActiveTasksAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
+	public List<Task> getAllActiveTasksAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
@@ -105,7 +105,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastSynchronizedUuid);
+			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastSynchronizedUuidSameTimestamp);
 			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		}
 

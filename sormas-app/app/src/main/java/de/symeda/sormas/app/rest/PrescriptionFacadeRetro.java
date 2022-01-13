@@ -31,7 +31,7 @@ public interface PrescriptionFacadeRetro {
 	Call<List<PrescriptionDto>> pullAllSince(
 			@Path("since") long since,
 			@Path("size") int size,
-			@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
+			@Path("lastSynchronizedUuid") String lastSynchronizedUuidSameTimestamp);
 
 	@POST("prescriptions/query")
 	Call<List<PrescriptionDto>> pullByUuids(@Body List<String> uuids);

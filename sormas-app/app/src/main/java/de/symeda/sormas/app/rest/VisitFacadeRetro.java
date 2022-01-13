@@ -31,7 +31,7 @@ public interface VisitFacadeRetro {
 	Call<List<VisitDto>> pullAllSince(
 			@Path("since") long since,
 			@Path("size") int size,
-			@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
+			@Path("lastSynchronizedUuid") String lastSynchronizedUuidSameTimestamp);
 
 	@POST("visits/query")
 	Call<List<VisitDto>> pullByUuids(@Body List<String> uuids);

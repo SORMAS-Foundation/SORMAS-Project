@@ -32,7 +32,7 @@ public interface WeeklyReportFacade {
 
 	List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date);
 
-	List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
+	List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp);
 
 	List<WeeklyReportDto> getByUuids(List<String> uuids);
 

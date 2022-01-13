@@ -44,7 +44,7 @@ public class HospitalizationDtoHelper extends AdoDtoHelper<Hospitalization, Hosp
 	}
 
 	@Override
-	protected Call<List<HospitalizationDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<HospitalizationDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 

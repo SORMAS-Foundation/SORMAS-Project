@@ -41,7 +41,7 @@ public interface TaskFacade {
 
 	List<TaskDto> getAllByCase(CaseReferenceDto caseRef);
 
-	List<TaskDto> getAllActiveTasksAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
+	List<TaskDto> getAllActiveTasksAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp);
 
 	Page<TaskIndexDto> getIndexPage(TaskCriteria taskCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 

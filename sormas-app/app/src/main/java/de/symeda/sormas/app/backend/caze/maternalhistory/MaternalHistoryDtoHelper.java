@@ -40,7 +40,7 @@ public class MaternalHistoryDtoHelper extends AdoDtoHelper<MaternalHistory, Mate
 	}
 
 	@Override
-	protected Call<List<MaternalHistoryDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<MaternalHistoryDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 

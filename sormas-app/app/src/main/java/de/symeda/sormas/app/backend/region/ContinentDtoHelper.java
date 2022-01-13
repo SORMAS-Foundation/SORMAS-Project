@@ -40,7 +40,7 @@ public class ContinentDtoHelper extends AdoDtoHelper<Continent, ContinentDto> {
     }
 
     @Override
-    protected Call<List<ContinentDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+    protected Call<List<ContinentDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
         return RetroProvider.getContinentFacade().pullAllSince(since);
     }
 

@@ -30,7 +30,7 @@ public interface AdditionalTestFacadeRetro {
 	Call<List<AdditionalTestDto>> pullAllSince(
 			@Path("since") long since,
 			@Path("size") int size,
-			@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
+			@Path("lastSynchronizedUuid") String lastSynchronizedUuidSameTimestamp);
 
 	@POST("additionaltests/query")
 	Call<List<AdditionalTestDto>> pullByUuids(@Body List<String> uuids);

@@ -49,8 +49,8 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
 	}
 
 	@Override
-	protected Call<List<TaskDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
-		return RetroProvider.getTaskFacade().pullAllSince(since, size, lastSynchronizedUuid);
+	protected Call<List<TaskDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+		return RetroProvider.getTaskFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
 	}
 
 	@Override

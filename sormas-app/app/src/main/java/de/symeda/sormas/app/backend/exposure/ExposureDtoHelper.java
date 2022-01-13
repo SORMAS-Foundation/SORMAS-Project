@@ -34,7 +34,7 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 	}
 
 	@Override
-	protected Call<List<ExposureDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<ExposureDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 

@@ -229,7 +229,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Case> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters, Integer batchSize, String lastSynchronizedUuid) {
+	public List<Case> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
@@ -253,7 +253,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), includeExtendedChangeDateFilters, lastSynchronizedUuid);
+			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), includeExtendedChangeDateFilters, lastSynchronizedUuidSameTimestamp);
 			if (dateFilter != null) {
 				filter = cb.and(filter, dateFilter);
 			}
@@ -962,9 +962,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		From<?, Case> casePath,
 		Timestamp date,
 		boolean includeExtendedChangeDateFilters,
-		String lastSynchronizedUuid) {
+		String lastSynchronizedUuidSameTimestamp) {
 
-		return addChangeDateFilter(new ChangeDateFilterBuilder(cb, date, casePath, lastSynchronizedUuid), casePath, includeExtendedChangeDateFilters).build();
+		return addChangeDateFilter(new ChangeDateFilterBuilder(cb, date, casePath, lastSynchronizedUuidSameTimestamp), casePath, includeExtendedChangeDateFilters).build();
 	}
 
 	public Predicate createChangeDateFilter(

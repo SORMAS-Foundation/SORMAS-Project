@@ -56,7 +56,7 @@ public interface PathogenTestFacade {
 
 	PathogenTestDto getLatestPathogenTest(String uuid);
 
-	List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
+	List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp);
 
 	Page<PathogenTestDto> getIndexPage(PathogenTestCriteria pathogenTestCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 

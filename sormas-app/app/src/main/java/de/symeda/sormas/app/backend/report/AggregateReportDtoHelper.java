@@ -33,7 +33,7 @@ public class AggregateReportDtoHelper extends AdoDtoHelper<AggregateReport, Aggr
 	}
 
 	@Override
-	protected Call<List<AggregateReportDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<AggregateReportDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
 		return RetroProvider.getAggregateReportFacade().pullAllSince(since);
 	}
 

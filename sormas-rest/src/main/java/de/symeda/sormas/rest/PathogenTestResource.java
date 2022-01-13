@@ -58,8 +58,8 @@ public class PathogenTestResource extends EntityDtoResource {
 	public List<PathogenTestDto> getAllPathogenTests(
 		@PathParam("since") long since,
 		@PathParam("size") int size,
-		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
-		return FacadeProvider.getPathogenTestFacade().getAllActivePathogenTestsAfter(new Date(since), size, lastSynchronizedUuid);
+		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuidSameTimestamp) {
+		return FacadeProvider.getPathogenTestFacade().getAllActivePathogenTestsAfter(new Date(since), size, lastSynchronizedUuidSameTimestamp);
 	}
 
 	@POST

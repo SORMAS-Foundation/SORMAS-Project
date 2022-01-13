@@ -49,7 +49,7 @@ public class CampaignFormMetaDtoHelper extends AdoDtoHelper<CampaignFormMeta, Ca
     }
 
     @Override
-    protected Call<List<CampaignFormMetaDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+    protected Call<List<CampaignFormMetaDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
         return RetroProvider.getCampaignFormMetaFacade().pullAllSince(since);
     }
 

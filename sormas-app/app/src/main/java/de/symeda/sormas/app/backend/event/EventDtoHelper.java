@@ -52,8 +52,8 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 	}
 
 	@Override
-	protected Call<List<EventDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
-		return RetroProvider.getEventFacade().pullAllSince(since, size, lastSynchronizedUuid);
+	protected Call<List<EventDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+		return RetroProvider.getEventFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
 	}
 
 	@Override

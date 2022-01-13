@@ -38,7 +38,7 @@ public class OutbreakDtoHelper extends AdoDtoHelper<Outbreak, OutbreakDto> {
 	}
 
 	@Override
-	protected Call<List<OutbreakDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<OutbreakDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
 		return RetroProvider.getOutbreakFacade().pullActiveSince(since);
 	}
 

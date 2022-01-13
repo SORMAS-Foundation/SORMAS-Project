@@ -44,7 +44,7 @@ public class CampaignFormDataDtoHelper extends AdoDtoHelper<CampaignFormData, Ca
 	}
 
 	@Override
-	protected Call<List<CampaignFormDataDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<CampaignFormDataDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
 		return RetroProvider.getCampaignFormDataFacade().pullAllSince(since);
 	}
 

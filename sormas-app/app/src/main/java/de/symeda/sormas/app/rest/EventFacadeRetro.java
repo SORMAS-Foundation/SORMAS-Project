@@ -31,7 +31,7 @@ public interface EventFacadeRetro {
 	Call<List<EventDto>> pullAllSince(
 			@Path("since") long since,
 			@Path("size") int size,
-			@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
+			@Path("lastSynchronizedUuid") String lastSynchronizedUuidSameTimestamp);
 
 	@POST("events/query")
 	Call<List<EventDto>> pullByUuids(@Body List<String> uuids);

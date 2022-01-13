@@ -128,14 +128,14 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	@Override
-	public List<TreatmentDto> getAllActiveTreatmentsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<TreatmentDto> getAllActiveTreatmentsAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllActiveTreatmentsAfter(date, user, batchSize, lastSynchronizedUuid)
+		return service.getAllActiveTreatmentsAfter(date, user, batchSize, lastSynchronizedUuidSameTimestamp)
 			.stream()
 			.map(t -> convertToDto(t, pseudonymizer))
 			.collect(Collectors.toList());

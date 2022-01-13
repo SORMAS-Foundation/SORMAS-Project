@@ -37,7 +37,7 @@ public class UserRoleConfigDtoHelper extends AdoDtoHelper<UserRoleConfig, UserRo
 	}
 
 	@Override
-	protected Call<List<UserRoleConfigDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<UserRoleConfigDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
 		return RetroProvider.getUserRoleConfigFacade().pullAllSince(since);
 	}
 

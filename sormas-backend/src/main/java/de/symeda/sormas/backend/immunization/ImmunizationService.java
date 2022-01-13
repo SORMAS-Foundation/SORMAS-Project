@@ -150,12 +150,12 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		return createChangeDateFilter(cb, immunization, date, null);
 	}
 
-	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Immunization> immunization, Timestamp date, String lastSynchronizedUuid) {
+	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Immunization> immunization, Timestamp date, String lastSynchronizedUuidSameTimestamp) {
 
 		Join<Immunization, Vaccination> vaccinations = immunization.join(Immunization.VACCINATIONS, JoinType.LEFT);
 
 		ChangeDateFilterBuilder changeDateFilterBuilder =
-			lastSynchronizedUuid == null ? new ChangeDateFilterBuilder(cb, date) : new ChangeDateFilterBuilder(cb, date, immunization, lastSynchronizedUuid);
+				lastSynchronizedUuidSameTimestamp == null ? new ChangeDateFilterBuilder(cb, date) : new ChangeDateFilterBuilder(cb, date, immunization, lastSynchronizedUuidSameTimestamp);
 		return changeDateFilterBuilder.add(immunization)
 			.add(vaccinations)
 			.add(immunization, Immunization.SORMAS_TO_SORMAS_ORIGIN_INFO)
@@ -163,7 +163,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			.build();
 	}
 
-	public List<Immunization> getAllActiveAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<Immunization> getAllActiveAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Immunization> cq = cb.createQuery(getElementClass());
@@ -179,7 +179,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
+			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), lastSynchronizedUuidSameTimestamp);
 			if (dateFilter != null) {
 				filter = cb.and(filter, dateFilter);
 			}

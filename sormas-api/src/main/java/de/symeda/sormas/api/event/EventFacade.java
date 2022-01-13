@@ -53,7 +53,7 @@ public interface EventFacade {
 
 	List<String> getAllActiveUuids();
 
-	List<EventDto> getAllActiveEventsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
+	List<EventDto> getAllActiveEventsAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp);
 
 	List<EventDto> getByUuids(List<String> uuids);
 

@@ -38,8 +38,8 @@ public class AdditionalTestDtoHelper extends AdoDtoHelper<AdditionalTest, Additi
 	}
 
 	@Override
-	protected Call<List<AdditionalTestDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
-		return RetroProvider.getAdditionalTestFacade().pullAllSince(since, size, lastSynchronizedUuid);
+	protected Call<List<AdditionalTestDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+		return RetroProvider.getAdditionalTestFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
 	}
 
 	@Override

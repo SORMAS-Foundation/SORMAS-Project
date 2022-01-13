@@ -40,7 +40,7 @@ public class WeeklyReportEntryDtoHelper extends AdoDtoHelper<WeeklyReportEntry, 
 	}
 
 	@Override
-	protected Call<List<WeeklyReportEntryDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<WeeklyReportEntryDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 

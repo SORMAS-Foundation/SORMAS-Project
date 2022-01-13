@@ -34,7 +34,7 @@ public interface ContactFacadeRetro {
 	Call<List<ContactDto>> pullAllSince(
 			@Path("since") long since,
 			@Path("size") int size,
-			@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
+			@Path("lastSynchronizedUuid") String lastSynchronizedUuidSameTimestamp);
 
 	@POST("contacts/query")
 	Call<List<ContactDto>> pullByUuids(@Body List<String> uuids);

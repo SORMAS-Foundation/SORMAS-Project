@@ -52,8 +52,8 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 	}
 
 	@Override
-	protected Call<List<PersonDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
-		return RetroProvider.getPersonFacade().pullAllSince(since, size, lastSynchronizedUuid);
+	protected Call<List<PersonDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+		return RetroProvider.getPersonFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
 	}
 
 	@Override

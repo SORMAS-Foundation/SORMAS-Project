@@ -74,7 +74,7 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<ClinicalVisit> getAllActiveClinicalVisitsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<ClinicalVisit> getAllActiveClinicalVisitsAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ClinicalVisit> cq = cb.createQuery(getElementClass());
@@ -91,7 +91,7 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
+			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), lastSynchronizedUuidSameTimestamp);
 			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		}
 
@@ -139,12 +139,12 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 		return createChangeDateFilter(cb, clinicalVisits, date, null);
 	}
 
-	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ClinicalVisit> clinicalVisits, Timestamp date, String lastSynchronizedUuid) {
+	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ClinicalVisit> clinicalVisits, Timestamp date, String lastSynchronizedUuidSameTimestamp) {
 
 		Join<ClinicalVisit, Symptoms> symptoms = clinicalVisits.join(ClinicalVisit.SYMPTOMS, JoinType.LEFT);
 
 		ChangeDateFilterBuilder changeDateFilterBuilder =
-			lastSynchronizedUuid == null ? new ChangeDateFilterBuilder(cb, date) : new ChangeDateFilterBuilder(cb, date, clinicalVisits, lastSynchronizedUuid);
+				lastSynchronizedUuidSameTimestamp == null ? new ChangeDateFilterBuilder(cb, date) : new ChangeDateFilterBuilder(cb, date, clinicalVisits, lastSynchronizedUuidSameTimestamp);
 		return changeDateFilterBuilder.add(clinicalVisits).add(symptoms).build();
 	}
 

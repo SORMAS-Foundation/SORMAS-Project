@@ -198,7 +198,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 
 	@Override
-	public List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
 
 		User user = userService.getCurrentUser();
 		if (user == null) {
@@ -206,7 +206,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return eventParticipantService.getAllActiveEventParticipantsAfter(date, user, batchSize, lastSynchronizedUuid)
+		return eventParticipantService.getAllActiveEventParticipantsAfter(date, user, batchSize, lastSynchronizedUuidSameTimestamp)
 			.stream()
 			.map(c -> convertToDto(c, pseudonymizer))
 			.collect(Collectors.toList());

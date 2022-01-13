@@ -53,7 +53,7 @@ public class PrescriptionService extends AdoServiceWithUserFilter<Prescription> 
 		return resultList;
 	}
 
-	public List<Prescription> getAllActivePrescriptionsAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
+	public List<Prescription> getAllActivePrescriptionsAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Prescription> cq = cb.createQuery(getElementClass());
@@ -69,7 +69,7 @@ public class PrescriptionService extends AdoServiceWithUserFilter<Prescription> 
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastSynchronizedUuid);
+			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastSynchronizedUuidSameTimestamp);
 			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		}
 

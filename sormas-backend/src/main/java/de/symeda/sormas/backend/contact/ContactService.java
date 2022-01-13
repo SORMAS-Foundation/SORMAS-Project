@@ -173,7 +173,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Contact> getAllActiveContactsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<Contact> getAllActiveContactsAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
@@ -187,7 +187,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastSynchronizedUuid);
+			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastSynchronizedUuidSameTimestamp);
 			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		}
 
@@ -208,13 +208,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	@Override
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Date date, String lastSynchronizedUuid) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Date date, String lastSynchronizedUuidSameTimestamp) {
 		return createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), null);
 	}
 
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Timestamp date, String lastSynchronizedUuid) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Timestamp date, String lastSynchronizedUuidSameTimestamp) {
 
-		ChangeDateFilterBuilder changeDateFilterBuilder = new ChangeDateFilterBuilder(cb, date, from, lastSynchronizedUuid);
+		ChangeDateFilterBuilder changeDateFilterBuilder = new ChangeDateFilterBuilder(cb, date, from, lastSynchronizedUuidSameTimestamp);
 		Join<Object, EpiData> epiData = from.join(Contact.EPI_DATA, JoinType.LEFT);
 		Join<Object, HealthConditions> healthCondition = from.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT);
 

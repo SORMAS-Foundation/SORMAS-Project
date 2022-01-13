@@ -110,7 +110,7 @@ public interface CaseFacade {
 
 	List<String> getAllActiveUuids();
 
-	List<CaseDataDto> getAllActiveCasesAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
+	List<CaseDataDto> getAllActiveCasesAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp);
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
 

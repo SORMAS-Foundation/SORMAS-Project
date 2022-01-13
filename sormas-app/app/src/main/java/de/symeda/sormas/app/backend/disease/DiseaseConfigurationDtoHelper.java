@@ -37,7 +37,7 @@ public class DiseaseConfigurationDtoHelper extends AdoDtoHelper<DiseaseConfigura
 	}
 
 	@Override
-	protected Call<List<DiseaseConfigurationDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<DiseaseConfigurationDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
 		return RetroProvider.getDiseaseConfigurationFacade().pullAllSince(since);
 	}
 

@@ -56,8 +56,8 @@ public class ClinicalVisitResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
-	public List<ClinicalVisitDto> getAllVisits(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
-		return FacadeProvider.getClinicalVisitFacade().getAllActiveClinicalVisitsAfter(new Date(since), size, lastSynchronizedUuid);
+	public List<ClinicalVisitDto> getAllVisits(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastSynchronizedUuid") String lastSynchronizedUuidSameTimestamp) {
+		return FacadeProvider.getClinicalVisitFacade().getAllActiveClinicalVisitsAfter(new Date(since), size, lastSynchronizedUuidSameTimestamp);
 	}
 
 	@POST

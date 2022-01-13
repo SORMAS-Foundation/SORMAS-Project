@@ -35,7 +35,7 @@ public interface SampleFacadeRetro {
 	Call<List<SampleDto>> pullAllSince(
 			@Path("since") long since,
 			@Path("size") int size,
-			@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
+			@Path("lastSynchronizedUuid") String lastSynchronizedUuidSameTimestamp);
 
 	@POST("samples/query")
 	Call<List<SampleDto>> pullByUuids(@Body List<String> uuids);

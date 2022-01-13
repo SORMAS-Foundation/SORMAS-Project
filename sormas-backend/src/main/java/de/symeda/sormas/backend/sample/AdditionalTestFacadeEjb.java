@@ -109,13 +109,13 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	}
 
 	@Override
-	public List<AdditionalTestDto> getAllActiveAdditionalTestsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<AdditionalTestDto> getAllActiveAdditionalTestsAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return service.getAllActiveAdditionalTestsAfter(date, user, batchSize, lastSynchronizedUuid).stream().map(e -> toDto(e)).collect(Collectors.toList());
+		return service.getAllActiveAdditionalTestsAfter(date, user, batchSize, lastSynchronizedUuidSameTimestamp).stream().map(e -> toDto(e)).collect(Collectors.toList());
 	}
 
 	@Override

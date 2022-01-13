@@ -39,7 +39,7 @@ public class SubcontinentDtoHelper extends AdoDtoHelper<Subcontinent, Subcontine
 	}
 
 	@Override
-	protected Call<List<SubcontinentDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<SubcontinentDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
 		return RetroProvider.getSubcontinentFacade().pullAllSince(since);
 	}
 

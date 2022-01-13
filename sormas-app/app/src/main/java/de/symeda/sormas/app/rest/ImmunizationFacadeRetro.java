@@ -34,7 +34,7 @@ public interface ImmunizationFacadeRetro {
 	Call<List<ImmunizationDto>> pullAllSince(
 		@Path("since") long since,
 		@Path("size") int size,
-		@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
+		@Path("lastSynchronizedUuid") String lastSynchronizedUuidSameTimestamp);
 
     @POST("immunizations/query")
     Call<List<ImmunizationDto>> pullByUuids(@Body List<String> uuids);

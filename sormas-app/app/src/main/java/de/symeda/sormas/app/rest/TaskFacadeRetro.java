@@ -34,7 +34,7 @@ public interface TaskFacadeRetro {
 	Call<List<TaskDto>> pullAllSince(
 			@Path("since") long since,
 			@Path("size") int size,
-			@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
+			@Path("lastSynchronizedUuid") String lastSynchronizedUuidSameTimestamp);
 
 	@POST("tasks/query")
 	Call<List<TaskDto>> pullByUuids(@Body List<String> uuids);

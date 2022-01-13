@@ -24,7 +24,7 @@ public class CountryDtoHelper extends AdoDtoHelper<Country, CountryDto> {
 	}
 
 	@Override
-	protected Call<List<CountryDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<CountryDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
 		return RetroProvider.getCountryFacade().pullAllSince(since);
 	}
 

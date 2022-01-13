@@ -31,7 +31,7 @@ public interface TreatmentFacadeRetro {
 	Call<List<TreatmentDto>> pullAllSince(
 			@Path("since") long since,
 			@Path("size") int size,
-			@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
+			@Path("lastSynchronizedUuid") String lastSynchronizedUuidSameTimestamp);
 
 	@POST("treatments/query")
 	Call<List<TreatmentDto>> pullByUuids(@Body List<String> uuids);

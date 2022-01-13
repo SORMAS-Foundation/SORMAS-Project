@@ -117,7 +117,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		super(Event.class);
 	}
 
-	public List<Event> getAllActiveEventsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<Event> getAllActiveEventsAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
@@ -137,7 +137,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
+			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), lastSynchronizedUuidSameTimestamp);
 			filter = cb.and(filter, dateFilter);
 		}
 
@@ -479,10 +479,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return addChangeDateFilter(new ChangeDateFilterBuilder(cb, date), eventPath).build();
 	}
 
-	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Event> eventPath, Timestamp date, String lastSynchronizedUuid) {
+	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Event> eventPath, Timestamp date, String lastSynchronizedUuidSameTimestamp) {
 
 		ChangeDateFilterBuilder changeDateFilterBuilder =
-			lastSynchronizedUuid == null ? new ChangeDateFilterBuilder(cb, date) : new ChangeDateFilterBuilder(cb, date, eventPath, lastSynchronizedUuid);
+				lastSynchronizedUuidSameTimestamp == null ? new ChangeDateFilterBuilder(cb, date) : new ChangeDateFilterBuilder(cb, date, eventPath, lastSynchronizedUuidSameTimestamp);
 
 		return addChangeDateFilter(changeDateFilterBuilder, eventPath).build();
 	}

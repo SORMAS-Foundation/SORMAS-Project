@@ -124,7 +124,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}
 
 	@Override
-	public List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
 		User user = userService.getCurrentUser();
 
 		if (user == null) {
@@ -132,7 +132,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return pathogenTestService.getAllActivePathogenTestsAfter(date, user, batchSize, lastSynchronizedUuid)
+		return pathogenTestService.getAllActivePathogenTestsAfter(date, user, batchSize, lastSynchronizedUuidSameTimestamp)
 			.stream()
 			.map(p -> convertToDto(p, pseudonymizer))
 			.collect(Collectors.toList());

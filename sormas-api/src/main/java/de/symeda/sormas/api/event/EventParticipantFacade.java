@@ -77,7 +77,7 @@ public interface EventParticipantFacade {
 
 	EventParticipantReferenceDto getReferenceByEventAndPerson(String eventUuid, String personUuid);
 
-	List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
+	List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp);
 
 	List<String> getDeletedUuidsSince(Date date);
 

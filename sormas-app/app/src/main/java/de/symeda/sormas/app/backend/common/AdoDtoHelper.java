@@ -52,7 +52,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
 	protected abstract Class<DTO> getDtoClass();
 
-	protected abstract Call<List<DTO>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException;
+	protected abstract Call<List<DTO>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp) throws NoConnectionException;
 
 	/**
 	 * Explicitly pull missing entities.

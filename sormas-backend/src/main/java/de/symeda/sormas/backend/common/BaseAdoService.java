@@ -216,8 +216,8 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
 	}
 
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from, Date date, String lastSynchronizedUuid) {
-		if (lastSynchronizedUuid == null || EntityDto.NO_LAST_SYNCED_UUID.equals(lastSynchronizedUuid)) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from, Date date, String lastSynchronizedUuidSameTimestamp) {
+		if (lastSynchronizedUuidSameTimestamp == null || EntityDto.NO_LAST_SYNCED_UUID.equals(lastSynchronizedUuidSameTimestamp)) {
 			return createChangeDateFilter(cb, from, date);
 		} else {
 			Timestamp timestamp = DateHelper.toTimestampUpper(date);
@@ -225,7 +225,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 				cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), timestamp),
 				cb.and(
 					cb.equal(from.get(AbstractDomainObject.CHANGE_DATE), timestamp),
-					cb.greaterThan(from.get(AbstractDomainObject.UUID), lastSynchronizedUuid)));
+					cb.greaterThan(from.get(AbstractDomainObject.UUID), lastSynchronizedUuidSameTimestamp)));
 			return predicate;
 		}
 	}

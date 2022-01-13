@@ -187,7 +187,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public List<SampleDto> getAllActiveSamplesAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<SampleDto> getAllActiveSamplesAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
 
 		User user = userService.getCurrentUser();
 		if (user == null) {
@@ -195,7 +195,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return sampleService.getAllActiveSamplesAfter(date, user, batchSize, lastSynchronizedUuid)
+		return sampleService.getAllActiveSamplesAfter(date, user, batchSize, lastSynchronizedUuidSameTimestamp)
 			.stream()
 			.map(e -> convertToDto(e, pseudonymizer))
 			.collect(Collectors.toList());

@@ -32,7 +32,7 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 		return getAllAfter(since, user, null, null);
 	}
 
-	public List<ADO> getAllAfter(Date since, User user, Integer batchSize, String lastSynchronizedUuid) {
+	public List<ADO> getAllAfter(Date since, User user, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
@@ -40,7 +40,7 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 
 		Predicate filter = createUserFilter(cb, cq, root);
 		if (since != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, root, since, lastSynchronizedUuid);
+			Predicate dateFilter = createChangeDateFilter(cb, root, since, lastSynchronizedUuidSameTimestamp);
 			if (filter != null) {
 				filter = cb.and(filter, dateFilter);
 			} else {

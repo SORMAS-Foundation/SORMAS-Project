@@ -71,7 +71,7 @@ public class TreatmentService extends AdoServiceWithUserFilter<Treatment> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Treatment> getAllActiveTreatmentsAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
+	public List<Treatment> getAllActiveTreatmentsAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Treatment> cq = cb.createQuery(getElementClass());
@@ -87,7 +87,7 @@ public class TreatmentService extends AdoServiceWithUserFilter<Treatment> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastSynchronizedUuid);
+			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastSynchronizedUuidSameTimestamp);
 			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		}
 
