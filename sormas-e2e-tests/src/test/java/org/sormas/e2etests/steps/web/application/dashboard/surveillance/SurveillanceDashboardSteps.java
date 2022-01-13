@@ -17,7 +17,6 @@ package org.sormas.e2etests.steps.web.application.dashboard.surveillance;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
-import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
 import org.testng.asserts.SoftAssert;
@@ -61,12 +60,16 @@ public class SurveillanceDashboardSteps implements En {
                   webDriverHelpers.getTextFromWebElement(
                       SurveillanceDashboardPage.COVID19_DISEASE_COUNTER));
 
-          softly
-              .assertTrue(newCasesCounterBefore < newCasesCounterAfter, "New cases counter for COVID-19 in Surveillance Dashboard has not been increased");
-          softly
-              .assertTrue(covid19DiseaseCounterBefore < covid19DiseaseCounterAfter, "COVID-19 disease counter in Surveillance Dashboard has not been increased");
-          softly
-              .assertEquals(newCasesCounterAfter, covid19DiseaseCounterAfter, "New cases counter for COVID-19 does not equal COVID-19 disease counter in Surveillance Dashboard" );
+          softly.assertTrue(
+              newCasesCounterBefore < newCasesCounterAfter,
+              "New cases counter for COVID-19 in Surveillance Dashboard has not been increased");
+          softly.assertTrue(
+              covid19DiseaseCounterBefore < covid19DiseaseCounterAfter,
+              "COVID-19 disease counter in Surveillance Dashboard has not been increased");
+          softly.assertEquals(
+              newCasesCounterAfter,
+              covid19DiseaseCounterAfter,
+              "New cases counter for COVID-19 does not equal COVID-19 disease counter in Surveillance Dashboard");
           softly.assertAll();
         });
 

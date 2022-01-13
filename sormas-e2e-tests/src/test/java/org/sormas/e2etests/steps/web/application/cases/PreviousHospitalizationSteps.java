@@ -4,12 +4,12 @@ import static org.sormas.e2etests.pages.application.cases.HospitalizationTabPage
 import static org.sormas.e2etests.pages.application.cases.HospitalizationTabPage.NEW_ENTRY_LINK;
 import static org.sormas.e2etests.pages.application.cases.PreviousHospitalizationPage.*;
 
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.PreviousHospitalization;
 import org.sormas.e2etests.services.PreviousHospitalizationService;
 
@@ -54,8 +54,8 @@ public class PreviousHospitalizationSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_PREVIOUS_HOSPITALIZATION_ENTRY);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(REGION_COMBOBOX);
-          PreviousHospitalization actualData = collectPreviousHospitalizationData();
-          Truth.assertThat(actualData).isEqualTo(previousHospitalization);
+          PreviousHospitalization collectedHospitalization = collectPreviousHospitalizationData();
+          ComparisonHelper.compareEqualEntities(collectedHospitalization, previousHospitalization);
         });
   }
 

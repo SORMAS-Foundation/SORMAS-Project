@@ -48,9 +48,6 @@ public class EventDirectorySteps implements En {
         "^I check if it appears under ([^\"]*) filter in event directory",
         (String eventStatus) -> {
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
-          if (eventStatus.equalsIgnoreCase("Signal") || eventStatus.equalsIgnoreCase("Event")) {
-            System.out.println("a");
-          }
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(eventUuid));
           webDriverHelpers.clickWebElementByText(EVENT_STATUS_FILTER_BUTTONS, eventStatus);
           TimeUnit.SECONDS.sleep(3); // TODO check in Jenkins if is a stable fix

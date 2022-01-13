@@ -104,6 +104,7 @@ public class HospitalizationTabSteps implements En {
   }
 
   private void fillEndOfStayDate(LocalDate date) {
+    webDriverHelpers.clickOnWebElementBySelector(END_OF_STAY_DATE_INPUT);
     webDriverHelpers.fillInWebElement(END_OF_STAY_DATE_INPUT, DATE_FORMATTER.format(date));
   }
 

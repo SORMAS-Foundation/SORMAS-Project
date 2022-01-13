@@ -145,7 +145,7 @@ public class EditPersonSteps implements En {
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_EVENTS_FOR_PERSON);
           webDriverHelpers.clickOnWebElementBySelector(SEE_EVENTS_FOR_PERSON);
-          final String eventUuid = EditEventSteps.event.getUuid();
+          final String eventUuid = EditEventSteps.collectedEvent.getUuid();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(eventUuid));
         });
 
@@ -366,7 +366,7 @@ public class EditPersonSteps implements En {
         .build();
   }
 
-  public Person getPersonInformation() {
+  private Person getPersonInformation() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USER_INFORMATION, 60);
     String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);

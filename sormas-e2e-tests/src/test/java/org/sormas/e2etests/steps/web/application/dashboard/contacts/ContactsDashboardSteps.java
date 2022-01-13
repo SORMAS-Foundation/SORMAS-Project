@@ -17,7 +17,6 @@ package org.sormas.e2etests.steps.web.application.dashboard.contacts;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
-import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.dashboard.Surveillance.ContactsDashboardPage;
 import org.testng.Assert;
@@ -51,7 +50,9 @@ public class ContactsDashboardSteps implements En {
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(
                       ContactsDashboardPage.CONTACTS_COVID19_COUNTER));
-          Assert.assertTrue(covid19ContactsCounterBefore < covid19ContactsCounterAfter, "COVID-19 contacts counter in Contacts dashboard hasn't  been incremented");
+          Assert.assertTrue(
+              covid19ContactsCounterBefore < covid19ContactsCounterAfter,
+              "COVID-19 contacts counter in Contacts dashboard hasn't  been incremented");
         });
   }
 }

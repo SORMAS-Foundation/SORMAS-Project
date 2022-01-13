@@ -6,7 +6,6 @@ import static org.sormas.e2etests.pages.application.contacts.EditEpidemiological
 import static org.sormas.e2etests.pages.application.contacts.EditEpidemiologicalDataContactPage.LARGE_OUTBREAKS_AREA_CHECKBOX;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.*;
 
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -66,7 +65,7 @@ public class ExposureInContactEpiDataSteps implements En {
         "I am checking all data is saved and displayed on edit Exposure page",
         () -> {
           exposureDetailsOutput = getExposureDetailsOutput();
-            ComparisonHelper.compareEqualEntities(exposureDetailsOutput, exposureDetailsInput );
+          ComparisonHelper.compareEqualEntities(exposureDetailsOutput, exposureDetailsInput);
         });
   }
 

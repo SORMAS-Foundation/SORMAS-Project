@@ -42,6 +42,7 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.Assert;
 
 @Slf4j
 public class WebDriverHelpers {
@@ -548,9 +549,9 @@ public class WebDriverHelpers {
       } else {
         assertHelpers.assertWithPoll20Second(
             () ->
-                assertWithMessage("Locator: %s is not displayed within 20s", selector)
-                    .that(getNumberOfElements((By) selector) > 0)
-                    .isTrue());
+                Assert.assertTrue(
+                    getNumberOfElements((By) selector) > 0,
+                    String.format("Locator: %s is not displayed within 20s", selector)));
       }
     } catch (StaleElementReferenceException staleEx) {
       log.warn("StaleElement found at: {}", selector);

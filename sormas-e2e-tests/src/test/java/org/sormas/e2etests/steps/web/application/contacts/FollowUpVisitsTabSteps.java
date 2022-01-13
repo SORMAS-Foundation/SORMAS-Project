@@ -26,7 +26,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.pojo.web.FollowUpVisit;
 import org.sormas.e2etests.state.ApiState;
 
 public class FollowUpVisitsTabSteps implements En {

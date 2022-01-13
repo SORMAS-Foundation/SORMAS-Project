@@ -29,16 +29,17 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 
 import com.github.javafaker.Faker;
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Event;
 import org.sormas.e2etests.pojo.web.EventGroup;
 import org.sormas.e2etests.pojo.web.Person;
@@ -49,7 +50,8 @@ import org.sormas.e2etests.state.ApiState;
 public class EditEventSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
-  public static Event event;
+  public static Event collectedEvent;
+  public static Event createdEvent;
   public static EventGroup groupEvent;
   public static Person person;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
@@ -73,49 +75,52 @@ public class EditEventSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_DATA_SAVED_MESSAGE);
         });
 
-    When("I collect the UUID displayed on Edit event page", () -> event = collectEventUuid());
+    // TODO refactor this
+    When(
+        "I collect the UUID displayed on Edit event page",
+        () -> collectedEvent = collectEventUuid());
 
     When(
         "I check the created data is correctly displayed in event edit page",
         () -> {
-          event = collectEventData();
-          Truth.assertThat(event.getUuid()).isEqualTo(CreateNewEventSteps.newEvent.getUuid());
-          Truth.assertThat(event.getReportDate())
-              .isEqualTo(CreateNewEventSteps.newEvent.getReportDate());
-          Truth.assertThat(event.getEventDate())
-              .isEqualTo(CreateNewEventSteps.newEvent.getEventDate());
-          Truth.assertThat(event.getEventStatus())
-              .isEqualTo(CreateNewEventSteps.newEvent.getEventStatus());
-          Truth.assertThat(event.getInvestigationStatus())
-              .isEqualTo(CreateNewEventSteps.newEvent.getInvestigationStatus());
-          Truth.assertThat(event.getEventManagementStatus())
-              .isEqualTo(CreateNewEventSteps.newEvent.getEventManagementStatus());
-          Truth.assertThat(event.getRiskLevel())
-              .isEqualTo(CreateNewEventSteps.newEvent.getRiskLevel());
-          Truth.assertThat(event.getDisease()).isEqualTo(CreateNewEventSteps.newEvent.getDisease());
-          Truth.assertThat(event.getTitle()).isEqualTo(CreateNewEventSteps.newEvent.getTitle());
-          Truth.assertThat(event.getSourceType())
-              .isEqualTo(CreateNewEventSteps.newEvent.getSourceType());
-          Truth.assertThat(event.getEventLocation())
-              .isEqualTo(CreateNewEventSteps.newEvent.getEventLocation());
+          collectedEvent = collectEventData();
+          createdEvent = CreateNewEventSteps.newEvent;
+
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedEvent,
+              createdEvent,
+              List.of(
+                  "uuid",
+                  "reportDate",
+                  "eventDate",
+                  "eventStatus",
+                  "investigationStatus",
+                  "eventManagementStatus",
+                  "riskLevel",
+                  "disease",
+                  "title",
+                  "sourceType",
+                  "eventLocation"));
         });
 
     When(
         "I change the fields of event and save",
         () -> {
-          event = eventService.buildEditEvent();
-          fillDateOfReport(event.getReportDate());
-          fillStartData(event.getEventDate());
-          event =
-              event.toBuilder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
-          selectEventStatus(event.getEventStatus());
-          selectEventInvestigationStatusOptions(event.getInvestigationStatus());
-          selectEventManagementStatusOption(event.getEventManagementStatus());
-          selectRiskLevel(event.getRiskLevel());
-          selectDisease(event.getDisease());
-          fillTitle(event.getTitle());
-          selectSourceType(event.getSourceType());
-          selectTypeOfPlace(event.getEventLocation());
+          collectedEvent = eventService.buildEditEvent();
+          fillDateOfReport(collectedEvent.getReportDate());
+          fillStartData(collectedEvent.getEventDate());
+          collectedEvent =
+              collectedEvent.toBuilder()
+                  .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+                  .build();
+          selectEventStatus(collectedEvent.getEventStatus());
+          selectEventInvestigationStatusOptions(collectedEvent.getInvestigationStatus());
+          selectEventManagementStatusOption(collectedEvent.getEventManagementStatus());
+          selectRiskLevel(collectedEvent.getRiskLevel());
+          selectDisease(collectedEvent.getDisease());
+          fillTitle(collectedEvent.getTitle());
+          selectSourceType(collectedEvent.getSourceType());
+          selectTypeOfPlace(collectedEvent.getEventLocation());
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_DATA_SAVED_MESSAGE);
@@ -125,7 +130,7 @@ public class EditEventSteps implements En {
         "I check the modified event data is correctly displayed",
         () -> {
           final Event currentEvent = collectEventData();
-          Truth.assertThat(event).isEqualTo(currentEvent);
+          ComparisonHelper.compareEqualEntities(collectedEvent, currentEvent);
         });
 
     When(
@@ -233,15 +238,15 @@ public class EditEventSteps implements En {
         });
   }
 
-  public Person collectPersonUuid() {
+  private Person collectPersonUuid() {
     return Person.builder().uuid(webDriverHelpers.getValueFromWebElement(POPUP_PERSON_ID)).build();
   }
 
-  public Event collectEventUuid() {
+  private Event collectEventUuid() {
     return Event.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
   }
 
-  public Event collectEventData() {
+  private Event collectEventData() {
     String reportingDate = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
     LocalDate reportDate = LocalDate.parse(reportingDate, DATE_FORMATTER);
     String eventStartDate = webDriverHelpers.getValueFromWebElement(START_DATA_INPUT);
@@ -267,61 +272,61 @@ public class EditEventSteps implements En {
         .build();
   }
 
-  public void selectEventStatus(String eventStatus) {
+  private void selectEventStatus(String eventStatus) {
     webDriverHelpers.clickWebElementByText(EVENT_STATUS_OPTIONS, eventStatus);
   }
 
-  public void selectResponsibleRegion(String region) {
+  private void selectResponsibleRegion(String region) {
     webDriverHelpers.selectFromCombobox(POPUP_RESPONSIBLE_REGION_COMBOBOX, region);
   }
 
-  public void selectResponsibleDistrict(String district) {
+  private void selectResponsibleDistrict(String district) {
     webDriverHelpers.selectFromCombobox(POPUP_RESPONSIBLE_DISTRICT_COMBOBOX, district);
   }
 
-  public void selectRiskLevel(String riskLevel) {
+  private void selectRiskLevel(String riskLevel) {
     webDriverHelpers.selectFromCombobox(RISK_LEVEL_COMBOBOX, riskLevel);
   }
 
-  public void selectEventManagementStatusOption(String eventManagementStatusOption) {
+  private void selectEventManagementStatusOption(String eventManagementStatusOption) {
     webDriverHelpers.clickWebElementByText(
         EVENT_MANAGEMENT_STATUS_OPTIONS, eventManagementStatusOption);
   }
 
-  public void fillStartData(LocalDate date) {
+  private void fillStartData(LocalDate date) {
     webDriverHelpers.fillInWebElement(START_DATA_INPUT, DATE_FORMATTER.format(date));
   }
 
-  public void selectEventInvestigationStatusOptions(String eventInvestigationStatusOption) {
+  private void selectEventInvestigationStatusOptions(String eventInvestigationStatusOption) {
     webDriverHelpers.clickWebElementByText(
         EVENT_INVESTIGATION_STATUS_OPTIONS, eventInvestigationStatusOption);
   }
 
-  public void selectDisease(String disease) {
+  private void selectDisease(String disease) {
     webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
   }
 
-  public void fillTitle(String title) {
+  private void fillTitle(String title) {
     webDriverHelpers.fillInWebElement(TITLE_INPUT, title);
   }
 
-  public void selectSourceType(String sourceType) {
+  private void selectSourceType(String sourceType) {
     webDriverHelpers.selectFromCombobox(SOURCE_TYPE_COMBOBOX, sourceType);
   }
 
-  public void selectTypeOfPlace(String typeOfPlace) {
+  private void selectTypeOfPlace(String typeOfPlace) {
     webDriverHelpers.selectFromCombobox(TYPE_OF_PLACE_COMBOBOX, typeOfPlace);
   }
 
-  public void fillDateOfReport(LocalDate date) {
+  private void fillDateOfReport(LocalDate date) {
     webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, DATE_FORMATTER.format(date));
   }
 
-  public void fillGroupEventName(String groupEventName) {
+  private void fillGroupEventName(String groupEventName) {
     webDriverHelpers.fillInWebElement(GROUP_EVENT_NAME_POPUP_INPUT, groupEventName);
   }
 
-  public EventGroup collectEventGroupUuid() {
+  private EventGroup collectEventGroupUuid() {
     return EventGroup.builder()
         .uuid(webDriverHelpers.getValueFromWebElement(GROUP_EVENT_UUID))
         .build();
