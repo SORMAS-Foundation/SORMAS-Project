@@ -22,6 +22,7 @@ import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import org.sormas.e2etests.enums.*;
 import org.sormas.e2etests.pojo.web.Sample;
 
 public class SampleService {
@@ -105,6 +106,36 @@ public class SampleService {
         .reportDate(LocalDate.now().minusDays(10))
         .typeOfTest("Histopathology")
         .testedDisease("Anthrax")
+        .dateOfResult(LocalDate.now())
+        .timeOfResult(LocalTime.of(15, 15))
+        .laboratory("Voreingestelltes Labor")
+        .sampleTestResults("Positive")
+        .resultVerifiedByLabSupervisor("NO")
+        .testResultsComment(currentTimeMillis + "Comment on Edit Pathogen requests or received")
+        .build();
+  }
+
+  public Sample buildPathogenTestResultPCRRTPCRType() {
+    long currentTimeMillis = System.currentTimeMillis();
+    return Sample.builder()
+        .reportDate(LocalDate.now().minusDays(10))
+        .typeOfTest("PCR / RT-PCR")
+        .testedDisease("COVID-19")
+        .dateOfResult(LocalDate.now())
+        .timeOfResult(LocalTime.of(15, 15))
+        .laboratory("Voreingestelltes Labor")
+        .sampleTestResults("Positive")
+        .resultVerifiedByLabSupervisor("NO")
+        .testResultsComment(currentTimeMillis + "Comment on Edit Pathogen requests or received")
+        .build();
+  }
+
+  public Sample buildPathogenTestResultType(String testType) {
+    long currentTimeMillis = System.currentTimeMillis();
+    return Sample.builder()
+        .reportDate(LocalDate.now().minusDays(10))
+        .typeOfTest(testType)
+        .testedDisease(PathogenTestedDisease.getRandomPathogenTestedDisease())
         .dateOfResult(LocalDate.now())
         .timeOfResult(LocalTime.of(15, 15))
         .laboratory("Voreingestelltes Labor")

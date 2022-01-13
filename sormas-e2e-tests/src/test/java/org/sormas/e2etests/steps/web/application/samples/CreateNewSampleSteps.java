@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.samples;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.*;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.*;
 
+import com.github.javafaker.Faker;
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -86,6 +87,142 @@ public class CreateNewSampleSteps implements En {
               sampleTestResult.getResultVerifiedByLabSupervisor(),
               RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
           fillTestResultsComment(sampleTestResult.getTestResultsComment());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "^I complete all fields from Pathogen test result popup for IgM test type and save$",
+        () -> {
+          //          sampleTestResult = sampleService.buildPathogenTestResultType("IgM serum
+          // antibody");
+          //          fillReportDate(sampleTestResult.getReportDate());
+          //          selectTypeOfTest(sampleTestResult.getTypeOfTest());
+          //          selectTestedDisease(sampleTestResult.getTestedDisease());
+          //          selectPathogenLaboratory(sampleTestResult.getLaboratory());
+          //          selectTestResult(sampleTestResult.getSampleTestResults());
+          //          fillDateOfResult(sampleTestResult.getDateOfResult());
+          //          fillTimeOfResult(sampleTestResult.getTimeOfResult());
+          //          selectResultVerifiedByLabSupervisor(
+          //              sampleTestResult.getResultVerifiedByLabSupervisor(),
+          //              RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+          //          fillTestResultsComment(sampleTestResult.getTestResultsComment());
+          simplePathogenBuilderResult("IgM serum antibody");
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "^I complete all fields from Pathogen test result popup for IgG test type and save$",
+        () -> {
+          //          sampleTestResult = sampleService.buildPathogenTestResultType("IgG serum
+          // antibody");
+          //          fillReportDate(sampleTestResult.getReportDate());
+          //          selectTypeOfTest(sampleTestResult.getTypeOfTest());
+          //          selectTestedDisease(sampleTestResult.getTestedDisease());
+          //          selectPathogenLaboratory(sampleTestResult.getLaboratory());
+          //          selectTestResult(sampleTestResult.getSampleTestResults());
+          //          fillDateOfResult(sampleTestResult.getDateOfResult());
+          //          fillTimeOfResult(sampleTestResult.getTimeOfResult());
+          //          selectResultVerifiedByLabSupervisor(
+          //              sampleTestResult.getResultVerifiedByLabSupervisor(),
+          //              RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+          //          fillTestResultsComment(sampleTestResult.getTestResultsComment());
+          simplePathogenBuilderResult("IgG serum antibody");
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I complete all fields from Pathogen test result popup for PCR RT PCR Value Detection test type and save",
+        () -> {
+          sampleTestResult = sampleService.buildPathogenTestResultPCRRTPCRType();
+          fillReportDate(sampleTestResult.getReportDate());
+          selectTypeOfTest(sampleTestResult.getTypeOfTest());
+          selectTestedDisease(sampleTestResult.getTestedDisease());
+          selectPathogenLaboratory(sampleTestResult.getLaboratory());
+          selectTestResult(sampleTestResult.getSampleTestResults());
+          fillDateOfResult(sampleTestResult.getDateOfResult());
+          fillTimeOfResult(sampleTestResult.getTimeOfResult());
+          selectResultVerifiedByLabSupervisor(
+              sampleTestResult.getResultVerifiedByLabSupervisor(),
+              RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+          fillTestResultsComment(sampleTestResult.getTestResultsComment());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I complete all fields from Pathogen test result popup for CQ Value Detection test type and save",
+        () -> {
+          //          sampleTestResult = sampleService.buildPathogenTestResultType("CQ Value
+          // Detection");
+          //          fillReportDate(sampleTestResult.getReportDate());
+          //          selectTypeOfTest(sampleTestResult.getTypeOfTest());
+          //          selectTestedDisease(sampleTestResult.getTestedDisease());
+          //          selectPathogenLaboratory(sampleTestResult.getLaboratory());
+          //          selectTestResult(sampleTestResult.getSampleTestResults());
+          //          fillDateOfResult(sampleTestResult.getDateOfResult());
+          //          fillTimeOfResult(sampleTestResult.getTimeOfResult());
+          //          selectResultVerifiedByLabSupervisor(
+          //              sampleTestResult.getResultVerifiedByLabSupervisor(),
+          //              RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+          //          fillTestResultsComment(sampleTestResult.getTestResultsComment());
+          simplePathogenBuilderResult("CQ Value Detection");
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I complete all fields from Pathogen test result popup for Sequencing test type and save",
+        () -> {
+          //          sampleTestResult = sampleService.buildPathogenTestResultType("Sequencing");
+          //          fillReportDate(sampleTestResult.getReportDate());
+          //          selectTypeOfTest(sampleTestResult.getTypeOfTest());
+          //          selectTestedDisease(sampleTestResult.getTestedDisease());
+          //          selectPathogenLaboratory(sampleTestResult.getLaboratory());
+          //          selectTestResult(sampleTestResult.getSampleTestResults());
+          //          fillDateOfResult(sampleTestResult.getDateOfResult());
+          //          fillTimeOfResult(sampleTestResult.getTimeOfResult());
+          //          selectResultVerifiedByLabSupervisor(
+          //              sampleTestResult.getResultVerifiedByLabSupervisor(),
+          //              RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+          //          fillTestResultsComment(sampleTestResult.getTestResultsComment());
+          simplePathogenBuilderResult("Sequencing");
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I complete all fields from Pathogen test result popup for DNA Microarray test type and save",
+        () -> {
+          //          sampleTestResult = sampleService.buildPathogenTestResultType("DNA
+          // Microarray");
+          //          fillReportDate(sampleTestResult.getReportDate());
+          //          selectTypeOfTest(sampleTestResult.getTypeOfTest());
+          //          selectTestedDisease(sampleTestResult.getTestedDisease());
+          //          selectPathogenLaboratory(sampleTestResult.getLaboratory());
+          //          selectTestResult(sampleTestResult.getSampleTestResults());
+          //          fillDateOfResult(sampleTestResult.getDateOfResult());
+          //          fillTimeOfResult(sampleTestResult.getTimeOfResult());
+          //          selectResultVerifiedByLabSupervisor(
+          //              sampleTestResult.getResultVerifiedByLabSupervisor(),
+          //              RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+          //          fillTestResultsComment(sampleTestResult.getTestResultsComment());
+          simplePathogenBuilderResult("DNA Microarray");
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I complete all fields from Pathogen test result popup for Other test type and save",
+        () -> {
+          //          sampleTestResult = sampleService.buildPathogenTestResultType("Other");
+          //          fillReportDate(sampleTestResult.getReportDate());
+          //          selectTypeOfTest(sampleTestResult.getTypeOfTest());
+          //          selectTestedDisease(sampleTestResult.getTestedDisease());
+          //          selectPathogenLaboratory(sampleTestResult.getLaboratory());
+          //          selectTestResult(sampleTestResult.getSampleTestResults());
+          //          fillDateOfResult(sampleTestResult.getDateOfResult());
+          //          fillTimeOfResult(sampleTestResult.getTimeOfResult());
+          //          selectResultVerifiedByLabSupervisor(
+          //              sampleTestResult.getResultVerifiedByLabSupervisor(),
+          //              RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+          //          fillTestResultsComment(sampleTestResult.getTestResultsComment());
+          simplePathogenBuilderResult("Other");
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
         });
 
@@ -332,5 +469,23 @@ public class CreateNewSampleSteps implements En {
         .resultVerifiedByLabSupervisor(getResultVerifiedByLabSupervisor())
         .testResultsComment(getTestResultComment())
         .build();
+  }
+
+  public Sample simplePathogenBuilderResult(String testType) {
+    Faker faker = new Faker();
+    SampleService sampleService = new SampleService(faker);
+    sampleTestResult = sampleService.buildPathogenTestResultType(testType);
+    fillReportDate(sampleTestResult.getReportDate());
+    selectTypeOfTest(sampleTestResult.getTypeOfTest());
+    selectTestedDisease(sampleTestResult.getTestedDisease());
+    selectPathogenLaboratory(sampleTestResult.getLaboratory());
+    selectTestResult(sampleTestResult.getSampleTestResults());
+    fillDateOfResult(sampleTestResult.getDateOfResult());
+    fillTimeOfResult(sampleTestResult.getTimeOfResult());
+    selectResultVerifiedByLabSupervisor(
+        sampleTestResult.getResultVerifiedByLabSupervisor(),
+        RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+    fillTestResultsComment(sampleTestResult.getTestResultsComment());
+    return sampleTestResult;
   }
 }

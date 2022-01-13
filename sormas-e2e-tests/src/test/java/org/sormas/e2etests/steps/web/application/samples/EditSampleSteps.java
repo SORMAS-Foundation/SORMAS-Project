@@ -19,8 +19,7 @@
 package org.sormas.e2etests.steps.web.application.samples;
 
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.*;
-import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_EDIT_PURPOSE_OPTIONS;
-import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_SEARCH_INPUT;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.*;
 
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
@@ -101,6 +100,50 @@ public class EditSampleSteps implements En {
         () -> {
           final Sample actualSample = collectSampleData();
           Truth.assertThat(editedSample).isEqualTo(actualSample);
+        });
+
+    When(
+        "I check that if Four Fold Increase Antibody Titer displayed",
+        () -> {
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+              FOUR_FOLD_INCREASE_ANTIBODY_TITER);
+        });
+
+    When(
+        "I check that if CQ CT Value field is correctly displayed",
+        () -> {
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(CQ_CT_VALUE_INPUT);
+        });
+
+    When(
+        "I check that if Sequencing or DNA Microarray field is correctly displayed",
+        () -> {
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(TYPING_ID_INPUT);
+        });
+
+    When(
+        "I check that if PCR RT PCR fields are correctly displayed",
+        () -> {
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(CQ_CT_VALUE_INPUT);
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+              PCR_TEST_SPECIFICATION_COMBOBOX);
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+              SPECIFY_TEST_DETAILS_INPUT);
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(TYPING_ID_INPUT);
+        });
+
+    When(
+        "I check that if Other field is correctly displayed",
+        () -> {
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+              SPECIFY_TEST_DETAILS_INPUT);
+        });
+
+    When(
+        "I delete the Pathogen test",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_PATHOGEN_TEST_RESULT);
+          webDriverHelpers.clickOnWebElementBySelector(SAMPLE_DELETION_POPUP_YES_BUTTON);
         });
   }
 
