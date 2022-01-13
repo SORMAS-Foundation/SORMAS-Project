@@ -106,6 +106,7 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	@SensitiveData(mandatoryField = true)
 	private String meansOfImmunizationDetails;
+	@Required
 	private ImmunizationManagementStatus immunizationManagementStatus;
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
