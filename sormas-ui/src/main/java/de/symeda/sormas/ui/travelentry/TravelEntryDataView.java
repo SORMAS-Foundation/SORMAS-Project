@@ -87,8 +87,9 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 			layout.addComponent(createCaseInfoLayout(resultingCase.getUuid()), CASE_LOC);
 		}
 
+		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
-			DocumentListComponent documentList = new DocumentListComponent(
+			documentList = new DocumentListComponent(
 				DocumentRelatedEntityType.TRAVEL_ENTRY,
 				getReference(),
 				UserRight.TRAVEL_ENTRY_EDIT,
@@ -96,7 +97,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 			layout.addComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
-		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, getTravelEntryRef());
+		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, getTravelEntryRef(), documentList);
 
 		setTravelEntryEditPermission(container);
 

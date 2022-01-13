@@ -20,6 +20,8 @@ public class AggregateReport extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -2809338755584760337L;
 
+	public static final String TABLE_NAME = "aggregatereport";
+
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String DISEASE = "disease";
 	public static final String YEAR = "year";
