@@ -57,13 +57,11 @@ public enum PathogenTestedDisease {
   RHINOVIRUS("RHINOVIRUS", "Rhinovirus"),
   WEST_NILE_FEVER("WEST_NILE_FEVER", "West Nile Fever");
 
-  // private final String pathogenResults;
-
   private final String pathogenTestedDiseaseName;
   private final String pathogenTestedDiseaseCaption;
 
   PathogenTestedDisease(String pathogenTestedDiseaseName, String pathogenTestedDiseaseCaption) {
-    // pathogenResults = vPathogenDisease;
+
     this.pathogenTestedDiseaseName = pathogenTestedDiseaseName;
     this.pathogenTestedDiseaseCaption = pathogenTestedDiseaseCaption;
   }
