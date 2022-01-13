@@ -132,10 +132,17 @@ public class SampleService {
 
   public Sample buildPathogenTestResultType(String testType) {
     long currentTimeMillis = System.currentTimeMillis();
+    String testedDiseaseType;
+    if (testType == "PCR / RT-PCR") {
+      testedDiseaseType = "COVID-19";
+    } else {
+      testedDiseaseType = PathogenTestedDisease.getRandomPathogenTestedDisease();
+    }
     return Sample.builder()
         .reportDate(LocalDate.now().minusDays(10))
         .typeOfTest(testType)
-        .testedDisease(PathogenTestedDisease.getRandomPathogenTestedDisease())
+        //  .testedDisease(PathogenTestedDisease.getRandomPathogenTestedDisease())
+        .testedDisease(testedDiseaseType)
         .dateOfResult(LocalDate.now())
         .timeOfResult(LocalTime.of(15, 15))
         .laboratory("Voreingestelltes Labor")

@@ -23,48 +23,61 @@ import lombok.Getter;
 
 @Getter
 public enum PathogenTestedDisease {
-  ACUTE_FLACCID_PARALYSIS("Acute Flaccid Paralysis"),
-  ANTHRAX("Anthrax"),
-  COVID19("COVID-19"),
-  CHOLERA("Cholera"),
-  CONGENITAL_RUBELLA("Congenital Rubella"),
-  DENGUE_FEVER("Dengue Fever"),
-  EBOLA("Ebola Virus Disease"),
-  GUINEA_WORM("Guinea Worm"),
-  HUMAN_RABIES("Human Rabies"),
-  INFLUENZA("Influenza (New subtype)"),
-  LASSA("Lassa"),
-  MEASLES("Measles"),
-  MENINGITIS("Meningitis (CSM)"),
-  MONKEYPOX("Monkeypox"),
-  NOT_YET_DEFINED("Not Yet Defined"),
-  OTHER_EPIDEMIC_DISEASE("Other Epidemic Disease"),
-  PLAGUE("Plague"),
-  POLIOMYELITIS("Poliomyelitis"),
-  UNSPECIFIED_VHF("Unspecified VHF"),
-  YELLOW_FEVER("Yellow Fever"),
-  ADENOVIRUS("Adenovirus"),
-  C_PNEUMONIAE("C.pneumoniae"),
-  ENTEROVIRUS("Enterovirus"),
-  H_METAPNEUMOVIRUS("H.metapneumovirus"),
-  INFLUENZA_A("Influenza A"),
-  INFLUENZA_B("Influenza B"),
-  M_PNEUMONIAE("M.pneumoniae"),
-  PARAINFLUENZA("Parainfluenza (1-4)"),
-  PNEUMONIA("Pneumonia"),
-  RESPIRATORY_SYNCYTIAL_VIRUS_RSV("Respiratory syncytial virus (RSV)"),
-  RHINOVIRUS("Rhinovirus"),
-  WEST_NILE_FEVER("West Nile Fever");
+  ACUTE_FLACCID_PARALYSIS("ACUTE_VIRAL_HEPATITIS", "Acute Flaccid Paralysis"),
+  ANTHRAX("ANTHRAX", "Anthrax"),
+  COVID19("CORONAVIRUS", "COVID-19"),
+  CHOLERA("CHOLERA", "Cholera"),
+  CONGENITAL_RUBELLA("CONGENITAL_RUBELLA", "Congenital Rubella"),
+  DENGUE_FEVER("DENGUE", "Dengue Fever"),
+  EBOLA("EVD", "Ebola Virus Disease"),
+  GUINEA_WORM("GUINEA_WORM", "Guinea Worm"),
+  HUMAN_RABIES("RABIES", "Human Rabies"),
+  INFLUENZA("NEW_INFLUENZA", "Influenza (New subtype)"),
+  LASSA("LASSA", "Lassa"),
+  MEASLES("MEASLES", "Measles"),
+  MENINGITIS("CSM", "Meningitis (CSM)"),
+  MONKEYPOX("MONKEYPOX", "Monkeypox"),
+  NOT_YET_DEFINED("UNDEFINED", "Not Yet Defined"),
+  OTHER_EPIDEMIC_DISEASE("OTHER", "Other Epidemic Disease"),
+  PLAGUE("PLAGUE", "Plague"),
+  POLIOMYELITIS("POLIO", "Poliomyelitis"),
+  UNSPECIFIED_VHF("UNSPECIFIED_VHF", "Unspecified VHF"),
+  YELLOW_FEVER("YELLOW_FEVER", "Yellow Fever"),
+  ADENOVIRUS("ADENOVIRUS", "Adenovirus"),
+  C_PNEUMONIAE("C_PNEUMONIAE", "C.pneumoniae"),
+  ENTEROVIRUS("ENTEROVIRUS", "Enterovirus"),
+  H_METAPNEUMOVIRUS("H_METAPNEUMOVIRUS", "H.metapneumovirus"),
+  INFLUENZA_A("INFLUENZA_A", "Influenza A"),
+  INFLUENZA_B("INFLUENZA_B", "Influenza B"),
+  M_PNEUMONIAE("M_PNEUMONIAE", "M.pneumoniae"),
+  PARAINFLUENZA("PARAINFLUENZA_1_4", "Parainfluenza (1-4)"),
+  PNEUMONIA("PNEUMONIA", "Pneumonia"),
+  RESPIRATORY_SYNCYTIAL_VIRUS_RSV(
+      "RESPIRATORY_SYNCYTIAL_VIRUS", "Respiratory syncytial virus (RSV)"),
+  RHINOVIRUS("RHINOVIRUS", "Rhinovirus"),
+  WEST_NILE_FEVER("WEST_NILE_FEVER", "West Nile Fever");
 
-  private final String pathogenResults;
+  // private final String pathogenResults;
 
-  PathogenTestedDisease(String vPathogenDisease) {
-    pathogenResults = vPathogenDisease;
+  private final String pathogenTestedDiseaseName;
+  private final String pathogenTestedDiseaseCaption;
+
+  PathogenTestedDisease(String pathogenTestedDiseaseName, String pathogenTestedDiseaseCaption) {
+    // pathogenResults = vPathogenDisease;
+    this.pathogenTestedDiseaseName = pathogenTestedDiseaseName;
+    this.pathogenTestedDiseaseCaption = pathogenTestedDiseaseCaption;
   }
-
+  /** Returns values used for UI tests */
   public static String getRandomPathogenTestedDisease() {
     Random random = new Random();
     return String.valueOf(
-        PathogenTestedDisease.values()[random.nextInt(values().length)].pathogenResults);
+        PathogenTestedDisease.values()[random.nextInt(values().length)]
+            .pathogenTestedDiseaseCaption);
+  }
+  /** Returns values used for API tests */
+  public static String getRandomPathogenTestedDiseaseName() {
+    Random random = new Random();
+    return String.valueOf(
+        PathogenTestedDisease.values()[random.nextInt(values().length)].pathogenTestedDiseaseName);
   }
 }
