@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,6 +112,7 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.PreviousCaseDto;
+import de.symeda.sormas.api.caze.ReinfectionDetail;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
@@ -1954,6 +1956,12 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (existingCase == null) {
 			vaccinationFacade.updateVaccinationStatuses(newCase);
 		}
+
+		// On German systems, correct and clean up reinfection data
+		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			newCase.setReinfectionDetails(cleanUpReinfectionDetails(newCase.getReinfectionDetails()));
+			newCase.setReinfectionStatus(CaseLogic.calculateReinfectionStatus(newCase.getReinfectionDetails()));
+		}
 	}
 
 	public boolean evaluateFulfilledCondition(CaseDataDto newCase, CaseClassification caseClassification) {
@@ -2567,7 +2575,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setReInfection(source.getReInfection());
 		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
 		target.setReinfectionStatus(source.getReinfectionStatus());
-		target.setReinfectionDetails(source.getReinfectionDetails());
+		if (source.getReinfectionDetails() != null) {
+			target.setReinfectionDetails(new HashMap<>(source.getReinfectionDetails()));
+		}
 
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 
@@ -2587,7 +2597,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
 		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
 
-		target.setExternalData(source.getExternalData());
+		if (source.getExternalData() != null) {
+			target.setExternalData(new HashMap<>(source.getExternalData()));
+		}
 
 		return target;
 	}
@@ -2766,6 +2778,18 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		return target;
+	}
+
+	public Map<ReinfectionDetail, Boolean> cleanUpReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
+		if (reinfectionDetails != null && reinfectionDetails.containsValue(Boolean.FALSE)) {
+			Map<ReinfectionDetail, Boolean> onlyTrueReinfectionDetails = new HashMap<>();
+			onlyTrueReinfectionDetails =
+				reinfectionDetails.entrySet().stream().filter(Map.Entry::getValue).collect(Collectors.toMap(Map.Entry::getKey, entry -> true));
+
+			return onlyTrueReinfectionDetails;
+		} else {
+			return reinfectionDetails;
+		}
 	}
 
 	public void updateInvestigationByStatus(CaseDataDto existingCase, Case caze) {

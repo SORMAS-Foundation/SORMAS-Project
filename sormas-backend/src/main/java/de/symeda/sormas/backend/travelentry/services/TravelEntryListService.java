@@ -60,7 +60,6 @@ public class TravelEntryListService extends BaseTravelEntryService {
 
 	private Predicate buildListEntryCriteriaFilter(Long personId, Long caseId, TravelEntryQueryContext travelEntryQueryContext) {
 
-		final TravelEntryJoins joins = (TravelEntryJoins) travelEntryQueryContext.getJoins();
 		final CriteriaBuilder cb = travelEntryQueryContext.getCriteriaBuilder();
 		final From<?, TravelEntry> from = travelEntryQueryContext.getRoot();
 

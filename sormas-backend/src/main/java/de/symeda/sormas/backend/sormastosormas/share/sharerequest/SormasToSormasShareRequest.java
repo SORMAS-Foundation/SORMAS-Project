@@ -52,6 +52,8 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 1116921896060439299L;
 
+	public static final String TABLE_NAME = "sormastosormassharerequest";
+
 	public static final String DATA_TYPE = "dataType";
 	public static final String STATUS = "status";
 	public static final String ORIGIN_INFO = "originInfo";

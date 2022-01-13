@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
@@ -63,6 +64,8 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 	private static final String EDIT_ASSIGNEE = "edit_assignee";
 
 	private static final String PDF_FILENAME_FORMAT = "sormas_lab_message_%s_%s.pdf";
+
+	private DataProviderListener<LabMessageIndexDto> dataProviderListener;
 
 	@SuppressWarnings("unchecked")
 	public LabMessageGrid(LabMessageCriteria criteria) {
@@ -142,7 +145,12 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 		ListDataProvider<LabMessageIndexDto> dataProvider =
 			DataProvider.fromStream(FacadeProvider.getLabMessageFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
+
 		setSelectionMode(SelectionMode.MULTI);
+
+		if (dataProviderListener != null) {
+			dataProvider.addDataProviderListener(dataProviderListener);
+		}
 	}
 
 	public void setLazyDataProvider() {
@@ -161,11 +169,19 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
+
+		if (dataProviderListener != null) {
+			dataProvider.addDataProviderListener(dataProviderListener);
+		}
 	}
 
 	public void reload() {
 		if (getSelectionModel().isUserSelectionAllowed()) {
 			deselectAll();
+		}
+
+		if (ViewModelProviders.of(LabMessagesView.class).get(ViewConfiguration.class).isInEagerMode()) {
+			setEagerDataProvider();
 		}
 
 		getDataProvider().refreshAll();
@@ -211,5 +227,9 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 		fileDownloader.setFileDownloadResource(streamResource);
 
 		return downloadButton;
+	}
+
+	public void setDataProviderListener(DataProviderListener<LabMessageIndexDto> dataProviderListener) {
+		this.dataProviderListener = dataProviderListener;
 	}
 }

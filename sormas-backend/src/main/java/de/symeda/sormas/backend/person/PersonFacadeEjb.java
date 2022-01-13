@@ -1193,19 +1193,6 @@ public class PersonFacadeEjb implements PersonFacade {
 			newPerson.setSymptomJournalStatus(SymptomJournalStatus.UNREGISTERED);
 		}
 
-		// Update case pregnancy information if sex has changed
-		if (existingPerson != null && existingPerson.getSex() != newPerson.getSex()) {
-			if (newPerson.getSex() != Sex.FEMALE) {
-				for (Case personCase : personCases) {
-					CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
-					personCase.setPregnant(null);
-					personCase.setTrimester(null);
-					personCase.setPostpartum(null);
-					caseFacade.onCaseChanged(existingCase, personCase, syncShares);
-				}
-			}
-		}
-
 		cleanUp(newPerson);
 	}
 

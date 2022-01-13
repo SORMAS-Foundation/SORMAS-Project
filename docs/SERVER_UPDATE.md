@@ -3,6 +3,9 @@
 SORMAS releases starting from 1.21.0 contain a script that automatically updates and deploys the server. If you are using an older version and therefore need to do a manual server update, please download the 1.21.0 release files and use the commands specified in the server-update.sh script.
 
 ## Preparations
+Note: At some versions it is mandatory to switch to a new Payara Server. If your version bump does apply to the listing below, please proceed with [Payara migration](SERVER_UPDATE.md#how-to-migrate-to-new-payara-server).
+* Switching from <=v1.66.4 to v1.67.0 or newer
+
 Note: You can skip this step if you've just set up your SORMAS server and have already downloaded the latest release.
 
 * Get the latest release files (deploy.zip) from <https://github.com/hzi-braunschweig/SORMAS-Project/releases/latest>
@@ -135,3 +138,26 @@ The docker installation is automatically upgraded to the latest version specifie
 **Prerequisites:** Make sure the DB is backed up, because once the upgrade is done the new DB won't be usable with the old version of Keycloak.
 
 For more info see the [Keycloak Docker Documentation](https://github.com/hzi-braunschweig/SORMAS-Docker/blob/development/keycloak/README.md).
+
+## How to migrate to new Payara Server
+
+### Step 1: Shutdown existing domain
+```bash
+# Stop domain
+service payara-sormas stop
+
+# Move existing domain
+DOMAIN_PATH=/opt/domains
+DOMAIN_NAME="sormas"
+DOMAIN_BACKUP_NAME="sormas_backup"
+mv $DOMAIN_PATH/$DOMAIN_NAME $DOMAIN_PATH/$DOMAIN_BACKUP_NAME
+```
+
+### Step 2: Setup Payara domain
+Please follow the [server setup](SERVER_SETUP.md#sormas-server): Create the payara domain under the same path as before, use the same directory paths and the same database settings.
+
+### Step 3: Apply your config file changes
+Transfer your settings from `sormas.properties`, `logback.xml` or changes in the domain setup. Use the new provided files and copy your changes in, don't reuse old files!
+
+### Step 4: Install new SORMAS version
+To install the new SORMAS version in the Payara domain, proceed with the [automatic update](SERVER_UPDATE.md#automatic-server-update) or for developers: Deploy SORMAS via the IDE as usual.
