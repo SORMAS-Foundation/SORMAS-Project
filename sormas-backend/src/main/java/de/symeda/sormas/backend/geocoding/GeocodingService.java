@@ -21,6 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -44,7 +45,6 @@ import org.slf4j.LoggerFactory;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
-import com.nimbusds.jose.util.StandardCharset;
 
 import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -174,7 +174,7 @@ public class GeocodingService {
 
 	private String encodeValue(String value) {
 		try {
-			return DataHelper.isNullOrEmpty(value) ? "" : URLEncoder.encode(value, StandardCharset.UTF_8.name());
+			return DataHelper.isNullOrEmpty(value) ? "" : URLEncoder.encode(value, StandardCharsets.UTF_8.name());
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("Can't encode parameter value [" + value + "]", e);
 		}
