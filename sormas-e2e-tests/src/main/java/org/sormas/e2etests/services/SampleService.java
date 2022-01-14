@@ -114,22 +114,7 @@ public class SampleService {
         .testResultsComment(currentTimeMillis + "Comment on Edit Pathogen requests or received")
         .build();
   }
-
-  public Sample buildPathogenTestResultPCRRTPCRType() {
-    long currentTimeMillis = System.currentTimeMillis();
-    return Sample.builder()
-        .reportDate(LocalDate.now().minusDays(10))
-        .typeOfTest("PCR / RT-PCR")
-        .testedDisease("COVID-19")
-        .dateOfResult(LocalDate.now())
-        .timeOfResult(LocalTime.of(15, 15))
-        .laboratory("Voreingestelltes Labor")
-        .sampleTestResults("Positive")
-        .resultVerifiedByLabSupervisor("NO")
-        .testResultsComment(currentTimeMillis + "Comment on Edit Pathogen requests or received")
-        .build();
-  }
-
+  
   public Sample buildPathogenTestResultType(String testType) {
     long currentTimeMillis = System.currentTimeMillis();
     String testedDiseaseType;
@@ -141,7 +126,6 @@ public class SampleService {
     return Sample.builder()
         .reportDate(LocalDate.now().minusDays(10))
         .typeOfTest(testType)
-        //  .testedDisease(PathogenTestedDisease.getRandomPathogenTestedDisease())
         .testedDisease(testedDiseaseType)
         .dateOfResult(LocalDate.now())
         .timeOfResult(LocalTime.of(15, 15))
