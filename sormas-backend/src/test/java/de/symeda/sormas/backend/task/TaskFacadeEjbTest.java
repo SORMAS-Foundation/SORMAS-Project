@@ -177,6 +177,19 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(allActiveTasksAfterBatched.get(0).getChangeDate().getTime() <= allActiveTasksAfterBatched.get(1).getChangeDate().getTime());
 		assertTrue(allActiveTasksAfterBatched.get(1).getChangeDate().getTime() <= allActiveTasksAfterBatched.get(2).getChangeDate().getTime());
 
+		List<TaskDto> allActiveTasksAfterLargeBatch = getTaskFacade().getAllActiveTasksAfter(null, 10, null);
+		assertEquals(6, allActiveTasksAfterLargeBatch.size());
+
+		// getAllActiveTasks batched with Uuid
+		TaskDto taskRead = allActiveTasksAfterBatched.get(2);
+		List<TaskDto> allActiveTasksAfterBatchedSameTime =
+			getTaskFacade().getAllActiveTasksAfter(taskRead.getChangeDate(), 10, "AAAAAA-AAAAAA-AAAAAA-AAAAAA");
+		assertEquals(4, allActiveTasksAfterBatchedSameTime.size());
+
+		List<TaskDto> allActiveTasksAfterBatchedSameTimeSameUuid =
+			getTaskFacade().getAllActiveTasksAfter(taskRead.getChangeDate(), 10, taskRead.getUuid());
+		assertEquals(3, allActiveTasksAfterBatchedSameTimeSameUuid.size());
+
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
 		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), true);
 

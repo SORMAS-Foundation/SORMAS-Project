@@ -171,11 +171,9 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 
 	public List<ADO> getBatchedQueryResults(CriteriaBuilder cb, CriteriaQuery<ADO> cq, From<?, ADO> from, Integer batchSize) {
 
-		if (batchSize != null) {
-			cq.orderBy(cb.asc(from.get(AbstractDomainObject.CHANGE_DATE)), cb.asc(from.get(AbstractDomainObject.UUID)));
-		} else {
-			cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
-		}
+		// Ordering by UUID is relevant if a batch includes some, but not all objects with the same timestamp.
+		// the next batch can then resume with the same timestamp and the next UUID in lexicographical order.
+		cq.orderBy(cb.asc(from.get(AbstractDomainObject.CHANGE_DATE)), cb.asc(from.get(AbstractDomainObject.UUID)));
 		return createQuery(cq, 0, batchSize).getResultList();
 	}
 
@@ -220,7 +218,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		if (lastSynchronizedUuidSameTimestamp == null || EntityDto.NO_LAST_SYNCED_UUID.equals(lastSynchronizedUuidSameTimestamp)) {
 			return createChangeDateFilter(cb, from, date);
 		} else {
-			Timestamp timestamp = DateHelper.toTimestampUpper(date);
+			Timestamp timestamp = new Timestamp(date.getTime());
 			Predicate predicate = cb.or(
 				cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), timestamp),
 				cb.and(

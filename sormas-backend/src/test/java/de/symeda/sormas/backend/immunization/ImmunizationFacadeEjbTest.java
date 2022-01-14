@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.immunization;
 
 import static org.junit.Assert.assertEquals;
 
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +41,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 
 public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 
@@ -110,8 +112,16 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			MeansOfImmunization.VACCINATION,
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf1);
+		creator.createImmunization(
+			Disease.MONKEYPOX,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
 		List<ImmunizationDto> allAfter = getImmunizationFacade().getAllAfter(new DateTime(new Date()).minusDays(1).toDate());
-		assertEquals(2, allAfter.size());
+		assertEquals(3, allAfter.size());
 
 		List<ImmunizationDto> allAfterBatched = getImmunizationFacade().getAllAfter(new DateTime(new Date()).minusDays(1).toDate(), 1, null);
 		assertEquals(1, allAfterBatched.size());
@@ -119,6 +129,46 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 
 		List<PersonDto> allPersonsAfter = getPersonFacade().getPersonsAfter(new DateTime(new Date()).minusDays(1).toDate());
 		assertEquals(1, allPersonsAfter.size());
+
+		List<ImmunizationDto> allAfterWithUuid =
+			getImmunizationFacade().getAllAfter(new DateTime(new Date()).minusDays(1).toDate(), 5, "AAAAAA-AAAAAA-AAAAAA-AAAAAA");
+		assertEquals(3, allAfterWithUuid.size());
+
+		ImmunizationDto immunizationRead = allAfter.get(0);
+		List<ImmunizationDto> allAfterSameTime =
+			getImmunizationFacade().getAllAfter(immunizationRead.getChangeDate(), 5, "AAAAAA-AAAAAA-AAAAAA-AAAAAA");
+		assertEquals(3, allAfterSameTime.size());
+
+		List<ImmunizationDto> allAfterSameTimeAndUuid =
+			getImmunizationFacade().getAllAfter(immunizationRead.getChangeDate(), 5, immunizationRead.getUuid());
+		assertEquals(2, allAfterSameTimeAndUuid.size());
+
+		ImmunizationService immunizationService = getBean(ImmunizationService.class);
+		Immunization byUuid = immunizationService.getByUuid(immunizationRead.getUuid());
+
+		Immunization newImmunization = new Immunization();
+		Timestamp changeDate = new Timestamp(immunizationRead.getChangeDate().getTime());
+		newImmunization.setChangeDate(changeDate);
+		newImmunization.setUuid("ZZZZZZ-ZZZZZZ-ZZZZZZ-ZZZZZZ");
+		newImmunization.setId(null);
+		newImmunization.setDisease(Disease.RABIES);
+		newImmunization.setPerson(byUuid.getPerson());
+		newImmunization.setReportingUser(byUuid.getReportingUser());
+		newImmunization.setReportDate(byUuid.getReportDate());
+		immunizationService.ensurePersisted(newImmunization);
+
+		assertEquals(changeDate.getTime(), immunizationService.getByUuid("ZZZZZZ-ZZZZZZ-ZZZZZZ-ZZZZZZ").getChangeDate().getTime());
+
+		List<ImmunizationDto> allAfterSeveralResultsSameTime =
+			getImmunizationFacade().getAllAfter(immunizationRead.getChangeDate(), 5, immunizationRead.getUuid());
+		assertEquals(3, allAfterSeveralResultsSameTime.size());
+
+		List<ImmunizationDto> allAfterSeveralResultsSameTimeWithUuid =
+			getImmunizationFacade().getAllAfter(immunizationRead.getChangeDate(), 5, "AAAAAA-AAAAAA-AAAAAA-AAAAAA");
+		assertEquals(4, allAfterSeveralResultsSameTimeWithUuid.size());
+
+		assertEquals(immunizationRead.getUuid(), allAfterSeveralResultsSameTimeWithUuid.get(0).getUuid());
+		assertEquals("ZZZZZZ-ZZZZZZ-ZZZZZZ-ZZZZZZ", allAfterSeveralResultsSameTimeWithUuid.get(1).getUuid());
 	}
 
 	@Test
