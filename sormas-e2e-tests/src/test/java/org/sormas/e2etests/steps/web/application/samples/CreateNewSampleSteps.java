@@ -43,7 +43,8 @@ public class CreateNewSampleSteps implements En {
   private final Faker faker;
 
   @Inject
-  public CreateNewSampleSteps(WebDriverHelpers webDriverHelpers, SampleService sampleService, Faker faker) {
+  public CreateNewSampleSteps(
+      WebDriverHelpers webDriverHelpers, SampleService sampleService, Faker faker) {
     this.webDriverHelpers = webDriverHelpers;
     this.faker = faker;
 
@@ -386,7 +387,7 @@ public class CreateNewSampleSteps implements En {
         .build();
   }
 
-  public Sample simplePathogenBuilderResult(String testType) {
+  private Sample simplePathogenBuilderResult(String testType) {
     SampleService sampleService = new SampleService(faker);
     sampleTestResult = sampleService.buildPathogenTestResultType(testType);
     fillReportDate(sampleTestResult.getReportDate());

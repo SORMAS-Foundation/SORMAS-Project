@@ -26,7 +26,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.inject.Inject;
-import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Case;
@@ -39,7 +38,7 @@ public class EditCasePersonSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMMM/d/yyyy");
 
   @Inject
-  public EditCasePersonSteps(final WebDriverHelpers webDriverHelpers, final SoftAssertions softly) {
+  public EditCasePersonSteps(final WebDriverHelpers webDriverHelpers) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(

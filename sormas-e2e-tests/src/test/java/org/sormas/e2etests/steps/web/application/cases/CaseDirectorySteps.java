@@ -32,6 +32,7 @@ import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.Assert;
 
 public class CaseDirectorySteps implements En {
 
@@ -97,9 +98,10 @@ public class CaseDirectorySteps implements En {
         (Integer number) ->
             assertHelpers.assertWithPoll20Second(
                 () ->
-                    Truth.assertWithMessage("Number of displayed cases is not correct")
-                        .that(webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS))
-                        .isEqualTo(number)));
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
+                        number.intValue(),
+                        "Number of displayed cases is not correct")));
 
     When(
         "^I search for cases created with the API using Person's name",
@@ -117,12 +119,10 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilAListOfElementsIsPresent(
               NAME_UUID_EPID_NUMBER_LIKE_INPUT, apiState.getCreatedCases().size());
-          Truth.assertWithMessage(
-                  "Total number of displayed cases doesn't match with the number of cases created via api")
-              .that(apiState.getCreatedCases().size())
-              .isEqualTo(
-                  Integer.parseInt(
-                      webDriverHelpers.getTextFromPresentWebElement(TOTAL_CASES_COUNTER)));
+          Assert.assertEquals(
+              apiState.getCreatedCases().size(),
+              Integer.parseInt(webDriverHelpers.getTextFromPresentWebElement(TOTAL_CASES_COUNTER)),
+              "Total number of displayed cases doesn't match with the number of cases created via api");
         });
 
     Then(

@@ -692,13 +692,13 @@ public class WebDriverHelpers {
 
     try {
       assertHelpers.assertWithPoll(
-              () ->
-                      Assert.assertTrue(
-                              baseSteps.getDriver().findElement(loadingSpinner).isDisplayed(),
-                              "Loading spinner isn't displayed"), 3);
+          () ->
+              Assert.assertTrue(
+                  baseSteps.getDriver().findElement(loadingSpinner).isDisplayed(),
+                  "Loading spinner isn't displayed"),
+          3);
       isSpinnerDisplayed = true;
-    }
-    catch (Throwable ignored){
+    } catch (Throwable ignored) {
       isSpinnerDisplayed = false;
     }
 
