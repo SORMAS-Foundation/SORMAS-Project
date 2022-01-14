@@ -15,7 +15,6 @@
 
 package org.sormas.e2etests.helpers;
 
-import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 import static java.time.Duration.ofSeconds;
 import static org.awaitility.Awaitility.await;
@@ -106,8 +105,12 @@ public class WebDriverHelpers {
       assertHelpers.assertWithPoll20Second(
           () -> {
             scrollToElement(selector);
-            Assert.assertTrue(((WebElement) selector).isDisplayed(), String.format("The element: %s was not displayed", selector));
-            Assert.assertTrue(((WebElement) selector).isEnabled(), String.format("The element: %s was not enabled", selector));
+            Assert.assertTrue(
+                ((WebElement) selector).isDisplayed(),
+                String.format("The element: %s was not displayed", selector));
+            Assert.assertTrue(
+                ((WebElement) selector).isEnabled(),
+                String.format("The element: %s was not enabled", selector));
           });
     } else {
       throw new NotFoundException(String.format("This type: %s is not available", selector));
@@ -123,14 +126,16 @@ public class WebDriverHelpers {
       assertHelpers.assertWithPoll(
           () -> {
             Assert.assertFalse(
-                    baseSteps.getDriver().findElement((By) selector).isDisplayed(),
-                    String.format("The element: %s is still visible", selector));
+                baseSteps.getDriver().findElement((By) selector).isDisplayed(),
+                String.format("The element: %s is still visible", selector));
           },
           seconds);
     } else if (selector instanceof WebElement) {
       assertHelpers.assertWithPoll20Second(
           () -> {
-            Assert.assertFalse(((WebElement) selector).isDisplayed(), String.format("The element: %s is still visible", selector));
+            Assert.assertFalse(
+                ((WebElement) selector).isDisplayed(),
+                String.format("The element: %s is still visible", selector));
           });
     } else {
       throw new NotFoundException(String.format("This type: %s is not available", selector));
@@ -150,7 +155,9 @@ public class WebDriverHelpers {
                   .collect(Collectors.toList());
           webElementsTexts.forEach(
               text ->
-                      Assert.assertFalse(text.isEmpty(),String.format("The element: %s was empty or null: %s", selector, text)));
+                  Assert.assertFalse(
+                      text.isEmpty(),
+                      String.format("The element: %s was empty or null: %s", selector, text)));
         },
         FLUENT_WAIT_TIMEOUT_SECONDS);
   }
@@ -165,17 +172,23 @@ public class WebDriverHelpers {
           .untilAsserted(
               () -> {
                 Assert.assertTrue(
-                        baseSteps.getDriver().findElement((By) selector).isDisplayed(),
-                        String.format("The element: %s was not visible", selector));
+                    baseSteps.getDriver().findElement((By) selector).isDisplayed(),
+                    String.format("The element: %s was not visible", selector));
                 Assert.assertTrue(
-                        baseSteps.getDriver().findElement((By) selector).isEnabled(),
-                        String.format("The element: %s was not enabled", selector));
+                    baseSteps.getDriver().findElement((By) selector).isEnabled(),
+                    String.format("The element: %s was not enabled", selector));
                 scrollToElement(selector);
                 clearWebElement(selector);
-                Assert.assertEquals(getValueFromWebElement(selector), "", String.format("Field %s wasn't cleared", selector));
+                Assert.assertEquals(
+                    getValueFromWebElement(selector),
+                    "",
+                    String.format("Field %s wasn't cleared", selector));
                 baseSteps.getDriver().findElement(selector).sendKeys(text);
                 String valueFromWebElement = getValueFromWebElement(selector);
-                Assert.assertEquals(valueFromWebElement, text, String.format("The expected text %s was not %s", valueFromWebElement, text));
+                Assert.assertEquals(
+                    valueFromWebElement,
+                    text,
+                    String.format("The expected text %s was not %s", valueFromWebElement, text));
               });
 
     } catch (ConditionTimeoutException ignored) {
@@ -228,12 +241,14 @@ public class WebDriverHelpers {
         .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
         .untilAsserted(
             () -> {
-              Assert.assertTrue(baseSteps
+              Assert.assertTrue(
+                  baseSteps
                       .getDriver()
                       .findElement(selector)
                       .findElement(By.xpath("preceding-sibling::input"))
                       .getAttribute("value")
-                      .contains(text), String.format("Option %s wasn't selected from dropdown %s", text, selector));
+                      .contains(text),
+                  String.format("Option %s wasn't selected from dropdown %s", text, selector));
             });
   }
 
@@ -260,8 +275,12 @@ public class WebDriverHelpers {
           .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
           .untilAsserted(
               () -> {
-                Assert.assertTrue(baseSteps.getDriver().findElements(selector).get(index).isDisplayed(), String.format("The element: %s is not displayed", selector));
-                Assert.assertTrue(baseSteps.getDriver().findElements(selector).get(index).isEnabled(), String.format("The element: %s was not enabled", selector));
+                Assert.assertTrue(
+                    baseSteps.getDriver().findElements(selector).get(index).isDisplayed(),
+                    String.format("The element: %s is not displayed", selector));
+                Assert.assertTrue(
+                    baseSteps.getDriver().findElements(selector).get(index).isEnabled(),
+                    String.format("The element: %s was not enabled", selector));
                 scrollToElement(selector);
                 baseSteps.getDriver().findElement(selector).click();
                 waitForPageLoaded();
@@ -277,7 +296,10 @@ public class WebDriverHelpers {
 
   public void checkWebElementContainsText(By selector, String text) {
     assertHelpers.assertWithPoll20Second(
-        () -> Assert.assertTrue(baseSteps.getDriver().findElement(selector).getText().contains(text), String.format("Element %s doesn't contain text: %s", selector, text)));
+        () ->
+            Assert.assertTrue(
+                baseSteps.getDriver().findElement(selector).getText().contains(text),
+                String.format("Element %s doesn't contain text: %s", selector, text)));
   }
 
   public void accessWebSite(String url) {
@@ -290,7 +312,10 @@ public class WebDriverHelpers {
     try {
       assertHelpers.assertWithPoll(
           () ->
-                  Assert.assertTrue(baseSteps.getDriver().findElement(selector).isDisplayed(), String.format("Element: %s is not visible under: %s seconds", selector, seconds)), seconds);
+              Assert.assertTrue(
+                  baseSteps.getDriver().findElement(selector).isDisplayed(),
+                  String.format("Element: %s is not visible under: %s seconds", selector, seconds)),
+          seconds);
       return true;
     } catch (Throwable ignored) {
       return false;
@@ -350,14 +375,18 @@ public class WebDriverHelpers {
         assertHelpers.assertWithPoll20Second(
             () -> {
               javascriptExecutor.executeScript(SCROLL_TO_WEB_ELEMENT_SCRIPT, selector);
-              Assert.assertTrue(((WebElement) selector).isDisplayed(), String.format("Element: %s is not displayed", selector));
+              Assert.assertTrue(
+                  ((WebElement) selector).isDisplayed(),
+                  String.format("Element: %s is not displayed", selector));
             });
       } else {
         assertHelpers.assertWithPoll20Second(
             () -> {
               javascriptExecutor.executeScript(
                   SCROLL_TO_WEB_ELEMENT_SCRIPT, baseSteps.getDriver().findElement((By) selector));
-              Assert.assertTrue(baseSteps.getDriver().findElement((By) selector).isDisplayed(), String.format("Element: %s is not displayed", selector));
+              Assert.assertTrue(
+                  baseSteps.getDriver().findElement((By) selector).isDisplayed(),
+                  String.format("Element: %s is not displayed", selector));
             });
       }
     } catch (Exception ignored) {
@@ -370,9 +399,10 @@ public class WebDriverHelpers {
     assertHelpers.assertWithPoll20Second(
         () -> {
           waitUntilIdentifiedElementIsVisibleAndClickable(selector);
-          assertWithMessage("Unable to find element based on: %s ", webElementPredicate).that(
+          assertWithMessage("Unable to find element based on: %s ", webElementPredicate)
+              .that(
                   baseSteps.getDriver().findElements(selector).stream()
-                          .anyMatch(webElementPredicate))
+                      .anyMatch(webElementPredicate))
               .isTrue();
         });
     return baseSteps.getDriver().findElements(selector).stream()
@@ -389,9 +419,16 @@ public class WebDriverHelpers {
           () -> {
             List<WebElement> webElements = baseSteps.getDriver().findElements(selector);
             scrollToElement(webElements.get(0));
-            Assert.assertTrue(webElements.size() >= 2, String.format("There are no more than %s found elements for text %s", webElements.size(), text));
-            for(WebElement element : webElements){
-              Assert.assertEquals(element.getText(), text, String.format("Element: %s doesn't have the correct text: %s", element, text));
+            Assert.assertTrue(
+                webElements.size() >= 2,
+                String.format(
+                    "There are no more than %s found elements for text %s",
+                    webElements.size(), text));
+            for (WebElement element : webElements) {
+              Assert.assertEquals(
+                  element.getText(),
+                  text,
+                  String.format("Element: %s doesn't have the correct text: %s", element, text));
             }
           },
           3);
@@ -406,7 +443,11 @@ public class WebDriverHelpers {
           () -> {
             List<WebElement> webElements = baseSteps.getDriver().findElements(selector);
             scrollToElement(webElements.get(0));
-            Assert.assertTrue(webElements.size() >= number, String.format("Couldn't identify %s of expected elements based on locator: %s", number, selector));
+            Assert.assertTrue(
+                webElements.size() >= number,
+                String.format(
+                    "Couldn't identify %s of expected elements based on locator: %s",
+                    number, selector));
           },
           4);
     } catch (Throwable ignored) {
@@ -460,7 +501,10 @@ public class WebDriverHelpers {
     assertHelpers.assertWithPoll(
         () -> {
           scrollToElement(selector);
-          Assert.assertNotNull(baseSteps.getDriver().findElement(selector).getAttribute(attribute), String.format("The element with selector %s does not have the attribute %s",
+          Assert.assertNotNull(
+              baseSteps.getDriver().findElement(selector).getAttribute(attribute),
+              String.format(
+                  "The element with selector %s does not have the attribute %s",
                   selector, attribute));
         },
         seconds);
@@ -502,7 +546,9 @@ public class WebDriverHelpers {
         WebElement element = (WebElement) selector;
         assertHelpers.assertWithPoll20Second(
             () ->
-                    Assert.assertTrue(element.isDisplayed(), String.format("Webelement: %s is not displayed within 20s", element)));
+                Assert.assertTrue(
+                    element.isDisplayed(),
+                    String.format("Webelement: %s is not displayed within 20s", element)));
 
       } else {
         assertHelpers.assertWithPoll20Second(
@@ -522,35 +568,47 @@ public class WebDriverHelpers {
       final By selector, String attribute, String value) {
     assertHelpers.assertWithPoll20Second(
         () ->
-                Assert.assertEquals(getAttributeFromWebElement(selector, attribute), String.format("Element: %s, attribute: %s, is not: %s", selector, attribute, value)));
+            Assert.assertEquals(
+                getAttributeFromWebElement(selector, attribute),
+                String.format(
+                    "Element: %s, attribute: %s, is not: %s", selector, attribute, value)));
   }
 
   public void waitUntilANumberOfElementsAreVisibleAndClickable(By selector, int number) {
     waitUntilIdentifiedElementIsVisibleAndClickable(selector, 15);
     assertHelpers.assertWithPoll20Second(
         () ->
-                Assert.assertTrue(getNumberOfElements(selector) >= number, String.format("Number of identified element should be %s", number)));
+            Assert.assertTrue(
+                getNumberOfElements(selector) >= number,
+                String.format("Number of identified element should be %s", number)));
   }
 
   public void waitUntilNumberOfElementsIsReduceToGiven(By selector, int given) {
     waitUntilIdentifiedElementIsVisibleAndClickable(selector, 15);
     assertHelpers.assertWithPoll20Second(
         () ->
-                Assert.assertTrue(getNumberOfElements(selector) < given, String.format("Number of identified element should be %s", given)));
+            Assert.assertTrue(
+                getNumberOfElements(selector) < given,
+                String.format("Number of identified element should be %s", given)));
   }
 
   public void waitUntilNumberOfElementsIsExactlyOrLess(By selector, int given) {
     waitUntilIdentifiedElementIsVisibleAndClickable(selector, 15);
     assertHelpers.assertWithPoll20Second(
         () ->
-                Assert.assertTrue(getNumberOfElements(selector) <= given, String.format("Number of identified element should be %s", given)));
+            Assert.assertTrue(
+                getNumberOfElements(selector) <= given,
+                String.format("Number of identified element should be %s", given)));
   }
 
   public void waitUntilNumberOfElementsIsExactly(By selector, int given) {
     waitUntilIdentifiedElementIsVisibleAndClickable(selector, 15);
     assertHelpers.assertWithPoll20Second(
         () ->
-                Assert.assertEquals(getNumberOfElements(selector), given, String.format("Number of identified element should be %s", given)));
+            Assert.assertEquals(
+                getNumberOfElements(selector),
+                given,
+                String.format("Number of identified element should be %s", given)));
   }
 
   public String getCheckedOptionFromHorizontalOptionGroup(By options) {
@@ -608,8 +666,8 @@ public class WebDriverHelpers {
           .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
           .until(() -> baseSteps.getDriver().findElement(selector).isDisplayed());
       return true;
-    } catch (Exception e) {
-      throw new NoSuchElementException("Element: " + selector + " is not visible");
+    } catch (ConditionTimeoutException ignored) {
+      throw new NoSuchElementException(String.format("Element: %s is not visible", selector));
     }
   }
 
@@ -630,11 +688,28 @@ public class WebDriverHelpers {
     By loadingSpinner =
         By.xpath(
             "//div[@class='v-loading-indicator third v-loading-indicator-wait' or contains(@class, 'v-loading-indicator')]");
+    boolean isSpinnerDisplayed;
+
     try {
-      if (isElementVisibleWithTimeout(loadingSpinner, 3))
+      assertHelpers.assertWithPoll(
+              () ->
+                      Assert.assertTrue(
+                              baseSteps.getDriver().findElement(loadingSpinner).isDisplayed(),
+                              "Loading spinner isn't displayed"), 3);
+      isSpinnerDisplayed = true;
+    }
+    catch (Throwable ignored){
+      isSpinnerDisplayed = false;
+    }
+
+    try {
+      if (isSpinnerDisplayed)
         assertHelpers.assertWithPoll(
             () ->
-                    Assert.assertTrue(getAttributeFromWebElement(loadingSpinner, "style").contains("display: none"), String.format("Loading spinner is still displayed after %s seconds", maxWaitingTime)),
+                Assert.assertTrue(
+                    getAttributeFromWebElement(loadingSpinner, "style").contains("display: none"),
+                    String.format(
+                        "Loading spinner is still displayed after %s seconds", maxWaitingTime)),
             maxWaitingTime);
     } catch (Throwable ignored) {
       if (!getAttributeFromWebElement(loadingSpinner, "style").contains("display: none"))
@@ -646,6 +721,8 @@ public class WebDriverHelpers {
   public void waitForRowToBeSelected(By rowLocator) {
     assertHelpers.assertWithPoll20Second(
         () ->
-                Assert.assertTrue(getAttributeFromWebElement(rowLocator, "class").contains("row-selected"), String.format("Row element: %s wasn't selected within 20s", rowLocator)));
+            Assert.assertTrue(
+                getAttributeFromWebElement(rowLocator, "class").contains("row-selected"),
+                String.format("Row element: %s wasn't selected within 20s", rowLocator)));
   }
 }
