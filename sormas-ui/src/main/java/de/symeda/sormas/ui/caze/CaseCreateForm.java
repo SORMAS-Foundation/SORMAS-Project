@@ -132,6 +132,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	private LocationEditForm homeAddressForm;
 
+	private PersonDto searchedPerson;
+
 	private final boolean showHomeAddressForm;
 
 	// If a case is created form a TravelEntry, the variable convertedTravelEntry provides the
@@ -239,8 +241,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 					SimilarPersonDto pickedPerson = personSearchField.getValue();
 					if (pickedPerson != null) {
 						// add consumer
-						setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(pickedPerson.getUuid()));
+						PersonDto personByUuid = FacadeProvider.getPersonFacade().getPersonByUuid(pickedPerson.getUuid());
+						setPerson(personByUuid);
 						clickEvent.getButton().setIcon(VaadinIcons.CLOSE);
+						searchedPerson = personByUuid;
 					}
 				});
 
@@ -252,6 +256,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			} else {
 				setPerson(null);
 				clickEvent.getButton().setIcon(VaadinIcons.SEARCH);
+				searchedPerson = null;
 			}
 		}, CssStyles.FORCE_CAPTION);
 		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
@@ -906,6 +911,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	public LocationEditForm getHomeAddressForm() {
 		return homeAddressForm;
+	}
+
+	public PersonDto getSearchedPerson() {
+		return searchedPerson;
 	}
 
 	@Override
