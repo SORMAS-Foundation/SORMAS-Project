@@ -219,7 +219,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 			return createChangeDateFilter(cb, from, date);
 		} else {
 			Timestamp timestampLower = new Timestamp(date.getTime());
-			Timestamp timestampUpper = DateHelper.toTimestampUpper(timestampLower);
+			Timestamp timestampUpper = new Timestamp(date.getTime() + 1L);
 			Predicate predicate = cb.or(
 				cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), timestampUpper),
 				cb.and(

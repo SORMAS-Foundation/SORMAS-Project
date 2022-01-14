@@ -26,7 +26,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.utils.DateHelper;
 
 public class ChangeDateFilterBuilder {
 
@@ -47,7 +46,7 @@ public class ChangeDateFilterBuilder {
 	public ChangeDateFilterBuilder(CriteriaBuilder cb, Date date) {
 		this(cb);
 		timestampLower = new Timestamp(date.getTime());
-		timestampUpper = DateHelper.toTimestampUpper(date);
+		timestampUpper = new Timestamp(date.getTime() + 1L);
 	}
 
 	public ChangeDateFilterBuilder(CriteriaBuilder cb, Date date, From<?, ?> root, String lastSynchronizedUuidSameTimestamp) {
@@ -78,7 +77,7 @@ public class ChangeDateFilterBuilder {
 
 		Predicate filter;
 		if (dateExpression == null) {
-			filter = CriteriaBuilderHelper.greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), timestampUpper);
+			filter = CriteriaBuilderHelper.greaterThanOrEqualToAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), timestampUpper);
 		} else {
 			filter = CriteriaBuilderHelper.greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), dateExpression);
 		}
