@@ -26,12 +26,14 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.utils.DateHelper;
 
 public class ChangeDateFilterBuilder {
 
 	private final CriteriaBuilder cb;
 	private final Stream.Builder<Predicate> filters;
-	private Timestamp date;
+	private Timestamp timestampUpper;
+	private Timestamp timestampLower;
 	private Expression<? extends Date> dateExpression;
 
 	private From<?, ?> root;
@@ -44,7 +46,8 @@ public class ChangeDateFilterBuilder {
 
 	public ChangeDateFilterBuilder(CriteriaBuilder cb, Date date) {
 		this(cb);
-		this.date = new Timestamp(date.getTime());
+		timestampLower = new Timestamp(date.getTime());
+		timestampUpper = DateHelper.toTimestampUpper(date);
 	}
 
 	public ChangeDateFilterBuilder(CriteriaBuilder cb, Date date, From<?, ?> root, String lastSynchronizedUuidSameTimestamp) {
@@ -75,7 +78,7 @@ public class ChangeDateFilterBuilder {
 
 		Predicate filter;
 		if (dateExpression == null) {
-			filter = CriteriaBuilderHelper.greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), date);
+			filter = CriteriaBuilderHelper.greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), timestampUpper);
 		} else {
 			filter = CriteriaBuilderHelper.greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), dateExpression);
 		}
@@ -83,9 +86,9 @@ public class ChangeDateFilterBuilder {
 		if (root != null && lastSynchronizedUuidSameTimestamp != null && !EntityDto.NO_LAST_SYNCED_UUID.equals(lastSynchronizedUuidSameTimestamp)) {
 			Predicate filterUuid = cb.greaterThan(root.get(AbstractDomainObject.UUID), lastSynchronizedUuidSameTimestamp);
 			if (dateExpression == null) {
-				filterUuid = cb.and(cb.equal(parent.get(AbstractDomainObject.CHANGE_DATE), date), filterUuid);
+				filterUuid = cb.and(cb.greaterThanOrEqualTo(parent.get(AbstractDomainObject.CHANGE_DATE), timestampLower), filterUuid);
 			} else {
-				filterUuid = cb.and(cb.equal(parent.get(AbstractDomainObject.CHANGE_DATE), dateExpression), filterUuid);
+				throw new UnsupportedOperationException("ChangeDateFilterBuilder: no implementation for batch filter with date expressions");
 			}
 			filter = cb.or(filter, filterUuid);
 		}

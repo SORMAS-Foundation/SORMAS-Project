@@ -218,11 +218,12 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		if (lastSynchronizedUuidSameTimestamp == null || EntityDto.NO_LAST_SYNCED_UUID.equals(lastSynchronizedUuidSameTimestamp)) {
 			return createChangeDateFilter(cb, from, date);
 		} else {
-			Timestamp timestamp = new Timestamp(date.getTime());
+			Timestamp timestampLower = new Timestamp(date.getTime());
+			Timestamp timestampUpper = DateHelper.toTimestampUpper(timestampLower);
 			Predicate predicate = cb.or(
-				cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), timestamp),
+				cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), timestampUpper),
 				cb.and(
-					cb.equal(from.get(AbstractDomainObject.CHANGE_DATE), timestamp),
+					cb.greaterThanOrEqualTo(from.get(AbstractDomainObject.CHANGE_DATE), timestampLower),
 					cb.greaterThan(from.get(AbstractDomainObject.UUID), lastSynchronizedUuidSameTimestamp)));
 			return predicate;
 		}

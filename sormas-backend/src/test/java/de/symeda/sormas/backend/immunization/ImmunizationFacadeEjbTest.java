@@ -146,16 +146,17 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		ImmunizationService immunizationService = getBean(ImmunizationService.class);
 		Immunization byUuid = immunizationService.getByUuid(immunizationRead.getUuid());
 
-		Immunization newImmunization = new Immunization();
+		Immunization immunizationWithNanoseconds = new Immunization();
 		Timestamp changeDate = new Timestamp(immunizationRead.getChangeDate().getTime());
-		newImmunization.setChangeDate(changeDate);
-		newImmunization.setUuid("ZZZZZZ-ZZZZZZ-ZZZZZZ-ZZZZZZ");
-		newImmunization.setId(null);
-		newImmunization.setDisease(Disease.RABIES);
-		newImmunization.setPerson(byUuid.getPerson());
-		newImmunization.setReportingUser(byUuid.getReportingUser());
-		newImmunization.setReportDate(byUuid.getReportDate());
-		immunizationService.ensurePersisted(newImmunization);
+		changeDate.setNanos(changeDate.getNanos() + 150000);
+		immunizationWithNanoseconds.setChangeDate(changeDate);
+		immunizationWithNanoseconds.setUuid("ZZZZZZ-ZZZZZZ-ZZZZZZ-ZZZZZZ");
+		immunizationWithNanoseconds.setId(null);
+		immunizationWithNanoseconds.setDisease(Disease.RABIES);
+		immunizationWithNanoseconds.setPerson(byUuid.getPerson());
+		immunizationWithNanoseconds.setReportingUser(byUuid.getReportingUser());
+		immunizationWithNanoseconds.setReportDate(byUuid.getReportDate());
+		immunizationService.ensurePersisted(immunizationWithNanoseconds);
 
 		assertEquals(changeDate.getTime(), immunizationService.getByUuid("ZZZZZZ-ZZZZZZ-ZZZZZZ-ZZZZZZ").getChangeDate().getTime());
 
