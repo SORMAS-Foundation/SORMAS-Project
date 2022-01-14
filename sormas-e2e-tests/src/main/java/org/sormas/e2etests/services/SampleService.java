@@ -114,7 +114,7 @@ public class SampleService {
         .testResultsComment(currentTimeMillis + "Comment on Edit Pathogen requests or received")
         .build();
   }
-  
+
   public Sample buildPathogenTestResultType(String testType) {
     long currentTimeMillis = System.currentTimeMillis();
     String testedDiseaseType;
