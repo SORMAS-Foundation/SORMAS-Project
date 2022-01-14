@@ -1,4 +1,5 @@
 @UI @Sanity @Sample @PathogenTest
+
 Feature: Sample Functionalities
 
   Scenario: Edit a new Sample
@@ -17,6 +18,7 @@ Feature: Sample Functionalities
     When I change all Sample fields and save
     Then I check the edited Sample is correctly displayed on Edit Sample page
 
+  @issue=SORDEV-5492
   Scenario: Add a Pathogen test from Samples with IgM test type and verify the fields
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -36,6 +38,7 @@ Feature: Sample Functionalities
     And I check that if Four Fold Increase Antibody Titer displayed
     And I delete the Pathogen test
 
+  @issue=SORDEV-5492
   Scenario: Add a Pathogen test from Samples with IgG test type and verify the fields
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -55,6 +58,7 @@ Feature: Sample Functionalities
     And I check that if Four Fold Increase Antibody Titer displayed
     And I delete the Pathogen test
 
+  @issue=SORDEV-5492
   Scenario: Add a Pathogen test from Samples with PCR RT PCR test type and verify the fields
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -74,6 +78,7 @@ Feature: Sample Functionalities
     And I check that if PCR RT PCR fields are correctly displayed
     And I delete the Pathogen test
 
+  @issue=SORDEV-5492
   Scenario: Add a Pathogen test from Samples with CQ Value Detection test type and verify the fields
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -93,6 +98,7 @@ Feature: Sample Functionalities
     And I check that if CQ CT Value field is correctly displayed
     And I delete the Pathogen test
 
+  @issue=SORDEV-5492
   Scenario: Add a Pathogen test from Samples with Sequencing test type and verify the fields
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -112,6 +118,7 @@ Feature: Sample Functionalities
     And I check that if Sequencing or DNA Microarray field is correctly displayed
     And I delete the Pathogen test
 
+  @issue=SORDEV-5492
   Scenario: Add a Pathogen test from Samples with DNA Microarray test type and verify the fields
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -131,6 +138,7 @@ Feature: Sample Functionalities
     And I check that if Sequencing or DNA Microarray field is correctly displayed
     And I delete the Pathogen test
 
+  @issue=SORDEV-5492
   Scenario: Add a Pathogen test from Samples with Other test type and verify the fields
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
