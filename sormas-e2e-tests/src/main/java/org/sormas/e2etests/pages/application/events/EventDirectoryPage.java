@@ -36,6 +36,7 @@ public class EventDirectoryPage {
   public static final By EVENT_ACTIONS_TABLE_ROW =
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By EVENT_ACTIONS_TABLE_DATA = By.tagName("td");
+  public static final By BACK_TO_PARTICIPANT_LIST = By.id("tab-events-eventparticipants");
 
   public static By getByEventUuid(String eventUuid) {
     return By.cssSelector("a[title='" + eventUuid + "']");

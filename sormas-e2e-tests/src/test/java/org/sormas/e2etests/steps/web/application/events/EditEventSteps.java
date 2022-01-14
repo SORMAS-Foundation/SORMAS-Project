@@ -143,6 +143,7 @@ public class EditEventSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
           if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP, 15)) {
             webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIO_BUTTON);
+            webDriverHelpers.scrollToElement(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
             webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
           }
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
@@ -150,8 +151,44 @@ public class EditEventSteps implements En {
           person = collectPersonUuid();
           selectResponsibleRegion("Region1");
           selectResponsibleDistrict("District11");
-          webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
+          //     webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
+          webDriverHelpers.scrollToElement(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(PERSON_DATA_SAVED);
+        });
+
+    When(
+        "I add empty participant data and check if error display correctly",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+          webDriverHelpers.checkWebElementContainsText(PARAGRAPH_TEXT, "First name");
+          webDriverHelpers.clickOnWebElementBySelector(PARAGRAPH_TEXT);
+        });
+
+    When(
+        "I add participant first name only and check if error display correctly",
+        () -> {
+          webDriverHelpers.fillInWebElement(PARTICIPANT_FIRST_NAME_INPUT, faker.name().firstName());
+          webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+          webDriverHelpers.checkWebElementContainsText(PARAGRAPH_TEXT, "Last name");
+          webDriverHelpers.clickOnWebElementBySelector(PARAGRAPH_TEXT);
+        });
+
+    When(
+        "I add participant first and last name only and check if error display correctly",
+        () -> {
+          webDriverHelpers.fillInWebElement(PARTICIPANT_FIRST_NAME_INPUT, faker.name().firstName());
+          webDriverHelpers.fillInWebElement(PARTICIPANT_LAST_NAME_INPUT, faker.name().lastName());
+          webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+          webDriverHelpers.checkWebElementContainsText(PARAGRAPH_TEXT, "Sex");
+          webDriverHelpers.clickOnWebElementBySelector(PARAGRAPH_TEXT);
+        });
+    When(
+        "I discard changes in participant window",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON);
         });
 
     When(
