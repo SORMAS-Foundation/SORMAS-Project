@@ -694,6 +694,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), 4, EntityDto.NO_LAST_SYNCED_UUID);
 		assertEquals(0, personsAfterT1.size());
 
+		personsAfterT1 = getPersonFacade().getPersonsAfter(new Date(personRead2.getChangeDate().getTime() - 1L), 4, EntityDto.NO_LAST_SYNCED_UUID);
+		assertEquals(1, personsAfterT1.size());
+
 		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), 4, "AAAAAA-AAAAAA-AAAAAA-AAAAAA");
 		assertEquals(1, personsAfterT1.size());
 

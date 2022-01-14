@@ -27,6 +27,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
@@ -135,6 +136,10 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(3, allAfterWithUuid.size());
 
 		ImmunizationDto immunizationRead = allAfter.get(0);
+		List<ImmunizationDto> allAfterOneMillisecondBefore =
+			getImmunizationFacade().getAllAfter(new Date(immunizationRead.getChangeDate().getTime() - 1L), 5, EntityDto.NO_LAST_SYNCED_UUID);
+		assertEquals(3, allAfterOneMillisecondBefore.size());
+
 		List<ImmunizationDto> allAfterSameTime =
 			getImmunizationFacade().getAllAfter(immunizationRead.getChangeDate(), 5, "AAAAAA-AAAAAA-AAAAAA-AAAAAA");
 		assertEquals(3, allAfterSameTime.size());

@@ -39,6 +39,7 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -266,8 +267,12 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		List<TaskDto> allActiveTasksAfterLargeBatch = getTaskFacade().getAllActiveTasksAfter(null, 10, null);
 		assertEquals(6, allActiveTasksAfterLargeBatch.size());
 
-		// getAllActiveTasks batched with Uuid
 		TaskDto taskRead = allActiveTasksAfterBatched.get(2);
+		List<TaskDto> allActiveTasksAfterBatchedOneMillisecondBefore =
+			getTaskFacade().getAllActiveTasksAfter(new Date(taskRead.getChangeDate().getTime() - 1L), 10, EntityDto.NO_LAST_SYNCED_UUID);
+		assertEquals(4, allActiveTasksAfterBatchedOneMillisecondBefore.size());
+
+		// getAllActiveTasks batched with Uuid
 		List<TaskDto> allActiveTasksAfterBatchedSameTime =
 			getTaskFacade().getAllActiveTasksAfter(taskRead.getChangeDate(), 10, "AAAAAA-AAAAAA-AAAAAA-AAAAAA");
 		assertEquals(4, allActiveTasksAfterBatchedSameTime.size());
