@@ -40,7 +40,6 @@ public class BaseSteps implements StepLifecycleListener {
 
   public static RemoteWebDriver driver;
   private final DriverManager driverManager;
-  private final String textFilePath = "customReports/data/results.txt";
 
   @Inject
   public BaseSteps(DriverManager driverManager) {

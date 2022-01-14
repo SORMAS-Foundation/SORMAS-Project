@@ -88,7 +88,11 @@ public abstract class ComparisonHelper {
       }
       pojoFields = BeanUtils.describe(pojo);
     } catch (Exception e) {
-      throw new Exception("Couldn't get Entity: " + pojo.toString() + " due to: " + e.getMessage());
+      throw new Exception(
+          "Couldn't get Entity: "
+              + pojo.getClass().getCanonicalName()
+              + " due to: "
+              + e.getMessage());
     }
     try {
       return pojoFields.get(fieldName).toUpperCase();
