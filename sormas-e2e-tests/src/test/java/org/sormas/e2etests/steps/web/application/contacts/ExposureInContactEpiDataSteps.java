@@ -6,11 +6,11 @@ import static org.sormas.e2etests.pages.application.contacts.EditEpidemiological
 import static org.sormas.e2etests.pages.application.contacts.EditEpidemiologicalDataContactPage.LARGE_OUTBREAKS_AREA_CHECKBOX;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.*;
 
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.ExposureDetails;
 import org.sormas.e2etests.pojo.web.ExposureInvestigation;
 import org.sormas.e2etests.services.ExposureDetailsService;
@@ -39,7 +39,7 @@ public class ExposureInContactEpiDataSteps implements En {
         () -> {
           EPIDATA_FOR_LAST_CREATED_CONTACT_URL =
               environmentUrl
-                  + "/sormas-ui/#!contacts/epidata/"
+                  + "/sormas-webdriver/#!contacts/epidata/"
                   + apiState.getCreatedContact().getUuid();
           webDriverHelpers.accessWebSite(EPIDATA_FOR_LAST_CREATED_CONTACT_URL);
           webDriverHelpers.waitForPageLoaded();
@@ -65,12 +65,11 @@ public class ExposureInContactEpiDataSteps implements En {
         "I am checking all data is saved and displayed on edit Exposure page",
         () -> {
           exposureDetailsOutput = getExposureDetailsOutput();
-
-          Truth.assertThat(exposureDetailsOutput).isEqualTo(exposureDetailsInput);
+          ComparisonHelper.compareEqualEntities(exposureDetailsOutput, exposureDetailsInput);
         });
   }
 
-  public void createExposureInvestigationOnContact(
+  private void createExposureInvestigationOnContact(
       ExposureInvestigation exposureInvestigationInput) {
     webDriverHelpers.clickWebElementByText(
         EXPOSURE_DETAILS_KNOWN_CHECKBOX, exposureInvestigationInput.getExposureDetailsKnown());
@@ -84,7 +83,7 @@ public class ExposureInContactEpiDataSteps implements En {
     }
   }
 
-  public void addNewExposureEntry(ExposureDetails exposureDetailsInput) {
+  private void addNewExposureEntry(ExposureDetails exposureDetailsInput) {
     webDriverHelpers.fillInWebElement(
         START_OF_EXPOSURE_INPUT, exposureDetailsInput.getStartOfExposure());
     webDriverHelpers.fillInWebElement(
@@ -141,9 +140,8 @@ public class ExposureInContactEpiDataSteps implements En {
     webDriverHelpers.fillInWebElement(GPS_ACCURACY_INPUT, exposureDetailsInput.getGpsAccuracy());
   }
 
-  public ExposureDetails getExposureDetailsOutput() {
+  private ExposureDetails getExposureDetailsOutput() {
     return ExposureDetails.builder()
-        // new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(date).replaceAll("0$", "");
         .startOfExposure(
             webDriverHelpers
                 .getValueFromWebElement(START_OF_EXPOSURE_INPUT)

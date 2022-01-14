@@ -15,7 +15,7 @@ import org.sormas.e2etests.services.ImmunizationService;
 
 public class CreateNewImmunizationSteps implements En {
 
-  public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static Immunization immunization;
   private final WebDriverHelpers webDriverHelpers;
 
@@ -52,68 +52,68 @@ public class CreateNewImmunizationSteps implements En {
         });
   }
 
-  public void fillDateOfReport(LocalDate date) {
+  private void fillDateOfReport(LocalDate date) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_REPORT_INPUT, formatter.format(date));
   }
 
-  public void fillStartData(LocalDate date) {
+    private void fillStartData(LocalDate date) {
     webDriverHelpers.fillInWebElement(START_DATA_INPUT, DATE_FORMATTER.format(date));
   }
 
-  public void selectManagementStatusOption(String managementStatusOption) {
+    private void selectManagementStatusOption(String managementStatusOption) {
     webDriverHelpers.clickWebElementByText(EVENT_MANAGEMENT_STATUS_OPTIONS, managementStatusOption);
   }
 
-  public void selectImmunizationStatus(String immunizationStatus) {
+    private void selectImmunizationStatus(String immunizationStatus) {
     webDriverHelpers.clickWebElementByText(EVENT_MANAGEMENT_STATUS_OPTIONS, immunizationStatus);
   }
 
-  public void fillEndData(LocalDate date) {
+    private void fillEndData(LocalDate date) {
     webDriverHelpers.fillInWebElement(END_DATA_INPUT, DATE_FORMATTER.format(date));
   }
 
-  private void selectFacilityCategory(String facilityCategory) {
+    private void selectFacilityCategory(String facilityCategory) {
     webDriverHelpers.selectFromCombobox(FACILITY_CATEGORY_COMBOBOX, facilityCategory);
   }
 
-  public void selectFacilityType(String facilityType) {
+    private void selectFacilityType(String facilityType) {
     webDriverHelpers.selectFromCombobox(FACILITY_TYPE_COMBOBOX, facilityType);
   }
 
-  public void selectFacilityName(String facilityName) {
+    private void selectFacilityName(String facilityName) {
     webDriverHelpers.selectFromCombobox(FACILITY_COMBOBOX, facilityName);
   }
 
-  public void fillFacilityNameAndDescription(String facilityName) {
+    private void fillFacilityNameAndDescription(String facilityName) {
     webDriverHelpers.fillInWebElement(FACILITY_DESCRIPTION, facilityName);
   }
 
-  public void fillExternalId(String externalId) {
+    private void fillExternalId(String externalId) {
     webDriverHelpers.fillInWebElement(EXTERNAL_ID_INPUT, externalId);
   }
 
-  public void fillDisease(String disease) {
+    private void fillDisease(String disease) {
     webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
   }
 
-  public void fillMeansOfImmunization(String meansOfImmunization) {
+    private void fillMeansOfImmunization(String meansOfImmunization) {
     webDriverHelpers.selectFromCombobox(MEANS_OF_IMMUNIZATIONS_COMBOBOX, meansOfImmunization);
   }
 
-  public void selectResponsibleRegion(String selectResponsibleRegion) {
+    private void selectResponsibleRegion(String selectResponsibleRegion) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_REGION_COMBOBOX, selectResponsibleRegion);
   }
 
-  public void selectResponsibleDistrict(String responsibleDistrict) {
+    private void selectResponsibleDistrict(String responsibleDistrict) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX, responsibleDistrict);
   }
 
-  public void selectResponsibleCommunity(String responsibleCommunity) {
+    private void selectResponsibleCommunity(String responsibleCommunity) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX, responsibleCommunity);
   }
 
-  public void fillFirstName(String firstName) {
+    private void fillFirstName(String firstName) {
     webDriverHelpers.fillInWebElement(FIRST_NAME_INPUT, firstName);
   }
 
@@ -121,7 +121,7 @@ public class CreateNewImmunizationSteps implements En {
     webDriverHelpers.fillInWebElement(LAST_NAME_INPUT, lastName);
   }
 
-  public void fillDateOfBirth(LocalDate localDate) {
+    private void fillDateOfBirth(LocalDate localDate) {
     webDriverHelpers.selectFromCombobox(
         DATE_OF_BIRTH_YEAR_COMBOBOX, String.valueOf(localDate.getYear()));
     webDriverHelpers.selectFromCombobox(
@@ -131,29 +131,28 @@ public class CreateNewImmunizationSteps implements En {
         DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
   }
 
-  public void selectSex(String sex) {
+    private void selectSex(String sex) {
     webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
   }
 
-  public void fillNationalHealthId(String nationalHealthId) {
+    private void fillNationalHealthId(String nationalHealthId) {
     webDriverHelpers.fillInWebElement(NATIONAL_HEALTH_ID_INPUT, nationalHealthId);
   }
 
-  public void fillPassportNumber(String passportNumber) {
+    private void fillPassportNumber(String passportNumber) {
     webDriverHelpers.fillInWebElement(PASSPORT_NUMBER_INPUT, passportNumber);
   }
 
-  public void selectPresentConditionOfPerson(String presentConditionOfPerson) {
+    private void selectPresentConditionOfPerson(String presentConditionOfPerson) {
     webDriverHelpers.selectFromCombobox(
         PRESENT_CONDITION_OF_PERSON_COMBOBOX, presentConditionOfPerson);
   }
 
-  public void fillPrimaryPhoneNumber(String primaryPhoneNumber) {
+    private void fillPrimaryPhoneNumber(String primaryPhoneNumber) {
     webDriverHelpers.fillInWebElement(PRIMARY_PHONE_NUMBER_INPUT, primaryPhoneNumber);
   }
 
-  public void fillPrimaryEmailAddress(String primaryPhoneNumber) {
+    private void fillPrimaryEmailAddress(String primaryPhoneNumber) {
     webDriverHelpers.fillInWebElement(PRIMARY_EMAIL_ADDRESS_INPUT, primaryPhoneNumber);
   }
 }
-
