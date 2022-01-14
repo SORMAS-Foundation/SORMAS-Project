@@ -65,11 +65,10 @@ public class PointOfEntryFacadeEjb
 
 	@Inject
 	protected PointOfEntryFacadeEjb(PointOfEntryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(PointOfEntry.class, PointOfEntryDto.class, service, featureConfiguration, userService);
+		super(PointOfEntry.class, PointOfEntryDto.class, service, featureConfiguration, userService, Validations.importPointOfEntryAlreadyExists);
 	}
 
 	public static PointOfEntryReferenceDto toReferenceDto(PointOfEntry entity) {
-
 		if (entity == null) {
 			return null;
 		}
@@ -137,9 +136,14 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
-	public PointOfEntryDto save(PointOfEntryDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
-		validate(dtoToSave);
-		return save(dtoToSave, allowMerge, Validations.importPointOfEntryAlreadyExists);
+	public PointOfEntryDto save(PointOfEntryDto dto, boolean allowMerge) {
+		validate(dto);
+		return super.save(dto, allowMerge);
+	}
+
+	@Override
+	public PointOfEntryDto saveUnchecked(PointOfEntryDto dto) {
+		return save(dto);
 	}
 
 	@Override

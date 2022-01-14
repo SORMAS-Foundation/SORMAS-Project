@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.ui.docgeneration;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
@@ -30,14 +33,20 @@ import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.ui.document.DocumentListComponent;
 
 public class EventDocumentLayout extends AbstractDocgenerationLayout {
 
 	private final DocumentInputStreamSupplier documentInputStreamSupplier;
+	private DocumentListComponent documentListComponent;
 
-	public EventDocumentLayout(Function<String, String> fileNameFunction, DocumentInputStreamSupplier documentInputStreamSupplier) {
-		super(I18nProperties.getCaption(Captions.DocumentTemplate_EventHandout), fileNameFunction);
+	public EventDocumentLayout(
+		DocumentListComponent documentListComponent,
+		Function<String, String> fileNameFunction,
+		DocumentInputStreamSupplier documentInputStreamSupplier) {
+		super(I18nProperties.getCaption(Captions.DocumentTemplate_EventHandout), fileNameFunction, isNull(documentListComponent));
 
+		this.documentListComponent = documentListComponent;
 		this.documentInputStreamSupplier = documentInputStreamSupplier;
 
 		init();
@@ -57,11 +66,15 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 	protected StreamResource createStreamResource(String templateFile, String filename) {
 		return new StreamResource((StreamResource.StreamSource) () -> {
 			try {
-				return documentInputStreamSupplier.get(templateFile, readAdditionalVariables());
+				return documentInputStreamSupplier.get(templateFile, readAdditionalVariables(), checkBoxUploadGeneratedDoc.getValue());
 			} catch (Exception e) {
 				new Notification(I18nProperties.getString(Strings.errorProcessingTemplate), e.getMessage(), Notification.Type.ERROR_MESSAGE)
 					.show(Page.getCurrent());
 				return null;
+			} finally {
+				if (nonNull(documentListComponent)) {
+					documentListComponent.reload();
+				}
 			}
 		}, filename);
 	}
@@ -73,6 +86,6 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 
 	interface DocumentInputStreamSupplier {
 
-		InputStream get(String templateFile, Properties properties) throws DocumentTemplateException;
+		InputStream get(String templateFile, Properties properties, Boolean shouldUploadGeneratedDoc) throws DocumentTemplateException;
 	}
 }

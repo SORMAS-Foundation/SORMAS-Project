@@ -118,8 +118,10 @@ public class LabMessagesView extends AbstractView {
 		gridLayout.addComponent(createStatusFilterBar());
 
 		grid = new LabMessageGrid(criteria);
-		gridLayout.addComponent(grid);
+		grid.setDataProviderListener(e -> updateStatusButtons());
 		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
+
+		gridLayout.addComponent(grid);
 
 		gridLayout.setMargin(true);
 		styleGridLayout(gridLayout);

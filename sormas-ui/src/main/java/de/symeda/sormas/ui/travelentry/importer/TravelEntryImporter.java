@@ -119,7 +119,7 @@ public class TravelEntryImporter extends DataImporter {
 				}
 
 				if (saveResult.isError()) {
-					writeImportError(values, importResult.getMessage());
+					writeImportError(values, saveResult.getMessage());
 					return ImportLineResult.ERROR;
 				}
 			}

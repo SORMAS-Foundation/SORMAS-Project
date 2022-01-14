@@ -38,6 +38,8 @@ import java.io.IOException;
 @ServletSecurity(@HttpConstraint())
 public class CallbackServlet extends HttpServlet {
 
+	private static final long serialVersionUID = 7429937658924321436L;
+
 	/**
 	 * Handles the HTTP <code>GET</code> method.
 	 *

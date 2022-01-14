@@ -34,14 +34,16 @@ public interface QuarantineOrderFacade {
 		ReferenceDto rootEntityReference,
 		SampleReferenceDto sampleReference,
 		PathogenTestReferenceDto pathogenTestReference,
-		Properties extraProperties)
+		Properties extraProperties,
+		Boolean shouldUploadGeneratedDoc)
 		throws DocumentTemplateException;
 
 	Map<ReferenceDto, byte[]> getGeneratedDocuments(
 		String templateName,
 		DocumentWorkflow workflow,
 		List<ReferenceDto> rootEntityReferences,
-		Properties extraProperties)
+		Properties extraProperties,
+		Boolean shouldUploadGeneratedDoc)
 		throws DocumentTemplateException;
 
 	List<String> getAvailableTemplates(DocumentWorkflow workflow);
