@@ -11,10 +11,6 @@
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
 
-    <properties>
-        <payara.version>5.194</payara.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>de.symeda.sormas</groupId>

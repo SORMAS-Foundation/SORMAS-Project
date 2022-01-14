@@ -78,24 +78,4 @@
 	<security-role>
 	  <role-name>CASE_OFFICER</role-name>
 	</security-role>
-  	
-  	<!-- 
-  	<security-constraint>
-    	<web-resource-collection>
-        	<web-resource-name>public</web-resource-name>
-        	<url-pattern>/login/*</url-pattern>
-        	<url-pattern>/VAADIN/*</url-pattern>
-    	</web-resource-collection>
-	</security-constraint>
-
-	<security-constraint>
-		<web-resource-collection>
-			<web-resource-name>private</web-resource-name>
-			<url-pattern>/*</url-pattern>
-		</web-resource-collection>
-	    <auth-constraint>
-      		<description>Only valid users are allowed</description>
-      		<role-name>USER</role-name>
-    	</auth-constraint>
-	</security-constraint> -->
 </web-app>

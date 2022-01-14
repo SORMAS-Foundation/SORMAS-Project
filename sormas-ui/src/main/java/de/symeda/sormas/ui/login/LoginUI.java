@@ -37,13 +37,21 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinServletService;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
-
 import de.symeda.sormas.api.AuthProvider;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasErrorHandler;
 import de.symeda.sormas.ui.login.LoginScreen.LoginListener;
 import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
+import fish.payara.security.openid.api.OpenIdContext;
+
+import javax.inject.Inject;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Main UI class of the application that shows either the login screen or the
@@ -86,6 +94,20 @@ public class LoginUI extends UI {
 
 	}
 
+	public static class OidcLogoutServlet extends HttpServlet {
+
+		@Inject
+		private OpenIdContext openIdContext;
+
+		@Override
+		protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+			AuthProvider authProvider = AuthProvider.getProvider(FacadeProvider.getConfigFacade());
+			if (AuthProvider.KEYCLOAK.equals(authProvider.getName()) && request != null && response != null) {
+				openIdContext.logout(request, response);
+			}
+		}
+	}
+
 	@WebListener
 	public static class ServletStartupListener implements ServletContextListener {
 
@@ -102,9 +124,14 @@ public class LoginUI extends UI {
 				servletRegistration.setServletSecurity(new ServletSecurityElement());
 				servletRegistration.setInitParameter(VaadinSession.UI_PARAMETER, LoginUI.class.getName());
 				servletRegistration.setInitParameter(Constants.SERVLET_PARAMETER_PRODUCTION_MODE, "true");
-				logger.debug("SORMAS servlet disabled");
+				logger.debug("SORMAS login servlet enabled");
 			} else {
-				logger.debug("SORMAS servlet enabled");
+				logger.debug("SORMAS login servlet disabled");
+				ServletRegistration.Dynamic servletRegistration = ctx.addServlet("OidcLogoutServlet", OidcLogoutServlet.class);
+				servletRegistration.addMapping("/logout/*");
+				servletRegistration.setAsyncSupported(true);
+				servletRegistration.setServletSecurity(new ServletSecurityElement());
+				logger.debug("OIDC logout servlet enabled");
 			}
 		}
 	}
