@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.cases;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 
+import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -79,6 +80,25 @@ public class EditCaseSteps implements En {
                   "lastName",
                   "dateOfBirth"));
         });
+
+      When(
+              "I check the created from contact data is correctly displayed on Edit case page",
+              () -> {
+                  aCase = collectCasePersonData();
+                  createdCase = CreateNewCaseSteps.caze;
+                  ComparisonHelper.compareEqualFieldsOfEntities(
+                          aCase,
+                          createdCase,
+                          List.of(
+                                  "dateOfReport",
+                                  "disease",
+                                  "externalId",
+                                  "responsibleRegion",
+                                  "responsibleDistrict",
+                                  "responsibleCommunity",
+                                  "placeOfStay",
+                                  "placeDescription"));
+              });
 
     When(
         "I collect the case person UUID displayed on Edit case page",

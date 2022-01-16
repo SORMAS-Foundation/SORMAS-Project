@@ -58,4 +58,6 @@ public class CreateNewCasePage {
   public static final By DATE_OF_SYMPTOM_ONSET_INPUT = By.cssSelector(".v-window #onsetDate input");
   public static final By PRIMARY_PHONE_NUMBER_INPUT = By.cssSelector(".v-window #phone");
   public static final By PRIMARY_EMAIL_ADDRESS_INPUT = By.cssSelector(".v-window #emailAddress");
+  public static final By CONTACT_CASE_SAVE_BUTTON =
+          By.xpath("/html/body/div[2]/div[3]/div/div/div[3]/div/div/div[2]/div/div/div[3]/div");
 }
