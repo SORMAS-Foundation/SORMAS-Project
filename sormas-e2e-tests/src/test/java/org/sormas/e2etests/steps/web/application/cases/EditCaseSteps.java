@@ -22,6 +22,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 
+import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -148,7 +149,7 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               NavBarPage.SAMPLE_BUTTON);
-          String caseLinkPath = "/sormas-webdriver/#!cases/data/";
+          String caseLinkPath = "/sormas-ui/#!cases/data/";
           String uuid = aCase.getUuid();
           webDriverHelpers.accessWebSite(environmentUrl + caseLinkPath + uuid);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(REPORT_DATE_INPUT);
@@ -244,7 +245,6 @@ public class EditCaseSteps implements En {
     When(
         "I delete the case",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
           webDriverHelpers.scrollToElement(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
