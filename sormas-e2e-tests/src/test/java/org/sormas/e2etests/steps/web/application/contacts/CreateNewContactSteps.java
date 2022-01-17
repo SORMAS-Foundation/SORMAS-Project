@@ -19,11 +19,9 @@
 package org.sormas.e2etests.steps.web.application.contacts;
 
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.*;
-import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.RESPONSIBLE_COMMUNITY_COMBOBOX;
-import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.RESPONSIBLE_DISTRICT_COMBOBOX;
-import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.RESPONSIBLE_REGION_COMBOBOX;
-import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SEX_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CREATED_POPUP;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -34,6 +32,7 @@ import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Contact;
 import org.sormas.e2etests.services.ContactService;
+import org.sormas.e2etests.state.ApiState;
 
 public class CreateNewContactSteps implements En {
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
@@ -41,7 +40,7 @@ public class CreateNewContactSteps implements En {
   public static Contact contact;
 
   @Inject
-  public CreateNewContactSteps(WebDriverHelpers webDriverHelpers, ContactService contactService) {
+  public CreateNewContactSteps(WebDriverHelpers webDriverHelpers, ContactService contactService, ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -74,6 +73,65 @@ public class CreateNewContactSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
         });
+      When(
+              "^I fill a new contact form$",
+              () -> {
+                  contact = contactService.buildGeneratedContact();
+                  fillFirstName(contact.getFirstName());
+                  fillLastName(contact.getLastName());
+                  fillDateOfBirth(contact.getDateOfBirth());
+                  selectSex(contact.getSex());
+                  fillNationalHealthId(contact.getNationalHealthId());
+                  fillPassportNumber(contact.getPassportNumber());
+                  fillPrimaryPhoneNumber(contact.getPrimaryPhoneNumber());
+                  fillPrimaryEmailAddress(contact.getPrimaryEmailAddress());
+                  selectReturningTraveler(contact.getReturningTraveler());
+                  fillDateOfReport(contact.getReportDate());
+                  fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
+                  fillCaseIdInExternalSystem(contact.getCaseIdInExternalSystem());
+                  selectMultiDayContact(contact.getMultiDay());
+                  fillDateOfFirstContact(contact.getDateOfFirstContact());
+                  fillDateOfLastContact(contact.getDateOfLastContact());
+                  fillCaseOrEventInformation(contact.getCaseOrEventInformation());
+                  selectResponsibleRegion(contact.getResponsibleRegion());
+                  selectResponsibleDistrict(contact.getResponsibleDistrict());
+                  selectResponsibleCommunity(contact.getResponsibleCommunity());
+                  selectTypeOfContact(contact.getTypeOfContact());
+                  fillAdditionalInformationOnTheTypeOfContact(
+                          contact.getAdditionalInformationOnContactType());
+                  selectContactCategory(contact.getContactCategory().toUpperCase());
+                  fillRelationshipWithCase(contact.getRelationshipWithCase());
+                  fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
+              });
+      When(
+              "^I click CHOOSE CASE button$",
+              () ->
+                  webDriverHelpers.clickOnWebElementBySelector(CHOOSE_CASE_BUTTON)
+              );
+      When(
+              "^I search for the last case uuid in the CHOOSE SOURCE Contact window$",
+              () -> {
+                  webDriverHelpers.fillInWebElement(
+                          SOURCE_CASE_WINDOW_CONTACT, apiState.getCreatedCase().getUuid());
+                  webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+              });
+      When(
+              "^I open the first found result in the CHOOSE SOURCE Contact window$",
+              () -> {
+                  webDriverHelpers.clickOnWebElementBySelector(
+                          SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION);
+                  webDriverHelpers.waitForRowToBeSelected(SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION);
+                  webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                          SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON);
+                  webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON);
+              });
+      When(
+              "^I click SAVE a new contact$",
+              () -> {
+                  webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+                  webDriverHelpers.waitForPageLoaded();
+                  webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
+              });
   }
 
   private void fillFirstName(String firstName) {
@@ -171,4 +229,11 @@ public class CreateNewContactSteps implements En {
     webDriverHelpers.fillInWebElement(
         DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT, descriptionOfHowContactTookPlace);
   }
+    public void selectMultiDayContact(String multiDayContact) {
+        webDriverHelpers.clickWebElementByText(MULTI_DAY_CONTACT_LABEL, multiDayContact);
+    }
+    public void fillDateOfFirstContact(LocalDate date) {
+        webDriverHelpers.clearAndFillInWebElement(FIRST_DAY_CONTACT_DATE, formatter.format(date));
+    }
+
 }
