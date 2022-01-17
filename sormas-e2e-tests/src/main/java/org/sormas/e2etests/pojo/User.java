@@ -51,7 +51,7 @@ public class User {
   String gpsLatitude;
   String gpsLongitude;
   String gpsAccuracy;
-  String active;
+  Boolean active;
   String userName;
   String userRole;
   String limitedDisease;

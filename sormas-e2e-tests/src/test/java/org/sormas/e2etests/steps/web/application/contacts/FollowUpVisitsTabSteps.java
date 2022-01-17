@@ -26,13 +26,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.pojo.web.FollowUpVisit;
 import org.sormas.e2etests.state.ApiState;
 
 public class FollowUpVisitsTabSteps implements En {
 
-  private final WebDriverHelpers webDriverHelpers;
-  public static FollowUpVisit followUpVisit;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
   @Inject
@@ -40,14 +37,13 @@ public class FollowUpVisitsTabSteps implements En {
       WebDriverHelpers webDriverHelpers,
       ApiState apiState,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
-    this.webDriverHelpers = webDriverHelpers;
 
     When(
         "^I am accessing the Follow-up visits tab using of created contact via api$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               NavBarPage.CONTACTS_BUTTON);
-          String visitLinkPath = "/sormas-ui/#!contacts/visits/";
+          String visitLinkPath = "/sormas-webdriver/#!contacts/visits/";
           String uuid = apiState.getCreatedContact().getUuid();
           String URL = environmentUrl + visitLinkPath + uuid;
           webDriverHelpers.accessWebSite(URL);
