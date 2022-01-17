@@ -69,3 +69,13 @@ Feature: Case end to end tests
     And I click on the Dashboard button from navbar and access Surveillance Dashboard
     When I am accessing the Symptoms tab using of created case via api
     And I check the created data is correctly displayed on Symptoms tab page
+
+@issue=SORDEV-5496
+  Scenario: Generate case document
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I open last created case
+    And I click on the Create button from Case Document Templates
+    When I create a case document from template
+    Then I verify that the generated case document is downloaded
+    And I verify that the downloaded case document is correctly named
