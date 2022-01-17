@@ -26,8 +26,6 @@ public class EditContactPersonPage {
   public static final By USER_INFORMATION =
       By.cssSelector(".v-slot.v-slot-h2.v-slot-vspace-top-none.v-slot-primary");
   public static final By SEX_INPUT = By.cssSelector("#sex input");
-  public static final By PASSPORT_NUMBER_INPUT = By.cssSelector("#passportNumber");
-  public static final By NATIONAL_HEALTH_ID_INPUT = By.cssSelector("#nationalHealthId");
   public static final By EMAIL_FIELD =
       By.xpath(
           "(//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Email')])[1]/../following-sibling::td//div");

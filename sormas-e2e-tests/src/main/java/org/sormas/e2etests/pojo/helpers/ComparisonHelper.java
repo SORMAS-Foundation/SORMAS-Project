@@ -28,12 +28,12 @@ public abstract class ComparisonHelper {
   private static SoftAssert softly;
 
   @SneakyThrows
-  public static void compareEqualEntities(Object pojo1, Object pojo2) {
+  public static void compareEqualEntities(Object pojoToCompare, Object referencePojo) {
     softly = new SoftAssert();
-    for (String key : BeanUtils.describe(pojo1).keySet()) {
+    for (String key : BeanUtils.describe(referencePojo).keySet()) {
       softly.assertEquals(
-          getEntityFieldValue(pojo1, key),
-          getEntityFieldValue(pojo2, key),
+          getEntityFieldValue(pojoToCompare, key),
+          getEntityFieldValue(referencePojo, key),
           "Value for: [" + key + "] field doesn't match.");
     }
     softly.assertAll();
@@ -41,24 +41,24 @@ public abstract class ComparisonHelper {
 
   @SneakyThrows
   public static void compareEqualFieldsOfEntities(
-      Object pojo1, Object pojo2, List<String> fieldsList) {
+      Object pojoToCompare, Object referencePojo, List<String> fieldsList) {
     softly = new SoftAssert();
     for (String field : fieldsList) {
       softly.assertEquals(
-          getEntityFieldValue(pojo1, field),
-          getEntityFieldValue(pojo2, field),
+          getEntityFieldValue(pojoToCompare, field),
+          getEntityFieldValue(referencePojo, field),
           "Value for: " + field + " doesn't match");
     }
     softly.assertAll();
   }
 
   @SneakyThrows
-  public static void compareDifferentEntities(Object pojo1, Object pojo2) {
+  public static void compareDifferentEntities(Object pojoToCompare, Object referencePojo) {
     softly = new SoftAssert();
-    for (String key : BeanUtils.describe(pojo1).keySet()) {
+    for (String key : BeanUtils.describe(referencePojo).keySet()) {
       softly.assertNotEquals(
-          getEntityFieldValue(pojo1, key),
-          getEntityFieldValue(pojo2, key),
+          getEntityFieldValue(pojoToCompare, key),
+          getEntityFieldValue(referencePojo, key),
           "Value for: " + key + " doesn't match");
     }
     softly.assertAll();
@@ -66,12 +66,12 @@ public abstract class ComparisonHelper {
 
   @SneakyThrows
   public static void compareDifferentFieldsOfEntities(
-      Object pojo1, Object pojo2, List<String> fieldsList) {
+      Object pojoToCompare, Object referencePojo, List<String> fieldsList) {
     softly = new SoftAssert();
     for (String field : fieldsList) {
       softly.assertNotEquals(
-          getEntityFieldValue(pojo1, field),
-          getEntityFieldValue(pojo2, field),
+          getEntityFieldValue(pojoToCompare, field),
+          getEntityFieldValue(referencePojo, field),
           "Value for: " + field + " doesn't match");
     }
     softly.assertAll();

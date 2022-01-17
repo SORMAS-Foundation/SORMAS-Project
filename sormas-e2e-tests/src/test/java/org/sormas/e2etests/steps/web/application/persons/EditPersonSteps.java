@@ -71,8 +71,6 @@ public class EditPersonSteps implements En {
               List.of(
                   "firstName",
                   "lastName",
-                  "passportNumber",
-                  "nationalHealthId",
                   "externalId",
                   "externalToken",
                   "street",
@@ -100,9 +98,6 @@ public class EditPersonSteps implements En {
           fillDateOfBirth(newGeneratedPerson.getDateOfBirth());
           selectSex(newGeneratedPerson.getSex());
           selectPresentConditionOfPerson(newGeneratedPerson.getPresentConditionOfPerson());
-          fillNationalHealthId(newGeneratedPerson.getNationalHealthId());
-          fillNationalHealthId(newGeneratedPerson.getNationalHealthId());
-          fillPassportNumber(newGeneratedPerson.getPassportNumber());
           fillExternalId(newGeneratedPerson.getExternalId());
           fillExternalToken(newGeneratedPerson.getExternalToken());
           selectTypeOfOccupation(newGeneratedPerson.getTypeOfOccupation());
@@ -191,14 +186,6 @@ public class EditPersonSteps implements En {
 
   private void selectPresentConditionOfPerson(String condition) {
     webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_COMBOBOX, condition);
-  }
-
-  private void fillNationalHealthId(String nationalHealthId) {
-    webDriverHelpers.clearAndFillInWebElement(NATIONAL_HEALTH_ID_INPUT, nationalHealthId);
-  }
-
-  private void fillPassportNumber(String passportNumber) {
-    webDriverHelpers.clearAndFillInWebElement(PASSPORT_NUMBER_INPUT, passportNumber);
   }
 
   private void fillExternalId(String id) {
@@ -320,8 +307,6 @@ public class EditPersonSteps implements En {
         .salutation(webDriverHelpers.getValueFromWebElement(SALUTATION_INPUT))
         .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
         .presentConditionOfPerson(webDriverHelpers.getValueFromWebElement(PRESENT_CONDITION_INPUT))
-        .nationalHealthId(webDriverHelpers.getValueFromWebElement(NATIONAL_HEALTH_ID_INPUT))
-        .passportNumber(webDriverHelpers.getValueFromWebElement(PASSPORT_NUMBER_INPUT))
         .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
         .externalToken(webDriverHelpers.getValueFromWebElement(EXTERNAL_TOKEN_INPUT))
         .typeOfOccupation(webDriverHelpers.getValueFromWebElement(TYPE_OF_OCCUPATION_INPUT))

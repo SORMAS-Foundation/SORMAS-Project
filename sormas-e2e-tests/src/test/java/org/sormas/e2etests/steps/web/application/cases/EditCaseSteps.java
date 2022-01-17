@@ -201,6 +201,7 @@ public class EditCaseSteps implements En {
     When(
         "I delete the case",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
           webDriverHelpers.scrollToElement(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
@@ -291,7 +292,6 @@ public class EditCaseSteps implements En {
   }
 
   private LocalDate getDateReceivedAtDistrictLevel() {
-
     String dateOfReport =
         webDriverHelpers.getValueFromWebElement(DATE_RECEIVED_AT_DISTRICT_LEVEL_INPUT);
     return LocalDate.parse(dateOfReport, DATE_FORMATTER);

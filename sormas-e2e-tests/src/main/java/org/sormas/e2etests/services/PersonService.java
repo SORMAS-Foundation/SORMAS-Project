@@ -41,20 +41,11 @@ public class PersonService {
   }
 
   public Person updateExistentPerson(
-      Person person,
-      String firstName,
-      String lastName,
-      String uuid,
-      String passportNumber,
-      String nationalHealthId,
-      String email,
-      String phone) {
+      Person person, String firstName, String lastName, String uuid, String email, String phone) {
     return person.toBuilder()
         .firstName(firstName)
         .lastName(lastName)
         .uuid(uuid)
-        .passportNumber(passportNumber)
-        .nationalHealthId(nationalHealthId)
         .emailAddress(email)
         .phoneNumber(phone)
         .build();
@@ -77,8 +68,6 @@ public class PersonService {
         .emailAddress(firstName + "." + lastName + emailDomain)
         .phoneNumber(faker.phoneNumber().phoneNumber())
         .presentConditionOfPerson("Alive")
-        .nationalHealthId(UUID.randomUUID().toString())
-        .passportNumber(String.valueOf(System.currentTimeMillis()))
         .externalId(UUID.randomUUID().toString())
         .externalToken(UUID.randomUUID().toString())
         .typeOfOccupation("Farmer")

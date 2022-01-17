@@ -34,8 +34,6 @@ public class Person {
   String presentConditionOfPerson;
   String emailAddress;
   String phoneNumber;
-  String passportNumber;
-  String nationalHealthId;
   String externalId;
   String externalToken;
   String typeOfOccupation;

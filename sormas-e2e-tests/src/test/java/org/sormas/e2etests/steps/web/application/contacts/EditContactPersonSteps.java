@@ -68,14 +68,6 @@ public class EditContactPersonSteps implements En {
               "Date of birth is not correct");
           softly.assertEquals(aPerson.getSex(), createdContact.getSex(), "Sex is not correct");
           softly.assertEquals(
-              aPerson.getNationalHealthId(),
-              createdContact.getNationalHealthId(),
-              "National health ID is not correct");
-          softly.assertEquals(
-              aPerson.getPassportNumber(),
-              createdContact.getPassportNumber(),
-              "Passport number is not correct");
-          softly.assertEquals(
               aPerson.getEmailAddress(),
               createdContact.getPrimaryEmailAddress(),
               "Primary email address is not correct");
@@ -143,8 +135,6 @@ public class EditContactPersonSteps implements En {
                   contactInfo.getFirstName(),
                   contactInfo.getLastName(),
                   contactInfo.getUuid(),
-                  CreateNewContactSteps.contact.getPassportNumber(),
-                  CreateNewContactSteps.contact.getNationalHealthId(),
                   CreateNewContactSteps.contact.getPrimaryEmailAddress(),
                   CreateNewContactSteps.contact.getPrimaryPhoneNumber());
         });
@@ -292,8 +282,6 @@ public class EditContactPersonSteps implements En {
         .lastName(contactInfo.getLastName())
         .dateOfBirth(contactInfo.getDateOfBirth())
         .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
-        .nationalHealthId(webDriverHelpers.getValueFromWebElement(NATIONAL_HEALTH_ID_INPUT))
-        .passportNumber(webDriverHelpers.getValueFromWebElement(PASSPORT_NUMBER_INPUT))
         .emailAddress(webDriverHelpers.getTextFromPresentWebElement(EMAIL_FIELD))
         .phoneNumber(webDriverHelpers.getTextFromPresentWebElement(PHONE_FIELD))
         .build();

@@ -36,8 +36,6 @@ public class EditPersonPage {
   public static final By PRESENT_CONDITION_INPUT = By.cssSelector("#presentCondition input");
   public static final By PRESENT_CONDITION_COMBOBOX =
       By.cssSelector("#presentCondition input + div");
-  public static final By PASSPORT_NUMBER_INPUT = By.cssSelector("#passportNumber");
-  public static final By NATIONAL_HEALTH_ID_INPUT = By.cssSelector("#nationalHealthId");
   public static final By EXTERNAL_ID_INPUT = By.cssSelector("#externalId ");
   public static final By EXTERNAL_TOKEN_INPUT = By.cssSelector("#externalToken");
   public static final By TYPE_OF_OCCUPATION_COMBOBOX =

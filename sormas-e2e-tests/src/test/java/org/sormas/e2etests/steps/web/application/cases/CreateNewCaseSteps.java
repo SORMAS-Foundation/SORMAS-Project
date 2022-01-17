@@ -56,8 +56,6 @@ public class CreateNewCaseSteps implements En {
           fillLastName(caze.getLastName());
           fillDateOfBirth(caze.getDateOfBirth());
           selectSex(caze.getSex());
-          fillNationalHealthId(caze.getNationalHealthId());
-          fillPassportNumber(caze.getPassportNumber());
           selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset());
           fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
@@ -84,8 +82,6 @@ public class CreateNewCaseSteps implements En {
           fillLastName(caze.getLastName());
           fillDateOfBirth(caze.getDateOfBirth());
           selectSex(caze.getSex());
-          fillNationalHealthId(caze.getNationalHealthId());
-          fillPassportNumber(caze.getPassportNumber());
           selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset());
           fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
@@ -105,8 +101,6 @@ public class CreateNewCaseSteps implements En {
           fillLastName(caze.getLastName());
           fillDateOfBirth(caze.getDateOfBirth());
           selectSex(caze.getSex());
-          fillNationalHealthId(caze.getNationalHealthId());
-          fillPassportNumber(caze.getPassportNumber());
           selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset());
           fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
@@ -184,14 +178,6 @@ public class CreateNewCaseSteps implements En {
 
   private void selectSex(String sex) {
     webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
-  }
-
-  private void fillNationalHealthId(String nationalHealthId) {
-    webDriverHelpers.fillInWebElement(NATIONAL_HEALTH_ID_INPUT, nationalHealthId);
-  }
-
-  private void fillPassportNumber(String passportNumber) {
-    webDriverHelpers.fillInWebElement(PASSPORT_NUMBER_INPUT, passportNumber);
   }
 
   private void selectPresentConditionOfPerson(String presentConditionOfPerson) {

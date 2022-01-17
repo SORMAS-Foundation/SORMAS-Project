@@ -38,6 +38,6 @@ public class EventDirectoryPage {
   public static final By EVENT_ACTIONS_TABLE_DATA = By.tagName("td");
 
   public static By getByEventUuid(String eventUuid) {
-    return By.cssSelector("a[title='" + eventUuid + "']");
+    return By.cssSelector("a[title=" + eventUuid + "]");
   }
 }

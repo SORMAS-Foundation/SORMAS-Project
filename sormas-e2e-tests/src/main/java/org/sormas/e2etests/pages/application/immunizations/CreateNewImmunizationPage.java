@@ -32,9 +32,6 @@ public class CreateNewImmunizationPage {
       By.cssSelector(".popupContent #birthdateMM input+div");
   public static final By DATE_OF_BIRTH_DAY_COMBOBOX =
       By.cssSelector(".popupContent #birthdateDD input+div");
-  public static final By NATIONAL_HEALTH_ID_INPUT =
-      By.cssSelector(".popupContent #nationalHealthId");
-  public static final By PASSPORT_NUMBER_INPUT = By.cssSelector(".popupContent #passportNumber");
   public static final By PRESENT_CONDITION_OF_PERSON_COMBOBOX =
       By.cssSelector(".v-window [location='presentCondition'] div[role='combobox'] div");
   public static final By DATE_OF_SYMPTOM_ONSET_INPUT = By.cssSelector(".v-window #onsetDate input");
