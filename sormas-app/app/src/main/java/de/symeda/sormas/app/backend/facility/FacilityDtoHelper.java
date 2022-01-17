@@ -51,7 +51,7 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
 	}
 
 	@Override
-	protected Call<List<FacilityDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+	protected Call<List<FacilityDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		throw new UnsupportedOperationException("Use pullAllByRegionSince");
 	}
 

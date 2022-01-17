@@ -271,14 +271,14 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	}
 
 	@Override
-	public List<ClinicalVisitDto> getAllActiveClinicalVisitsAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
+	public List<ClinicalVisitDto> getAllActiveClinicalVisitsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllActiveClinicalVisitsAfter(date, batchSize, lastSynchronizedUuidSameTimestamp)
+		return service.getAllActiveClinicalVisitsAfter(date, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(t -> convertToDto(t, pseudonymizer))
 			.collect(Collectors.toList());

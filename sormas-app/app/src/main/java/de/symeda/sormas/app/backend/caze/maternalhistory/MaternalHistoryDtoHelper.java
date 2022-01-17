@@ -40,7 +40,7 @@ public class MaternalHistoryDtoHelper extends AdoDtoHelper<MaternalHistory, Mate
 	}
 
 	@Override
-	protected Call<List<MaternalHistoryDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+	protected Call<List<MaternalHistoryDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 
@@ -135,8 +135,8 @@ public class MaternalHistoryDtoHelper extends AdoDtoHelper<MaternalHistory, Mate
 		target.setPseudonymized(source.isPseudonymized());
 	}
 
-    @Override
-    protected long getApproximateJsonSizeInBytes() {
-        return 0;
-    }
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return 0;
+	}
 }

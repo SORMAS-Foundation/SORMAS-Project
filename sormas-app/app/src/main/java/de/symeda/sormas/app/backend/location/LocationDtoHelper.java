@@ -47,7 +47,7 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 	}
 
 	@Override
-	protected Call<List<LocationDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+	protected Call<List<LocationDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 

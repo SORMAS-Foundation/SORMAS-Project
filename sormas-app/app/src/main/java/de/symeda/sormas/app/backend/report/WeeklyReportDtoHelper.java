@@ -55,8 +55,8 @@ public class WeeklyReportDtoHelper extends AdoDtoHelper<WeeklyReport, WeeklyRepo
 	}
 
 	@Override
-	protected Call<List<WeeklyReportDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
-		return RetroProvider.getWeeklyReportFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
+	protected Call<List<WeeklyReportDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+		return RetroProvider.getWeeklyReportFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
 	@Override

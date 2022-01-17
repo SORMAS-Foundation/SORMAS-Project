@@ -131,7 +131,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	}
 
 	@Override
-	public List<PrescriptionDto> getAllActivePrescriptionsAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
+	public List<PrescriptionDto> getAllActivePrescriptionsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		User user = userService.getCurrentUser();
 		if (user == null) {
@@ -139,7 +139,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllActivePrescriptionsAfter(date, user, batchSize, lastSynchronizedUuidSameTimestamp)
+		return service.getAllActivePrescriptionsAfter(date, user, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(p -> convertToDto(p, pseudonymizer))
 			.collect(Collectors.toList());

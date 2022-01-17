@@ -31,7 +31,7 @@ public interface WeeklyReportFacadeRetro {
 	Call<List<WeeklyReportDto>> pullAllSince(
 			@Path("since") long since,
 			@Path("size") int size,
-			@Path("lastSynchronizedUuid") String lastSynchronizedUuidSameTimestamp);
+			@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
 
 	@POST("weeklyreports/query")
 	Call<List<WeeklyReportDto>> pullByUuids(@Body List<String> uuids);

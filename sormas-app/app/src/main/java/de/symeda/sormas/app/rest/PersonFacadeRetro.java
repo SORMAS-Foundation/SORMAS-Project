@@ -34,7 +34,7 @@ public interface PersonFacadeRetro {
 	Call<List<PersonDto>> pullAllSince(
 			@Path("since") long since,
 			@Path("size") int size,
-			@Path("lastSynchronizedUuid") String lastSynchronizedUuidSameTimestamp);
+			@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
 
 	@POST("persons/query")
 	Call<List<PersonDto>> pullByUuids(@Body List<String> uuids);

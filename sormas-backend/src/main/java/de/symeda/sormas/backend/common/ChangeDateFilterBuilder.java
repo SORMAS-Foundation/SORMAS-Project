@@ -36,7 +36,7 @@ public class ChangeDateFilterBuilder {
 	private Expression<? extends Date> dateExpression;
 
 	private From<?, ?> root;
-	private String lastSynchronizedUuidSameTimestamp;
+	private String lastSynchronizedUuid;
 
 	private ChangeDateFilterBuilder(CriteriaBuilder cb) {
 		this.cb = cb;
@@ -49,10 +49,10 @@ public class ChangeDateFilterBuilder {
 		timestampUpper = new Timestamp(date.getTime() + 1L);
 	}
 
-	public ChangeDateFilterBuilder(CriteriaBuilder cb, Date date, From<?, ?> root, String lastSynchronizedUuidSameTimestamp) {
+	public ChangeDateFilterBuilder(CriteriaBuilder cb, Date date, From<?, ?> root, String lastSynchronizedUuid) {
 		this(cb, date);
 		this.root = root;
-		this.lastSynchronizedUuidSameTimestamp = lastSynchronizedUuidSameTimestamp;
+		this.lastSynchronizedUuid = lastSynchronizedUuid;
 	}
 
 	public ChangeDateFilterBuilder(CriteriaBuilder cb, Expression<? extends Date> dateExpression) {
@@ -82,8 +82,8 @@ public class ChangeDateFilterBuilder {
 			filter = CriteriaBuilderHelper.greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), dateExpression);
 		}
 
-		if (root != null && lastSynchronizedUuidSameTimestamp != null && !EntityDto.NO_LAST_SYNCED_UUID.equals(lastSynchronizedUuidSameTimestamp)) {
-			Predicate filterUuid = cb.greaterThan(root.get(AbstractDomainObject.UUID), lastSynchronizedUuidSameTimestamp);
+		if (root != null && lastSynchronizedUuid != null && !EntityDto.NO_LAST_SYNCED_UUID.equals(lastSynchronizedUuid)) {
+			Predicate filterUuid = cb.greaterThan(root.get(AbstractDomainObject.UUID), lastSynchronizedUuid);
 			if (dateExpression == null) {
 				filterUuid = cb.and(cb.greaterThanOrEqualTo(parent.get(AbstractDomainObject.CHANGE_DATE), timestampLower), filterUuid);
 			} else {

@@ -38,8 +38,8 @@ public class AdditionalTestDtoHelper extends AdoDtoHelper<AdditionalTest, Additi
 	}
 
 	@Override
-	protected Call<List<AdditionalTestDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
-		return RetroProvider.getAdditionalTestFacade().pullAllSince(since, size, lastSynchronizedUuidSameTimestamp);
+	protected Call<List<AdditionalTestDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
+		return RetroProvider.getAdditionalTestFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
 	@Override
@@ -111,8 +111,8 @@ public class AdditionalTestDtoHelper extends AdoDtoHelper<AdditionalTest, Additi
 		target.setOtherTestResults(source.getOtherTestResults());
 	}
 
-    @Override
-    protected long getApproximateJsonSizeInBytes() {
-        return AdditionalTestDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
-    }
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return AdditionalTestDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+	}
 }

@@ -15,12 +15,6 @@
 
 package de.symeda.sormas.app.backend.common;
 
-import android.content.Context;
-import android.util.Log;
-
-import com.j256.ormlite.logger.Logger;
-import com.j256.ormlite.logger.LoggerFactory;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -29,6 +23,12 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
+
+import com.j256.ormlite.logger.Logger;
+import com.j256.ormlite.logger.LoggerFactory;
+
+import android.content.Context;
+import android.util.Log;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.PushResult;
@@ -44,7 +44,6 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
 	private static final Logger logger = LoggerFactory.getLogger(AdoDtoHelper.class);
 
-	private Date previousLastSyncedEntityDate;
 	private Date lastSyncedEntityDate;
 	private String lastSyncedEntityUuid;
 
@@ -52,7 +51,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
 	protected abstract Class<DTO> getDtoClass();
 
-	protected abstract Call<List<DTO>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp) throws NoConnectionException;
+	protected abstract Call<List<DTO>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException;
 
 	/**
 	 * Explicitly pull missing entities.
@@ -67,7 +66,8 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
 	protected abstract void fillInnerFromAdo(DTO dto, ADO ado);
 
-	protected void preparePulledResult(List<DTO> result) throws NoConnectionException, ServerCommunicationException, ServerConnectionException, DaoException {
+	protected void preparePulledResult(List<DTO> result)
+		throws NoConnectionException, ServerCommunicationException, ServerConnectionException, DaoException {
 	}
 
 	protected abstract long getApproximateJsonSizeInBytes();
@@ -76,7 +76,8 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 	 * @return another pull needed?
 	 * @param context
 	 */
-	public boolean pullAndPushEntities(Context context) throws DaoException, ServerConnectionException, ServerCommunicationException, NoConnectionException {
+	public boolean pullAndPushEntities(Context context)
+		throws DaoException, ServerConnectionException, ServerCommunicationException, NoConnectionException {
 
 		pullEntities(false, context);
 
@@ -90,10 +91,10 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
 			Date maxModifiedDate = dao.getLatestChangeDate();
 			long approximateJsonSizeInBytes = getApproximateJsonSizeInBytes();
-			final Integer batchSize = approximateJsonSizeInBytes != 0
+			final int batchSize = approximateJsonSizeInBytes != 0
 				? RetroProvider.getNumberOfEntitiesToBePulledInOneBatch(approximateJsonSizeInBytes, context)
 				: Integer.MAX_VALUE;
-			Integer lastBatchSize = batchSize;
+			int lastBatchSize = batchSize;
 
 			lastSyncedEntityDate = maxModifiedDate;
 
@@ -101,11 +102,8 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 				Call<List<DTO>> dtoCall = pullAllSince(
 					lastSyncedEntityDate.getTime(),
 					batchSize,
-					lastSyncedEntityDate != null && lastSyncedEntityUuid != null
-						? lastSyncedEntityDate.equals(previousLastSyncedEntityDate) ? EntityDto.NO_LAST_SYNCED_UUID : lastSyncedEntityUuid
-						: EntityDto.NO_LAST_SYNCED_UUID);
+					lastSyncedEntityDate != null && lastSyncedEntityUuid != null ? lastSyncedEntityUuid : EntityDto.NO_LAST_SYNCED_UUID);
 
-				previousLastSyncedEntityDate = lastSyncedEntityDate;
 				if (dtoCall == null) {
 					return;
 				}
@@ -130,20 +128,17 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 			final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
 			long approximateJsonSizeInBytes = getApproximateJsonSizeInBytes();
-			final Integer batchSize = approximateJsonSizeInBytes != 0
+			final int batchSize = approximateJsonSizeInBytes != 0
 				? RetroProvider.getNumberOfEntitiesToBePulledInOneBatch(approximateJsonSizeInBytes, context)
 				: Integer.MAX_VALUE;
-			Integer lastBatchSize = batchSize;
+			int lastBatchSize = batchSize;
 
 			while (lastBatchSize == batchSize) {
 				Call<List<DTO>> dtoCall = pullAllSince(
 					lastSyncedEntityDate != null ? lastSyncedEntityDate.getTime() : 0,
 					batchSize,
-					lastSyncedEntityDate != null && lastSyncedEntityUuid != null
-						? lastSyncedEntityDate.equals(previousLastSyncedEntityDate) ? EntityDto.NO_LAST_SYNCED_UUID : lastSyncedEntityUuid
-						: EntityDto.NO_LAST_SYNCED_UUID);
+					lastSyncedEntityDate != null && lastSyncedEntityUuid != null ? lastSyncedEntityUuid : EntityDto.NO_LAST_SYNCED_UUID);
 
-				previousLastSyncedEntityDate = lastSyncedEntityDate;
 				if (dtoCall == null) {
 					return;
 				}
@@ -168,7 +163,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 	 * @return Number of pulled entities
 	 */
 	protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<ADO> dao, Response<List<DTO>> response)
-			throws ServerCommunicationException, DaoException, ServerConnectionException, NoConnectionException {
+		throws ServerCommunicationException, DaoException, ServerConnectionException, NoConnectionException {
 		if (!response.isSuccessful()) {
 			RetroProvider.throwException(response);
 		}
@@ -180,7 +175,8 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 		return 0;
 	}
 
-	public int handlePulledList(AbstractAdoDao<ADO> dao, List<DTO> result) throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
+	public int handlePulledList(AbstractAdoDao<ADO> dao, List<DTO> result)
+		throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
 		preparePulledResult(result);
 		dao.callBatchTasks((Callable<Void>) () -> {
 // 		boolean empty = dao.countOf() == 0;
@@ -192,7 +188,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 //				if (entity != null && markAsRead) {
 //					dao.markAsRead(entity);
 //				}
-				if (!iterator.hasNext()){
+				if (!iterator.hasNext()) {
 					lastSyncedEntityUuid = dto.getUuid();
 					lastSyncedEntityDate = dto.getChangeDate();
 				}

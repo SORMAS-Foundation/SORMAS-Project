@@ -58,8 +58,8 @@ public class AdditionalTestResource extends EntityDtoResource {
 	public List<AdditionalTestDto> getAllAdditionalTests(
 		@PathParam("since") long since,
 		@PathParam("size") int size,
-		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuidSameTimestamp) {
-		return FacadeProvider.getAdditionalTestFacade().getAllActiveAdditionalTestsAfter(new Date(since), size, lastSynchronizedUuidSameTimestamp);
+		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		return FacadeProvider.getAdditionalTestFacade().getAllActiveAdditionalTestsAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
 	@POST

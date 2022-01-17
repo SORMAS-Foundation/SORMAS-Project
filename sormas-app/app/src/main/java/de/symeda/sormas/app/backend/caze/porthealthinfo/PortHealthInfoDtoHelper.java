@@ -36,7 +36,7 @@ public class PortHealthInfoDtoHelper extends AdoDtoHelper<PortHealthInfo, PortHe
 	}
 
 	@Override
-	protected Call<List<PortHealthInfoDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+	protected Call<List<PortHealthInfoDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 

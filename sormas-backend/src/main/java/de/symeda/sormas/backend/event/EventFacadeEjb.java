@@ -178,7 +178,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public List<EventDto> getAllActiveEventsAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
+	public List<EventDto> getAllActiveEventsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		User user = userService.getCurrentUser();
 		if (user == null) {
@@ -186,7 +186,7 @@ public class EventFacadeEjb implements EventFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return eventService.getAllActiveEventsAfter(date, batchSize, lastSynchronizedUuidSameTimestamp)
+		return eventService.getAllActiveEventsAfter(date, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(e -> convertToDto(e, pseudonymizer))
 			.collect(Collectors.toList());

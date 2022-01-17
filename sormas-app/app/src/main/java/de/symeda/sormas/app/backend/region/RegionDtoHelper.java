@@ -39,7 +39,7 @@ public class RegionDtoHelper extends AdoDtoHelper<Region, RegionDto> {
 	}
 
 	@Override
-	protected Call<List<RegionDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+	protected Call<List<RegionDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		return RetroProvider.getRegionFacade().pullAllSince(since);
 	}
 

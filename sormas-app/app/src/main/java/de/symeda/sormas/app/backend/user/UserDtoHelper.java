@@ -47,7 +47,7 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 	}
 
 	@Override
-	protected Call<List<UserDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuidSameTimestamp)  throws NoConnectionException {
+	protected Call<List<UserDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
 		return RetroProvider.getUserFacade().pullAllSince(since);
 	}
 
@@ -76,12 +76,12 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 		});
 	}
 
-    @Override
-    protected long getApproximateJsonSizeInBytes() {
-        return 0;
-    }
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return 0;
+	}
 
-    @Override
+	@Override
 	protected void fillInnerFromDto(User target, UserDto source) {
 		target.setActive(source.isActive());
 		target.setUserName(source.getUserName());

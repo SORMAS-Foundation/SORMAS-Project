@@ -15,13 +15,10 @@
 
 package de.symeda.sormas.app.rest;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
-import android.util.Log;
-
-import androidx.fragment.app.FragmentActivity;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -30,10 +27,13 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.util.Log;
+
+import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationAllSymptomsCriteriaDto;
@@ -306,8 +306,10 @@ public final class RetroProvider {
 
 	public static Integer getNumberOfEntitiesToBePulledInOneBatch(long approximateJsonSizeInBytes, Context context) throws ServerConnectionException {
 		double compressedJsonSizeInBits = approximateJsonSizeInBytes * 8 / JSON_COMPRESSION_FACTOR;
-		int batchSize = Math.toIntExact(Math.round(getNetworkDownloadSpeedInKbps(context) * ASSUMED_TRANSFER_TIME_IN_SECONDS * 1024 / compressedJsonSizeInBits));
-		return batchSize < 10 ? 10 : batchSize;
+		int batchSize =
+			Math.toIntExact(Math.round(getNetworkDownloadSpeedInKbps(context) * ASSUMED_TRANSFER_TIME_IN_SECONDS * 1024 / compressedJsonSizeInBits));
+		//return batchSize < 10 ? 10 : batchSize;
+		return 5;
 	}
 
 	public static long getNetworkDownloadSpeedInKbps(Context context) throws ServerConnectionException {

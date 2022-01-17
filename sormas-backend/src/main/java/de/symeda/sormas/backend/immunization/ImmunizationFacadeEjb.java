@@ -202,9 +202,9 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	}
 
 	@Override
-	public List<ImmunizationDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
+	public List<ImmunizationDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultWithInaccessibleValuePlaceHolder(userService::hasRight);
-		return immunizationService.getAllActiveAfter(date, batchSize, lastSynchronizedUuidSameTimestamp)
+		return immunizationService.getAllActiveAfter(date, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(c -> convertToDto(c, pseudonymizer))
 			.collect(Collectors.toList());

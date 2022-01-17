@@ -54,8 +54,8 @@ public class WeeklyReportResource extends EntityDtoResource {
 		@Context SecurityContext sc,
 		@PathParam("since") long since,
 		@PathParam("size") int size,
-		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuidSameTimestamp) {
-		return FacadeProvider.getWeeklyReportFacade().getAllWeeklyReportsAfter(new Date(since), size, lastSynchronizedUuidSameTimestamp);
+		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		return FacadeProvider.getWeeklyReportFacade().getAllWeeklyReportsAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
 	@POST

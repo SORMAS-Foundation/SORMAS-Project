@@ -31,7 +31,7 @@ public interface PathogenTestFacadeRetro {
 	Call<List<PathogenTestDto>> pullAllSince(
 			@Path("since") long since,
 			@Path("size") int size,
-			@Path("lastSynchronizedUuid") String lastSynchronizedUuidSameTimestamp);
+			@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
 
 	@POST("pathogentests/query")
 	Call<List<PathogenTestDto>> pullByUuids(@Body List<String> uuids);

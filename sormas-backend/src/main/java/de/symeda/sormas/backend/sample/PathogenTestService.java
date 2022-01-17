@@ -65,7 +65,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		super(PathogenTest.class);
 	}
 
-	public List<PathogenTest> getAllActivePathogenTestsAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
+	public List<PathogenTest> getAllActivePathogenTestsAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PathogenTest> cq = cb.createQuery(getElementClass());
@@ -79,7 +79,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), lastSynchronizedUuidSameTimestamp);
+			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
 			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		}
 
