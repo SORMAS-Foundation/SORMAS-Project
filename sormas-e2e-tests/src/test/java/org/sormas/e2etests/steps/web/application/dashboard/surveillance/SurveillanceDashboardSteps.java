@@ -16,6 +16,7 @@
 package org.sormas.e2etests.steps.web.application.dashboard.surveillance;
 
 import cucumber.api.java8.En;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
@@ -79,6 +80,7 @@ public class SurveillanceDashboardSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
           webDriverHelpers.clickWebElementByText(
               SurveillanceDashboardPage.TAB_SHEET_CAPTION, tabSheetValue);
+          TimeUnit.SECONDS.sleep(5);
         });
 
     When(

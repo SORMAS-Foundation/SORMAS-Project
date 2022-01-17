@@ -38,7 +38,6 @@ public class Person {
   String externalToken;
   String typeOfOccupation;
   String staffOfArmedForces;
-  String education;
   String region;
   String district;
   String community;
@@ -54,12 +53,7 @@ public class Person {
   String areaType;
   String contactPersonFirstName;
   String contactPersonLastName;
-  String communityContactPerson;
   String birthName;
-  String nickname;
-  String motherMaidenName;
-  String motherName;
-  String fatherName;
   String nameOfGuardians;
   String personContactDetailsTypeOfContactDetails;
   String personContactDetailsContactInformation;

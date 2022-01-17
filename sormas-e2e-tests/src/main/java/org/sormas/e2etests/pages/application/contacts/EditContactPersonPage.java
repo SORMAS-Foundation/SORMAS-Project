@@ -46,7 +46,6 @@ public class EditContactPersonPage {
       By.cssSelector("[location=occupationType] input+div");
   public static final By STAFF_OF_ARMED_FORCES_COMBOBOX =
       By.cssSelector("[location=armedForcesRelationType] input+div");
-  public static final By EDUCATION_COMBOBOX = By.cssSelector("[location=educationType] input+div");
   public static final By REGION_COMBOBOX = By.cssSelector("#region > div");
   public static final By DISTRICT_COMBOBOX = By.cssSelector("#district > div");
   public static final By COMMUNITY_COMBOBOX = By.cssSelector("#community > div");
@@ -63,12 +62,7 @@ public class EditContactPersonPage {
   public static final By CONTACT_PERSON_FIRST_NAME_INPUT =
       By.cssSelector("#contactPersonFirstName");
   public static final By CONTACT_PERSON_LAST_NAME_INPUT = By.cssSelector("#contactPersonLastName");
-  public static final By COMMUNITY_CONTACT_PERSON_INPUT = By.cssSelector("#details");
   public static final By BIRTH_NAME_INPUT = By.cssSelector("#birthName");
-  public static final By NICKNAME_INPUT = By.cssSelector("#nickname");
-  public static final By MOTHER_MAIDEN_NAME_INPUT = By.cssSelector("#mothersMaidenName");
-  public static final By MOTHER_NAME_INPUT = By.cssSelector("#mothersName");
-  public static final By FATHER_NAME_INPUT = By.cssSelector("#fathersName");
   public static final By NAMES_OF_GUARDIANS_INPUT = By.cssSelector("#namesOfGuardians");
   public static final By CONTACT_INFORMATION_NEW_ENTRY_BUTTON =
       By.cssSelector("#personContactDetails #actionNewEntry");

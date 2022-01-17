@@ -210,6 +210,7 @@ public class EditCaseSteps implements En {
   }
 
   private Case collectCasePersonUuid() {
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 40);
     return Case.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
   }
 

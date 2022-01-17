@@ -34,7 +34,7 @@ public abstract class ComparisonHelper {
       softly.assertEquals(
           getEntityFieldValue(pojoToCompare, key),
           getEntityFieldValue(referencePojo, key),
-          "Value for: [" + key + "] field doesn't match.");
+          String.format("Value for [%s] field doesn't match.", key));
     }
     softly.assertAll();
   }
@@ -47,7 +47,7 @@ public abstract class ComparisonHelper {
       softly.assertEquals(
           getEntityFieldValue(pojoToCompare, field),
           getEntityFieldValue(referencePojo, field),
-          "Value for: " + field + " doesn't match");
+          String.format("Value for [%s] field doesn't match.", field));
     }
     softly.assertAll();
   }
@@ -59,7 +59,7 @@ public abstract class ComparisonHelper {
       softly.assertNotEquals(
           getEntityFieldValue(pojoToCompare, key),
           getEntityFieldValue(referencePojo, key),
-          "Value for: " + key + " doesn't match");
+          String.format("Value for [%s] field doesn't match.", key));
     }
     softly.assertAll();
   }
@@ -72,7 +72,7 @@ public abstract class ComparisonHelper {
       softly.assertNotEquals(
           getEntityFieldValue(pojoToCompare, field),
           getEntityFieldValue(referencePojo, field),
-          "Value for: " + field + " doesn't match");
+          String.format("Value for [%s] field doesn't match.", field));
     }
     softly.assertAll();
   }

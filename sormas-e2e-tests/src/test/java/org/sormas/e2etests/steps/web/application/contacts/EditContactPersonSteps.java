@@ -91,7 +91,6 @@ public class EditContactPersonSteps implements En {
           fillExternalToken(newGeneratedPerson.getExternalToken());
           selectTypeOfOccupation(newGeneratedPerson.getTypeOfOccupation());
           selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
-          selectEducation(newGeneratedPerson.getEducation());
           selectRegion(newGeneratedPerson.getRegion());
           selectDistrict(newGeneratedPerson.getDistrict());
           selectCommunity(newGeneratedPerson.getCommunity());
@@ -107,12 +106,7 @@ public class EditContactPersonSteps implements En {
           selectAreaType(newGeneratedPerson.getAreaType());
           fillContactPersonFirstName(newGeneratedPerson.getContactPersonFirstName());
           fillContactPersonLastName(newGeneratedPerson.getContactPersonLastName());
-          fillCommunityContactPerson(newGeneratedPerson.getCommunityContactPerson());
           fillBirthName(newGeneratedPerson.getBirthName());
-          fillNickName(newGeneratedPerson.getNickname());
-          fillMotherMaidenName(newGeneratedPerson.getMotherMaidenName());
-          fillMotherName(newGeneratedPerson.getMotherName());
-          fillFatherName(newGeneratedPerson.getFatherName());
           fillNamesOfGuardians(newGeneratedPerson.getNameOfGuardians());
         });
 
@@ -182,10 +176,6 @@ public class EditContactPersonSteps implements En {
     webDriverHelpers.selectFromCombobox(STAFF_OF_ARMED_FORCES_COMBOBOX, armedForces);
   }
 
-  private void selectEducation(String education) {
-    webDriverHelpers.selectFromCombobox(EDUCATION_COMBOBOX, education);
-  }
-
   private void selectRegion(String region) {
     webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, region);
   }
@@ -246,28 +236,8 @@ public class EditContactPersonSteps implements En {
     webDriverHelpers.fillInWebElement(CONTACT_PERSON_LAST_NAME_INPUT, last);
   }
 
-  private void fillCommunityContactPerson(String name) {
-    webDriverHelpers.fillInWebElement(COMMUNITY_CONTACT_PERSON_INPUT, name);
-  }
-
   private void fillBirthName(String name) {
     webDriverHelpers.fillInWebElement(BIRTH_NAME_INPUT, name);
-  }
-
-  private void fillNickName(String name) {
-    webDriverHelpers.fillInWebElement(NICKNAME_INPUT, name);
-  }
-
-  private void fillMotherMaidenName(String name) {
-    webDriverHelpers.fillInWebElement(MOTHER_MAIDEN_NAME_INPUT, name);
-  }
-
-  private void fillMotherName(String name) {
-    webDriverHelpers.fillInWebElement(MOTHER_NAME_INPUT, name);
-  }
-
-  private void fillFatherName(String name) {
-    webDriverHelpers.fillInWebElement(FATHER_NAME_INPUT, name);
   }
 
   private void fillNamesOfGuardians(String name) {

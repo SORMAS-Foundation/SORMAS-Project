@@ -24,6 +24,7 @@ import static org.sormas.e2etests.helpers.AssertHelpers.takeScreenshot;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
@@ -233,6 +234,7 @@ public class WebDriverHelpers {
     waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestpopup"));
     waitUntilANumberOfElementsAreVisibleAndClickable(By.xpath("//td[@role='listitem']/span"), 1);
     By dropDownValueXpath = By.xpath(comboBoxItemWithText);
+    TimeUnit.MILLISECONDS.sleep(500);
     clickOnWebElementBySelector(dropDownValueXpath);
     await()
         .pollInterval(ONE_HUNDRED_MILLISECONDS)
@@ -568,6 +570,7 @@ public class WebDriverHelpers {
         () ->
             Assert.assertEquals(
                 getAttributeFromWebElement(selector, attribute),
+                value,
                 String.format(
                     "Element: %s, attribute: %s, is not: %s", selector, attribute, value)));
   }
