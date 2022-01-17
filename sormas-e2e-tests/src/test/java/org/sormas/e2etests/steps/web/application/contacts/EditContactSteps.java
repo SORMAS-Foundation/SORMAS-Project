@@ -21,14 +21,25 @@ package org.sormas.e2etests.steps.web.application.contacts;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
 
+import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Stream;
 import java.util.List;
 import javax.inject.Inject;
+import org.apache.commons.io.FileUtils;
+import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Contact;
+import org.sormas.e2etests.pojo.web.QuarantineOrder;
+import org.sormas.e2etests.services.ContactDocumentService;
 import org.sormas.e2etests.services.ContactService;
 
 public class EditContactSteps implements En {
@@ -36,10 +47,16 @@ public class EditContactSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   public static Contact createdContact;
   public static Contact collectedContact;
+  public static Contact aContact;
+  public static QuarantineOrder aQuarantineOrder;
   public static Contact editedContact;
+  public static final String userDirPath = System.getProperty("user.dir");
 
   @Inject
-  public EditContactSteps(WebDriverHelpers webDriverHelpers, ContactService contactService) {
+  public EditContactSteps(
+      WebDriverHelpers webDriverHelpers,
+      ContactService contactService,
+      ContactDocumentService contactDocumentService) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -148,6 +165,46 @@ public class EditContactSteps implements En {
           fillGeneralComment(editedContact.getGeneralComment());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_EDIT_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_EDIT_BUTTON);
+        });
+
+    When(
+        "I click on the Create button from Contact Document Templates",
+        () -> webDriverHelpers.clickOnWebElementBySelector(EditContactPage.CREATE_DOCUMENT_BUTTON));
+
+    When(
+        "I create a contact document from template",
+        () -> {
+          File dir = new File(userDirPath + "\\downloads");
+          FileUtils.deleteDirectory(dir);
+          aQuarantineOrder = contactDocumentService.buildQuarantineOrder();
+          aQuarantineOrder = aQuarantineOrder.toBuilder().build();
+          selectQuarantineOrderTemplate(aQuarantineOrder.getDocumentTemplate());
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXTRA_COMMENT_INPUT);
+          fillExtraComment(aQuarantineOrder.getExtraComment());
+          webDriverHelpers.clickOnWebElementBySelector(
+              EditContactPage.CREATE_QUARANTINE_ORDER_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACT_SAVED_POPUP);
+        });
+
+    Then(
+        "I verify that the generated contact document is downloaded",
+        () -> {
+          Stream<Path> list = Files.list(Paths.get(userDirPath + "\\downloads"));
+          Truth.assertThat(list.findFirst().isPresent()).isTrue();
+        });
+
+    And(
+        "I verify that the downloaded contact document is correctly named",
+        () -> {
+          String uuid = webDriverHelpers.getValueFromWebElement(EditContactPage.UUID_INPUT);
+          Path path =
+              Paths.get(
+                  userDirPath
+                      + "\\downloads\\"
+                      + uuid.substring(0, 6)
+                      + "-"
+                      + aQuarantineOrder.getDocumentTemplate());
+          Truth.assertThat(Files.exists(path)).isTrue();
         });
   }
 
@@ -476,5 +533,13 @@ public class EditContactSteps implements En {
         .lastName(contactInfos[1])
         .dateOfBirth(localDate)
         .build();
+  }
+
+  public void selectQuarantineOrderTemplate(String templateName) {
+    webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, templateName);
+  }
+
+  public void fillExtraComment(String extraComment) {
+    webDriverHelpers.fillInWebElement(EditContactPage.EXTRA_COMMENT_TEXTAREA, extraComment);
   }
 }

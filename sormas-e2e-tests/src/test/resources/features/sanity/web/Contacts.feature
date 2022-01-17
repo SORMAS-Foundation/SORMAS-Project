@@ -131,3 +131,13 @@ Feature: Contacts end to end tests
     And I am accessing the contacts from New Visit
     And I open Follow up Visits tab from contact directory
     Then I am validating the From and To dates displayed
+
+  @issue=SORDEV-5496
+  Scenario: Generate contact document
+    Given I log in with National User
+    And I click on the Contacts button from navbar
+    And I open the first contact
+    And I click on the Create button from Contact Document Templates
+    When I create a contact document from template
+    Then I verify that the generated contact document is downloaded
+    And I verify that the downloaded contact document is correctly named
