@@ -221,7 +221,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 			Timestamp timestampLower = new Timestamp(date.getTime());
 			Timestamp timestampUpper = new Timestamp(date.getTime() + 1L);
 			Predicate predicate = cb.or(
-				cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), timestampUpper),
+				cb.greaterThanOrEqualTo(from.get(AbstractDomainObject.CHANGE_DATE), timestampUpper),
 				cb.and(
 					cb.greaterThanOrEqualTo(from.get(AbstractDomainObject.CHANGE_DATE), timestampLower),
 					cb.greaterThan(from.get(AbstractDomainObject.UUID), lastSynchronizedUuidSameTimestamp)));
