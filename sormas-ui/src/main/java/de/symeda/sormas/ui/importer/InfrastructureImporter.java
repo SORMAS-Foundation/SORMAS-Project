@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.importer;
 
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;

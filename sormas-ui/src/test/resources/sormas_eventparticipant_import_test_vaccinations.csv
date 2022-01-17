@@ -1,0 +1,5 @@
+EventParticipant,EventParticipant,EventParticipant,Vaccination,Vaccination,Vaccination,Vaccination,Vaccination,Vaccination,Vaccination,Vaccination,Vaccination
+person.firstName,person.lastName,involvementDescription,reportDate,vaccinationDate,vaccineName,vaccineManufacturer,healthConditions.chronicPulmonaryDisease,reportDate,vaccinationDate,vaccineName,vaccineManufacturer
+Günther,Heinze,description 1
+Peter,Meyer,description 2,11/20/2018,11/20/2018,COMIRNATY,BIONTECH_PFIZER,
+Hans,Flamme,description 3,11/20/2018,11/20/2018,MRNA_1273,MODERNA,YES,12/20/2018,12/20/2018,MRNA_1273,MODERNA
