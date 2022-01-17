@@ -23,7 +23,6 @@ import static org.sormas.e2etests.enums.DiseasesValues.getRandomDiseaseCaption;
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
-
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.pojo.web.ContactsLineListing;
