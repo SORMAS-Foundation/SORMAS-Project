@@ -129,6 +129,7 @@ public class DistrictDto extends InfrastructureDto {
 		return new DistrictReferenceDto(getUuid(), name, externalID);
 	}
 
+
 	public static DistrictDto build() {
 		DistrictDto dto = new DistrictDto();
 		dto.setUuid(DataHelper.createUuid());
