@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -467,10 +466,14 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
-		return getAllActiveCasesAfter(date, false, null, null);
+		return getAllActiveCasesAfter(date, false, batchSize, lastSynchronizedUuidSameTimestamp);
 	}
 
-	private List<CaseDataDto> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters, Integer batchSize, String lastSynchronizedUuidSameTimestamp) {
+	private List<CaseDataDto> getAllActiveCasesAfter(
+		Date date,
+		boolean includeExtendedChangeDateFilters,
+		Integer batchSize,
+		String lastSynchronizedUuidSameTimestamp) {
 
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
