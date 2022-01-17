@@ -55,3 +55,13 @@ Feature: Case end to end tests
     Then I create a new contact from Cases Contacts tab
     And I open the Case Contacts tab of the created case via api
     And I verify that created contact from Case Contacts tab is correctly displayed
+
+@issue=SORDEV-5496
+  Scenario: Generate case document
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I open last created case
+    And I click on the Create button from Case Document Templates
+    When I create a case document from template
+    Then I verify that the generated case document is downloaded
+    And I verify that the downloaded case document is correctly named

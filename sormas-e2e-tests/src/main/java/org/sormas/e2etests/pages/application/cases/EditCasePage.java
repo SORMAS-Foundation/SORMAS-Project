@@ -71,7 +71,6 @@ public class EditCasePage {
   public static final By PROHIBITION_TO_WORK_OPTIONS = By.cssSelector("#prohibitionToWork label");
   public static final By HOME_BASED_QUARANTINE_POSSIBLE_OPTIONS =
       By.cssSelector("#quarantineHomePossible label");
-  public static final By QUARANTINE_COMBOBOX = By.cssSelector("#quarantine div");
   public static final By REPORT_GPS_LATITUDE_INPUT = By.cssSelector("input#reportLat");
   public static final By REPORT_GPS_LONGITUDE_INPUT = By.cssSelector("input#reportLon");
   public static final By REPORT_GPS_ACCURACY_IN_M_INPUT =
@@ -93,4 +92,14 @@ public class EditCasePage {
   public static final By DELETE_BUTTON = By.id("delete");
   public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
   public static final By CASE_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
+  public static final By EXTRA_COMMENT_INPUT =
+          By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
+  public static final By CREATE_DOCUMENT_BUTTON = By.cssSelector("[id='Create']");
+  public static final By CREATE_QUARANTINE_ORDER_BUTTON =
+      By.cssSelector(".popupContent [id='Create']");
+  public static final By EXTRA_COMMENT_TEXTAREA =
+      By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
+  public static final By QUARANTINE_COMBOBOX = By.cssSelector("#quarantine div");
+  public static final By QUARANTINE_ORDER_COMBOBOX =
+          By.cssSelector(".popupContent div[role='combobox'] div");
 }

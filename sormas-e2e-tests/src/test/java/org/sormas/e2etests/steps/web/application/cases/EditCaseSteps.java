@@ -20,17 +20,27 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.SneakyThrows;
+import org.apache.commons.io.FileUtils;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
+import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.pojo.web.Case;
+import org.sormas.e2etests.pojo.web.QuarantineOrder;
+import org.sormas.e2etests.services.CaseDocumentService;
 import org.sormas.e2etests.services.CaseService;
 import org.sormas.e2etests.state.ApiState;
 
@@ -38,13 +48,16 @@ public class EditCaseSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   public static Case aCase;
+  public static QuarantineOrder aQuarantineOrder;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static final String userDirPath = System.getProperty("user.dir");
 
   @SneakyThrows
   @Inject
   public EditCaseSteps(
       WebDriverHelpers webDriverHelpers,
       CaseService caseService,
+      CaseDocumentService caseDocumentService,
       ApiState apiState,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
@@ -103,6 +116,45 @@ public class EditCaseSteps implements En {
     When(
         "I click on edit Sample",
         () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_SAMPLE_BUTTON));
+
+    When(
+        "I click on the Create button from Case Document Templates",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_BUTTON));
+
+    When(
+        "I create a case document from template",
+        () -> {
+          File dir = new File(userDirPath + "\\downloads");
+          FileUtils.deleteDirectory(dir);
+          aQuarantineOrder = caseDocumentService.buildQuarantineOrder();
+          aQuarantineOrder = aQuarantineOrder.toBuilder().build();
+          selectQuarantineOrderTemplate(aQuarantineOrder.getDocumentTemplate());
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXTRA_COMMENT_INPUT);
+          fillExtraComment(aQuarantineOrder.getExtraComment());
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_QUARANTINE_ORDER_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_SAVED_POPUP);
+        });
+
+    Then(
+        "I verify that the generated case document is downloaded",
+        () -> {
+          Stream<Path> list = Files.list(Paths.get(userDirPath + "\\downloads"));
+          Truth.assertThat(list.findFirst().isPresent()).isTrue();
+        });
+
+    And(
+        "I verify that the downloaded case document is correctly named",
+        () -> {
+          String uuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
+          Path path =
+              Paths.get(
+                  userDirPath
+                      + "\\downloads\\"
+                      + uuid.substring(0, 6)
+                      + "-"
+                      + aQuarantineOrder.getDocumentTemplate());
+          Truth.assertThat(Files.exists(path)).isTrue();
+        });
 
     When(
         "I open last edited case by link",
@@ -484,5 +536,13 @@ public class EditCaseSteps implements En {
 
   public void fillGeneralComment(String generalComment) {
     webDriverHelpers.fillInWebElement(GENERAL_COMMENT_TEXTAREA, generalComment);
+  }
+
+  public void selectQuarantineOrderTemplate(String templateName) {
+    webDriverHelpers.selectFromCombobox(EditCasePage.QUARANTINE_ORDER_COMBOBOX, templateName);
+  }
+
+  public void fillExtraComment(String extraComment) {
+    webDriverHelpers.fillInWebElement(EditCasePage.EXTRA_COMMENT_TEXTAREA, extraComment);
   }
 }

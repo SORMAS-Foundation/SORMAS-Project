@@ -94,6 +94,10 @@ public class ContactDirectorySteps implements En {
           openContactFromResultsByUUID(apiState.getCreatedContact().getUuid());
         });
 
+    When(
+        "I open the first contact",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_CONTACT_ID_BUTTON));
+
     Then(
         "I check that number of displayed contact results is (\\d+)",
         (Integer number) ->

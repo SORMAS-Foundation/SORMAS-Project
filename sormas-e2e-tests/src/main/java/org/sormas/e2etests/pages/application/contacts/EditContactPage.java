@@ -117,4 +117,14 @@ public class EditContactPage {
   public static final By REMOVE_CASE_CTA_LINK = By.id("contactRemoveCase");
   public static final By CASE_CHANGE_POPUP_SUCCESS_MESSAGE =
       By.xpath("//*[contains(text(),'The source case of the contact has been changed')]");
+  public static final By CREATE_DOCUMENT_BUTTON = By.cssSelector("[id='Create']");
+  public static final By CONTACT_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
+  public static final By CREATE_QUARANTINE_ORDER_BUTTON =
+      By.cssSelector(".popupContent [id='Create']");
+  public static final By EXTRA_COMMENT_TEXTAREA =
+      By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
+  public static final By EXTRA_COMMENT_INPUT =
+      By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
+  public static final By QUARANTINE_ORDER_COMBOBOX =
+      By.cssSelector(".popupContent div[role='combobox'] div");
 }
