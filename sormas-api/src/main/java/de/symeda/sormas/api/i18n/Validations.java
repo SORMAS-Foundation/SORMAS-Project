@@ -46,6 +46,8 @@ public interface Validations {
 	String duplicateExternalToken = "duplicateExternalToken";
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
 	String errorsInForm = "errorsInForm";
+	String eventSubordinateEventFromDateFilterValidation = "eventSubordinateEventFromDateFilterValidation";
+	String eventSuperordinateEventToDateFilterValidation = "eventSuperordinateEventToDateFilterValidation";
 	String exportNoNameSpecified = "exportNoNameSpecified";
 	String externalJournalPersonSynchronizationFailure = "externalJournalPersonSynchronizationFailure";
 	String externalJournalPersonSynchronizationPartial = "externalJournalPersonSynchronizationPartial";
