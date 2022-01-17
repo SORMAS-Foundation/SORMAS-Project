@@ -29,11 +29,12 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
-import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.web.Contact;
 import org.sormas.e2etests.pojo.web.Person;
 import org.sormas.e2etests.services.PersonService;
 import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.asserts.SoftAssert;
 
 public class EditContactPersonSteps implements En {
 
@@ -46,7 +47,7 @@ public class EditContactPersonSteps implements En {
   public EditContactPersonSteps(
       WebDriverHelpers webDriverHelpers,
       PersonService personService,
-      final SoftAssertions softly,
+      SoftAssert softly,
       BaseSteps baseSteps) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -54,28 +55,34 @@ public class EditContactPersonSteps implements En {
         "I check the created data is correctly displayed on Edit Contact Person page",
         () -> {
           aPerson = collectPersonData();
-          softly
-              .assertThat(aPerson.getFirstName())
-              .isEqualToIgnoringCase(CreateNewContactSteps.contact.getFirstName());
-          softly
-              .assertThat(aPerson.getLastName())
-              .isEqualToIgnoringCase(CreateNewContactSteps.contact.getLastName());
-          softly
-              .assertThat(aPerson.getDateOfBirth())
-              .isEqualTo(CreateNewContactSteps.contact.getDateOfBirth());
-          softly.assertThat(aPerson.getSex()).isEqualTo(CreateNewContactSteps.contact.getSex());
-          softly
-              .assertThat(aPerson.getNationalHealthId())
-              .isEqualTo(CreateNewContactSteps.contact.getNationalHealthId());
-          softly
-              .assertThat(aPerson.getPassportNumber())
-              .isEqualTo(CreateNewContactSteps.contact.getPassportNumber());
-          softly
-              .assertThat(aPerson.getEmailAddress())
-              .isEqualTo(CreateNewContactSteps.contact.getPrimaryEmailAddress());
-          softly
-              .assertThat(aPerson.getPhoneNumber())
-              .isEqualTo(CreateNewContactSteps.contact.getPrimaryPhoneNumber());
+          Contact createdContact = CreateNewContactSteps.contact;
+          softly.assertEquals(
+              aPerson.getFirstName(), createdContact.getFirstName(), "First name is not correct");
+          softly.assertEquals(
+              aPerson.getLastName(),
+              createdContact.getLastName().toUpperCase(),
+              "Last name is not correct");
+          softly.assertEquals(
+              aPerson.getDateOfBirth(),
+              createdContact.getDateOfBirth(),
+              "Date of birth is not correct");
+          softly.assertEquals(aPerson.getSex(), createdContact.getSex(), "Sex is not correct");
+          softly.assertEquals(
+              aPerson.getNationalHealthId(),
+              createdContact.getNationalHealthId(),
+              "National health ID is not correct");
+          softly.assertEquals(
+              aPerson.getPassportNumber(),
+              createdContact.getPassportNumber(),
+              "Passport number is not correct");
+          softly.assertEquals(
+              aPerson.getEmailAddress(),
+              createdContact.getPrimaryEmailAddress(),
+              "Primary email address is not correct");
+          softly.assertEquals(
+              aPerson.getPhoneNumber(),
+              createdContact.getPrimaryPhoneNumber(),
+              "Phone number is not correct");
           softly.assertAll();
         });
 
@@ -277,7 +284,7 @@ public class EditContactPersonSteps implements En {
     webDriverHelpers.fillInWebElement(NAMES_OF_GUARDIANS_INPUT, name);
   }
 
-  public Person collectPersonData() {
+  private Person collectPersonData() {
     Person contactInfo = getPersonInformation();
 
     return Person.builder()
@@ -292,7 +299,7 @@ public class EditContactPersonSteps implements En {
         .build();
   }
 
-  public Person getPersonInformation() {
+  private Person getPersonInformation() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
     String uuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
