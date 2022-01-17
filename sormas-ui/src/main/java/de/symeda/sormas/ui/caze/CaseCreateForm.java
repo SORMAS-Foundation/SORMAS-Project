@@ -38,10 +38,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Sets;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
@@ -76,7 +74,6 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -87,23 +84,18 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
-import de.symeda.sormas.ui.person.PersonSearchField;
-import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.PersonDependentEditForm;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
+public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final String PERSON_SEARCH_LOC = "personSearchLoc";
 	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
 	private static final String FACILITY_TYPE_GROUP_LOC = "typeGroupLoc";
 	private static final String DONT_SHARE_WARNING_LOC = "dontShareWithReportingToolWarnLoc";
@@ -131,8 +123,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBox pointOfEntryDistrictCombo;
 
 	private LocationEditForm homeAddressForm;
-
-	private PersonDto searchedPerson;
 
 	private final boolean showHomeAddressForm;
 
@@ -228,37 +218,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
 
-		Button searchPersonButton = ButtonHelper.createIconButtonWithCaption(PERSON_SEARCH_LOC, StringUtils.EMPTY, VaadinIcons.SEARCH, clickEvent -> {
-			VaadinIcons icon = (VaadinIcons) clickEvent.getButton().getIcon();
-			if (icon == VaadinIcons.SEARCH) {
-				PersonSearchField personSearchField = new PersonSearchField(null, I18nProperties.getString(Strings.infoSearchPerson));
-				personSearchField.setWidth(1280, Unit.PIXELS);
-
-				final CommitDiscardWrapperComponent<PersonSearchField> component = new CommitDiscardWrapperComponent<>(personSearchField);
-				component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
-				component.getCommitButton().setEnabled(false);
-				component.addCommitListener(() -> {
-					SimilarPersonDto pickedPerson = personSearchField.getValue();
-					if (pickedPerson != null) {
-						// add consumer
-						PersonDto personByUuid = FacadeProvider.getPersonFacade().getPersonByUuid(pickedPerson.getUuid());
-						setPerson(personByUuid);
-						clickEvent.getButton().setIcon(VaadinIcons.CLOSE);
-						searchedPerson = personByUuid;
-					}
-				});
-
-				personSearchField.setSelectionChangeCallback((commitAllowed) -> {
-					component.getCommitButton().setEnabled(commitAllowed);
-				});
-
-				VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSelectPerson));
-			} else {
-				setPerson(null);
-				clickEvent.getButton().setIcon(VaadinIcons.SEARCH);
-				searchedPerson = null;
-			}
-		}, CssStyles.FORCE_CAPTION);
+		Button searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
 		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
 
 		addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
@@ -838,6 +798,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			((ComboBox) getField(PersonDto.PRESENT_CONDITION)).setValue(person.getPresentCondition());
 			((TextField) getField(PersonDto.PHONE)).setValue(person.getPhone());
 			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getEmailAddress());
+			((TextField) getField(PersonDto.PASSPORT_NUMBER)).setValue(person.getPassportNumber());
+			((TextField) getField(PersonDto.NATIONAL_HEALTH_ID)).setValue(person.getNationalHealthId());
+			homeAddressForm.setValue(person.getAddress());
 		} else {
 			getField(PersonDto.FIRST_NAME).clear();
 			getField(PersonDto.LAST_NAME).clear();
@@ -848,7 +811,25 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			getField(PersonDto.PRESENT_CONDITION).clear();
 			getField(PersonDto.PHONE).clear();
 			getField(PersonDto.EMAIL_ADDRESS).clear();
+			getField(PersonDto.PASSPORT_NUMBER).clear();
+			getField(PersonDto.NATIONAL_HEALTH_ID).clear();
+			homeAddressForm.clear();
 		}
+	}
+	
+	protected void enablePersonFields(Boolean enable) {
+		getField(PersonDto.FIRST_NAME).setEnabled(enable);
+		getField(PersonDto.LAST_NAME).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_DD).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_MM).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(enable);
+		getField(PersonDto.SEX).setEnabled(enable);
+		getField(PersonDto.PRESENT_CONDITION).setEnabled(enable);
+		getField(PersonDto.PHONE).setEnabled(enable);
+		getField(PersonDto.EMAIL_ADDRESS).setEnabled(enable);
+		getField(PersonDto.PASSPORT_NUMBER).setEnabled(enable);
+		getField(PersonDto.NATIONAL_HEALTH_ID).setEnabled(enable);
+		homeAddressForm.setEnabled(enable);
 	}
 
 	public void setSymptoms(SymptomsDto symptoms) {
@@ -911,10 +892,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	public LocationEditForm getHomeAddressForm() {
 		return homeAddressForm;
-	}
-
-	public PersonDto getSearchedPerson() {
-		return searchedPerson;
 	}
 
 	@Override
