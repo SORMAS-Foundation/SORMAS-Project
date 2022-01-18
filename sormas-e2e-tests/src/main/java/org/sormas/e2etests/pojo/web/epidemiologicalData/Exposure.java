@@ -43,5 +43,4 @@ public class Exposure {
   String postalCode;
   String city;
   String areaType;
-  String communityContactPerson;
 }

@@ -70,7 +70,7 @@ Feature: Create events
     And I click on the searched event
     Then I check the modified event data is correctly displayed
 
-  Scenario: Add a New action from event and verify the fields.
+  Scenario: Add a New action from event and verify the fields
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
@@ -80,18 +80,6 @@ Feature: Create events
     And I click on New Action button from Event tab
     Then I create New Action from event tab
     And I click on Event Actions tab
-    And I open the Action recently created from Event tab
-    And I check that Action created from Event tab is correctly displayed in Event Actions tab
-
-  Scenario: Add a New action from Event Actions tab and verify the fields.
-    Given API: I create a new event
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in with National User
-    Then I navigate to Event Action tab for created Event
-    And I click on New Action from Event Actions tab
-    And I create New Action from event tab
-    Then I navigate to Event Action tab for created Event
     And I open the Action recently created from Event tab
     And I check that Action created from Event tab is correctly displayed in Event Actions tab
 

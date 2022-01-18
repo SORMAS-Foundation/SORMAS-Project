@@ -28,11 +28,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -41,6 +39,7 @@ import org.sormas.e2etests.pojo.web.Task;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
+import org.testng.asserts.SoftAssert;
 
 public class TaskManagementSteps implements En {
 
@@ -53,7 +52,7 @@ public class TaskManagementSteps implements En {
       WebDriverHelpers webDriverHelpers,
       BaseSteps baseSteps,
       ApiState apiState,
-      SoftAssertions softly,
+      SoftAssert softly,
       Properties properties) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
@@ -80,7 +79,8 @@ public class TaskManagementSteps implements En {
     When(
         "^I search last created task by Case UUID$",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(GENERAL_SEARCH_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              GENERAL_SEARCH_INPUT, 50);
           webDriverHelpers.fillAndSubmitInWebElement(
               GENERAL_SEARCH_INPUT, EditCaseSteps.aCase.getUuid());
         });
@@ -90,16 +90,21 @@ public class TaskManagementSteps implements En {
         () -> {
           String eventUuid = apiState.getCreatedEvent().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(GENERAL_SEARCH_INPUT, eventUuid);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              getByEventUuid(eventUuid));
           webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
         });
 
     When(
         "^I search last created task by API using Contact UUID$",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(GENERAL_SEARCH_INPUT);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              GENERAL_SEARCH_INPUT, 50);
           webDriverHelpers.fillAndSubmitInWebElement(
               GENERAL_SEARCH_INPUT, apiState.getCreatedContact().getUuid());
-          TimeUnit.SECONDS.sleep(20);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
@@ -107,46 +112,63 @@ public class TaskManagementSteps implements En {
         () -> {
           org.sormas.e2etests.pojo.api.Task expectedTask = apiState.getCreatedTask();
           Task actualTask = taskTableRows.get(1);
-          softly
-              .assertThat(apiState.getCreatedContact().getUuid())
-              .containsIgnoringCase(
-                  getPartialUuidFromAssociatedLink(actualTask.getAssociatedLink()));
-          softly
-              .assertThat(actualTask.getAssociatedLink())
-              .containsIgnoringCase(apiState.getCreatedContact().getPerson().getFirstName());
-          softly
-              .assertThat(actualTask.getAssociatedLink())
-              .containsIgnoringCase(apiState.getCreatedContact().getPerson().getLastName());
-          softly
-              .assertThat(actualTask.getTaskContext())
-              .isEqualToIgnoringCase(expectedTask.getTaskContext());
-          softly
-              .assertThat(actualTask.getTaskType())
-              .isEqualTo(properties.getProperty("TaskType." + expectedTask.getTaskType()));
-          softly
-              .assertThat(actualTask.getRegion())
-              .isEqualTo(apiState.getCreatedContact().getRegion().getCaption());
-          softly
-              .assertThat(actualTask.getDistrict())
-              .isEqualTo(apiState.getCreatedContact().getDistrict().getCaption());
-          softly
-              .assertThat(actualTask.getPriority())
-              .isEqualToIgnoringCase(expectedTask.getPriority());
-          softly
-              .assertThat(actualTask.getAssignedTo())
-              .containsIgnoringCase(expectedTask.getAssigneeUser().getFirstName());
-          softly
-              .assertThat(actualTask.getAssignedTo())
-              .containsIgnoringCase(expectedTask.getAssigneeUser().getLastName());
-          softly
-              .assertThat(actualTask.getCommentsOnTask())
-              .isEqualTo(expectedTask.getCreatorComment());
-          softly
-              .assertThat(actualTask.getCommentsOnExecution())
-              .isEqualTo(expectedTask.getAssigneeReply());
-          softly
-              .assertThat(actualTask.getTaskStatus())
-              .isEqualToIgnoringCase(expectedTask.getTaskStatus());
+          softly.assertTrue(
+              apiState
+                  .getCreatedContact()
+                  .getUuid()
+                  .toUpperCase()
+                  .contains(getPartialUuidFromAssociatedLink(actualTask.getAssociatedLink())),
+              "UUID is not correct displayed");
+          softly.assertTrue(
+              actualTask
+                  .getAssociatedLink()
+                  .contains(apiState.getCreatedContact().getPerson().getFirstName()),
+              "First name is not correct displayed");
+          softly.assertTrue(
+              actualTask
+                  .getAssociatedLink()
+                  .contains(apiState.getCreatedContact().getPerson().getLastName().toUpperCase()),
+              "Last name is not correct displayed");
+          softly.assertEquals(
+              actualTask.getTaskContext().toUpperCase(),
+              expectedTask.getTaskContext(),
+              "Task context is not correct displayed");
+          softly.assertEquals(
+              actualTask.getTaskType(),
+              properties.getProperty("TaskType." + expectedTask.getTaskType()),
+              "Task type is not correct displayed");
+          softly.assertEquals(
+              actualTask.getRegion(),
+              apiState.getCreatedContact().getRegion().getCaption(),
+              "Region is not correct displayed");
+          softly.assertEquals(
+              actualTask.getDistrict(),
+              apiState.getCreatedContact().getDistrict().getCaption(),
+              "District is not correct displayed");
+          softly.assertEquals(
+              actualTask.getPriority().toUpperCase(),
+              expectedTask.getPriority(),
+              "Priority is not correct displayed");
+          softly.assertTrue(
+              actualTask.getAssignedTo().contains(expectedTask.getAssigneeUser().getFirstName()),
+              "Assigned to user first name is not correct displayed");
+          softly.assertTrue(
+              actualTask
+                  .getAssignedTo()
+                  .contains(expectedTask.getAssigneeUser().getLastName().toUpperCase()),
+              "Assigned to user last name is not correct displayed");
+          softly.assertEquals(
+              actualTask.getCommentsOnTask(),
+              expectedTask.getCreatorComment(),
+              "Creator comment is not correct displayed");
+          softly.assertEquals(
+              actualTask.getCommentsOnExecution(),
+              expectedTask.getAssigneeReply(),
+              "Comments on execution is not correct displayed");
+          softly.assertEquals(
+              actualTask.getTaskStatus().toUpperCase(),
+              expectedTask.getTaskStatus(),
+              "Task status is not correct displayed");
           softly.assertAll();
         });
 

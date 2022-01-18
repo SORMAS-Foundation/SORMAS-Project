@@ -30,8 +30,6 @@ public class Contact {
   String lastName;
   LocalDate dateOfBirth;
   String sex;
-  String nationalHealthId;
-  String passportNumber;
   String primaryEmailAddress;
   String primaryPhoneNumber;
   String returningTraveler;

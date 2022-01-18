@@ -32,6 +32,7 @@ import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
+import org.testng.Assert;
 
 public class SamplesDirectorySteps implements En {
 
@@ -68,7 +69,9 @@ public class SamplesDirectorySteps implements En {
         "I am accessing the created sample via api",
         () -> {
           String CREATED_SAMPLE_VIA_API_URL =
-              environmentUrl + "/sormas-ui/#!samples/data/" + apiState.getCreatedSample().getUuid();
+              environmentUrl
+                  + "/sormas-webdriver/#!samples/data/"
+                  + apiState.getCreatedSample().getUuid();
           webDriverHelpers.accessWebSite(CREATED_SAMPLE_VIA_API_URL);
           webDriverHelpers.waitForPageLoaded();
         });
@@ -89,8 +92,10 @@ public class SamplesDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
           webDriverHelpers.waitUntilNumberOfElementsIsExactlyOrLess(
               SEARCH_RESULT_SAMPLE, apiState.getCreatedSamples().size());
-          Truth.assertThat(apiState.getCreatedSamples().size())
-              .isEqualTo(webDriverHelpers.getNumberOfElements(SAMPLE_GRID_RESULTS_ROWS));
+          Assert.assertEquals(
+              apiState.getCreatedSamples().size(),
+              webDriverHelpers.getNumberOfElements(SAMPLE_GRID_RESULTS_ROWS),
+              "Number of created samples is wrong");
         });
 
     Then(
@@ -130,7 +135,9 @@ public class SamplesDirectorySteps implements En {
                           FINAL_LABORATORY_RESULT, aSpecimen.getCondition());
                       assertHelpers.assertWithPoll20Second(
                           () ->
-                              Truth.assertThat(
+                              Truth.assertWithMessage(
+                                      "Total number of displayed samples results is not correct")
+                                  .that(
                                       apiState.getCreatedSamples().stream()
                                           .filter(
                                               sample ->
@@ -156,7 +163,9 @@ public class SamplesDirectorySteps implements En {
                           FINAL_LABORATORY_RESULT, caption.getCaptionEnglish());
                       assertHelpers.assertWithPoll20Second(
                           () ->
-                              Truth.assertThat(
+                              Truth.assertWithMessage(
+                                      "Total number of sample results is not correct")
+                                  .that(
                                       apiState.getCreatedSamples().stream()
                                           .filter(
                                               sample ->
@@ -183,7 +192,9 @@ public class SamplesDirectorySteps implements En {
         (Integer number) ->
             assertHelpers.assertWithPoll20Second(
                 () ->
-                    Truth.assertThat(webDriverHelpers.getNumberOfElements(SAMPLE_GRID_RESULTS_ROWS))
-                        .isEqualTo(number)));
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(SAMPLE_GRID_RESULTS_ROWS),
+                        number.intValue(),
+                        "Displayed number of sample results is not correct")));
   }
 }

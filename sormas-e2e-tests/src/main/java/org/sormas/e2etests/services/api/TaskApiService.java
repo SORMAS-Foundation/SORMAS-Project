@@ -18,11 +18,20 @@
 
 package org.sormas.e2etests.services.api;
 
+import com.github.javafaker.Faker;
+import com.google.inject.Inject;
 import java.util.Date;
 import java.util.UUID;
 import org.sormas.e2etests.pojo.api.*;
 
 public class TaskApiService {
+
+  private final Faker faker;
+
+  @Inject
+  public TaskApiService(Faker faker) {
+    this.faker = faker;
+  }
 
   public Task buildGeneratedTask() {
     return Task.builder()
@@ -40,8 +49,8 @@ public class TaskApiService {
                 .lastName("Officer")
                 .uuid("TWJCUP-I3VN2G-QL5UG3-WXX6SOPA")
                 .build())
-        .assigneeReply(UUID.randomUUID().toString())
-        .creatorComment(UUID.randomUUID().toString())
+        .assigneeReply(faker.music().instrument())
+        .creatorComment(faker.book().title())
         .build();
   }
 }

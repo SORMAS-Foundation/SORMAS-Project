@@ -18,6 +18,7 @@ package org.sormas.e2etests.steps.web.application;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_CONTACT_BUTTON;
 import static org.sormas.e2etests.pages.application.dashboard.Contacts.ContactsDashboardPage.CONTACTS_DASHBOARD_NAME;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONTACTS_BUTTON;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.SURVEILLANCE_DASHBOARD_NAME;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.NEW_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsDirectoryPage.ADD_NEW_IMMUNIZATION_BUTTON;
@@ -29,11 +30,11 @@ import cucumber.api.java8.En;
 import customreport.data.TableDataManager;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
 import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
 
 @Slf4j
@@ -110,11 +111,14 @@ public class NavBarSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONTACTS_BUTTON);
+          TimeUnit.SECONDS.sleep(10); // mandatory due to loading time issue
+          webDriverHelpers.clickOnWebElementBySelector(CONTACTS_BUTTON);
+
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              SurveillanceDashboardPage.CONTACTS_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.CONTACTS_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.CONTACTS_BUTTON);
+              CONTACTS_DASHBOARD_NAME, 10);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
         });
 

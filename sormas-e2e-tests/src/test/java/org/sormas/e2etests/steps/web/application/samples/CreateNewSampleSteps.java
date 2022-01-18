@@ -21,7 +21,7 @@ package org.sormas.e2etests.steps.web.application.samples;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.*;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.*;
 
-import com.google.common.truth.Truth;
+import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -29,6 +29,7 @@ import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Sample;
 import org.sormas.e2etests.services.SampleService;
 
@@ -39,10 +40,13 @@ public class CreateNewSampleSteps implements En {
   public static Sample sampleTestResult;
   public static String sampleId;
   private final WebDriverHelpers webDriverHelpers;
+  private final Faker faker;
 
   @Inject
-  public CreateNewSampleSteps(WebDriverHelpers webDriverHelpers, SampleService sampleService) {
+  public CreateNewSampleSteps(
+      WebDriverHelpers webDriverHelpers, SampleService sampleService, Faker faker) {
     this.webDriverHelpers = webDriverHelpers;
+    this.faker = faker;
 
     When(
         "^I create a new Sample with specific data and save$",
@@ -68,7 +72,7 @@ public class CreateNewSampleSteps implements En {
         "^I check the created Sample is correctly displayed on Edit Sample page",
         () -> {
           final Sample actualSample = collectSampleData();
-          Truth.assertThat(sample).isEqualTo(actualSample);
+          ComparisonHelper.compareEqualEntities(sample, actualSample);
         });
 
     When(
@@ -90,6 +94,55 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "^I complete all fields from Pathogen test result popup for IgM test type and save$",
+        () -> {
+          simplePathogenBuilderResult("IgM serum antibody");
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "^I complete all fields from Pathogen test result popup for IgG test type and save$",
+        () -> {
+          simplePathogenBuilderResult("IgG serum antibody");
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I complete all fields from Pathogen test result popup for PCR RT PCR Value Detection test type and save",
+        () -> {
+          simplePathogenBuilderResult("PCR / RT-PCR");
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I complete all fields from Pathogen test result popup for CQ Value Detection test type and save",
+        () -> {
+          simplePathogenBuilderResult("CQ Value Detection");
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I complete all fields from Pathogen test result popup for Sequencing test type and save",
+        () -> {
+          simplePathogenBuilderResult("Sequencing");
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I complete all fields from Pathogen test result popup for DNA Microarray test type and save",
+        () -> {
+          simplePathogenBuilderResult("DNA Microarray");
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I complete all fields from Pathogen test result popup for Other test type and save",
+        () -> {
+          simplePathogenBuilderResult("Other");
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
         "I collect the sample UUID displayed on create new sample page",
         () -> sampleId = collectSampleUuid());
 
@@ -98,57 +151,57 @@ public class CreateNewSampleSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EDIT_TEST_RESULTS_BUTTON);
           final Sample actualSampleTestResult = collectPathogenTestResultsData();
-          Truth.assertThat(sampleTestResult).isEqualTo(actualSampleTestResult);
+          ComparisonHelper.compareEqualEntities(sampleTestResult, actualSampleTestResult);
         });
   }
 
-  public void selectPurposeOfSample(String samplePurpose, By element) {
+  private void selectPurposeOfSample(String samplePurpose, By element) {
     webDriverHelpers.clickWebElementByText(element, samplePurpose);
   }
 
-  public String collectSampleUuid() {
+  private String collectSampleUuid() {
     return webDriverHelpers.getValueFromWebElement(SAMPLE_UUID);
   }
 
-  public void fillDateOfCollection(LocalDate dateOfCollection) {
+  private void fillDateOfCollection(LocalDate dateOfCollection) {
     webDriverHelpers.clearAndFillInWebElement(
         DATE_SAMPLE_COLLECTED, DATE_FORMATTER.format(dateOfCollection));
   }
 
-  public void fillTimeOfCollection(LocalTime timeOfCollection) {
+  private void fillTimeOfCollection(LocalTime timeOfCollection) {
     webDriverHelpers.selectFromCombobox(
         COLLECTED_DATE_TIME_COMBOBOX, TIME_FORMATTER.format(timeOfCollection));
   }
 
-  public void selectSampleType(String sampleType) {
+  private void selectSampleType(String sampleType) {
     webDriverHelpers.selectFromCombobox(SAMPLE_TYPE_COMBOBOX, sampleType);
   }
 
-  public void selectReasonForSample(String reasonForSample) {
+  private void selectReasonForSample(String reasonForSample) {
     webDriverHelpers.selectFromCombobox(REASON_FOR_SAMPLING_TESTING_COMBOBOX, reasonForSample);
   }
 
-  public void fillSampleID(long sampleID) {
+  private void fillSampleID(long sampleID) {
     webDriverHelpers.clearAndFillInWebElement(FIELD_SAMPLE_ID_INPUT, String.valueOf(sampleID));
   }
 
-  public void selectLaboratory(String laboratory) {
+  private void selectLaboratory(String laboratory) {
     webDriverHelpers.selectFromCombobox(LABORATORY_COMBOBOX, laboratory);
   }
 
-  public void selectPathogenLaboratory(String laboratory) {
+  private void selectPathogenLaboratory(String laboratory) {
     webDriverHelpers.selectFromCombobox(PATHOGEN_LABORATORY_COMBOBOX, laboratory);
   }
 
-  public void selectTestResult(String testResult) {
+  private void selectTestResult(String testResult) {
     webDriverHelpers.selectFromCombobox(PATHOGEN_TEST_RESULT_COMBOBOX, testResult);
   }
 
-  public void selectSpecimenCondition(String specimenCondition) {
+  private void selectSpecimenCondition(String specimenCondition) {
     webDriverHelpers.selectFromCombobox(SPECIMEN_CONDITION_COMBOBOX, specimenCondition);
   }
 
-  public void fillReceivedDate(LocalDate receivedDate) {
+  private void fillReceivedDate(LocalDate receivedDate) {
     webDriverHelpers.clearAndFillInWebElement(
         DATE_SAMPLE_RECEIVED, DATE_FORMATTER.format(receivedDate));
   }
@@ -157,54 +210,54 @@ public class CreateNewSampleSteps implements En {
     webDriverHelpers.clearAndFillInWebElement(LABORATORY_NAME_INPUT, laboratoryName);
   }
 
-  public void selectReceivedOptionButton(String received) {
+  private void selectReceivedOptionButton(String received) {
     webDriverHelpers.clickWebElementByText(RECEIVED_OPTION_BUTTON, received);
   }
 
-  public void fillLabSampleId(long labSampleId) {
+  private void fillLabSampleId(long labSampleId) {
     webDriverHelpers.clearAndFillInWebElement(LAB_SAMPLE_ID_INPUT, String.valueOf(labSampleId));
   }
 
-  public void fillCommentsOnSample(String commentsOnSample) {
+  private void fillCommentsOnSample(String commentsOnSample) {
     webDriverHelpers.clearAndFillInWebElement(COMMENT_AREA_INPUT, commentsOnSample);
   }
 
-  public void selectSampleTestResultButton() {
+  private void selectSampleTestResultButton() {
     webDriverHelpers.clickOnWebElementBySelector(SAMPLE_TEST_RESULT_BUTTON);
   }
 
-  public void fillReportDate(LocalDate dateOfCollection) {
+  private void fillReportDate(LocalDate dateOfCollection) {
     webDriverHelpers.clearAndFillInWebElement(
         DATE_TEST_REPORT, DATE_FORMATTER.format(dateOfCollection));
   }
 
-  public void selectTypeOfTest(String typeOfTest) {
+  private void selectTypeOfTest(String typeOfTest) {
     webDriverHelpers.selectFromCombobox(TYPE_OF_TEST_COMBOBOX, typeOfTest);
   }
 
-  public void selectTestedDisease(String typeOfDisease) {
+  private void selectTestedDisease(String typeOfDisease) {
     webDriverHelpers.selectFromCombobox(TESTED_DISEASE_COMBOBOX, typeOfDisease);
   }
 
-  public void fillDateOfResult(LocalDate dateOfCollection) {
+  private void fillDateOfResult(LocalDate dateOfCollection) {
     webDriverHelpers.clearAndFillInWebElement(
         DATE_OF_RESULT, DATE_FORMATTER.format(dateOfCollection));
   }
 
-  public void fillTimeOfResult(LocalTime timeOfCollection) {
+  private void fillTimeOfResult(LocalTime timeOfCollection) {
     webDriverHelpers.selectFromCombobox(
         TIME_OF_RESULT_COMBOBOX, TIME_FORMATTER.format(timeOfCollection));
   }
 
-  public void selectResultVerifiedByLabSupervisor(String resultVerified, By element) {
+  private void selectResultVerifiedByLabSupervisor(String resultVerified, By element) {
     webDriverHelpers.clickWebElementByText(element, resultVerified);
   }
 
-  public void fillTestResultsComment(String testResultsComment) {
+  private void fillTestResultsComment(String testResultsComment) {
     webDriverHelpers.clearAndFillInWebElement(TEST_RESULTS_COMMENT_AREA_INPUT, testResultsComment);
   }
 
-  public Sample collectSampleData() {
+  private Sample collectSampleData() {
     return Sample.builder()
         .purposeOfTheSample(getPurposeOfSample())
         .dateOfCollection(getDateOfCollection())
@@ -222,105 +275,105 @@ public class CreateNewSampleSteps implements En {
         .build();
   }
 
-  public String getPurposeOfSample() {
+  private String getPurposeOfSample() {
     return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SAMPLE_EDIT_PURPOSE_OPTIONS);
   }
 
-  public LocalDate getDateOfCollection() {
+  private LocalDate getDateOfCollection() {
     return LocalDate.parse(
         webDriverHelpers.getValueFromWebElement(DATE_SAMPLE_COLLECTED), DATE_FORMATTER);
   }
 
-  public LocalTime getTimeOfCollection() {
+  private LocalTime getTimeOfCollection() {
     return LocalTime.parse(
         webDriverHelpers.getValueFromWebElement(COLLECTED_DATE_TIME_INPUT), TIME_FORMATTER);
   }
 
-  public String getSampleType() {
+  private String getSampleType() {
     return webDriverHelpers.getValueFromWebElement(SAMPLE_TYPE_INPUT);
   }
 
-  public String getReasonForSample() {
+  private String getReasonForSample() {
     return webDriverHelpers.getValueFromWebElement(REASON_FOR_SAMPLING_TESTING_INPUT);
   }
 
-  public String getSampleID() {
+  private String getSampleID() {
     return webDriverHelpers.getValueFromWebElement(FIELD_SAMPLE_ID_INPUT);
   }
 
-  public String getLaboratory() {
+  private String getLaboratory() {
     return webDriverHelpers.getValueFromWebElement(LABORATORY_INPUT);
   }
 
-  public String getPathogenPopupLaboratory() {
+  private String getPathogenPopupLaboratory() {
     return webDriverHelpers.getValueFromWebElement(PATHOGEN_LABORATORY_INPUT);
   }
 
-  public String getPathogenPopupTestResult() {
+  private String getPathogenPopupTestResult() {
     return webDriverHelpers.getValueFromWebElement(PATHOGEN_TEST_RESULT_INPUT);
   }
 
-  public String getLaboratoryName() {
+  private String getLaboratoryName() {
     return webDriverHelpers.getValueFromWebElement(LABORATORY_NAME_INPUT);
   }
 
-  public String getReceivedOption() {
+  private String getReceivedOption() {
     return webDriverHelpers.getTextFromWebElement(RECEIVED_OPTION_BUTTON);
   }
 
-  public LocalDate getReceivedDate() {
+  private LocalDate getReceivedDate() {
     return LocalDate.parse(
         webDriverHelpers.getValueFromWebElement(DATE_SAMPLE_RECEIVED), DATE_FORMATTER);
   }
 
-  public String getSpecimenCondition() {
+  private String getSpecimenCondition() {
     return webDriverHelpers.getValueFromWebElement(SPECIMEN_CONDITION_INPUT);
   }
 
-  public String getLabSampleID() {
+  private String getLabSampleID() {
     return webDriverHelpers.getValueFromWebElement(LAB_SAMPLE_ID_INPUT);
   }
 
-  public String getCommentsOnSample() {
+  private String getCommentsOnSample() {
     return webDriverHelpers.getValueFromWebElement(COMMENT_AREA_INPUT);
   }
 
-  public String getSampleTestResult() {
+  private String getSampleTestResult() {
     return webDriverHelpers.getTextFromWebElement(SAMPLE_TEST_RESULT_BUTTON);
   }
 
-  public LocalDate getReportDate() {
+  private LocalDate getReportDate() {
     return LocalDate.parse(
         webDriverHelpers.getValueFromWebElement(DATE_TEST_REPORT), DATE_FORMATTER);
   }
 
-  public String getTypeOfTest() {
+  private String getTypeOfTest() {
     return webDriverHelpers.getValueFromWebElement(TYPE_OF_TEST_INPUT);
   }
 
-  public String getTestedDisease() {
+  private String getTestedDisease() {
     return webDriverHelpers.getValueFromWebElement(TESTED_DISEASE_INPUT);
   }
 
-  public LocalDate getDateOfResult() {
+  private LocalDate getDateOfResult() {
     return LocalDate.parse(webDriverHelpers.getValueFromWebElement(DATE_OF_RESULT), DATE_FORMATTER);
   }
 
-  public LocalTime getTimeOfResult() {
+  private LocalTime getTimeOfResult() {
     return LocalTime.parse(
         webDriverHelpers.getValueFromWebElement(TIME_OF_RESULT_INPUT), TIME_FORMATTER);
   }
 
-  public String getTestResultComment() {
+  private String getTestResultComment() {
     return webDriverHelpers.getValueFromWebElement(TEST_RESULTS_COMMENT_AREA_INPUT);
   }
 
-  public String getResultVerifiedByLabSupervisor() {
+  private String getResultVerifiedByLabSupervisor() {
     return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
         RESULT_VERIFIED_BY_LAB_SUPERVISOR_EDIT_OPTIONS);
   }
 
-  public Sample collectPathogenTestResultsData() {
+  private Sample collectPathogenTestResultsData() {
     return Sample.builder()
         .sampleTestResults(getPathogenPopupTestResult())
         .reportDate(getReportDate())
@@ -332,5 +385,22 @@ public class CreateNewSampleSteps implements En {
         .resultVerifiedByLabSupervisor(getResultVerifiedByLabSupervisor())
         .testResultsComment(getTestResultComment())
         .build();
+  }
+
+  private Sample simplePathogenBuilderResult(String testType) {
+    SampleService sampleService = new SampleService(faker);
+    sampleTestResult = sampleService.buildPathogenTestResultType(testType);
+    fillReportDate(sampleTestResult.getReportDate());
+    selectTypeOfTest(sampleTestResult.getTypeOfTest());
+    selectTestedDisease(sampleTestResult.getTestedDisease());
+    selectPathogenLaboratory(sampleTestResult.getLaboratory());
+    selectTestResult(sampleTestResult.getSampleTestResults());
+    fillDateOfResult(sampleTestResult.getDateOfResult());
+    fillTimeOfResult(sampleTestResult.getTimeOfResult());
+    selectResultVerifiedByLabSupervisor(
+        sampleTestResult.getResultVerifiedByLabSupervisor(),
+        RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+    fillTestResultsComment(sampleTestResult.getTestResultsComment());
+    return sampleTestResult;
   }
 }

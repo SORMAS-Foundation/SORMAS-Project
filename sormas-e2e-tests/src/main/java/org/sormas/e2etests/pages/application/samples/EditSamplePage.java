@@ -22,8 +22,7 @@ import org.openqa.selenium.By;
 
 public class EditSamplePage {
 
-  public static final By PATHOGEN_NEW_TEST_RESULT_BUTTON =
-      By.cssSelector("[id='pathogenTestNewTest']");
+  public static final By PATHOGEN_NEW_TEST_RESULT_BUTTON = By.cssSelector("[id='New test result']");
   public static final By COLLECTED_DATE_TIME_COMBOBOX =
       By.cssSelector("[id='sampleDateTime_time'] [class='v-filterselect-button']");
   public static final By COMMENT_AREA_INPUT = By.cssSelector("[id='comment']");
@@ -49,7 +48,18 @@ public class EditSamplePage {
       By.cssSelector("[id='sampleMaterial'] [class='v-filterselect-button']");
   public static final By SPECIMEN_CONDITION_COMBOBOX =
       By.cssSelector("[id='specimenCondition'] [class='v-filterselect-button']");
+  public static final By FOUR_FOLD_INCREASE_ANTIBODY_TITER =
+      By.cssSelector("[class='popupContent'] [id='fourFoldIncreaseAntibodyTiter']");
+  public static final By CQ_CT_VALUE_INPUT =
+      By.cssSelector("[class='popupContent'] [id='cqValue']");
+  public static final By PCR_TEST_SPECIFICATION_COMBOBOX =
+      By.cssSelector("[class='popupContent'] [id='pcrTestSpecification']");
+  public static final By SPECIFY_TEST_DETAILS_INPUT =
+      By.cssSelector("[class='popupContent'] [id='testTypeText']");
+  public static final By TYPING_ID_INPUT = By.cssSelector("[class='popupContent'] [id='typingId']");
   public static final By DELETE_SAMPLE_BUTTON = By.cssSelector("#delete");
+  public static final By DELETE_PATHOGEN_TEST_RESULT =
+      By.cssSelector("[class='popupContent'] [id='delete']");
   public static final By SAMPLE_DELETION_POPUP = By.cssSelector(".v-window .popupContent");
   public static final By SAMPLE_DELETION_POPUP_YES_BUTTON = By.id("actionConfirm");
   public static final By SAVE_SAMPLE_BUTTON = By.id("commit");

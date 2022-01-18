@@ -28,13 +28,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.EventActionTableEntry;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.asserts.SoftAssert;
 
 public class EventActionsTableSteps implements En {
 
@@ -47,7 +47,7 @@ public class EventActionsTableSteps implements En {
       WebDriverHelpers webDriverHelpers,
       BaseSteps baseSteps,
       ApiState apiState,
-      SoftAssertions softly) {
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
 
@@ -64,31 +64,34 @@ public class EventActionsTableSteps implements En {
     Then(
         "^I am checking if all the fields are correctly displayed in the Event directory Actions table$",
         () -> {
-          softly
-              .assertThat(eventActionTableEntry.getEventId())
-              .containsIgnoringCase(
-                  getPartialUuidFromAssociatedLink(apiState.getCreatedEvent().getUuid()));
-          softly
-              .assertThat(eventActionTableEntry.getActionTitle())
-              .containsIgnoringCase(apiState.getCreatedAction().getTitle());
-          softly
-              .assertThat(eventActionTableEntry.getActionCreationDate().toString())
-              .containsIgnoringCase(apiState.getCreatedAction().getDate().toString());
-          softly
-              .assertThat(eventActionTableEntry.getActionChangeDate().toString())
-              .containsIgnoringCase(apiState.getCreatedAction().getDate().toString());
-
-          softly
-              .assertThat(eventActionTableEntry.getActionStatus())
-              .containsIgnoringCase(apiState.getCreatedAction().getActionStatus());
-
-          softly
-              .assertThat(eventActionTableEntry.getActionPriority())
-              .containsIgnoringCase(apiState.getCreatedAction().getPriority());
-
-          softly
-              .assertThat(eventActionTableEntry.getActionLastModifiedBy())
-              .containsIgnoringCase("National USER");
+          softly.assertEquals(
+              eventActionTableEntry.getEventId(),
+              getPartialUuidFromAssociatedLink(apiState.getCreatedEvent().getUuid()).toUpperCase(),
+              "Event ID is not correct");
+          softly.assertEquals(
+              eventActionTableEntry.getActionTitle(),
+              apiState.getCreatedAction().getTitle(),
+              "Action title is not correct");
+          softly.assertEquals(
+              eventActionTableEntry.getActionCreationDate().toString().substring(0, 10),
+              apiState.getCreatedAction().getDate().toString(),
+              "Action creation date is not correct");
+          softly.assertEquals(
+              eventActionTableEntry.getActionChangeDate().toString().substring(0, 10),
+              apiState.getCreatedAction().getDate().toString(),
+              "Action change date is not correct");
+          softly.assertEquals(
+              eventActionTableEntry.getActionStatus().toUpperCase(),
+              apiState.getCreatedAction().getActionStatus(),
+              "Action status is not correct");
+          softly.assertEquals(
+              eventActionTableEntry.getActionPriority(),
+              apiState.getCreatedAction().getPriority(),
+              "Priority is not correct");
+          softly.assertEquals(
+              eventActionTableEntry.getActionLastModifiedBy(),
+              "National USER",
+              "Last modified by user is not correct");
           softly.assertAll();
         });
 
@@ -191,7 +194,6 @@ public class EventActionsTableSteps implements En {
   }
 
   private String getPartialUuidFromAssociatedLink(String associatedLink) {
-
     return StringUtils.left(associatedLink, 6);
   }
 }

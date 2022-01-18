@@ -25,37 +25,35 @@ public class ImmunizationService {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
     return Immunization.builder()
-            .dateOfReport(LocalDate.now().minusDays(1))
-            .externalId(UUID.randomUUID().toString())
-            .disease(DiseasesValues.getRandomDiseaseCaption())
-            .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
-            .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
-            .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
-            .presentConditionOfPerson("Alive")
-            .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
-            .primaryEmailAddress(firstName + "." + lastName + emailDomain)
-            .passportNumber(UUID.randomUUID().toString())
-            .firstName(firstName)
-            .lastName(lastName)
-            .dateOfBirth(
-                    LocalDate.of(
-                            faker.number().numberBetween(1900, 2002),
-                            faker.number().numberBetween(1, 12),
-                            faker.number().numberBetween(1, 27)))
-            .sex(GenderValues.getRandomGender())
-            .nationalHealthId(UUID.randomUUID().toString())
-            .meansOfImmunization("Vaccination")
-            .immunizationStatus(StatusValues.getRandomImmunizationStatus())
-            .managementStatus(
-                    ImmunizationManagementStatusValues.getRandomImmunizationManagementStatus())
-            .facilityCategory("Care facility")
-            .facilityType("Elderly care facility")
-            .facility("Other facility")
-            .facilityDescription("dummy description")
-            .startDate(LocalDate.now().minusDays(1))
-            .endDate(LocalDate.now())
-            .validFrom(LocalDate.now().minusDays(1))
-            .validUntil(LocalDate.now())
-            .build();
+        .dateOfReport(LocalDate.now().minusDays(1))
+        .externalId(UUID.randomUUID().toString())
+        .disease(DiseasesValues.getRandomDiseaseCaption())
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .presentConditionOfPerson("Alive")
+        .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
+        .primaryEmailAddress(firstName + "." + lastName + emailDomain)
+        .firstName(firstName)
+        .lastName(lastName)
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGender())
+        .meansOfImmunization("Vaccination")
+        .immunizationStatus(StatusValues.getRandomImmunizationStatus())
+        .managementStatus(
+            ImmunizationManagementStatusValues.getRandomImmunizationManagementStatus())
+        .facilityCategory("Care facility")
+        .facilityType("Elderly care facility")
+        .facility("Other facility")
+        .facilityDescription("dummy description")
+        .startDate(LocalDate.now().minusDays(1))
+        .endDate(LocalDate.now())
+        .validFrom(LocalDate.now().minusDays(1))
+        .validUntil(LocalDate.now())
+        .build();
   }
 }
