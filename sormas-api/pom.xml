@@ -106,6 +106,12 @@
 			<artifactId>archunit-junit4</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>uk.co.jemos.podam</groupId>
+			<artifactId>podam</artifactId>
+			<version>7.2.8.RELEASE</version>
+			<scope>test</scope>
+		</dependency>
 
 	</dependencies>
 
