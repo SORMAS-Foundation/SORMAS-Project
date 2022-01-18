@@ -125,8 +125,6 @@ public class CreateNewCaseSteps implements En {
 
                   selectPlaceOfStay(caze.getPlaceOfStay());
                   fillPlaceDescription(caze.getPlaceDescription());
-                  fillNationalHealthId(caze.getNationalHealthId());
-                  fillPassportNumber(caze.getPassportNumber());
                   selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
                   fillDateOfSymptomOnset(caze.getDateOfSymptomOnset());
 
