@@ -115,7 +115,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			return Collections.emptyList();
 		}
 
-		return weeklyReportService.getAllAfter(date, user, batchSize, lastSynchronizedUuidSameTimestamp)
+		return weeklyReportService.getAllAfter(date, user, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(WeeklyReportFacadeEjb::toDto)
 			.collect(Collectors.toList());
