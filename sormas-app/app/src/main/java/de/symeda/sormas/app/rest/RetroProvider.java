@@ -308,8 +308,7 @@ public final class RetroProvider {
 		double compressedJsonSizeInBits = approximateJsonSizeInBytes * 8 / JSON_COMPRESSION_FACTOR;
 		int batchSize =
 			Math.toIntExact(Math.round(getNetworkDownloadSpeedInKbps(context) * ASSUMED_TRANSFER_TIME_IN_SECONDS * 1024 / compressedJsonSizeInBits));
-		//return batchSize < 10 ? 10 : batchSize;
-		return 5;
+		return batchSize < 10 ? 10 : batchSize;
 	}
 
 	public static long getNetworkDownloadSpeedInKbps(Context context) throws ServerConnectionException {
