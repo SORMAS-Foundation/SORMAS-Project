@@ -107,7 +107,7 @@ public class CentralInfraSyncFacade {
 
 		newDtos.forEach(d -> {
 			logger.info("Processing: {} - {}", d, d.getUuid());
-			facade.saveUnchecked(d);
+			facade.saveUnchecked(d, true);
 		});
 		return newestChangeDate;
 	}
