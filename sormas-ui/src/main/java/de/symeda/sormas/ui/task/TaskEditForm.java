@@ -352,7 +352,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 					TaskDto.SUGGESTED_START,
 					TaskDto.DUE_DATE,
 					TaskDto.ASSIGNEE_USER,
-					TaskDto.CREATOR_COMMENT);
+					TaskDto.CREATOR_COMMENT,
+					TaskDto.OBSERVER_USERS);
 				setReadOnly(
 					!(creator || supervisor),
 					TaskDto.PRIORITY,
