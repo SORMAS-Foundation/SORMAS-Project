@@ -18,19 +18,18 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
+
 import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Contact;
 import org.sormas.e2etests.services.ContactService;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
 
 public class EditContactSteps implements En {
   DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
@@ -139,35 +138,36 @@ public class EditContactSteps implements En {
           selectVaccinationStatusForThisDisease(editedContact.getVaccinationStatusForThisDisease());
           selectImmunosuppressiveTherapy(editedContact.getImmunosuppressiveTherapy());
           selectActiveInCare(editedContact.getActiveInCare());
-            clickCancelFollowUpButton();
-            // TODO enable it back once 6803 is fixed
-            // selectOverwriteFollowUp(editedContact.getOverwriteFollowUp());
-            // fillDateOfFollowUpUntil(editedContact.getDateOfFollowUpUntil());
-            fillFollowUpStatusComment(editedContact.getFollowUpStatusComment());
-            selectResponsibleContactOfficer(editedContact.getResponsibleContactOfficer());
-            fillGeneralComment(editedContact.getGeneralComment());
-            webDriverHelpers.clickOnWebElementBySelector(SAVE_EDIT_BUTTON);
-            webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_EDIT_BUTTON);
+          clickCancelFollowUpButton();
+          // TODO enable it back once 6803 is fixed
+          // selectOverwriteFollowUp(editedContact.getOverwriteFollowUp());
+          // fillDateOfFollowUpUntil(editedContact.getDateOfFollowUpUntil());
+          fillFollowUpStatusComment(editedContact.getFollowUpStatusComment());
+          selectResponsibleContactOfficer(editedContact.getResponsibleContactOfficer());
+          fillGeneralComment(editedContact.getGeneralComment());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_EDIT_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_EDIT_BUTTON);
         });
-      When(
-              "I click on Confirm Contact radio button Contact Person tab",
-              () -> webDriverHelpers.clickOnWebElementBySelector(CASE_CONFIRMED_RADIO_BUTTON)
-      );
-      When(
-              "^I click SAVE button$",
-              () -> {
-                  webDriverHelpers.scrollToElement(SAVE_EDIT_BUTTON);
-                  webDriverHelpers.clickOnWebElementBySelector(SAVE_EDIT_BUTTON);
-                  webDriverHelpers.clickOnWebElementBySelector(CONTACT_SAVED_POPUP);
-              });
-      When(
-              "^I click Create Case from Contact button$",
-              () -> {
-                  webDriverHelpers.waitForPageLoaded();
-                  webDriverHelpers.scrollToElement(CREATE_CASE_FROM_CONTACT_BUTTON);
-                  webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_FROM_CONTACT_BUTTON);
-              });
+    When(
+        "^I click on ([^\"]*) radio button Contact Person tab$",
+        (String buttonName) ->
+            webDriverHelpers.clickWebElementByText(
+                CONTACT_CLASSIFICATION_RADIO_BUTTON, buttonName));
 
+    When(
+        "^I click SAVE button on Edit Contact Page$",
+        () -> {
+          webDriverHelpers.scrollToElement(SAVE_EDIT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_EDIT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_SAVED_POPUP);
+        });
+    When(
+        "^I click Create Case from Contact button$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.scrollToElement(CREATE_CASE_FROM_CONTACT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_FROM_CONTACT_BUTTON);
+        });
   }
 
   private void selectContactClassification(String classification) {

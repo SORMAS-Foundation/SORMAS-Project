@@ -105,6 +105,7 @@ public class EditContactPage {
       By.cssSelector("tr[class*='v-grid-row-has-data']");
   public static final By CHANGE_CASE_BUTTON = By.id("contactChangeCase");
   public static final By CASE_ID_LABEL = By.id("caseIdLabel");
+  public static final By CONTACT_CLASSIFICATION_RADIO_BUTTON = By.cssSelector(".v-radiobutton");
   public static final By CASE_PERSON_LABEL =
       By.xpath(
           "//span[contains(text(), 'Case person')]/ancestor::div[@class='v-caption']/following-sibling::div");
@@ -117,9 +118,6 @@ public class EditContactPage {
   public static final By REMOVE_CASE_CTA_LINK = By.id("contactRemoveCase");
   public static final By CASE_CHANGE_POPUP_SUCCESS_MESSAGE =
       By.xpath("//*[contains(text(),'The source case of the contact has been changed')]");
-  public static final By CASE_CONFIRMED_RADIO_BUTTON =
-          By.xpath(
-                  "/html/body/div[1]/div/div[2]/div/div[2]/div/div/div[3]/div/div/div/div/div[1]/div/div[1]/div/div[2]/div/div/div[2]/div[1]/div/div[2]/span[2]/label");
   public static final By CONTACT_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By CREATE_CASE_FROM_CONTACT_BUTTON = By.id("contactCreateContactCase");
 }

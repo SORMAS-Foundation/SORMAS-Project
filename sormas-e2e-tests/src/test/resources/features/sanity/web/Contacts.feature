@@ -138,8 +138,8 @@ Feature: Contacts end to end tests
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I create a new contact
-    And I click on Confirm Contact radio button Contact Person tab
-    Then I click SAVE button
+    And I click on CONFIRMED CONTACT radio button Contact Person tab
+    Then I click SAVE button on Edit Contact Page
     And I click Create Case from Contact button
     And I create a new case for contact with specific data
-    And I check the created from contact data is correctly displayed on Edit case page
+    And I check case created from created contact is correctly displayed on Edit Case page
