@@ -44,14 +44,14 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 
 	public DTO save(DTO dto, boolean allowMerge) {
 		checkInfraDataLocked();
-		return doSave(dto, allowMerge, duplicateErrorMessageProperty);
+		return doSave(dto, allowMerge, true, duplicateErrorMessageProperty);
 	}
 
-	public DTO saveUnchecked(DTO dtoToSave, boolean allowMerge) {
-		return doSave(dtoToSave, allowMerge, duplicateErrorMessageProperty);
+	public DTO saveFromCentral(DTO dtoToSave) {
+		return doSave(dtoToSave, true, false, duplicateErrorMessageProperty);
 	}
 
-	protected DTO doSave(DTO dtoToSave, boolean allowMerge, String duplicateErrorMessageProperty) {
+	protected DTO doSave(DTO dtoToSave, boolean allowMerge, boolean includeArchived, String duplicateErrorMessageProperty) {
 		if (dtoToSave == null) {
 			return null;
 		}
@@ -74,7 +74,7 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 		}
 
 		if (existingEntity == null) {
-			List<ADO> duplicates = findDuplicates(dtoToSave);
+			List<ADO> duplicates = findDuplicates(dtoToSave, includeArchived);
 			if (!duplicates.isEmpty()) {
 				if (allowMerge) {
 					return mergeAndPersist(dtoToSave, duplicates);

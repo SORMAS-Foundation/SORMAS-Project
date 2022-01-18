@@ -190,8 +190,8 @@ public class CommunityFacadeEjb
 	}
 
 	@Override
-	protected List<Community> findDuplicates(CommunityDto dto) {
-		return service.getByName(dto.getName(), districtService.getByReferenceDto(dto.getDistrict()), true);
+	protected List<Community> findDuplicates(CommunityDto dto, boolean mergeDuplicates) {
+		return service.getByName(dto.getName(), districtService.getByReferenceDto(dto.getDistrict()), mergeDuplicates);
 	}
 
 	@Override

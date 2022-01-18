@@ -204,8 +204,8 @@ public class DistrictFacadeEjb
 	}
 
 	@Override
-	protected List<District> findDuplicates(DistrictDto dto) {
-		return service.getByName(dto.getName(), regionService.getByReferenceDto(dto.getRegion()), true);
+	protected List<District> findDuplicates(DistrictDto dto, boolean mergeDuplicates) {
+		return service.getByName(dto.getName(), regionService.getByReferenceDto(dto.getRegion()), mergeDuplicates);
 	}
 
 	@Override

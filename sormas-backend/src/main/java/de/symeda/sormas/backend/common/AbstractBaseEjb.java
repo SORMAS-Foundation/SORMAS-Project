@@ -97,7 +97,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 
 	}
 
-	protected abstract List<ADO> findDuplicates(DTO dto);
+	protected abstract List<ADO> findDuplicates(DTO dto, boolean includeArchived);
 
 	protected abstract ADO fillOrBuildEntity(@NotNull DTO source, ADO target, boolean checkChangeDate);
 
