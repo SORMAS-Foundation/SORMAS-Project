@@ -65,28 +65,33 @@ public class ContactsLineListingSteps implements En {
         "I save the new contact using line listing feature",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_ACTION_SAVE);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(25);
         });
 
     When(
         "I check that contact created from Line Listing is saved and displayed in results grid",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(DISEASE_COLUMNS);
+          softly.assertTrue(
+              contactsLineListing
+                  .getDisease()
+                  .toUpperCase()
+                  .contains(getDiseaseDirectoryPage().toUpperCase()),
+              String.format(
+                  "Disease value is not correct: expecting: %s, but found: %s",
+                  contactsLineListing.getDisease(), getDiseaseDirectoryPage()));
           softly.assertEquals(
-              contactsLineListing.getDisease(),
-              getDiseaseDirectoryPage(),
-              "Disease value is not correct");
-          softly.assertEquals(
-              contactsLineListing.getTypeOfContact(),
               getTypeOfContactDirectoryPage(),
+              contactsLineListing.getTypeOfContact(),
               "Type of contact is not correct");
           softly.assertEquals(
-              contactsLineListing.getFirstName(),
               getFirstNameDirectoryPage(),
+              contactsLineListing.getFirstName(),
               "First name is not correct");
           softly.assertEquals(
-              contactsLineListing.getLastName(),
               getLastNameDirectoryPage(),
+              contactsLineListing.getLastName(),
               "Last name is not correct");
           softly.assertAll();
         });
@@ -152,14 +157,14 @@ public class ContactsLineListingSteps implements En {
   }
 
   private String getTypeOfContactDirectoryPage() {
-    return webDriverHelpers.getTextFromListElement(FIRST_NAME_COLUMNS, 0);
+    return webDriverHelpers.getTextFromListElement(TYPE_OF_CONTACT_COLUMNS, 0);
   }
 
   private String getFirstNameDirectoryPage() {
-    return webDriverHelpers.getTextFromListElement(LAST_NAME_COLUMNS, 0);
+    return webDriverHelpers.getTextFromListElement(FIRST_NAME_COLUMNS, 0);
   }
 
   private String getLastNameDirectoryPage() {
-    return webDriverHelpers.getTextFromListElement(TYPE_OF_CONTACT_COLUMNS, 0);
+    return webDriverHelpers.getTextFromListElement(LAST_NAME_COLUMNS, 0);
   }
 }

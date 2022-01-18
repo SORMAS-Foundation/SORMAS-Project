@@ -41,8 +41,6 @@ public class Case {
   String facilityType;
   String firstName;
   String lastName;
-  String nationalHealthId;
-  String passportNumber;
   String placeDescription;
   String responsibleJurisdiction;
   String placeOfStay;

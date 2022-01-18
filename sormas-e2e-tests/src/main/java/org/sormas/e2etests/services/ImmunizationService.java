@@ -34,7 +34,6 @@ public class ImmunizationService {
         .presentConditionOfPerson("Alive")
         .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
         .primaryEmailAddress(firstName + "." + lastName + emailDomain)
-        .passportNumber(UUID.randomUUID().toString())
         .firstName(firstName)
         .lastName(lastName)
         .dateOfBirth(
@@ -43,7 +42,6 @@ public class ImmunizationService {
                 faker.number().numberBetween(1, 12),
                 faker.number().numberBetween(1, 27)))
         .sex(GenderValues.getRandomGender())
-        .nationalHealthId(UUID.randomUUID().toString())
         .meansOfImmunization("Vaccination")
         .immunizationStatus(StatusValues.getRandomImmunizationStatus())
         .managementStatus(

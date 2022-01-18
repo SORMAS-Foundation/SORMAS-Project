@@ -33,6 +33,7 @@ import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.FollowUpVisit;
 import org.sormas.e2etests.services.FollowUpVisitService;
 import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
@@ -129,6 +130,7 @@ public class CreateNewVisitSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(FOLLOW_UP_VISITS_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(FROM_INPUT);
         });
 
     Then(
@@ -141,6 +143,7 @@ public class CreateNewVisitSteps implements En {
           fillDateFrom(followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit());
           fillDateTo(followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit());
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(CONTACT_GRID_RESULTS_ROWS);
           Assert.assertEquals(
               webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS),
@@ -316,11 +319,13 @@ public class CreateNewVisitSteps implements En {
   }
 
   private void fillDateFrom(LocalDate from) {
-    webDriverHelpers.clearAndFillInWebElement(FROM_INPUT, DATE_FORMATTER.format(from));
+    BaseSteps.driver.findElement(FROM_INPUT).clear();
+    BaseSteps.driver.findElement(FROM_INPUT).sendKeys(DATE_FORMATTER.format(from));
   }
 
   private void fillDateTo(LocalDate to) {
-    webDriverHelpers.clearAndFillInWebElement(TO_INPUT, DATE_FORMATTER.format(to));
+    BaseSteps.driver.findElement(FROM_INPUT).clear();
+    BaseSteps.driver.findElement(FROM_INPUT).sendKeys(DATE_FORMATTER.format(to));
   }
 
   private void fillVisitRemark(String visitRemark) {

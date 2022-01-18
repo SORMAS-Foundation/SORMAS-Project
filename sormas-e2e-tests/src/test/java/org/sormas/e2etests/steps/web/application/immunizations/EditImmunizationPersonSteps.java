@@ -38,8 +38,6 @@ public class EditImmunizationPersonSteps implements En {
                   "lastName",
                   "presentConditionOfPerson",
                   "sex",
-                  "passportNumber",
-                  "nationalHealthId",
                   "primaryEmailAddress",
                   "dateOfBirth"));
         });
@@ -54,8 +52,6 @@ public class EditImmunizationPersonSteps implements En {
         .dateOfBirth(getUserBirthDate())
         .presentConditionOfPerson(webDriverHelpers.getValueFromWebElement(PRESENT_CONDITION_INPUT))
         .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
-        .passportNumber(webDriverHelpers.getValueFromWebElement(PASSPORT_NUMBER_INPUT))
-        .nationalHealthId(webDriverHelpers.getValueFromWebElement(NATIONAL_HEALTH_ID_INPUT))
         .primaryPhoneNumber(webDriverHelpers.getTextFromPresentWebElement(PHONE_FIELD))
         .primaryEmailAddress(webDriverHelpers.getTextFromPresentWebElement(EMAIL_FIELD))
         .build();
