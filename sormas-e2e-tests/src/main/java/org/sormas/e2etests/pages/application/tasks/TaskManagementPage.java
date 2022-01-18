@@ -29,4 +29,8 @@ public class TaskManagementPage {
       By.cssSelector("thead .v-grid-column-default-header-content");
   public static final By TABLE_ROW = By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By TABLE_DATA = By.tagName("td");
+  public static final By TASK_CONTEXT_COMBOBOX = By.cssSelector("#taskContext div");
+  public static final By TASK_STATUS_COMBOBOX = By.cssSelector("#taskStatus div");
+  public static final By FILTER_ACTIVE_TASK_CONTEXT = By.xpath("//table/tbody/tr[1]/td[3]");
+  public static final By FILTER_ACTIVE_TASK_STATUS = By.xpath("//table/tbody/tr[1]/td[14]");
 }

@@ -18,6 +18,8 @@
 
 package org.sormas.e2etests.steps.web.application.tasks;
 
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESET_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_POPUP;
 import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_TYPE_COMBOBOX;
@@ -28,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -94,6 +97,42 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               getByEventUuid(eventUuid));
           webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
+        });
+
+    When(
+        "^I filter Task context by ([^\"]*)$",
+        (String filterType) -> {
+          webDriverHelpers.selectFromCombobox(TASK_CONTEXT_COMBOBOX, filterType);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(TABLE_ROW);
+        });
+
+    When(
+        "^I am checking if filter works correctly for ([^\"]*)$",
+        (String filterType) -> {
+          webDriverHelpers.checkWebElementContainsText(FILTER_ACTIVE_TASK_CONTEXT, filterType);
+        });
+
+    When(
+        "^I filter Task status ([^\"]*)$",
+        (String statusType) -> {
+          webDriverHelpers.selectFromCombobox(TASK_STATUS_COMBOBOX, statusType);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(TABLE_ROW);
+        });
+
+    When(
+        "^I am checking if filter works for ([^\"]*) status$",
+        (String statusType) -> {
+          webDriverHelpers.scrollToElementUntilIsVisible(FILTER_ACTIVE_TASK_STATUS);
+          webDriverHelpers.checkWebElementContainsText(FILTER_ACTIVE_TASK_STATUS, statusType);
+        });
+
+    When(
+        "I reset filter",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER);
+          TimeUnit.SECONDS.sleep(5);
         });
 
     When(
