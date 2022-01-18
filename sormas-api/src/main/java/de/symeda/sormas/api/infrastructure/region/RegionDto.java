@@ -152,6 +152,8 @@ public class RegionDto extends InfrastructureDto {
 		return new RegionReferenceDto(getUuid(), name, externalID);
 	}
 
+
+
 	public static RegionDto build() {
 		RegionDto dto = new RegionDto();
 		dto.setUuid(DataHelper.createUuid());

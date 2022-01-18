@@ -4,14 +4,14 @@ import de.symeda.sormas.api.EntityDto;
 
 import java.util.Date;
 
-public class InfrastructureDto extends EntityDto {
+public abstract class InfrastructureDto extends EntityDto {
 
 	private boolean centrallyManaged;
 
-	public InfrastructureDto() {
+	protected InfrastructureDto() {
 	}
 
-	public InfrastructureDto(Date creationDate, Date changeDate, String uuid) {
+	protected InfrastructureDto(Date creationDate, Date changeDate, String uuid) {
 		super(creationDate, changeDate, uuid);
 	}
 
@@ -22,4 +22,5 @@ public class InfrastructureDto extends EntityDto {
 	public void setCentrallyManaged(boolean centrallyManaged) {
 		this.centrallyManaged = centrallyManaged;
 	}
+
 }
