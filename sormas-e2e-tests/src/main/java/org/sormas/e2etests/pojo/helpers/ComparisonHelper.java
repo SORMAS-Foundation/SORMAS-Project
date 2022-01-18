@@ -28,51 +28,51 @@ public abstract class ComparisonHelper {
   private static SoftAssert softly;
 
   @SneakyThrows
-  public static void compareEqualEntities(Object pojo1, Object pojo2) {
+  public static void compareEqualEntities(Object pojoToCompare, Object referencePojo) {
     softly = new SoftAssert();
-    for (String key : BeanUtils.describe(pojo1).keySet()) {
+    for (String key : BeanUtils.describe(referencePojo).keySet()) {
       softly.assertEquals(
-          getEntityFieldValue(pojo1, key),
-          getEntityFieldValue(pojo2, key),
-          "Value for: [" + key + "] field doesn't match.");
+          getEntityFieldValue(pojoToCompare, key),
+          getEntityFieldValue(referencePojo, key),
+          String.format("Value for [%s] field doesn't match.", key));
     }
     softly.assertAll();
   }
 
   @SneakyThrows
   public static void compareEqualFieldsOfEntities(
-      Object pojo1, Object pojo2, List<String> fieldsList) {
+      Object pojoToCompare, Object referencePojo, List<String> fieldsList) {
     softly = new SoftAssert();
     for (String field : fieldsList) {
       softly.assertEquals(
-          getEntityFieldValue(pojo1, field),
-          getEntityFieldValue(pojo2, field),
-          "Value for: " + field + " doesn't match");
+          getEntityFieldValue(pojoToCompare, field),
+          getEntityFieldValue(referencePojo, field),
+          String.format("Value for [%s] field doesn't match.", field));
     }
     softly.assertAll();
   }
 
   @SneakyThrows
-  public static void compareDifferentEntities(Object pojo1, Object pojo2) {
+  public static void compareDifferentEntities(Object pojoToCompare, Object referencePojo) {
     softly = new SoftAssert();
-    for (String key : BeanUtils.describe(pojo1).keySet()) {
+    for (String key : BeanUtils.describe(referencePojo).keySet()) {
       softly.assertNotEquals(
-          getEntityFieldValue(pojo1, key),
-          getEntityFieldValue(pojo2, key),
-          "Value for: " + key + " doesn't match");
+          getEntityFieldValue(pojoToCompare, key),
+          getEntityFieldValue(referencePojo, key),
+          String.format("Value for [%s] field doesn't match.", key));
     }
     softly.assertAll();
   }
 
   @SneakyThrows
   public static void compareDifferentFieldsOfEntities(
-      Object pojo1, Object pojo2, List<String> fieldsList) {
+      Object pojoToCompare, Object referencePojo, List<String> fieldsList) {
     softly = new SoftAssert();
     for (String field : fieldsList) {
       softly.assertNotEquals(
-          getEntityFieldValue(pojo1, field),
-          getEntityFieldValue(pojo2, field),
-          "Value for: " + field + " doesn't match");
+          getEntityFieldValue(pojoToCompare, field),
+          getEntityFieldValue(referencePojo, field),
+          String.format("Value for [%s] field doesn't match.", field));
     }
     softly.assertAll();
   }

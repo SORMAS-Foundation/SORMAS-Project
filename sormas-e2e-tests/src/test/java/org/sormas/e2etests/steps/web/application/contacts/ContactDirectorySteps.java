@@ -76,8 +76,8 @@ public class ContactDirectorySteps implements En {
           By uuidLocator = By.cssSelector(String.format(CONTACT_RESULTS_UUID_LOCATOR, contactUuid));
           webDriverHelpers.fillAndSubmitInWebElement(
               CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, contactUuid);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(uuidLocator);
-          Thread.sleep(5000); // mandatory refresh to have the grid refreshed
         });
 
     When(
@@ -93,13 +93,15 @@ public class ContactDirectorySteps implements En {
 
     Then(
         "I check that number of displayed contact results is (\\d+)",
-        (Integer number) ->
-            assertHelpers.assertWithPoll20Second(
-                () ->
-                    Assert.assertEquals(
-                        webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS),
-                        number.intValue(),
-                        "Number of displayed contacts is not correct")));
+        (Integer number) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_CONTACT_BUTTON);
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Assert.assertEquals(
+                      webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS),
+                      number.intValue(),
+                      "Number of displayed contacts is not correct"));
+        });
   }
 
   private void searchAfterContactByMultipleOptions(String idPhoneNameEmail) {

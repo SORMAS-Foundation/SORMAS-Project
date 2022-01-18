@@ -25,6 +25,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BU
 import static org.sormas.e2etests.pages.application.events.EventActionsPage.CREATE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.*;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANTS_TAB;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.SEX_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 
@@ -150,7 +151,7 @@ public class EditEventSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIO_BUTTON);
             webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
           }
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
               PERSON_DATA_ADDED_AS_A_PARTICIPANT_MESSAGE);
           person = collectPersonUuid();
           selectResponsibleRegion("Region1");

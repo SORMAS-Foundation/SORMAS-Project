@@ -132,8 +132,6 @@ public class ExposureInContactEpiDataSteps implements En {
     webDriverHelpers.fillInWebElement(POSTAL_CODE_INPUT, exposureDetailsInput.getPostalCode());
     webDriverHelpers.fillInWebElement(CITY_INPUT, exposureDetailsInput.getCity());
     webDriverHelpers.selectFromCombobox(AREA_TYPE_COMBOBOX, exposureDetailsInput.getAreaType());
-    webDriverHelpers.fillInWebElement(
-        COMMUNITY_CONTACT_PERSON_INPUT, exposureDetailsInput.getCommunityContactPerson());
     webDriverHelpers.fillInWebElement(GPS_LATITUDE_INPUT, exposureDetailsInput.getGpsLatitude());
     webDriverHelpers.fillInWebElement(GPS_LATITUDE_INPUT, exposureDetailsInput.getGpsLatitude());
     webDriverHelpers.fillInWebElement(GPS_LONGITUDE_INPUT, exposureDetailsInput.getGpsLongitude());
@@ -191,8 +189,6 @@ public class ExposureInContactEpiDataSteps implements En {
         .postalCode(webDriverHelpers.getValueFromWebElement(POSTAL_CODE_INPUT))
         .city(webDriverHelpers.getValueFromWebElement(CITY_INPUT))
         .areaType(webDriverHelpers.getValueFromCombobox(AREA_TYPE_COMBOBOX))
-        .communityContactPerson(
-            webDriverHelpers.getValueFromWebElement(COMMUNITY_CONTACT_PERSON_INPUT))
         .gpsLatitude(webDriverHelpers.getValueFromWebElement(GPS_LATITUDE_INPUT))
         .gpsLongitude(webDriverHelpers.getValueFromWebElement(GPS_LONGITUDE_INPUT))
         .gpsAccuracy(webDriverHelpers.getValueFromWebElement(GPS_ACCURACY_INPUT))
