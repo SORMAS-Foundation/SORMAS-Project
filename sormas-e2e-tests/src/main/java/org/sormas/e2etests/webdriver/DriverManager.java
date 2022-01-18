@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.ui;
+package org.sormas.e2etests.webdriver;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -19,6 +19,7 @@
 package de.symeda.sormas.ui.security.config;
 
 import fish.payara.security.annotations.ClaimsDefinition;
+import fish.payara.security.annotations.LogoutDefinition;
 import fish.payara.security.annotations.OpenIdAuthenticationDefinition;
 import fish.payara.security.annotations.OpenIdProviderMetadata;
 import fish.payara.security.openid.api.DisplayType;
@@ -52,6 +53,11 @@ public class DefaultOpenIdAuthenticationDefinition implements OpenIdAuthenticati
 			}
 
 			@Override
+			public String issuer() {
+				return "";
+			}
+
+			@Override
 			public String authorizationEndpoint() {
 				return "";
 			}
@@ -67,8 +73,53 @@ public class DefaultOpenIdAuthenticationDefinition implements OpenIdAuthenticati
 			}
 
 			@Override
+			public String endSessionEndpoint() {
+				return "";
+			}
+
+			@Override
 			public String jwksURI() {
 				return "";
+			}
+
+			@Override
+			public String[] scopesSupported() {
+				return new String[0];
+			}
+
+			@Override
+			public String[] responseTypesSupported() {
+				return new String[0];
+			}
+
+			@Override
+			public String[] subjectTypesSupported() {
+				return new String[0];
+			}
+
+			@Override
+			public String[] idTokenSigningAlgValuesSupported() {
+				return new String[0];
+			}
+
+			@Override
+			public String[] idTokenEncryptionAlgValuesSupported() {
+				return new String[0];
+			}
+
+			@Override
+			public String[] idTokenEncryptionEncValuesSupported() {
+				return new String[0];
+			}
+
+			@Override
+			public String[] claimsSupported() {
+				return new String[0];
+			}
+
+			@Override
+			public boolean disableScopeValidation() {
+				return false;
 			}
 		};
 	}
@@ -90,6 +141,38 @@ public class DefaultOpenIdAuthenticationDefinition implements OpenIdAuthenticati
 			@Override
 			public String callerGroupsClaim() {
 				return OpenIdConstant.GROUPS;
+			}
+		};
+	}
+
+	@Override
+	public LogoutDefinition logout() {
+		//TODO: investigate how to configure logout for SORMAS when token expires
+		return new LogoutDefinition() {
+
+			@Override
+			public Class<? extends Annotation> annotationType() {
+				return LogoutDefinition.class;
+			}
+
+			@Override
+			public boolean notifyProvider() {
+				return false;
+			}
+
+			@Override
+			public String redirectURI() {
+				return "";
+			}
+
+			@Override
+			public boolean accessTokenExpiry() {
+				return false;
+			}
+
+			@Override
+			public boolean identityTokenExpiry() {
+				return false;
 			}
 		};
 	}
@@ -172,5 +255,10 @@ public class DefaultOpenIdAuthenticationDefinition implements OpenIdAuthenticati
 	@Override
 	public int tokenMinValidity() {
 		return 10 * 1000;
+	}
+
+	@Override
+	public boolean userClaimsFromIDToken() {
+		return false;
 	}
 }

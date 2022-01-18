@@ -30,6 +30,7 @@ import org.sormas.e2etests.steps.web.application.persons.EditPersonSteps;
 public class EditPersonContactDetailsSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
+  private Person newCreatederson;
 
   @Inject
   public EditPersonContactDetailsSteps(WebDriverHelpers webDriverHelpers) {
@@ -38,17 +39,17 @@ public class EditPersonContactDetailsSteps implements En {
     Then(
         "I edit all Person primary contact details and save",
         () -> {
-          Person person = EditPersonSteps.newGeneratedPerson;
+          newCreatederson = EditPersonSteps.newGeneratedPerson;
           webDriverHelpers.clickOnWebElementBySelector(PRIMARY_CONTACT_DETAILS_EDIT_EMAIL_FIELD);
-          fillContactInformationInput(person.getEmailAddress());
+          fillContactInformationInput(newCreatederson.getEmailAddress());
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
 
           webDriverHelpers.clickOnWebElementBySelector(PRIMARY_CONTACT_DETAILS_EDIT_PHONE_FIELD);
-          fillContactInformationInput(person.getPhoneNumber());
+          fillContactInformationInput(newCreatederson.getPhoneNumber());
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
 
           webDriverHelpers.clickOnWebElementBySelector(PRIMARY_CONTACT_DETAILS_EDIT_OTHER_FIELD);
-          fillContactInformationInput(person.getPersonContactDetailsContactInformation());
+          fillContactInformationInput(newCreatederson.getPersonContactDetailsContactInformation());
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
         });
   }
