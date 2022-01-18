@@ -32,8 +32,8 @@ public class ResponseChecksSteps implements En {
         (String expectedBody) -> {
           String responseBody = apiState.getResponse().getBody().asString();
           Assert.assertEquals(
-              expectedBody,
               String.valueOf(responseBody).replaceAll("[^a-zA-Z0-9]", ""),
+              expectedBody,
               "Request response body is not correct");
         });
 

@@ -72,6 +72,8 @@ public class EventDirectorySteps implements En {
         "I click on the searched event",
         () -> {
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              getByEventUuid(eventUuid));
           webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
@@ -80,6 +82,7 @@ public class EventDirectorySteps implements En {
         "I check if participant appears in the event participants list",
         () -> {
           final String personUuid = EditEventSteps.person.getUuid();
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
         });
 

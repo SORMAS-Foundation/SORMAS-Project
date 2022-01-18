@@ -89,8 +89,6 @@ public class EditContactsSteps implements En {
           fillLastName(contact.getLastName());
           fillDateOfBirth(contact.getDateOfBirth());
           selectSex(contact.getSex());
-          fillNationalHealthId(contact.getNationalHealthId());
-          fillPassportNumber(contact.getPassportNumber());
           fillPrimaryPhoneNumber(contact.getPrimaryPhoneNumber());
           fillPrimaryEmailAddress(contact.getPrimaryEmailAddress());
           selectReturningTraveler(contact.getReturningTraveler());
@@ -200,14 +198,6 @@ public class EditContactsSteps implements En {
 
   private void selectSex(String sex) {
     webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
-  }
-
-  private void fillNationalHealthId(String nationalHealthId) {
-    webDriverHelpers.fillInWebElement(NATIONAL_HEALTH_ID_INPUT, nationalHealthId);
-  }
-
-  private void fillPassportNumber(String passportNumber) {
-    webDriverHelpers.fillInWebElement(PASSPORT_NUMBER_INPUT, passportNumber);
   }
 
   private void fillPrimaryPhoneNumber(String primaryPhoneNumber) {

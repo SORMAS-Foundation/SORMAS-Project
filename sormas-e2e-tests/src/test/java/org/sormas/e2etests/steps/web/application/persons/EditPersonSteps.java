@@ -71,8 +71,6 @@ public class EditPersonSteps implements En {
               List.of(
                   "firstName",
                   "lastName",
-                  "passportNumber",
-                  "nationalHealthId",
                   "externalId",
                   "externalToken",
                   "street",
@@ -81,12 +79,7 @@ public class EditPersonSteps implements En {
                   "postalCode",
                   "contactPersonFirstName",
                   "contactPersonLastName",
-                  "communityContactPerson",
                   "birthName",
-                  "nickname",
-                  "motherMaidenName",
-                  "motherName",
-                  "fatherName",
                   "nameOfGuardians"));
         });
 
@@ -100,14 +93,10 @@ public class EditPersonSteps implements En {
           fillDateOfBirth(newGeneratedPerson.getDateOfBirth());
           selectSex(newGeneratedPerson.getSex());
           selectPresentConditionOfPerson(newGeneratedPerson.getPresentConditionOfPerson());
-          fillNationalHealthId(newGeneratedPerson.getNationalHealthId());
-          fillNationalHealthId(newGeneratedPerson.getNationalHealthId());
-          fillPassportNumber(newGeneratedPerson.getPassportNumber());
           fillExternalId(newGeneratedPerson.getExternalId());
           fillExternalToken(newGeneratedPerson.getExternalToken());
           selectTypeOfOccupation(newGeneratedPerson.getTypeOfOccupation());
           selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
-          selectEducation(newGeneratedPerson.getEducation());
           selectRegion(newGeneratedPerson.getRegion());
           selectDistrict(newGeneratedPerson.getDistrict());
           selectCommunity(newGeneratedPerson.getCommunity());
@@ -123,12 +112,7 @@ public class EditPersonSteps implements En {
           selectAreaType(newGeneratedPerson.getAreaType());
           fillContactPersonFirstName(newGeneratedPerson.getContactPersonFirstName());
           fillContactPersonLastName(newGeneratedPerson.getContactPersonLastName());
-          fillCommunityContactPerson(newGeneratedPerson.getCommunityContactPerson());
           fillBirthName(newGeneratedPerson.getBirthName());
-          fillNickName(newGeneratedPerson.getNickname());
-          fillMotherMaidenName(newGeneratedPerson.getMotherMaidenName());
-          fillMotherName(newGeneratedPerson.getMotherName());
-          fillFatherName(newGeneratedPerson.getFatherName());
           fillNamesOfGuardians(newGeneratedPerson.getNameOfGuardians());
         });
 
@@ -193,14 +177,6 @@ public class EditPersonSteps implements En {
     webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_COMBOBOX, condition);
   }
 
-  private void fillNationalHealthId(String nationalHealthId) {
-    webDriverHelpers.clearAndFillInWebElement(NATIONAL_HEALTH_ID_INPUT, nationalHealthId);
-  }
-
-  private void fillPassportNumber(String passportNumber) {
-    webDriverHelpers.clearAndFillInWebElement(PASSPORT_NUMBER_INPUT, passportNumber);
-  }
-
   private void fillExternalId(String id) {
     webDriverHelpers.clearAndFillInWebElement(EXTERNAL_ID_INPUT, id);
   }
@@ -215,10 +191,6 @@ public class EditPersonSteps implements En {
 
   private void selectStaffOfArmedForces(String armedForces) {
     webDriverHelpers.selectFromCombobox(STAFF_OF_ARMED_FORCES_COMBOBOX, armedForces);
-  }
-
-  private void selectEducation(String education) {
-    webDriverHelpers.selectFromCombobox(EDUCATION_COMBOBOX, education);
   }
 
   private void selectRegion(String region) {
@@ -281,28 +253,8 @@ public class EditPersonSteps implements En {
     webDriverHelpers.clearAndFillInWebElement(CONTACT_PERSON_LAST_NAME_INPUT, last);
   }
 
-  private void fillCommunityContactPerson(String name) {
-    webDriverHelpers.clearAndFillInWebElement(COMMUNITY_CONTACT_PERSON_INPUT, name);
-  }
-
   private void fillBirthName(String name) {
     webDriverHelpers.clearAndFillInWebElement(BIRTH_NAME_INPUT, name);
-  }
-
-  private void fillNickName(String name) {
-    webDriverHelpers.clearAndFillInWebElement(NICKNAME_INPUT, name);
-  }
-
-  private void fillMotherMaidenName(String name) {
-    webDriverHelpers.clearAndFillInWebElement(MOTHER_MAIDEN_NAME_INPUT, name);
-  }
-
-  private void fillMotherName(String name) {
-    webDriverHelpers.clearAndFillInWebElement(MOTHER_NAME_INPUT, name);
-  }
-
-  private void fillFatherName(String name) {
-    webDriverHelpers.clearAndFillInWebElement(FATHER_NAME_INPUT, name);
   }
 
   private void fillNamesOfGuardians(String name) {
@@ -320,13 +272,10 @@ public class EditPersonSteps implements En {
         .salutation(webDriverHelpers.getValueFromWebElement(SALUTATION_INPUT))
         .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
         .presentConditionOfPerson(webDriverHelpers.getValueFromWebElement(PRESENT_CONDITION_INPUT))
-        .nationalHealthId(webDriverHelpers.getValueFromWebElement(NATIONAL_HEALTH_ID_INPUT))
-        .passportNumber(webDriverHelpers.getValueFromWebElement(PASSPORT_NUMBER_INPUT))
         .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
         .externalToken(webDriverHelpers.getValueFromWebElement(EXTERNAL_TOKEN_INPUT))
         .typeOfOccupation(webDriverHelpers.getValueFromWebElement(TYPE_OF_OCCUPATION_INPUT))
         .staffOfArmedForces(webDriverHelpers.getValueFromWebElement(STAFF_OF_ARMED_FORCES_INPUT))
-        .education(webDriverHelpers.getValueFromWebElement(EDUCATION_INPUT))
         .region(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
         .district(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
         .community(webDriverHelpers.getValueFromWebElement(COMMUNITY_INPUT))
@@ -346,13 +295,7 @@ public class EditPersonSteps implements En {
             webDriverHelpers.getValueFromWebElement(CONTACT_PERSON_FIRST_NAME_INPUT))
         .contactPersonLastName(
             webDriverHelpers.getValueFromWebElement(CONTACT_PERSON_LAST_NAME_INPUT))
-        .communityContactPerson(
-            webDriverHelpers.getValueFromWebElement(COMMUNITY_CONTACT_PERSON_INPUT))
         .birthName(webDriverHelpers.getValueFromWebElement(BIRTH_NAME_INPUT))
-        .nickname(webDriverHelpers.getValueFromWebElement(NICKNAME_INPUT))
-        .motherMaidenName(webDriverHelpers.getValueFromWebElement(MOTHER_MAIDEN_NAME_INPUT))
-        .motherName(webDriverHelpers.getValueFromWebElement(MOTHER_NAME_INPUT))
-        .fatherName(webDriverHelpers.getValueFromWebElement(FATHER_NAME_INPUT))
         .nameOfGuardians(webDriverHelpers.getValueFromWebElement(NAMES_OF_GUARDIANS_INPUT))
         .personContactDetailsContactInformation(
             webDriverHelpers.getTextFromPresentWebElement(
