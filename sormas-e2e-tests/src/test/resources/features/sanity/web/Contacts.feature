@@ -133,7 +133,7 @@ Feature: Contacts end to end tests
     Then I am validating the From and To dates displayed
 
   @issue=SORDEV-5490
-  Scenario: Create a simple contact and convert it into a case
+  Scenario: Create a contact and create a case for contact person
     Given I log in with National User
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
