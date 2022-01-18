@@ -83,17 +83,17 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	// todo find a better name, it is not clear what it does
 	protected abstract void selectDtoFields(CriteriaQuery<DTO> cq, Root<ADO> root);
 
-	protected DTO persistEntity(DTO dto, ADO entityToPersist) {
-		entityToPersist = fillOrBuildEntity(dto, entityToPersist, true);
+	protected DTO persistEntity(DTO dto, ADO entityToPersist, boolean checkChangeDate) {
+		entityToPersist = fillOrBuildEntity(dto, entityToPersist, checkChangeDate);
 		service.ensurePersisted(entityToPersist);
 		return toDto(entityToPersist);
 	}
 
-	protected DTO mergeAndPersist(DTO dtoToSave, List<ADO> duplicates) {
+	protected DTO mergeAndPersist(DTO dtoToSave, List<ADO> duplicates, boolean checkChangeDate) {
 		ADO existingEntity = duplicates.get(0);
 		DTO existingDto = toDto(existingEntity);
 		DtoHelper.copyDtoValues(existingDto, dtoToSave, true);
-		return persistEntity(dtoToSave, existingEntity);
+		return persistEntity(dtoToSave, existingEntity, checkChangeDate);
 
 	}
 
