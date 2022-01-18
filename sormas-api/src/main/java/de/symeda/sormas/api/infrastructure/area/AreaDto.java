@@ -54,4 +54,9 @@ public class AreaDto extends InfrastructureDto {
 	public void setArchived(boolean archived) {
 		this.archived = archived;
 	}
+
+	@Override
+	public String toString() {
+		return getName();
+	}
 }

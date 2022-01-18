@@ -395,7 +395,7 @@ public class LabMessageController {
 
 	private void pickOrCreateEvent(LabMessageDto labMessageDto, PersonDto person) {
 		EventSelectionField eventSelect =
-			new EventSelectionField(labMessageDto.getTestedDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForLabMessage));
+			new EventSelectionField(labMessageDto.getTestedDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForLabMessage), null);
 		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
 
 		Window window = VaadinUiUtil.createPopupWindow();

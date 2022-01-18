@@ -65,6 +65,12 @@ public class ContactResource extends EntityDtoResource {
 		return FacadeProvider.getContactFacade().getAllActiveContactsAfter(new Date(since));
 	}
 
+	@GET
+	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
+	public List<ContactDto> getAllContacts(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		return FacadeProvider.getContactFacade().getAllActiveContactsAfter(new Date(since), size, lastSynchronizedUuid);
+	}
+
 	@POST
 	@Path("/query")
 	public List<ContactDto> getByUuids(List<String> uuids) {

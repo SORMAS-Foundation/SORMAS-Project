@@ -40,7 +40,7 @@ public class ClinicalCourseDtoHelper extends AdoDtoHelper<ClinicalCourse, Clinic
 	}
 
 	@Override
-	protected Call<List<ClinicalCourseDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<ClinicalCourseDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 
@@ -67,6 +67,11 @@ public class ClinicalCourseDtoHelper extends AdoDtoHelper<ClinicalCourse, Clinic
 		} else {
 			target.setHealthConditions(null);
 		}
+	}
+
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return 0;
 	}
 
 	public static ClinicalCourseReferenceDto toReferenceDto(ClinicalCourse ado) {

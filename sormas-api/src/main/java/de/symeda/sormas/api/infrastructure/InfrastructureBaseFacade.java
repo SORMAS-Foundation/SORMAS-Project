@@ -3,7 +3,6 @@ package de.symeda.sormas.api.infrastructure;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.ejb.Remote;
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.BaseFacade;
@@ -23,5 +22,5 @@ public interface InfrastructureBaseFacade<DTO extends EntityDto, INDEX_DTO exten
 	 *            The DTO which should be saved.
 	 * @return The saved DTO.
 	 */
-	DTO saveUnchecked(@Valid DTO dto);
+	DTO saveUnchecked(@Valid DTO dto, boolean allowMerge);
 }

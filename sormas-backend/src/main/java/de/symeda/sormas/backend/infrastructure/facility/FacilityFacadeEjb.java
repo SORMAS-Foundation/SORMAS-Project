@@ -550,8 +550,8 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
-	public FacilityDto saveUnchecked(FacilityDto dto) {
-		return save(dto);
+	public FacilityDto saveUnchecked(FacilityDto dto, boolean allowMerge) {
+		return save(dto, allowMerge);
 	}
 
 	@Override

@@ -53,7 +53,7 @@ public class PrescriptionService extends AdoServiceWithUserFilter<Prescription> 
 		return resultList;
 	}
 
-	public List<Prescription> getAllActivePrescriptionsAfter(Date date, User user) {
+	public List<Prescription> getAllActivePrescriptionsAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Prescription> cq = cb.createQuery(getElementClass());
@@ -69,15 +69,14 @@ public class PrescriptionService extends AdoServiceWithUserFilter<Prescription> 
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date);
+			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastSynchronizedUuid);
 			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		}
 
 		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(Prescription.CHANGE_DATE)));
 		cq.distinct(true);
 
-		return em.createQuery(cq).getResultList();
+		return getBatchedQueryResults(cb, cq, from, batchSize);
 	}
 
 	public List<Object[]> getPrescriptionCountByCases(List<Long> caseIds) {
@@ -128,7 +127,8 @@ public class PrescriptionService extends AdoServiceWithUserFilter<Prescription> 
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(therapy.get(Therapy.UUID), criteria.getTherapy().getUuid()));
 		}
 		if (criteria.getPrescriptionType() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(prescription.get(Prescription.PRESCRIPTION_TYPE), criteria.getPrescriptionType()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(prescription.get(Prescription.PRESCRIPTION_TYPE), criteria.getPrescriptionType()));
 		}
 		if (!StringUtils.isEmpty(criteria.getTextFilter())) {
 			String[] textFilters = criteria.getTextFilter().split("\\s+");
