@@ -46,6 +46,7 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 	public static final String CREATION_DATE = "creationDate";
 	public static final String CHANGE_DATE = "changeDate";
 	public static final String UUID = "uuid";
+	public static final String NO_LAST_SYNCED_UUID = "NO_LAST_SYNCED_UUID";
 
 	private Date creationDate;
 	private Date changeDate;

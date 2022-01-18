@@ -38,6 +38,8 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -8725734604520880084L;
 
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 46200;
+
 	public static final String I18N_PREFIX = "EventParticipant";
 
 	public static final String EVENT = "event";

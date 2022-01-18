@@ -47,7 +47,7 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 	}
 
 	@Override
-	protected Call<List<LocationDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<LocationDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 
@@ -152,4 +152,9 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 		target.setContactPersonPhone(source.getContactPersonPhone());
 		target.setContactPersonEmail(source.getContactPersonEmail());
 	}
+
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
+    }
 }

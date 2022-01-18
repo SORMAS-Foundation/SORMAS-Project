@@ -142,8 +142,8 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
-	public PointOfEntryDto saveUnchecked(PointOfEntryDto dto) {
-		return save(dto);
+	public PointOfEntryDto saveUnchecked(PointOfEntryDto dto, boolean allowMerge) {
+		return save(dto, allowMerge);
 	}
 
 	@Override

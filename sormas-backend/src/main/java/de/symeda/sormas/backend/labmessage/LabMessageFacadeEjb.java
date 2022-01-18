@@ -138,6 +138,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setSampleOverallTestResult(source.getSampleOverallTestResult());
 		if (source.getAssignee() != null) {
 			target.setAssignee(userService.getByReferenceDto(source.getAssignee()));
+		} else {
+			target.setAssignee(null);
 		}
 		if (source.getSample() != null) {
 			target.setSample(sampleService.getByReferenceDto(source.getSample()));

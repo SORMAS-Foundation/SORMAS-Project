@@ -20,7 +20,8 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
 public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, DTO extends InfrastructureDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, SRV extends AbstractInfrastructureAdoService<ADO, CRITERIA>, CRITERIA extends BaseCriteria>
-	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA> implements InfrastructureBaseFacade<DTO,INDEX_DTO,REF_DTO,CRITERIA> {
+	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA>
+	implements InfrastructureBaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
 
 	protected FeatureConfigurationFacadeEjb featureConfiguration;
 	private String duplicateErrorMessageProperty;
@@ -46,8 +47,8 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 		return doSave(dto, allowMerge, duplicateErrorMessageProperty);
 	}
 
-	public DTO saveUnchecked(DTO dtoToSave) {
-		return doSave(dtoToSave, false, duplicateErrorMessageProperty);
+	public DTO saveUnchecked(DTO dtoToSave, boolean allowMerge) {
+		return doSave(dtoToSave, allowMerge, duplicateErrorMessageProperty);
 	}
 
 	protected DTO doSave(DTO dtoToSave, boolean allowMerge, String duplicateErrorMessageProperty) {

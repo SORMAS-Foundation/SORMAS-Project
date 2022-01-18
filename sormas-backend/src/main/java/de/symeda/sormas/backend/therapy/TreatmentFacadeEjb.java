@@ -124,14 +124,21 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 	@Override
 	public List<TreatmentDto> getAllActiveTreatmentsAfter(Date date) {
+		return getAllActiveTreatmentsAfter(date, null, null);
+	}
 
+	@Override
+	public List<TreatmentDto> getAllActiveTreatmentsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllActiveTreatmentsAfter(date, user).stream().map(t -> convertToDto(t, pseudonymizer)).collect(Collectors.toList());
+		return service.getAllActiveTreatmentsAfter(date, user, batchSize, lastSynchronizedUuid)
+			.stream()
+			.map(t -> convertToDto(t, pseudonymizer))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -199,8 +206,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 	private void pseudonymizeDto(Treatment source, TreatmentDto dto, Pseudonymizer pseudonymizer) {
 		if (source != null && dto != null) {
-			pseudonymizer
-				.pseudonymizeDto(TreatmentDto.class, dto, caseService.inJurisdictionOrOwned(source.getTherapy().getCaze()), null);
+			pseudonymizer.pseudonymizeDto(TreatmentDto.class, dto, caseService.inJurisdictionOrOwned(source.getTherapy().getCaze()), null);
 		}
 	}
 
@@ -211,7 +217,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 				TreatmentDto.class,
 				source,
 				existingDto,
-					caseService.inJurisdictionOrOwned(existingTreatment.getTherapy().getCaze()));
+				caseService.inJurisdictionOrOwned(existingTreatment.getTherapy().getCaze()));
 		}
 	}
 

@@ -66,6 +66,12 @@ public class VisitResource extends EntityDtoResource {
 		return FacadeProvider.getVisitFacade().getAllActiveVisitsAfter(new Date(since));
 	}
 
+	@GET
+	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
+	public List<VisitDto> getAllVisits(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		return FacadeProvider.getVisitFacade().getAllActiveVisitsAfter(new Date(since), size, lastSynchronizedUuid);
+	}
+
 	@POST
 	@Path("/query")
 	public List<VisitDto> getByUuids(List<String> uuids) {
