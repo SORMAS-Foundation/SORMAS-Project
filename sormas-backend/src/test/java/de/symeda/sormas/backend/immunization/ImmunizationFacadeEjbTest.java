@@ -163,7 +163,11 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		immunizationWithNanoseconds.setReportDate(byUuid.getReportDate());
 		immunizationService.ensurePersisted(immunizationWithNanoseconds);
 
-		assertEquals(changeDate.getTime(), immunizationService.getByUuid("ZZZZZZ-ZZZZZZ-ZZZZZZ-ZZZZZZ").getChangeDate().getTime());
+		Timestamp changeAfterPersistence = immunizationService.getByUuid("ZZZZZZ-ZZZZZZ-ZZZZZZ-ZZZZZZ").getChangeDate();
+		assertEquals(changeDate.getTime(), changeAfterPersistence.getTime());
+
+		// Change date timestamps should be persisted with millisecond precision
+		assertEquals(0, changeAfterPersistence.getNanos() % 1000000);
 
 		List<ImmunizationDto> allAfterSeveralResultsSameTime =
 			getImmunizationFacade().getAllAfter(immunizationRead.getChangeDate(), 5, immunizationRead.getUuid());
