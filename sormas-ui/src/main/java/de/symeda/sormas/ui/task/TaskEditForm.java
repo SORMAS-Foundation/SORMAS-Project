@@ -336,7 +336,6 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				: user.equals(value.getCreatorUser());
 			boolean supervisor = UserRole.isSupervisor(user.getUserRoles());
 			boolean assignee = user.equals(getFieldGroup().getField(TaskDto.ASSIGNEE_USER).getValue());
-			boolean observer = user.equals(getFieldGroup().getField(TaskDto.OBSERVER_USERS).getValue());
 
 			setVisible(!creating || assignee, TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
 			if (creating && !assignee) {
@@ -347,7 +346,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				setReadOnly(!(assignee || creator), TaskDto.TASK_STATUS);
 				setReadOnly(!assignee, TaskDto.ASSIGNEE_REPLY);
 				setReadOnly(
-					!(creator || observer),
+					!creator,
 					TaskDto.TASK_TYPE,
 					TaskDto.PRIORITY,
 					TaskDto.SUGGESTED_START,
