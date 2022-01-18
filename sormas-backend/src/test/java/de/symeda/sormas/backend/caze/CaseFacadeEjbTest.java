@@ -110,6 +110,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.CauseOfDeath;
@@ -1905,6 +1906,61 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testSearchByFacilityTypeAndGroup() {
+		RDCF rdcf = creator.createRDCF();
+		PersonReferenceDto personDto = creator.createPerson().toReference();
+		CaseDataDto savedCaze1 = createCaseOfFacilityType(rdcf, personDto, FacilityType.HOSPITAL);
+		CaseDataDto savedCaze2 = createCaseOfFacilityType(rdcf, personDto, FacilityType.MATERNITY_FACILITY);
+		CaseDataDto savedCaze3 = createCaseOfFacilityType(rdcf, personDto, FacilityType.HOTEL);
+		CaseDataDto savedCaze4 = createCaseOfFacilityType(rdcf, personDto, FacilityType.REFUGEE_ACCOMMODATION);
+
+		MatcherAssert.assertThat(getCaseFacade().getIndexList(new CaseCriteria(), 0, 100, null), hasSize(4));
+
+		final CaseCriteria facilityTypeGroupFilter = new CaseCriteria();
+		facilityTypeGroupFilter.setFacilityTypeGroup(FacilityTypeGroup.MEDICAL_FACILITY);
+		MatcherAssert.assertThat(getCaseFacade().getIndexList(facilityTypeGroupFilter, 0, 100, null), hasSize(2));
+
+		final CaseCriteria facilityTypeAndGroupFilter = new CaseCriteria();
+		facilityTypeAndGroupFilter.setFacilityTypeGroup(FacilityTypeGroup.MEDICAL_FACILITY);
+		facilityTypeAndGroupFilter.setFacilityType(FacilityType.HOSPITAL);
+		MatcherAssert.assertThat(getCaseFacade().getIndexList(facilityTypeAndGroupFilter, 0, 100, null), hasSize(1));
+
+		final CaseCriteria facilityTypeFilter = new CaseCriteria();
+		facilityTypeFilter.setFacilityType(FacilityType.HOTEL);
+		final List<CaseIndexDto> indexListByFacilityTYpe = getCaseFacade().getIndexList(facilityTypeFilter, 0, 100, null);
+		MatcherAssert.assertThat(indexListByFacilityTYpe, hasSize(1));
+		Assert.assertEquals(indexListByFacilityTYpe.get(0).getUuid(), savedCaze3.getUuid());
+
+		final CaseCriteria facilityTypeAndGroupNonMatchingFilter = new CaseCriteria();
+		facilityTypeAndGroupNonMatchingFilter.setFacilityTypeGroup(FacilityTypeGroup.MEDICAL_FACILITY);
+		facilityTypeAndGroupNonMatchingFilter.setFacilityType(FacilityType.HOTEL);
+		MatcherAssert.assertThat(getCaseFacade().getIndexList(facilityTypeAndGroupNonMatchingFilter, 0, 100, null), hasSize(0));
+	}
+
+	private CaseDataDto createCaseOfFacilityType(RDCF rdcf, PersonReferenceDto personDto, FacilityType facilityType) {
+		CaseDataDto caze1 = CaseDataDto.build(personDto, Disease.CORONAVIRUS);
+		caze1.setReportDate(new Date());
+		caze1.setReportingUser(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference());
+		caze1.setCaseClassification(CaseClassification.PROBABLE);
+		caze1.setInvestigationStatus(InvestigationStatus.PENDING);
+		caze1.setDisease(Disease.CORONAVIRUS);
+		caze1.setPerson(personDto);
+		caze1.setResponsibleRegion(rdcf.region);
+		caze1.setResponsibleDistrict(rdcf.district);
+		caze1.setFacilityType(facilityType);
+		caze1.setHealthFacility(rdcf.facility);
+		caze1.setTherapy(new TherapyDto());
+		caze1.setSymptoms(new SymptomsDto());
+		EpiDataDto epiData = new EpiDataDto();
+		ExposureDto exposure = new ExposureDto();
+		exposure.setExposureType(ExposureType.WORK);
+		epiData.setExposures(Collections.singletonList(exposure));
+		caze1.setEpiData(epiData);
+
+		return getCaseFacade().saveCase(caze1);
+	}
+
+	@Test
 	public void testGetDuplicatesWithReportDateThreshold() {
 		RDCF rdcf = creator.createRDCF();
 		Date now = new Date();
@@ -2253,6 +2309,42 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(2, districtCaseCount.getElement1().intValue());
 	}
 
+	@Test
+	public void testGetMostRecentPreviousCase() {
+
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		PersonDto person1 = creator.createPerson();
+		PersonDto person2 = creator.createPerson();
+		Date now = new Date();
+
+		CaseDataDto newCase = creator.createCase(user.toReference(), person1.toReference(), rdcf, c -> c.setDisease(Disease.EVD));
+		CaseDataDto previousCase1 = creator.createCase(user.toReference(), person1.toReference(), rdcf, c -> {
+			c.setDisease(Disease.EVD);
+			c.setReportDate(DateHelper.subtractDays(now, 1));
+			c.getSymptoms().setOnsetDate(DateHelper.subtractDays(now, 7));
+		});
+		creator.createCase(user.toReference(), person1.toReference(), rdcf, c -> {
+			c.setDisease(Disease.EVD);
+			c.setReportDate(DateHelper.subtractDays(now, 3));
+			c.getSymptoms().setOnsetDate(DateHelper.subtractDays(now, 9));
+		});
+		creator.createCase(user.toReference(), person1.toReference(), rdcf, c -> c.setDisease(Disease.EVD));
+		creator.createCase(user.toReference(), person1.toReference(), rdcf, c -> {
+			c.setDisease(Disease.CHOLERA);
+			c.getSymptoms().setOnsetDate(DateHelper.subtractDays(now, 2));
+		});
+		creator.createCase(user.toReference(), person2.toReference(), rdcf, c -> {
+			c.setDisease(Disease.EVD);
+			c.getSymptoms().setOnsetDate(DateHelper.subtractDays(now, 2));
+		});
+
+		assertThat(
+			getCaseFacade().getMostRecentPreviousCase(person1.toReference(), Disease.EVD, newCase.getReportDate()).getUuid(),
+			is(previousCase1.getUuid()));
+
+	}
+
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";
 	private static final SecureRandom rnd = new SecureRandom();
 
@@ -2262,4 +2354,5 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			sb.append(AB.charAt(rnd.nextInt(AB.length())));
 		return sb.toString();
 	}
+
 }

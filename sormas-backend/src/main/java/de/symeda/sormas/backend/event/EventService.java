@@ -117,7 +117,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		super(Event.class);
 	}
 
-	public List<Event> getAllActiveEventsAfter(Date date) {
+	public List<Event> getAllActiveEventsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
@@ -137,15 +137,14 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
+			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
 			filter = cb.and(filter, dateFilter);
 		}
 
 		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(Event.CHANGE_DATE)));
 		cq.distinct(true);
 
-		return em.createQuery(cq).getResultList();
+		return getBatchedQueryResults(cb, cq, from, batchSize);
 	}
 
 	public List<String> getAllActiveUuids() {
@@ -355,11 +354,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		final User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
-		if (jurisdictionLevel == JurisdictionLevel.NATION || currentUser.hasAnyUserRole(UserRole.REST_USER)) {
-			return null;
-		}
-
 		Predicate filter = null;
+
 		final EventJoins eventJoins;
 		final From<?, Event> eventJoin;
 		final From<?, EventParticipant> eventParticipantJoin;
@@ -375,63 +371,69 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			eventParticipantJoin = eventParticipantPath;
 		}
 
-		switch (jurisdictionLevel) {
-		case REGION:
-			if (currentUser.getRegion() != null) {
+		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.REST_USER)) {
+			switch (jurisdictionLevel) {
+			case REGION:
+				if (currentUser.getRegion() != null) {
+					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.REGION), currentUser.getRegion()));
+				}
+				break;
+			case DISTRICT:
+				if (currentUser.getDistrict() != null) {
+					filter =
+						CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.DISTRICT), currentUser.getDistrict()));
+				}
+				break;
+			case COMMUNITY:
+				if (currentUser.getCommunity() != null) {
+					filter =
+						CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.COMMUNITY), currentUser.getCommunity()));
+				}
+				break;
+			case HEALTH_FACILITY:
+				if (currentUser.getHealthFacility() != null && currentUser.getHealthFacility().getDistrict() != null) {
+					filter = CriteriaBuilderHelper
+						.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.DISTRICT), currentUser.getHealthFacility().getDistrict()));
+				}
+				break;
+			case LABORATORY:
+				final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
+				final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
+				final SampleJoins sampleJoins = new SampleJoins(sampleRoot);
+				final Join eventParticipant = sampleJoins.getEventParticipant();
+				SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator =
+					SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, currentUser);
+				sampleSubQuery
+					.where(cb.and(cb.equal(eventParticipant, eventParticipantJoin), sampleJurisdictionPredicateValidator.inJurisdictionOrOwned()));
+				sampleSubQuery.select(sampleRoot.get(Sample.ID));
+				filter = CriteriaBuilderHelper.or(cb, cb.exists(sampleSubQuery));
+				break;
+			default:
+			}
+
+			Predicate filterResponsible = cb.equal(eventJoins.getReportingUser(), currentUser);
+			filterResponsible = cb.or(filterResponsible, cb.equal(eventJoins.getResponsibleUser(), currentUser));
+
+			if (eventUserFilterCriteria != null && eventUserFilterCriteria.isIncludeUserCaseAndEventParticipantFilter()) {
+				filter = CriteriaBuilderHelper.or(cb, filter, createCaseAndEventParticipantFilter(cb, cq, eventParticipantJoin));
+			}
+
+			if (eventUserFilterCriteria != null && eventUserFilterCriteria.isForceRegionJurisdiction()) {
 				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.REGION), currentUser.getRegion()));
 			}
-			break;
-		case DISTRICT:
-			if (currentUser.getDistrict() != null) {
-				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.DISTRICT), currentUser.getDistrict()));
+
+			if (filter != null) {
+				filter = CriteriaBuilderHelper.or(cb, filter, filterResponsible);
+			} else {
+				filter = filterResponsible;
 			}
-			break;
-		case COMMUNITY:
-			if (currentUser.getCommunity() != null) {
-				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.COMMUNITY), currentUser.getCommunity()));
-			}
-			break;
-		case HEALTH_FACILITY:
-			if (currentUser.getHealthFacility() != null && currentUser.getHealthFacility().getDistrict() != null) {
-				filter = CriteriaBuilderHelper
-					.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.DISTRICT), currentUser.getHealthFacility().getDistrict()));
-			}
-			break;
-		case LABORATORY:
-			final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
-			final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
-			final SampleJoins sampleJoins = new SampleJoins(sampleRoot);
-			final Join eventParticipant = sampleJoins.getEventParticipant();
-			SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator =
-				SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, currentUser);
-			sampleSubQuery
-				.where(cb.and(cb.equal(eventParticipant, eventParticipantJoin), sampleJurisdictionPredicateValidator.inJurisdictionOrOwned()));
-			sampleSubQuery.select(sampleRoot.get(Sample.ID));
-			filter = CriteriaBuilderHelper.or(cb, cb.exists(sampleSubQuery));
-			break;
-		default:
 		}
 
-		if (filter != null && currentUser.getLimitedDisease() != null) {
-			filter = cb
-				.and(filter, cb.or(cb.equal(eventJoin.get(Event.DISEASE), currentUser.getLimitedDisease()), cb.isNull(eventJoin.get(Event.DISEASE))));
-		}
-
-		Predicate filterResponsible = cb.equal(eventJoins.getReportingUser(), currentUser);
-		filterResponsible = cb.or(filterResponsible, cb.equal(eventJoins.getResponsibleUser(), currentUser));
-
-		if (eventUserFilterCriteria != null && eventUserFilterCriteria.isIncludeUserCaseAndEventParticipantFilter()) {
-			filter = CriteriaBuilderHelper.or(cb, filter, createCaseAndEventParticipantFilter(cb, cq, eventParticipantJoin));
-		}
-
-		if (eventUserFilterCriteria != null && eventUserFilterCriteria.isForceRegionJurisdiction()) {
-			filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.REGION), currentUser.getRegion()));
-		}
-
-		if (filter != null) {
-			filter = CriteriaBuilderHelper.or(cb, filter, filterResponsible);
-		} else {
-			filter = filterResponsible;
+		if (currentUser.getLimitedDisease() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(cb.equal(eventJoin.get(Event.DISEASE), currentUser.getLimitedDisease()), cb.isNull(eventJoin.get(Event.DISEASE))));
 		}
 
 		return filter;
@@ -474,8 +476,16 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Event> eventPath, Timestamp date) {
-
 		return addChangeDateFilter(new ChangeDateFilterBuilder(cb, date), eventPath).build();
+	}
+
+	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Event> eventPath, Timestamp date, String lastSynchronizedUuid) {
+
+		ChangeDateFilterBuilder changeDateFilterBuilder = lastSynchronizedUuid == null
+			? new ChangeDateFilterBuilder(cb, date)
+			: new ChangeDateFilterBuilder(cb, date, eventPath, lastSynchronizedUuid);
+
+		return addChangeDateFilter(changeDateFilterBuilder, eventPath).build();
 	}
 
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Event> eventPath, Expression<? extends Date> dateExpression) {
@@ -743,6 +753,20 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				eventDateFilter = cb.or(
 					cb.and(cb.isNull(from.get(Event.START_DATE)), cb.lessThanOrEqualTo(from.get(Event.END_DATE), eventDateTo)),
 					cb.and(cb.isNull(from.get(Event.END_DATE)), cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventDateTo)));
+			}
+
+			if (eventDateFrom != null || eventDateTo != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, eventDateFilter);
+			}
+		} else if (eventDateType == EventCriteriaDateType.REPORT_DATE) {
+			Predicate eventDateFilter = null;
+
+			if (eventDateFrom != null && eventDateTo != null) {
+				eventDateFilter = cb.between(from.get(Event.REPORT_DATE_TIME), eventDateFrom, eventDateTo);
+			} else if (eventDateFrom != null) {
+				eventDateFilter = cb.greaterThanOrEqualTo(from.get(Event.REPORT_DATE_TIME), eventDateFrom);
+			} else if (eventDateTo != null) {
+				eventDateFilter = cb.lessThanOrEqualTo(from.get(Event.REPORT_DATE_TIME), eventDateTo);
 			}
 
 			if (eventDateFrom != null || eventDateTo != null) {

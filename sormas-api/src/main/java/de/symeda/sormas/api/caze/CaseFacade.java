@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.ejb.Remote;
@@ -45,6 +46,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -94,6 +96,8 @@ public interface CaseFacade {
 
 	CaseDataDto saveCase(@Valid CaseDataDto dto) throws ValidationRuntimeException;
 
+	CaseDataDto saveCase(@Valid CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException;
+
 	void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef);
 
 	void setSampleAssociations(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef);
@@ -105,6 +109,8 @@ public interface CaseFacade {
 	CaseReferenceDto getReferenceByUuid(String uuid);
 
 	List<String> getAllActiveUuids();
+
+	List<CaseDataDto> getAllActiveCasesAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
 
@@ -236,4 +242,8 @@ public interface CaseFacade {
 	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 
 	int updateCompleteness();
+
+	PreviousCaseDto getMostRecentPreviousCase(PersonReferenceDto person, Disease disease, Date startDate);
+
+	Map<ReinfectionDetail, Boolean> cleanUpReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails);
 }

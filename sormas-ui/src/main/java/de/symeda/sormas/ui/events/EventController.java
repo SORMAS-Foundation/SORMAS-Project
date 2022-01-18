@@ -62,7 +62,10 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolExc
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -138,7 +141,7 @@ public class EventController {
 		CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 
 		EventSelectionField eventSelect =
-			new EventSelectionField(caseDataDto.getDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForCase));
+			new EventSelectionField(caseDataDto.getDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForCase), null);
 		eventSelect.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
@@ -186,7 +189,7 @@ public class EventController {
 
 		EventSelectionField eventSelect = new EventSelectionField(
 			caseDataDtos.stream().findFirst().get().getDisease(),
-			I18nProperties.getString(Strings.infoPickOrCreateEventForCases));
+			I18nProperties.getString(Strings.infoPickOrCreateEventForCases), null);
 		eventSelect.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
@@ -217,7 +220,7 @@ public class EventController {
 
 		EventSelectionField eventSelect = new EventSelectionField(
 			contactDtos.stream().findFirst().get().getDisease(),
-			I18nProperties.getString(Strings.infoPickOrCreateEventForContact));
+			I18nProperties.getString(Strings.infoPickOrCreateEventForContact), null);
 		eventSelect.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
@@ -345,7 +348,7 @@ public class EventController {
 
 		Set<String> relatedEventUuids = FacadeProvider.getEventFacade().getAllEventUuidsByEventGroupUuid(eventGroupReference.getUuid());
 
-		EventSelectionField eventSelect = new EventSelectionField(eventGroupReference, relatedEventUuids);
+		EventSelectionField eventSelect = new EventSelectionField(relatedEventUuids);
 		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
@@ -370,7 +373,7 @@ public class EventController {
 	public void selectOrCreateEvent(ContactDto contact) {
 
 		EventSelectionField eventSelect =
-			new EventSelectionField(contact.getDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForContact));
+			new EventSelectionField(contact.getDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForContact), null);
 		eventSelect.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
@@ -407,7 +410,7 @@ public class EventController {
 		excludedUuids.addAll(FacadeProvider.getEventFacade().getAllSuperordinateEventUuids(superordinateEventRef.getUuid()));
 
 		EventDto superordinateEvent = FacadeProvider.getEventFacade().getEventByUuid(superordinateEventRef.getUuid(), false);
-		EventSelectionField selectionField = new EventSelectionField(superordinateEvent, excludedUuids, false);
+		EventSelectionField selectionField = EventSelectionField.forSubordinateEvent(superordinateEvent, excludedUuids);
 		selectionField.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
@@ -436,7 +439,7 @@ public class EventController {
 		excludedUuids.addAll(FacadeProvider.getEventFacade().getAllSubordinateEventUuids(subordinateEventRef.getUuid()));
 
 		EventDto subordinateEvent = FacadeProvider.getEventFacade().getEventByUuid(subordinateEventRef.getUuid(), false);
-		EventSelectionField selectionField = new EventSelectionField(subordinateEvent, excludedUuids, true);
+		EventSelectionField selectionField = EventSelectionField.forSuperordinateEvent(subordinateEvent, excludedUuids);
 		selectionField.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
@@ -735,12 +738,29 @@ public class EventController {
 		editView.addCommitListener(() -> {
 			if (!eventEditForm.getFieldGroup().isModified()) {
 				EventDto eventDto = eventEditForm.getValue();
-				eventDto = FacadeProvider.getEventFacade().saveEvent(eventDto);
-				Notification.show(I18nProperties.getString(Strings.messageEventSaved), Type.WARNING_MESSAGE);
-				SormasUI.refreshView();
 
-				if (saveCallback != null) {
-					saveCallback.accept(eventDto.getEventStatus());
+				final UserDto user = UserProvider.getCurrent().getUser();
+				final RegionReferenceDto userRegion = user.getRegion();
+				final DistrictReferenceDto userDistrict = user.getDistrict();
+				final RegionReferenceDto epEventRegion = eventDto.getEventLocation().getRegion();
+				final DistrictReferenceDto epEventDistrict = eventDto.getEventLocation().getDistrict();
+				final Boolean eventOutsideJurisdiction =
+					(userRegion != null && !userRegion.equals(epEventRegion) || userDistrict != null && !userDistrict.equals(epEventDistrict));
+
+				if (eventOutsideJurisdiction) {
+					VaadinUiUtil.showConfirmationPopup(
+						I18nProperties.getString(Strings.headingEventJurisdictionUpdated),
+						new Label(I18nProperties.getString(Strings.messageEventJurisdictionUpdated)),
+						I18nProperties.getString(Strings.yes),
+						I18nProperties.getString(Strings.no),
+						500,
+						confirmed -> {
+							if (confirmed) {
+								saveEvent(saveCallback, eventDto);
+							}
+						});
+				} else {
+					saveEvent(saveCallback, eventDto);
 				}
 			}
 		});
@@ -780,6 +800,16 @@ public class EventController {
 		}
 
 		return editView;
+	}
+
+	private void saveEvent(Consumer<EventStatus> saveCallback, EventDto eventDto) {
+		eventDto = FacadeProvider.getEventFacade().saveEvent(eventDto);
+		Notification.show(I18nProperties.getString(Strings.messageEventSaved), Type.WARNING_MESSAGE);
+		SormasUI.refreshView();
+
+		if (saveCallback != null) {
+			saveCallback.accept(eventDto.getEventStatus());
+		}
 	}
 
 	public void showBulkEventDataEditComponent(Collection<EventIndexDto> selectedEvents) {

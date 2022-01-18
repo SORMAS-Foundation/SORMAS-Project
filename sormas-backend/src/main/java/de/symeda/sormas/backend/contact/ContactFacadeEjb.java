@@ -97,6 +97,8 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -193,6 +195,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.Vaccination;
+import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
@@ -260,6 +263,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
 	private SormasToSormasContactFacadeEjbLocal sormasToSormasContactFacade;
+	@EJB
+	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@Resource
 	private ManagedScheduledExecutorService executorService;
 
@@ -277,6 +282,11 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public List<ContactDto> getAllActiveContactsAfter(Date date) {
+		return getAllActiveContactsAfter(date, null, null);
+	}
+
+	@Override
+	public List<ContactDto> getAllActiveContactsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		User user = userService.getCurrentUser();
 
@@ -285,7 +295,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return contactService.getAllActiveContactsAfter(date).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
+		return contactService.getAllActiveContactsAfter(date, batchSize, lastSynchronizedUuid)
+			.stream()
+			.map(c -> convertToDto(c, pseudonymizer))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -407,6 +420,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	public void onContactChanged(ContactDto existingContact, Contact contact, boolean syncShares) {
+
+		if (existingContact == null) {
+			vaccinationFacade.updateVaccinationStatuses(contact);
+		}
+
 		onContactChanged(toDto(contact), syncShares);
 
 		// This logic should be consistent with ContactDataForm.onContactChanged
@@ -1138,7 +1156,8 @@ public class ContactFacadeEjb implements ContactFacade {
 			ContactLogic.getFollowUpStartDate(contactDto, sampleFacade.getByContactUuids(Collections.singletonList(contactDto.getUuid()))),
 			visitFacade.getVisitsByContact(contactDto.toReference()),
 			diseaseConfigurationFacade.getFollowUpDuration(contactDto.getDisease()),
-			ignoreOverwrite);
+			ignoreOverwrite,
+			featureConfigurationFacade.isPropertyValueTrue(FeatureType.CONTACT_TRACING, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE));
 	}
 
 	@Override

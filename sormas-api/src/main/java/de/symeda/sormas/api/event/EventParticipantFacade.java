@@ -77,6 +77,8 @@ public interface EventParticipantFacade {
 
 	EventParticipantReferenceDto getReferenceByEventAndPerson(String eventUuid, String personUuid);
 
+	List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
+
 	List<String> getDeletedUuidsSince(Date date);
 
 	boolean isEventParticipantEditAllowed(String uuid);

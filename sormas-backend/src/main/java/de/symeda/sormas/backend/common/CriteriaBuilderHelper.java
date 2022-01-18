@@ -65,6 +65,10 @@ public class CriteriaBuilderHelper {
 		return cb.and(cb.greaterThan(path, date), cb.isNotNull(path));
 	}
 
+	public static Predicate greaterThanOrEqualToAndNotNull(CriteriaBuilder cb, Expression<? extends Date> path, Date date) {
+		return cb.and(cb.greaterThanOrEqualTo(path, date), cb.isNotNull(path));
+	}
+
 	public static Predicate greaterThanAndNotNull(CriteriaBuilder cb, Expression<? extends Date> path, Expression<? extends Date> date) {
 		return cb.and(cb.greaterThan(path, date), cb.isNotNull(path));
 	}

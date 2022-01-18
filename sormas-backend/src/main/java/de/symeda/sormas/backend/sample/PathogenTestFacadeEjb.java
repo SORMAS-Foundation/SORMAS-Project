@@ -120,6 +120,11 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 	@Override
 	public List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date) {
+		return getAllActivePathogenTestsAfter(date, null, null);
+	}
+
+	@Override
+	public List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 		User user = userService.getCurrentUser();
 
 		if (user == null) {
@@ -127,7 +132,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return pathogenTestService.getAllActivePathogenTestsAfter(date, user)
+		return pathogenTestService.getAllActivePathogenTestsAfter(date, user, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(p -> convertToDto(p, pseudonymizer))
 			.collect(Collectors.toList());
@@ -259,7 +264,11 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		// update event participant if necessary
 		EventParticipant associatedEventParticipant = pathogenTest.getSample().getAssociatedEventParticipant();
 		if (associatedEventParticipant != null) {
-			eventParticipantFacade.onEventParticipantChanged(EventFacadeEjbLocal.toDto(associatedEventParticipant.getEvent()), syncShares);
+			eventParticipantFacade.onEventParticipantChanged(
+				EventFacadeEjbLocal.toDto(associatedEventParticipant.getEvent()),
+				EventParticipantFacadeEjbLocal.toDto(associatedEventParticipant),
+				associatedEventParticipant,
+				syncShares);
 		}
 	}
 
@@ -391,6 +400,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setViaLims(source.isViaLims());
 		target.setExternalId(source.getExternalId());
 		target.setExternalOrderId(source.getExternalOrderId());
+		target.setPreliminary(source.getPreliminary());
 
 		return target;
 	}
@@ -446,6 +456,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setViaLims(source.isViaLims());
 		target.setExternalId(source.getExternalId());
 		target.setExternalOrderId(source.getExternalOrderId());
+		target.setPreliminary(source.getPreliminary());
 
 		return target;
 	}

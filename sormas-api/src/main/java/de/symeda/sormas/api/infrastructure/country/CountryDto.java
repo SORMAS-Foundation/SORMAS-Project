@@ -4,13 +4,13 @@ import java.util.Date;
 
 import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
-public class CountryDto extends EntityDto {
+public class CountryDto extends InfrastructureDto {
 
 	private static final long serialVersionUID = 8309822957203823162L;
 
@@ -110,7 +110,7 @@ public class CountryDto extends EntityDto {
 
 	@Override
 	public String toString() {
-		return this.defaultName;
+		return getDefaultName();
 	}
 
 	public static CountryDto build() {

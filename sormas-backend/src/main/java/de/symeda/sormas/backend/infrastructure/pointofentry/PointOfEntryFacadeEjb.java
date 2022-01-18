@@ -65,11 +65,10 @@ public class PointOfEntryFacadeEjb
 
 	@Inject
 	protected PointOfEntryFacadeEjb(PointOfEntryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(PointOfEntry.class, PointOfEntryDto.class, service, featureConfiguration, userService);
+		super(PointOfEntry.class, PointOfEntryDto.class, service, featureConfiguration, userService, Validations.importPointOfEntryAlreadyExists);
 	}
 
 	public static PointOfEntryReferenceDto toReferenceDto(PointOfEntry entity) {
-
 		if (entity == null) {
 			return null;
 		}
@@ -137,9 +136,14 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
-	public PointOfEntryDto save(PointOfEntryDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
-		validate(dtoToSave);
-		return save(dtoToSave, allowMerge, Validations.importPointOfEntryAlreadyExists);
+	public PointOfEntryDto save(PointOfEntryDto dto, boolean allowMerge) {
+		validate(dto);
+		return super.save(dto, allowMerge);
+	}
+
+	@Override
+	public PointOfEntryDto saveUnchecked(PointOfEntryDto dto, boolean allowMerge) {
+		return save(dto, allowMerge);
 	}
 
 	@Override
@@ -298,6 +302,7 @@ public class PointOfEntryFacadeEjb
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
+		target.setCentrallyManaged(source.isCentrallyManaged());
 		return target;
 	}
 
@@ -319,6 +324,7 @@ public class PointOfEntryFacadeEjb
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 		dto.setArchived(entity.isArchived());
 		dto.setExternalID(entity.getExternalID());
+		dto.setCentrallyManaged(entity.isCentrallyManaged());
 
 		return dto;
 	}

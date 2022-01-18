@@ -20,13 +20,13 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.*;
 
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Visit;
 import org.sormas.e2etests.services.FollowUpVisitService;
 
@@ -36,8 +36,8 @@ public class FollowUpStep implements En {
   public static Visit visit;
 
   @Inject
-  public FollowUpStep(WebDriverHelpers webDriverHelpers, FollowUpVisitService followUpVisitService)
-      throws InterruptedException {
+  public FollowUpStep(
+      WebDriverHelpers webDriverHelpers, FollowUpVisitService followUpVisitService) {
     this.webDriverHelpers = webDriverHelpers;
 
     And(
@@ -74,61 +74,61 @@ public class FollowUpStep implements En {
         "^I validate all fields from Visit",
         () -> {
           final Visit actualVisit = collectTestResultsData();
-          Truth.assertThat(visit).isEqualTo(actualVisit);
+          ComparisonHelper.compareEqualEntities(visit, actualVisit);
         });
   }
 
-  public void selectPersonAvailable(String availableAndCooperative, By element) {
+  private void selectPersonAvailable(String availableAndCooperative, By element) {
     webDriverHelpers.clickWebElementByText(element, availableAndCooperative);
   }
 
-  public void fillDateOfVisit(LocalDate dateOfVisit) {
+  private void fillDateOfVisit(LocalDate dateOfVisit) {
     webDriverHelpers.clearAndFillInWebElement(
         DATE_OF_VISIT_INPUT, DATE_FORMATTER.format(dateOfVisit));
   }
 
-  public void fillVisitRemarks(String remarks, By element) {
+  private void fillVisitRemarks(String remarks, By element) {
     webDriverHelpers.clearAndFillInWebElement(element, remarks);
   }
 
-  public void selectCurrentTemperature(String currentTemperature) {
+  private void selectCurrentTemperature(String currentTemperature) {
     webDriverHelpers.selectFromCombobox(CURRENT_BODY_TEMPERATURE_COMBOBOX, currentTemperature);
   }
 
-  public void selectSourceOfTemperature(String sourceTemperature) {
+  private void selectSourceOfTemperature(String sourceTemperature) {
     webDriverHelpers.selectFromCombobox(SOURCE_OF_BODY_TEMPERATURE_COMBOBOX, sourceTemperature);
   }
 
-  public void selectClearedToNo(String clearedToNo, By element) {
+  private void selectClearedToNo(String clearedToNo, By element) {
     webDriverHelpers.clickWebElementByText(element, clearedToNo);
   }
 
-  public void selectChillsAndSweats(String chillsAndSweats, By element) {
+  private void selectChillsAndSweats(String chillsAndSweats, By element) {
     webDriverHelpers.clickWebElementByText(element, chillsAndSweats);
   }
 
-  public void selectFeelingIll(String feelingIll, By element) {
+  private void selectFeelingIll(String feelingIll, By element) {
     webDriverHelpers.clickWebElementByText(element, feelingIll);
   }
 
-  public void selectFever(String fever, By element) {
+  private void selectFever(String fever, By element) {
     webDriverHelpers.clickWebElementByText(element, fever);
   }
 
-  public void fillComments(String comments, By element) {
+  private void fillComments(String comments, By element) {
     webDriverHelpers.fillAndSubmitInWebElement(element, comments);
   }
 
-  public void selectFirstSymptom(String firstSymptom, By element) {
+  private void selectFirstSymptom(String firstSymptom, By element) {
     webDriverHelpers.selectFromCombobox(element, firstSymptom);
   }
 
-  public void fillDateOfSymptoms(LocalDate dateOfSymptom) {
+  private void fillDateOfSymptoms(LocalDate dateOfSymptom) {
     webDriverHelpers.clearAndFillInWebElement(
         DATE_OF_ONSET_INPUT, DATE_FORMATTER.format(dateOfSymptom));
   }
 
-  public Visit collectTestResultsData() {
+  private Visit collectTestResultsData() {
     return Visit.builder()
         .personAvailableAndCooperative(getPersonAvailableAndCooperative())
         .dateOfVisit(getDateOfVisit())
@@ -146,48 +146,48 @@ public class FollowUpStep implements En {
         .build();
   }
 
-  public String getPersonAvailableAndCooperative() {
+  private String getPersonAvailableAndCooperative() {
     return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PERSONS_AVAILABLE_OPTIONS);
   }
 
-  public LocalDate getDateOfVisit() {
+  private LocalDate getDateOfVisit() {
     return LocalDate.parse(
         webDriverHelpers.getValueFromWebElement(DATE_OF_VISIT_INPUT), DATE_FORMATTER);
   }
 
-  public String getVisitRemarks() {
+  private String getVisitRemarks() {
     return webDriverHelpers.getValueFromWebElement(VISIT_REMARKS);
   }
 
-  public String getCurrentBodyTemperature() {
+  private String getCurrentBodyTemperature() {
     return webDriverHelpers.getValueFromWebElement(CURRENT_BODY_TEMPERATURE_INPUT).substring(0, 4);
   }
 
-  public String getSourceOfBodyTemperature() {
+  private String getSourceOfBodyTemperature() {
     return webDriverHelpers.getValueFromWebElement(SOURCE_OF_BODY_TEMPERATURE_INPUT);
   }
 
-  public String getChillsAndSweats() {
+  private String getChillsAndSweats() {
     return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CHILLS_SWEATS_OPTIONS);
   }
 
-  public String getFeelingIll() {
+  private String getFeelingIll() {
     return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEELING_ILL_OPTIONS);
   }
 
-  public String getFever() {
+  private String getFever() {
     return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEVER_OPTIONS);
   }
 
-  public String getComments() {
+  private String getComments() {
     return webDriverHelpers.getValueFromWebElement(SYMPTOMS_COMMENTS_INPUT);
   }
 
-  public String getFirstSymptom() {
+  private String getFirstSymptom() {
     return webDriverHelpers.getValueFromWebElement(FIRST_SYMPTOM_INPUT);
   }
 
-  public LocalDate getDateOfSymptom() {
+  private LocalDate getDateOfSymptom() {
     return LocalDate.parse(
         webDriverHelpers.getValueFromWebElement(DATE_OF_ONSET_INPUT), DATE_FORMATTER);
   }

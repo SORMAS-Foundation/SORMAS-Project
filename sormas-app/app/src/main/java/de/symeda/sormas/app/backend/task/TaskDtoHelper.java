@@ -49,8 +49,8 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
 	}
 
 	@Override
-	protected Call<List<TaskDto>> pullAllSince(long since) throws NoConnectionException {
-		return RetroProvider.getTaskFacade().pullAllSince(since);
+	protected Call<List<TaskDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+		return RetroProvider.getTaskFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
 	@Override
@@ -138,4 +138,9 @@ public class TaskDtoHelper extends AdoDtoHelper<Task, TaskDto> {
 		target.setClosedLon(source.getClosedLon());
 		target.setClosedLatLonAccuracy(source.getClosedLatLonAccuracy());
 	}
+
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return TaskDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+    }
 }

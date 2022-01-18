@@ -20,8 +20,6 @@ import com.googlecode.openbeans.IntrospectionException;
 import android.content.Context;
 import android.util.Log;
 
-import androidx.core.content.ContextCompat;
-
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
@@ -64,7 +62,7 @@ public class LbdsIntentSender {
 				NotificationType.INFO,
 				context.getResources().getString(R.string.info_lbds_key_exchange_started));
 
-			ContextCompat.startForegroundService(context, kexToLbdsIntent);
+			context.sendBroadcast(kexToLbdsIntent);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -193,7 +191,7 @@ public class LbdsIntentSender {
 		HttpContainer httpContainerRead = lbdsSendIntent.getHttpContainer(lbdsAesSecret);
 		Log.i("SORMAS_LBDS", "HttpContainer: " + httpContainerRead);
 
-		ContextCompat.startForegroundService(context, lbdsSendIntent);
+		context.sendBroadcast(lbdsSendIntent);
 	}
 
 	private static String getAuthHeader() {

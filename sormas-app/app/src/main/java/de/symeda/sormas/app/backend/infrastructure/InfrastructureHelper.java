@@ -20,6 +20,9 @@ import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.backend.region.SubcontinentDtoHelper;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.backend.user.UserRoleConfigDtoHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
+import de.symeda.sormas.app.rest.ServerCommunicationException;
+import de.symeda.sormas.app.rest.ServerConnectionException;
 
 public class InfrastructureHelper {
 
@@ -46,7 +49,7 @@ public class InfrastructureHelper {
 		return changeDates;
 	}
 
-	public static void handlePulledInfrastructureData(InfrastructureSyncDto infrastructureData) throws DaoException {
+	public static void handlePulledInfrastructureData(InfrastructureSyncDto infrastructureData) throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
 		new ContinentDtoHelper().handlePulledList(DatabaseHelper.getContinentDao(), infrastructureData.getContinents());
 		new SubcontinentDtoHelper().handlePulledList(DatabaseHelper.getSubcontinentDao(), infrastructureData.getSubcontinents());
 		new CountryDtoHelper().handlePulledList(DatabaseHelper.getCountryDao(), infrastructureData.getCountries());

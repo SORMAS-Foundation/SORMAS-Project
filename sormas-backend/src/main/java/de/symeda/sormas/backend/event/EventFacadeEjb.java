@@ -79,6 +79,7 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -173,6 +174,11 @@ public class EventFacadeEjb implements EventFacade {
 
 	@Override
 	public List<EventDto> getAllActiveEventsAfter(Date date) {
+		return getAllActiveEventsAfter(date, null, null);
+	}
+
+	@Override
+	public List<EventDto> getAllActiveEventsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		User user = userService.getCurrentUser();
 		if (user == null) {
@@ -180,7 +186,10 @@ public class EventFacadeEjb implements EventFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return eventService.getAllActiveEventsAfter(date).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
+		return eventService.getAllActiveEventsAfter(date, batchSize, lastSynchronizedUuid)
+			.stream()
+			.map(e -> convertToDto(e, pseudonymizer))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -398,7 +407,9 @@ public class EventFacadeEjb implements EventFacade {
 
 		if (eventCriteria != null) {
 			if (eventCriteria.getUserFilterIncluded()) {
-				filter = eventService.createUserFilter(cb, cq, event);
+				EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
+				eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
+				filter = eventService.createUserFilter(cb, cq, event, eventUserFilterCriteria);
 			}
 
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, eventQueryContext);
@@ -611,8 +622,11 @@ public class EventFacadeEjb implements EventFacade {
 			}
 		}
 
-		return indexList;
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(EventIndexDto.class, indexList, EventIndexDto::getInJurisdictionOrOwned, (c, isInJurisdiction) -> {
+		});
 
+		return indexList;
 	}
 
 	@Override

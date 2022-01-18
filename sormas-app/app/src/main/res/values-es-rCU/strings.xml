@@ -138,6 +138,7 @@
     <string name="caption_case_tasks">Tareas del caso</string>
     <string name="caption_case_events">Eventos de caso</string>
     <string name="caption_case_immunizations">Inmunizaciones de casos</string>
+    <string name="caption_case_vaccinations">Vacunaciones de casos</string>
     <string name="caption_case_treatments">Tratamientos</string>
     <string name="caption_case_similarity_create">Crear un nuevo caso</string>
     <string name="caption_changed_data_lost">Los datos modificados se perdieron durante la re-sincronización.</string>
@@ -154,6 +155,7 @@
     <string name="caption_contact_epidemiological_data">Información epidemiológica</string>
     <string name="caption_contact_visits">Información de seguimiento</string>
     <string name="caption_contact_immunizations">Inmunizaciones de contactos</string>
+    <string name="caption_contact_vaccinations">Vacunaciones de contactos</string>
     <string name="caption_converted_to_case">Convertido en caso</string>
     <string name="caption_date_of_birth">Fecha de nacimiento (año / mes / día)</string>
     <string name="caption_date_of_sampling">Fecha de muestreo</string>
@@ -167,6 +169,7 @@
     <string name="caption_event_information">Información del evento</string>
     <string name="caption_event_participants">Personas involucradas</string>
     <string name="caption_event_participant_immunizations">Inmunizaciones de participantes de eventos</string>
+    <string name="caption_event_participant_vaccinations">Vacunaciones de participantes de evento</string>
     <string name="caption_event_tasks">Tareas del evento</string>
     <string name="caption_executed_by">Ejecutado por</string>
     <string name="caption_facility_or_home">Lugar de estancia</string>
@@ -643,4 +646,6 @@
     <string name="caption_facility_type_group">Categoría de instalación</string>
     <string name="caption_facility_type">Tipo de instalación</string>
     <string name="value_vaccine_date_unknown">Fecha de vacunación N/A</string>
+    <string name="value_vaccine_name_unknown">Vacuna N/A</string>
+    <string name="value_vaccine_manufacturer_unknown">Fabricante N/A</string>
 </resources>

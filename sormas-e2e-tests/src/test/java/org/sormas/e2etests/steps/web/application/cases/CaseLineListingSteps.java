@@ -9,24 +9,23 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import javax.inject.Inject;
-import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Case;
 import org.sormas.e2etests.services.CaseService;
+import org.testng.asserts.SoftAssert;
 
 public class CaseLineListingSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   protected static Case caze;
-  protected static Case secondCaze;
 
   @Inject
   public CaseLineListingSteps(
-      WebDriverHelpers webDriverHelpers, CaseService caseService, final SoftAssertions softly) {
+      WebDriverHelpers webDriverHelpers, CaseService caseService, final SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
-        "^I create a new case using line listing feature$",
+        "^I create a new case in line listing feature popup$",
         () -> {
           caze = caseService.buildCaseForLineListingFeature();
           selectDisease(caze.getDisease());
@@ -46,20 +45,8 @@ public class CaseLineListingSteps implements En {
         });
 
     When(
-        "^I click on add line button$",
+        "^From case line listing I click on add line button$",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_ADD_LINE_BUTTON));
-
-    When(
-        "^I create the second case using listing feature in new line$",
-        () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SECOND_DATE_OF_SYMPTOM_INPUT);
-          secondCaze = caseService.buildCaseForLineListingFeature();
-          fillSecondFirstName(secondCaze.getFirstName(), 1);
-          fillSecondLastName(secondCaze.getLastName(), 1);
-          fillSecondDateOfBirth(secondCaze.getDateOfBirth());
-          selectSecondSex(secondCaze.getSex());
-          fillSecondDateOfSymptom(secondCaze.getDateOfSymptomOnset());
-        });
 
     When(
         "^I save the new case using line listing feature$",
@@ -69,76 +56,76 @@ public class CaseLineListingSteps implements En {
         });
 
     When(
-        "I am checking all data created from Case Line Listing option is saved and displayed",
+        "I check that case created from Line Listing is saved and displayed in results grid",
         () -> {
           webDriverHelpers.waitForPageLoaded();
-          softly
-              .assertThat(getCaseDiseaseFromGridResults())
-              .isEqualToIgnoringCase(caze.getDisease());
-          softly.assertThat(getCaseFirstNameFromGridResults()).isEqualTo(secondCaze.getFirstName());
-          softly.assertThat(getCaseLastNameFromGridResults()).isEqualTo(secondCaze.getLastName());
-          softly.assertThat(getCaseDistrictFromGridResults()).isEqualTo(caze.getDistrict());
-          softly
-              .assertThat(getCaseHealthFacilityFromGridResults())
-              .isEqualToIgnoringCase("Other Facility - " + caze.getPlaceDescription());
+
+          softly.assertEquals(
+              getCaseDiseaseFromGridResults(), caze.getDisease(), "Disease value doesn't match");
+          softly.assertEquals(
+              getCaseFirstNameFromGridResults(),
+              caze.getFirstName(),
+              "First name value doesn't match");
+          softly.assertEquals(
+              getCaseLastNameFromGridResults(),
+              caze.getLastName(),
+              "Last name value doesn't match");
+          softly.assertEquals(
+              getCaseDistrictFromGridResults(), caze.getDistrict(), "District value doesn't match");
+          softly.assertEquals(
+              getCaseHealthFacilityFromGridResults(),
+              "Other facility - " + caze.getPlaceDescription(),
+              "Health facility value doesn't match");
           softly.assertAll();
         });
   }
 
-  public void selectDisease(String disease) {
+  private void selectDisease(String disease) {
     webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
   }
 
-  public void selectRegion(String region) {
+  private void selectRegion(String region) {
     webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, region);
   }
 
-  public void selectDistrict(String district) {
+  private void selectDistrict(String district) {
     webDriverHelpers.selectFromCombobox(DISTRICT_COMBOBOX, district);
   }
 
-  public void selectFacilityCategory(String facilityCategory) {
+  private void selectFacilityCategory(String facilityCategory) {
     webDriverHelpers.selectFromCombobox(FACILITY_CATEGORY_COMBOBOX, facilityCategory);
   }
 
-  public void selectFacilityType(String facilityType) {
+  private void selectFacilityType(String facilityType) {
     webDriverHelpers.selectFromCombobox(FACILITY_TYPE_COMBOBOX, facilityType);
   }
 
-  public void fillDateOfReport(LocalDate date) {
+  private void fillDateOfReport(LocalDate date) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_REPORT, formatter.format(date));
   }
 
-  public void selectCommunity(String community) {
+  private void selectCommunity(String community) {
     webDriverHelpers.selectFromCombobox(COMMUNITY_COMBOBOX, community);
   }
 
-  public void selectFacility() {
+  private void selectFacility() {
     webDriverHelpers.selectFromCombobox(FACILITY_COMBOBOX, "Other facility");
   }
 
-  public void fillFacilityName(String facilityName) {
+  private void fillFacilityName(String facilityName) {
     webDriverHelpers.fillInWebElement(FACILITY_NAME_INPUT, facilityName);
   }
 
-  public void fillFirstName(String firstName) {
+  private void fillFirstName(String firstName) {
     webDriverHelpers.fillInWebElement(FIRST_NAME_INPUT, firstName);
   }
 
-  public void fillSecondFirstName(String firstName, int index) {
-    webDriverHelpers.fillValueOfListElement(FIRST_NAME_INPUT, index, firstName);
-  }
-
-  public void fillLastName(String lastName) {
+  private void fillLastName(String lastName) {
     webDriverHelpers.fillInWebElement(LAST_NAME_INPUT, lastName);
   }
 
-  public void fillSecondLastName(String lastName, int index) {
-    webDriverHelpers.fillValueOfListElement(LAST_NAME_INPUT, index, lastName);
-  }
-
-  public void fillDateOfBirth(LocalDate localDate) {
+  private void fillDateOfBirth(LocalDate localDate) {
     webDriverHelpers.selectFromCombobox(
         DATE_OF_BIRTH_YEAR_COMBOBOX, String.valueOf(localDate.getYear()));
     webDriverHelpers.selectFromCombobox(
@@ -148,51 +135,33 @@ public class CaseLineListingSteps implements En {
         DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
   }
 
-  public void fillSecondDateOfBirth(LocalDate localDate) {
-    webDriverHelpers.selectFromCombobox(
-        SECOND_BIRTHDATE_YEAR_COMBOBOX, String.valueOf(localDate.getYear()));
-    webDriverHelpers.selectFromCombobox(
-        SECOND_BIRTHDATE_MONTH_COMBOBOX,
-        localDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
-    webDriverHelpers.selectFromCombobox(
-        SECOND_BIRTHDATE_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
-  }
-
-  public void selectSex(String sex) {
+  private void selectSex(String sex) {
     webDriverHelpers.selectFromCombobox(SEX, sex);
   }
 
-  public void selectSecondSex(String sex) {
-    webDriverHelpers.selectFromCombobox(SECOND_SEX, sex);
-  }
-
-  public void fillDateOfSymptom(LocalDate date) {
+  private void fillDateOfSymptom(LocalDate date) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_INPUT, formatter.format(date));
   }
 
-  public void fillSecondDateOfSymptom(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
-    webDriverHelpers.fillInWebElement(SECOND_DATE_OF_SYMPTOM_INPUT, formatter.format(date));
-  }
-
-  public String getCaseDiseaseFromGridResults() {
+  // TODO refactor last methods and generate a POJO based on collected fields
+  private String getCaseDiseaseFromGridResults() {
     return webDriverHelpers.getTextFromListElement(GRID_RESULTS_DISEASE, 0);
   }
 
-  public String getCaseFirstNameFromGridResults() {
+  private String getCaseFirstNameFromGridResults() {
     return webDriverHelpers.getTextFromListElement(GRID_RESULTS_FIRST_NAME, 0);
   }
 
-  public String getCaseLastNameFromGridResults() {
+  private String getCaseLastNameFromGridResults() {
     return webDriverHelpers.getTextFromListElement(GRID_RESULTS_LAST_NAME, 0);
   }
 
-  public String getCaseDistrictFromGridResults() {
+  private String getCaseDistrictFromGridResults() {
     return webDriverHelpers.getTextFromListElement(GRID_RESULTS_DISTRICT, 0);
   }
 
-  public String getCaseHealthFacilityFromGridResults() {
+  private String getCaseHealthFacilityFromGridResults() {
     return webDriverHelpers.getTextFromListElement(GRID_RESULTS_HEALTH_FACILITY, 0);
   }
 }

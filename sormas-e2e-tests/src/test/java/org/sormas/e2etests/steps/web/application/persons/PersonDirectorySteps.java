@@ -64,7 +64,7 @@ public class PersonDirectorySteps implements En {
         () -> {
           String createdPersonUUID = EditContactPersonSteps.fullyDetailedPerson.getUuid();
           String LAST_CREATED_PERSON_PAGE_URL =
-              environmentUrl + "/sormas-ui/#!persons/data/" + createdPersonUUID;
+              environmentUrl + "/sormas-webdriver/#!persons/data/" + createdPersonUUID;
           webDriverHelpers.accessWebSite(LAST_CREATED_PERSON_PAGE_URL);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);

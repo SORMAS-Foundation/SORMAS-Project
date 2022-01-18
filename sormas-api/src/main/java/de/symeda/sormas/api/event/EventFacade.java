@@ -53,6 +53,8 @@ public interface EventFacade {
 
 	List<String> getAllActiveUuids();
 
+	List<EventDto> getAllActiveEventsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
+
 	List<EventDto> getByUuids(List<String> uuids);
 
 	void deleteEvent(String eventUuid) throws ExternalSurveillanceToolException;

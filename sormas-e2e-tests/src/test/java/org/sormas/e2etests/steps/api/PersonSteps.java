@@ -22,11 +22,13 @@ import cucumber.api.java8.En;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.helpers.api.PersonsHelper;
 import org.sormas.e2etests.pojo.api.Person;
 import org.sormas.e2etests.services.api.PersonApiService;
 import org.sormas.e2etests.state.ApiState;
 
+@Slf4j
 public class PersonSteps implements En {
 
   @Inject
@@ -57,6 +59,7 @@ public class PersonSteps implements En {
           for (int i = 0; i < numberOfPersons; i++) {
             personList.add(personApiService.buildGeneratedPerson());
           }
+          log.info("Pushing %s Persons", numberOfPersons);
           personsHelper.createMultiplePersons(personList);
           apiState.setLastCreatedPersonsList(personList);
         });

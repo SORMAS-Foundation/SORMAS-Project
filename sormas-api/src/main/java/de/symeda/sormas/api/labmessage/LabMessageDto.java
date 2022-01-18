@@ -8,16 +8,19 @@ import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityDto;
+
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
-public class LabMessageDto extends EntityDto {
+public class LabMessageDto extends SormasToSormasShareableDto {
 
 	public static final String I18N_PREFIX = "LabMessage";
 
@@ -47,6 +50,7 @@ public class LabMessageDto extends EntityDto {
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String PROCESSED = "processed";
 	public static final String REPORT_ID = "reportId";
+	public static final String ASSIGNEE = "assignee";
 
 	private Disease testedDisease;
 	private Date messageDateTime;
@@ -98,8 +102,15 @@ public class LabMessageDto extends EntityDto {
 	private String labMessageDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String reportId;
+	private PathogenTestResultType sampleOverallTestResult;
 
 	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
+
+	private UserReferenceDto assignee;
+	/**
+	 * Used in S2S context
+	 */
+	private UserReferenceDto reportingUser;
 
 	public Disease getTestedDisease() {
 		return testedDisease;
@@ -336,6 +347,22 @@ public class LabMessageDto extends EntityDto {
 		this.reportId = reportId;
 	}
 
+	public PathogenTestResultType getSampleOverallTestResult() {
+		return sampleOverallTestResult;
+	}
+
+	public void setSampleOverallTestResult(PathogenTestResultType sampleOverallTestResult) {
+		this.sampleOverallTestResult = sampleOverallTestResult;
+	}
+
+	public UserReferenceDto getAssignee() {
+		return assignee;
+	}
+
+	public void setAssignee(UserReferenceDto assignee) {
+		this.assignee = assignee;
+	}
+
 	public static LabMessageDto build() {
 
 		LabMessageDto labMessage = new LabMessageDto();
@@ -353,5 +380,15 @@ public class LabMessageDto extends EntityDto {
 
 	public void setSample(SampleReferenceDto sample) {
 		this.sample = sample;
+	}
+
+	@Override
+	public UserReferenceDto getReportingUser() {
+		return reportingUser;
+	}
+
+	@Override
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 }

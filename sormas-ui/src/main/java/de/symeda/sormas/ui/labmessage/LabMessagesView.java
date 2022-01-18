@@ -64,6 +64,7 @@ public class LabMessagesView extends AbstractView {
 	private Map<Button, String> statusButtons;
 	private Button activeStatusButton;
 
+	private LabMessageGridFilterForm filterForm;
 	private final LabMessageGrid grid;
 
 	public LabMessagesView() {
@@ -112,11 +113,15 @@ public class LabMessagesView extends AbstractView {
 		VerticalLayout gridLayout = new VerticalLayout();
 		addComponent(gridLayout);
 
+		gridLayout.addComponent(createFilterBar());
+
 		gridLayout.addComponent(createStatusFilterBar());
 
 		grid = new LabMessageGrid(criteria);
-		gridLayout.addComponent(grid);
+		grid.setDataProviderListener(e -> updateStatusButtons());
 		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
+
+		gridLayout.addComponent(grid);
 
 		gridLayout.setMargin(true);
 		styleGridLayout(gridLayout);
@@ -129,8 +134,34 @@ public class LabMessagesView extends AbstractView {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
 		}
-		updateStatusButtons();
+		updateFilterComponents();
 		grid.reload();
+	}
+
+	public HorizontalLayout createFilterBar() {
+
+		HorizontalLayout filterLayout = new HorizontalLayout();
+		filterLayout.setMargin(false);
+		filterLayout.setSpacing(true);
+		filterLayout.setSizeUndefined();
+		filterLayout.addStyleName("wrap");
+
+		filterForm = new LabMessageGridFilterForm();
+		filterForm.addValueChangeListener(e -> {
+			if (!filterForm.hasFilter()) {
+				this.navigateTo(null);
+			}
+		});
+		filterForm.addResetHandler(e -> {
+			ViewModelProviders.of(LabMessagesView.class).remove(LabMessageCriteria.class);
+			this.navigateTo(null, true);
+		});
+		filterForm.addApplyHandler(e -> {
+			grid.reload();
+		});
+		filterLayout.addComponent(filterForm);
+
+		return filterLayout;
 	}
 
 	public HorizontalLayout createStatusFilterBar() {
@@ -167,6 +198,13 @@ public class LabMessagesView extends AbstractView {
 		menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
 			ControllerProvider.getLabMessageController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 		}, true));
+		menuBarItems.add(
+			new MenuBarHelper.MenuBarItem(
+				I18nProperties.getCaption(Captions.bulkEditAssignee),
+				VaadinIcons.ELLIPSIS_H,
+				mi -> ControllerProvider.getLabMessageController()
+					.assignAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
+				true));
 
 		MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);
 		bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
@@ -179,6 +217,13 @@ public class LabMessagesView extends AbstractView {
 		gridLayout.setSizeFull();
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setStyleName("crud-main-layout");
+	}
+
+	private void updateFilterComponents() {
+		setApplyingCriteria(true);
+		updateStatusButtons();
+		filterForm.setValue(criteria);
+		setApplyingCriteria(false);
 	}
 
 	private void updateStatusButtons() {

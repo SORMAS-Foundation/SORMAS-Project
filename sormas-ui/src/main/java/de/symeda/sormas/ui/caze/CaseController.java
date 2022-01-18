@@ -230,12 +230,13 @@ public class CaseController {
 			if (uuid == null) {
 				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null, null, false);
 				caseCreateComponent.addCommitListener(() -> {
-					if (contact.getResultingCase() != null) {
-						String caseUuid = contact.getResultingCase().getUuid();
+					ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+					if (contactDto.getResultingCase() != null) {
+						String caseUuid = contactDto.getResultingCase().getUuid();
 						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 						convertSamePersonContactsAndEventparticipants(
 							caze,
-							ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime()));
+							ContactLogic.getStartDate(contactDto.getLastContactDate(), contactDto.getReportDateTime()));
 					}
 				});
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
@@ -249,6 +250,8 @@ public class CaseController {
 				updatedContact.setResultingCase(selectedCase.toReference());
 				updatedContact.setResultingCaseUser(UserProvider.getCurrent().getUserReference());
 				FacadeProvider.getContactFacade().saveContact(updatedContact);
+
+				FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), selectedCase.toReference());
 
 				convertSamePersonContactsAndEventparticipants(
 					selectedCase,
@@ -360,7 +363,8 @@ public class CaseController {
 			if (!selectedContacts.isEmpty()) {
 				caze.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
 			}
-			saveCase(caze);
+			CaseDataDto refreshedCaze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
+			saveCase(refreshedCaze);
 			setResultingCase(caze, selectedContacts, convertToCaseSelectionField.getSelectedEventParticipants());
 			SormasUI.refreshView();
 		});
@@ -543,7 +547,11 @@ public class CaseController {
 			|| (convertedEventParticipant == null && convertedTravelEntry == null));
 		assert (unrelatedDisease == null || (convertedEventParticipant == null && convertedTravelEntry == null));
 
-		CaseCreateForm createForm = new CaseCreateForm(convertedTravelEntry);
+		CaseCreateForm createForm = convertedContact == null
+			&& convertedEventParticipant == null
+			&& convertedTravelEntry == null
+			&& unrelatedDisease == null
+			&& !createdFromLabMessage ? new CaseCreateForm() : new CaseCreateForm(convertedTravelEntry);
 
 		CaseDataDto caze;
 		PersonDto person;
@@ -615,6 +623,9 @@ public class CaseController {
 			createForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE),
 			createForm.getFieldGroup());
+		if (createForm.getHomeAddressForm() != null) {
+			editView.addFieldGroups(createForm.getHomeAddressForm().getFieldGroup());
+		}
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -766,6 +777,9 @@ public class CaseController {
 		}
 		person.setNationalHealthId(createForm.getNationalHealthId());
 		person.setPassportNumber(createForm.getPassportNumber());
+		if (createForm.getHomeAddressForm() != null) {
+			person.setAddress(createForm.getHomeAddressForm().getValue());
+		}
 	}
 
 	public void selectOrCreateCase(CaseDataDto caseDto, PersonDto person, Consumer<String> selectedCaseUuidConsumer) {
@@ -860,6 +874,8 @@ public class CaseController {
 			CaseDataDto cazeDto = caseEditForm.getValue();
 			saveCaseWithFacilityChangedPrompt(cazeDto, oldCase);
 		});
+
+		editView.addDiscardListener(() -> caseEditForm.onDiscard());
 
 		appendSpecialCommands(caze, editView);
 

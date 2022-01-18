@@ -15,19 +15,6 @@
 
 package de.symeda.sormas.app.backend.common;
 
-import android.util.Log;
-
-import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.googlecode.openbeans.PropertyDescriptor;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
-import com.j256.ormlite.support.ConnectionSource;
-
-import org.apache.commons.lang3.StringUtils;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
@@ -40,12 +27,26 @@ import java.util.concurrent.Callable;
 
 import javax.persistence.NonUniqueResultException;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.googlecode.openbeans.PropertyDescriptor;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.support.ConnectionSource;
+
+import android.util.Log;
+
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.app.util.MetaProperty;
 
 /**
@@ -263,6 +264,22 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	/**
+	 * Retrieves all entities that have been created on the mobile device and haven not been synchronized
+	 * to the server yet. Those entities have their change date set to 0.
+	 */
+	public List<ADO> queryForNew() {
+		return queryForEq(ADO.CHANGE_DATE, new Date(0));
+	}
+
+	/**
+	 * Retrieves all entities that have been modified on the mobile device and for which the modifications
+	 * have not been synchronized to the server yet.
+	 */
+	public List<ADO> queryForModified() {
+		return queryForEq(ADO.MODIFIED, true);
 	}
 
 	public ADO getByReferenceDto(ReferenceDto dto) {
@@ -629,7 +646,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 				if (!AdoPropertyHelper.isModifiableProperty(property)
 					|| parentProperty.equals(property.getName())
 					|| property.getReadMethod().isAnnotationPresent(JoinTableReference.class)
-					|| Case.COMPLETENESS.equals(property.getName()))
+					|| Case.COMPLETENESS.equals(property.getName())
+					|| FeatureConfiguration.PROPERTIES_MAP.equals(property.getName()))
 					continue;
 
 				// we now have to write the value from source into target and base

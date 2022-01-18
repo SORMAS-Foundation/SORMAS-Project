@@ -18,11 +18,10 @@ package de.symeda.sormas.ui.vaccination.list;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -30,7 +29,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
@@ -41,12 +39,12 @@ public class VaccinationListEntry extends SideComponentField {
 	public static final String SEPARATOR = ": ";
 
 	private final VaccinationListEntryDto vaccination;
-	private Button editButton;
 
 	public VaccinationListEntry(VaccinationListEntryDto vaccination, boolean showDisease) {
 		this.vaccination = vaccination;
 
 		buildLayout(showDisease);
+		setEnabled(vaccination.isRelevant());
 	}
 
 	private void buildLayout(boolean showDisease) {
@@ -70,6 +68,11 @@ public class VaccinationListEntry extends SideComponentField {
 		uuidDateLayout.setComponentAlignment(dateLabel, Alignment.MIDDLE_RIGHT);
 		addComponentToField(uuidDateLayout);
 
+		HorizontalLayout vaccineNameAndInfoLayout = new HorizontalLayout();
+		vaccineNameAndInfoLayout.setMargin(false);
+		vaccineNameAndInfoLayout.setSpacing(true);
+		vaccineNameAndInfoLayout.setWidthFull();
+
 		String vaccine = vaccination.getVaccineName() != null
 			? (vaccination.getVaccineName() == Vaccine.OTHER ? vaccination.getOtherVaccineName() : vaccination.getVaccineName().toString())
 			: null;
@@ -77,28 +80,21 @@ public class VaccinationListEntry extends SideComponentField {
 			StringUtils.isNotBlank(vaccine)
 				? I18nProperties.getPrefixCaption(VaccinationDto.I18N_PREFIX, VaccinationDto.VACCINE_NAME) + SEPARATOR + vaccine
 				: I18nProperties.getString(Strings.labelNoVaccineName));
-		vaccineLabel.setWidthFull();
-		addComponentToField(vaccineLabel);
+		vaccineNameAndInfoLayout.addComponent(vaccineLabel);
+		vaccineNameAndInfoLayout.setComponentAlignment(vaccineLabel, Alignment.MIDDLE_LEFT);
+
+		if (!vaccination.isRelevant()) {
+			Label vaccinationNotRelevantInfo = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+			vaccinationNotRelevantInfo.setDescription(vaccination.getNonRelevantMessage());
+			vaccineNameAndInfoLayout.addComponent(vaccinationNotRelevantInfo);
+			vaccineNameAndInfoLayout.setComponentAlignment(vaccinationNotRelevantInfo, Alignment.MIDDLE_RIGHT);
+		}
+
+		addComponentToField(vaccineNameAndInfoLayout);
 
 		if (showDisease) {
 			Label diseaseLabel = new Label(vaccination.getDisease().toString());
 			addComponentToField(diseaseLabel);
-		}
-	}
-
-	public void addEditListener(Button.ClickListener editClickListener) {
-		if (editButton == null) {
-			editButton = ButtonHelper.createIconButtonWithCaption(
-				"edit-vaccination-" + vaccination.getUuid(),
-				null,
-				VaadinIcons.PENCIL,
-				editClickListener,
-				ValoTheme.BUTTON_LINK,
-				CssStyles.BUTTON_COMPACT);
-
-			addComponent(editButton);
-			setComponentAlignment(editButton, Alignment.TOP_RIGHT);
-			setExpandRatio(editButton, 0);
 		}
 	}
 

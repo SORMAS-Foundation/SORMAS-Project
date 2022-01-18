@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.utils;
 
+import static java.util.stream.Collectors.joining;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +25,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -96,6 +99,12 @@ public final class DataHelper {
 		}
 		if (b instanceof String) {
 			equal = equal || (a == null && ((String) b).isEmpty());
+		}
+
+		if (a instanceof Timestamp && b instanceof Date) {
+			equal = equal || a.equals(new Timestamp(((Date) b).getTime()));
+		} else if (a instanceof Date && b instanceof Timestamp) {
+			equal = equal || new Timestamp(((Date) a).getTime()).equals(b);
 		}
 
 		return equal;
@@ -450,5 +459,13 @@ public final class DataHelper {
 
 	public static boolean isValidEmailAddress(String emailAddress) {
 		return StringUtils.isBlank(emailAddress) || emailAddress.matches(VALID_EMAIL_REGEX);
+	}
+
+	public static String buildStringFromTrueValues(Map<? extends Enum<?>, Boolean> map) {
+		if (map != null) {
+			return map.keySet().stream().filter(map::get).map(I18nProperties::getEnumCaption).collect(joining(", "));
+		} else {
+			return "";
+		}
 	}
 }

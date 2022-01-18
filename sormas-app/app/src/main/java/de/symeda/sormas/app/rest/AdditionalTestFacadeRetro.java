@@ -26,8 +26,11 @@ import retrofit2.http.Path;
 
 public interface AdditionalTestFacadeRetro {
 
-	@GET("additionaltests/all/{since}")
-	Call<List<AdditionalTestDto>> pullAllSince(@Path("since") long since);
+	@GET("additionaltests/all/{since}/{size}/{lastSynchronizedUuid}")
+	Call<List<AdditionalTestDto>> pullAllSince(
+			@Path("since") long since,
+			@Path("size") int size,
+			@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
 
 	@POST("additionaltests/query")
 	Call<List<AdditionalTestDto>> pullByUuids(@Body List<String> uuids);

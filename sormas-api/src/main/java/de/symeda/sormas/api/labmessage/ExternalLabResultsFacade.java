@@ -30,4 +30,6 @@ public interface ExternalLabResultsFacade {
 	 * 	 *         from the external lab message server
 	 */
 	ExternalMessageResult<byte[]> convertToPDF(LabMessageDto message);
+
+	String getVersion();
 }

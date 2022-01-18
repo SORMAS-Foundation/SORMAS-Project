@@ -32,8 +32,7 @@ import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.sormas.e2etests.steps.web.application.NavBarSteps;
-import org.sormas.e2etests.ui.DriverManager;
+import org.sormas.e2etests.webdriver.DriverManager;
 import recorders.StepsLogger;
 
 @Slf4j
@@ -77,15 +76,10 @@ public class BaseSteps implements StepLifecycleListener {
     log.info("Finished test: " + scenario.getName());
   }
 
-  @After(value = "@PagesMeasurements")
-  public void afterPageLoadTests(Scenario scenario) {
-    String testName = scenario.getName().replace("Check", "").replace("loading time", "");
-    log.info(scenario.getName() + " done, adding page meassurement result into TableDataManager");
-    TableDataManager.addRowEntity(testName, NavBarSteps.elapsedTime);
-  }
-
   @After(value = "@PublishCustomReport")
   public void generateMeasurementsReport() {
+    log.info("Parsing results collected in results.txt and converting them into Row Objects");
+    TableDataManager.convertData();
     log.info("Creating Chart for UI Meassurements report");
     ReportChartBuilder.buildChartForData(TableDataManager.getTableRowsDataList());
     log.info("Generating Sormas Custom report");

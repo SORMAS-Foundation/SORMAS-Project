@@ -39,7 +39,7 @@ public class RegionDtoHelper extends AdoDtoHelper<Region, RegionDto> {
 	}
 
 	@Override
-	protected Call<List<RegionDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<RegionDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		return RetroProvider.getRegionFacade().pullAllSince(since);
 	}
 
@@ -67,7 +67,12 @@ public class RegionDtoHelper extends AdoDtoHelper<Region, RegionDto> {
 		throw new UnsupportedOperationException("Entity is infrastructure");
 	}
 
-	public static RegionReferenceDto toReferenceDto(Region ado) {
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
+    }
+
+    public static RegionReferenceDto toReferenceDto(Region ado) {
 		if (ado == null) {
 			return null;
 		}
