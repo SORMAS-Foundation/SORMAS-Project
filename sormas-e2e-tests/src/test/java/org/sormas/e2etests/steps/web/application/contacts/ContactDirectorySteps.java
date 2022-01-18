@@ -22,15 +22,14 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.openqa.selenium.By;
-import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.Assert;
 
 public class ContactDirectorySteps implements En {
 
@@ -41,9 +40,7 @@ public class ContactDirectorySteps implements En {
       WebDriverHelpers webDriverHelpers,
       ApiState apiState,
       AssertHelpers assertHelpers,
-      DataOperations dataOperations,
-      @Named("ENVIRONMENT_URL") String environmentUrl)
-      throws InterruptedException {
+      @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -51,7 +48,7 @@ public class ContactDirectorySteps implements En {
         () -> {
           String LAST_CREATED_CONTACT_URL =
               environmentUrl
-                  + "/sormas-ui/#!contacts/data/"
+                  + "/sormas-webdriver/#!contacts/data/"
                   + apiState.getCreatedContact().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CONTACT_URL);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
@@ -99,9 +96,10 @@ public class ContactDirectorySteps implements En {
         (Integer number) ->
             assertHelpers.assertWithPoll20Second(
                 () ->
-                    Truth.assertThat(
-                            webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS))
-                        .isEqualTo(number)));
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS),
+                        number.intValue(),
+                        "Number of displayed contacts is not correct")));
   }
 
   private void searchAfterContactByMultipleOptions(String idPhoneNameEmail) {

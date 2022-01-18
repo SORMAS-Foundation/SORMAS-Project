@@ -26,7 +26,6 @@ import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.*;
 import cucumber.api.java8.En;
 import java.util.*;
 import javax.inject.Inject;
-import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Action;
@@ -44,20 +43,14 @@ public class EventActionsSteps implements En {
   private List<EventActionTableEntry> actionsTableRows;
 
   @Inject
-  public EventActionsSteps(
-      WebDriverHelpers webDriverHelpers,
-      BaseSteps baseSteps,
-      ApiState apiState,
-      SoftAssertions softly,
-      Properties properties) {
+  public EventActionsSteps(WebDriverHelpers webDriverHelpers, BaseSteps baseSteps) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
 
     When(
         "I open the Action recently created from Event tab",
         () -> {
-          createdAction = CreateNewActionSteps.action;
-          clickOnActionEditButtonByTitle(createdAction.getTitle());
+          clickOnActionEditButtonByTitle(CreateNewActionSteps.action.getTitle());
         });
   }
 

@@ -4,12 +4,12 @@ import static org.sormas.e2etests.pages.application.cases.HospitalizationTabPage
 import static org.sormas.e2etests.pages.application.cases.HospitalizationTabPage.NEW_ENTRY_LINK;
 import static org.sormas.e2etests.pages.application.cases.PreviousHospitalizationPage.*;
 
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.PreviousHospitalization;
 import org.sormas.e2etests.services.PreviousHospitalizationService;
 
@@ -54,76 +54,70 @@ public class PreviousHospitalizationSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_PREVIOUS_HOSPITALIZATION_ENTRY);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(REGION_COMBOBOX);
-          PreviousHospitalization actualData = collectPreviousHospitalizationData();
-          Truth.assertThat(actualData).isEqualTo(previousHospitalization);
+          PreviousHospitalization collectedHospitalization = collectPreviousHospitalizationData();
+          ComparisonHelper.compareEqualEntities(collectedHospitalization, previousHospitalization);
         });
   }
 
-  public void fillDateOfVisitOrAdmission(LocalDate date) {
+  private void fillDateOfVisitOrAdmission(LocalDate date) {
     webDriverHelpers.fillInWebElement(
         DATE_OF_VISIT_OR_ADMISSION_INPUT, DATE_FORMATTER.format(date));
   }
 
-  public void fillDateOfDischargeOrTransfer(LocalDate date) {
+  private void fillDateOfDischargeOrTransfer(LocalDate date) {
     webDriverHelpers.fillInWebElement(
         DATE_OF_DISCHARGE_OR_TRANSFER_INPUT, DATE_FORMATTER.format(date));
   }
 
-  public void selectReasonForHospitalization(String reason) {
+  private void selectReasonForHospitalization(String reason) {
     webDriverHelpers.selectFromCombobox(REASON_FOR_HOSPITALIZATION_COMBOBOX, reason);
   }
 
-  public void fillSpecifyReason(String text) {
+  private void fillSpecifyReason(String text) {
     webDriverHelpers.fillInWebElement(SPECIFY_REASON_INPUT, text);
   }
 
-  public void selectStayInTheIntensiveCareUnit(String option) {
+  private void selectStayInTheIntensiveCareUnit(String option) {
     webDriverHelpers.clickWebElementByText(STAY_IN_THE_INTENSIVE_CARE_UNIT_OPTIONS, option);
   }
 
-  public void fillStartOfStayDate(LocalDate date) {
+  private void fillStartOfStayDate(LocalDate date) {
     webDriverHelpers.fillInWebElement(START_OF_STAY_DATE_INPUT, DATE_FORMATTER.format(date));
   }
 
-  public void fillEndOfStayDate(LocalDate date) {
+  private void fillEndOfStayDate(LocalDate date) {
     webDriverHelpers.fillInWebElement(END_OF_STAY_DATE_INPUT, DATE_FORMATTER.format(date));
   }
 
-  public void selectIsolation(String option) {
+  private void selectIsolation(String option) {
     webDriverHelpers.clickWebElementByText(ISOLATION_OPTIONS, option);
   }
 
-  public void selectRegion(String option) {
+  private void selectRegion(String option) {
     webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, option);
   }
-  ;
 
-  public void selectDistrict(String option) {
+  private void selectDistrict(String option) {
     webDriverHelpers.selectFromCombobox(DISTRICT_COMBOBOX, option);
   }
-  ;
 
-  public void selectCommunity(String option) {
+  private void selectCommunity(String option) {
     webDriverHelpers.selectFromCombobox(COMMUNITY_COMBOBOX, option);
   }
-  ;
 
-  public void selectHospital(String option) {
+  private void selectHospital(String option) {
     webDriverHelpers.selectFromCombobox(HOSPITAL_COMBOBOX, option);
   }
-  ;
 
-  public void fillDescription(String text) {
+  private void fillDescription(String text) {
     webDriverHelpers.fillInWebElement(DESCRIPTION_INPUT, text);
   }
-  ;
 
-  public void fillFacilityNameDescription(String text) {
+  private void fillFacilityNameDescription(String text) {
     webDriverHelpers.fillInWebElement(FACILITY_NAME_DESCRIPTION_INPUT, text);
   }
-  ;
 
-  public PreviousHospitalization collectPreviousHospitalizationData() {
+  private PreviousHospitalization collectPreviousHospitalizationData() {
     return PreviousHospitalization.builder()
         .dateOfVisitOrAdmission(
             LocalDate.parse(
