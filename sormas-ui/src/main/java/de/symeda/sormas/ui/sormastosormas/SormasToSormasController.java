@@ -201,7 +201,7 @@ public class SormasToSormasController {
 				VaadinUiUtil.showPopupWindowWithWidth(
 					new VerticalLayout(messageComponent),
 					I18nProperties.getCaption(Captions.sormasToSormasErrorDialogTitle),
-					100);
+					38);
 			}
 		} catch (SormasToSormasValidationException ex) {
 			Component messageComponent = buildShareErrorMessage(ex.getMessage(), ex.getErrors());
@@ -209,7 +209,7 @@ public class SormasToSormasController {
 			VaadinUiUtil.showPopupWindowWithWidth(
 				new VerticalLayout(messageComponent),
 				I18nProperties.getCaption(Captions.sormasToSormasErrorDialogTitle),
-				100);
+				38);
 		}
 	}
 
