@@ -24,6 +24,7 @@ import static org.sormas.e2etests.helpers.AssertHelpers.takeScreenshot;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
@@ -233,6 +234,7 @@ public class WebDriverHelpers {
     waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestpopup"));
     waitUntilANumberOfElementsAreVisibleAndClickable(By.xpath("//td[@role='listitem']/span"), 1);
     By dropDownValueXpath = By.xpath(comboBoxItemWithText);
+    TimeUnit.MILLISECONDS.sleep(500);
     clickOnWebElementBySelector(dropDownValueXpath);
     await()
         .pollInterval(ONE_HUNDRED_MILLISECONDS)
@@ -267,6 +269,7 @@ public class WebDriverHelpers {
   }
 
   public void clickOnWebElementBySelectorAndIndex(By selector, int index) {
+    scrollToElementUntilIsVisible(selector);
     try {
       await()
           .pollInterval(ONE_HUNDRED_MILLISECONDS)
@@ -337,12 +340,10 @@ public class WebDriverHelpers {
 
   public void scrollToElement(final Object selector) {
     JavascriptExecutor javascriptExecutor = baseSteps.getDriver();
-    waitUntilIdentifiedElementIsPresent(selector);
     try {
       if (selector instanceof WebElement) {
         javascriptExecutor.executeScript(SCROLL_TO_WEB_ELEMENT_SCRIPT, selector);
       } else {
-        waitUntilIdentifiedElementIsPresent(selector);
         javascriptExecutor.executeScript(
             SCROLL_TO_WEB_ELEMENT_SCRIPT, baseSteps.getDriver().findElement((By) selector));
       }
@@ -367,9 +368,9 @@ public class WebDriverHelpers {
     waitForPageLoaded();
   }
 
+  // TODO replace regular scroll wth this one
   public void scrollToElementUntilIsVisible(final Object selector) {
     JavascriptExecutor javascriptExecutor = baseSteps.getDriver();
-    waitUntilIdentifiedElementIsPresent(selector);
     try {
       if (selector instanceof WebElement) {
         assertHelpers.assertWithPoll20Second(
@@ -474,6 +475,7 @@ public class WebDriverHelpers {
   }
 
   public String getValueFromWebElement(By byObject) {
+    scrollToElementUntilIsVisible(byObject);
     return getAttributeFromWebElement(byObject, "value");
   }
 
@@ -490,7 +492,6 @@ public class WebDriverHelpers {
   }
 
   public String getAttributeFromWebElement(By byObject, String attribute) {
-    waitUntilIdentifiedElementIsPresent(byObject);
     scrollToElement(byObject);
     waitUntilIdentifiedElementHasANonNullValue(byObject, attribute, FLUENT_WAIT_TIMEOUT_SECONDS);
     return baseSteps.getDriver().findElement(byObject).getAttribute(attribute);
@@ -535,7 +536,6 @@ public class WebDriverHelpers {
   }
 
   public String getTextFromPresentWebElement(By byObject) {
-    waitUntilIdentifiedElementIsPresent(byObject);
     scrollToElement(byObject);
     return baseSteps.getDriver().findElement(byObject).getText();
   }
@@ -570,6 +570,7 @@ public class WebDriverHelpers {
         () ->
             Assert.assertEquals(
                 getAttributeFromWebElement(selector, attribute),
+                value,
                 String.format(
                     "Element: %s, attribute: %s, is not: %s", selector, attribute, value)));
   }
@@ -657,17 +658,31 @@ public class WebDriverHelpers {
     return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
   }
 
-  public boolean isElementDisplayedIn20SecondsOrThrowException(By selector) {
-    try {
-      await()
-          .pollInterval(ONE_HUNDRED_MILLISECONDS)
-          .ignoreExceptions()
-          .catchUncaughtExceptions()
-          .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
-          .until(() -> baseSteps.getDriver().findElement(selector).isDisplayed());
-      return true;
-    } catch (ConditionTimeoutException ignored) {
-      throw new NoSuchElementException(String.format("Element: %s is not visible", selector));
+  public boolean isElementDisplayedIn20SecondsOrThrowException(Object selector) {
+    if (selector instanceof WebElement) {
+      try {
+        await()
+            .pollInterval(ONE_HUNDRED_MILLISECONDS)
+            .ignoreExceptions()
+            .catchUncaughtExceptions()
+            .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
+            .until(((WebElement) selector)::isDisplayed);
+        return true;
+      } catch (ConditionTimeoutException ignored) {
+        throw new NoSuchElementException(String.format("Element: %s is not visible", selector));
+      }
+    } else {
+      try {
+        await()
+            .pollInterval(ONE_HUNDRED_MILLISECONDS)
+            .ignoreExceptions()
+            .catchUncaughtExceptions()
+            .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
+            .until(() -> baseSteps.getDriver().findElement((By) selector).isDisplayed());
+        return true;
+      } catch (ConditionTimeoutException ignored) {
+        throw new NoSuchElementException(String.format("Element: %s is not visible", selector));
+      }
     }
   }
 

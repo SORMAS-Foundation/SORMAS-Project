@@ -1,7 +1,7 @@
 @UI @Sanity @Case
 Feature: Case end to end tests
 
-  Scenario:Check a new case data
+  Scenario: Check a new case data
     Given I log in with National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
@@ -9,7 +9,7 @@ Feature: Case end to end tests
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
 
-  Scenario:Check that double clicking NEW CASE button does not cause a redundant action
+  Scenario: Check that double clicking NEW CASE button does not cause a redundant action
     Given I log in with National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
@@ -55,3 +55,17 @@ Feature: Case end to end tests
     Then I create a new contact from Cases Contacts tab
     And I open the Case Contacts tab of the created case via api
     And I verify that created contact from Case Contacts tab is correctly displayed
+
+  Scenario: Edit all fields from Symptoms tab
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I am accessing the Symptoms tab using of created case via api
+    And I change all symptoms fields and save
+    And I click on the Dashboard button from navbar and access Surveillance Dashboard
+    When I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms tab page

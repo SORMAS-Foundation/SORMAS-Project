@@ -39,12 +39,11 @@ public class ContactsDetailedTableViewSteps implements En {
         () -> {
           List<Map<String, String>> tableRowsData = getTableRowsData();
           Map<String, String> detailedContactDTableRow = tableRowsData.get(0);
-          softly.assertTrue(
-              detailedContactDTableRow
-                  .get(ContactsDetailedTableViewHeaders.CONTACT_ID.toString())
-                  .contains(
-                      dataOperations.getPartialUuidFromAssociatedLink(
-                          apiState.getCreatedContact().getUuid())),
+          softly.assertEquals(
+              detailedContactDTableRow.get(ContactsDetailedTableViewHeaders.CONTACT_ID.toString()),
+              dataOperations
+                  .getPartialUuidFromAssociatedLink(apiState.getCreatedContact().getUuid())
+                  .toUpperCase(),
               "UUID from associated link is not correct");
           softly.assertEquals(
               detailedContactDTableRow.get(ContactsDetailedTableViewHeaders.DISEASE.toString()),
@@ -58,7 +57,7 @@ public class ContactsDetailedTableViewSteps implements En {
           softly.assertEquals(
               detailedContactDTableRow.get(
                   ContactsDetailedTableViewHeaders.CONTACT_STATUS.toString()),
-              "Active Contact",
+              "Active contact",
               "Contact status is not correct");
           softly.assertEquals(
               detailedContactDTableRow.get(

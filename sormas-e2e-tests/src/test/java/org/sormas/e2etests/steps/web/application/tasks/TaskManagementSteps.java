@@ -79,7 +79,8 @@ public class TaskManagementSteps implements En {
     When(
         "^I search last created task by Case UUID$",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(GENERAL_SEARCH_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              GENERAL_SEARCH_INPUT, 50);
           webDriverHelpers.fillAndSubmitInWebElement(
               GENERAL_SEARCH_INPUT, EditCaseSteps.aCase.getUuid());
         });
@@ -89,6 +90,9 @@ public class TaskManagementSteps implements En {
         () -> {
           String eventUuid = apiState.getCreatedEvent().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(GENERAL_SEARCH_INPUT, eventUuid);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              getByEventUuid(eventUuid));
           webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
         });
 
