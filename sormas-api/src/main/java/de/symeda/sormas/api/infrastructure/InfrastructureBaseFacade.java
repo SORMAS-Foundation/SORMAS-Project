@@ -16,11 +16,11 @@ public interface InfrastructureBaseFacade<DTO extends EntityDto, INDEX_DTO exten
 	List<REF_DTO> getByExternalId(String externalId, boolean includeArchivedEntities);
 
 	/**
-	 * Save the given DTO, but skip checks for infrastructure locks etc.
+	 * Save the given DTO received from central, but skip checks for infrastructure locks, archived entities etc.
 	 * 
 	 * @param dto
 	 *            The DTO which should be saved.
 	 * @return The saved DTO.
 	 */
-	DTO saveUnchecked(@Valid DTO dto, boolean allowMerge);
+	DTO saveFromCentral(@Valid DTO dto);
 }
