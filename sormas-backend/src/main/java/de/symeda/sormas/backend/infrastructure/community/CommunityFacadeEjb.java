@@ -191,6 +191,8 @@ public class CommunityFacadeEjb
 
 	@Override
 	protected List<Community> findDuplicates(CommunityDto dto, boolean includeArchived) {
+		// todo this does not work in edge cases (see #6752) as names are not guaranteed to be unique or and collide
+		//  it would be really good to use external ID here but it is not unique in the DB
 		return service.getByName(dto.getName(), districtService.getByReferenceDto(dto.getDistrict()), includeArchived);
 	}
 

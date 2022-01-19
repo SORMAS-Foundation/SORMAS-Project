@@ -44,6 +44,7 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 
 	public DTO save(DTO dto, boolean allowMerge) {
 		checkInfraDataLocked();
+		// default behaviour is to include archived data and check for the change date
 		return doSave(dto, allowMerge, true, true, duplicateErrorMessageProperty);
 	}
 
