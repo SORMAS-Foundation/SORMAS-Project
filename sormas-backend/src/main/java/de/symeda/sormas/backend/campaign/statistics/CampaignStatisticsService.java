@@ -84,14 +84,18 @@ public class CampaignStatisticsService {
 		queryBuilder.append(buildJsonWhereExpression());
 
 		queryBuilder.append(buildGroupByExpression(criteria)).append(buildJsonGroupByExpression()).append(buildOrderByExpression(criteria));
+		
+		System.out.println(">>>>>>>>>>>>>>>>>>> xxxxxxxxxxxxxxxxxxxxx"+queryBuilder.toString()); 
 
 		return queryBuilder.toString();
 	}
+	
+	
 
 	private String buildSelectExpression(CampaignStatisticsCriteria criteria) {
 		StringBuilder selectBuilder = new StringBuilder().append(buildSelectField(Campaign.TABLE_NAME, Campaign.NAME))
 			.append(", ")
-			.append(buildSelectField(CampaignFormMeta.TABLE_NAME, CampaignFormMeta.FORM_NAME))
+			.append(buildSelectField(CampaignFormMeta.TABLE_NAME, CampaignFormMeta.FORM_NAME)) 
 			.append(", ")
 			.append(buildSelectField(Area.TABLE_NAME, Area.NAME));
 
@@ -149,6 +153,7 @@ public class CampaignStatisticsService {
 		return joinConditionBuilder.toString();
 	}
 
+	
 	private String buildWhereExpression(CampaignStatisticsCriteria criteria) {
 		StringBuilder whereBuilder = new StringBuilder();
 		if (criteria.getCampaign() != null) {
@@ -270,7 +275,8 @@ public class CampaignStatisticsService {
 	}
 
 	private String buildJsonSelectExpression() {
-		System.out.println(">>>>>>>>>>>>>>>>>>> xxxxxxxxxxxxxxxxxxxxx");
+		String eum_dug = CampaignFormElementType.YES_NO.toString();
+		
 		
 		StringBuilder jsonQueryExpression = new StringBuilder();
 		jsonQueryExpression.append(", jsonData->>'")
@@ -283,15 +289,50 @@ public class CampaignStatisticsService {
 			.append("' THEN sum(cast_to_int(jsonData->>'")
 			.append(CampaignFormDataEntry.VALUE)
 			.append("', 0))")
+			
 			.append(" WHEN (jsonMeta ->> '")
 			.append(CampaignFormElement.TYPE)
 			.append("') = '")
-			.append(CampaignFormElementType.YES_NO.toString())
+			.append(eum_dug.toLowerCase().replaceAll("-", "_"))
 			.append("' THEN sum(CASE WHEN(jsonData->>'")
 			.append(CampaignFormDataEntry.VALUE)
-			.append("') = 'true' THEN 1 ELSE 0 END) END as sumValue");
+			.append("') = 'true' THEN 1 ELSE 0 END)")
+			
+/*			
+			.append(" WHEN (jsonMeta ->> '")
+			.append(CampaignFormElement.TYPE)
+			.append("') = '")
+			.append(CampaignFormElementType.YES_NO.toStringJson())
+			.append("' THEN sum(CASE WHEN(jsonData->>'")
+			.append(CampaignFormDataEntry.VALUE)
+			.append("') = 'true' THEN 1 ELSE 0 END)")
+			
+			
+			.append(" WHEN (jsonMeta ->> '")
+			.append(CampaignFormElement.TYPE)
+			.append("') = '")
+			.append(CampaignFormElementType.YES_NO.toStringJson())
+			.append("' THEN sum(CASE WHEN(jsonData->>'")
+			.append(CampaignFormDataEntry.VALUE)
+			.append("') = 'true' THEN 1 ELSE 0 END)")
+			
+			
+			.append(" WHEN (jsonMeta ->> '")
+			.append(CampaignFormElement.TYPE)
+			.append("') = '")
+			.append(CampaignFormElementType.YES_NO.toStringJson())
+			.append("' THEN sum(CASE WHEN(jsonData->>'")
+			.append(CampaignFormDataEntry.VALUE)
+			.append("') = 'true' THEN 1 ELSE 0 END)")
+			
+			
+			*/	
+			
+			.append(" END as sumValue");
 		return jsonQueryExpression.toString();
 	}
+	
+	
 
 	private String buildJsonJoinExpression() {
 		return new StringBuilder().append(", json_array_elements(")

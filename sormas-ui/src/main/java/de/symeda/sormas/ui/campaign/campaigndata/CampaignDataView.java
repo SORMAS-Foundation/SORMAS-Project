@@ -18,6 +18,8 @@ package de.symeda.sormas.ui.campaign.campaigndata;
 import static de.symeda.sormas.ui.utils.FilteredGrid.EDIT_BTN_ID;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -238,7 +240,8 @@ public class CampaignDataView extends AbstractCampaignView {
 		if (campaignReferenceDto != null) {
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences =
 				FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid());
-			System.out.println(campaignReferenceDto.getUuid() + " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>___________"+campaignReferenceDto+"____________>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  "+campagaignFormReferences);
+			Collections.sort(campagaignFormReferences);
+			//System.out.println(campaignReferenceDto.getUuid() + " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>___________"+campaignReferenceDto+"____________>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  "+ campagaignFormReferences);
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
 				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), e -> {
 					ControllerProvider.getCampaignController().createCampaignDataForm(criteria.getCampaign(), campaignForm);

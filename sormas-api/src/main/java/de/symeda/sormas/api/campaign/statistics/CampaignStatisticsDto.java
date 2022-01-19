@@ -16,7 +16,7 @@ public class CampaignStatisticsDto implements Serializable, Cloneable {
 	public static final String AREA = "area";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
-	public static final String COMMUNITY = "community";
+	public static final String COMMUNITY = "community"; 
 	public static final String FORM_COUNT = "formCount";
 
 	private final CampaignStatisticsGroupingDto campaignStatisticsGroupingDto;
