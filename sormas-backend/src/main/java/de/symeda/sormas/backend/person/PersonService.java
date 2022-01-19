@@ -483,7 +483,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		}
 
 		List<Person> travelEntryPersonsResultList = new ArrayList<>();
-		// if no batch size is given this is a sync from the mobile app where travel entries are not relevant for now
+		// if a batch size is given, this is a sync from the mobile app where travel entries are not relevant for now
 		if (batchSize == null) {
 			// persons by travel entries
 			CriteriaQuery<Person> tepQuery = cb.createQuery(Person.class);
