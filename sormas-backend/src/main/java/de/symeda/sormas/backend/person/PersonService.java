@@ -409,7 +409,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			casePersonsQuery.where(casePersonsFilter);
 		}
 		casePersonsQuery.distinct(true);
-		List<Person> casePersonsResultList = getBatchedQueryResults(cb, casePersonsQuery, personsRoot, batchSize);
+		List<Person> casePersonsResultList = getBatchedQueryResults(cb, casePersonsQuery, casePersonsSelect, batchSize);
 
 		// persons by contact
 		CriteriaQuery<Person> contactPersonsQuery = cb.createQuery(Person.class);
@@ -431,7 +431,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			contactPersonsQuery.where(contactPersonsFilter);
 		}
 		contactPersonsQuery.distinct(true);
-		List<Person> contactPersonsResultList = getBatchedQueryResults(cb, contactPersonsQuery, personsRoot, batchSize);
+		List<Person> contactPersonsResultList = getBatchedQueryResults(cb, contactPersonsQuery, contactPersonsSelect, batchSize);
 
 		// persons by event participant
 		CriteriaQuery<Person> eventPersonsQuery = cb.createQuery(Person.class);
@@ -454,7 +454,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			eventPersonsQuery.where(eventPersonsFilter);
 		}
 		eventPersonsQuery.distinct(true);
-		List<Person> eventPersonsResultList = getBatchedQueryResults(cb, eventPersonsQuery, personsRoot, batchSize);
+		List<Person> eventPersonsResultList = getBatchedQueryResults(cb, eventPersonsQuery, eventPersonsSelect, batchSize);
 
 		// persons by immunization
 		List<Person> immunizationPersonsResultList = new ArrayList<>();
@@ -479,7 +479,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 				immunizationPersonsQuery.where(immunizationPersonsFilter);
 			}
 			immunizationPersonsQuery.distinct(true);
-			immunizationPersonsResultList = getBatchedQueryResults(cb, immunizationPersonsQuery, personsRoot, batchSize);
+			immunizationPersonsResultList = getBatchedQueryResults(cb, immunizationPersonsQuery, immunizationPersonsSelect, batchSize);
 		}
 
 		List<Person> travelEntryPersonsResultList = new ArrayList<>();
