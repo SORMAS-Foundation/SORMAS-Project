@@ -11,16 +11,23 @@ import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventActionIndexDto;
+import de.symeda.sormas.api.event.EventHelper;
 import de.symeda.sormas.api.event.EventIdentificationSource;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventManagementStatus;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.RiskLevel;
+import de.symeda.sormas.api.user.UserReferenceDto;
 
 public class EventActionIndexDtoReasultTransformer implements ResultTransformer {
 
 	@Override
 	public Object transformTuple(Object[] objects, String[] strings) {
+		UserReferenceDto eventReportingUser = new UserReferenceDto((String) objects[12], (String) objects[13], (String) objects[14], null);
+		UserReferenceDto eventResponsibleUser = new UserReferenceDto((String) objects[15], (String) objects[16], (String) objects[17], null);
+		String actionTitle = EventHelper.buildEventActionTitleString((ActionMeasure) objects[18], (String) objects[20]);
+		UserReferenceDto actionLastModifiedBy = new UserReferenceDto((String) objects[26], (String) objects[27], (String) objects[28], null);
+		UserReferenceDto actionCreatorUser = new UserReferenceDto((String) objects[29], (String) objects[30], (String) objects[31], null);
 		return new EventActionIndexDto(
 			(String) objects[0],
 			(String) objects[1],
@@ -34,26 +41,17 @@ public class EventActionIndexDtoReasultTransformer implements ResultTransformer 
 			(RiskLevel) objects[9],
 			(EventInvestigationStatus) objects[10],
 			(EventManagementStatus) objects[11],
-			(String) objects[12],
-			(String) objects[13],
-			(String) objects[14],
-			(String) objects[15],
-			(String) objects[16],
-			(String) objects[17],
-			(ActionMeasure) objects[18],
+			eventReportingUser,
+			eventResponsibleUser,
+			actionTitle,
 			(Date) objects[19],
-			(String) objects[20],
 			(Date) objects[21],
 			(Date) objects[22],
 			(Date) objects[23],
 			(ActionStatus) objects[24],
 			(ActionPriority) objects[25],
-			(String) objects[26],
-			(String) objects[27],
-			(String) objects[28],
-			(String) objects[29],
-			(String) objects[30],
-			(String) objects[31]);
+			actionLastModifiedBy,
+			actionCreatorUser);
 	}
 
 	@Override
