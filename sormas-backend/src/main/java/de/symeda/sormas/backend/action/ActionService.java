@@ -317,7 +317,10 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			lastModifiedBy.get(User.LAST_NAME),
 			creatorUser.get(User.UUID),
 			creatorUser.get(User.FIRST_NAME),
-			creatorUser.get(User.LAST_NAME));
+			creatorUser.get(User.LAST_NAME),
+			event.get(Event.CHANGE_DATE));
+
+		cq.distinct(true);
 
 		if (sortProperties != null && !sortProperties.isEmpty()) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
@@ -490,7 +493,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			cq.where(filter);
 		}
 
-		cq.select(cb.count(action.get(Action.UUID)));
+		cq.select(cb.countDistinct(action.get(Action.UUID)));
 
 		return em.createQuery(cq).getSingleResult();
 	}
