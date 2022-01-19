@@ -382,7 +382,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			lgaFilter = cb.and(lgaFilter, dateFilter);
 		}
 		personsQuery.where(lgaFilter);
-		List<Person> lgaResultList = em.createQuery(personsQuery).getResultList();
+		List<Person> lgaResultList = getBatchedQueryResults(cb, personsQuery, personsRoot, batchSize);
 
 		// persons by case
 		CriteriaQuery<Person> casePersonsQuery = cb.createQuery(Person.class);
@@ -409,7 +409,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			casePersonsQuery.where(casePersonsFilter);
 		}
 		casePersonsQuery.distinct(true);
-		List<Person> casePersonsResultList = em.createQuery(casePersonsQuery).getResultList();
+		List<Person> casePersonsResultList = getBatchedQueryResults(cb, casePersonsQuery, personsRoot, batchSize);
 
 		// persons by contact
 		CriteriaQuery<Person> contactPersonsQuery = cb.createQuery(Person.class);
@@ -431,7 +431,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			contactPersonsQuery.where(contactPersonsFilter);
 		}
 		contactPersonsQuery.distinct(true);
-		List<Person> contactPersonsResultList = em.createQuery(contactPersonsQuery).getResultList();
+		List<Person> contactPersonsResultList = getBatchedQueryResults(cb, contactPersonsQuery, personsRoot, batchSize);
 
 		// persons by event participant
 		CriteriaQuery<Person> eventPersonsQuery = cb.createQuery(Person.class);
@@ -454,7 +454,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			eventPersonsQuery.where(eventPersonsFilter);
 		}
 		eventPersonsQuery.distinct(true);
-		List<Person> eventPersonsResultList = em.createQuery(eventPersonsQuery).getResultList();
+		List<Person> eventPersonsResultList = getBatchedQueryResults(cb, eventPersonsQuery, personsRoot, batchSize);
 
 		// persons by immunization
 		List<Person> immunizationPersonsResultList = new ArrayList<>();
@@ -479,7 +479,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 				immunizationPersonsQuery.where(immunizationPersonsFilter);
 			}
 			immunizationPersonsQuery.distinct(true);
-			immunizationPersonsResultList = em.createQuery(immunizationPersonsQuery).getResultList();
+			immunizationPersonsResultList = getBatchedQueryResults(cb, immunizationPersonsQuery, personsRoot, batchSize);
 		}
 
 		List<Person> travelEntryPersonsResultList = new ArrayList<>();

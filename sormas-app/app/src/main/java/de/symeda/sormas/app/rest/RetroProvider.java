@@ -85,6 +85,7 @@ public final class RetroProvider {
 
 	private static final Integer ASSUMED_TRANSFER_TIME_IN_SECONDS = 60;
 	public static final double JSON_COMPRESSION_FACTOR = 5.7; // number derived using https://dafrok.github.io/gzip-size-online/
+	private static final Integer MAX_BATCH_SIZE = 500;
 
 	private final Context context;
 	private final Retrofit retrofit;
@@ -156,7 +157,7 @@ public final class RetroProvider {
 
 		OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 		httpClient.connectTimeout(20, TimeUnit.SECONDS);
-		httpClient.readTimeout(240, TimeUnit.SECONDS); // for infrastructure data
+		httpClient.readTimeout(300, TimeUnit.SECONDS);
 		httpClient.writeTimeout(60, TimeUnit.SECONDS);
 
 		// adds "Accept-Encoding: gzip" by default
@@ -308,7 +309,10 @@ public final class RetroProvider {
 		double compressedJsonSizeInBits = approximateJsonSizeInBytes * 8 / JSON_COMPRESSION_FACTOR;
 		int batchSize =
 			Math.toIntExact(Math.round(getNetworkDownloadSpeedInKbps(context) * ASSUMED_TRANSFER_TIME_IN_SECONDS * 1024 / compressedJsonSizeInBits));
-		return batchSize < 10 ? 10 : batchSize;
+		// Restrict the batch size to a maximum value to avoid backend queries leading to a timeout
+		batchSize = Math.min(MAX_BATCH_SIZE, Math.max(10, batchSize));
+		batchSize = (int) (10 * Math.sqrt(batchSize / 10f));
+		return batchSize;
 	}
 
 	public static long getNetworkDownloadSpeedInKbps(Context context) throws ServerConnectionException {
