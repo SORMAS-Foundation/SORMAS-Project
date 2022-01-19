@@ -40,4 +40,3 @@ public final class UserId implements Serializable {
 	}
 
 }
-

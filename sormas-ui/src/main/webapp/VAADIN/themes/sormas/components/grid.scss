@@ -9,8 +9,10 @@ $v-grid-cell-focused-border: none !default;
 
 @mixin sormas-grid {
   .v-grid-row:hover{
-		background-color: rgb(253, 228, 208);
+		background-color: rgb(234, 234, 234);
 		cursor: pointer;
+		text-decoration: underline;
+		  font-weight: bolder;
 
 	}
 	
@@ -62,6 +64,7 @@ $v-grid-cell-focused-border: none !default;
 
         &.link {
           cursor: pointer;
+		  
         }
       
         &.priority-high {

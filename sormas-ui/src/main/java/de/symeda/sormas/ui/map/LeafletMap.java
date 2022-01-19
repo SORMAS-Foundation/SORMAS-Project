@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 	"vaadin://map/leaflet-connector.js" })
 @StyleSheet({
 	"vaadin://map/leaflet.css",
-	"vaadin://map/leaflet.fullscreen.css",
+	"vaadin://map/leaflet.fullscreen.css", 
 	"vaadin://map/MarkerCluster.css" })
 public class LeafletMap extends AbstractJavaScriptComponent {
 

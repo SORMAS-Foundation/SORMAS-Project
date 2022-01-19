@@ -17,7 +17,7 @@ public enum Language {
 	/**
 	 * Links locale strings to Languages
 	 */
-	private static final Map<String, Language> languageLookup; //max
+	private static final Map<String, Language> languageLookup;
 	static {
 		languageLookup = new HashMap<>();
 		for (Language lang : Language.values()) {

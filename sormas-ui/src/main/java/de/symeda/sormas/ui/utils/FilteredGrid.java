@@ -25,6 +25,8 @@ import de.symeda.sormas.ui.UserProvider;
 public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
 	public static final String EDIT_BTN_ID = "edit";
+	
+	public static final String CLONE_BTN_ID = "clone";
 
 	private static final long serialVersionUID = 8116377533153377424L;
 
@@ -147,6 +149,11 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 		setColumnOrder(columnsList.toArray(new Column[columnsList.size()]));
 
 		addItemClickListener(new ShowDetailsListener<>(EDIT_BTN_ID, e -> handler.accept(e)));
+	}
+	
+	protected void addCloneColumn(Consumer<T> handler) {
+		
+		
 	}
 
 	protected void removeColumnIfExists(String columnId) {
