@@ -179,9 +179,9 @@ public class CountryFacadeEjb
 	}
 
 	@Override
-	protected List<Country> findDuplicates(CountryDto dto, boolean mergeDuplicates) {
-		Optional<Country> byIsoCode = service.getByIsoCode(dto.getIsoCode(), mergeDuplicates);
-		Optional<Country> byUnoCode = service.getByUnoCode(dto.getUnoCode(), mergeDuplicates);
+	protected List<Country> findDuplicates(CountryDto dto, boolean includeArchived) {
+		Optional<Country> byIsoCode = service.getByIsoCode(dto.getIsoCode(), includeArchived);
+		Optional<Country> byUnoCode = service.getByUnoCode(dto.getUnoCode(), includeArchived);
 		List<Optional<Country>> tmp = Arrays.asList(byIsoCode, byUnoCode);
 		return tmp.stream().filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
 	}
