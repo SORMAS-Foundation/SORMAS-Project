@@ -37,13 +37,10 @@ public class EventDirectoryPage {
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By EVENT_ACTIONS_TABLE_DATA = By.tagName("td");
   public static final By BACK_TO_PARTICIPANT_LIST = By.id("tab-events-eventparticipants");
-<<<<<<< HEAD
 
   /*public static By getByEventUuid(String eventUuid) {
     return By.cssSelector("a[title=" + eventUuid + "]");
   }*/
-=======
->>>>>>> be5878809da029b60aebd24a9826ba1b7587dc14
 
   public static By getByEventUuid(String eventUuid) {
     return By.cssSelector(String.format("a[title=%s]", eventUuid));

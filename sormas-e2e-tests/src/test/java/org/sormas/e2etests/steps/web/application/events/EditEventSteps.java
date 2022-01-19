@@ -157,17 +157,12 @@ public class EditEventSteps implements En {
           person = collectPersonUuid();
           selectResponsibleRegion("Region1");
           selectResponsibleDistrict("District11");
-<<<<<<< HEAD
-=======
-          //     webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
->>>>>>> be5878809da029b60aebd24a9826ba1b7587dc14
           webDriverHelpers.scrollToElement(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(PERSON_DATA_SAVED);
         });
 
     When(
-<<<<<<< HEAD
         "I add empty participant data",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
@@ -214,35 +209,6 @@ public class EditEventSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
         });
 
-=======
-        "I add empty participant data and check if error display correctly",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
-          webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
-          webDriverHelpers.checkWebElementContainsText(PARAGRAPH_TEXT, "First name");
-          webDriverHelpers.clickOnWebElementBySelector(PARAGRAPH_TEXT);
-        });
-
-    When(
-        "I add participant first name only and check if error display correctly",
-        () -> {
-          webDriverHelpers.fillInWebElement(PARTICIPANT_FIRST_NAME_INPUT, faker.name().firstName());
-          webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
-          webDriverHelpers.checkWebElementContainsText(PARAGRAPH_TEXT, "Last name");
-          webDriverHelpers.clickOnWebElementBySelector(PARAGRAPH_TEXT);
-        });
-
-    When(
-        "I add participant first and last name only and check if error display correctly",
-        () -> {
-          webDriverHelpers.fillInWebElement(PARTICIPANT_FIRST_NAME_INPUT, faker.name().firstName());
-          webDriverHelpers.fillInWebElement(PARTICIPANT_LAST_NAME_INPUT, faker.name().lastName());
-          webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
-          webDriverHelpers.checkWebElementContainsText(PARAGRAPH_TEXT, "Sex");
-          webDriverHelpers.clickOnWebElementBySelector(PARAGRAPH_TEXT);
-        });
->>>>>>> be5878809da029b60aebd24a9826ba1b7587dc14
     When(
         "I discard changes in participant window",
         () -> {
