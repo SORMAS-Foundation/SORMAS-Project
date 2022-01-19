@@ -81,6 +81,7 @@ public class EditContactSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(CONTACT_PERSON_TAB);
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_PERSON_TAB);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
 
     When(
