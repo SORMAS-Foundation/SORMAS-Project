@@ -310,8 +310,8 @@ public final class RetroProvider {
 		int batchSize =
 			Math.toIntExact(Math.round(getNetworkDownloadSpeedInKbps(context) * ASSUMED_TRANSFER_TIME_IN_SECONDS * 1024 / compressedJsonSizeInBits));
 		// Restrict the batch size to a maximum value to avoid backend queries leading to a timeout
-		batchSize = Math.min(MAX_BATCH_SIZE, Math.max(10, batchSize));
-		batchSize = (int) (10 * Math.sqrt(batchSize / 10f));
+		batchSize = Math.max(10, batchSize);
+		batchSize = Math.min(MAX_BATCH_SIZE, (int) (10 * Math.sqrt(batchSize / 10f)));
 		return batchSize;
 	}
 
