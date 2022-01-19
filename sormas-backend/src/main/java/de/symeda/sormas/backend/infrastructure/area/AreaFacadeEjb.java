@@ -84,8 +84,8 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, Area
 	}
 
 	@Override
-	protected List<Area> findDuplicates(AreaDto dto) {
-		return service.getByName(dto.getName(), true);
+	protected List<Area> findDuplicates(AreaDto dto, boolean includeArchived) {
+		return service.getByName(dto.getName(), includeArchived);
 	}
 
 	@Override
