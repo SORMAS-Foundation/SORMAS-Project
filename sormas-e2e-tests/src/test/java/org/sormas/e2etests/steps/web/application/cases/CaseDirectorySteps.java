@@ -32,6 +32,9 @@ import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.common.*;
 import org.sormas.e2etests.enums.*;
+import org.sormas.e2etests.enums.CaseOrigin;
+import org.sormas.e2etests.enums.CaseOutcome;
+import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -82,10 +85,9 @@ public class CaseDirectorySteps implements En {
               dataOperations.getPartialUuidFromAssociatedLink(apiState.getCreatedCase().getUuid());
           webDriverHelpers.fillAndSubmitInWebElement(
               CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
-          //                  webDriverHelpers.clickOnWebElementBySelector(
-          //                          CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
-          //                  TimeUnit.SECONDS.sleep(3); // needed for table refresh
-          //                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(3);
+          webDriverHelpers.clickOnWebElementBySelector(
+              CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // needed for table refresh
         });
 
     And(
@@ -465,6 +467,15 @@ public class CaseDirectorySteps implements En {
               CASE_DISTRICT_FILTER_COMBOBOX, DistrictsValues.getValueFor(district));
           // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
 
+        });
+
+    Then(
+        "I apply Case origin {string}",
+        (String caseOrigin) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_ORIGIN_FILTER_COMBOBOX, CaseOrigin.getValueFor(caseOrigin));
+          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+          TimeUnit.SECONDS.sleep(3);
         });
 
     And(
