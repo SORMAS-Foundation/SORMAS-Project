@@ -41,7 +41,7 @@ public abstract class AbstractCampaignDataView extends AbstractDetailView<Campai
 	}
 
 	@Override
-	public void refreshMenu(SubMenu menu, String params) {
+	public void refreshMenu(SubMenu menu, String params) { 
 		if (!findReferenceByParams(params)) {
 			return;
 		}
