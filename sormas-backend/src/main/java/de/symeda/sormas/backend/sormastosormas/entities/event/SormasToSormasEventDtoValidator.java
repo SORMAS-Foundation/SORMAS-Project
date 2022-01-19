@@ -13,6 +13,8 @@ import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidato
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.ValidationDirection;
 
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
+
 @Stateless
 @LocalBean
 public class SormasToSormasEventDtoValidator extends SormasToSormasDtoValidator<EventDto, SormasToSormasEventDto, SormasToSormasEventPreview> {
@@ -28,7 +30,7 @@ public class SormasToSormasEventDtoValidator extends SormasToSormasDtoValidator<
 	@Override
 	public ValidationErrors validate(SormasToSormasEventDto sharedData, ValidationDirection direction) {
 		EventDto event = sharedData.getEntity();
-		ValidationErrors validationErrors = new ValidationErrors();
+		ValidationErrors validationErrors = new ValidationErrors(buildEventValidationGroupName(event));
 		validateLocation(event.getEventLocation(), Captions.Event, validationErrors, direction);
 
 		return validationErrors;
@@ -36,7 +38,7 @@ public class SormasToSormasEventDtoValidator extends SormasToSormasDtoValidator<
 
 	@Override
 	public ValidationErrors validatePreview(SormasToSormasEventPreview preview, ValidationDirection direction) {
-		ValidationErrors eventValidationErrors = new ValidationErrors();
+		ValidationErrors eventValidationErrors = new ValidationErrors(buildEventValidationGroupName(preview));
 		validateLocation(preview.getEventLocation(), Captions.Event, eventValidationErrors, direction);
 		return eventValidationErrors;
 	}

@@ -27,7 +27,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.sormastosormas.ValidationHelper;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
-
+// todo SormasToSormasShareable
 public abstract class ShareDataBuilder<DTO extends SormasToSormasShareableDto, T extends AbstractDomainObject, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW extends PseudonymizableDto, VALIDATOR extends SormasToSormasDtoValidator<DTO, SHARED, PREVIEW>> {
 
 	VALIDATOR validator;
@@ -46,7 +46,7 @@ public abstract class ShareDataBuilder<DTO extends SormasToSormasShareableDto, T
 		ValidationErrors errors = validator.validateOutgoing(shared);
 		if (errors.hasError()) {
 			List<ValidationErrors> validationErrors = new ArrayList<>();
-			validationErrors.add(new ValidationErrors(ValidationHelper.buildEventValidationGroupName(data), errors));
+			validationErrors.add(errors);
 			throw new SormasToSormasValidationException(validationErrors);
 		}
 		return shared;
