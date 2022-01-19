@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.common.*;
+import org.sormas.e2etests.enums.CaseOrigin;
 import org.sormas.e2etests.enums.CaseOutcome;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.helpers.AssertHelpers;
@@ -133,6 +134,15 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.selectFromCombobox(
               CASE_OUTCOME_FILTER_COMBOBOX, CaseOutcome.getValueFor(outcomeFilterOption));
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+        });
+
+    Then(
+        "I apply Case origin {string}",
+        (String caseOrigin) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_ORIGIN_FILTER_COMBOBOX, CaseOrigin.getValueFor(caseOrigin));
+          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+          TimeUnit.SECONDS.sleep(3);
         });
 
     And(

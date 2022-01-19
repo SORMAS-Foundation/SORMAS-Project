@@ -13,3 +13,19 @@ Feature: Case filter functionality
     When I search for cases created with the API using Person's name
     Then I apply Disease filter "COVID-19"
     And I check that all displayed cases have "COVID-19" in grid Disease column
+
+  Scenario: Check Cases Origin filter
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    Then I apply Case origin "Point of Entry"
+    And I filter by CaseID on Case directory page
+    And I check that number of displayed cases results is 0
+    When I filter by CaseID on Case directory page
+    Then I apply Case origin "In-Country"
+    And I check that number of displayed cases results is 1
