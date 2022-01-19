@@ -5,24 +5,26 @@ Feature: Tasks functionalities
   Scenario Outline: Check the filter of tasks context
     Given I log in with National User
     And I click on the Tasks button from navbar
-    And I filter Task context by <filterType>
-    And I am checking if filter works correctly for <filterType>
-    And I reset filter
+    Then I filter Task context by <taskContext>
+    And I collect the task column objects
+    And I check displayed task's context is <taskContext>
+    And I reset filter from Tasks Directory
 
     Examples:
-      | filterType     |
-      | Case           |
-      | Contact        |
-      | Event          |
-      | General        |
+      | taskContext |
+      | Case        |
+      | Contact     |
+      | Event       |
+      | General     |
 
   @issue=SORDEV-5688
   Scenario Outline: Check the filter of tasks status
     Given I log in with National User
     And I click on the Tasks button from navbar
     Then I filter Task status <statusType>
-    And I am checking if filter works for <statusType> status
-    And I reset filter
+    And I collect the task column objects
+    And I check displayed task's status is <statusType>
+    And I reset filter from Tasks Directory
 
     Examples:
       | statusType     |

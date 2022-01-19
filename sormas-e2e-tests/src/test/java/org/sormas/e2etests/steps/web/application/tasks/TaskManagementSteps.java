@@ -104,13 +104,19 @@ public class TaskManagementSteps implements En {
         (String filterType) -> {
           webDriverHelpers.selectFromCombobox(TASK_CONTEXT_COMBOBOX, filterType);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(TABLE_ROW);
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
-        "^I am checking if filter works correctly for ([^\"]*)$",
-        (String filterType) -> {
-          webDriverHelpers.checkWebElementContainsText(FILTER_ACTIVE_TASK_CONTEXT, filterType);
+        "^I check displayed task's context is ([^\"]*)$",
+        (String taskContext) -> {
+          taskTableRows.forEach(
+              data -> {
+                softly.assertEquals(
+                    data.getTaskContext(), taskContext, "Task context is not correct displayed");
+              });
+          softly.assertAll();
         });
 
     When(
@@ -118,21 +124,27 @@ public class TaskManagementSteps implements En {
         (String statusType) -> {
           webDriverHelpers.selectFromCombobox(TASK_STATUS_COMBOBOX, statusType);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(TABLE_ROW);
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
-        "^I am checking if filter works for ([^\"]*) status$",
+        "^I check displayed task's status is ([^\"]*)$",
         (String statusType) -> {
-          webDriverHelpers.scrollToElementUntilIsVisible(FILTER_ACTIVE_TASK_STATUS);
-          webDriverHelpers.checkWebElementContainsText(FILTER_ACTIVE_TASK_STATUS, statusType);
+          taskTableRows.forEach(
+              data -> {
+                softly.assertEquals(
+                    data.getTaskStatus(), statusType, "Task status is not correct displayed");
+              });
+          softly.assertAll();
         });
 
     When(
-        "I reset filter",
+        "I reset filter from Tasks Directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER);
           TimeUnit.SECONDS.sleep(5);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(

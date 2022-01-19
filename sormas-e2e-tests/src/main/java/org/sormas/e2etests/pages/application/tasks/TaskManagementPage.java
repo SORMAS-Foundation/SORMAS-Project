@@ -31,6 +31,4 @@ public class TaskManagementPage {
   public static final By TABLE_DATA = By.tagName("td");
   public static final By TASK_CONTEXT_COMBOBOX = By.cssSelector("#taskContext div");
   public static final By TASK_STATUS_COMBOBOX = By.cssSelector("#taskStatus div");
-  public static final By FILTER_ACTIVE_TASK_CONTEXT = By.xpath("//table/tbody/tr[1]/td[3]");
-  public static final By FILTER_ACTIVE_TASK_STATUS = By.xpath("//table/tbody/tr[1]/td[14]");
 }
