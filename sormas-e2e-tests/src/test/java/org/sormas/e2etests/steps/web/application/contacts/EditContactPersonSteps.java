@@ -68,14 +68,6 @@ public class EditContactPersonSteps implements En {
               "Date of birth is not correct");
           softly.assertEquals(aPerson.getSex(), createdContact.getSex(), "Sex is not correct");
           softly.assertEquals(
-              aPerson.getNationalHealthId(),
-              createdContact.getNationalHealthId(),
-              "National health ID is not correct");
-          softly.assertEquals(
-              aPerson.getPassportNumber(),
-              createdContact.getPassportNumber(),
-              "Passport number is not correct");
-          softly.assertEquals(
               aPerson.getEmailAddress(),
               createdContact.getPrimaryEmailAddress(),
               "Primary email address is not correct");
@@ -99,7 +91,6 @@ public class EditContactPersonSteps implements En {
           fillExternalToken(newGeneratedPerson.getExternalToken());
           selectTypeOfOccupation(newGeneratedPerson.getTypeOfOccupation());
           selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
-          selectEducation(newGeneratedPerson.getEducation());
           selectRegion(newGeneratedPerson.getRegion());
           selectDistrict(newGeneratedPerson.getDistrict());
           selectCommunity(newGeneratedPerson.getCommunity());
@@ -115,12 +106,7 @@ public class EditContactPersonSteps implements En {
           selectAreaType(newGeneratedPerson.getAreaType());
           fillContactPersonFirstName(newGeneratedPerson.getContactPersonFirstName());
           fillContactPersonLastName(newGeneratedPerson.getContactPersonLastName());
-          fillCommunityContactPerson(newGeneratedPerson.getCommunityContactPerson());
           fillBirthName(newGeneratedPerson.getBirthName());
-          fillNickName(newGeneratedPerson.getNickname());
-          fillMotherMaidenName(newGeneratedPerson.getMotherMaidenName());
-          fillMotherName(newGeneratedPerson.getMotherName());
-          fillFatherName(newGeneratedPerson.getFatherName());
           fillNamesOfGuardians(newGeneratedPerson.getNameOfGuardians());
         });
 
@@ -143,8 +129,6 @@ public class EditContactPersonSteps implements En {
                   contactInfo.getFirstName(),
                   contactInfo.getLastName(),
                   contactInfo.getUuid(),
-                  CreateNewContactSteps.contact.getPassportNumber(),
-                  CreateNewContactSteps.contact.getNationalHealthId(),
                   CreateNewContactSteps.contact.getPrimaryEmailAddress(),
                   CreateNewContactSteps.contact.getPrimaryPhoneNumber());
         });
@@ -190,10 +174,6 @@ public class EditContactPersonSteps implements En {
 
   private void selectStaffOfArmedForces(String armedForces) {
     webDriverHelpers.selectFromCombobox(STAFF_OF_ARMED_FORCES_COMBOBOX, armedForces);
-  }
-
-  private void selectEducation(String education) {
-    webDriverHelpers.selectFromCombobox(EDUCATION_COMBOBOX, education);
   }
 
   private void selectRegion(String region) {
@@ -256,28 +236,8 @@ public class EditContactPersonSteps implements En {
     webDriverHelpers.fillInWebElement(CONTACT_PERSON_LAST_NAME_INPUT, last);
   }
 
-  private void fillCommunityContactPerson(String name) {
-    webDriverHelpers.fillInWebElement(COMMUNITY_CONTACT_PERSON_INPUT, name);
-  }
-
   private void fillBirthName(String name) {
     webDriverHelpers.fillInWebElement(BIRTH_NAME_INPUT, name);
-  }
-
-  private void fillNickName(String name) {
-    webDriverHelpers.fillInWebElement(NICKNAME_INPUT, name);
-  }
-
-  private void fillMotherMaidenName(String name) {
-    webDriverHelpers.fillInWebElement(MOTHER_MAIDEN_NAME_INPUT, name);
-  }
-
-  private void fillMotherName(String name) {
-    webDriverHelpers.fillInWebElement(MOTHER_NAME_INPUT, name);
-  }
-
-  private void fillFatherName(String name) {
-    webDriverHelpers.fillInWebElement(FATHER_NAME_INPUT, name);
   }
 
   private void fillNamesOfGuardians(String name) {
@@ -292,8 +252,6 @@ public class EditContactPersonSteps implements En {
         .lastName(contactInfo.getLastName())
         .dateOfBirth(contactInfo.getDateOfBirth())
         .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
-        .nationalHealthId(webDriverHelpers.getValueFromWebElement(NATIONAL_HEALTH_ID_INPUT))
-        .passportNumber(webDriverHelpers.getValueFromWebElement(PASSPORT_NUMBER_INPUT))
         .emailAddress(webDriverHelpers.getTextFromPresentWebElement(EMAIL_FIELD))
         .phoneNumber(webDriverHelpers.getTextFromPresentWebElement(PHONE_FIELD))
         .build();

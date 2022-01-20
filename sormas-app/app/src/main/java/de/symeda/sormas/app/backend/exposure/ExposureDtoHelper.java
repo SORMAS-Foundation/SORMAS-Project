@@ -34,7 +34,7 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 	}
 
 	@Override
-	protected Call<List<ExposureDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<ExposureDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 
@@ -183,4 +183,9 @@ public class ExposureDtoHelper extends AdoDtoHelper<Exposure, ExposureDto> {
 		target.setRiskArea(source.getRiskArea());
 		target.setLargeAttendanceNumber(source.getLargeAttendanceNumber());
 	}
+
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
+    }
 }

@@ -34,8 +34,6 @@ public class CreateNewContactPage {
       By.cssSelector(".popupContent #birthdateDD input+div");
   public static final By SEX_COMBOBOX =
       By.cssSelector(".v-window [location='sex'] [role='combobox'] div");
-  public static final By NATIONAL_HEALTH_ID_INPUT = By.cssSelector("#nationalHealthId");
-  public static final By PASSPORT_NUMBER_INPUT = By.cssSelector("#passportNumber");
   public static final By PRIMARY_PHONE_NUMBER_INPUT = By.cssSelector(".v-window #phone");
   public static final By PRIMARY_EMAIL_ADDRESS_INPUT = By.cssSelector(".v-window #emailAddress");
   public static final By DATE_OF_REPORT_INPUT = By.cssSelector(".v-window #reportDateTime input");

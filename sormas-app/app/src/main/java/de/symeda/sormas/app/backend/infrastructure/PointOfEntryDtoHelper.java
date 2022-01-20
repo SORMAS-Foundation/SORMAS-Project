@@ -43,7 +43,7 @@ public class PointOfEntryDtoHelper extends AdoDtoHelper<PointOfEntry, PointOfEnt
 	}
 
 	@Override
-	protected Call<List<PointOfEntryDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<PointOfEntryDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		return RetroProvider.getPointOfEntryFacade().pullAllSince(since);
 	}
 
@@ -94,7 +94,12 @@ public class PointOfEntryDtoHelper extends AdoDtoHelper<PointOfEntry, PointOfEnt
 		}
 	}
 
-	public static PointOfEntryReferenceDto toReferenceDto(PointOfEntry ado) {
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
+    }
+
+    public static PointOfEntryReferenceDto toReferenceDto(PointOfEntry ado) {
 		if (ado == null) {
 			return null;
 		}

@@ -108,16 +108,27 @@ public final class VaadinUiUtil {
 	}
 
 	public static Window showPopupWindow(Component content, String caption) {
-
 		Window window = new Window(caption);
 		window.setModal(true);
-		window.setSizeUndefined();
 		window.setResizable(false);
 		window.center();
 		window.setContent(content);
+		UI.getCurrent().addWindow(window);
+		return window;
+	}
+
+	public static Window showPopupWindowWithWidth(Component content, String caption, Integer width) {
+		Window window = new Window(caption);
+		window.setModal(true);
+		window.setResizable(false);
+		window.center();
+		window.setContent(content);
+		if (width != null) {
+			window.setWidth(width, Unit.PERCENTAGE);
+		}
+
 
 		UI.getCurrent().addWindow(window);
-
 		return window;
 	}
 

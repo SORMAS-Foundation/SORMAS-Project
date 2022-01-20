@@ -41,8 +41,8 @@ public class PrescriptionDtoHelper extends AdoDtoHelper<Prescription, Prescripti
 	}
 
 	@Override
-	protected Call<List<PrescriptionDto>> pullAllSince(long since) throws NoConnectionException {
-		return RetroProvider.getPrescriptionFacade().pullAllSince(since);
+	protected Call<List<PrescriptionDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+		return RetroProvider.getPrescriptionFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
 	@Override
@@ -96,7 +96,12 @@ public class PrescriptionDtoHelper extends AdoDtoHelper<Prescription, Prescripti
 		target.setPseudonymized(source.isPseudonymized());
 	}
 
-	public static PrescriptionReferenceDto toReferenceDto(Prescription ado) {
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return PrescriptionDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+    }
+
+    public static PrescriptionReferenceDto toReferenceDto(Prescription ado) {
 		if (ado == null) {
 			return null;
 		}

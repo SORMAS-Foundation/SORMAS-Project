@@ -107,8 +107,9 @@ public class CentralInfraSyncFacade {
 
 		newDtos.forEach(d -> {
 			logger.info("Processing: {} - {}", d, d.getUuid());
-			facade.saveUnchecked(d, true);
+			facade.saveFromCentral(d);
 		});
+		logger.info("Successfully imported all entities from central");
 		return newestChangeDate;
 	}
 

@@ -189,10 +189,6 @@ public class CreateNewUserSteps implements En {
     webDriverHelpers.selectFromCombobox(AREA_TYPE_COMBOBOX, areaType);
   }
 
-  private void fillCommunityContactPerson(String communityContactPerson) {
-    webDriverHelpers.fillInWebElement(COMMUNITY_CONTACT_PERSON_INPUT, communityContactPerson);
-  }
-
   private void fillGpsLatitude(String gpsLatitude) {
     webDriverHelpers.fillInWebElement(LATITUDE_INPUT, gpsLatitude);
   }

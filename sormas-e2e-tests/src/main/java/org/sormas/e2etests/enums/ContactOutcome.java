@@ -23,8 +23,8 @@ import lombok.Getter;
 
 @Getter
 public enum ContactOutcome {
-  SAME_HOUSEHOLD("the same household"),
-  FOLLOW_UP("follow-up"),
+  SAME_HOUSEHOLD("Live in the same household"),
+  FOLLOW_UP("Under follow-up"),
   CORONAVIRUS("COVID-19"),
   UNCONFIRMED("Unconfirmed contact");
 
