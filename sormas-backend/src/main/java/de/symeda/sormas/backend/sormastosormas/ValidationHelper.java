@@ -44,15 +44,15 @@ public class ValidationHelper {
 	}
 
 	public static ValidationErrorGroup buildCaseValidationGroupName(HasUuid caze) {
-		return buildValidationGroupName(Captions.CaseData, caze);
+		return buildValidationGroupName(Captions.CaseData_uuid, caze);
 	}
 
 	public static ValidationErrorGroup buildContactValidationGroupName(HasUuid contact) {
-		return buildValidationGroupName(Captions.Contact, contact);
+		return buildValidationGroupName(Captions.Contact_uuid, contact);
 	}
 
 	public static ValidationErrorGroup buildSampleValidationGroupName(SampleDto sample) {
-		return buildValidationGroupName(Captions.Sample, sample);
+		return buildValidationGroupName(Captions.Sample_uuid, sample);
 	}
 
 	public static ValidationErrorGroup buildPathogenTestValidationGroupName(PathogenTestDto pathogenTest) {
@@ -60,15 +60,15 @@ public class ValidationHelper {
 	}
 
 	public static ValidationErrorGroup buildEventValidationGroupName(HasUuid event) {
-		return buildValidationGroupName(Captions.Event, event);
+		return buildValidationGroupName(Captions.Event_uuid, event);
 	}
 
 	public static ValidationErrorGroup buildEventParticipantValidationGroupName(HasUuid event) {
-		return buildValidationGroupName(Captions.Event, event);
+		return buildValidationGroupName(Captions.EventParticipant_uuid, event);
 	}
 
 	public static ValidationErrorGroup buildImmunizationValidationGroupName(ImmunizationDto immunization) {
-		return buildValidationGroupName(Captions.Immunization, immunization);
+		return buildValidationGroupName(Captions.Immunization_uuid, immunization);
 	}
 
 	public static ValidationErrorGroup buildLabMessageValidationGroupName(LabMessageDto labMessageDto) {

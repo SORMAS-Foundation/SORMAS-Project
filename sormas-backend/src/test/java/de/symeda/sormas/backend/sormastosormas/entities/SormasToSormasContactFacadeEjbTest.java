@@ -307,7 +307,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 
 		PersonDto contactPerson = creator.createPerson();
-		ContactDto contact = creator.createContact(officer, contactPerson.toReference());
+		ContactDto contact = creator.createContact(rdcf, officer, contactPerson.toReference());
 		SampleDto sharedSample = creator.createSample(contact.toReference(), officer, rdcf.facility, null);
 		SampleDto newSample = createRemoteSample(contact.toReference(), officer, rdcf.facility);
 
