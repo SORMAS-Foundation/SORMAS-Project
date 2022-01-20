@@ -43,14 +43,17 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Event;
 import org.sormas.e2etests.pojo.web.EventGroup;
+import org.sormas.e2etests.pojo.web.EventParticipant;
 import org.sormas.e2etests.pojo.web.Person;
 import org.sormas.e2etests.services.EventGroupService;
+import org.sormas.e2etests.services.EventParticipantService;
 import org.sormas.e2etests.services.EventService;
 import org.sormas.e2etests.state.ApiState;
 
 public class EditEventSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
+  public static EventParticipant participant;
   public static Event collectedEvent;
   public static Event createdEvent;
   public static EventGroup groupEvent;
@@ -63,6 +66,7 @@ public class EditEventSteps implements En {
       EventService eventService,
       Faker faker,
       EventGroupService eventGroupService,
+      EventParticipantService eventParticipant,
       @Named("ENVIRONMENT_URL") String environmentUrl,
       ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
@@ -158,6 +162,61 @@ public class EditEventSteps implements En {
           selectResponsibleDistrict("District11");
           webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(PERSON_DATA_SAVED);
+        });
+
+    When(
+        "I add empty participant data",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
+        });
+
+    When(
+        "I add participant first name only",
+        () -> {
+          participant = eventParticipant.buildGeneratedEventParticipant();
+          fillFirstName(participant.getFirstName());
+        });
+
+    When(
+        "I add participant first and last name only",
+        () -> {
+          participant = eventParticipant.buildGeneratedEventParticipant();
+          fillFirstName(participant.getFirstName());
+          fillLastName(participant.getLastName());
+        });
+
+    When(
+        "I check if error display correctly expecting first name error",
+        () -> {
+          webDriverHelpers.checkWebElementContainsText(ERROR_MESSAGE_TEXT, "First name");
+          webDriverHelpers.clickOnWebElementBySelector(ERROR_MESSAGE_TEXT);
+        });
+
+    When(
+        "I check if error display correctly expecting last name error",
+        () -> {
+          webDriverHelpers.checkWebElementContainsText(ERROR_MESSAGE_TEXT, "Last name");
+          webDriverHelpers.clickOnWebElementBySelector(ERROR_MESSAGE_TEXT);
+        });
+
+    When(
+        "I check if error display correctly expecting sex error",
+        () -> {
+          webDriverHelpers.checkWebElementContainsText(ERROR_MESSAGE_TEXT, "Sex");
+          webDriverHelpers.clickOnWebElementBySelector(ERROR_MESSAGE_TEXT);
+        });
+
+    When(
+        "I save changes in participant window",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+        });
+
+    When(
+        "I discard changes in participant window",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON);
         });
 
     When(
@@ -275,6 +334,14 @@ public class EditEventSteps implements En {
 
   private void selectEventStatus(String eventStatus) {
     webDriverHelpers.clickWebElementByText(EVENT_STATUS_OPTIONS, eventStatus);
+  }
+
+  private void fillFirstName(String firstName) {
+    webDriverHelpers.fillInWebElement(PARTICIPANT_FIRST_NAME_INPUT, firstName);
+  }
+
+  public void fillLastName(String lastName) {
+    webDriverHelpers.fillInWebElement(PARTICIPANT_LAST_NAME_INPUT, lastName);
   }
 
   private void selectResponsibleRegion(String region) {
