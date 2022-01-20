@@ -40,11 +40,14 @@ public interface Validations {
 	String caseClassificationInvalid = "caseClassificationInvalid";
 	String caseMultipleInfectionEnvironments = "caseMultipleInfectionEnvironments";
 	String contactFollowUpUntilDate = "contactFollowUpUntilDate";
+	String contactFollowUpUntilDateSoftValidation = "contactFollowUpUntilDateSoftValidation";
 	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
 	String duplicateEpidNumber = "duplicateEpidNumber";
 	String duplicateExternalToken = "duplicateExternalToken";
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
 	String errorsInForm = "errorsInForm";
+	String eventSubordinateEventFromDateFilterValidation = "eventSubordinateEventFromDateFilterValidation";
+	String eventSuperordinateEventToDateFilterValidation = "eventSuperordinateEventToDateFilterValidation";
 	String exportNoNameSpecified = "exportNoNameSpecified";
 	String externalJournalPersonSynchronizationFailure = "externalJournalPersonSynchronizationFailure";
 	String externalJournalPersonSynchronizationPartial = "externalJournalPersonSynchronizationPartial";
@@ -53,9 +56,11 @@ public interface Validations {
 	String externalJournalPersonValidationEmail = "externalJournalPersonValidationEmail";
 	String externalJournalPersonValidationEmailTaken = "externalJournalPersonValidationEmailTaken";
 	String externalJournalPersonValidationError = "externalJournalPersonValidationError";
+	String externalJournalPersonValidationNoEmail = "externalJournalPersonValidationNoEmail";
 	String externalJournalPersonValidationNoEmailOrPhone = "externalJournalPersonValidationNoEmailOrPhone";
 	String externalJournalPersonValidationPhone = "externalJournalPersonValidationPhone";
 	String externalJournalPersonValidationPhoneTaken = "externalJournalPersonValidationPhoneTaken";
+	String externalJournalPersonValidationSeveralEmails = "externalJournalPersonValidationSeveralEmails";
 	String externalJournalPersonValidationSeveralPhonesOrEmails = "externalJournalPersonValidationSeveralPhonesOrEmails";
 	String externalMessageConfigError = "externalMessageConfigError";
 	String externalMessageConversionError = "externalMessageConversionError";

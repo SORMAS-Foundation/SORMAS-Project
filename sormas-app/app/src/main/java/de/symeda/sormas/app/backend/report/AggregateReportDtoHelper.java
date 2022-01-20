@@ -33,7 +33,7 @@ public class AggregateReportDtoHelper extends AdoDtoHelper<AggregateReport, Aggr
 	}
 
 	@Override
-	protected Call<List<AggregateReportDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<AggregateReportDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		return RetroProvider.getAggregateReportFacade().pullAllSince(since);
 	}
 
@@ -106,4 +106,9 @@ public class AggregateReportDtoHelper extends AdoDtoHelper<AggregateReport, Aggr
 		target.setLabConfirmations(source.getLabConfirmations());
 		target.setDeaths(source.getDeaths());
 	}
+
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return AggregateReportDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+    }
 }

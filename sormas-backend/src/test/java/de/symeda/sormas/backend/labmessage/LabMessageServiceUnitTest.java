@@ -52,4 +52,15 @@ public class LabMessageServiceUnitTest {
 		assertEquals(predicate, result);
 	}
 
+	@Test
+	public void testCreateDefaultFilter() {
+
+		LabMessageService sut = new LabMessageService();
+		when(cb.isFalse(any())).thenReturn(predicate);
+
+		Predicate result = sut.createDefaultFilter(cb, labMessage);
+
+		assertEquals(predicate, result);
+	}
+
 }

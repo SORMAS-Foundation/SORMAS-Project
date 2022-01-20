@@ -31,6 +31,7 @@ import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -272,7 +273,7 @@ public class DirectoryImmunizationService extends AbstractCoreAdoService<Directo
 		if (Boolean.TRUE.equals(criteria.getOnlyPersonsWithOverdueImmunization())) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS), ImmunizationManagementStatus.ONGOING));
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Immunization.END_DATE), new Date()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThan(from.get(Immunization.END_DATE), DateHelper.getStartOfDay(new Date())));
 		}
 		if (criteria.getImmunizationDateType() != null) {
 			Path<Object> path = buildPathForDateFilter(criteria.getImmunizationDateType(), directoryImmunizationQueryContext);

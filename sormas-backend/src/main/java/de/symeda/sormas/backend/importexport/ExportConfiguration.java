@@ -26,6 +26,8 @@ public class ExportConfiguration extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 8901097581909494666L;
 
+	public static final String TABLE_NAME = "exportconfiguration";
+
 	public static final String NAME = "name";
 	public static final String SHARED_TO_PUBLIC = "sharedToPublic";
 	public static final String EXPORT_TYPE = "exportType";

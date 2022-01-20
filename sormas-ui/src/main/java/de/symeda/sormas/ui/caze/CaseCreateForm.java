@@ -23,10 +23,12 @@ import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.style;
+import static de.symeda.sormas.ui.utils.LayoutUtil.divsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.time.Month;
@@ -67,6 +69,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -75,9 +78,11 @@ import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -99,6 +104,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private static final String DIFFERENT_POINT_OF_ENTRY_JURISDICTION = "differentPointOfEntryJurisdiction";
 	private static final String POINT_OF_ENTRY_REGION = "pointOfEntryRegion";
 	private static final String POINT_OF_ENTRY_DISTRICT = "pointOfEntryDistrict";
+	private static final String ENTER_HOME_ADDRESS_NOW = "enterHomeAddressNow";
+	private static final String HOME_ADDRESS_HEADER = "addressHeader";
+	private static final String HOME_ADDRESS_LOC = "homeAddressLoc";
 
 	private ComboBox birthDateDay;
 	private NullableOptionGroup facilityOrHome;
@@ -113,49 +121,65 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBox facilityCombo;
 	private ComboBox pointOfEntryDistrictCombo;
 
+	private LocationEditForm homeAddressForm;
+
+	private final boolean showHomeAddressForm;
+
 	// If a case is created form a TravelEntry, the variable convertedTravelEntry provides the
 	// necessary extra data. This variable is expected to be replaced in the implementation of
 	// issue #5910.
-	private TravelEntryDto convertedTravelEntry;
+	private final TravelEntryDto convertedTravelEntry;
 
 	//@formatter:off
-	private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
-			+ fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER, CaseDataDto.EXTERNAL_ID)
-			+ fluidRow(
-					fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
-					fluidColumn(6, 0,
-							locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.DENGUE_FEVER_TYPE,
-									CaseDataDto.RABIES_TYPE)))
-			+ fluidRowLocs(CaseDataDto.DISEASE_VARIANT, CaseDataDto.DISEASE_VARIANT_DETAILS)
-			+ fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
-			+ fluidRowLocs(CaseDataDto.RESPONSIBLE_REGION, CaseDataDto.RESPONSIBLE_DISTRICT, CaseDataDto.RESPONSIBLE_COMMUNITY)
-			+ fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL)
-			+ fluidRowLocs(DONT_SHARE_WARNING_LOC)
-			+ fluidRowLocs(DIFFERENT_PLACE_OF_STAY_JURISDICTION)
-			+ fluidRowLocs(PLACE_OF_STAY_HEADING_LOC)
-			+ fluidRowLocs(FACILITY_OR_HOME_LOC)
-			+ fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY)
-			+ fluidRowLocs(FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE)
-			+ fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS)
-			+ fluidRowLocs(DIFFERENT_POINT_OF_ENTRY_JURISDICTION)
-			+ fluidRowLocs(POINT_OF_ENTRY_REGION, POINT_OF_ENTRY_DISTRICT)
-			+ fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
-			+ fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME)
-			+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
-			fluidRowLocs(PersonDto.SEX))
-			+ fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
-			+ fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE)
-			+ fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS);
-	//@formatter:on
+    private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
+        + fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER, CaseDataDto.EXTERNAL_ID)
+        + fluidRow(
+        fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
+        fluidColumn(6, 0,
+            locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.DENGUE_FEVER_TYPE,
+                CaseDataDto.RABIES_TYPE)))
+        + fluidRowLocs(CaseDataDto.DISEASE_VARIANT, CaseDataDto.DISEASE_VARIANT_DETAILS)
+        + fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
+        + fluidRowLocs(CaseDataDto.RESPONSIBLE_REGION, CaseDataDto.RESPONSIBLE_DISTRICT, CaseDataDto.RESPONSIBLE_COMMUNITY)
+        + fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL)
+        + fluidRowLocs(DONT_SHARE_WARNING_LOC)
+        + fluidRowLocs(DIFFERENT_PLACE_OF_STAY_JURISDICTION)
+        + fluidRowLocs(PLACE_OF_STAY_HEADING_LOC)
+        + fluidRowLocs(FACILITY_OR_HOME_LOC)
+        + fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY)
+        + fluidRowLocs(FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE)
+        + fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS)
+        + fluidRowLocs(DIFFERENT_POINT_OF_ENTRY_JURISDICTION)
+        + fluidRowLocs(POINT_OF_ENTRY_REGION, POINT_OF_ENTRY_DISTRICT)
+        + fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
+        + fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME)
+        + fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
+        fluidRowLocs(PersonDto.SEX))
+        + fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
+        + fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE)
+        + fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS)
+        + fluidRowLocs(ENTER_HOME_ADDRESS_NOW)
+        + loc(HOME_ADDRESS_HEADER)
+        + divsCss(VSPACE_3, fluidRowLocs(HOME_ADDRESS_LOC));
+    //@formatter:on
+
+	public CaseCreateForm() {
+		this(true, null);
+	}
 
 	public CaseCreateForm(TravelEntryDto convertedTravelEntry) {
+		this(false, convertedTravelEntry);
+	}
 
+	private CaseCreateForm(Boolean showHomeAddressForm, TravelEntryDto convertedTravelEntry) {
 		super(
 			CaseDataDto.class,
 			CaseDataDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			UiFieldAccessCheckers.getNoop());
 		this.convertedTravelEntry = convertedTravelEntry;
+		this.showHomeAddressForm = showHomeAddressForm;
 		addFields();
 		setWidth(720, Unit.PIXELS);
 		hideValidationUntilNextCommit();
@@ -296,7 +320,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		pointOfEntryDistrictCombo.addValueChangeListener(e -> updatePOEs());
 
-		// InfrastructureFieldsHelper.initInfrastructureFields(pointOfEntryRegionCombo, pointOfEntryDistrictCombo, null);
+		if (showHomeAddressForm) {
+			addHomeAddressForm();
+		}
 
 		FieldHelper.setVisibleWhen(
 			differentPlaceOfStayJurisdiction,
@@ -809,6 +835,37 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	public void setDiseaseReadOnly(boolean readOnly) {
 		getField(CaseDataDto.DISEASE).setEnabled(!readOnly);
+	}
+
+	private void addHomeAddressForm() {
+		CheckBox enterHomeAddressNow = new CheckBox(I18nProperties.getCaption(Captions.caseDataEnterHomeAddressNow));
+		enterHomeAddressNow.addStyleName(VSPACE_3);
+		getContent().addComponent(enterHomeAddressNow, ENTER_HOME_ADDRESS_NOW);
+
+		Label addressHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS));
+		addressHeader.addStyleName(H3);
+		getContent().addComponent(addressHeader, HOME_ADDRESS_HEADER);
+		addressHeader.setVisible(false);
+
+		homeAddressForm = new LocationEditForm(
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			UiFieldAccessCheckers.getNoop());
+		homeAddressForm.setValue(new LocationDto());
+		homeAddressForm.setCaption(null);
+		homeAddressForm.setWidthFull();
+
+		getContent().addComponent(homeAddressForm, HOME_ADDRESS_LOC);
+		homeAddressForm.setVisible(false);
+
+		enterHomeAddressNow.addValueChangeListener(e -> {
+			boolean isChecked = (boolean) e.getProperty().getValue();
+			addressHeader.setVisible(isChecked);
+			homeAddressForm.setVisible(isChecked);
+		});
+	}
+
+	public LocationEditForm getHomeAddressForm() {
+		return homeAddressForm;
 	}
 
 	@Override

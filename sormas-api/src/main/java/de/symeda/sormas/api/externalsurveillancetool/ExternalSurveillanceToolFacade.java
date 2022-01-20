@@ -47,4 +47,6 @@ public interface ExternalSurveillanceToolFacade {
 	void deleteCases(List<CaseDataDto> cases) throws ExternalSurveillanceToolException;
 
 	void deleteEvents(List<EventDto> events) throws ExternalSurveillanceToolException;
+
+	String getVersion() throws ExternalSurveillanceToolException;
 }

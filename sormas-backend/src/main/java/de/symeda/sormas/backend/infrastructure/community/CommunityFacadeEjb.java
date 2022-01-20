@@ -44,7 +44,8 @@ import de.symeda.sormas.api.infrastructure.community.CommunityFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -71,7 +72,7 @@ public class CommunityFacadeEjb
 
 	@Inject
 	protected CommunityFacadeEjb(CommunityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(Community.class, CommunityDto.class, service, featureConfiguration, userService);
+		super(Community.class, CommunityDto.class, service, featureConfiguration, userService, Validations.importCommunityAlreadyExists);
 	}
 
 	@Override
@@ -88,16 +89,16 @@ public class CommunityFacadeEjb
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
 		// Need to be in the same order as in the constructor
 		cq.multiselect(
-			root.get(Community.CREATION_DATE),
-			root.get(Community.CHANGE_DATE),
-			root.get(Community.UUID),
-			root.get(Community.ARCHIVED),
+			root.get(AbstractDomainObject.CREATION_DATE),
+			root.get(AbstractDomainObject.CHANGE_DATE),
+			root.get(AbstractDomainObject.UUID),
+			root.get(InfrastructureAdo.ARCHIVED),
 			root.get(Community.NAME),
 			root.get(Community.GROWTH_RATE),
-			region.get(Region.UUID),
+			region.get(AbstractDomainObject.UUID),
 			region.get(Region.NAME),
 			region.get(Region.EXTERNAL_ID),
-			district.get(District.UUID),
+			district.get(AbstractDomainObject.UUID),
 			district.get(District.NAME),
 			district.get(District.EXTERNAL_ID),
 			root.get(Community.EXTERNAL_ID));
@@ -180,21 +181,18 @@ public class CommunityFacadeEjb
 		Root<Community> root = cq.from(Community.class);
 		Join<Community, District> districtJoin = root.join(Community.DISTRICT, JoinType.LEFT);
 
-		Predicate filter = root.get(Community.UUID).in(communities.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
+		Predicate filter = root.get(AbstractDomainObject.UUID).in(communities.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
 		cq.where(filter);
-		cq.multiselect(root.get(Community.UUID), districtJoin.get(District.UUID));
+		cq.multiselect(root.get(AbstractDomainObject.UUID), districtJoin.get(AbstractDomainObject.UUID));
 
 		return em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(e -> (String) e[0], e -> (String) e[1]));
 	}
 
 	@Override
-	public CommunityDto save(CommunityDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
-		return save(dtoToSave, allowMerge, Validations.importCommunityAlreadyExists);
-	}
-
-	@Override
-	protected List<Community> findDuplicates(CommunityDto dto) {
-		return service.getByName(dto.getName(), districtService.getByReferenceDto(dto.getDistrict()), true);
+	protected List<Community> findDuplicates(CommunityDto dto, boolean includeArchived) {
+		// todo this does not work in edge cases (see #6752) as names are not guaranteed to be unique or and collide
+		//  it would be really good to use external ID here but it is not unique in the DB
+		return service.getByName(dto.getName(), districtService.getByReferenceDto(dto.getDistrict()), includeArchived);
 	}
 
 	@Override
@@ -236,10 +234,10 @@ public class CommunityFacadeEjb
 
 		cq.where(
 			cb.and(
-				cb.or(cb.isTrue(districtJoin.get(District.ARCHIVED)), cb.isTrue(regionJoin.get(Region.ARCHIVED))),
-				root.get(Community.UUID).in(communityUuids)));
+				cb.or(cb.isTrue(districtJoin.get(InfrastructureAdo.ARCHIVED)), cb.isTrue(regionJoin.get(InfrastructureAdo.ARCHIVED))),
+				root.get(AbstractDomainObject.UUID).in(communityUuids)));
 
-		cq.select(root.get(Community.ID));
+		cq.select(root.get(AbstractDomainObject.ID));
 
 		return QueryHelper.getFirstResult(em, cq) != null;
 	}
@@ -267,6 +265,7 @@ public class CommunityFacadeEjb
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getDistrict().getRegion()));
 		dto.setArchived(entity.isArchived());
 		dto.setExternalID(entity.getExternalID());
+		dto.setCentrallyManaged(entity.isCentrallyManaged());
 
 		return dto;
 	}
@@ -285,6 +284,7 @@ public class CommunityFacadeEjb
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
+		target.setCentrallyManaged(source.isCentrallyManaged());
 		return target;
 	}
 

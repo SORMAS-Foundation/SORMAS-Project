@@ -118,8 +118,10 @@ public class LabMessagesView extends AbstractView {
 		gridLayout.addComponent(createStatusFilterBar());
 
 		grid = new LabMessageGrid(criteria);
-		gridLayout.addComponent(grid);
+		grid.setDataProviderListener(e -> updateStatusButtons());
 		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
+
+		gridLayout.addComponent(grid);
 
 		gridLayout.setMargin(true);
 		styleGridLayout(gridLayout);
@@ -196,6 +198,13 @@ public class LabMessagesView extends AbstractView {
 		menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
 			ControllerProvider.getLabMessageController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 		}, true));
+		menuBarItems.add(
+			new MenuBarHelper.MenuBarItem(
+				I18nProperties.getCaption(Captions.bulkEditAssignee),
+				VaadinIcons.ELLIPSIS_H,
+				mi -> ControllerProvider.getLabMessageController()
+					.assignAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
+				true));
 
 		MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);
 		bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());

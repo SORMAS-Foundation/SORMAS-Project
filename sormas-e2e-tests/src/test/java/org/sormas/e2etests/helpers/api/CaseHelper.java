@@ -18,6 +18,8 @@
 package org.sormas.e2etests.helpers.api;
 
 import static org.sormas.e2etests.constants.api.Endpoints.CASES_PATH;
+import static org.sormas.e2etests.constants.api.Endpoints.POST_PATH;
+import static org.sormas.e2etests.constants.api.Endpoints.UUIDS_PATH;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.Method;
@@ -25,19 +27,25 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.pojo.api.Case;
 import org.sormas.e2etests.pojo.api.Request;
+import org.sormas.e2etests.state.ApiState;
 
+@Slf4j
 public class CaseHelper {
 
   private final RestAssuredClient restAssuredClient;
   private final ObjectMapper objectMapper;
+  private final ApiState apiState;
 
   @Inject
-  public CaseHelper(RestAssuredClient restAssuredClient, ObjectMapper objectMapper) {
+  public CaseHelper(
+      RestAssuredClient restAssuredClient, ObjectMapper objectMapper, ApiState apiState) {
     this.restAssuredClient = restAssuredClient;
     this.objectMapper = objectMapper;
+    this.apiState = apiState;
   }
 
   public void postCases(String specificPath, String jsonBody) {
@@ -66,5 +74,26 @@ public class CaseHelper {
             .path(CASES_PATH + "push")
             .body(out.toString())
             .build());
+  }
+
+  @SneakyThrows
+  public void createMultipleCases(List<Case> casesList) {
+    final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    List<Case> personBody = casesList;
+    objectMapper.writeValue(out, personBody);
+    restAssuredClient.sendRequest(
+        Request.builder()
+            .method(Method.POST)
+            .body(out.toString())
+            .path(CASES_PATH + POST_PATH)
+            .build());
+  }
+
+  public void getAllCasesUuid() {
+    restAssuredClient.sendRequest(
+        Request.builder().method(Method.GET).path(CASES_PATH + UUIDS_PATH).build());
+    int totalPersons =
+        apiState.getResponse().getBody().asString().replaceAll("\"", "").split(",").length;
+    log.info("Total cases: " + totalPersons);
   }
 }

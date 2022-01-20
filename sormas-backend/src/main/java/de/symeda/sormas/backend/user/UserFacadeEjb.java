@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -54,12 +55,15 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskContextIndex;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceWithTaskNumbersDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRole.UserRoleValidationException;
@@ -74,6 +78,7 @@ import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
@@ -97,6 +102,7 @@ import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
@@ -130,6 +136,8 @@ public class UserFacadeEjb implements UserFacade {
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
 	@EJB
+	private TaskFacadeEjb.TaskFacadeEjbLocal taskFacade;
+	@EJB
 	private CaseService caseService;
 	@EJB
 	private ContactService contactService;
@@ -139,6 +147,8 @@ public class UserFacadeEjb implements UserFacade {
 	private TravelEntryService travelEntryService;
 	@EJB
 	private PointOfEntryService pointOfEntryService;
+	@EJB
+	private UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	@Inject
 	private Event<UserCreateEvent> userCreateEvent;
 	@Inject
@@ -214,6 +224,19 @@ public class UserFacadeEjb implements UserFacade {
 		return userService.getReferenceList(toUuidList(regionRef), null, false, true, true, assignableRoles)
 			.stream()
 			.map(f -> toReferenceDto(f))
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<UserReferenceDto> getUsersByRegionAndRight(RegionReferenceDto region, UserRight userRight) {
+
+		List<UserRole> userRoles = Arrays.stream(UserRole.values())
+			.filter(r -> userRoleConfigFacade.getEffectiveUserRights(r).contains(userRight))
+			.collect(Collectors.toList());
+
+		return userService.getReferenceList(region == null ? null : Arrays.asList(region.getUuid()), null, null, false, true, true, userRoles)
+			.stream()
+			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
 
@@ -327,6 +350,43 @@ public class UserFacadeEjb implements UserFacade {
 			.collect(Collectors.toList());
 	}
 
+	private List<UserReferenceDto> getAssignableUsersBasedOnContext(TaskContextIndex taskContextIndex) {
+		List<UserReferenceDto> availableUsers = new ArrayList<>();
+		if (taskContextIndex.getUuid() == null) {
+			taskContextIndex = new TaskContextIndex(TaskContext.GENERAL);
+		}
+		switch (taskContextIndex.getTaskContext()) {
+		case CASE:
+			availableUsers.addAll(getUsersHavingCaseInJurisdiction(new CaseReferenceDto(taskContextIndex.getUuid())));
+			break;
+		case CONTACT:
+			availableUsers.addAll(getUsersHavingContactInJurisdiction(new ContactReferenceDto(taskContextIndex.getUuid())));
+			break;
+		case EVENT:
+			availableUsers.addAll(getUsersHavingEventInJurisdiction(new EventReferenceDto(taskContextIndex.getUuid())));
+			break;
+		case TRAVEL_ENTRY:
+			availableUsers.addAll(getUsersHavingTravelEntryInJurisdiction(new TravelEntryReferenceDto(taskContextIndex.getUuid())));
+			break;
+		default:
+			availableUsers.addAll(getAllUserRefs(false));
+
+		}
+		return availableUsers;
+	}
+
+	public List<UserReferenceWithTaskNumbersDto> getAssignableUsersWithTaskNumbers(TaskContextIndex taskContextIndex) {
+
+		List<UserReferenceDto> availableUsers = getAssignableUsersBasedOnContext(taskContextIndex);
+		Map<String, Long> userTaskCounts =
+			taskFacade.getPendingTaskCountPerUser(availableUsers.stream().map(UserReferenceDto::getUuid).collect(Collectors.toList()));
+
+		return availableUsers.stream()
+			.map(userReference -> new UserReferenceWithTaskNumbersDto(userReference, userTaskCounts.get(userReference.getUuid())))
+			.collect(Collectors.toList());
+
+	}
+
 	@Override
 	public List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficerRef, UserRole... userRoles) {
 
@@ -417,7 +477,7 @@ public class UserFacadeEjb implements UserFacade {
 		final Root<User> root = cq.from(User.class);
 		cq.select(root);
 
-		cq.where(cb.exists(subqueryBuilder.buildSubquery(cb, cq, root)));
+		cq.where(CriteriaBuilderHelper.and(cb, cb.isTrue(root.get(User.ACTIVE)), cb.exists(subqueryBuilder.buildSubquery(cb, cq, root))));
 
 		cq.distinct(true);
 		cq.orderBy(cb.asc(root.get(User.ID)));

@@ -7919,6 +7919,9 @@ ALTER TABLE vaccination_history DROP COLUMN vaccinemanufacturerdetails;
 INSERT INTO schema_version (version_number, comment) VALUES (405, 'Vaccination drop details columns #5843');
 
 -- 2021-09-03 Vaccination refactoring #5909
+/* Fix event participants without a missing reporting user before starting the migration (#7531) */
+UPDATE eventparticipant SET reportinguser_id = (SELECT reportinguser_id FROM events WHERE events.id = eventparticipant.event_id) WHERE reportinguser_id IS NULL;
+
 /* Vaccination refactoring */
 /* Step 1: Create a temporary table containing the latest vaccination information for each disease of each person */
 DROP TABLE IF EXISTS tmp_vaccinated_entities;
@@ -8108,7 +8111,7 @@ UNION
              LEFT JOIN events ON eventparticipant.event_id = events.id
              LEFT JOIN location ON events.eventlocation_id = location.id
              LEFT JOIN vaccinationinfo ON eventparticipant.vaccinationinfo_id = vaccinationinfo.id
-    WHERE vaccinationinfo.vaccination = 'VACCINATED' AND eventparticipant.deleted = false
+    WHERE vaccinationinfo.vaccination = 'VACCINATED' AND eventparticipant.deleted = false AND events.disease IS NOT NULL
     ORDER BY person.id, events.disease, relevancedate DESC
 );
 
@@ -8198,6 +8201,7 @@ UNION
              LEFT JOIN vaccinationinfo ON eventparticipant.vaccinationinfo_id = vaccinationinfo.id
     WHERE vaccinationinfo.vaccination = 'VACCINATED'
       AND eventparticipant.deleted = false
+      AND events.disease IS NOT NULL
 
     ORDER BY person.id, events.disease, relevancedate ASC
 );
@@ -9392,5 +9396,406 @@ ALTER TABLE testreport ADD COLUMN preliminary boolean;
 ALTER TABLE testreport_history ADD COLUMN preliminary boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (431, '[DEMIS2SORMAS] Handle New Profile: Preliminary Test Results #5551');
+
+-- 2021-12-03 [S2S] Implement outgoing S2S entity validation #7070
+ALTER TABLE areas ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE areas_history ADD COLUMN centrally_managed boolean DEFAULT false;
+
+ALTER TABLE community ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE continent ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE country ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE district ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE facility ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE pointofentry ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE region ADD COLUMN centrally_managed boolean DEFAULT false;
+ALTER TABLE subcontinent ADD COLUMN centrally_managed boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (432, ' [S2S] Implement outgoing S2S entity validation #7070');
+
+-- 2021-12-16 Fill missing reporting users of event participants #7531
+UPDATE eventparticipant SET reportinguser_id = (SELECT reportinguser_id FROM events WHERE events.id = eventparticipant.event_id) WHERE reportinguser_id IS NULL;
+ALTER TABLE eventparticipant ALTER COLUMN reportinguser_id SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (433, 'Fill missing reporting users of event participants #7531');
+
+-- 2021-12-07 Added assignee to labmassage #7310
+ALTER TABLE labmessage ADD COLUMN assignee_id bigint;
+ALTER TABLE labmessage_history ADD COLUMN assignee_id bigint;
+ALTER TABLE labmessage ADD CONSTRAINT fk_labmessage_assignee_id FOREIGN KEY (assignee_id) REFERENCES users(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (434, 'Added assignee to labmassage #7310');
+
+-- 2022-01-03 Add reinfection details and status #7182
+
+ALTER TABLE cases ADD COLUMN reinfectionstatus varchar(255);
+ALTER TABLE cases ADD COLUMN reinfectiondetails jsonb;
+ALTER TABLE cases_history ADD COLUMN reinfectionstatus varchar(255);
+ALTER TABLE cases_history ADD COLUMN reinfectiondetails jsonb;
+
+INSERT INTO schema_version (version_number, comment) VALUES (435, 'Add reinfection details and status #7182');
+
+-- 2022-01-18 Set timestamp precision to milliseconds #7303
+
+ALTER TABLE action ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE action ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE action_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE action_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE activityascase ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE activityascase ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE activityascase_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE activityascase_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE additionaltest ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE additionaltest ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE additionaltest_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE additionaltest_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE aggregatereport ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE aggregatereport ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE aggregatereport_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE aggregatereport_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE areas ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE areas ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE areas_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE areas_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE campaigndiagramdefinition ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE campaigndiagramdefinition ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE campaigndiagramdefinition_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE campaigndiagramdefinition_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE campaignformdata ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE campaignformdata ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE campaignformdata_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE campaignformdata_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE campaignformmeta ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE campaignformmeta ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE campaignformmeta_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE campaignformmeta_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE campaigns ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE campaigns ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE campaigns_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE campaigns_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE cases ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE cases ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE cases_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE cases_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE clinicalcourse ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE clinicalcourse ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE clinicalcourse_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE clinicalcourse_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE clinicalvisit ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE clinicalvisit ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE clinicalvisit_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE clinicalvisit_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE community ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE community ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE contact ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE contact ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE contact_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE contact_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE continent ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE continent ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE country ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE country ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE customizableenumvalue ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE customizableenumvalue ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE customizableenumvalue_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE customizableenumvalue_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE diseaseconfiguration ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE diseaseconfiguration ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE diseaseconfiguration_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE diseaseconfiguration_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE district ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE district ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE documents ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE documents ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE epidata ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE epidata ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE epidata_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE epidata_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE eventgroups ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE eventgroups ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE eventgroups_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE eventgroups_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE eventparticipant ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE eventparticipant ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE eventparticipant_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE eventparticipant_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE events ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE events ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE events_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE events_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE exportconfiguration ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE exportconfiguration ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE exportconfiguration_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE exportconfiguration_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE exposures ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE exposures ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE exposures_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE exposures_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE externalshareinfo ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE externalshareinfo ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE facility ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE facility ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE featureconfiguration ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE featureconfiguration ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE featureconfiguration_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE featureconfiguration_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE healthconditions ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE healthconditions ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE healthconditions_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE healthconditions_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE hospitalization ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE hospitalization ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE hospitalization_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE hospitalization_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE immunization ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE immunization ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE immunization_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE immunization_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE labmessage ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE labmessage ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE labmessage_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE labmessage_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE location ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE location ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE location_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE location_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE manualmessagelog ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE manualmessagelog ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE maternalhistory ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE maternalhistory ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE maternalhistory_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE maternalhistory_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE outbreak ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE outbreak ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE outbreak_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE outbreak_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE pathogentest ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE pathogentest ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE pathogentest_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE pathogentest_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE person ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE person ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE person_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE person_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE personcontactdetail ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE personcontactdetail ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE personcontactdetail_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE personcontactdetail_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE pointofentry ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE pointofentry ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE populationdata ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE populationdata ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE porthealthinfo ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE porthealthinfo ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE porthealthinfo_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE porthealthinfo_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE prescription ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE prescription ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE prescription_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE prescription_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE previoushospitalization ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE previoushospitalization ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE previoushospitalization_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE previoushospitalization_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE region ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE region ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE samples ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE samples ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE samples_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE samples_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE sharerequestinfo ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE sharerequestinfo ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE sharerequestinfo_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE sharerequestinfo_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE sormastosormasorigininfo ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE sormastosormasorigininfo ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE sormastosormasorigininfo_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE sormastosormasorigininfo_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE sormastosormasshareinfo ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE sormastosormasshareinfo ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE sormastosormasshareinfo_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE sormastosormasshareinfo_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE sormastosormassharerequest ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE sormastosormassharerequest ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE sormastosormassharerequest_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE sormastosormassharerequest_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE subcontinent ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE subcontinent ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE surveillancereports ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE surveillancereports ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE surveillancereports_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE surveillancereports_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE symptoms ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE symptoms ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE symptoms_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE symptoms_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE systemevent ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE systemevent ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE task ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE task ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE task_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE task_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE testreport ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE testreport ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE testreport_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE testreport_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE therapy ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE therapy ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE therapy_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE therapy_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE travelentry ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE travelentry ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE travelentry_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE travelentry_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE treatment ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE treatment ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE treatment_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE treatment_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE userrolesconfig ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE userrolesconfig ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE userrolesconfig_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE userrolesconfig_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE users ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE users ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE users_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE users_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE vaccination ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE vaccination ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE vaccination_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE vaccination_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE vaccinationinfo_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE vaccinationinfo_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE visit ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE visit ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE visit_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE visit_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE weeklyreport ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE weeklyreport ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE weeklyreport_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE weeklyreport_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE weeklyreportentry ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE weeklyreportentry ALTER COLUMN creationdate TYPE timestamp(3);
+
+ALTER TABLE weeklyreportentry_history ALTER COLUMN changedate TYPE timestamp(3);
+ALTER TABLE weeklyreportentry_history ALTER COLUMN creationdate TYPE timestamp(3);
+
+INSERT INTO schema_version (version_number, comment) VALUES (436, 'Set timestamp precision to milliseconds #7303');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

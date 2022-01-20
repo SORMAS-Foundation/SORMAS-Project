@@ -37,6 +37,8 @@ public interface SampleFacade {
 
 	List<SampleIndexDto> getIndexList(SampleCriteria sampleCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
+	List<SampleListEntryDto> getEntriesList(SampleCriteria sampleCriteria, Integer first, Integer max);
+
 	Page<SampleIndexDto> getIndexPage(SampleCriteria sampleCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
 	List<SampleExportDto> getExportList(SampleCriteria sampleCriteria, Collection<String> selectedRows, int first, int max);
@@ -54,6 +56,8 @@ public interface SampleFacade {
 	SampleReferenceDto getReferredFrom(String sampleUuid);
 
 	List<String> getAllActiveUuids();
+
+	List<SampleDto> getAllActiveSamplesAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
 
 	List<SampleDto> getByUuids(List<String> uuids);
 

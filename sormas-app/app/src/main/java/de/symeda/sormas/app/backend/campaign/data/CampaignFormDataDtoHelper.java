@@ -44,7 +44,7 @@ public class CampaignFormDataDtoHelper extends AdoDtoHelper<CampaignFormData, Ca
 	}
 
 	@Override
-	protected Call<List<CampaignFormDataDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<CampaignFormDataDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		return RetroProvider.getCampaignFormDataFacade().pullAllSince(since);
 	}
 
@@ -81,4 +81,9 @@ public class CampaignFormDataDtoHelper extends AdoDtoHelper<CampaignFormData, Ca
 		target.setCommunity(CommunityDtoHelper.toReferenceDto(source.getCommunity()));
 		target.setCreatingUser(UserDtoHelper.toReferenceDto(source.getCreatingUser()));
 	}
+
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
+    }
 }

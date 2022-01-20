@@ -21,11 +21,21 @@ package org.sormas.e2etests.services;
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
+import java.util.Random;
 import java.util.UUID;
+import org.sormas.e2etests.enums.CommunityValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.GenderValues;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.pojo.web.Contact;
 
 public class ContactService {
   private final Faker faker;
+  private static Random random = new Random();
+
+  private String firstName;
+  private String lastName;
+  private final String emailDomain = "@CONTACT.com";
 
   @Inject
   public ContactService(Faker faker) {
@@ -33,24 +43,29 @@ public class ContactService {
   }
 
   public Contact buildGeneratedContact() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
     return Contact.builder()
-        .firstName(faker.name().firstName())
-        .lastName(faker.name().lastName())
-        .dateOfBirth(LocalDate.of(1904, 3, 7))
-        .sex("Male")
-        .nationalHealthId(UUID.randomUUID().toString())
-        .passportNumber(String.valueOf(System.currentTimeMillis()))
-        .primaryEmailAddress(faker.internet().emailAddress())
+        .firstName(firstName)
+        .lastName(lastName)
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGender())
+        .primaryEmailAddress(firstName + "." + lastName + emailDomain)
         .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
         .returningTraveler("NO")
-        .reportDate(LocalDate.now())
+        .reportDate(LocalDate.now().minusDays(random.nextInt(10)))
         .diseaseOfSourceCase("COVID-19")
         .caseIdInExternalSystem(UUID.randomUUID().toString())
-        .dateOfLastContact(LocalDate.now())
+        .dateOfLastContact(LocalDate.now().minusDays(random.nextInt(10)))
         .caseOrEventInformation("Automated test dummy description")
-        .responsibleRegion("Voreingestellte Bundesl\u00E4nder")
-        .responsibleDistrict("Voreingestellter Landkreis")
-        .responsibleCommunity("Voreingestellte Gemeinde")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
         .additionalInformationOnContactType("Automated test dummy description")
         .typeOfContact("Touched fluid of source case")
         .contactCategory("Low risk contact")

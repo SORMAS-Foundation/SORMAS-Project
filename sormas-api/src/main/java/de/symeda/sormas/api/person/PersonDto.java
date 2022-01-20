@@ -56,6 +56,8 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class PersonDto extends PseudonymizableDto {
 
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 42953;
+
 	public static final String I18N_PREFIX = "Person";
 	public static final String SEX = "sex";
 	public static final String FIRST_NAME = "firstName";
@@ -149,18 +151,22 @@ public class PersonDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@HideForCountries
 	private String nickname;
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
 	private String mothersName;
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
 	private String mothersMaidenName;
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
 	private String fathersName;
 	@PersonalData
 	@SensitiveData
@@ -291,9 +297,11 @@ public class PersonDto extends PseudonymizableDto {
 	@Valid
 	private LocationDto address;
 
+	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
 	private EducationType educationType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
 	private String educationDetails;
 
 	private OccupationType occupationType;
@@ -305,9 +313,11 @@ public class PersonDto extends PseudonymizableDto {
 	private ArmedForcesRelationType armedForcesRelationType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
 	private String passportNumber;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	@HideForCountries
 	private String nationalHealthId;
 	@Valid
 	private List<LocationDto> addresses = new ArrayList<>();

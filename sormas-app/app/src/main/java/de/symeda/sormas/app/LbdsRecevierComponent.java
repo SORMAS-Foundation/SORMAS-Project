@@ -15,12 +15,11 @@ import org.hzi.sormas.lbds.messaging.LbdsResponseIntent;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import android.app.IntentService;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
-
-import androidx.annotation.Nullable;
 
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -29,21 +28,15 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.lbds.LbdsSyncDao;
 import de.symeda.sormas.app.rest.RetroProvider;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
-public class LbdsRecevierComponent extends IntentService {
+public class LbdsRecevierComponent extends BroadcastReceiver {
 
-	/**
-	 * Creates an IntentService. Invoked by your subclass's constructor.
-	 */
 	public LbdsRecevierComponent() {
-		super("LbdsRecevierComponent");
+		super();
 	}
 
 	@Override
-	protected void onHandleIntent(@Nullable Intent intent) {
+	public void onReceive(Context context, Intent intent) {
 		Log.i("SORMAS_LBDS", "==========================");
 		final String intentType = intent.getStringExtra(Constants.INTENT_TYPE);
 		Log.i("SORMAS_LBDS", "Received LBDS intent: " + intentType);
@@ -61,9 +54,9 @@ public class LbdsRecevierComponent extends IntentService {
 				}
 
 				if (methodFromResponse.url.endsWith("persons/push")) {
-					processLbdsResponsePersons(httpContainerResponse);
+					processLbdsResponsePersons(context, httpContainerResponse);
 				} else if (methodFromResponse.url.endsWith("cases/push")) {
-					processLbdsResponseCases(httpContainerResponse);
+					processLbdsResponseCases(context, httpContainerResponse);
 				} else {
 					throw new IllegalArgumentException("Unknown HTTP request URL " + methodFromResponse.url);
 				}
@@ -83,8 +76,7 @@ public class LbdsRecevierComponent extends IntentService {
 				String aesSecret = kexToSormasIntent.getAesSecret(ConfigProvider.getLbdsSormasPrivateKey());
 				ConfigProvider.setLbdsAesSecret(aesSecret);
 
-				Toast.makeText(getApplicationContext(), getResources().getString(R.string.info_lbds_key_exchange_successful), Toast.LENGTH_LONG)
-					.show();
+				Toast.makeText(context, context.getResources().getString(R.string.info_lbds_key_exchange_successful), Toast.LENGTH_LONG).show();
 
 				break;
 			default:
@@ -94,7 +86,7 @@ public class LbdsRecevierComponent extends IntentService {
 		Log.i("SORMAS_LBDS", "==========================");
 	}
 
-	private void processLbdsResponsePersons(HttpContainer httpContainerResponse) {
+	private void processLbdsResponsePersons(Context context, HttpContainer httpContainerResponse) {
 
 		HttpMethod methodFromResponse = httpContainerResponse.getMethod();
 		HttpResult resultFromResponse = httpContainerResponse.getResult();
@@ -135,13 +127,13 @@ public class LbdsRecevierComponent extends IntentService {
 
 		Toast
 			.makeText(
-				getApplicationContext(),
-				String.format(getResources().getString(R.string.lbds_response_persons), successful, ignored),
+				context,
+				String.format(context.getResources().getString(R.string.lbds_response_persons), successful, ignored),
 				Toast.LENGTH_LONG)
 			.show();
 	}
 
-	private void processLbdsResponseCases(HttpContainer httpContainerResponse) {
+	private void processLbdsResponseCases(Context context, HttpContainer httpContainerResponse) {
 
 		HttpMethod methodFromResponse = httpContainerResponse.getMethod();
 		HttpResult resultFromResponse = httpContainerResponse.getResult();
@@ -180,25 +172,7 @@ public class LbdsRecevierComponent extends IntentService {
 			}
 		}
 
-		Toast
-			.makeText(
-				getApplicationContext(),
-				String.format(getResources().getString(R.string.lbds_response_cases), successful, ignored),
-				Toast.LENGTH_LONG)
+		Toast.makeText(context, String.format(context.getResources().getString(R.string.lbds_response_cases), successful, ignored), Toast.LENGTH_LONG)
 			.show();
 	}
-
-	private static class PushResultCallback implements Callback<List<PushResult>> {
-
-		@Override
-		public void onResponse(Call<List<PushResult>> call, Response<List<PushResult>> response) {
-
-		}
-
-		@Override
-		public void onFailure(Call<List<PushResult>> call, Throwable t) {
-
-		}
-	}
-
 }

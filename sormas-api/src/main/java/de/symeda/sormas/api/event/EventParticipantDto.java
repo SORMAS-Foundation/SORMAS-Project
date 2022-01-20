@@ -18,14 +18,13 @@ import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
@@ -34,11 +33,12 @@ import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 
 public class EventParticipantDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -8725734604520880084L;
+
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 46200;
 
 	public static final String I18N_PREFIX = "EventParticipant";
 
@@ -51,6 +51,7 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 	public static final String DISTRICT = "district";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
+	@Required
 	private UserReferenceDto reportingUser;
 	@Required
 	private EventReferenceDto event;
@@ -64,10 +65,6 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 	private CaseReferenceDto resultingCase; // read-only
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
-
-	@Valid
-	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
-	private boolean ownershipHandedOver;
 
 	@Diseases({
 		Disease.AFP,
@@ -98,8 +95,8 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 		PersonDto person,
 		EventReferenceDto event,
 		UserReferenceDto reportingUser) {
-		EventParticipantDto eventParticipantDto = build(event, reportingUser);
 
+		EventParticipantDto eventParticipantDto = build(event, reportingUser);
 		eventParticipantDto.setPerson(person);
 		eventParticipantDto.setResultingCase(caseReferenceDto);
 
@@ -108,16 +105,17 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 
 	public static EventParticipantDto buildFromPerson(PersonDto person, EventReferenceDto event, UserReferenceDto reportingUser) {
 		EventParticipantDto eventParticipantDto = build(event, reportingUser);
-
 		eventParticipantDto.setPerson(person);
 
 		return eventParticipantDto;
 	}
 
+	@Override
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
 	}
 
+	@Override
 	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
 	}
@@ -175,26 +173,6 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 
 	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
-	}
-
-	@Override
-	@ImportIgnore
-	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
-		return sormasToSormasOriginInfo;
-	}
-
-	@Override
-	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
-		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
-	}
-
-	@Override
-	public boolean isOwnershipHandedOver() {
-		return ownershipHandedOver;
-	}
-
-	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
-		this.ownershipHandedOver = ownershipHandedOver;
 	}
 
 	public VaccinationStatus getVaccinationStatus() {

@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.i18n.Captions;
@@ -85,8 +84,6 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return convertToDto(travelEntryService.getByUuid(uuid), pseudonymizer);
 	}
-
-
 
 	@Override
 	public TravelEntryReferenceDto getReferenceByUuid(String uuid) {

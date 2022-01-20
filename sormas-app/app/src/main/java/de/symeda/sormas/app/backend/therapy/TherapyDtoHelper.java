@@ -37,7 +37,7 @@ public class TherapyDtoHelper extends AdoDtoHelper<Therapy, TherapyDto> {
 	}
 
 	@Override
-	protected Call<List<TherapyDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<TherapyDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 
@@ -61,7 +61,12 @@ public class TherapyDtoHelper extends AdoDtoHelper<Therapy, TherapyDto> {
 		// No fields in Therapy
 	}
 
-	public static TherapyReferenceDto toReferenceDto(Therapy ado) {
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
+    }
+
+    public static TherapyReferenceDto toReferenceDto(Therapy ado) {
 		if (ado == null) {
 			return null;
 		}
