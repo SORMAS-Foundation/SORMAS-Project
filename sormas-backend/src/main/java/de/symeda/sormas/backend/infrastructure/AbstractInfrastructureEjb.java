@@ -44,14 +44,17 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 
 	public DTO save(DTO dto, boolean allowMerge) {
 		checkInfraDataLocked();
-		return doSave(dto, allowMerge, duplicateErrorMessageProperty);
+		// default behaviour is to include archived data and check for the change date
+		return doSave(dto, allowMerge, true, true, duplicateErrorMessageProperty);
 	}
 
-	public DTO saveUnchecked(DTO dtoToSave, boolean allowMerge) {
-		return doSave(dtoToSave, allowMerge, duplicateErrorMessageProperty);
+	public DTO saveFromCentral(DTO dtoToSave) {
+		// merge, but do not include archived data (we consider archive data to be completely broken)
+		// also ignore change date as merging will always cause the date to be newer to what is present in central
+		return doSave(dtoToSave, true, false, false, duplicateErrorMessageProperty);
 	}
 
-	protected DTO doSave(DTO dtoToSave, boolean allowMerge, String duplicateErrorMessageProperty) {
+	protected DTO doSave(DTO dtoToSave, boolean allowMerge, boolean includeArchived, boolean checkChangeDate, String duplicateErrorMessageProperty) {
 		if (dtoToSave == null) {
 			return null;
 		}
@@ -74,16 +77,16 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 		}
 
 		if (existingEntity == null) {
-			List<ADO> duplicates = findDuplicates(dtoToSave);
+			List<ADO> duplicates = findDuplicates(dtoToSave, includeArchived);
 			if (!duplicates.isEmpty()) {
 				if (allowMerge) {
-					return mergeAndPersist(dtoToSave, duplicates);
+					return mergeAndPersist(dtoToSave, duplicates, checkChangeDate);
 				} else {
 					throw new ValidationRuntimeException(I18nProperties.getValidationError(duplicateErrorMessageProperty));
 				}
 			}
 		}
-		return persistEntity(dtoToSave, existingEntity);
+		return persistEntity(dtoToSave, existingEntity, checkChangeDate);
 	}
 
 	@Override

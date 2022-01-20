@@ -203,8 +203,8 @@ public class SubcontinentFacadeEjb
 	}
 
 	@Override
-	protected List<Subcontinent> findDuplicates(SubcontinentDto dto) {
-		return service.getByDefaultName(dto.getDefaultName(), true);
+	protected List<Subcontinent> findDuplicates(SubcontinentDto dto, boolean includeArchived) {
+		return service.getByDefaultName(dto.getDefaultName(), includeArchived);
 	}
 
 	public SubcontinentDto toDto(Subcontinent entity) {

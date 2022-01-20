@@ -13,6 +13,8 @@ import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidato
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.ValidationDirection;
 
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildImmunizationValidationGroupName;
+
 @Stateless
 @LocalBean
 public class SormasToSormasImmunizationDtoValidator
@@ -28,9 +30,8 @@ public class SormasToSormasImmunizationDtoValidator
 
 	@Override
 	public ValidationErrors validate(SormasToSormasImmunizationDto sharedData, ValidationDirection direction) {
-
-		ValidationErrors validationErrors = new ValidationErrors();
 		final ImmunizationDto im = sharedData.getEntity();
+		ValidationErrors validationErrors = new ValidationErrors(buildImmunizationValidationGroupName(im));
 
 		final String groupNameTag = Captions.Immunization;
 		infraValidator.validateCountry(im.getCountry(), groupNameTag, validationErrors, im::setCountry, direction);
