@@ -41,26 +41,7 @@ Feature: Create events
     And I search for specific event in event directory
     And I click on the searched event
     Then I check the created data is correctly displayed in event edit page
-
-  @issue=SORDEV-5475
-  Scenario: Add a participant to an event
-    Given I log in with National User
-    And I click on the Events button from navbar
-    And I click on the NEW EVENT button
-    And I create a new event with status EVENT
-    And I click on the Events button from navbar
-    And I search for specific event in event directory
-    And I click on the searched event
-    And I collect the UUID displayed on Edit event page
-    Given I add empty participant data and check if error display correctly
-    And I add participant first name only and check if error display correctly
-    And I add participant first and last name only and check if error display correctly
-    And I discard changes in participant window
-    Then I add a participant to the event
-    Then I check if participant appears in the event participants list
-    And I navigate via URL to last Person created from edit Event page
-    Then I check if event is available at person information
-
+    
   @issue=SORDEV-5475
   Scenario: Add a participant to an event
     Given I log in with National User
