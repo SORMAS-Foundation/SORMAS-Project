@@ -5,7 +5,7 @@ Feature: Create events
     Given I log in with National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
-    And I create a new event
+    And I create a new event with status CLUSTER
 
   Scenario: Create a new event and change its status multiple times
     Given I log in with National User
