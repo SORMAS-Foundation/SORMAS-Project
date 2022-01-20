@@ -87,11 +87,16 @@ public class CountryFacadeEjb
 	}
 
 	@Override
-	protected CountryDto doSave(CountryDto dtoToSave, boolean allowMerge, String duplicateErrorMessageProperty) {
+	protected CountryDto doSave(
+		CountryDto dtoToSave,
+		boolean allowMerge,
+		boolean includeArchived,
+		boolean checkChangeDate,
+		String duplicateErrorMessageProperty) {
 		if (StringUtils.isBlank(dtoToSave.getIsoCode())) {
 			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
 		}
-		return super.doSave(dtoToSave, allowMerge, duplicateErrorMessageProperty);
+		return super.doSave(dtoToSave, allowMerge, includeArchived, checkChangeDate, duplicateErrorMessageProperty);
 	}
 
 	@Override
@@ -174,9 +179,9 @@ public class CountryFacadeEjb
 	}
 
 	@Override
-	protected List<Country> findDuplicates(CountryDto dto) {
-		Optional<Country> byIsoCode = service.getByIsoCode(dto.getIsoCode(), true);
-		Optional<Country> byUnoCode = service.getByUnoCode(dto.getUnoCode(), true);
+	protected List<Country> findDuplicates(CountryDto dto, boolean includeArchived) {
+		Optional<Country> byIsoCode = service.getByIsoCode(dto.getIsoCode(), includeArchived);
+		Optional<Country> byUnoCode = service.getByUnoCode(dto.getUnoCode(), includeArchived);
 		List<Optional<Country>> tmp = Arrays.asList(byIsoCode, byUnoCode);
 		return tmp.stream().filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
 	}

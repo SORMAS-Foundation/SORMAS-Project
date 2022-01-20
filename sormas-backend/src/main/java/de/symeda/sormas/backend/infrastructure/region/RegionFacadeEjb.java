@@ -267,8 +267,8 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 	}
 
 	@Override
-	protected List<Region> findDuplicates(RegionDto dto) {
-		return service.getByName(dto.getName(), true);
+	protected List<Region> findDuplicates(RegionDto dto, boolean includeArchived) {
+		return service.getByName(dto.getName(), includeArchived);
 	}
 
 	@Override
