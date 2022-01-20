@@ -41,16 +41,16 @@ import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.Event;
-import org.sormas.e2etests.pojo.web.EventGroup;
-import org.sormas.e2etests.pojo.web.Person;
+import org.sormas.e2etests.pojo.web.*;
 import org.sormas.e2etests.services.EventGroupService;
+import org.sormas.e2etests.services.EventParticipantService;
 import org.sormas.e2etests.services.EventService;
 import org.sormas.e2etests.state.ApiState;
 
 public class EditEventSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
+  public static EventParticipant participant;
   public static Event collectedEvent;
   public static Event createdEvent;
   public static EventGroup groupEvent;
@@ -63,6 +63,7 @@ public class EditEventSteps implements En {
       EventService eventService,
       Faker faker,
       EventGroupService eventGroupService,
+      EventParticipantService eventParticipant,
       @Named("ENVIRONMENT_URL") String environmentUrl,
       ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
@@ -149,7 +150,6 @@ public class EditEventSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
           if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP, 15)) {
             webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIO_BUTTON);
-            webDriverHelpers.scrollToElement(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
             webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
           }
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(
@@ -172,14 +172,16 @@ public class EditEventSteps implements En {
     When(
         "I add participant first name only",
         () -> {
-          webDriverHelpers.fillInWebElement(PARTICIPANT_FIRST_NAME_INPUT, faker.name().firstName());
+          participant = eventParticipant.buildGeneratedEventParticipant();
+          fillFirstName(participant.getFirstName());
         });
 
     When(
         "I add participant first and last name only",
         () -> {
-          webDriverHelpers.fillInWebElement(PARTICIPANT_FIRST_NAME_INPUT, faker.name().firstName());
-          webDriverHelpers.fillInWebElement(PARTICIPANT_LAST_NAME_INPUT, faker.name().lastName());
+          participant = eventParticipant.buildGeneratedEventParticipant();
+          fillFirstName(participant.getFirstName());
+          fillLastName(participant.getLastName());
         });
 
     When(
@@ -330,6 +332,14 @@ public class EditEventSteps implements En {
 
   private void selectEventStatus(String eventStatus) {
     webDriverHelpers.clickWebElementByText(EVENT_STATUS_OPTIONS, eventStatus);
+  }
+
+  private void fillFirstName(String firstName) {
+    webDriverHelpers.fillInWebElement(PARTICIPANT_FIRST_NAME_INPUT, firstName);
+  }
+
+  public void fillLastName(String lastName) {
+    webDriverHelpers.fillInWebElement(PARTICIPANT_LAST_NAME_INPUT, lastName);
   }
 
   private void selectResponsibleRegion(String region) {
