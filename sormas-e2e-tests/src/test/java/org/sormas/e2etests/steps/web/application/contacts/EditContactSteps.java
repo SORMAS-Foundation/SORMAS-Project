@@ -18,13 +18,16 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
+import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.GENERAL_SEARCH_INPUT;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
@@ -70,6 +73,19 @@ public class EditContactSteps implements En {
         });
 
     When(
+        "I search created task by Contact first and last name",
+        () -> {
+          createdContact = CreateNewContactSteps.contact;
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              GENERAL_SEARCH_INPUT, 50);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              GENERAL_SEARCH_INPUT,
+              createdContact.getFirstName() + " " + createdContact.getLastName());
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
+
+    When(
         "I check the edited data is correctly displayed on Edit Contact page after editing",
         () -> {
           collectedContact = collectContactDataAfterEdit();
@@ -90,6 +106,12 @@ public class EditContactSteps implements En {
           webDriverHelpers.scrollToElement(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
+        });
+
+    When(
+        "I open the last created UI Contact",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID_BUTTON);
         });
 
     When(

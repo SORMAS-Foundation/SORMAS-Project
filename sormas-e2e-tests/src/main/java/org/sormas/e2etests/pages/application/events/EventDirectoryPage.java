@@ -37,10 +37,6 @@ public class EventDirectoryPage {
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By EVENT_ACTIONS_TABLE_DATA = By.tagName("td");
 
-  /*public static By getByEventUuid(String eventUuid) {
-    return By.cssSelector("a[title=" + eventUuid + "]");
-  }*/
-
   public static By getByEventUuid(String eventUuid) {
     return By.cssSelector(String.format("a[title=%s]", eventUuid));
   }

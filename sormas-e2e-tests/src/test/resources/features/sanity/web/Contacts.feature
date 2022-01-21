@@ -37,6 +37,17 @@ Feature: Contacts end to end tests
     And I navigate to the last created contact via the url
     Then I check the edited data is correctly displayed on Edit Contact page after editing
 
+  @issue=SORDEV-5476
+    Scenario: Add a task from contact and verify the fields
+    Given I log in with National User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I create a new contact
+    And I click on the Tasks button from navbar
+    Then I search created task by Contact first and last name
+    And I open the last created UI Contact
+    Then I check the created data is correctly displayed on Edit Contact page
+
   Scenario: Source case selected for contact
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
