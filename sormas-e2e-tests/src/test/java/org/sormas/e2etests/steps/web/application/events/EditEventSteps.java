@@ -449,7 +449,7 @@ public class EditEventSteps implements En {
         .build();
   }
 
-  public void selectEventHandoutTemplate(String templateName) {
+  private void selectEventHandoutTemplate(String templateName) {
     webDriverHelpers.selectFromCombobox(EVENT_HANDOUT_COMBOBOX, templateName);
   }
 }

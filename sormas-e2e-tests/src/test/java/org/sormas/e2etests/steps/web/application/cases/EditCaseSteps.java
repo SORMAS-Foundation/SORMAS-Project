@@ -520,11 +520,11 @@ public class EditCaseSteps implements En {
     webDriverHelpers.fillInWebElement(GENERAL_COMMENT_TEXTAREA, generalComment);
   }
 
-  public void selectQuarantineOrderTemplate(String templateName) {
+  private void selectQuarantineOrderTemplate(String templateName) {
     webDriverHelpers.selectFromCombobox(EditCasePage.QUARANTINE_ORDER_COMBOBOX, templateName);
   }
 
-  public void fillExtraComment(String extraComment) {
-    webDriverHelpers.fillInWebElement(EditCasePage.EXTRA_COMMENT_TEXTAREA, extraComment);
+  private void fillExtraComment(String extraComment) {
+    webDriverHelpers.fillInAndLeaveWebElement(EditCasePage.EXTRA_COMMENT_TEXTAREA, extraComment);
   }
 }

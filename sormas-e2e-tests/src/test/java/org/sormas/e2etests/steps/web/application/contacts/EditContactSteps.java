@@ -169,7 +169,10 @@ public class EditContactSteps implements En {
 
     When(
         "I click on the Create button from Contact Document Templates",
-        () -> webDriverHelpers.clickOnWebElementBySelector(EditContactPage.CREATE_DOCUMENT_BUTTON));
+        () -> {
+          webDriverHelpers.scrollToElement(EditContactPage.CREATE_DOCUMENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EditContactPage.CREATE_DOCUMENT_BUTTON);
+        });
 
     When(
         "I create a contact document from template",
@@ -535,11 +538,11 @@ public class EditContactSteps implements En {
         .build();
   }
 
-  public void selectQuarantineOrderTemplate(String templateName) {
+  private void selectQuarantineOrderTemplate(String templateName) {
     webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, templateName);
   }
 
-  public void fillExtraComment(String extraComment) {
-    webDriverHelpers.fillInWebElement(EditContactPage.EXTRA_COMMENT_TEXTAREA, extraComment);
+  private void fillExtraComment(String extraComment) {
+    webDriverHelpers.fillInAndLeaveWebElement(EditContactPage.EXTRA_COMMENT_TEXTAREA, extraComment);
   }
 }
