@@ -277,15 +277,15 @@ public class EditEventSteps implements En {
         });
   }
 
-  public Person collectPersonUuid() {
+  private Person collectPersonUuid() {
     return Person.builder().uuid(webDriverHelpers.getValueFromWebElement(POPUP_PERSON_ID)).build();
   }
 
-  public Event collectEventUuid() {
+  private Event collectEventUuid() {
     return Event.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
   }
 
-  public Event collectEventData() {
+  private Event collectEventData() {
     String reportingDate = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
     LocalDate reportDate = LocalDate.parse(reportingDate, DATE_FORMATTER);
     String eventStartDate = webDriverHelpers.getValueFromWebElement(START_DATA_INPUT);
@@ -311,67 +311,67 @@ public class EditEventSteps implements En {
         .build();
   }
 
-  public void selectEventStatus(String eventStatus) {
+  private void selectEventStatus(String eventStatus) {
     webDriverHelpers.clickWebElementByText(EVENT_STATUS_OPTIONS, eventStatus);
   }
 
-  public void selectResponsibleRegion(String region) {
+  private void selectResponsibleRegion(String region) {
     webDriverHelpers.selectFromCombobox(POPUP_RESPONSIBLE_REGION_COMBOBOX, region);
   }
 
-  public void selectResponsibleDistrict(String district) {
+  private void selectResponsibleDistrict(String district) {
     webDriverHelpers.selectFromCombobox(POPUP_RESPONSIBLE_DISTRICT_COMBOBOX, district);
   }
 
-  public void selectRiskLevel(String riskLevel) {
+  private void selectRiskLevel(String riskLevel) {
     webDriverHelpers.selectFromCombobox(RISK_LEVEL_COMBOBOX, riskLevel);
   }
 
-  public void selectEventManagementStatusOption(String eventManagementStatusOption) {
+  private void selectEventManagementStatusOption(String eventManagementStatusOption) {
     webDriverHelpers.clickWebElementByText(
         EVENT_MANAGEMENT_STATUS_OPTIONS, eventManagementStatusOption);
   }
 
-  public void fillStartData(LocalDate date) {
+  private void fillStartData(LocalDate date) {
     webDriverHelpers.fillInWebElement(START_DATA_INPUT, DATE_FORMATTER.format(date));
   }
 
-  public void selectEventInvestigationStatusOptions(String eventInvestigationStatusOption) {
+  private void selectEventInvestigationStatusOptions(String eventInvestigationStatusOption) {
     webDriverHelpers.clickWebElementByText(
         EVENT_INVESTIGATION_STATUS_OPTIONS, eventInvestigationStatusOption);
   }
 
-  public void selectDisease(String disease) {
+  private void selectDisease(String disease) {
     webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
   }
 
-  public void fillTitle(String title) {
+  private void fillTitle(String title) {
     webDriverHelpers.fillInWebElement(TITLE_INPUT, title);
   }
 
-  public void selectSourceType(String sourceType) {
+  private void selectSourceType(String sourceType) {
     webDriverHelpers.selectFromCombobox(SOURCE_TYPE_COMBOBOX, sourceType);
   }
 
-  public void selectTypeOfPlace(String typeOfPlace) {
+  private void selectTypeOfPlace(String typeOfPlace) {
     webDriverHelpers.selectFromCombobox(TYPE_OF_PLACE_COMBOBOX, typeOfPlace);
   }
 
-  public void fillDateOfReport(LocalDate date) {
+  private void fillDateOfReport(LocalDate date) {
     webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, DATE_FORMATTER.format(date));
   }
 
-  public void fillGroupEventName(String groupEventName) {
+  private void fillGroupEventName(String groupEventName) {
     webDriverHelpers.fillInWebElement(GROUP_EVENT_NAME_POPUP_INPUT, groupEventName);
   }
 
-  public EventGroup collectEventGroupUuid() {
+  private EventGroup collectEventGroupUuid() {
     return EventGroup.builder()
         .uuid(webDriverHelpers.getValueFromWebElement(GROUP_EVENT_UUID))
         .build();
   }
 
-  public void selectEventHandoutTemplate(String templateName) {
+  private void selectEventHandoutTemplate(String templateName) {
     webDriverHelpers.selectFromCombobox(EVENT_HANDOUT_COMBOBOX, templateName);
   }
 }

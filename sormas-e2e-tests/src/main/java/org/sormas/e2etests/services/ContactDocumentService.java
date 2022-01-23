@@ -25,9 +25,7 @@ import org.sormas.e2etests.pojo.web.QuarantineOrder;
 public class ContactDocumentService {
   private final Faker faker;
 
-  private String firstName;
-  private String lastName;
-  private final String emailDomain = "@CASE.com";
+  private final String emailDomain = "@CONTACT-DOCUMENT.com";
 
   @Inject
   public ContactDocumentService(Faker faker) {
@@ -35,9 +33,6 @@ public class ContactDocumentService {
   }
 
   public QuarantineOrder buildQuarantineOrder() {
-    firstName = faker.name().firstName();
-    lastName = faker.name().lastName();
-
     return QuarantineOrder.builder()
         .documentTemplate("ExampleDocumentTemplateContacts.docx")
         .sample("")

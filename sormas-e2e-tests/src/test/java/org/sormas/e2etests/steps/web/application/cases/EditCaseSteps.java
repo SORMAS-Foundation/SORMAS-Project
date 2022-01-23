@@ -278,11 +278,11 @@ public class EditCaseSteps implements En {
         });
   }
 
-  public Case collectCasePersonUuid() {
+  private Case collectCasePersonUuid() {
     return Case.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
   }
 
-  public Case collectCasePersonData() {
+  private Case collectCasePersonData() {
     Case userInfo = getUserInformation();
 
     return Case.builder()
@@ -301,7 +301,7 @@ public class EditCaseSteps implements En {
         .build();
   }
 
-  public Case collectCaseData() {
+  private Case collectCaseData() {
     return Case.builder()
         .dateOfReport(getDateOfReport())
         .caseClassification(webDriverHelpers.getValueFromCombobox(CASE_CLASSIFICATION_COMBOBOX))
@@ -381,7 +381,7 @@ public class EditCaseSteps implements En {
     return LocalDate.parse(dateOfReport, DATE_FORMATTER);
   }
 
-  public Case getUserInformation() {
+  private Case getUserInformation() {
 
     String userInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
     String[] userInfos = userInfo.split(" ");
@@ -393,156 +393,156 @@ public class EditCaseSteps implements En {
         .build();
   }
 
-  public void fillDateOfReport(LocalDate date) {
+  private void fillDateOfReport(LocalDate date) {
     webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, DATE_FORMATTER.format(date));
   }
 
-  public void selectCaseClassification(String caseClassification) {
+  private void selectCaseClassification(String caseClassification) {
     webDriverHelpers.selectFromCombobox(CASE_CLASSIFICATION_COMBOBOX, caseClassification);
   }
 
-  public void selectClinicalConfirmation(String clinicalConfirmation) {
+  private void selectClinicalConfirmation(String clinicalConfirmation) {
     webDriverHelpers.selectFromCombobox(CLINICAL_CONFIRMATION_COMBOBOX, clinicalConfirmation);
   }
 
-  public void selectEpidemiologicalConfirmation(String epidemiologicalConfirmation) {
+  private void selectEpidemiologicalConfirmation(String epidemiologicalConfirmation) {
     webDriverHelpers.selectFromCombobox(
         EPIDEMIOLOGICAL_CONFIRMATION_COMBOBOX, epidemiologicalConfirmation);
   }
 
-  public void selectLaboratoryDiagnosticConfirmation(String laboratoryDiagnosticConfirmation) {
+  private void selectLaboratoryDiagnosticConfirmation(String laboratoryDiagnosticConfirmation) {
     webDriverHelpers.selectFromCombobox(
         LABORATORY_DIAGNOSTIC_CONFIRMATION_COMBOBOX, laboratoryDiagnosticConfirmation);
   }
 
-  public void selectInvestigationStatus(String investigationStatus) {
+  private void selectInvestigationStatus(String investigationStatus) {
     webDriverHelpers.clickWebElementByText(INVESTIGATION_STATUS_OPTIONS, investigationStatus);
   }
 
-  public void fillExternalId(String externalId) {
+  private void fillExternalId(String externalId) {
     webDriverHelpers.fillInWebElement(EXTERNAL_ID_INPUT, externalId);
   }
 
-  public void fillExternalToken(String externalToken) {
+  private void fillExternalToken(String externalToken) {
     webDriverHelpers.fillInWebElement(EXTERNAL_TOKEN_INPUT, externalToken);
   }
 
-  public void selectDisease(String disease) {
+  private void selectDisease(String disease) {
     webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
   }
 
-  public void selectReinfection(String reinfection) {
+  private void selectReinfection(String reinfection) {
     webDriverHelpers.clickWebElementByText(REINFECTION_OPTIONS, reinfection);
   }
 
-  public void selectOutcomeOfCase(String outcomeOfCase) {
+  private void selectOutcomeOfCase(String outcomeOfCase) {
     webDriverHelpers.clickWebElementByText(OUTCOME_OF_CASE_OPTIONS, outcomeOfCase);
   }
 
-  public void selectCaseIdentificationSource(String caseIdentificationSource) {
+  private void selectCaseIdentificationSource(String caseIdentificationSource) {
     webDriverHelpers.selectFromCombobox(
         CASE_IDENTIFICATION_SOURCE_COMBOBOX, caseIdentificationSource);
   }
 
-  public void selectRegion(String region) {
+  private void selectRegion(String region) {
     webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, region);
   }
 
-  public void selectDistrict(String district) {
+  private void selectDistrict(String district) {
     webDriverHelpers.selectFromCombobox(DISTRICT_COMBOBOX, district);
   }
 
-  public void selectCommunity(String community) {
+  private void selectCommunity(String community) {
     webDriverHelpers.selectFromCombobox(COMMUNITY_COMBOBOX, community);
   }
 
-  public void fillPlaceDescription(String placeDescription) {
+  private void fillPlaceDescription(String placeDescription) {
     webDriverHelpers.fillInWebElement(PLACE_DESCRIPTION_INPUT, placeDescription);
   }
 
-  public void selectResponsibleRegion(String responsibleRegion) {
+  private void selectResponsibleRegion(String responsibleRegion) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_REGION_COMBOBOX, responsibleRegion);
   }
 
-  public void selectResponsibleDistrict(String responsibleDistrict) {
+  private void selectResponsibleDistrict(String responsibleDistrict) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX, responsibleDistrict);
   }
 
-  public void selectResponsibleCommunity(String responsibleCommunity) {
+  private void selectResponsibleCommunity(String responsibleCommunity) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX, responsibleCommunity);
   }
 
-  public void selectSequelae(String sequelae) {
+  private void selectSequelae(String sequelae) {
     webDriverHelpers.clickWebElementByText(SEQUELAE_OPTIONS, sequelae);
   }
 
-  public void selectProhibitionToWork(String prohibitionToWork) {
+  private void selectProhibitionToWork(String prohibitionToWork) {
     webDriverHelpers.clickWebElementByText(PROHIBITION_TO_WORK_OPTIONS, prohibitionToWork);
   }
 
-  public void selectHomeBasedQuarantinePossible(String homeBasedQuarantinePossible) {
+  private void selectHomeBasedQuarantinePossible(String homeBasedQuarantinePossible) {
     webDriverHelpers.clickWebElementByText(
         HOME_BASED_QUARANTINE_POSSIBLE_OPTIONS, homeBasedQuarantinePossible);
   }
 
-  public void selectQuarantine(String quarantine) {
+  private void selectQuarantine(String quarantine) {
     webDriverHelpers.selectFromCombobox(QUARANTINE_COMBOBOX, quarantine);
   }
 
-  public void fillReportGpsLatitude(String reportGpsLatitude) {
+  private void fillReportGpsLatitude(String reportGpsLatitude) {
     webDriverHelpers.fillInWebElement(REPORT_GPS_LATITUDE_INPUT, reportGpsLatitude);
   }
 
-  public void fillReportGpsLongitude(String reportGpsLongitude) {
+  private void fillReportGpsLongitude(String reportGpsLongitude) {
     webDriverHelpers.fillInWebElement(REPORT_GPS_LONGITUDE_INPUT, reportGpsLongitude);
   }
 
-  public void fillReportGpsAccuracyInM(String reportGpsAccuracyInM) {
+  private void fillReportGpsAccuracyInM(String reportGpsAccuracyInM) {
     webDriverHelpers.fillInWebElement(REPORT_GPS_ACCURACY_IN_M_INPUT, reportGpsAccuracyInM);
   }
 
-  public void selectBloodOrganTissueDonationInTheLast6Months(
+  private void selectBloodOrganTissueDonationInTheLast6Months(
       String bloodOrganTissueDonationInTheLast6Months) {
     webDriverHelpers.clickWebElementByText(
         BLOOD_ORGAN_TISSUE_DONATION_IN_THE_LAST_6_MONTHS_OPTIONS,
         bloodOrganTissueDonationInTheLast6Months);
   }
 
-  public void selectVaccinationStatusForThisDisease(String vaccinationStatusForThisDisease) {
+  private void selectVaccinationStatusForThisDisease(String vaccinationStatusForThisDisease) {
     webDriverHelpers.selectFromCombobox(
         VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX, vaccinationStatusForThisDisease);
   }
 
-  public void selectResponsibleSurveillanceOfficer(String responsibleSurveillanceOfficer) {
+  private void selectResponsibleSurveillanceOfficer(String responsibleSurveillanceOfficer) {
     webDriverHelpers.selectFromCombobox(
         RESPONSIBLE_SURVEILLANCE_OFFICER_COMBOBOX, responsibleSurveillanceOfficer);
   }
 
-  public void fillDateReceivedAtDistrictLevel(LocalDate dateReceivedAtDistrictLevel) {
+  private void fillDateReceivedAtDistrictLevel(LocalDate dateReceivedAtDistrictLevel) {
     webDriverHelpers.fillInWebElement(
         DATE_RECEIVED_AT_DISTRICT_LEVEL_INPUT, DATE_FORMATTER.format(dateReceivedAtDistrictLevel));
   }
 
-  public void fillDateReceivedAtRegionLevel(LocalDate dateReceivedAtRegionLevel) {
+  private void fillDateReceivedAtRegionLevel(LocalDate dateReceivedAtRegionLevel) {
 
     webDriverHelpers.fillInWebElement(
         DATE_RECEIVED_AT_REGION_LEVEL_INPUT, DATE_FORMATTER.format(dateReceivedAtRegionLevel));
   }
 
-  public void fillDateReceivedAtNationalLevel(LocalDate dateReceivedAtNationalLevel) {
+  private void fillDateReceivedAtNationalLevel(LocalDate dateReceivedAtNationalLevel) {
     webDriverHelpers.fillInWebElement(
         DATE_RECEIVED_AT_NATIONAL_LEVEL_INPUT, DATE_FORMATTER.format(dateReceivedAtNationalLevel));
   }
 
-  public void fillGeneralComment(String generalComment) {
+  private void fillGeneralComment(String generalComment) {
     webDriverHelpers.fillInWebElement(GENERAL_COMMENT_TEXTAREA, generalComment);
   }
 
-  public void selectQuarantineOrderTemplate(String templateName) {
+  private void selectQuarantineOrderTemplate(String templateName) {
     webDriverHelpers.selectFromCombobox(EditCasePage.QUARANTINE_ORDER_COMBOBOX, templateName);
   }
 
-  public void fillExtraComment(String extraComment) {
-    webDriverHelpers.fillInWebElement(EditCasePage.EXTRA_COMMENT_TEXTAREA, extraComment);
+  private void fillExtraComment(String extraComment) {
+    webDriverHelpers.fillInAndLeaveWebElement(EditCasePage.EXTRA_COMMENT_TEXTAREA, extraComment);
   }
 }

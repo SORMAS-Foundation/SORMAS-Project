@@ -199,7 +199,10 @@ public class EditContactSteps implements En {
 
     When(
         "I click on the Create button from Contact Document Templates",
-        () -> webDriverHelpers.clickOnWebElementBySelector(EditContactPage.CREATE_DOCUMENT_BUTTON));
+        () -> {
+          webDriverHelpers.scrollToElement(EditContactPage.CREATE_DOCUMENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EditContactPage.CREATE_DOCUMENT_BUTTON);
+        });
 
     When(
         "I create a contact document from template",
@@ -238,194 +241,194 @@ public class EditContactSteps implements En {
         });
   }
 
-  public void selectContactClassification(String classification) {
+  private void selectContactClassification(String classification) {
     webDriverHelpers.clickWebElementByText(CONTACT_CLASSIFICATION_OPTIONS, classification);
   }
 
-  public void selectMultiDayContact(String multiDayContact) {
+  private void selectMultiDayContact(String multiDayContact) {
     webDriverHelpers.clickWebElementByText(MULTI_DAY_CONTACT_LABEL, multiDayContact);
   }
 
-  public void fillDateOfFirstContact(LocalDate date) {
+  private void fillDateOfFirstContact(LocalDate date) {
     webDriverHelpers.clearAndFillInWebElement(FIRST_DAY_CONTACT_DATE, formatter.format(date));
   }
 
-  public void fillDateOfLastContact(LocalDate date) {
+  private void fillDateOfLastContact(LocalDate date) {
     webDriverHelpers.clearAndFillInWebElement(LAST_CONTACT_DATE, formatter.format(date));
   }
 
-  public void selectDiseaseOfSourceCase(String disease) {
+  private void selectDiseaseOfSourceCase(String disease) {
     webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
   }
 
-  public void fillExternalId(String text) {
+  private void fillExternalId(String text) {
     webDriverHelpers.clearAndFillInWebElement(EXTERNAL_ID_INPUT, text);
   }
 
-  public void fillExternalToken(String text) {
+  private void fillExternalToken(String text) {
     webDriverHelpers.clearAndFillInWebElement(EXTERNAL_TOKEN_INPUT, text);
   }
 
-  public void fillReportDate(LocalDate date) {
+  private void fillReportDate(LocalDate date) {
     webDriverHelpers.clearAndFillInWebElement(REPORT_DATE, formatter.format(date));
   }
 
-  public void selectReportingDistrict(String district) {
+  private void selectReportingDistrict(String district) {
     webDriverHelpers.selectFromCombobox(REPORTING_DISTRICT_COMBOBOX, district);
   }
 
-  public void selectResponsibleRegion(String region) {
+  private void selectResponsibleRegion(String region) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_REGION_COMBOBOX, region);
   }
 
-  public void selectResponsibleDistrict(String district) {
+  private void selectResponsibleDistrict(String district) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX, district);
   }
 
-  public void selectResponsibleCommunity(String community) {
+  private void selectResponsibleCommunity(String community) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX, community);
   }
 
-  public void selectReturningTraveler(String text) {
+  private void selectReturningTraveler(String text) {
     webDriverHelpers.clickWebElementByText(RETURNING_TRAVELER_OPTIONS, text);
   }
 
-  public void fillCaseIdExternalSystem(String date) {
+  private void fillCaseIdExternalSystem(String date) {
     webDriverHelpers.clearAndFillInWebElement(CASE_ID_IN_EXTERNAL_SYSTEM_INPUT, date);
   }
 
-  public void fillCaseOrEventInformation(String information) {
+  private void fillCaseOrEventInformation(String information) {
     webDriverHelpers.clearAndFillInWebElement(CASE_OR_EVENT_INFORMATION_INPUT, information);
   }
 
-  public void selectIdentificationSource(String source) {
+  private void selectIdentificationSource(String source) {
     webDriverHelpers.selectFromCombobox(CONTACT_IDENTIFICATION_SOURCE_DETAILS_COMBOBOX, source);
   }
 
-  public void fillIdentificationSource(String source) {
+  private void fillIdentificationSource(String source) {
     webDriverHelpers.clearAndFillInWebElement(IDENTIFICATION_SOURCE_INPUT, source);
   }
 
-  public void selectContactType(String proximity) {
+  private void selectContactType(String proximity) {
     webDriverHelpers.clickWebElementByText(TYPE_OF_CONTACT_OPTIONS, proximity);
   }
 
-  public void fillAdditionalInformationOnContactType(String information) {
+  private void fillAdditionalInformationOnContactType(String information) {
     webDriverHelpers.clearAndFillInWebElement(
         ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT, information);
   }
 
-  public void selectContactCategory(String category) {
+  private void selectContactCategory(String category) {
     webDriverHelpers.clickWebElementByText(CONTACT_CATEGORY_OPTIONS, category);
   }
 
-  public void selectRelationShipWithCase(String relationship) {
+  private void selectRelationShipWithCase(String relationship) {
     webDriverHelpers.selectFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX, relationship);
   }
 
-  public void fillDescriptionOfHowContactTookPlace(String text) {
+  private void fillDescriptionOfHowContactTookPlace(String text) {
     webDriverHelpers.clearAndFillInWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT, text);
   }
 
-  public void selectProhibitionToWork(String text) {
+  private void selectProhibitionToWork(String text) {
     webDriverHelpers.clickWebElementByText(PROHIBITION_TO_WORK_OPTIONS, text);
   }
 
-  public void selectHomeBasedQuarantinePossible(String text) {
+  private void selectHomeBasedQuarantinePossible(String text) {
     webDriverHelpers.clickWebElementByText(HOME_BASED_QUARANTINE_OPTIONS, text);
   }
 
-  public void selectQuarantine(String text) {
+  private void selectQuarantine(String text) {
     webDriverHelpers.selectFromCombobox(QUARANTINE_COMBOBOX, text);
   }
 
-  public void selectHighPriority(String text) {
+  private void selectHighPriority(String text) {
     webDriverHelpers.clickWebElementByText(HIGH_PRIORITY_LABEL, text);
   }
 
-  public void selectPreexistingConditionDiabetes(String text) {
+  private void selectPreexistingConditionDiabetes(String text) {
     webDriverHelpers.clickWebElementByText(DIABETES_OPTIONS, text);
   }
 
-  public void selectPreexistingConditionHiv(String text) {
+  private void selectPreexistingConditionHiv(String text) {
     webDriverHelpers.clickWebElementByText(HIV_OPTIONS, text);
   }
 
-  public void selectPreexistingConditionLiver(String text) {
+  private void selectPreexistingConditionLiver(String text) {
     webDriverHelpers.clickWebElementByText(LIVER_OPTIONS, text);
   }
 
-  public void selectPreexistingConditionMalignancy(String text) {
+  private void selectPreexistingConditionMalignancy(String text) {
     webDriverHelpers.clickWebElementByText(MALIGNANCY_OPTIONS, text);
   }
 
-  public void selectPreexistingConditionChronicPulmonary(String text) {
+  private void selectPreexistingConditionChronicPulmonary(String text) {
     webDriverHelpers.clickWebElementByText(PULMONARY_OPTIONS, text);
   }
 
-  public void selectPreexistingConditionRenal(String text) {
+  private void selectPreexistingConditionRenal(String text) {
     webDriverHelpers.clickWebElementByText(RENAL_OPTIONS, text);
   }
 
-  public void selectPreexistingConditionNeurologic(String text) {
+  private void selectPreexistingConditionNeurologic(String text) {
     webDriverHelpers.clickWebElementByText(NEUROLOGIC_OPTIONS, text);
   }
 
-  public void selectPreexistingConditionCardiovascular(String text) {
+  private void selectPreexistingConditionCardiovascular(String text) {
     webDriverHelpers.clickWebElementByText(CARDIOVASCULAR_OPTIONS, text);
   }
 
-  public void fillAdditionalRelevantPreexistingConditions(String source) {
+  private void fillAdditionalRelevantPreexistingConditions(String source) {
     webDriverHelpers.clearAndFillInWebElement(ADDITIONAL_RELEVANT_PRE_CONDITIONS_TEXT, source);
   }
 
-  public void selectVaccinationStatusForThisDisease(String vaccine) {
+  private void selectVaccinationStatusForThisDisease(String vaccine) {
     webDriverHelpers.selectFromCombobox(VACCINATION_STATUS_COMBOBOX, vaccine);
   }
 
-  public void selectImmunosuppressiveTherapy(String text) {
+  private void selectImmunosuppressiveTherapy(String text) {
     webDriverHelpers.clickWebElementByText(IMMUNOSUPPRESSIVE_THERAPY_OPTIONS, text);
   }
 
-  public void selectActiveInCare(String text) {
+  private void selectActiveInCare(String text) {
     webDriverHelpers.clickWebElementByText(CARE_OVER_60_OPTIONS, text);
   }
 
-  public void clickCancelFollowUpButton() {
+  private void clickCancelFollowUpButton() {
     if (editedContact.isCancelFollowUp()) {
       webDriverHelpers.clickOnWebElementBySelector(CANCEL_FOLLOW_UP_BUTTON);
     }
   }
 
-  public void selectOverwriteFollowUp(String text) {
+  private void selectOverwriteFollowUp(String text) {
     webDriverHelpers.clickWebElementByText(OVERWRITE_FOLLOW_UP_LABEL, text);
   }
 
-  public void fillDateOfFollowUpUntil(LocalDate date) {
+  private void fillDateOfFollowUpUntil(LocalDate date) {
     webDriverHelpers.clearAndFillInWebElement(FOLLOW_UP_UNTIL_DATE, formatter.format(date));
   }
 
-  public void fillFollowUpStatusComment(String source) {
+  private void fillFollowUpStatusComment(String source) {
     webDriverHelpers.clearAndFillInWebElement(FOLLOW_UP_STATUS_TEXT, source);
   }
 
-  public void selectResponsibleContactOfficer(String vaccine) {
+  private void selectResponsibleContactOfficer(String vaccine) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_STATUS_OFFICER_COMBOBOX, vaccine);
   }
 
-  public void fillGeneralComment(String source) {
+  private void fillGeneralComment(String source) {
     webDriverHelpers.clearAndFillInWebElement(GENERAL_COMMENT_TEXT, source);
   }
 
-  public boolean isFollowUpIsVisible() {
+  private boolean isFollowUpIsVisible() {
     return webDriverHelpers.isElementVisibleWithTimeout(CANCEL_FOLLOW_UP_BUTTON, 1);
   }
 
-  public boolean isFollowUpNotVisible() {
+  private boolean isFollowUpNotVisible() {
     return !isFollowUpIsVisible();
   }
 
-  public Contact collectContactData() {
+  private Contact collectContactData() {
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
     LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
     String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
@@ -462,7 +465,7 @@ public class EditContactSteps implements En {
         .build();
   }
 
-  public Contact collectContactDataAfterEdit() {
+  private Contact collectContactDataAfterEdit() {
     webDriverHelpers.waitForPageLoaded();
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
     String classification =
@@ -553,7 +556,7 @@ public class EditContactSteps implements En {
         .build();
   }
 
-  public Contact getContactInformation() {
+  private Contact getContactInformation() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
     String[] contactInfos = contactInfo.split(" ");
@@ -565,11 +568,11 @@ public class EditContactSteps implements En {
         .build();
   }
 
-  public void selectQuarantineOrderTemplate(String templateName) {
+  private void selectQuarantineOrderTemplate(String templateName) {
     webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, templateName);
   }
 
-  public void fillExtraComment(String extraComment) {
-    webDriverHelpers.fillInWebElement(EditContactPage.EXTRA_COMMENT_TEXTAREA, extraComment);
+  private void fillExtraComment(String extraComment) {
+    webDriverHelpers.fillInAndLeaveWebElement(EditContactPage.EXTRA_COMMENT_TEXTAREA, extraComment);
   }
 }
