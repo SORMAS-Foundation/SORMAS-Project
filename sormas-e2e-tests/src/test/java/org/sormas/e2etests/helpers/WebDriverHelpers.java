@@ -236,42 +236,6 @@ public class WebDriverHelpers {
     }
   }
 
-  public void fillInAndLeaveWebElement(By selector, String text) {
-    try {
-      await()
-          .pollInterval(ONE_HUNDRED_MILLISECONDS)
-          .ignoreExceptions()
-          .catchUncaughtExceptions()
-          .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
-          .untilAsserted(
-              () -> {
-                assertWithMessage("The element: %s was not enabled", selector)
-                    .that(baseSteps.getDriver().findElement(selector).isEnabled())
-                    .isTrue();
-                assertWithMessage("The element: %s was not displayed", selector)
-                    .that(baseSteps.getDriver().findElement(selector).isDisplayed())
-                    .isTrue();
-                scrollToElement(selector);
-                clearWebElement(selector);
-                assertWithMessage("Field %s wasn't cleared", selector)
-                    .that(getValueFromWebElement(selector))
-                    .isEqualTo("");
-                baseSteps.getDriver().findElement(selector).sendKeys(text);
-                baseSteps.getDriver().findElement(By.cssSelector("body")).sendKeys(Keys.TAB);
-                String valueFromWebElement = getValueFromWebElement(selector);
-                assertWithMessage("The expected text %s was not %s", valueFromWebElement, text)
-                    .that(valueFromWebElement)
-                    .isEqualTo(text);
-              });
-
-    } catch (ConditionTimeoutException ignored) {
-      log.error("Unable to fill on element identified by locator: {} and text {}", selector, text);
-      takeScreenshot(baseSteps.getDriver());
-      throw new TimeoutException(
-          "Unable to fill on element identified by locator: " + selector + " and text : " + text);
-    }
-  }
-
   public void fillAndSubmitInWebElement(By selector, String text) {
     fillInWebElement(selector, text);
     submitInWebElement(selector);
