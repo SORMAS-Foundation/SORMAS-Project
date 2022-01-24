@@ -93,21 +93,10 @@ public class EditCaseSteps implements En {
         () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(INVESTIGATED_DATE_FIELD));
 
     When(
-        "I select Outcome Of Case Status Deceased",
-        () ->
+        "I select Outcome Of Case Status ([^\"]*)",
+        (String caseStatus) ->
             webDriverHelpers.clickWebElementByText(
-                OUTCOME_OF_CASE_OPTIONS, CaseOutcome.getValueFor("DECEASED").toUpperCase()));
-    When(
-        "I select Outcome Of Case Status Recovered",
-        () ->
-            webDriverHelpers.clickWebElementByText(
-                OUTCOME_OF_CASE_OPTIONS, CaseOutcome.getValueFor("RECOVERED").toUpperCase()));
-
-    When(
-        "I select Outcome Of Case Status Unknown",
-        () ->
-            webDriverHelpers.clickWebElementByText(
-                OUTCOME_OF_CASE_OPTIONS, CaseOutcome.getValueFor("UNKNOWN").toUpperCase()));
+                OUTCOME_OF_CASE_OPTIONS, CaseOutcome.getValueFor(caseStatus).toUpperCase()));
 
     When(
         "I check if date of outcome filed is available",
@@ -162,10 +151,10 @@ public class EditCaseSteps implements En {
         () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_TYPE_COMBOBOX));
 
     When(
-        "I set Facility as a Other Facility",
-        () ->
+        "I set Facility as a ([^\"]*)",
+        (String facility) ->
             webDriverHelpers.selectFromCombobox(
-                FACILITY_HEALTH_COMBOBOX, CaseOutcome.getValueFor("Other facility")));
+                FACILITY_HEALTH_COMBOBOX, CaseOutcome.getValueFor(facility)));
 
     When(
         "I check if Facility name and description field is available",

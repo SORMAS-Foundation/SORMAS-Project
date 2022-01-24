@@ -61,7 +61,7 @@ Feature: Case end to end tests
     Then I click on Facility as place of stay
     And I check if Facility Category combobox is available
     And I check if Facility Type combobox is available
-    Then I set Facility as a Other Facility
+    Then I set Facility as a Other facility
     And I check if Facility name and description field is available
     Then I set Quarantine Home
     And I check if Quarantine start field is available
