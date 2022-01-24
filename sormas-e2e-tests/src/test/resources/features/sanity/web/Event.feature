@@ -154,5 +154,4 @@ Feature: Create events
     And I open the first event
     And I click on the Create button from Event Document Templates
     When I create an event document from template
-    Then I verify that the generated event document is downloaded
-    And I verify that the downloaded event document is correctly named
+    And I verify that the event document is downloaded and correctly named

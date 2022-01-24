@@ -21,19 +21,14 @@ package org.sormas.e2etests.steps.web.application.contacts;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
 
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.stream.Stream;
 import java.util.List;
 import javax.inject.Inject;
-import org.apache.commons.io.FileUtils;
-import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
@@ -41,6 +36,7 @@ import org.sormas.e2etests.pojo.web.Contact;
 import org.sormas.e2etests.pojo.web.QuarantineOrder;
 import org.sormas.e2etests.services.ContactDocumentService;
 import org.sormas.e2etests.services.ContactService;
+import org.testng.asserts.SoftAssert;
 
 public class EditContactSteps implements En {
   DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
@@ -56,6 +52,7 @@ public class EditContactSteps implements En {
   public EditContactSteps(
       WebDriverHelpers webDriverHelpers,
       ContactService contactService,
+      SoftAssert softly,
       ContactDocumentService contactDocumentService) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -177,8 +174,6 @@ public class EditContactSteps implements En {
     When(
         "I create a contact document from template",
         () -> {
-          File dir = new File(userDirPath + "\\downloads");
-          FileUtils.deleteDirectory(dir);
           aQuarantineOrder = contactDocumentService.buildQuarantineOrder();
           aQuarantineOrder = aQuarantineOrder.toBuilder().build();
           selectQuarantineOrderTemplate(aQuarantineOrder.getDocumentTemplate());
@@ -189,15 +184,8 @@ public class EditContactSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACT_SAVED_POPUP);
         });
 
-    Then(
-        "I verify that the generated contact document is downloaded",
-        () -> {
-          Stream<Path> list = Files.list(Paths.get(userDirPath + "\\downloads"));
-          Truth.assertThat(list.findFirst().isPresent()).isTrue();
-        });
-
     And(
-        "I verify that the downloaded contact document is correctly named",
+        "I verify that the contact document is downloaded and correctly named",
         () -> {
           String uuid = webDriverHelpers.getValueFromWebElement(EditContactPage.UUID_INPUT);
           Path path =
@@ -207,7 +195,8 @@ public class EditContactSteps implements En {
                       + uuid.substring(0, 6)
                       + "-"
                       + aQuarantineOrder.getDocumentTemplate());
-          Truth.assertThat(Files.exists(path)).isTrue();
+          softly.assertTrue(
+              Files.exists(path), "The document with expected name was not downloaded");
         });
   }
 
