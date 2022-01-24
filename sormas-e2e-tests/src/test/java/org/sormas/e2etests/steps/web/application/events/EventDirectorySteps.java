@@ -100,7 +100,7 @@ public class EventDirectorySteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_TASK_BUTTON));
 
     When(
-        "I open the first event",
+        "I open the first event from events list",
         () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_ID_BUTTON));
   }
 }

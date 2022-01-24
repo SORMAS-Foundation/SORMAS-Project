@@ -335,6 +335,7 @@ public class EditEventSteps implements En {
                       + aEventHandout.getDocumentTemplate());
           softly.assertTrue(
               Files.exists(path), "The document with expected name was not downloaded");
+          softly.assertAll();
         });
   }
 
