@@ -86,7 +86,7 @@ public class LoginSteps implements En {
         });
 
     Given(
-        "I log in as a ([^\"]*)",
+        "^I log in as a ([^\"]*)$",
         (String userRole) -> {
           webDriverHelpers.accessWebSite(environmentUrl);
           webDriverHelpers.fillInWebElement(
