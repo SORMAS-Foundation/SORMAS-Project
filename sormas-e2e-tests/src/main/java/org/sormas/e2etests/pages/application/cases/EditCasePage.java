@@ -51,27 +51,54 @@ public class EditCasePage {
       By.cssSelector("#laboratoryDiagnosticConfirmation div");
   public static final By INVESTIGATION_STATUS_OPTIONS =
       By.cssSelector("#investigationStatus label");
+  public static final By INVESTIGATED_DATE_FIELD = By.cssSelector("#investigatedDate");
   public static final By EXTERNAL_TOKEN_INPUT = By.id("externalToken");
   public static final By DISEASE_COMBOBOX = By.cssSelector("#disease div");
   public static final By REINFECTION_OPTIONS = By.cssSelector("#reInfection label");
   public static final By OUTCOME_OF_CASE_OPTIONS = By.cssSelector("#outcome label");
+  public static final By DATE_OF_OUTCOME = By.cssSelector("#outcomeDate");
   public static final By SEQUELAE_OPTIONS = By.cssSelector("#sequelae label");
+  public static final By SEQUELAE_DETAILS = By.cssSelector("#sequelaeDetails");
+  public static final By PLACE_OF_STAY_CHECKBOX =
+      By.xpath("//*[@id='differentPlaceOfStayJurisdiction']/label");
+
+  public static final By PLACE_OF_STAY_REGION_COMBOBOX = By.cssSelector("#region div");
+  public static final By PLACE_OF_STAY_DISTRICT_COMBOBOX = By.cssSelector("#district div");
   public static final By REPORTING_DISTRICT_COMBOBOX = By.cssSelector("#reportingDistrict div");
   public static final By CASE_IDENTIFICATION_SOURCE_COMBOBOX =
       By.cssSelector("#caseIdentificationSource div");
   public static final By PLACE_OF_STAY_OPTIONS =
       By.cssSelector("[location='facilityOrHomeLoc'] label");
+  public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector("#typeGroup div");
+  public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector("#facilityType div");
+  public static final By FACILITY_HEALTH_COMBOBOX = By.cssSelector("#healthFacility div");
   public static final By REGION_COMBOBOX = By.cssSelector("#responsibleRegion div");
   public static final By DISTRICT_COMBOBOX = By.cssSelector("#responsibleDistrict div");
   public static final By COMMUNITY_COMBOBOX = By.cssSelector("#responsibleCommunity div");
   public static final By RESPONSIBLE_REGION_COMBOBOX = By.cssSelector("#responsibleRegion div");
   public static final By RESPONSIBLE_DISTRICT_COMBOBOX = By.cssSelector("#responsibleDistrict div");
+  public static final By COMMUNITY_COMBOBOX_BY_PLACE_OF_STAY = By.cssSelector("#community div");
   public static final By RESPONSIBLE_COMMUNITY_COMBOBOX =
       By.cssSelector("#responsibleCommunity div");
   public static final By PROHIBITION_TO_WORK_OPTIONS = By.cssSelector("#prohibitionToWork label");
   public static final By HOME_BASED_QUARANTINE_POSSIBLE_OPTIONS =
       By.cssSelector("#quarantineHomePossible label");
   public static final By QUARANTINE_COMBOBOX = By.cssSelector("#quarantine div");
+  public static final By QUARANTINE_DATE_FROM = By.cssSelector("#quarantineFrom");
+  public static final By QUARANTINE_DATE_TO = By.cssSelector("#quarantineTo");
+  public static final By QUARANTINE_ORDERED_VERBALLY_CHECKBOX =
+      By.xpath("//*[@id='quarantineOrderedVerbally']/label");
+  public static final By QUARANTINE_ORDERED_BY_DOCUMENT_CHECKBOX =
+      By.xpath("//*[@id='quarantineOrderedOfficialDocument']/label");
+  public static final By OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX =
+      By.xpath("//*[@id='quarantineOfficialOrderSent']/label");
+  public static final By QUARANTINE_ORDERED_BY_DOCUMENT_DATE =
+      By.cssSelector("#quarantineOrderedOfficialDocumentDate");
+  public static final By DATE_OF_THE_VERBAL_ORDER =
+      By.cssSelector("#quarantineOrderedVerballyDate");
+  public static final By DATE_OFFICIAL_QUARANTINE_ORDER_WAS_SENT =
+      By.cssSelector("#quarantineOfficialOrderSentDate");
+  public static final By QUARANTINE_TYPE_DETAILS = By.cssSelector("#quarantineTypeDetails");
   public static final By REPORT_GPS_LATITUDE_INPUT = By.cssSelector("input#reportLat");
   public static final By REPORT_GPS_LONGITUDE_INPUT = By.cssSelector("input#reportLon");
   public static final By REPORT_GPS_ACCURACY_IN_M_INPUT =

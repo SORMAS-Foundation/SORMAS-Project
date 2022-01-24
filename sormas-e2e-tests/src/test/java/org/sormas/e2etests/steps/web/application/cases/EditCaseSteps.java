@@ -28,6 +28,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.SneakyThrows;
+import org.sormas.e2etests.enums.CaseOutcome;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
@@ -79,6 +80,209 @@ public class EditCaseSteps implements En {
                   "lastName",
                   "dateOfBirth"));
         });
+
+    When(
+        "I select Investigation Status Pending",
+        () ->
+            webDriverHelpers.clickWebElementByText(
+                INVESTIGATION_STATUS_OPTIONS,
+                CaseOutcome.getValueFor("INVESTIGATION PENDING").toUpperCase()));
+
+    When(
+        "I select Investigation Status Done",
+        () ->
+            webDriverHelpers.clickWebElementByText(
+                INVESTIGATION_STATUS_OPTIONS,
+                CaseOutcome.getValueFor("INVESTIGATION DONE").toUpperCase()));
+
+    When(
+        "I select Investigation Status Discarded",
+        () ->
+            webDriverHelpers.clickWebElementByText(
+                INVESTIGATION_STATUS_OPTIONS,
+                CaseOutcome.getValueFor("INVESTIGATION DISCARDED").toUpperCase()));
+
+    When(
+        "I check if date of investigation filed is available",
+        () -> webDriverHelpers.clickOnWebElementBySelector(INVESTIGATED_DATE_FIELD));
+
+    When(
+        "I select Outcome Of Case Status Deceased",
+        () ->
+            webDriverHelpers.clickWebElementByText(
+                OUTCOME_OF_CASE_OPTIONS, CaseOutcome.getValueFor("DECEASED").toUpperCase()));
+    When(
+        "I select Outcome Of Case Status Recovered",
+        () ->
+            webDriverHelpers.clickWebElementByText(
+                OUTCOME_OF_CASE_OPTIONS, CaseOutcome.getValueFor("RECOVERED").toUpperCase()));
+
+    When(
+        "I select Outcome Of Case Status Unknown",
+        () ->
+            webDriverHelpers.clickWebElementByText(
+                OUTCOME_OF_CASE_OPTIONS, CaseOutcome.getValueFor("UNKNOWN").toUpperCase()));
+
+    When(
+        "I check if date of outcome filed is available",
+        () -> webDriverHelpers.clickOnWebElementBySelector(DATE_OF_OUTCOME));
+
+    When(
+        "I click on yes option in Sequelae",
+        () ->
+            webDriverHelpers.clickWebElementByText(
+                SEQUELAE_OPTIONS, CaseOutcome.getValueFor("Yes").toUpperCase()));
+    When(
+        "I click on no option in Sequelae",
+        () ->
+            webDriverHelpers.clickWebElementByText(
+                SEQUELAE_OPTIONS, CaseOutcome.getValueFor("No").toUpperCase()));
+    When(
+        "I click on unknown option in Sequelae",
+        () ->
+            webDriverHelpers.clickWebElementByText(
+                SEQUELAE_OPTIONS, CaseOutcome.getValueFor("Unknown").toUpperCase()));
+
+    When(
+        "I check if Sequelae Details field is available",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SEQUELAE_DETAILS));
+
+    When(
+        "I click on Place of stay of this case differs from its responsible jurisdiction",
+        () -> webDriverHelpers.clickOnWebElementBySelector(PLACE_OF_STAY_CHECKBOX));
+
+    When(
+        "I check if region combobox is available and I select Responsible Region",
+        () -> {
+          aCase = caseService.buildEditGeneratedCase();
+          webDriverHelpers.selectFromCombobox(PLACE_OF_STAY_REGION_COMBOBOX, aCase.getRegion());
+        });
+
+    When(
+        "I check if district combobox is available and i select Responsible District",
+        () -> {
+          aCase = caseService.buildEditGeneratedCase();
+          webDriverHelpers.selectFromCombobox(PLACE_OF_STAY_DISTRICT_COMBOBOX, aCase.getDistrict());
+        });
+
+    When(
+        "I check if community combobox is available",
+        () -> webDriverHelpers.clickOnWebElementBySelector(COMMUNITY_COMBOBOX_BY_PLACE_OF_STAY));
+
+    When(
+        "I click on Facility as place of stay",
+        () ->
+            webDriverHelpers.clickWebElementByText(
+                PLACE_OF_STAY_OPTIONS, CaseOutcome.getValueFor("Facility").toUpperCase()));
+
+    When(
+        "I check if Facility Category combobox is available",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FACILITY_CATEGORY_COMBOBOX));
+
+    When(
+        "I check if Facility Type combobox is available",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FACILITY_TYPE_COMBOBOX));
+
+    When(
+        "I set Facility as a Other Facility",
+        () ->
+            webDriverHelpers.selectFromCombobox(
+                FACILITY_HEALTH_COMBOBOX, CaseOutcome.getValueFor("Other facility")));
+
+    When(
+        "I check if Facility name and description field is available",
+        () -> webDriverHelpers.clickOnWebElementBySelector(PLACE_DESCRIPTION_INPUT));
+
+    When(
+        "I set Quarantine Home",
+        () ->
+            webDriverHelpers.selectFromCombobox(
+                QUARANTINE_COMBOBOX, CaseOutcome.getValueFor("Home")));
+
+    When(
+        "I set Quarantine Institutional",
+        () ->
+            webDriverHelpers.selectFromCombobox(
+                QUARANTINE_COMBOBOX, CaseOutcome.getValueFor("Institutional")));
+
+    When(
+        "I set Quarantine None",
+        () ->
+            webDriverHelpers.selectFromCombobox(
+                QUARANTINE_COMBOBOX, CaseOutcome.getValueFor("None")));
+    When(
+        "I set Quarantine Unknown",
+        () ->
+            webDriverHelpers.selectFromCombobox(
+                QUARANTINE_COMBOBOX, CaseOutcome.getValueFor("Unknown")));
+
+    When(
+        "I set Quarantine Other",
+        () ->
+            webDriverHelpers.selectFromCombobox(
+                QUARANTINE_COMBOBOX, CaseOutcome.getValueFor("Other")));
+
+    When(
+        "I check if Quarantine start field is available",
+        () -> webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_DATE_FROM));
+
+    When(
+        "I check if Quarantine end field is available",
+        () -> webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_DATE_TO));
+
+    When(
+        "I select Quarantine ordered verbally checkbox",
+        () -> webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_ORDERED_VERBALLY_CHECKBOX));
+
+    When(
+        "I check if Date of verbal order field is available",
+        () -> webDriverHelpers.clickOnWebElementBySelector(DATE_OF_THE_VERBAL_ORDER));
+
+    When(
+        "I select Quarantine ordered by official document checkbox",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_ORDERED_BY_DOCUMENT_CHECKBOX));
+
+    When(
+        "I check if Date of the official document ordered field is available",
+        () -> webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_ORDERED_BY_DOCUMENT_DATE));
+
+    When(
+        "I select Official quarantine order sent",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX));
+    When(
+        "I check if Date official quarantine order was sent field is available",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(DATE_OFFICIAL_QUARANTINE_ORDER_WAS_SENT));
+
+    When(
+        "I check if Quarantine details field is available",
+        () -> webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_TYPE_DETAILS));
+
+    When(
+        "I set Vaccination Status as vaccinated",
+        () ->
+            webDriverHelpers.selectFromCombobox(
+                VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX,
+                CaseOutcome.getValueFor("Vaccinated")));
+
+    When(
+        "I set Vaccination Status as unvaccinated",
+        () ->
+            webDriverHelpers.selectFromCombobox(
+                VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX,
+                CaseOutcome.getValueFor("Unvaccinated")));
+
+    When(
+        "I set Vaccination Status as unknown",
+        () ->
+            webDriverHelpers.selectFromCombobox(
+                VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX, CaseOutcome.getValueFor("Unknown")));
+
+    When(
+        "I click on save button in case edit",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON));
 
     When(
         "I collect the case person UUID displayed on Edit case page",
