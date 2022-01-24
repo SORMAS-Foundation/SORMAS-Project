@@ -9798,4 +9798,12 @@ ALTER TABLE weeklyreportentry_history ALTER COLUMN creationdate TYPE timestamp(3
 
 INSERT INTO schema_version (version_number, comment) VALUES (436, 'Set timestamp precision to milliseconds #7303');
 
+ALTER TABLE testreport ADD COLUMN testeddiseasevariant varchar(255);
+ALTER TABLE testreport ADD COLUMN testeddiseasevariantdetails varchar(255);
+
+ALTER TABLE testreport_history ADD COLUMN testeddiseasevariant varchar(255);
+ALTER TABLE testreport_history ADD COLUMN testeddiseasevariantdetails varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (437, 'Add disease variant mapping to test reports #7209');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
