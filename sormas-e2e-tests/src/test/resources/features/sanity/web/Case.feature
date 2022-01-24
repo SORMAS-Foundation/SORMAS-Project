@@ -77,5 +77,4 @@ Feature: Case end to end tests
     And I open last created case
     And I click on the Create button from Case Document Templates
     When I create a case document from template
-    Then I verify that the generated case document is downloaded
-    And I verify that the downloaded case document is correctly named
+    Then I verify that the case document is downloaded and correctly named

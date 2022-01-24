@@ -31,31 +31,29 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.stream.Stream;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.io.FileUtils;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.events.EditEventPage;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.pojo.web.*;
 import org.sormas.e2etests.pojo.web.Event;
 import org.sormas.e2etests.pojo.web.EventGroup;
 import org.sormas.e2etests.pojo.web.Person;
-import org.sormas.e2etests.pages.application.events.EditEventPage;
-import org.sormas.e2etests.pojo.web.*;
 import org.sormas.e2etests.services.EventDocumentService;
 import org.sormas.e2etests.services.EventGroupService;
 import org.sormas.e2etests.services.EventService;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class EditEventSteps implements En {
 
@@ -75,6 +73,7 @@ public class EditEventSteps implements En {
       EventDocumentService eventDocumentService,
       Faker faker,
       EventGroupService eventGroupService,
+      SoftAssert softly,
       @Named("ENVIRONMENT_URL") String environmentUrl,
       ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
@@ -257,8 +256,6 @@ public class EditEventSteps implements En {
     When(
         "I create an event document from template",
         () -> {
-          File dir = new File(userDirPath + "\\downloads");
-          FileUtils.deleteDirectory(dir);
           aEventHandout = eventDocumentService.buildEventHandout();
           aEventHandout = aEventHandout.toBuilder().build();
           selectEventHandoutTemplate(aEventHandout.getDocumentTemplate());
@@ -266,15 +263,8 @@ public class EditEventSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CANCEL_EVENT_HANDOUT_BUTTON);
         });
 
-    Then(
-        "I verify that the generated event document is downloaded",
-        () -> {
-          Stream<Path> list = Files.list(Paths.get(userDirPath + "\\downloads"));
-          Truth.assertThat(list.findFirst().isPresent()).isTrue();
-        });
-
     And(
-        "I verify that the downloaded event document is correctly named",
+        "I verify that the event document is downloaded and correctly named",
         () -> {
           String uuid = webDriverHelpers.getValueFromWebElement(EditEventPage.UUID_INPUT);
           Path path =
@@ -284,7 +274,8 @@ public class EditEventSteps implements En {
                       + uuid.substring(0, 6)
                       + "-"
                       + aEventHandout.getDocumentTemplate());
-          Truth.assertThat(Files.exists(path)).isTrue();
+          softly.assertTrue(
+              Files.exists(path), "The document with expected name was not downloaded");
         });
   }
 

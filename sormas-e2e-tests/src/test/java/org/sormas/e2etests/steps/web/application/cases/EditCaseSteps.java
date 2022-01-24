@@ -23,26 +23,24 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 
 import cucumber.api.java8.En;
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.SneakyThrows;
-import org.apache.commons.io.FileUtils;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
+import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Case;
 import org.sormas.e2etests.pojo.web.QuarantineOrder;
 import org.sormas.e2etests.services.CaseDocumentService;
 import org.sormas.e2etests.services.CaseService;
+import org.testng.asserts.SoftAssert;
 
 public class EditCaseSteps implements En {
 
@@ -60,6 +58,7 @@ public class EditCaseSteps implements En {
       WebDriverHelpers webDriverHelpers,
       CaseService caseService,
       CaseDocumentService caseDocumentService,
+      SoftAssert softly,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -120,8 +119,6 @@ public class EditCaseSteps implements En {
     When(
         "I create a case document from template",
         () -> {
-          File dir = new File(userDirPath + "\\downloads");
-          FileUtils.deleteDirectory(dir);
           aQuarantineOrder = caseDocumentService.buildQuarantineOrder();
           aQuarantineOrder = aQuarantineOrder.toBuilder().build();
           selectQuarantineOrderTemplate(aQuarantineOrder.getDocumentTemplate());
@@ -131,15 +128,8 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_SAVED_POPUP);
         });
 
-    Then(
-        "I verify that the generated case document is downloaded",
-        () -> {
-          Stream<Path> list = Files.list(Paths.get(userDirPath + "\\downloads"));
-          Truth.assertThat(list.findFirst().isPresent()).isTrue();
-        });
-
     And(
-        "I verify that the downloaded case document is correctly named",
+        "I verify that the case document is downloaded and correctly named",
         () -> {
           String uuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
           Path path =
@@ -149,7 +139,8 @@ public class EditCaseSteps implements En {
                       + uuid.substring(0, 6)
                       + "-"
                       + aQuarantineOrder.getDocumentTemplate());
-          Truth.assertThat(Files.exists(path)).isTrue();
+          softly.assertTrue(
+              Files.exists(path), "The document with expected name was not downloaded");
         });
 
     When(

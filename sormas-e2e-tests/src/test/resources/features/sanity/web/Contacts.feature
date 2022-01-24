@@ -139,5 +139,4 @@ Feature: Contacts end to end tests
     And I open the first contact
     And I click on the Create button from Contact Document Templates
     When I create a contact document from template
-    Then I verify that the generated contact document is downloaded
-    And I verify that the downloaded contact document is correctly named
+    Then I verify that the contact document is downloaded and correctly named
