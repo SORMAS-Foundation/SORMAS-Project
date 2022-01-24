@@ -38,10 +38,12 @@ public class PersonDirectorySteps implements En {
 
   @Inject
   public PersonDirectorySteps(
-      WebDriverHelpers webDriverHelpers, @Named("ENVIRONMENT_URL") String environmentUrl, ApiState apiState) {
+      WebDriverHelpers webDriverHelpers,
+      @Named("ENVIRONMENT_URL") String environmentUrl,
+      ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
 
-    //TODO refactor all BDD methods naming to be more explicit regarding where data comes from
+    // TODO refactor all BDD methods naming to be more explicit regarding where data comes from
 
     /** Avoid using this method until Person's performance is fixed */
     Then(
@@ -89,34 +91,40 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(getByPersonUuid(personUuid));
         });
 
-      Then(
-              "I search after last created person from API by {string}",
-              (String searchCriteria) -> {
-                  String searchText ="";
-                  String personUUID = apiState.getLastCreatedPerson().getUuid();
-                  switch (searchCriteria){
-                      case "uuid" : searchText = personUUID;
-                          break;
-                      case "full name" : searchText = apiState.getLastCreatedPerson().getLastName() + " " + apiState.getLastCreatedPerson().getFirstName();
-                          break;
-                          //etc
-                  }
-                  webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
-                  webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON);
-                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+    Then(
+        "I search after last created person from API by {string}",
+        (String searchCriteria) -> {
+          String searchText = "";
+          String personUUID = apiState.getLastCreatedPerson().getUuid();
+          switch (searchCriteria) {
+            case "uuid":
+              searchText = personUUID;
+              break;
+            case "full name":
+              searchText =
+                  apiState.getLastCreatedPerson().getLastName()
+                      + " "
+                      + apiState.getLastCreatedPerson().getFirstName();
+              break;
+              // etc
+          }
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
 
-                  webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, searchText);
-                  webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-                  By uuidLocator =
-                          By.cssSelector(String.format(PERSON_RESULTS_UUID_LOCATOR, personUUID));
-                  webDriverHelpers.isElementVisibleWithTimeout(uuidLocator, 150);
-                  webDriverHelpers.clickOnWebElementBySelector(uuidLocator);
-                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
-                  webDriverHelpers.isElementVisibleWithTimeout(UUID_INPUT, 20);
-              });
+          webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, searchText);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          By uuidLocator = By.cssSelector(String.format(PERSON_RESULTS_UUID_LOCATOR, personUUID));
+          webDriverHelpers.isElementVisibleWithTimeout(uuidLocator, 150);
+          webDriverHelpers.clickOnWebElementBySelector(uuidLocator);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
+          webDriverHelpers.isElementVisibleWithTimeout(UUID_INPUT, 20);
+        });
 
-      //TODO Michal, due to specific logic to filter only for this situation, create a method with a suggestive name, where you apply filters based on generated POJO data.
-      //We can't create multiple methods to reuse them in this case, but please keep in mind to create generic locators
-      //The above method will need to be finished by you (the switch to cover all search criteria)
+    // TODO Michal, due to specific logic to filter only for this situation, create a method with a
+    // suggestive name, where you apply filters based on generated POJO data.
+    // We can't create multiple methods to reuse them in this case, but please keep in mind to
+    // create generic locators
+    // The above method will need to be finished by you (the switch to cover all search criteria)
   }
 }
