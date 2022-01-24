@@ -44,16 +44,16 @@ Feature: Case end to end tests
     And I check if date of outcome filed is available
     Then I select Outcome Of Case Status Recovered
     And I check if date of outcome filed is available
-    And I click on yes option in Sequelae
+    And I click on Yes option in Sequelae
     And I check if Sequelae Details field is available
-    And I click on no option in Sequelae
-    And I click on unknown option in Sequelae
+    And I click on No option in Sequelae
+    And I click on Unknown option in Sequelae
     Then I select Outcome Of Case Status Unknown
     And I check if date of outcome filed is available
-    And I click on yes option in Sequelae
+    And I click on Yes option in Sequelae
     And I check if Sequelae Details field is available
-    And I click on no option in Sequelae
-    And I click on unknown option in Sequelae
+    And I click on No option in Sequelae
+    And I click on Unknown option in Sequelae
     Then I click on Place of stay of this case differs from its responsible jurisdiction
     And I check if region combobox is available and I select Responsible Region
     And I check if district combobox is available and i select Responsible District

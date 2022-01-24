@@ -82,29 +82,15 @@ public class EditCaseSteps implements En {
         });
 
     When(
-        "I select Investigation Status Pending",
-        () ->
+        "I select Investigation Status ([^\"]*)",
+        (String investigationStatus) ->
             webDriverHelpers.clickWebElementByText(
                 INVESTIGATION_STATUS_OPTIONS,
-                CaseOutcome.getValueFor("INVESTIGATION PENDING").toUpperCase()));
-
-    When(
-        "I select Investigation Status Done",
-        () ->
-            webDriverHelpers.clickWebElementByText(
-                INVESTIGATION_STATUS_OPTIONS,
-                CaseOutcome.getValueFor("INVESTIGATION DONE").toUpperCase()));
-
-    When(
-        "I select Investigation Status Discarded",
-        () ->
-            webDriverHelpers.clickWebElementByText(
-                INVESTIGATION_STATUS_OPTIONS,
-                CaseOutcome.getValueFor("INVESTIGATION DISCARDED").toUpperCase()));
+                CaseOutcome.getValueFor("INVESTIGATION " + investigationStatus).toUpperCase()));
 
     When(
         "I check if date of investigation filed is available",
-        () -> webDriverHelpers.clickOnWebElementBySelector(INVESTIGATED_DATE_FIELD));
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(INVESTIGATED_DATE_FIELD));
 
     When(
         "I select Outcome Of Case Status Deceased",
@@ -125,27 +111,17 @@ public class EditCaseSteps implements En {
 
     When(
         "I check if date of outcome filed is available",
-        () -> webDriverHelpers.clickOnWebElementBySelector(DATE_OF_OUTCOME));
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(DATE_OF_OUTCOME));
 
     When(
-        "I click on yes option in Sequelae",
-        () ->
+        "I click on ([^\"]*) option in Sequelae",
+        (String option) ->
             webDriverHelpers.clickWebElementByText(
-                SEQUELAE_OPTIONS, CaseOutcome.getValueFor("Yes").toUpperCase()));
-    When(
-        "I click on no option in Sequelae",
-        () ->
-            webDriverHelpers.clickWebElementByText(
-                SEQUELAE_OPTIONS, CaseOutcome.getValueFor("No").toUpperCase()));
-    When(
-        "I click on unknown option in Sequelae",
-        () ->
-            webDriverHelpers.clickWebElementByText(
-                SEQUELAE_OPTIONS, CaseOutcome.getValueFor("Unknown").toUpperCase()));
+                SEQUELAE_OPTIONS, CaseOutcome.getValueFor(option).toUpperCase()));
 
     When(
         "I check if Sequelae Details field is available",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SEQUELAE_DETAILS));
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEQUELAE_DETAILS));
 
     When(
         "I click on Place of stay of this case differs from its responsible jurisdiction",
@@ -167,7 +143,9 @@ public class EditCaseSteps implements En {
 
     When(
         "I check if community combobox is available",
-        () -> webDriverHelpers.clickOnWebElementBySelector(COMMUNITY_COMBOBOX_BY_PLACE_OF_STAY));
+        () ->
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                COMMUNITY_COMBOBOX_BY_PLACE_OF_STAY));
 
     When(
         "I click on Facility as place of stay",
@@ -177,11 +155,11 @@ public class EditCaseSteps implements En {
 
     When(
         "I check if Facility Category combobox is available",
-        () -> webDriverHelpers.clickOnWebElementBySelector(FACILITY_CATEGORY_COMBOBOX));
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_CATEGORY_COMBOBOX));
 
     When(
         "I check if Facility Type combobox is available",
-        () -> webDriverHelpers.clickOnWebElementBySelector(FACILITY_TYPE_COMBOBOX));
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_TYPE_COMBOBOX));
 
     When(
         "I set Facility as a Other Facility",
@@ -191,44 +169,21 @@ public class EditCaseSteps implements En {
 
     When(
         "I check if Facility name and description field is available",
-        () -> webDriverHelpers.clickOnWebElementBySelector(PLACE_DESCRIPTION_INPUT));
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(PLACE_DESCRIPTION_INPUT));
 
     When(
-        "I set Quarantine Home",
-        () ->
+        "I set Quarantine ([^\"]*)",
+        (String option) ->
             webDriverHelpers.selectFromCombobox(
-                QUARANTINE_COMBOBOX, CaseOutcome.getValueFor("Home")));
-
-    When(
-        "I set Quarantine Institutional",
-        () ->
-            webDriverHelpers.selectFromCombobox(
-                QUARANTINE_COMBOBOX, CaseOutcome.getValueFor("Institutional")));
-
-    When(
-        "I set Quarantine None",
-        () ->
-            webDriverHelpers.selectFromCombobox(
-                QUARANTINE_COMBOBOX, CaseOutcome.getValueFor("None")));
-    When(
-        "I set Quarantine Unknown",
-        () ->
-            webDriverHelpers.selectFromCombobox(
-                QUARANTINE_COMBOBOX, CaseOutcome.getValueFor("Unknown")));
-
-    When(
-        "I set Quarantine Other",
-        () ->
-            webDriverHelpers.selectFromCombobox(
-                QUARANTINE_COMBOBOX, CaseOutcome.getValueFor("Other")));
+                QUARANTINE_COMBOBOX, CaseOutcome.getValueFor(option)));
 
     When(
         "I check if Quarantine start field is available",
-        () -> webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_DATE_FROM));
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(QUARANTINE_DATE_FROM));
 
     When(
         "I check if Quarantine end field is available",
-        () -> webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_DATE_TO));
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(QUARANTINE_DATE_TO));
 
     When(
         "I select Quarantine ordered verbally checkbox",
@@ -236,7 +191,7 @@ public class EditCaseSteps implements En {
 
     When(
         "I check if Date of verbal order field is available",
-        () -> webDriverHelpers.clickOnWebElementBySelector(DATE_OF_THE_VERBAL_ORDER));
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(DATE_OF_THE_VERBAL_ORDER));
 
     When(
         "I select Quarantine ordered by official document checkbox",
@@ -245,7 +200,9 @@ public class EditCaseSteps implements En {
 
     When(
         "I check if Date of the official document ordered field is available",
-        () -> webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_ORDERED_BY_DOCUMENT_DATE));
+        () ->
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                QUARANTINE_ORDERED_BY_DOCUMENT_DATE));
 
     When(
         "I select Official quarantine order sent",
@@ -254,11 +211,12 @@ public class EditCaseSteps implements En {
     When(
         "I check if Date official quarantine order was sent field is available",
         () ->
-            webDriverHelpers.clickOnWebElementBySelector(DATE_OFFICIAL_QUARANTINE_ORDER_WAS_SENT));
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                DATE_OFFICIAL_QUARANTINE_ORDER_WAS_SENT));
 
     When(
         "I check if Quarantine details field is available",
-        () -> webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_TYPE_DETAILS));
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(QUARANTINE_TYPE_DETAILS));
 
     When(
         "I set Vaccination Status as vaccinated",
