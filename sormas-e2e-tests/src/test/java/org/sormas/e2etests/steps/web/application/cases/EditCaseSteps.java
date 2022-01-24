@@ -208,24 +208,11 @@ public class EditCaseSteps implements En {
         () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(QUARANTINE_TYPE_DETAILS));
 
     When(
-        "I set Vaccination Status as vaccinated",
-        () ->
+        "I set Vaccination Status as ([^\"]*)",
+        (String vaccinationStatus) ->
             webDriverHelpers.selectFromCombobox(
                 VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX,
-                CaseOutcome.getValueFor("Vaccinated")));
-
-    When(
-        "I set Vaccination Status as unvaccinated",
-        () ->
-            webDriverHelpers.selectFromCombobox(
-                VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX,
-                CaseOutcome.getValueFor("Unvaccinated")));
-
-    When(
-        "I set Vaccination Status as unknown",
-        () ->
-            webDriverHelpers.selectFromCombobox(
-                VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX, CaseOutcome.getValueFor("Unknown")));
+                CaseOutcome.getValueFor(vaccinationStatus)));
 
     When(
         "I click on save button in case edit",
