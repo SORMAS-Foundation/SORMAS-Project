@@ -18,6 +18,7 @@
 package org.sormas.e2etests.enums;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum DistrictsValues {
@@ -29,5 +30,14 @@ public enum DistrictsValues {
   DistrictsValues(String name, String uuid) {
     this.name = name;
     this.uuid = uuid;
+  }
+
+  @SneakyThrows
+  public static String getValueFor(String option) {
+    DistrictsValues[] districtsValues = DistrictsValues.values();
+    for (DistrictsValues value : districtsValues) {
+      if (value.getName().equalsIgnoreCase(option)) return value.getName();
+    }
+    throw new Exception("Unable to find " + option + " value in DistrictsValues Enum");
   }
 }

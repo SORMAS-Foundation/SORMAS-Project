@@ -27,9 +27,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.common.*;
-import org.sormas.e2etests.enums.CaseOrigin;
-import org.sormas.e2etests.enums.CaseOutcome;
-import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.*;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -79,9 +77,10 @@ public class CaseDirectorySteps implements En {
               dataOperations.getPartialUuidFromAssociatedLink(apiState.getCreatedCase().getUuid());
           webDriverHelpers.fillAndSubmitInWebElement(
               CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
-          webDriverHelpers.clickOnWebElementBySelector(
-              CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
-          TimeUnit.SECONDS.sleep(3); // needed for table refresh
+          //                  webDriverHelpers.clickOnWebElementBySelector(
+          //                          CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
+          //                  TimeUnit.SECONDS.sleep(3); // needed for table refresh
+          //                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(3);
         });
 
     When(
@@ -128,12 +127,58 @@ public class CaseDirectorySteps implements En {
               "Total number of displayed cases doesn't match with the number of cases created via api");
         });
 
+    And(
+        "I apply Person Id filter",
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(
+              PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
+              apiState.getLastCreatedPerson().getFirstName()
+                  + " "
+                  + apiState.getLastCreatedPerson().getLastName());
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+
     Then(
         "I apply Outcome of case filter {string}",
         (String outcomeFilterOption) -> {
           webDriverHelpers.selectFromCombobox(
               CASE_OUTCOME_FILTER_COMBOBOX, CaseOutcome.getValueFor(outcomeFilterOption));
-          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+        });
+    And(
+        "I apply Case classification filter {string}",
+        (String caseClassification) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_CLASSIFICATION_FILTER_COMBOBOX,
+              CaseClasification.getValueFor(caseClassification));
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Follow-up filter {string}",
+        (String caseClassification) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_FOLLOWUP_FILTER_COMBOBOX, FollowUpStatus.getValueFor(caseClassification));
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Present Condition filter {string}",
+        (String caseClassification) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_PRESENT_CONDITION_COMBOBOX, FollowUpStatus.getValueFor(caseClassification));
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+
+    And(
+        "I click APPLY BUTTON in Case Directory Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // needed for table refresh
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(3);
         });
 
     Then(
@@ -141,8 +186,100 @@ public class CaseDirectorySteps implements En {
         (String caseOrigin) -> {
           webDriverHelpers.selectFromCombobox(
               CASE_ORIGIN_FILTER_COMBOBOX, CaseOrigin.getValueFor(caseOrigin));
-          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
-          TimeUnit.SECONDS.sleep(3);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    Then(
+        "I apply Community {string}",
+        (String community) -> {
+          webDriverHelpers.selectFromCombobox(CASE_COMMUNITY_FILTER_COMBOBOX, community);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+
+    And(
+        "I apply Region filter {string}",
+        (String region) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_REGION_FILTER_COMBOBOX, RegionsValues.getValueFor(region));
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Surveillance Officer filter {string}",
+        (String survoff) -> {
+          webDriverHelpers.selectFromCombobox(CASE_SURVOFF_FILTER_COMBOBOX, survoff);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Reporting User filter {string}",
+        (String reportingUser) -> {
+          webDriverHelpers.fillInWebElement(CASE_REPORTING_USER_FILTER, reportingUser);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Year filter {string}",
+        (String year) -> {
+          webDriverHelpers.selectFromCombobox(CASE_YEAR_FILTER, year);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Year filter of last created person",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_YEAR_FILTER, apiState.getLastCreatedPerson().getBirthdateYYYY().toString());
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+
+    And(
+        "I apply Month filter {string}",
+        (String month) -> {
+          webDriverHelpers.selectFromCombobox(CASE_MONTH_FILTER, month);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Month filter of last created person",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_MONTH_FILTER, apiState.getLastCreatedPerson().getBirthdateMM().toString());
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Day filter {string}",
+        (String day) -> {
+          webDriverHelpers.selectFromCombobox(CASE_DAY_FILTER, day);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Day filter of last created person",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_DAY_FILTER, apiState.getLastCreatedPerson().getBirthdateDD().toString());
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Facility category filter {string}",
+        (String facilityCategory) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_REGION_FILTER_COMBOBOX, FacilityCategory.getValueFor(facilityCategory));
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply District filter {string}",
+        (String district) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_DISTRICT_FILTER_COMBOBOX, DistrictsValues.getValueFor(district));
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
         });
 
     And(
@@ -170,7 +307,12 @@ public class CaseDirectorySteps implements En {
         (String diseaseFilterOption) -> {
           webDriverHelpers.selectFromCombobox(
               CASE_DISEASE_FILTER_COMBOBOX, DiseasesValues.getCaptionFor(diseaseFilterOption));
-          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+        });
+    And(
+        "I click SHOW MORE FILTERS button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_LESS_FILTERS);
         });
 
     Then(
