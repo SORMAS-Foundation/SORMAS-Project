@@ -25,6 +25,7 @@ import cucumber.api.java8.En;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
@@ -102,5 +103,12 @@ public class EventDirectorySteps implements En {
     When(
         "I open the first event from events list",
         () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_ID_BUTTON));
+    And(
+        "I click Create Case for Event Participant",
+        () ->
+            webDriverHelpers.clickWebElementByText(
+                By.xpath(
+                    "//*[@id=\"sormasui-1655777373\"]/div/div[2]/div/div[2]/div/div/div/div[3]/div/div/div[3]/div/div[3]/table/tbody/tr/td[8]/a"),
+                "Create"));
   }
 }

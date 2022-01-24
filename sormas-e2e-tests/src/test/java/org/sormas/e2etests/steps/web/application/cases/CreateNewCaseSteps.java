@@ -141,6 +141,30 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
+
+    When(
+        "^I create a new case for event participant with specific data$",
+        () -> {
+          caze = caseService.buildGeneratedCase();
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillExternalId(caze.getExternalId());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+
+          fillDateOfBirth(caze.getDateOfBirth());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset());
+          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+          fillDateOfReport(caze.getDateOfReport());
+          fillPlaceDescription(caze.getPlaceDescription());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
   }
 
   private void selectCaseOrigin(String caseOrigin) {
