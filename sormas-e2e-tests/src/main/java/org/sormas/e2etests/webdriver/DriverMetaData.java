@@ -16,31 +16,28 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.services;
+package org.sormas.e2etests.webdriver;
 
-import com.github.javafaker.Faker;
-import com.google.inject.Inject;
-import java.time.LocalDate;
-import org.sormas.e2etests.pojo.web.Action;
-import org.sormas.e2etests.pojo.web.Event;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import java.net.URI;
+import lombok.Builder;
+import lombok.Value;
+import org.sormas.e2etests.enums.OperatingSystems;
 
-public class EventActionTableEntryService {
-  private final Faker faker;
+@Builder(toBuilder = true, builderClassName = "Builder")
+@JsonDeserialize(builder = DriverMetaData.Builder.class)
+@Value
+public class DriverMetaData {
 
-  @Inject
-  public EventActionTableEntryService(Faker faker) {
-    this.faker = faker;
-  }
-
-  public Action buildEventActionTableEntryInput(Event event, Action action) {
-    String timestamp = String.valueOf(System.currentTimeMillis());
-    return Action.builder()
-        .date(LocalDate.now())
-        .priority("Normal")
-        .measure("Closure of facility")
-        .title("Dummy Action " + timestamp)
-        .description("Dummy Action " + timestamp)
-        .actionStatus("PENDING")
-        .build();
-  }
+  URI gridUrl;
+  OperatingSystems operatingSystem;
+  String systemArchitecture;
+  boolean isRemoteWebDriverEnabled;
+  boolean isProxyEnabled;
+  String proxyHostname;
+  int proxyPort;
+  String proxyDetail;
+  String userDirProperty;
+  String browser;
+  String environmentUrl;
 }

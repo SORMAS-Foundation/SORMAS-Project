@@ -37,10 +37,10 @@ public class ContactDirectoryPage {
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By CONTACTS_DETAILED_TABLE_DATA = By.cssSelector("[role=gridcell]");
   public static final By DISEASE_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(5)");
-  public static final By FIRST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(8)");
-  public static final By LAST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(9)");
+  public static final By FIRST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(9)");
+  public static final By LAST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(10)");
   public static final By TYPE_OF_CONTACT_COLUMNS =
-      By.cssSelector("[role=rowgroup] tr>td:nth-child(11)");
+      By.cssSelector("[role=rowgroup] tr>td:nth-child(12)");
   public static final By FOLLOW_UP_VISITS_BUTTON =
       By.cssSelector("#contactsViewSwitcher span:nth-child(3)");
   public static final By FROM_INPUT = By.cssSelector("#fromReferenceDateField input");

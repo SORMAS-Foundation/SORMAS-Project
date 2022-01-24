@@ -55,8 +55,8 @@ public class WeeklyReportDtoHelper extends AdoDtoHelper<WeeklyReport, WeeklyRepo
 	}
 
 	@Override
-	protected Call<List<WeeklyReportDto>> pullAllSince(long since) throws NoConnectionException {
-		return RetroProvider.getWeeklyReportFacade().pullAllSince(since);
+	protected Call<List<WeeklyReportDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+		return RetroProvider.getWeeklyReportFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
 	@Override
@@ -151,7 +151,12 @@ public class WeeklyReportDtoHelper extends AdoDtoHelper<WeeklyReport, WeeklyRepo
 		target.setEpiWeek(source.getEpiWeek());
 	}
 
-	public static WeeklyReportReferenceDto toReferenceDto(WeeklyReport ado) {
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return WeeklyReportDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+    }
+
+    public static WeeklyReportReferenceDto toReferenceDto(WeeklyReport ado) {
 		if (ado == null) {
 			return null;
 		}

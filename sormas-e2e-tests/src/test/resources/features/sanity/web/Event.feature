@@ -5,7 +5,7 @@ Feature: Create events
     Given I log in with National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
-    And I create a new event
+    And I create a new event with status CLUSTER
 
   Scenario: Create a new event and change its status multiple times
     Given I log in with National User
@@ -56,6 +56,31 @@ Feature: Create events
     And I navigate via URL to last Person created from edit Event page
     Then I check if event is available at person information
 
+  @issue=SORDEV-5475
+  Scenario: Add a participant to an event
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with status EVENT
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    Given I add empty participant data
+    Then I save changes in participant window
+    And I check if error display correctly expecting first name error
+    And I add participant first name only
+    Then I save changes in participant window
+    And I check if error display correctly expecting last name error
+    And I add participant first and last name only
+    Then I save changes in participant window
+    And I check if error display correctly expecting sex error
+    And I discard changes in participant window
+    Then I add a participant to the event
+    Then I check if participant appears in the event participants list
+    And I navigate via URL to last Person created from edit Event page
+    Then I check if event is available at person information
+
   Scenario: Create and edit a new event
     Given I log in with National User
     And I click on the Events button from navbar
@@ -70,7 +95,7 @@ Feature: Create events
     And I click on the searched event
     Then I check the modified event data is correctly displayed
 
-  Scenario: Add a New action from event and verify the fields.
+  Scenario: Add a New action from event and verify the fields
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
@@ -80,18 +105,6 @@ Feature: Create events
     And I click on New Action button from Event tab
     Then I create New Action from event tab
     And I click on Event Actions tab
-    And I open the Action recently created from Event tab
-    And I check that Action created from Event tab is correctly displayed in Event Actions tab
-
-  Scenario: Add a New action from Event Actions tab and verify the fields.
-    Given API: I create a new event
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in with National User
-    Then I navigate to Event Action tab for created Event
-    And I click on New Action from Event Actions tab
-    And I create New Action from event tab
-    Then I navigate to Event Action tab for created Event
     And I open the Action recently created from Event tab
     And I check that Action created from Event tab is correctly displayed in Event Actions tab
 

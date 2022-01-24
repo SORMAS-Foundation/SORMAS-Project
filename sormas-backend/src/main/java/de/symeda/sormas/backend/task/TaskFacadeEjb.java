@@ -304,11 +304,12 @@ public class TaskFacadeEjb implements TaskFacade {
 		if (ado.getTaskType() == TaskType.CONTACT_FOLLOW_UP && ado.getTaskStatus() == TaskStatus.DONE && ado.getContact() != null) {
 			try {
 				messagingService.sendMessages(() -> {
-					final List<User> messageRecipients = new ArrayList<>(userService.getAllByRegionsAndUserRoles(
-						JurisdictionHelper.getContactRegions(ado.getContact()),
-						UserRole.SURVEILLANCE_SUPERVISOR,
-						UserRole.CASE_SUPERVISOR,
-						UserRole.CONTACT_SUPERVISOR));
+					final List<User> messageRecipients = new ArrayList<>(
+						userService.getAllByRegionsAndUserRoles(
+							JurisdictionHelper.getContactRegions(ado.getContact()),
+							UserRole.SURVEILLANCE_SUPERVISOR,
+							UserRole.CASE_SUPERVISOR,
+							UserRole.CONTACT_SUPERVISOR));
 					if (ado.getObserverUsers() != null) {
 						messageRecipients.addAll(ado.getObserverUsers());
 					}
@@ -345,6 +346,11 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	@Override
 	public List<TaskDto> getAllActiveTasksAfter(Date date) {
+		return getAllActiveTasksAfter(date, null, null);
+	}
+
+	@Override
+	public List<TaskDto> getAllActiveTasksAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		User user = userService.getCurrentUser();
 		if (user == null) {
@@ -352,7 +358,10 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return taskService.getAllActiveTasksAfter(date, user).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
+		return taskService.getAllActiveTasksAfter(date, user, batchSize, lastSynchronizedUuid)
+			.stream()
+			.map(c -> toDto(c, pseudonymizer))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -848,9 +857,9 @@ public class TaskFacadeEjb implements TaskFacade {
 					String message = context == TaskContext.GENERAL
 						? String.format(I18nProperties.getString(MessageContents.CONTENT_TASK_START_GENERAL), task.getTaskType().toString())
 						: String.format(
-						I18nProperties.getString(MessageContents.CONTENT_TASK_START_SPECIFIC),
-						task.getTaskType().toString(),
-						buildAssociatedEntityLinkContent(context, associatedEntity));
+							I18nProperties.getString(MessageContents.CONTENT_TASK_START_SPECIFIC),
+							task.getTaskType().toString(),
+							buildAssociatedEntityLinkContent(context, associatedEntity));
 					if (task.getAssigneeUser() != null) {
 						mapToReturn.put(task.getAssigneeUser(), message);
 					}
@@ -878,9 +887,9 @@ public class TaskFacadeEjb implements TaskFacade {
 					String message = context == TaskContext.GENERAL
 						? String.format(I18nProperties.getString(MessageContents.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString())
 						: String.format(
-						I18nProperties.getString(MessageContents.CONTENT_TASK_DUE_SPECIFIC),
-						task.getTaskType().toString(),
-						buildAssociatedEntityLinkContent(context, associatedEntity));
+							I18nProperties.getString(MessageContents.CONTENT_TASK_DUE_SPECIFIC),
+							task.getTaskType().toString(),
+							buildAssociatedEntityLinkContent(context, associatedEntity));
 					if (task.getAssigneeUser() != null) {
 						mapToReturn.put(task.getAssigneeUser(), message);
 					}

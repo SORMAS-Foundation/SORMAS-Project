@@ -331,7 +331,9 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			boolean creating = value.getCreationDate() == null;
 
 			UserDto user = UserProvider.getCurrent().getUser();
-			boolean creator = user.equals(value.getCreatorUser());
+			boolean creator = value.getCreatorUser() == null
+				? UserRole.getJurisdictionLevel(user.getUserRoles()) == JurisdictionLevel.NATION
+				: user.equals(value.getCreatorUser());
 			boolean supervisor = UserRole.isSupervisor(user.getUserRoles());
 			boolean assignee = user.equals(getFieldGroup().getField(TaskDto.ASSIGNEE_USER).getValue());
 
@@ -350,7 +352,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 					TaskDto.SUGGESTED_START,
 					TaskDto.DUE_DATE,
 					TaskDto.ASSIGNEE_USER,
-					TaskDto.CREATOR_COMMENT);
+					TaskDto.CREATOR_COMMENT,
+					TaskDto.OBSERVER_USERS);
 				setReadOnly(
 					!(creator || supervisor),
 					TaskDto.PRIORITY,

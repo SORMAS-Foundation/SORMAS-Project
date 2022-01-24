@@ -29,8 +29,6 @@ public class Immunization {
   String lastName;
   LocalDate dateOfBirth;
   String sex;
-  String nationalHealthId;
-  String passportNumber;
   String presentConditionOfPerson;
   String primaryPhoneNumber;
   String primaryEmailAddress;

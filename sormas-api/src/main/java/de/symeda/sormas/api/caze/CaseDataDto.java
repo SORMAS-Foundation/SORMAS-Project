@@ -76,8 +76,9 @@ import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.Longitude
 public class CaseDataDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = 5007131477733638086L;
-
 	private static final long MILLISECONDS_30_DAYS = 30L * 24L * 60L * 60L * 1000L;
+
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 123458;
 
 	public static final String I18N_PREFIX = "CaseData";
 

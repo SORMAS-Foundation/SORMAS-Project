@@ -57,13 +57,13 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
@@ -104,13 +104,21 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 	@Override
 	public List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date) {
+		return getAllWeeklyReportsAfter(date, null, null);
+	}
+
+	@Override
+	public List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return weeklyReportService.getAllAfter(date, user).stream().map(WeeklyReportFacadeEjb::toDto).collect(Collectors.toList());
+		return weeklyReportService.getAllAfter(date, user, batchSize, lastSynchronizedUuid)
+			.stream()
+			.map(WeeklyReportFacadeEjb::toDto)
+			.collect(Collectors.toList());
 	}
 
 	@Override

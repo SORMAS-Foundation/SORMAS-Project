@@ -110,7 +110,7 @@ public class CountryDto extends InfrastructureDto {
 
 	@Override
 	public String toString() {
-		return this.defaultName;
+		return getDefaultName();
 	}
 
 	public static CountryDto build() {

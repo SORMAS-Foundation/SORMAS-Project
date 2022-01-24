@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.sormastosormas.validation;
 
 import static org.hibernate.validator.internal.util.Contracts.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import java.lang.reflect.Constructor;
@@ -20,17 +21,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import de.symeda.sormas.api.sormastosormas.labmessage.SormasToSormasLabMessageDto;
-import de.symeda.sormas.api.utils.DefaultEntityHelper;
-import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.common.DefaultEntitiesCreator;
-import de.symeda.sormas.backend.infrastructure.community.Community;
-import de.symeda.sormas.backend.infrastructure.continent.Continent;
-import de.symeda.sormas.backend.infrastructure.country.Country;
-import de.symeda.sormas.backend.infrastructure.district.District;
-import de.symeda.sormas.backend.infrastructure.region.Region;
-import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
-import de.symeda.sormas.backend.sormastosormas.entities.labmessage.SormasToSormasLabMessageDtoValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
@@ -53,6 +43,7 @@ import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
+import de.symeda.sormas.api.sormastosormas.labmessage.SormasToSormasLabMessageDto;
 import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
@@ -62,13 +53,23 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPrevi
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.common.DefaultEntitiesCreator;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.continent.Continent;
+import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.eventparticipant.SormasToSormasEventParticipantDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.immunization.SormasToSormasImmunizationDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.entities.labmessage.SormasToSormasLabMessageDtoValidator;
 
 public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 
@@ -515,8 +516,9 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 	}
 
 	private void assertValidation(Set<String> expected, Set<String> foundFields) {
-		// smoke test, we allow both to be empty though, as lab messages currently don't have relevant fields
-		assertFalse(foundFields.isEmpty() ^ expected.isEmpty());
+		// smoke test, in case both are empty for some reason this will blow up
+		assertFalse(foundFields.isEmpty());
+		assertFalse(expected.isEmpty());
 		final Collection disjunction = CollectionUtils.disjunction(foundFields, expected);
 		assertTrue(disjunction.isEmpty(), "The following fields are not validated in the DTO: " + disjunction);
 	}
@@ -530,7 +532,14 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 		SormasToSormasDtoValidator<DTO, SHARED, PREVIEW> validator)
 		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
 		Set<String> expected = getExpected(entity, rootNode);
-
+		if (expected.isEmpty()) {
+			assertEquals(
+				"SormasToSormasLabMessageDto have no infra. fields as of now, therefore, the are not populated at all. "
+					+ "Other types are not expected to be completely empty.",
+				"de.symeda.sormas.api.sormastosormas.labmessage.SormasToSormasLabMessageDto",
+				typeResolver.resolve(entity.getClass()).getTypeName());
+			return;
+		}
 		Set<String> foundFieldsIncoming = getRejectedFields(getDtoValidationErrors(entity, validator));
 		assertValidation(expected, foundFieldsIncoming);
 	}
@@ -548,7 +557,14 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 		SormasToSormasDtoValidator<DTO, SHARED, PREVIEW> validator)
 		throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
 		Set<String> expected = getExpected(entity, rootNode);
-
+		if (expected.isEmpty()) {
+			assertEquals(
+					"SormasToSormasLabMessageDto have no infra. fields as of now, therefore, the are not populated at all. "
+							+ "Other types are not expected to be completely empty.",
+					"de.symeda.sormas.api.sormastosormas.labmessage.SormasToSormasLabMessageDto",
+					typeResolver.resolve(entity.getClass()).getTypeName());
+			return;
+		}
 		Set<String> foundFieldsIncoming = getRejectedFields(getPreviewValidationErrors(entity, validator));
 		assertValidation(expected, foundFieldsIncoming);
 	}

@@ -39,7 +39,7 @@ public class SubcontinentDtoHelper extends AdoDtoHelper<Subcontinent, Subcontine
 	}
 
 	@Override
-	protected Call<List<SubcontinentDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<SubcontinentDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		return RetroProvider.getSubcontinentFacade().pullAllSince(since);
 	}
 
@@ -65,7 +65,12 @@ public class SubcontinentDtoHelper extends AdoDtoHelper<Subcontinent, Subcontine
 		throw new UnsupportedOperationException("Entity is infrastructure");
 	}
 
-	public static SubcontinentReferenceDto toReferenceDto(Subcontinent ado) {
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
+    }
+
+    public static SubcontinentReferenceDto toReferenceDto(Subcontinent ado) {
 		if (ado == null) {
 			return null;
 		}

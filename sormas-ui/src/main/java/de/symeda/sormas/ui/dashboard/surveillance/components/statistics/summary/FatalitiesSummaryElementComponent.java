@@ -3,7 +3,6 @@ package de.symeda.sormas.ui.dashboard.surveillance.components.statistics.summary
 import java.util.List;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
@@ -22,11 +21,11 @@ public class FatalitiesSummaryElementComponent extends HorizontalLayout {
 	public FatalitiesSummaryElementComponent() {
 		setMargin(false);
 		setSpacing(false);
-		setWidth(100, Sizeable.Unit.PERCENTAGE);
 
 		caseFatalityRateValue = new DiseaseSummaryElementComponent(Strings.headingCaseFatalityRate, "00.0%");
 		addComponent(caseFatalityRateValue);
-		setExpandRatio(caseFatalityRateValue, 1);
+
+		addComponent(new DiseaseSummaryElementComponent(" ", " "));
 
 		caseFatalityCountValue = new DiseaseSummaryElementComponent(Strings.headingFatalities, "0");
 
@@ -35,7 +34,7 @@ public class FatalitiesSummaryElementComponent extends HorizontalLayout {
 		caseFatalityCountValue.addComponent(caseFatalityCountGrowth);
 
 		addComponent(caseFatalityCountValue);
-		setExpandRatio(caseFatalityCountValue, 0);
+		setExpandRatio(caseFatalityCountValue, 1);
 		setComponentAlignment(caseFatalityCountValue, Alignment.MIDDLE_RIGHT);
 	}
 

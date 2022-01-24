@@ -1,12 +1,11 @@
 package de.symeda.sormas.backend.sormastosormas.entities.labmessage;
 
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildLabMessageValidationGroupName;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
-import de.symeda.sormas.api.hospitalization.HospitalizationDto;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.sormastosormas.labmessage.SormasToSormasLabMessageDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
@@ -30,7 +29,8 @@ public class SormasToSormasLabMessageDtoValidator
 
 	@Override
 	public ValidationErrors validate(SormasToSormasLabMessageDto sharedData, ValidationDirection direction) {
-		return new ValidationErrors();
+		LabMessageDto labMessage = sharedData.getEntity();
+		return new ValidationErrors(buildLabMessageValidationGroupName(labMessage));
 	}
 
 	@Override

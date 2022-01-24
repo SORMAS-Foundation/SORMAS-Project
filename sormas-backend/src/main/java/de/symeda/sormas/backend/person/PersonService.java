@@ -26,7 +26,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -80,6 +79,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
@@ -100,6 +100,7 @@ import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.ChangeDateUuidComparator;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -360,8 +361,13 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	}
 
 	@Override
-	// todo refactor this to use the create user filter form persons
 	public List<Person> getAllAfter(Date date, User user) {
+		return getAllAfter(date, user, null, null);
+	}
+
+	@Override
+	// todo refactor this to use the create user filter form persons
+	public List<Person> getAllAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -372,11 +378,11 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		Predicate lgaFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, personsRoot, DateHelper.toTimestampUpper(date));
+			Predicate dateFilter = createChangeDateFilter(cb, personsRoot, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
 			lgaFilter = cb.and(lgaFilter, dateFilter);
 		}
 		personsQuery.where(lgaFilter);
-		List<Person> lgaResultList = em.createQuery(personsQuery).getResultList();
+		List<Person> lgaResultList = getBatchedQueryResults(cb, personsQuery, personsRoot, batchSize);
 
 		// persons by case
 		CriteriaQuery<Person> casePersonsQuery = cb.createQuery(Person.class);
@@ -387,20 +393,23 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot);
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, casePersonsSelect, DateHelper.toTimestampUpper(date));
-			// include case change dates: When a case is relocated it may become available to another user and this will have to include the person as-well
-			Predicate caseDateFilter = caseService.createChangeDateFilter(cb, casePersonsRoot, DateHelper.toTimestampUpper(date));
+			Predicate dateFilter = createChangeDateFilter(cb, casePersonsSelect, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
+			if (batchSize == null) {
+				// include case change dates: When a case is relocated it may become available to another user and this will have to include the person as-well
+				Predicate caseDateFilter = caseService.createChangeDateFilter(cb, casePersonsRoot, DateHelper.toTimestampUpper(date));
+				dateFilter = cb.or(dateFilter, caseDateFilter);
+			}
 			if (casePersonsFilter != null) {
-				casePersonsFilter = cb.and(casePersonsFilter, cb.or(dateFilter, caseDateFilter));
+				casePersonsFilter = cb.and(casePersonsFilter, dateFilter);
 			} else {
-				casePersonsFilter = cb.or(dateFilter, caseDateFilter);
+				casePersonsFilter = dateFilter;
 			}
 		}
 		if (casePersonsFilter != null) {
 			casePersonsQuery.where(casePersonsFilter);
 		}
 		casePersonsQuery.distinct(true);
-		List<Person> casePersonsResultList = em.createQuery(casePersonsQuery).getResultList();
+		List<Person> casePersonsResultList = getBatchedQueryResults(cb, casePersonsQuery, casePersonsSelect, batchSize);
 
 		// persons by contact
 		CriteriaQuery<Person> contactPersonsQuery = cb.createQuery(Person.class);
@@ -411,15 +420,18 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		Predicate contactPersonsFilter = contactService.createUserFilter(cb, contactPersonsQuery, contactPersonsRoot);
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, contactPersonsSelect, DateHelper.toTimestampUpper(date));
-			Predicate contactDateFilter = contactService.createChangeDateFilter(cb, contactPersonsRoot, date);
-			contactPersonsFilter = and(cb, contactPersonsFilter, cb.or(dateFilter, contactDateFilter));
+			Predicate dateFilter = createChangeDateFilter(cb, contactPersonsSelect, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
+			if (batchSize == null) {
+				Predicate contactDateFilter = contactService.createChangeDateFilter(cb, contactPersonsRoot, date);
+				dateFilter = cb.or(dateFilter, contactDateFilter);
+			}
+			contactPersonsFilter = and(cb, contactPersonsFilter, dateFilter);
 		}
 		if (contactPersonsFilter != null) {
 			contactPersonsQuery.where(contactPersonsFilter);
 		}
 		contactPersonsQuery.distinct(true);
-		List<Person> contactPersonsResultList = em.createQuery(contactPersonsQuery).getResultList();
+		List<Person> contactPersonsResultList = getBatchedQueryResults(cb, contactPersonsQuery, contactPersonsSelect, batchSize);
 
 		// persons by event participant
 		CriteriaQuery<Person> eventPersonsQuery = cb.createQuery(Person.class);
@@ -430,16 +442,19 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		Predicate eventPersonsFilter = eventParticipantService.createUserFilter(cb, eventPersonsQuery, eventPersonsRoot);
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, eventPersonsSelect, DateHelper.toTimestampUpper(date));
-			Predicate eventParticipantDateFilter =
-				eventParticipantService.createChangeDateFilter(cb, eventPersonsRoot, DateHelper.toTimestampUpper(date));
-			eventPersonsFilter = and(cb, eventPersonsFilter, cb.or(dateFilter, eventParticipantDateFilter));
+			Predicate dateFilter = createChangeDateFilter(cb, eventPersonsSelect, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
+			if (batchSize == null) {
+				Predicate eventParticipantDateFilter =
+					eventParticipantService.createChangeDateFilter(cb, eventPersonsRoot, DateHelper.toTimestampUpper(date));
+				dateFilter = cb.or(dateFilter, eventParticipantDateFilter);
+			}
+			eventPersonsFilter = and(cb, eventPersonsFilter, dateFilter);
 		}
 		if (eventPersonsFilter != null) {
 			eventPersonsQuery.where(eventPersonsFilter);
 		}
 		eventPersonsQuery.distinct(true);
-		List<Person> eventPersonsResultList = em.createQuery(eventPersonsQuery).getResultList();
+		List<Person> eventPersonsResultList = getBatchedQueryResults(cb, eventPersonsQuery, eventPersonsSelect, batchSize);
 
 		// persons by immunization
 		List<Person> immunizationPersonsResultList = new ArrayList<>();
@@ -452,36 +467,43 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			Predicate immunizationPersonsFilter = immunizationService.createUserFilter(cb, immunizationPersonsQuery, immunizationPersonsRoot);
 			// date range
 			if (date != null) {
-				Predicate dateFilter = createChangeDateFilter(cb, immunizationPersonsSelect, DateHelper.toTimestampUpper(date));
-				Predicate immunizationDateFilter =
-					immunizationService.createChangeDateFilter(cb, immunizationPersonsRoot, DateHelper.toTimestampUpper(date));
-				immunizationPersonsFilter = and(cb, immunizationPersonsFilter, cb.or(dateFilter, immunizationDateFilter));
+				Predicate dateFilter = createChangeDateFilter(cb, immunizationPersonsSelect, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
+				if (batchSize == null) {
+					Predicate immunizationDateFilter =
+						immunizationService.createChangeDateFilter(cb, immunizationPersonsRoot, DateHelper.toTimestampUpper(date));
+					dateFilter = cb.or(dateFilter, immunizationDateFilter);
+				}
+				immunizationPersonsFilter = and(cb, immunizationPersonsFilter, dateFilter);
 			}
 			if (immunizationPersonsFilter != null) {
 				immunizationPersonsQuery.where(immunizationPersonsFilter);
 			}
 			immunizationPersonsQuery.distinct(true);
-			immunizationPersonsResultList = em.createQuery(immunizationPersonsQuery).getResultList();
+			immunizationPersonsResultList = getBatchedQueryResults(cb, immunizationPersonsQuery, immunizationPersonsSelect, batchSize);
 		}
 
-		// persons by travel entries
-		CriteriaQuery<Person> tepQuery = cb.createQuery(Person.class);
-		Root<TravelEntry> tepRoot = tepQuery.from(TravelEntry.class);
-		Join<TravelEntry, Person> tepSelect = tepRoot.join(TravelEntry.PERSON);
-		tepSelect.fetch(Person.ADDRESS);
-		tepQuery.select(tepSelect);
-		Predicate tepFilter = travelEntryService.createUserFilter(cb, tepQuery, tepRoot);
-		// date range
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, tepSelect, DateHelper.toTimestampUpper(date));
-			Predicate travelEntryDateFilter = travelEntryService.createChangeDateFilter(cb, tepRoot, DateHelper.toTimestampUpper(date));
-			tepFilter = and(cb, tepFilter, cb.or(dateFilter, travelEntryDateFilter));
+		List<Person> travelEntryPersonsResultList = new ArrayList<>();
+		// if a batch size is given, this is a sync from the mobile app where travel entries are not relevant for now
+		if (batchSize == null) {
+			// persons by travel entries
+			CriteriaQuery<Person> tepQuery = cb.createQuery(Person.class);
+			Root<TravelEntry> tepRoot = tepQuery.from(TravelEntry.class);
+			Join<TravelEntry, Person> tepSelect = tepRoot.join(TravelEntry.PERSON);
+			tepSelect.fetch(Person.ADDRESS);
+			tepQuery.select(tepSelect);
+			Predicate tepFilter = travelEntryService.createUserFilter(cb, tepQuery, tepRoot);
+			// date range
+			if (date != null) {
+				Predicate dateFilter = createChangeDateFilter(cb, tepSelect, DateHelper.toTimestampUpper(date));
+				Predicate travelEntryDateFilter = travelEntryService.createChangeDateFilter(cb, tepRoot, DateHelper.toTimestampUpper(date));
+				tepFilter = and(cb, tepFilter, cb.or(dateFilter, travelEntryDateFilter));
+			}
+			if (tepFilter != null) {
+				tepQuery.where(tepFilter);
+			}
+			tepQuery.distinct(true);
+			travelEntryPersonsResultList = em.createQuery(tepQuery).getResultList();
 		}
-		if (tepFilter != null) {
-			tepQuery.where(tepFilter);
-		}
-		tepQuery.distinct(true);
-		List<Person> travelEntryPersonsResultList = em.createQuery(tepQuery).getResultList();
 
 		return Stream
 			.of(
@@ -493,7 +515,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 				travelEntryPersonsResultList)
 			.flatMap(List<Person>::stream)
 			.distinct()
-			.sorted(Comparator.comparing(Person::getChangeDate))
+			.sorted(new ChangeDateUuidComparator<>())
+			.limit(batchSize == null ? Long.MAX_VALUE : batchSize)
 			.collect(Collectors.toList());
 	}
 
@@ -778,10 +801,17 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Person> from, Timestamp date) {
+		return createChangeDateFilter(cb, from, date, null);
+	}
 
-		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
-		Join<Person, Location> address = from.join(Person.ADDRESS);
-		return cb.or(dateFilter, cb.greaterThan(address.get(AbstractDomainObject.CHANGE_DATE), date));
+	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Person> persons, Timestamp date, String lastSynchronizedUuid) {
+		Join<Person, Location> address = persons.join(Person.ADDRESS);
+
+		// TODO #7303: Include change date of addresses, personContactDetails?
+		ChangeDateFilterBuilder changeDateFilterBuilder = lastSynchronizedUuid == null
+			? new ChangeDateFilterBuilder(cb, date)
+			: new ChangeDateFilterBuilder(cb, date, persons, lastSynchronizedUuid);
+		return changeDateFilterBuilder.add(persons).add(address).build();
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

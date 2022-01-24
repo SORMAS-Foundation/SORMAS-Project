@@ -47,11 +47,10 @@ public class User {
   String postalCode;
   String city;
   String areaType;
-  String communityContactPerson;
   String gpsLatitude;
   String gpsLongitude;
   String gpsAccuracy;
-  String active;
+  Boolean active;
   String userName;
   String userRole;
   String limitedDisease;

@@ -22,6 +22,8 @@ public interface PrescriptionFacade {
 
 	List<PrescriptionDto> getAllActivePrescriptionsAfter(Date date);
 
+	List<PrescriptionDto> getAllActivePrescriptionsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
+
 	List<PrescriptionDto> getByUuids(List<String> uuids);
 
 	List<String> getAllActiveUuids();
