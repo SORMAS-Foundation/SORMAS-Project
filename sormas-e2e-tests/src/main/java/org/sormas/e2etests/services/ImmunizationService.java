@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.sormas.e2etests.enums.*;
 import org.sormas.e2etests.enums.immunizations.ImmunizationManagementStatusValues;
 import org.sormas.e2etests.enums.immunizations.StatusValues;
+import org.sormas.e2etests.helpers.strings.ASCIIHelper;
 import org.sormas.e2etests.pojo.web.Immunization;
 
 public class ImmunizationService {
@@ -33,7 +34,8 @@ public class ImmunizationService {
         .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
         .presentConditionOfPerson("Alive")
         .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
-        .primaryEmailAddress(firstName + "." + lastName + emailDomain)
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
         .firstName(firstName)
         .lastName(lastName)
         .dateOfBirth(

@@ -21,7 +21,6 @@ package org.sormas.e2etests.steps.web.application.events;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
 
-import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -39,16 +38,6 @@ public class CreateNewEventSteps implements En {
   @Inject
   public CreateNewEventSteps(WebDriverHelpers webDriverHelpers, EventService eventService) {
     this.webDriverHelpers = webDriverHelpers;
-
-    When(
-        "^I create a new event",
-        () -> {
-          String timestamp = String.valueOf(System.currentTimeMillis());
-          webDriverHelpers.fillInWebElement(
-              TITLE_INPUT, "EVENT_AUTOMATION" + timestamp + Faker.instance().name().name());
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CREATED_MESSAGE);
-        });
 
     When(
         "^I create a new event with specific data$",

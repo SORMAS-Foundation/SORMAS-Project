@@ -31,8 +31,10 @@ import org.sormas.e2etests.enums.CountryUUIDs;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.FacilityUUIDs;
 import org.sormas.e2etests.enums.GenderValues;
+import org.sormas.e2etests.enums.PresentCondition;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.SubcontinentUUIDs;
+import org.sormas.e2etests.helpers.strings.ASCIIHelper;
 import org.sormas.e2etests.pojo.api.Person;
 import org.sormas.e2etests.pojo.api.chunks.Address;
 import org.sormas.e2etests.pojo.api.chunks.Country;
@@ -90,7 +92,9 @@ public class PersonApiService {
             .contactPersonFirstName(contactFirstName)
             .contactPersonLastName(contactLastName)
             .contactPersonPhone(faker.phoneNumber().cellPhone())
-            .contactPersonEmail(contactFirstName + "." + contactLastName + contactEmailDomain)
+            .contactPersonEmail(
+                ASCIIHelper.convertASCIIToLatin(
+                    contactFirstName + "." + contactLastName + contactEmailDomain))
             .uuid(personUUID)
             .build();
 
@@ -108,7 +112,7 @@ public class PersonApiService {
         .uuid(personUUID)
         .firstName(firstName)
         .lastName(lastName)
-        .emailAddress(firstName + "." + lastName + emailDomain)
+        .emailAddress(ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
         .birthdateDD(faker.number().numberBetween(1, 27))
         .birthdateMM(faker.number().numberBetween(1, 12))
         .birthdateYYYY(faker.number().numberBetween(1900, 2005))
@@ -116,6 +120,7 @@ public class PersonApiService {
         .phone(faker.phoneNumber().phoneNumber())
         .address(address)
         .personContactDetails(Collections.singletonList(personContactDetails))
+        .presentCondition(PresentCondition.getRandomPresentCondition().toUpperCase())
         .build();
   }
 }
