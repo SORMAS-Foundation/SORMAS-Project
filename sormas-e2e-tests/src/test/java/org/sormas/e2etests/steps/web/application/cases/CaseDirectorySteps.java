@@ -474,8 +474,100 @@ public class CaseDirectorySteps implements En {
         (String caseOrigin) -> {
           webDriverHelpers.selectFromCombobox(
               CASE_ORIGIN_FILTER_COMBOBOX, CaseOrigin.getValueFor(caseOrigin));
-          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
-          TimeUnit.SECONDS.sleep(3);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    Then(
+        "I apply Community {string}",
+        (String community) -> {
+          webDriverHelpers.selectFromCombobox(CASE_COMMUNITY_FILTER_COMBOBOX, community);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+
+    And(
+        "I apply Region filter {string}",
+        (String region) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_REGION_FILTER_COMBOBOX, RegionsValues.getValueFor(region));
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Surveillance Officer filter {string}",
+        (String survoff) -> {
+          webDriverHelpers.selectFromCombobox(CASE_SURVOFF_FILTER_COMBOBOX, survoff);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Reporting User filter {string}",
+        (String reportingUser) -> {
+          webDriverHelpers.fillInWebElement(CASE_REPORTING_USER_FILTER, reportingUser);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Year filter {string}",
+        (String year) -> {
+          webDriverHelpers.selectFromCombobox(CASE_YEAR_FILTER, year);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Year filter of last created person",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_YEAR_FILTER, apiState.getLastCreatedPerson().getBirthdateYYYY().toString());
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+
+    And(
+        "I apply Month filter {string}",
+        (String month) -> {
+          webDriverHelpers.selectFromCombobox(CASE_MONTH_FILTER, month);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Month filter of last created person",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_MONTH_FILTER, apiState.getLastCreatedPerson().getBirthdateMM().toString());
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Day filter {string}",
+        (String day) -> {
+          webDriverHelpers.selectFromCombobox(CASE_DAY_FILTER, day);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Day filter of last created person",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_DAY_FILTER, apiState.getLastCreatedPerson().getBirthdateDD().toString());
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Facility category filter {string}",
+        (String facilityCategory) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_REGION_FILTER_COMBOBOX, FacilityCategory.getValueFor(facilityCategory));
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply District filter {string}",
+        (String district) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_DISTRICT_FILTER_COMBOBOX, DistrictsValues.getValueFor(district));
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
         });
 
     And(

@@ -80,4 +80,13 @@ public enum CaseClassification {
     }
     throw new Exception("Unable to find " + option + " value in CaseClassification Enum");
   }
+
+  @SneakyThrows
+  public static String getValueFor(String option) {
+    CaseClasification[] caseClasificationsOptions = CaseClasification.values();
+    for (CaseClasification value : caseClasificationsOptions) {
+      if (value.getClassification().equalsIgnoreCase(option)) return value.getClassification();
+    }
+    throw new Exception("Unable to find " + option + " value in CaseClassification Enum");
+  }
 }
