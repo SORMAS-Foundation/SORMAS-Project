@@ -126,7 +126,7 @@ Feature: Create events
   Scenario: Generate event document
     Given I log in with National User
     And I click on the Events button from navbar
-    And I open the first event
+    And I open the first event from events list
     And I click on the Create button from Event Document Templates
     When I create an event document from template
     And I verify that the event document is downloaded and correctly named

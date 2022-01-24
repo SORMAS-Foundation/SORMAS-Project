@@ -141,6 +141,7 @@ public class EditCaseSteps implements En {
                       + aQuarantineOrder.getDocumentTemplate());
           softly.assertTrue(
               Files.exists(path), "The document with expected name was not downloaded");
+          softly.assertAll();
         });
 
     When(

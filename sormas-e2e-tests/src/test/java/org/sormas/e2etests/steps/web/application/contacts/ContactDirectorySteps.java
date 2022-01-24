@@ -92,7 +92,7 @@ public class ContactDirectorySteps implements En {
         });
 
     When(
-        "I open the first contact",
+        "I open the first contact from contacts list",
         () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_CONTACT_ID_BUTTON));
 
     Then(
