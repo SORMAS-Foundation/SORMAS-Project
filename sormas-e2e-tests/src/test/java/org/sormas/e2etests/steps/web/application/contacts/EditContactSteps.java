@@ -22,24 +22,38 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
 
 import cucumber.api.java8.En;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Contact;
+import org.sormas.e2etests.pojo.web.QuarantineOrder;
+import org.sormas.e2etests.services.ContactDocumentService;
 import org.sormas.e2etests.services.ContactService;
+import org.testng.asserts.SoftAssert;
 
 public class EditContactSteps implements En {
   DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
   private final WebDriverHelpers webDriverHelpers;
   public static Contact createdContact;
   public static Contact collectedContact;
+  public static Contact aContact;
+  public static QuarantineOrder aQuarantineOrder;
   public static Contact editedContact;
+  public static final String userDirPath = System.getProperty("user.dir");
 
   @Inject
-  public EditContactSteps(WebDriverHelpers webDriverHelpers, ContactService contactService) {
+  public EditContactSteps(
+      WebDriverHelpers webDriverHelpers,
+      ContactService contactService,
+      SoftAssert softly,
+      ContactDocumentService contactDocumentService) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -148,6 +162,42 @@ public class EditContactSteps implements En {
           fillGeneralComment(editedContact.getGeneralComment());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_EDIT_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_EDIT_BUTTON);
+        });
+
+    When(
+        "I click on the Create button from Contact Document Templates",
+        () -> {
+          webDriverHelpers.scrollToElement(EditContactPage.CREATE_DOCUMENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EditContactPage.CREATE_DOCUMENT_BUTTON);
+        });
+
+    When(
+        "I create a contact document from template",
+        () -> {
+          aQuarantineOrder = contactDocumentService.buildQuarantineOrder();
+          aQuarantineOrder = aQuarantineOrder.toBuilder().build();
+          selectQuarantineOrderTemplate(aQuarantineOrder.getDocumentTemplate());
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXTRA_COMMENT_INPUT);
+          fillExtraComment(aQuarantineOrder.getExtraComment());
+          webDriverHelpers.clickOnWebElementBySelector(
+              EditContactPage.CREATE_QUARANTINE_ORDER_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACT_SAVED_POPUP);
+        });
+
+    And(
+        "I verify that the contact document is downloaded and correctly named",
+        () -> {
+          String uuid = webDriverHelpers.getValueFromWebElement(EditContactPage.UUID_INPUT);
+          Path path =
+              Paths.get(
+                  userDirPath
+                      + "\\downloads\\"
+                      + uuid.substring(0, 6)
+                      + "-"
+                      + aQuarantineOrder.getDocumentTemplate());
+          softly.assertTrue(
+              Files.exists(path), "The document with expected name was not downloaded");
+          softly.assertAll();
         });
   }
 
@@ -476,5 +526,13 @@ public class EditContactSteps implements En {
         .lastName(contactInfos[1])
         .dateOfBirth(localDate)
         .build();
+  }
+
+  private void selectQuarantineOrderTemplate(String templateName) {
+    webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, templateName);
+  }
+
+  private void fillExtraComment(String extraComment) {
+    webDriverHelpers.fillInAndLeaveWebElement(EditContactPage.EXTRA_COMMENT_TEXTAREA, extraComment);
   }
 }
