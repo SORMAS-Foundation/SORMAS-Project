@@ -15,10 +15,10 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.MapContactDto;
-import de.symeda.sormas.api.dashboard.CaseDataTypeDashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardCaseStatisticDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
+import de.symeda.sormas.api.dashboard.SurveillanceDashboardCriteria;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -81,7 +81,7 @@ public class DashboardResource extends EntityDtoResource {
 
 	@POST
 	@Path("/loadMapCaseData")
-	public List<MapCaseDto> getMapCaseData(@RequestBody CaseDataTypeDashboardCriteria dashboardCriteria) {
+	public List<MapCaseDto> getMapCaseData(@RequestBody SurveillanceDashboardCriteria dashboardCriteria) {
 		return FacadeProvider.getCaseFacade()
 			.getCasesForMap(
 				dashboardCriteria.getRegion(),

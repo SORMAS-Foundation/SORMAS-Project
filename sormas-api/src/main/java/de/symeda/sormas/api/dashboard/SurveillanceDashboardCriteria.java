@@ -2,7 +2,7 @@ package de.symeda.sormas.api.dashboard;
 
 import de.symeda.sormas.api.caze.NewCaseDateType;
 
-public class CaseDataTypeDashboardCriteria extends DashboardCriteria {
+public class SurveillanceDashboardCriteria extends DashboardCriteria {
 
 	private NewCaseDateType newCaseDateType;
 
