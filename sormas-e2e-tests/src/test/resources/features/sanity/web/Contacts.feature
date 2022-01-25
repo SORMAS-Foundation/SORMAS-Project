@@ -141,6 +141,7 @@ Feature: Contacts end to end tests
     When I create a contact document from template
     Then I verify that the contact document is downloaded and correctly named
 
+    @issue=SORDEV-5470
   Scenario: Create complex contact
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
