@@ -26,6 +26,7 @@ echo "Executing gradle clean..."
 ./gradlew clean goJF
 echo "Starting all BDD tests under @$1 tag..."
 ./gradlew startTests -Dcucumber.tags=\"@$1\" -Dheadless=true -Dcourgette.threads=9
-
+echo "Deleting test downloads folder..."
+rm -rf ./downloads
 
 
