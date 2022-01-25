@@ -25,6 +25,7 @@ import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.helpers.strings.ASCIIHelper;
 import org.sormas.e2etests.pojo.User;
 
 public class UserService {
@@ -45,7 +46,7 @@ public class UserService {
     return User.builder()
         .firstName(firstName)
         .lastName(lastName)
-        .emailAddress(firstName + "." + lastName + emailDomain)
+        .emailAddress(ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
         .phoneNumber(generatePhoneNumber())
         .language("English")
         .country("Germany")
@@ -80,7 +81,7 @@ public class UserService {
     return User.builder()
         .firstName(firstName)
         .lastName(lastName)
-        .emailAddress(firstName + "." + lastName + emailDomain)
+        .emailAddress(ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
         .phoneNumber(generatePhoneNumber())
         .language("Deutsch")
         .country("Germany")

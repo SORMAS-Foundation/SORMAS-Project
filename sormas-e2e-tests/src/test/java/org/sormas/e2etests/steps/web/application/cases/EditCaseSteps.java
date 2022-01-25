@@ -20,8 +20,13 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 
+import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -30,9 +35,13 @@ import javax.inject.Named;
 import lombok.SneakyThrows;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
+import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Case;
+import org.sormas.e2etests.pojo.web.QuarantineOrder;
+import org.sormas.e2etests.services.CaseDocumentService;
 import org.sormas.e2etests.services.CaseService;
+import org.testng.asserts.SoftAssert;
 
 public class EditCaseSteps implements En {
 
@@ -40,13 +49,17 @@ public class EditCaseSteps implements En {
   public static Case aCase;
   private static Case createdCase;
   private static Case editedCase;
+  public static QuarantineOrder aQuarantineOrder;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static final String userDirPath = System.getProperty("user.dir");
 
   @SneakyThrows
   @Inject
   public EditCaseSteps(
       WebDriverHelpers webDriverHelpers,
       CaseService caseService,
+      CaseDocumentService caseDocumentService,
+      SoftAssert softly,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -101,11 +114,43 @@ public class EditCaseSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_SAMPLE_BUTTON));
 
     When(
+        "I click on the Create button from Case Document Templates",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_BUTTON));
+
+    When(
+        "I create a case document from template",
+        () -> {
+          aQuarantineOrder = caseDocumentService.buildQuarantineOrder();
+          aQuarantineOrder = aQuarantineOrder.toBuilder().build();
+          selectQuarantineOrderTemplate(aQuarantineOrder.getDocumentTemplate());
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXTRA_COMMENT_INPUT);
+          fillExtraComment(aQuarantineOrder.getExtraComment());
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_QUARANTINE_ORDER_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_SAVED_POPUP);
+        });
+
+    And(
+        "I verify that the case document is downloaded and correctly named",
+        () -> {
+          String uuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
+          Path path =
+              Paths.get(
+                  userDirPath
+                      + "\\downloads\\"
+                      + uuid.substring(0, 6)
+                      + "-"
+                      + aQuarantineOrder.getDocumentTemplate());
+          softly.assertTrue(
+              Files.exists(path), "The document with expected name was not downloaded");
+          softly.assertAll();
+        });
+
+    When(
         "I open last edited case by link",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               NavBarPage.SAMPLE_BUTTON);
-          String caseLinkPath = "/sormas-webdriver/#!cases/data/";
+          String caseLinkPath = "/sormas-ui/#!cases/data/";
           String uuid = aCase.getUuid();
           webDriverHelpers.accessWebSite(environmentUrl + caseLinkPath + uuid);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(REPORT_DATE_INPUT);
@@ -201,7 +246,6 @@ public class EditCaseSteps implements En {
     When(
         "I delete the case",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
           webDriverHelpers.scrollToElement(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
@@ -466,5 +510,13 @@ public class EditCaseSteps implements En {
 
   private void fillGeneralComment(String generalComment) {
     webDriverHelpers.fillInWebElement(GENERAL_COMMENT_TEXTAREA, generalComment);
+  }
+
+  private void selectQuarantineOrderTemplate(String templateName) {
+    webDriverHelpers.selectFromCombobox(EditCasePage.QUARANTINE_ORDER_COMBOBOX, templateName);
+  }
+
+  private void fillExtraComment(String extraComment) {
+    webDriverHelpers.fillInAndLeaveWebElement(EditCasePage.EXTRA_COMMENT_TEXTAREA, extraComment);
   }
 }

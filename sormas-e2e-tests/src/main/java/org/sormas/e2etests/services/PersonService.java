@@ -26,6 +26,7 @@ import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.helpers.strings.ASCIIHelper;
 import org.sormas.e2etests.pojo.web.Person;
 
 public class PersonService {
@@ -46,7 +47,7 @@ public class PersonService {
         .firstName(firstName)
         .lastName(lastName)
         .uuid(uuid)
-        .emailAddress(email)
+        .emailAddress(ASCIIHelper.convertASCIIToLatin(email))
         .phoneNumber(phone)
         .build();
   }
@@ -65,7 +66,7 @@ public class PersonService {
                 faker.number().numberBetween(1, 12),
                 faker.number().numberBetween(1, 27)))
         .sex(GenderValues.getRandomGender())
-        .emailAddress(firstName + "." + lastName + emailDomain)
+        .emailAddress(ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
         .phoneNumber(faker.phoneNumber().phoneNumber())
         .presentConditionOfPerson("Alive")
         .externalId(UUID.randomUUID().toString())
@@ -78,10 +79,10 @@ public class PersonService {
         .facilityCategory("Accommodation")
         .facilityType("Campsite")
         .facility("Other facility")
-        .facilityNameAndDescription("Dummy description")
+        .facilityNameAndDescription("Dummy description" + System.currentTimeMillis())
         .street(faker.address().streetAddress())
         .houseNumber(faker.address().buildingNumber())
-        .additionalInformation("Dummy description")
+        .additionalInformation("Dummy description" + System.currentTimeMillis())
         .postalCode(faker.address().zipCode())
         .city(faker.address().cityName())
         .areaType("Urban")

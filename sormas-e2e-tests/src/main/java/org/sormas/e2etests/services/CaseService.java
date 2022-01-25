@@ -27,6 +27,7 @@ import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.helpers.strings.ASCIIHelper;
 import org.sormas.e2etests.pojo.web.Case;
 
 public class CaseService {
@@ -66,7 +67,8 @@ public class CaseService {
         .presentConditionOfPerson("Alive")
         .dateOfSymptomOnset(LocalDate.now().minusDays(1))
         .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
-        .primaryEmailAddress(firstName + "." + lastName + emailDomain)
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
         .build();
   }
 
