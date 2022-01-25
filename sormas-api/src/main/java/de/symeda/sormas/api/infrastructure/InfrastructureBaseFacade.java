@@ -3,7 +3,6 @@ package de.symeda.sormas.api.infrastructure;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.ejb.Remote;
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.BaseFacade;
@@ -17,11 +16,11 @@ public interface InfrastructureBaseFacade<DTO extends EntityDto, INDEX_DTO exten
 	List<REF_DTO> getByExternalId(String externalId, boolean includeArchivedEntities);
 
 	/**
-	 * Save the given DTO, but skip checks for infrastructure locks etc.
+	 * Save the given DTO received from central, but skip checks for infrastructure locks, archived entities etc.
 	 * 
 	 * @param dto
 	 *            The DTO which should be saved.
 	 * @return The saved DTO.
 	 */
-	DTO saveUnchecked(@Valid DTO dto);
+	DTO saveFromCentral(@Valid DTO dto);
 }

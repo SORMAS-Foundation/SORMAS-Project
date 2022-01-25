@@ -43,6 +43,8 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -5213210080802372054L;
 
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 3391;
+
 	public static final String I18N_PREFIX = "PathogenTest";
 
 	public static final String SAMPLE = "sample";

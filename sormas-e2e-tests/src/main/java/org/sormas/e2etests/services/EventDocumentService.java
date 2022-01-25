@@ -16,10 +16,24 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.ui;
+package org.sormas.e2etests.services;
 
-import org.openqa.selenium.remote.RemoteWebDriver;
+import com.github.javafaker.Faker;
+import com.google.inject.Inject;
+import org.sormas.e2etests.pojo.web.EventHandout;
 
-public interface DriverFactory {
-  RemoteWebDriver getRemoteWebDriver();
+public class EventDocumentService {
+  private final Faker faker;
+
+  @Inject
+  public EventDocumentService(Faker faker) {
+    this.faker = faker;
+  }
+
+  public EventHandout buildEventHandout() {
+
+    return EventHandout.builder()
+        .documentTemplate("ExampleDocumentTemplateEventHandout.html")
+        .build();
+  }
 }

@@ -28,6 +28,7 @@ import javax.inject.Named;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Person;
+import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 
@@ -37,8 +38,12 @@ public class PersonDirectorySteps implements En {
 
   @Inject
   public PersonDirectorySteps(
-      WebDriverHelpers webDriverHelpers, @Named("ENVIRONMENT_URL") String environmentUrl) {
+      WebDriverHelpers webDriverHelpers,
+      @Named("ENVIRONMENT_URL") String environmentUrl,
+      ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
+
+    // TODO refactor all BDD methods naming to be more explicit regarding where data comes from
 
     /** Avoid using this method until Person's performance is fixed */
     Then(
@@ -64,7 +69,7 @@ public class PersonDirectorySteps implements En {
         () -> {
           String createdPersonUUID = EditContactPersonSteps.fullyDetailedPerson.getUuid();
           String LAST_CREATED_PERSON_PAGE_URL =
-              environmentUrl + "/sormas-ui/#!persons/data/" + createdPersonUUID;
+              environmentUrl + "/sormas-webdriver/#!persons/data/" + createdPersonUUID;
           webDriverHelpers.accessWebSite(LAST_CREATED_PERSON_PAGE_URL);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
@@ -85,5 +90,41 @@ public class PersonDirectorySteps implements En {
           final String personUuid = EditEventSteps.person.getUuid();
           webDriverHelpers.clickOnWebElementBySelector(getByPersonUuid(personUuid));
         });
+
+    Then(
+        "I search after last created person from API by {string}",
+        (String searchCriteria) -> {
+          String searchText = "";
+          String personUUID = apiState.getLastCreatedPerson().getUuid();
+          switch (searchCriteria) {
+            case "uuid":
+              searchText = personUUID;
+              break;
+            case "full name":
+              searchText =
+                  apiState.getLastCreatedPerson().getLastName()
+                      + " "
+                      + apiState.getLastCreatedPerson().getFirstName();
+              break;
+              // etc
+          }
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+
+          webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, searchText);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          By uuidLocator = By.cssSelector(String.format(PERSON_RESULTS_UUID_LOCATOR, personUUID));
+          webDriverHelpers.isElementVisibleWithTimeout(uuidLocator, 150);
+          webDriverHelpers.clickOnWebElementBySelector(uuidLocator);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
+          webDriverHelpers.isElementVisibleWithTimeout(UUID_INPUT, 20);
+        });
+
+    // TODO Michal, due to specific logic to filter only for this situation, create a method with a
+    // suggestive name, where you apply filters based on generated POJO data.
+    // We can't create multiple methods to reuse them in this case, but please keep in mind to
+    // create generic locators
+    // The above method will need to be finished by you (the switch to cover all search criteria)
   }
 }

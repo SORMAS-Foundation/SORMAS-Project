@@ -16,28 +16,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.ui;
+package org.sormas.e2etests.webdriver;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import java.net.URI;
-import lombok.Builder;
-import lombok.Value;
-import org.sormas.e2etests.enums.OperatingSystems;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
-@Builder(toBuilder = true, builderClassName = "Builder")
-@JsonDeserialize(builder = DriverMetaData.Builder.class)
-@Value
-public class DriverMetaData {
-
-  URI gridUrl;
-  OperatingSystems operatingSystem;
-  String systemArchitecture;
-  boolean isRemoteWebDriverEnabled;
-  boolean isProxyEnabled;
-  String proxyHostname;
-  int proxyPort;
-  String proxyDetail;
-  String userDirProperty;
-  String browser;
-  String environmentUrl;
+public interface DriverFactory {
+  RemoteWebDriver getRemoteWebDriver();
 }

@@ -49,8 +49,9 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 		setTemplateContents(
 			LayoutUtil.fluidRow(
-				LayoutUtil.fluidColumn(6, 0, 12, 0, LayoutUtil.fluidRowLocs(CASE_LOC, OUTBREAK_LOC)),
-				LayoutUtil.fluidColumn(6, 0, 12, 0, LayoutUtil.fluidRowLocs(EVENT_LOC, SAMPLE_LOC))));
+				LayoutUtil.fluidColumn(3, 0, 12, 0, LayoutUtil.fluidRowLocs(CASE_LOC)),
+				LayoutUtil.fluidColumn(4, 0, 12, 0, LayoutUtil.fluidRowLocs(OUTBREAK_LOC)),
+				LayoutUtil.fluidColumn(5, 0, 12, 0, LayoutUtil.fluidRowLocs(EVENT_LOC, SAMPLE_LOC))));
 
 		caseStatisticsComponent = new CaseStatisticsComponent();
 		diseaseSummaryComponent = new DiseaseSummaryComponent();

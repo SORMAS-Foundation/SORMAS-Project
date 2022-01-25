@@ -42,6 +42,8 @@ public class TaskDto extends EntityDto {
 
 	private static final long serialVersionUID = 2439546041916003653L;
 
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 2094;
+
 	public static final String I18N_PREFIX = "Task";
 
 	public static final String ASSIGNEE_REPLY = "assigneeReply";

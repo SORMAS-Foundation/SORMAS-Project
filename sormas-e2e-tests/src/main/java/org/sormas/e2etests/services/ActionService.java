@@ -38,7 +38,7 @@ public class ActionService {
         .priority("Normal")
         .measure("Closure of facility")
         .title("Dummy Action " + timestamp)
-        .description("Dummy Action " + timestamp)
+        .description("Dummy Description " + timestamp)
         .actionStatus("PENDING")
         .build();
   }

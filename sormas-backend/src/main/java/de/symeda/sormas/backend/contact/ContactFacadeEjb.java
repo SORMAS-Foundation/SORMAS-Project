@@ -282,6 +282,11 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public List<ContactDto> getAllActiveContactsAfter(Date date) {
+		return getAllActiveContactsAfter(date, null, null);
+	}
+
+	@Override
+	public List<ContactDto> getAllActiveContactsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		User user = userService.getCurrentUser();
 
@@ -290,7 +295,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return contactService.getAllActiveContactsAfter(date).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
+		return contactService.getAllActiveContactsAfter(date, batchSize, lastSynchronizedUuid)
+			.stream()
+			.map(c -> convertToDto(c, pseudonymizer))
+			.collect(Collectors.toList());
 	}
 
 	@Override

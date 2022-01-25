@@ -56,6 +56,10 @@ public class AssertHelpers {
     }
   }
 
+  public void assertWithPoll20Second(ThrowingRunnable throwingRunnable) {
+    assertWithPoll(throwingRunnable, 20);
+  }
+
   @SneakyThrows
   static void takeScreenshot(RemoteWebDriver remoteWebDriver) {
     File srcFile = remoteWebDriver.getScreenshotAs(OutputType.FILE);
@@ -65,9 +69,5 @@ public class AssertHelpers {
             projectDir + File.separator + "screenshots/" + System.currentTimeMillis() + ".jpg");
     log.error("{} screenshot with name: {}", PROCESS_ID_STRING, destFileName.getName());
     FileUtils.copyFile(srcFile, destFileName);
-  }
-
-  public void assertWithPoll20Second(ThrowingRunnable throwingRunnable) {
-    assertWithPoll(throwingRunnable, 20);
   }
 }

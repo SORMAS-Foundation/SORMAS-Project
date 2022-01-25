@@ -11,7 +11,7 @@ Feature: Epidemiological data coverage
     Given I log in with National User
     And I click on the Cases button from navbar
     When I am accessing via URL the Epidemiological data tab of the created case
-    Then I create a new Exposure fro Epidemiological data tab and fill all the data
+    Then I create a new Exposure for Epidemiological data tab and fill all the data
     Then I create a new Activity from Epidemiological data tab and fill all the data
     And I click on save button from Epidemiological Data
     When I am accessing via URL the Epidemiological data tab of the created case

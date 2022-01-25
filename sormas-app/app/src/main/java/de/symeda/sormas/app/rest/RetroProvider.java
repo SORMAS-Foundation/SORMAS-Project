@@ -29,6 +29,7 @@ import com.google.gson.JsonSerializer;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.util.Log;
 
@@ -81,6 +82,10 @@ public final class RetroProvider {
 	private static int lastConnectionId = 0;
 	private static RetroProvider instance = null;
 	private static boolean connecting = false;
+
+	private static final Integer ASSUMED_TRANSFER_TIME_IN_SECONDS = 60;
+	public static final double JSON_COMPRESSION_FACTOR = 5.7; // number derived using https://dafrok.github.io/gzip-size-online/
+	private static final Integer MAX_BATCH_SIZE = 500;
 
 	private final Context context;
 	private final Retrofit retrofit;
@@ -152,7 +157,7 @@ public final class RetroProvider {
 
 		OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 		httpClient.connectTimeout(20, TimeUnit.SECONDS);
-		httpClient.readTimeout(240, TimeUnit.SECONDS); // for infrastructure data
+		httpClient.readTimeout(300, TimeUnit.SECONDS);
 		httpClient.writeTimeout(60, TimeUnit.SECONDS);
 
 		// adds "Accept-Encoding: gzip" by default
@@ -298,6 +303,25 @@ public final class RetroProvider {
 
 	public static boolean isConnected() {
 		return instance != null && isConnectedToNetwork(instance.context);
+	}
+
+	public static Integer getNumberOfEntitiesToBePulledInOneBatch(long approximateJsonSizeInBytes, Context context) throws ServerConnectionException {
+		double compressedJsonSizeInBits = approximateJsonSizeInBytes * 8 / JSON_COMPRESSION_FACTOR;
+		int batchSize =
+			Math.toIntExact(Math.round(getNetworkDownloadSpeedInKbps(context) * ASSUMED_TRANSFER_TIME_IN_SECONDS * 1024 / compressedJsonSizeInBits));
+		// Restrict the batch size to a maximum value to avoid backend queries leading to a timeout
+		batchSize = Math.max(10, batchSize);
+		batchSize = Math.min(MAX_BATCH_SIZE, (int) (10 * Math.sqrt(batchSize / 10f)));
+		return batchSize;
+	}
+
+	public static long getNetworkDownloadSpeedInKbps(Context context) throws ServerConnectionException {
+		final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (cm == null || cm.getNetworkCapabilities(cm.getActiveNetwork()) == null) {
+			throw new ServerConnectionException(600);
+		}
+		final NetworkCapabilities nc = cm.getNetworkCapabilities(cm.getActiveNetwork());
+		return nc.getLinkDownstreamBandwidthKbps();
 	}
 
 	public static boolean isConnectedOrConnecting() {

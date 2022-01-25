@@ -33,9 +33,9 @@ import java.util.Locale;
 import java.util.Properties;
 import javax.inject.Singleton;
 import lombok.SneakyThrows;
-import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.enums.TestDataUser;
-import org.sormas.e2etests.ui.DriverManager;
+import org.sormas.e2etests.webdriver.DriverManager;
+import org.testng.asserts.SoftAssert;
 
 public class CommonModule extends PrivateModule {
 
@@ -55,8 +55,8 @@ public class CommonModule extends PrivateModule {
   @Provides
   @Singleton
   @Exposed
-  SoftAssertions provideSoftAssertions() {
-    return new SoftAssertions();
+  SoftAssert provideSoftAssertions() {
+    return new SoftAssert();
   }
 
   @SneakyThrows

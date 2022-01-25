@@ -20,27 +20,24 @@ package org.sormas.e2etests.services;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
-import java.time.LocalDate;
-import org.sormas.e2etests.pojo.web.Action;
-import org.sormas.e2etests.pojo.web.Event;
+import org.sormas.e2etests.pojo.web.QuarantineOrder;
 
-public class EventActionTableEntryService {
+public class ContactDocumentService {
   private final Faker faker;
 
+  private final String emailDomain = "@CONTACT-DOCUMENT.com";
+
   @Inject
-  public EventActionTableEntryService(Faker faker) {
+  public ContactDocumentService(Faker faker) {
     this.faker = faker;
   }
 
-  public Action buildEventActionTableEntryInput(Event event, Action action) {
-    String timestamp = String.valueOf(System.currentTimeMillis());
-    return Action.builder()
-        .date(LocalDate.now())
-        .priority("Normal")
-        .measure("Closure of facility")
-        .title("Dummy Action " + timestamp)
-        .description("Dummy Action " + timestamp)
-        .actionStatus("PENDING")
+  public QuarantineOrder buildQuarantineOrder() {
+    return QuarantineOrder.builder()
+        .documentTemplate("ExampleDocumentTemplateContacts.docx")
+        .sample("")
+        .pathogenTest("")
+        .extraComment("This is a test comment")
         .build();
   }
 }

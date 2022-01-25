@@ -44,7 +44,6 @@ import de.symeda.sormas.api.infrastructure.community.CommunityFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -190,8 +189,10 @@ public class CommunityFacadeEjb
 	}
 
 	@Override
-	protected List<Community> findDuplicates(CommunityDto dto) {
-		return service.getByName(dto.getName(), districtService.getByReferenceDto(dto.getDistrict()), true);
+	protected List<Community> findDuplicates(CommunityDto dto, boolean includeArchived) {
+		// todo this does not work in edge cases (see #6752) as names are not guaranteed to be unique or and collide
+		//  it would be really good to use external ID here but it is not unique in the DB
+		return service.getByName(dto.getName(), districtService.getByReferenceDto(dto.getDistrict()), includeArchived);
 	}
 
 	@Override

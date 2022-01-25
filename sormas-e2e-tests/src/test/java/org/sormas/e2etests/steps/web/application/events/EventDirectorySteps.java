@@ -48,9 +48,6 @@ public class EventDirectorySteps implements En {
         "^I check if it appears under ([^\"]*) filter in event directory",
         (String eventStatus) -> {
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
-          if (eventStatus.equalsIgnoreCase("Signal") || eventStatus.equalsIgnoreCase("Event")) {
-            System.out.println("a");
-          }
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(eventUuid));
           webDriverHelpers.clickWebElementByText(EVENT_STATUS_FILTER_BUTTONS, eventStatus);
           TimeUnit.SECONDS.sleep(3); // TODO check in Jenkins if is a stable fix
@@ -75,6 +72,8 @@ public class EventDirectorySteps implements En {
         "I click on the searched event",
         () -> {
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              getByEventUuid(eventUuid));
           webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
@@ -83,6 +82,7 @@ public class EventDirectorySteps implements En {
         "I check if participant appears in the event participants list",
         () -> {
           final String personUuid = EditEventSteps.person.getUuid();
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
         });
 
@@ -91,12 +91,16 @@ public class EventDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.EVENTS_BUTTON);
           final String eventUuid = apiState.getCreatedEvent().getUuid();
-          final String eventLinkPath = "/sormas-ui/#!events/data/";
+          final String eventLinkPath = "/sormas-webdriver/#!events/data/";
           webDriverHelpers.accessWebSite(environmentUrl + eventLinkPath + eventUuid);
         });
 
     When(
         "I click on New Task from event tab",
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_TASK_BUTTON));
+
+    When(
+        "I open the first event from events list",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_ID_BUTTON));
   }
 }

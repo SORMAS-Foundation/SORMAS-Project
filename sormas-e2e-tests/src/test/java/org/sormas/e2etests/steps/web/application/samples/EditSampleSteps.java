@@ -19,10 +19,8 @@
 package org.sormas.e2etests.steps.web.application.samples;
 
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.*;
-import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_EDIT_PURPOSE_OPTIONS;
-import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_SEARCH_INPUT;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.*;
 
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -31,6 +29,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Sample;
 import org.sormas.e2etests.services.SampleService;
 import org.sormas.e2etests.state.ApiState;
@@ -54,7 +53,9 @@ public class EditSampleSteps implements En {
         "I open the last created sample via API",
         () -> {
           String LAST_CREATED_SAMPLE_URL =
-              environmentUrl + "/sormas-ui/#!samples/data/" + apiState.getCreatedSample().getUuid();
+              environmentUrl
+                  + "/sormas-webdriver/#!samples/data/"
+                  + apiState.getCreatedSample().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_SAMPLE_URL);
         });
 
@@ -100,117 +101,161 @@ public class EditSampleSteps implements En {
         "^I check the edited Sample is correctly displayed on Edit Sample page",
         () -> {
           final Sample actualSample = collectSampleData();
-          Truth.assertThat(editedSample).isEqualTo(actualSample);
+          ComparisonHelper.compareEqualEntities(editedSample, actualSample);
+        });
+
+    When(
+        "I check that if Four Fold Increase Antibody Titer displayed",
+        () -> {
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+              FOUR_FOLD_INCREASE_ANTIBODY_TITER);
+        });
+
+    When(
+        "I check that if CQ CT Value field is correctly displayed",
+        () -> {
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(CQ_CT_VALUE_INPUT);
+        });
+
+    When(
+        "I check that if Sequencing or DNA Microarray field is correctly displayed",
+        () -> {
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(TYPING_ID_INPUT);
+        });
+
+    When(
+        "I check that if PCR RT PCR fields are correctly displayed",
+        () -> {
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(CQ_CT_VALUE_INPUT);
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+              PCR_TEST_SPECIFICATION_COMBOBOX);
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+              SPECIFY_TEST_DETAILS_INPUT);
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(TYPING_ID_INPUT);
+        });
+
+    When(
+        "I check that if Other field is correctly displayed",
+        () -> {
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+              SPECIFY_TEST_DETAILS_INPUT);
+        });
+
+    When(
+        "I delete the Pathogen test",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_PATHOGEN_TEST_RESULT);
+          webDriverHelpers.clickOnWebElementBySelector(SAMPLE_DELETION_POPUP_YES_BUTTON);
         });
   }
 
-  public void selectPurposeOfSample(String samplePurpose, By element) {
+  private void selectPurposeOfSample(String samplePurpose, By element) {
     webDriverHelpers.clickWebElementByText(element, samplePurpose);
   }
 
-  public void fillDateOfCollection(LocalDate dateOfCollection) {
+  private void fillDateOfCollection(LocalDate dateOfCollection) {
     webDriverHelpers.clearAndFillInWebElement(
         DATE_SAMPLE_COLLECTED, DATE_FORMATTER.format(dateOfCollection));
   }
 
-  public void fillTimeOfCollection(LocalTime timeOfCollection) {
+  private void fillTimeOfCollection(LocalTime timeOfCollection) {
     webDriverHelpers.selectFromCombobox(
         COLLECTED_DATE_TIME_COMBOBOX, TIME_FORMATTER.format(timeOfCollection));
   }
 
-  public void selectSampleType(String sampleType) {
+  private void selectSampleType(String sampleType) {
     webDriverHelpers.selectFromCombobox(SAMPLE_TYPE_COMBOBOX, sampleType);
   }
 
-  public void selectReasonForSample(String reasonForSample) {
+  private void selectReasonForSample(String reasonForSample) {
     webDriverHelpers.selectFromCombobox(REASON_FOR_SAMPLING_TESTING_COMBOBOX, reasonForSample);
   }
 
-  public void fillSampleID(long sampleID) {
+  private void fillSampleID(long sampleID) {
     webDriverHelpers.clearAndFillInWebElement(FIELD_SAMPLE_ID_INPUT, String.valueOf(sampleID));
   }
 
-  public void selectLaboratory(String laboratory) {
+  private void selectLaboratory(String laboratory) {
     webDriverHelpers.selectFromCombobox(LABORATORY_COMBOBOX, laboratory);
   }
 
-  public void selectSpecimenCondition(String specimenCondition) {
+  private void selectSpecimenCondition(String specimenCondition) {
     webDriverHelpers.selectFromCombobox(SPECIMEN_CONDITION_COMBOBOX, specimenCondition);
   }
 
-  public void fillReceivedDate(LocalDate receivedDate) {
+  private void fillReceivedDate(LocalDate receivedDate) {
     webDriverHelpers.clearAndFillInWebElement(
         DATE_SAMPLE_RECEIVED, DATE_FORMATTER.format(receivedDate));
   }
 
-  public void selectLaboratoryName(String laboratoryName) {
+  private void selectLaboratoryName(String laboratoryName) {
     webDriverHelpers.clearAndFillInWebElement(LABORATORY_NAME_INPUT, laboratoryName);
   }
 
-  public void fillLabSampleId(long labSampleId) {
+  private void fillLabSampleId(long labSampleId) {
     webDriverHelpers.clearAndFillInWebElement(LAB_SAMPLE_ID_INPUT, String.valueOf(labSampleId));
   }
 
-  public void fillCommentsOnSample(String commentsOnSample) {
+  private void fillCommentsOnSample(String commentsOnSample) {
     webDriverHelpers.clearAndFillInWebElement(COMMENT_AREA_INPUT, commentsOnSample);
   }
 
-  public String getPurposeOfSample() {
+  private String getPurposeOfSample() {
     return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SAMPLE_EDIT_PURPOSE_OPTIONS);
   }
 
-  public LocalDate getDateOfCollection() {
+  private LocalDate getDateOfCollection() {
     return LocalDate.parse(
         webDriverHelpers.getValueFromWebElement(DATE_SAMPLE_COLLECTED), DATE_FORMATTER);
   }
 
-  public LocalTime getTimeOfCollection() {
+  private LocalTime getTimeOfCollection() {
     return LocalTime.parse(
         webDriverHelpers.getValueFromWebElement(COLLECTED_DATE_TIME_INPUT), TIME_FORMATTER);
   }
 
-  public String getSampleType() {
+  private String getSampleType() {
     return webDriverHelpers.getValueFromWebElement(SAMPLE_TYPE_INPUT);
   }
 
-  public String getReasonForSample() {
+  private String getReasonForSample() {
     return webDriverHelpers.getValueFromWebElement(REASON_FOR_SAMPLING_TESTING_INPUT);
   }
 
-  public String getSampleID() {
+  private String getSampleID() {
     return webDriverHelpers.getValueFromWebElement(FIELD_SAMPLE_ID_INPUT);
   }
 
-  public String getLaboratory() {
+  private String getLaboratory() {
     return webDriverHelpers.getValueFromWebElement(LABORATORY_INPUT);
   }
 
-  public String getLaboratoryName() {
+  private String getLaboratoryName() {
     return webDriverHelpers.getValueFromWebElement(LABORATORY_NAME_INPUT);
   }
 
-  public String getReceivedOption() {
+  private String getReceivedOption() {
     return webDriverHelpers.getTextFromWebElement(RECEIVED_OPTION_BUTTON);
   }
 
-  public LocalDate getReceivedDate() {
+  private LocalDate getReceivedDate() {
     return LocalDate.parse(
         webDriverHelpers.getValueFromWebElement(DATE_SAMPLE_RECEIVED), DATE_FORMATTER);
   }
 
-  public String getLabSampleID() {
+  private String getLabSampleID() {
     return webDriverHelpers.getValueFromWebElement(LAB_SAMPLE_ID_INPUT);
   }
 
-  public String getCommentsOnSample() {
+  private String getCommentsOnSample() {
     return webDriverHelpers.getValueFromWebElement(COMMENT_AREA_INPUT);
   }
 
-  public String getSpecimenCondition() {
+  private String getSpecimenCondition() {
     return webDriverHelpers.getValueFromWebElement(SPECIMEN_CONDITION_INPUT);
   }
 
-  public Sample collectSampleData() {
+  private Sample collectSampleData() {
     return Sample.builder()
         .purposeOfTheSample(getPurposeOfSample())
         .dateOfCollection(getDateOfCollection())

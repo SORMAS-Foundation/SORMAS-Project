@@ -22,6 +22,7 @@ import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import org.sormas.e2etests.enums.*;
 import org.sormas.e2etests.pojo.web.Sample;
 
 public class SampleService {
@@ -42,7 +43,7 @@ public class SampleService {
         .reasonForSample("Presence of symptoms")
         .sampleID(faker.number().randomNumber(7, false))
         .laboratory("Other facility")
-        .laboratoryName("Laboratory Create")
+        .laboratoryName(faker.crypto() + " Laboratory New")
         .received("Received")
         .receivedDate(LocalDate.now().minusDays(5))
         .specimenCondition("Adequate")
@@ -76,26 +77,12 @@ public class SampleService {
         .reasonForSample("Screening")
         .sampleID(faker.number().randomNumber(8, false))
         .laboratory("Other facility")
-        .laboratoryName("Laboratory Edit")
+        .laboratoryName(faker.crypto() + " Laboratory Edit")
         .received("Received")
         .receivedDate(LocalDate.now().minusDays(10))
         .specimenCondition("Adequate")
         .labSampleId(faker.number().randomNumber(7, false))
         .commentsOnSample(currentTimeMillis + "Comment on Edit requests or received")
-        .build();
-  }
-
-  public Sample buildEditSampleEditTestResult() {
-    long currentTimeMillis = System.currentTimeMillis();
-    return Sample.builder()
-        .reportDate(LocalDate.now().minusDays(10))
-        .typeOfTest("Histopathology")
-        .testedDisease("Anthrax")
-        .dateOfResult(LocalDate.now())
-        .timeOfResult(LocalTime.of(15, 15))
-        .resultVerifiedByLabSupervisor("NO")
-        .laboratory("Voreingestelltes Labor")
-        .testResultsComment(currentTimeMillis + "Comment on Edit Pathogen requests or received")
         .build();
   }
 
@@ -111,6 +98,27 @@ public class SampleService {
         .sampleTestResults("Positive")
         .resultVerifiedByLabSupervisor("NO")
         .testResultsComment(currentTimeMillis + "Comment on Edit Pathogen requests or received")
+        .build();
+  }
+
+  public Sample buildPathogenTestResultType(String testType) {
+    long currentTimeMillis = System.currentTimeMillis();
+    String testedDiseaseType;
+    if (testType == "PCR / RT-PCR") {
+      testedDiseaseType = "COVID-19";
+    } else {
+      testedDiseaseType = PathogenTestedDisease.getRandomPathogenTestedDisease();
+    }
+    return Sample.builder()
+        .reportDate(LocalDate.now().minusDays(10))
+        .typeOfTest(testType)
+        .testedDisease(testedDiseaseType)
+        .dateOfResult(LocalDate.now())
+        .timeOfResult(LocalTime.of(15, 15))
+        .laboratory("Voreingestelltes Labor")
+        .sampleTestResults("Positive")
+        .resultVerifiedByLabSupervisor("NO")
+        .testResultsComment("Comment on Edit Pathogen requests or received " + currentTimeMillis)
         .build();
   }
 }
