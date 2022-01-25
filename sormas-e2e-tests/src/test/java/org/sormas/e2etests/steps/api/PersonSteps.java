@@ -50,6 +50,7 @@ public class PersonSteps implements En {
           Person createPersonObject = personApiService.buildGeneratedPerson();
           apiState.setLastCreatedPerson(createPersonObject);
           personsHelper.createNewPerson(createPersonObject);
+          System.out.println("Year of Birth" + createPersonObject.getBirthdateYYYY().toString());
         });
 
     When(
