@@ -59,8 +59,26 @@ public class EditContactPersonSteps implements En {
         () -> {
           aPerson = collectPersonData();
           createdContact = CreateNewContactSteps.contact;
-          ComparisonHelper.compareEqualFieldsOfEntities(
-              aPerson, createdContact, List.of("firstName", "lastName", "dateOfBirth", "sex"));
+            softly.assertEquals(
+                    aPerson.getFirstName(), createdContact.getFirstName(), "First name is not correct");
+            softly.assertEquals(
+                    aPerson.getLastName(),
+                    createdContact.getLastName().toUpperCase(),
+                    "Last name is not correct");
+            softly.assertEquals(
+                    aPerson.getDateOfBirth(),
+                    createdContact.getDateOfBirth(),
+                    "Date of birth is not correct");
+            softly.assertEquals(aPerson.getSex(), createdContact.getSex(), "Sex is not correct");
+            softly.assertEquals(
+                    aPerson.getEmailAddress(),
+                    createdContact.getPrimaryEmailAddress(),
+                    "Primary email address is not correct");
+            softly.assertEquals(
+                    aPerson.getPhoneNumber(),
+                    createdContact.getPrimaryPhoneNumber(),
+                    "Phone number is not correct");
+            softly.assertAll();
         });
 
     Then(

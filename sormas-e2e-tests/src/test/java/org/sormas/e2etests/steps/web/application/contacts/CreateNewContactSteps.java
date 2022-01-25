@@ -45,34 +45,6 @@ public class CreateNewContactSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
-        "^I create a new contact$",
-        () -> {
-          contact = contactService.buildGeneratedContact();
-          fillFirstName(contact.getFirstName());
-          fillLastName(contact.getLastName());
-          fillDateOfBirth(contact.getDateOfBirth());
-          selectSex(contact.getSex());
-          fillPrimaryPhoneNumber(contact.getPrimaryPhoneNumber());
-          fillPrimaryEmailAddress(contact.getPrimaryEmailAddress());
-          selectReturningTraveler(contact.getReturningTraveler());
-          fillDateOfReport(contact.getReportDate());
-          fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
-          fillCaseIdInExternalSystem(contact.getCaseIdInExternalSystem());
-          fillDateOfLastContact(contact.getDateOfLastContact());
-          fillCaseOrEventInformation(contact.getCaseOrEventInformation());
-          selectResponsibleRegion(contact.getResponsibleRegion());
-          selectResponsibleDistrict(contact.getResponsibleDistrict());
-          selectResponsibleCommunity(contact.getResponsibleCommunity());
-          selectTypeOfContact(contact.getTypeOfContact());
-          fillAdditionalInformationOnTheTypeOfContact(
-              contact.getAdditionalInformationOnContactType());
-          selectContactCategory(contact.getContactCategory().toUpperCase());
-          fillRelationshipWithCase(contact.getRelationshipWithCase());
-          fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
-        });
-    When(
         "^I fill a new contact form$",
         () -> {
           contact = contactService.buildGeneratedContact();

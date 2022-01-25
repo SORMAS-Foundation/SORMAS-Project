@@ -5,7 +5,8 @@ Feature: Contacts end to end tests
     Given I log in with National User
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
-    And I create a new contact
+    And I fill a new contact form
+    And I click SAVE a new contact
     Then I check the created data is correctly displayed on Edit Contact page
     Then I open Contact Person tab
     And I check the created data is correctly displayed on Edit Contact Person page
