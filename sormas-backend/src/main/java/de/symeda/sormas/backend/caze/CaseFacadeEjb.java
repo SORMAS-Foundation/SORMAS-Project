@@ -69,6 +69,8 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.deletionconfiguration.CoreEntityFacade;
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -326,7 +328,7 @@ import de.symeda.sormas.backend.visit.VisitService;
 import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "CaseFacade")
-public class CaseFacadeEjb implements CaseFacade {
+public class CaseFacadeEjb implements CaseFacade, CoreEntityFacade {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
 
@@ -1960,7 +1962,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			syncSharesAsync(new ShareTreeCriteria(existingCase.getUuid()));
 		}
 
-		// This logic should be consistent with CaseDataForm.onQuarantineEndChange 
+		// This logic should be consistent with CaseDataForm.onQuarantineEndChange
 		if (existingCase != null && existingCase.getQuarantineTo() != null && !existingCase.getQuarantineTo().equals(newCase.getQuarantineTo())) {
 			newCase.setPreviousQuarantineTo(existingCase.getQuarantineTo());
 		}
@@ -3847,6 +3849,21 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		caseService.updateExternalData(externalData);
+	}
+
+	@Override
+	public void executeAutomaticDeletion(DeletionReference deletionReference, Date referenceDeletionDate){
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria.setReportDateTo(referenceDeletionDate);
+		List<CaseIndexDto> caseDeletionList = getIndexList(caseCriteria, null, null, null);
+		caseDeletionList.stream().forEach(caseIndexDto -> {
+			try {
+				deleteCase(caseIndexDto.getUuid());
+			} catch (ExternalSurveillanceToolException e) {
+				e.printStackTrace();
+			}
+		});
+
 	}
 
 	@LocalBean

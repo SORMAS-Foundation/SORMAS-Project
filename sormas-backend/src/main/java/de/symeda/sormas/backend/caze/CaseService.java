@@ -53,6 +53,8 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.deletionconfiguration.CoreEntityFacade;
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -158,7 +160,7 @@ import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean
-public class CaseService extends AbstractCoreAdoService<Case> {
+public class CaseService extends AbstractCoreAdoService<Case> implements CoreEntityFacade {
 
 	private static final long SECONDS_30_DAYS = 30L * 24L * 60L * 60L;
 
@@ -1885,4 +1887,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		cq.multiselect(listQueryBuilder.getCaseIndexSelections((Root<Case>) caseQueryContext.getRoot(), caseQueryContext));
 	}
 
+	@Override
+	public void executeAutomaticDeletion(DeletionReference deletionReference, Date referenceDeletionDate) {
+		System.out.println("am ajuns");
+	}
 }

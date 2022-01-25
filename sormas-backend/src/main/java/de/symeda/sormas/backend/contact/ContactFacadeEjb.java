@@ -63,6 +63,8 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.deletionconfiguration.CoreEntityFacade;
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -202,7 +204,7 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "ContactFacade")
-public class ContactFacadeEjb implements ContactFacade {
+public class ContactFacadeEjb implements ContactFacade, CoreEntityFacade {
 
 	private static final long SECONDS_30_DAYS = TimeUnit.DAYS.toSeconds(30L);
 
@@ -2119,6 +2121,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Override
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		contactService.updateExternalData(externalData);
+	}
+
+	@Override
+	public void executeAutomaticDeletion(DeletionReference deletionReference, Date referenceDeletionDate) {
+
 	}
 
 	private float calculateCompleteness(Contact contact) {
