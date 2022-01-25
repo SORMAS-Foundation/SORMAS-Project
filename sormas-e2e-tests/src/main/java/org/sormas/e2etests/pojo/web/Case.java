@@ -76,4 +76,11 @@ public class Case {
   String epidemiologicalConfirmation;
   String laboratoryDiagnosticConfirmation;
   String investigationStatus;
+  String differentPlaceOfStayJurisdiction;
+  String facility;
+  String quarantineOrderedVerbally;
+  String quarantineOrderedByDocument;
+  String quarantineOrderSet;
+  String vaccinationStatus;
+  String facilityNameAndDescription;
 }

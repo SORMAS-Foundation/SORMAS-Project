@@ -59,9 +59,10 @@ public class EditCasePage {
   public static final By DATE_OF_OUTCOME = By.cssSelector("#outcomeDate");
   public static final By SEQUELAE_OPTIONS = By.cssSelector("#sequelae label");
   public static final By SEQUELAE_DETAILS = By.cssSelector("#sequelaeDetails");
-  public static final By PLACE_OF_STAY_CHECKBOX =
+  public static final By PLACE_OF_STAY_CHECKBOX_LABEL =
       By.xpath("//*[@id='differentPlaceOfStayJurisdiction']/label");
-
+  public static final By PLACE_OF_STAY_CHECKBOX_INPUT =
+      By.xpath("//*[@id='differentPlaceOfStayJurisdiction']/input");
   public static final By PLACE_OF_STAY_REGION_COMBOBOX = By.cssSelector("#region div");
   public static final By PLACE_OF_STAY_DISTRICT_COMBOBOX = By.cssSelector("#district div");
   public static final By REPORTING_DISTRICT_COMBOBOX = By.cssSelector("#reportingDistrict div");
@@ -86,12 +87,18 @@ public class EditCasePage {
   public static final By QUARANTINE_COMBOBOX = By.cssSelector("#quarantine div");
   public static final By QUARANTINE_DATE_FROM = By.cssSelector("#quarantineFrom");
   public static final By QUARANTINE_DATE_TO = By.cssSelector("#quarantineTo");
-  public static final By QUARANTINE_ORDERED_VERBALLY_CHECKBOX =
+  public static final By QUARANTINE_ORDERED_VERBALLY_CHECKBOX_LABEL =
       By.xpath("//*[@id='quarantineOrderedVerbally']/label");
-  public static final By QUARANTINE_ORDERED_BY_DOCUMENT_CHECKBOX =
+  public static final By QUARANTINE_ORDERED_VERBALLY_CHECKBOX_INPUT =
+      By.xpath("//*[@id='quarantineOrderedVerbally']/input");
+  public static final By QUARANTINE_ORDERED_BY_DOCUMENT_CHECKBOX_LABEL =
       By.xpath("//*[@id='quarantineOrderedOfficialDocument']/label");
-  public static final By OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX =
+  public static final By QUARANTINE_ORDERED_BY_DOCUMENT_CHECKBOX_INPUT =
+      By.xpath("//*[@id='quarantineOrderedOfficialDocument']/input");
+  public static final By OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX_LABEL =
       By.xpath("//*[@id='quarantineOfficialOrderSent']/label");
+  public static final By OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX_INPUT =
+      By.xpath("//*[@id='quarantineOfficialOrderSent']/input");
   public static final By QUARANTINE_ORDERED_BY_DOCUMENT_DATE =
       By.cssSelector("#quarantineOrderedOfficialDocumentDate");
   public static final By DATE_OF_THE_VERBAL_ORDER =
@@ -117,6 +124,7 @@ public class EditCasePage {
       By.cssSelector("#nationalLevelDate input");
   public static final By GENERAL_COMMENT_TEXTAREA = By.cssSelector("textarea#additionalDetails");
   public static final By SAVE_BUTTON = By.id("commit");
+  public static final By ACTION_CANCEL = By.id("actionCancel");
   public static final By DELETE_BUTTON = By.id("delete");
   public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
   public static final By CASE_SAVED_POPUP = By.cssSelector(".v-Notification-caption");

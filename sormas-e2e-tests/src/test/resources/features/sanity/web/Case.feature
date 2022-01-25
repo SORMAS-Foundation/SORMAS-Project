@@ -40,6 +40,7 @@ Feature: Case end to end tests
     Then I select Investigation Status Pending
     Then I select Investigation Status Discarded
     And I check if date of investigation filed is available
+    Then I select Investigation Status Pending
     Then I select Outcome Of Case Status Deceased
     And I check if date of outcome filed is available
     Then I select Outcome Of Case Status Recovered
@@ -62,6 +63,7 @@ Feature: Case end to end tests
     And I check if Facility Category combobox is available
     And I check if Facility Type combobox is available
     Then I set Facility as a Other facility
+    And I fill Facility name and description filed by dummy description
     And I check if Facility name and description field is available
     Then I set Quarantine Home
     And I check if Quarantine start field is available
@@ -86,6 +88,7 @@ Feature: Case end to end tests
     Then I set Vaccination Status as unvaccinated
     Then I set Vaccination Status as unknown
     And I click on save button in case edit
+    Then I check if the specific data is correctly displayed
 
   Scenario: Delete created case
     When API: I create a new person
