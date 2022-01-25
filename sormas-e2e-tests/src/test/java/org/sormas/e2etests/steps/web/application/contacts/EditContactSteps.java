@@ -579,14 +579,6 @@ public class EditContactSteps implements En {
         .dateOfBirth(localDate)
         .build();
   }
-
-  private void selectQuarantineOrderTemplate(String templateName) {
-    webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, templateName);
-  }
-
-  private void fillExtraComment(String extraComment) {
-    webDriverHelpers.fillInAndLeaveWebElement(EditContactPage.EXTRA_COMMENT_TEXTAREA, extraComment);
-  }
     public Contact collectComplexContactData() {
         String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
         LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
@@ -618,4 +610,13 @@ public class EditContactSteps implements En {
                 .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
                 .build();
     }
+
+  private void selectQuarantineOrderTemplate(String templateName) {
+    webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, templateName);
+  }
+
+  private void fillExtraComment(String extraComment) {
+    webDriverHelpers.fillInAndLeaveWebElement(EditContactPage.EXTRA_COMMENT_TEXTAREA, extraComment);
+  }
+
 }
