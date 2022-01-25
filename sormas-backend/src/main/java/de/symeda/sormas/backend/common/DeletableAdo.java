@@ -6,8 +6,8 @@ import javax.persistence.MappedSuperclass;
 import de.symeda.auditlog.api.Audited;
 
 /**
- * An extension of the {@link AbstractDomainObject} that defines core data that is essential to the system.
- * The integral definition of core data is that it may not be deleted from the system, e.g. because it is
+ * An extension of the {@link AbstractDomainObject} that defines data that is essential to the system.
+ * This data may not be deleted from the system, e.g. because it is
  * relevant for external systems that share data with or use data from SORMAS.
  */
 @MappedSuperclass

@@ -77,7 +77,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
-import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.epidata.EpiData;
@@ -103,7 +103,7 @@ import de.symeda.sormas.backend.visit.Visit;
 
 @Entity(name = "cases")
 @Audited
-public class Case extends DeletableAdo implements SormasToSormasShareable, HasExternalData {
+public class Case extends CoreAdo implements SormasToSormasShareable, HasExternalData {
 
 	private static final long serialVersionUID = -2697795184663562129L;
 
@@ -159,7 +159,7 @@ public class Case extends DeletableAdo implements SormasToSormasShareable, HasEx
 	public static final String SEQUELAE = "sequelae";
 	public static final String SEQUELAE_DETAILS = "sequelaeDetails";
 	public static final String CASE_AGE = "caseAge";
-	public static final String ARCHIVED = "archived";
+
 	public static final String THERAPY = "therapy";
 	public static final String CLINICIAN_DETAILS = "clinicianDetails";
 	public static final String CASE_ORIGIN = "caseOrigin";
@@ -314,7 +314,7 @@ public class Case extends DeletableAdo implements SormasToSormasShareable, HasEx
 
 	private Integer caseAge;
 
-	private boolean archived;
+
 	private String creationVersion;
 	private Case duplicateOf;
 
@@ -1067,15 +1067,6 @@ public class Case extends DeletableAdo implements SormasToSormasShareable, HasEx
 
 	public void setCaseAge(Integer caseAge) {
 		this.caseAge = caseAge;
-	}
-
-	@Column
-	public boolean isArchived() {
-		return archived;
-	}
-
-	public void setArchived(boolean archived) {
-		this.archived = archived;
 	}
 
 	@Column(length = 32)

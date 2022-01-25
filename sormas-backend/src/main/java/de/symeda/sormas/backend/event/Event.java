@@ -65,7 +65,7 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
@@ -77,7 +77,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 
 @Entity(name = "events")
 @Audited
-public class Event extends DeletableAdo implements SormasToSormasShareable, HasExternalData {
+public class Event extends CoreAdo implements SormasToSormasShareable, HasExternalData {
 
 	private static final long serialVersionUID = 4964495716032049582L;
 
@@ -133,7 +133,6 @@ public class Event extends DeletableAdo implements SormasToSormasShareable, HasE
 	public static final String TASKS = "tasks";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
-	public static final String ARCHIVED = "archived";
 	public static final String DISEASE_TRANSMISSION_MODE = "diseaseTransmissionMode";
 	public static final String TRANSREGIONAL_OUTBREAK = "transregionalOutbreak";
 	public static final String SUPERORDINATE_EVENT = "superordinateEvent";
@@ -200,8 +199,6 @@ public class Event extends DeletableAdo implements SormasToSormasShareable, HasE
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 	private EventManagementStatus eventManagementStatus;
-
-	private boolean archived;
 
 	private InfectionPathCertainty infectionPathCertainty;
 	private HumanTransmissionMode humanTransmissionMode;
@@ -674,15 +671,6 @@ public class Event extends DeletableAdo implements SormasToSormasShareable, HasE
 
 	public void setDiseaseTransmissionMode(DiseaseTransmissionMode diseaseTransmissionMode) {
 		this.diseaseTransmissionMode = diseaseTransmissionMode;
-	}
-
-	@Column
-	public boolean isArchived() {
-		return archived;
-	}
-
-	public void setArchived(boolean archived) {
-		this.archived = archived;
 	}
 
 	@Override

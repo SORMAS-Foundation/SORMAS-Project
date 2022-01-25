@@ -35,7 +35,7 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
@@ -47,7 +47,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Entity
 @Audited
-public class EventParticipant extends DeletableAdo implements SormasToSormasShareable {
+public class EventParticipant extends CoreAdo implements SormasToSormasShareable {
 
 	private static final long serialVersionUID = -9006001699517297107L;
 

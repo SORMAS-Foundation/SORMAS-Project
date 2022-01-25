@@ -32,7 +32,6 @@ public class Immunization extends BaseImmunization {
 	public static final String PERSON_ID = "personId";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String REPORTING_USER = "reportingUser";
-	public static final String ARCHIVED = "archived";
 	public static final String IMMUNIZATION_STATUS = "immunizationStatus";
 	public static final String MEANS_OF_IMMUNIZATION = "meansOfImmunization";
 	public static final String IMMUNIZATION_MANAGEMENT_STATUS = "immunizationManagementStatus";

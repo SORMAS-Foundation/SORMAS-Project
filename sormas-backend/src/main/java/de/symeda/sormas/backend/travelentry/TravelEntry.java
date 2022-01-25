@@ -22,7 +22,7 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -34,7 +34,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 
 @Entity(name = "travelentry")
 @Audited
-public class TravelEntry extends DeletableAdo {
+public class TravelEntry extends CoreAdo {
 
 	private static final long serialVersionUID = 8415313365918535184L;
 
@@ -44,7 +44,6 @@ public class TravelEntry extends DeletableAdo {
 	public static final String PERSON_ID = "personId";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String REPORTING_USER = "reportingUser";
-	public static final String ARCHIVED = "archived";
 	public static final String DELETED = "deleted";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_VARIANT = "diseaseVariant";
@@ -66,7 +65,6 @@ public class TravelEntry extends DeletableAdo {
 	private Person person;
 	private Date reportDate;
 	private User reportingUser;
-	private boolean archived;
 	private boolean deleted;
 	private Disease disease;
 	private String diseaseDetails;
@@ -144,15 +142,6 @@ public class TravelEntry extends DeletableAdo {
 
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
-	}
-
-	@Column
-	public boolean isArchived() {
-		return archived;
-	}
-
-	public void setArchived(boolean archived) {
-		this.archived = archived;
 	}
 
 	@Override
