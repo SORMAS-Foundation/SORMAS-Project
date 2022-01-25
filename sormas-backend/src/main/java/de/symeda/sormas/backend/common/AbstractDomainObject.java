@@ -22,15 +22,19 @@ import java.sql.Timestamp;
 import java.time.Instant;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.backend.user.User;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
@@ -65,6 +69,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 	private String uuid;
 	private Timestamp creationDate;
 	private Timestamp changeDate;
+	private User changeUser;
 
 	@Override
 	public AbstractDomainObject clone() {
@@ -131,6 +136,17 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 
 	public void setChangeDate(Timestamp changeDate) {
 		this.changeDate = changeDate;
+	}
+
+
+	@ManyToOne(cascade = CascadeType.REFRESH)
+	@JoinColumn(name="change_user_id")
+	public User getChangeUser() {
+		return changeUser;
+	}
+
+	public void setChangeUser(User changeUser) {
+		this.changeUser = changeUser;
 	}
 
 	@Override
