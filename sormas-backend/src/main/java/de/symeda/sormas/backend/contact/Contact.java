@@ -62,7 +62,7 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
-import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -78,7 +78,7 @@ import de.symeda.sormas.backend.visit.Visit;
 
 @Entity
 @Audited
-public class Contact extends CoreAdo implements SormasToSormasShareable, HasExternalData {
+public class Contact extends DeletableAdo implements SormasToSormasShareable, HasExternalData {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 

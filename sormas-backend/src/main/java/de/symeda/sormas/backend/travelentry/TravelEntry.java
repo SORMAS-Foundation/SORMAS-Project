@@ -22,7 +22,7 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -34,7 +34,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 
 @Entity(name = "travelentry")
 @Audited
-public class TravelEntry extends CoreAdo {
+public class TravelEntry extends DeletableAdo {
 
 	private static final long serialVersionUID = 8415313365918535184L;
 

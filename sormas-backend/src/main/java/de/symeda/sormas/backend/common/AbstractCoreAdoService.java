@@ -7,7 +7,7 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
-public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AdoServiceWithUserFilter<ADO> {
+public abstract class AbstractCoreAdoService<ADO extends DeletableAdo> extends AdoServiceWithUserFilter<ADO> {
 
 	public AbstractCoreAdoService(Class<ADO> elementClass) {
 		super(elementClass);

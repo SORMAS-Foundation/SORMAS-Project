@@ -27,7 +27,7 @@ import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -41,7 +41,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 
 @MappedSuperclass
-public class BaseImmunization extends CoreAdo implements SormasToSormasShareable {
+public class BaseImmunization extends DeletableAdo implements SormasToSormasShareable {
 
 	private Disease disease;
 	private String diseaseDetails;

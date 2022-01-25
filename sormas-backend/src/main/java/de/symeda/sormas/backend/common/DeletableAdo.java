@@ -12,7 +12,7 @@ import de.symeda.auditlog.api.Audited;
  */
 @MappedSuperclass
 @Audited
-public abstract class CoreAdo extends AbstractDomainObject {
+public abstract class DeletableAdo extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 6512756286608581221L;
 

@@ -21,13 +21,13 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
-import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Entity(name = "campaigns")
 @Audited
-public class Campaign extends CoreAdo {
+public class Campaign extends DeletableAdo {
 
 	private static final long serialVersionUID = -2744033662114826543L;
 

@@ -65,7 +65,7 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
@@ -77,7 +77,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 
 @Entity(name = "events")
 @Audited
-public class Event extends CoreAdo implements SormasToSormasShareable, HasExternalData {
+public class Event extends DeletableAdo implements SormasToSormasShareable, HasExternalData {
 
 	private static final long serialVersionUID = 4964495716032049582L;
 
