@@ -70,7 +70,7 @@ Feature: Case end to end tests
     When I am accessing the Symptoms tab using of created case via api
     And I check the created data is correctly displayed on Symptoms tab page
 
-@issue=SORDEV-5496
+@issue=SORDEV-5496 @Mock
   Scenario: Generate case document
     Given I log in with National User
     And I click on the Cases button from navbar

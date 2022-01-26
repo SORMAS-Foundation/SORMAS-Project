@@ -22,7 +22,6 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -141,7 +140,10 @@ public class EditCaseSteps implements En {
                       + "-"
                       + aQuarantineOrder.getDocumentTemplate());
           softly.assertTrue(
-              Files.exists(path), "The document with expected name was not downloaded");
+              Files.exists(path),
+              String.format(
+                  "The document with expected name was not downloaded. Searching path was: %s",
+                  path.toAbsolutePath()));
           softly.assertAll();
         });
 

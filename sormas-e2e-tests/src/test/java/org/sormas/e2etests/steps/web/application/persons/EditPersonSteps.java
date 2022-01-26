@@ -313,6 +313,7 @@ public class EditPersonSteps implements En {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USER_INFORMATION, 60);
     String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
+    webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
     String uuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
     String[] personInfos = contactInfo.split(" ");
     LocalDate localDate = LocalDate.parse(personInfos[3].replace(")", ""), formatter);
