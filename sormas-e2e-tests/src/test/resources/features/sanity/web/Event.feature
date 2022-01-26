@@ -182,4 +182,5 @@ Feature: Create events
     Then I add a participant to the event
     Then I check if participant appears in the event participants list
     Then I click Create Case for Event Participant
-    And I create a new case for event participant with specific data
+    And I fill all fields for a new case created for event participant
+    And I click on save case button

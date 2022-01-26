@@ -18,7 +18,6 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.*;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.*;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.SAVE_BUTTON;

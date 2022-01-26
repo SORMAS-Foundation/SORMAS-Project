@@ -143,7 +143,7 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
-        "^I create a new case for event participant with specific data$",
+        "^I fill all fields for a new case created for event participant$",
         () -> {
           caze = caseService.buildGeneratedCase();
           selectCaseOrigin(caze.getCaseOrigin());
@@ -160,10 +160,6 @@ public class CreateNewCaseSteps implements En {
           fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
           fillDateOfReport(caze.getDateOfReport());
           fillPlaceDescription(caze.getPlaceDescription());
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
-          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
   }
 
