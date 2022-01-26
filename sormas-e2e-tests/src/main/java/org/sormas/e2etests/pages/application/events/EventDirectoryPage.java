@@ -32,7 +32,7 @@ public class EventDirectoryPage {
       By.cssSelector("div#eventsViewSwitcher span:nth-child(2)");
   public static final By FILTER_BY_GENERAL_INPUT = By.cssSelector("input#freeText");
   public static final By EVENT_ACTIONS_COLUMN_HEADERS =
-      By.cssSelector("thead .v-grid-column-default-header-content");
+      By.cssSelector("thead" + " .v-grid-column-default-header-content");
   public static final By EVENT_ACTIONS_TABLE_ROW =
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By EVENT_ACTIONS_TABLE_DATA = By.tagName("td");
