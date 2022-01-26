@@ -584,5 +584,4 @@ public class EditContactSteps implements En {
   private void fillExtraComment(String extraComment) {
     webDriverHelpers.fillInAndLeaveWebElement(EditContactPage.EXTRA_COMMENT_TEXTAREA, extraComment);
   }
-
 }

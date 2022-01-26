@@ -104,7 +104,7 @@ public abstract class ComparisonHelper {
       return "Empty value";
     }
   }
-  
+
   private static void checkObjectsClassType(Object obj1, Object obj2) throws Exception {
     if (obj1.getClass() != obj2.getClass())
       throw new Exception(

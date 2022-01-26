@@ -43,6 +43,6 @@ public class EventDirectoryPage {
   }*/
 
   public static By getByEventUuid(String eventUuid) {
-    return By.cssSelector(String.format("a[title=%s]", eventUuid));
+    return By.xpath(String.format("//a[@title='%s']", eventUuid));
   }
 }
