@@ -184,12 +184,9 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 			if (!ignoreDifferentPointOfEntryJurisdiction) {
 				if (differentPointOfEntryJurisdiction.booleanValue()) {
 					districtCombo.setValue(null);
-					getPointsOfEntryForDistrict(null);
-				} else {
-					cbPointOfEntry.setValue(null);
-					DistrictReferenceDto districtDto = (DistrictReferenceDto) responsibleDistrict.getValue();
-					getPointsOfEntryForDistrict(districtDto);
 				}
+				cbPointOfEntry.setValue(null);
+				updatePointsOfEntry();
 			}
 		});
 
@@ -205,11 +202,8 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 				.updateItems(districtCombo, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		districtCombo.addValueChangeListener(e -> {
-			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
-			if (differentPointOfEntryJurisdiction.getValue()) {
-				getPointsOfEntryForDistrict(districtDto);
-			} else {
-				getPointsOfEntryForDistrict((DistrictReferenceDto) responsibleDistrict.getValue());
+			if (differentPointOfEntryJurisdiction.booleanValue()) {
+				updatePointsOfEntry();
 			}
 		});
 
@@ -369,8 +363,9 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		setReadOnly(true, TravelEntryDto.UUID, TravelEntryDto.REPORTING_USER);
 
 		responsibleDistrict.addValueChangeListener(e -> {
-			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
-			getPointsOfEntryForDistrict(districtDto);
+			if (!differentPointOfEntryJurisdiction.booleanValue()) {
+				updatePointsOfEntry();
+			}
 		});
 
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
@@ -390,10 +385,18 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 	public void onDiscard() {
 		ignoreDifferentPointOfEntryJurisdiction = true;
 		updateVisibilityDifferentPointOfEntryJurisdiction(getValue());
+		updatePointsOfEntry();
 		ignoreDifferentPointOfEntryJurisdiction = false;
 	}
 
-	private void getPointsOfEntryForDistrict(DistrictReferenceDto districtDto) {
+	private void updatePointsOfEntry() {
+		DistrictReferenceDto districtDto =
+			(DistrictReferenceDto) (differentPointOfEntryJurisdiction.booleanValue() ? districtCombo.getValue() : responsibleDistrict.getValue());
+
+		updatePointsOfEntryForDistrict(districtDto);
+	}
+
+	private void updatePointsOfEntryForDistrict(DistrictReferenceDto districtDto) {
 		FieldHelper.updateItems(
 			cbPointOfEntry,
 			districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), true) : null);
@@ -408,11 +411,12 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 			if (!isOtherPointOfEntry) {
 				tfPointOfEntryDetails.clear();
 			}
-		} else {
+		} else if (!ignoreDifferentPointOfEntryJurisdiction) {
 			tfPointOfEntryDetails.setVisible(false);
 			tfPointOfEntryDetails.setRequired(false);
 			tfPointOfEntryDetails.clear();
 		}
+
 	}
 
 	private static UiFieldAccessCheckers createFieldAccessCheckers(boolean isPseudonymized, boolean withPersonalAndSensitive) {
@@ -461,6 +465,8 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 	@Override
 	public void setValue(TravelEntryDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		updateVisibilityDifferentPointOfEntryJurisdiction(newFieldValue);
+		updatePointsOfEntryForDistrict(
+			newFieldValue.getPointOfEntryDistrict() != null ? newFieldValue.getPointOfEntryDistrict() : newFieldValue.getResponsibleDistrict());
 		super.setValue(newFieldValue);
 		buildDeaContent(newFieldValue);
 
