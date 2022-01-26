@@ -43,7 +43,6 @@ public class EditContactSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   public static Contact createdContact;
   public static Contact collectedContact;
-  public static Contact aContact;
   public static QuarantineOrder aQuarantineOrder;
   public static Contact editedContact;
   public static final String userDirPath = System.getProperty("user.dir");
@@ -95,7 +94,6 @@ public class EditContactSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(CONTACT_PERSON_TAB);
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_PERSON_TAB);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
 
     When(
@@ -198,6 +196,27 @@ public class EditContactSteps implements En {
           softly.assertTrue(
               Files.exists(path), "The document with expected name was not downloaded");
           softly.assertAll();
+        });
+    When(
+        "I check the created data for complex contact is correctly displayed on Edit Contact page",
+        () -> {
+          collectedContact = collectComplexContactData();
+          createdContact = CreateNewContactSteps.contact;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedContact,
+              createdContact,
+              List.of(
+                  "firstName",
+                  "lastName",
+                  "reportDate",
+                  "dateOfLastContact",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "additionalInformationOnContactType",
+                  "contactCategory",
+                  "relationshipWithCase",
+                  "descriptionOfHowContactTookPlace"));
         });
   }
 
@@ -528,6 +547,34 @@ public class EditContactSteps implements En {
         .build();
   }
 
+  public Contact collectComplexContactData() {
+    String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
+    LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
+    String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
+    LocalDate parsedLastDateOfContact = LocalDate.parse(collectedLastDateOfContact, formatter);
+    Contact contactInfo = getContactInformation();
+
+    return Contact.builder()
+        .firstName(contactInfo.getFirstName())
+        .lastName(contactInfo.getLastName())
+        .reportDate(parsedDateOfReport)
+        .dateOfLastContact(parsedLastDateOfContact)
+        .responsibleRegion(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_REGION_COMBOBOX))
+        .responsibleDistrict(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX))
+        .responsibleCommunity(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX))
+        .additionalInformationOnContactType(
+            webDriverHelpers.getValueFromWebElement(
+                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
+        .contactCategory(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
+        .relationshipWithCase(
+            webDriverHelpers.getValueFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX))
+        .descriptionOfHowContactTookPlace(
+            webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .build();
+  }
+
   private void selectQuarantineOrderTemplate(String templateName) {
     webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, templateName);
   }
@@ -535,4 +582,5 @@ public class EditContactSteps implements En {
   private void fillExtraComment(String extraComment) {
     webDriverHelpers.fillInAndLeaveWebElement(EditContactPage.EXTRA_COMMENT_TEXTAREA, extraComment);
   }
+
 }
