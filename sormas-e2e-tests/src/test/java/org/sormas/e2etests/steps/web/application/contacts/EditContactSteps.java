@@ -222,6 +222,26 @@ public class EditContactSteps implements En {
           softly.assertAll();
         });
     When(
+        "^I click on ([^\"]*) radio button Contact Person tab$",
+        (String buttonName) ->
+            webDriverHelpers.clickWebElementByText(
+                CONTACT_CLASSIFICATION_RADIO_BUTTON, buttonName));
+
+    When(
+        "^I click SAVE button on Edit Contact Page$",
+        () -> {
+          webDriverHelpers.scrollToElement(SAVE_EDIT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_EDIT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_SAVED_POPUP);
+        });
+    When(
+        "^I click Create Case from Contact button$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.scrollToElement(CREATE_CASE_FROM_CONTACT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_FROM_CONTACT_BUTTON);
+        });
+    When(
         "I check the created data for complex contact is correctly displayed on Edit Contact page",
         () -> {
           collectedContact = collectComplexContactData();
