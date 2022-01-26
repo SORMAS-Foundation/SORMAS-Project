@@ -37,6 +37,8 @@ public class EventDirectoryPage {
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By EVENT_ACTIONS_TABLE_DATA = By.tagName("td");
   public static final By FIRST_EVENT_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
+  public static final By CREATE_CASE_BUTTON =
+      By.xpath("//td//span[contains(@class, 'v-icon-edit')]");
 
   public static By getByEventUuid(String eventUuid) {
     return By.xpath(String.format("//a[@title='%s']", eventUuid));
