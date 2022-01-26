@@ -43,7 +43,7 @@ Feature: Contacts end to end tests
     Given I log in with National User
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
-    Then I fill a new contact form
+    And I fill a new contact form
     And I click SAVE a new contact
     And I click on the Tasks button from navbar
     Then I search created task by Contact first and last name
@@ -144,6 +144,19 @@ Feature: Contacts end to end tests
     And I am accessing the contacts from New Visit
     And I open Follow up Visits tab from contact directory
     Then I am validating the From and To dates displayed
+
+  @issue=SORDEV-5490
+  Scenario: Create a contact and create a case for contact person
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click SAVE a new contact
+    And I click on CONFIRMED CONTACT radio button Contact Person tab
+    Then I click SAVE button on Edit Contact Page
+    And I click Create Case from Contact button
+    And I create a new case for contact with specific data
+    And I check case created from created contact is correctly displayed on Edit Case page
 
   @issue=SORDEV-5496
   Scenario: Generate contact document
