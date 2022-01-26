@@ -159,7 +159,10 @@ public class EditCaseSteps implements En {
                       + "-"
                       + aQuarantineOrder.getDocumentTemplate());
           softly.assertTrue(
-              Files.exists(path), "The document with expected name was not downloaded");
+              Files.exists(path),
+              String.format(
+                  "The document with expected name was not downloaded. Searching path was: %s",
+                  path.toAbsolutePath()));
           softly.assertAll();
         });
 

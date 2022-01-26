@@ -334,7 +334,9 @@ public class EditEventSteps implements En {
                       + "-"
                       + aEventHandout.getDocumentTemplate());
           softly.assertTrue(
-              Files.exists(path), "The document with expected name was not downloaded");
+              Files.exists(path),
+              "The document with expected name was not downloaded. Searched after path: "
+                  + path.toAbsolutePath());
           softly.assertAll();
         });
   }

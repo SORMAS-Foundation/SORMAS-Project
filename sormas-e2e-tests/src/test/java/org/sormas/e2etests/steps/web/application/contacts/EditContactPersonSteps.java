@@ -25,13 +25,11 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Contact;
 import org.sormas.e2etests.pojo.web.Person;
 import org.sormas.e2etests.services.PersonService;
@@ -59,26 +57,26 @@ public class EditContactPersonSteps implements En {
         () -> {
           aPerson = collectPersonData();
           createdContact = CreateNewContactSteps.contact;
-            softly.assertEquals(
-                    aPerson.getFirstName(), createdContact.getFirstName(), "First name is not correct");
-            softly.assertEquals(
-                    aPerson.getLastName(),
-                    createdContact.getLastName().toUpperCase(),
-                    "Last name is not correct");
-            softly.assertEquals(
-                    aPerson.getDateOfBirth(),
-                    createdContact.getDateOfBirth(),
-                    "Date of birth is not correct");
-            softly.assertEquals(aPerson.getSex(), createdContact.getSex(), "Sex is not correct");
-            softly.assertEquals(
-                    aPerson.getEmailAddress(),
-                    createdContact.getPrimaryEmailAddress(),
-                    "Primary email address is not correct");
-            softly.assertEquals(
-                    aPerson.getPhoneNumber(),
-                    createdContact.getPrimaryPhoneNumber(),
-                    "Phone number is not correct");
-            softly.assertAll();
+          softly.assertEquals(
+              aPerson.getFirstName(), createdContact.getFirstName(), "First name is not correct");
+          softly.assertEquals(
+              aPerson.getLastName(),
+              createdContact.getLastName().toUpperCase(),
+              "Last name is not correct");
+          softly.assertEquals(
+              aPerson.getDateOfBirth(),
+              createdContact.getDateOfBirth(),
+              "Date of birth is not correct");
+          softly.assertEquals(aPerson.getSex(), createdContact.getSex(), "Sex is not correct");
+          softly.assertEquals(
+              aPerson.getEmailAddress(),
+              createdContact.getPrimaryEmailAddress(),
+              "Primary email address is not correct");
+          softly.assertEquals(
+              aPerson.getPhoneNumber(),
+              createdContact.getPrimaryPhoneNumber(),
+              "Phone number is not correct");
+          softly.assertAll();
         });
 
     Then(
