@@ -31,54 +31,59 @@ import retrofit2.Call;
 
 public class CampaignDtoHelper extends AdoDtoHelper<Campaign, CampaignDto> {
 
-    public static CampaignReferenceDto toReferenceDto(Campaign ado) {
-        if (ado == null) {
-            return null;
-        }
-        CampaignReferenceDto dto = new CampaignReferenceDto(ado.getUuid());
-        return dto;
-    }
+	public static CampaignReferenceDto toReferenceDto(Campaign ado) {
+		if (ado == null) {
+			return null;
+		}
+		CampaignReferenceDto dto = new CampaignReferenceDto(ado.getUuid());
+		return dto;
+	}
 
-    @Override
-    protected Class<Campaign> getAdoClass() {
-        return Campaign.class;
-    }
+	@Override
+	protected Class<Campaign> getAdoClass() {
+		return Campaign.class;
+	}
 
-    @Override
-    protected Class<CampaignDto> getDtoClass() {
-        return CampaignDto.class;
-    }
+	@Override
+	protected Class<CampaignDto> getDtoClass() {
+		return CampaignDto.class;
+	}
 
-    @Override
-    protected Call<List<CampaignDto>> pullAllSince(long since) throws NoConnectionException {
-        return RetroProvider.getCampaignFacade().pullAllSince(since);
-    }
+	@Override
+	protected Call<List<CampaignDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
+		return RetroProvider.getCampaignFacade().pullAllSince(since);
+	}
 
-    @Override
-    protected Call<List<CampaignDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
-        return RetroProvider.getCampaignFacade().pullByUuids(uuids);
-    }
+	@Override
+	protected Call<List<CampaignDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
+		return RetroProvider.getCampaignFacade().pullByUuids(uuids);
+	}
 
-    @Override
-    protected Call<List<PushResult>> pushAll(List<CampaignDto> campaignDtos) throws NoConnectionException {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	protected Call<List<PushResult>> pushAll(List<CampaignDto> campaignDtos) throws NoConnectionException {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    protected void fillInnerFromDto(Campaign target, CampaignDto source) {
-        target.setName(source.getName());
-        target.setDescription(source.getDescription());
-        target.setStartDate(source.getStartDate());
-        target.setEndDate(source.getEndDate());
-        target.setCreatingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getCreatingUser()));
-        final Set<CampaignFormMetaReferenceDto> campaignFormMetaReferenceDtos = source.getCampaignFormMetas();
-        if (campaignFormMetaReferenceDtos != null) {
-            target.setCampaignFormMetas(new ArrayList<>(campaignFormMetaReferenceDtos));
-        }
-    }
+	@Override
+	protected void fillInnerFromDto(Campaign target, CampaignDto source) {
+		target.setName(source.getName());
+		target.setDescription(source.getDescription());
+		target.setStartDate(source.getStartDate());
+		target.setEndDate(source.getEndDate());
+		target.setCreatingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getCreatingUser()));
+		final Set<CampaignFormMetaReferenceDto> campaignFormMetaReferenceDtos = source.getCampaignFormMetas();
+		if (campaignFormMetaReferenceDtos != null) {
+			target.setCampaignFormMetas(new ArrayList<>(campaignFormMetaReferenceDtos));
+		}
+	}
 
-    @Override
-    protected void fillInnerFromAdo(CampaignDto dto, Campaign campaign) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	protected void fillInnerFromAdo(CampaignDto dto, Campaign campaign) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return 0;
+	}
 }

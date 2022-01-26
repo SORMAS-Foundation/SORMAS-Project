@@ -36,7 +36,7 @@ public class HealthConditionsDtoHelper extends AdoDtoHelper<HealthConditions, He
 	}
 
 	@Override
-	protected Call<List<HealthConditionsDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<HealthConditionsDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 
@@ -106,5 +106,10 @@ public class HealthConditionsDtoHelper extends AdoDtoHelper<HealthConditions, He
 		target.setImmunodeficiencyIncludingHiv(source.getImmunodeficiencyIncludingHiv());
 
 		target.setPseudonymized(source.isPseudonymized());
+	}
+
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return 0;
 	}
 }

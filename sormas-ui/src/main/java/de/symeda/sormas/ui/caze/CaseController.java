@@ -324,9 +324,10 @@ public class CaseController {
 			convertToCaseConfirmComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionNo));
 
 			convertToCaseConfirmComponent.addCommitListener(() -> {
-				caze.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
-				saveCase(caze);
-				setResultingCase(caze, matchingContacts, matchingEventParticipants);
+				CaseDataDto refreshedCaze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
+				refreshedCaze.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
+				saveCase(refreshedCaze);
+				setResultingCase(refreshedCaze, matchingContacts, matchingEventParticipants);
 				SormasUI.refreshView();
 			});
 
@@ -363,7 +364,8 @@ public class CaseController {
 			if (!selectedContacts.isEmpty()) {
 				caze.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
 			}
-			saveCase(caze);
+			CaseDataDto refreshedCaze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
+			saveCase(refreshedCaze);
 			setResultingCase(caze, selectedContacts, convertToCaseSelectionField.getSelectedEventParticipants());
 			SormasUI.refreshView();
 		});

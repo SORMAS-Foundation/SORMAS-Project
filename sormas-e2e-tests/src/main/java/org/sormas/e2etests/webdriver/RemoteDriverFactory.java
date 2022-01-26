@@ -20,6 +20,7 @@ package org.sormas.e2etests.webdriver;
 
 import static org.openqa.selenium.remote.CapabilityType.SUPPORTS_ALERTS;
 
+import java.util.HashMap;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.SneakyThrows;
@@ -36,6 +37,7 @@ public class RemoteDriverFactory implements DriverFactory {
   private final String userDirProperty;
   private final DesiredCapabilities desiredCapabilities;
   private final DriverMetaData driverMetaData;
+  private final String userDirectory = System.getProperty("user.dir");
 
   @Inject
   public RemoteDriverFactory(
@@ -54,6 +56,8 @@ public class RemoteDriverFactory implements DriverFactory {
     System.setProperty("webdriver.chrome.driver", "/usr/lib64/chromium-browser/chromedriver");
     log.info("Adding all chrome preferences");
     final ChromeOptions options = new ChromeOptions();
+    final HashMap<String, Object> chromePreferences = new HashMap<>();
+    chromePreferences.put("download.default_directory", userDirectory + "/downloads");
     options.merge(desiredCapabilities);
     options.addArguments("--no-default-browser-check");
     options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.IGNORE);
@@ -73,6 +77,7 @@ public class RemoteDriverFactory implements DriverFactory {
     options.addArguments("--ignore-certificate-errors");
     options.addArguments("--ignore-ssl-errors");
     options.setCapability("javascript.enabled", true);
+    options.setExperimentalOption("prefs", chromePreferences);
     options.addArguments("--window-size=1920,1080");
     options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
     options.setCapability(SUPPORTS_ALERTS, false);

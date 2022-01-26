@@ -37,14 +37,15 @@ public class ContactDirectoryPage {
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By CONTACTS_DETAILED_TABLE_DATA = By.cssSelector("[role=gridcell]");
   public static final By DISEASE_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(5)");
-  public static final By FIRST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(8)");
-  public static final By LAST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(9)");
+  public static final By FIRST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(9)");
+  public static final By LAST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(10)");
   public static final By TYPE_OF_CONTACT_COLUMNS =
-      By.cssSelector("[role=rowgroup] tr>td:nth-child(11)");
+      By.cssSelector("[role=rowgroup] tr>td:nth-child(12)");
   public static final By FOLLOW_UP_VISITS_BUTTON =
       By.cssSelector("#contactsViewSwitcher span:nth-child(3)");
   public static final By FROM_INPUT = By.cssSelector("#fromReferenceDateField input");
   public static final By TO_INPUT = By.cssSelector("#toReferenceDateField input");
   public static final By GRID_HEADERS = By.xpath("//thead//tr//th");
   public static final String RESULTS_GRID_HEADER = "//div[contains(text(), '%s')]";
+  public static final By FIRST_CONTACT_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
 }

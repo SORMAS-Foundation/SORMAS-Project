@@ -87,14 +87,10 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		List<PrescriptionIndexDto> indexList = em.createQuery(cq).getResultList();
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(
-			PrescriptionIndexDto.class,
-			indexList,
-			p -> p.getInJurisdiction(),
-			(p, inJurisdiction) -> {
-				pseudonymizer.pseudonymizeDto(PrescriptionIndexDto.PrescriptionIndexType.class, p.getPrescriptionIndexType(), inJurisdiction, null);
-				pseudonymizer.pseudonymizeDto(PrescriptionIndexDto.PrescriptionIndexRoute.class, p.getPrescriptionIndexRoute(), inJurisdiction, null);
-			});
+		pseudonymizer.pseudonymizeDtoCollection(PrescriptionIndexDto.class, indexList, p -> p.getInJurisdiction(), (p, inJurisdiction) -> {
+			pseudonymizer.pseudonymizeDto(PrescriptionIndexDto.PrescriptionIndexType.class, p.getPrescriptionIndexType(), inJurisdiction, null);
+			pseudonymizer.pseudonymizeDto(PrescriptionIndexDto.PrescriptionIndexRoute.class, p.getPrescriptionIndexRoute(), inJurisdiction, null);
+		});
 
 		return indexList;
 	}
@@ -131,6 +127,11 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 	@Override
 	public List<PrescriptionDto> getAllActivePrescriptionsAfter(Date date) {
+		return getAllActivePrescriptionsAfter(date, null, null);
+	}
+
+	@Override
+	public List<PrescriptionDto> getAllActivePrescriptionsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		User user = userService.getCurrentUser();
 		if (user == null) {
@@ -138,7 +139,10 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllActivePrescriptionsAfter(date, user).stream().map(p -> convertToDto(p, pseudonymizer)).collect(Collectors.toList());
+		return service.getAllActivePrescriptionsAfter(date, user, batchSize, lastSynchronizedUuid)
+			.stream()
+			.map(p -> convertToDto(p, pseudonymizer))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -214,8 +218,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 	private void pseudonymizeDto(Prescription source, PrescriptionDto dto, Pseudonymizer pseudonymizer) {
 		if (source != null && dto != null) {
-			pseudonymizer
-				.pseudonymizeDto(PrescriptionDto.class, dto, caseService.inJurisdictionOrOwned(source.getTherapy().getCaze()), null);
+			pseudonymizer.pseudonymizeDto(PrescriptionDto.class, dto, caseService.inJurisdictionOrOwned(source.getTherapy().getCaze()), null);
 		}
 	}
 

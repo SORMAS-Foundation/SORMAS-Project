@@ -54,6 +54,7 @@ public class NullableOptionGroup extends OptionGroup {
 		} else {
 			setConverter(new NullableOptionGroupConverter(getFirstValue((Set) getValue())));
 		}
+		addStyleName("multiline");
 	}
 
 	@Override

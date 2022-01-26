@@ -22,6 +22,8 @@ public interface AdditionalTestFacade {
 
 	List<AdditionalTestDto> getAllActiveAdditionalTestsAfter(Date date);
 
+	List<AdditionalTestDto> getAllActiveAdditionalTestsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
+
 	List<AdditionalTestDto> getByUuids(List<String> uuids);
 
 	List<String> getAllActiveUuids();

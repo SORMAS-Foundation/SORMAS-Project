@@ -15,6 +15,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
+
 @Stateless
 @LocalBean
 public class SormasToSormasCaseDtoValidator extends SormasToSormasDtoValidator<CaseDataDto, SormasToSormasCaseDto, SormasToSormasCasePreview> {
@@ -30,7 +32,7 @@ public class SormasToSormasCaseDtoValidator extends SormasToSormasDtoValidator<C
 	@Override
 	public ValidationErrors validate(SormasToSormasCaseDto sharedData, ValidationDirection direction) {
 		CaseDataDto caze = sharedData.getEntity();
-		ValidationErrors validationErrors = new ValidationErrors();
+		ValidationErrors validationErrors = new ValidationErrors(buildCaseValidationGroupName(caze));
 
 		ValidationErrors personValidationErrors = validatePerson(sharedData.getPerson(), direction);
 		validationErrors.addAll(personValidationErrors);
@@ -79,7 +81,7 @@ public class SormasToSormasCaseDtoValidator extends SormasToSormasDtoValidator<C
 
 	@Override
 	public ValidationErrors validatePreview(SormasToSormasCasePreview preview, ValidationDirection direction) {
-		ValidationErrors validationErrors = new ValidationErrors();
+		ValidationErrors validationErrors = new ValidationErrors(buildCaseValidationGroupName(preview));
 		validationErrors.addAll(validatePersonPreview(preview.getPerson(), direction));
 
 		final String groupNameTag = Captions.CaseData;

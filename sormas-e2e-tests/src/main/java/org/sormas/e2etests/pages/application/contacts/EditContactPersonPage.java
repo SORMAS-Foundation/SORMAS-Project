@@ -26,8 +26,6 @@ public class EditContactPersonPage {
   public static final By USER_INFORMATION =
       By.cssSelector(".v-slot.v-slot-h2.v-slot-vspace-top-none.v-slot-primary");
   public static final By SEX_INPUT = By.cssSelector("#sex input");
-  public static final By PASSPORT_NUMBER_INPUT = By.cssSelector("#passportNumber");
-  public static final By NATIONAL_HEALTH_ID_INPUT = By.cssSelector("#nationalHealthId");
   public static final By EMAIL_FIELD =
       By.xpath(
           "(//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Email')])[1]/../following-sibling::td//div");
@@ -48,7 +46,6 @@ public class EditContactPersonPage {
       By.cssSelector("[location=occupationType] input+div");
   public static final By STAFF_OF_ARMED_FORCES_COMBOBOX =
       By.cssSelector("[location=armedForcesRelationType] input+div");
-  public static final By EDUCATION_COMBOBOX = By.cssSelector("[location=educationType] input+div");
   public static final By REGION_COMBOBOX = By.cssSelector("#region > div");
   public static final By DISTRICT_COMBOBOX = By.cssSelector("#district > div");
   public static final By COMMUNITY_COMBOBOX = By.cssSelector("#community > div");
@@ -65,12 +62,7 @@ public class EditContactPersonPage {
   public static final By CONTACT_PERSON_FIRST_NAME_INPUT =
       By.cssSelector("#contactPersonFirstName");
   public static final By CONTACT_PERSON_LAST_NAME_INPUT = By.cssSelector("#contactPersonLastName");
-  public static final By COMMUNITY_CONTACT_PERSON_INPUT = By.cssSelector("#details");
   public static final By BIRTH_NAME_INPUT = By.cssSelector("#birthName");
-  public static final By NICKNAME_INPUT = By.cssSelector("#nickname");
-  public static final By MOTHER_MAIDEN_NAME_INPUT = By.cssSelector("#mothersMaidenName");
-  public static final By MOTHER_NAME_INPUT = By.cssSelector("#mothersName");
-  public static final By FATHER_NAME_INPUT = By.cssSelector("#fathersName");
   public static final By NAMES_OF_GUARDIANS_INPUT = By.cssSelector("#namesOfGuardians");
   public static final By CONTACT_INFORMATION_NEW_ENTRY_BUTTON =
       By.cssSelector("#personContactDetails #actionNewEntry");

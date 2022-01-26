@@ -20,12 +20,12 @@ import java.util.List;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistoryDtoHelper;
 import de.symeda.sormas.app.backend.caze.porthealthinfo.PortHealthInfoDtoHelper;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourseDtoHelper;
-import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataDtoHelper;
@@ -36,6 +36,7 @@ import de.symeda.sormas.app.backend.hospitalization.HospitalizationDtoHelper;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDtoHelper;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDependentDtoHelper;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
@@ -54,7 +55,7 @@ import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
-public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
+public class CaseDtoHelper extends PersonDependentDtoHelper<Case, CaseDataDto> {
 
 	private SymptomsDtoHelper symptomsDtoHelper = new SymptomsDtoHelper();
 	private HospitalizationDtoHelper hospitalizationDtoHelper = new HospitalizationDtoHelper();
@@ -76,8 +77,8 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 	}
 
 	@Override
-	protected Call<List<CaseDataDto>> pullAllSince(long since) throws NoConnectionException {
-		return RetroProvider.getCaseFacade().pullAllSince(since);
+	protected Call<List<CaseDataDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+		return RetroProvider.getCaseFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
 	@Override
@@ -477,6 +478,11 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setFollowUpStatusChangeUser(UserDtoHelper.toReferenceDto(source.getFollowUpStatusChangeUser()));
 	}
 
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return CaseDataDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+	}
+
 	public static CaseReferenceDto toReferenceDto(Case ado) {
 		if (ado == null) {
 			return null;
@@ -484,5 +490,10 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		CaseReferenceDto dto = new CaseReferenceDto(ado.getUuid());
 
 		return dto;
+	}
+
+	@Override
+	protected PersonReferenceDto getPerson(CaseDataDto dto) {
+		return dto.getPerson();
 	}
 }

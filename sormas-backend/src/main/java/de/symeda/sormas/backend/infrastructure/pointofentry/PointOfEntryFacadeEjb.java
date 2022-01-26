@@ -142,13 +142,13 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
-	public PointOfEntryDto saveUnchecked(PointOfEntryDto dto) {
+	public PointOfEntryDto saveFromCentral(PointOfEntryDto dto) {
 		return save(dto);
 	}
 
 	@Override
-	protected List<PointOfEntry> findDuplicates(PointOfEntryDto dto) {
-		return service.getByName(dto.getName(), districtService.getByReferenceDto(dto.getDistrict()), true);
+	protected List<PointOfEntry> findDuplicates(PointOfEntryDto dto, boolean includeArchived) {
+		return service.getByName(dto.getName(), districtService.getByReferenceDto(dto.getDistrict()), includeArchived);
 	}
 
 	@Override

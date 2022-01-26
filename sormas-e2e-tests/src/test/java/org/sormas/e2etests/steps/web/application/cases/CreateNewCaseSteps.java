@@ -19,6 +19,7 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.*;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 
 import cucumber.api.java8.En;
@@ -56,8 +57,6 @@ public class CreateNewCaseSteps implements En {
           fillLastName(caze.getLastName());
           fillDateOfBirth(caze.getDateOfBirth());
           selectSex(caze.getSex());
-          fillNationalHealthId(caze.getNationalHealthId());
-          fillPassportNumber(caze.getPassportNumber());
           selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset());
           fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
@@ -84,8 +83,6 @@ public class CreateNewCaseSteps implements En {
           fillLastName(caze.getLastName());
           fillDateOfBirth(caze.getDateOfBirth());
           selectSex(caze.getSex());
-          fillNationalHealthId(caze.getNationalHealthId());
-          fillPassportNumber(caze.getPassportNumber());
           selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset());
           fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
@@ -105,8 +102,6 @@ public class CreateNewCaseSteps implements En {
           fillLastName(caze.getLastName());
           fillDateOfBirth(caze.getDateOfBirth());
           selectSex(caze.getSex());
-          fillNationalHealthId(caze.getNationalHealthId());
-          fillPassportNumber(caze.getPassportNumber());
           selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset());
           fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
@@ -114,6 +109,27 @@ public class CreateNewCaseSteps implements En {
           fillDateOfReport(caze.getDateOfReport());
           fillPlaceDescription(caze.getPlaceDescription());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+    When(
+        "^I create a new case for contact with specific data$",
+        () -> {
+          caze = caseService.buildGeneratedCase();
+          fillDateOfReport(caze.getDateOfReport());
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillExternalId(caze.getExternalId());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillPlaceDescription(caze.getPlaceDescription());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset());
+
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
@@ -184,14 +200,6 @@ public class CreateNewCaseSteps implements En {
 
   private void selectSex(String sex) {
     webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
-  }
-
-  private void fillNationalHealthId(String nationalHealthId) {
-    webDriverHelpers.fillInWebElement(NATIONAL_HEALTH_ID_INPUT, nationalHealthId);
-  }
-
-  private void fillPassportNumber(String passportNumber) {
-    webDriverHelpers.fillInWebElement(PASSPORT_NUMBER_INPUT, passportNumber);
   }
 
   private void selectPresentConditionOfPerson(String presentConditionOfPerson) {

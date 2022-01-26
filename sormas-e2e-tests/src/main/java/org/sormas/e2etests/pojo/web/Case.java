@@ -41,8 +41,6 @@ public class Case {
   String facilityType;
   String firstName;
   String lastName;
-  String nationalHealthId;
-  String passportNumber;
   String placeDescription;
   String responsibleJurisdiction;
   String placeOfStay;
@@ -78,4 +76,11 @@ public class Case {
   String epidemiologicalConfirmation;
   String laboratoryDiagnosticConfirmation;
   String investigationStatus;
+  String differentPlaceOfStayJurisdiction;
+  String facility;
+  String quarantineOrderedVerbally;
+  String quarantineOrderedByDocument;
+  String quarantineOrderSet;
+  String vaccinationStatus;
+  String facilityNameAndDescription;
 }

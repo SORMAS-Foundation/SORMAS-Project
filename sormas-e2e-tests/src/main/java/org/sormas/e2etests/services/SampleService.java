@@ -43,7 +43,7 @@ public class SampleService {
         .reasonForSample("Presence of symptoms")
         .sampleID(faker.number().randomNumber(7, false))
         .laboratory("Other facility")
-        .laboratoryName("Laboratory Create")
+        .laboratoryName(faker.crypto() + " Laboratory New")
         .received("Received")
         .receivedDate(LocalDate.now().minusDays(5))
         .specimenCondition("Adequate")
@@ -77,26 +77,12 @@ public class SampleService {
         .reasonForSample("Screening")
         .sampleID(faker.number().randomNumber(8, false))
         .laboratory("Other facility")
-        .laboratoryName("Laboratory Edit")
+        .laboratoryName(faker.crypto() + " Laboratory Edit")
         .received("Received")
         .receivedDate(LocalDate.now().minusDays(10))
         .specimenCondition("Adequate")
         .labSampleId(faker.number().randomNumber(7, false))
         .commentsOnSample(currentTimeMillis + "Comment on Edit requests or received")
-        .build();
-  }
-
-  public Sample buildEditSampleEditTestResult() {
-    long currentTimeMillis = System.currentTimeMillis();
-    return Sample.builder()
-        .reportDate(LocalDate.now().minusDays(10))
-        .typeOfTest("Histopathology")
-        .testedDisease("Anthrax")
-        .dateOfResult(LocalDate.now())
-        .timeOfResult(LocalTime.of(15, 15))
-        .resultVerifiedByLabSupervisor("NO")
-        .laboratory("Voreingestelltes Labor")
-        .testResultsComment(currentTimeMillis + "Comment on Edit Pathogen requests or received")
         .build();
   }
 
@@ -132,7 +118,7 @@ public class SampleService {
         .laboratory("Voreingestelltes Labor")
         .sampleTestResults("Positive")
         .resultVerifiedByLabSupervisor("NO")
-        .testResultsComment(currentTimeMillis + "Comment on Edit Pathogen requests or received")
+        .testResultsComment("Comment on Edit Pathogen requests or received " + currentTimeMillis)
         .build();
   }
 }

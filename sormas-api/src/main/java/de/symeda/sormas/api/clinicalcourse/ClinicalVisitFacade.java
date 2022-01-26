@@ -38,6 +38,8 @@ public interface ClinicalVisitFacade {
 
 	List<ClinicalVisitDto> getAllActiveClinicalVisitsAfter(Date date);
 
+	List<ClinicalVisitDto> getAllActiveClinicalVisitsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
+
 	List<ClinicalVisitDto> getByUuids(List<String> uuids);
 
 	List<String> getAllActiveUuids();

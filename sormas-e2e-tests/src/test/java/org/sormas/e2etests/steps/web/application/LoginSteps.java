@@ -19,6 +19,7 @@
 package org.sormas.e2etests.steps.web.application;
 
 import static org.sormas.e2etests.enums.TestDataUser.*;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LOGOUT_BUTTON;
 
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
@@ -39,9 +40,12 @@ public class LoginSteps implements En {
 
     Given(
         "^I am logged in with name ([^\"]*)$",
-        (String name) ->
-            webDriverHelpers.checkWebElementContainsText(
-                SurveillanceDashboardPage.LOGOUT_BUTTON, name));
+        (String name) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LOGOUT_BUTTON, 40);
+          webDriverHelpers.checkWebElementContainsText(
+              SurveillanceDashboardPage.LOGOUT_BUTTON, name);
+        });
 
     Given(
         "^I navigate to SORMAS login page$", () -> webDriverHelpers.accessWebSite(environmentUrl));
@@ -82,14 +86,17 @@ public class LoginSteps implements En {
         });
 
     Given(
-        "I log in as a ([^\"]*)",
+        "^I log in as a ([^\"]*)$",
         (String userRole) -> {
           webDriverHelpers.accessWebSite(environmentUrl);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
           webDriverHelpers.fillInWebElement(
               LoginPage.USER_NAME_INPUT, gertUserByRole(userRole).getUsername());
           webDriverHelpers.fillInWebElement(
               LoginPage.USER_PASSWORD_INPUT, gertUserByRole(userRole).getPassword());
           webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 30);
         });
   }
 }

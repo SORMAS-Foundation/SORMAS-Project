@@ -496,6 +496,7 @@ public class PathogenTestController {
 					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
 					caseDataByUuid.setCaseClassification(CaseClassification.CONFIRMED);
 					FacadeProvider.getCaseFacade().saveCase(caseDataByUuid);
+					ControllerProvider.getCaseController().navigateToCase(caseDataByUuid.getUuid());
 				}
 			});
 	}

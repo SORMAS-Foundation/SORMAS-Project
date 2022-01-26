@@ -21,15 +21,18 @@ package org.sormas.e2etests.services;
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
+import java.util.Random;
 import java.util.UUID;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.helpers.strings.ASCIIHelper;
 import org.sormas.e2etests.pojo.web.Contact;
 
 public class ContactService {
   private final Faker faker;
+  private static Random random = new Random();
 
   private String firstName;
   private String lastName;
@@ -53,15 +56,15 @@ public class ContactService {
                 faker.number().numberBetween(1, 12),
                 faker.number().numberBetween(1, 27)))
         .sex(GenderValues.getRandomGender())
-        .nationalHealthId(UUID.randomUUID().toString())
-        .passportNumber(String.valueOf(System.currentTimeMillis()))
-        .primaryEmailAddress(firstName + "." + lastName + emailDomain)
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
         .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
         .returningTraveler("NO")
-        .reportDate(LocalDate.now())
+        .reportDate(LocalDate.now().minusDays(random.nextInt(10)))
         .diseaseOfSourceCase("COVID-19")
         .caseIdInExternalSystem(UUID.randomUUID().toString())
-        .dateOfLastContact(LocalDate.now())
+        .dateOfFirstContact(LocalDate.now().minusDays(5))
+        .dateOfLastContact(LocalDate.now().minusDays(3))
         .caseOrEventInformation("Automated test dummy description")
         .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())

@@ -550,18 +550,18 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
-	public FacilityDto saveUnchecked(FacilityDto dto) {
+	public FacilityDto saveFromCentral(FacilityDto dto) {
 		return save(dto);
 	}
 
 	@Override
-	protected List<Facility> findDuplicates(FacilityDto dto) {
+	protected List<Facility> findDuplicates(FacilityDto dto, boolean includeArchived) {
 		return service.getFacilitiesByNameAndType(
 			dto.getName(),
 			districtService.getByReferenceDto(dto.getDistrict()),
 			communityService.getByReferenceDto(dto.getCommunity()),
 			dto.getType(),
-			true);
+			includeArchived);
 	}
 
 	@Override
