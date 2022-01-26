@@ -43,7 +43,8 @@ Feature: Contacts end to end tests
     Given I log in with National User
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
-    And I create a new contact
+    And I fill a new contact form
+    And I click SAVE a new contact
     And I click on the Tasks button from navbar
     Then I search created task by Contact first and last name
     And I open the last created UI Contact
@@ -149,7 +150,8 @@ Feature: Contacts end to end tests
     Given I log in with National User
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
-    And I create a new contact
+    And I fill a new contact form
+    And I click SAVE a new contact
     And I click on CONFIRMED CONTACT radio button Contact Person tab
     Then I click SAVE button on Edit Contact Page
     And I click Create Case from Contact button
