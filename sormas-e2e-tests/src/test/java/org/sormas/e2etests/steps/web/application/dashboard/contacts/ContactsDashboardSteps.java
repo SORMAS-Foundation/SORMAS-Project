@@ -18,6 +18,7 @@ package org.sormas.e2etests.steps.web.application.dashboard.contacts;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.ContactsDashboardPage.CONTACTS_COVID19_COUNTER;
 
 import cucumber.api.java8.En;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.testng.Assert;
@@ -47,6 +48,9 @@ public class ContactsDashboardSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACTS_COVID19_COUNTER);
+          // TODO check if this sleep helps for Jenkins execution, otherwise remove it and create
+          // proper handle
+          TimeUnit.SECONDS.sleep(5);
           covid19ContactsCounterAfter =
               Integer.parseInt(webDriverHelpers.getTextFromWebElement(CONTACTS_COVID19_COUNTER));
           Assert.assertTrue(

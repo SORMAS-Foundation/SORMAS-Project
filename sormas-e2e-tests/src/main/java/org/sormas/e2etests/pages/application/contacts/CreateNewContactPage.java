@@ -62,4 +62,15 @@ public class CreateNewContactPage {
   public static final By CONTACT_CATEGORY_OPTIONS =
       By.cssSelector(".popupContent #contactCategory> span label");
   public static final By SAVE_BUTTON = By.id("commit");
+  public static final By MULTI_DAY_CONTACT_LABEL = By.xpath("//*[@id='multiDayContact']/label");
+  public static final By FIRST_DAY_CONTACT_DATE = By.cssSelector("#firstContactDate input");
+  public static final By CHOOSE_CASE_BUTTON = By.id("contactChooseCase");
+  public static final By SOURCE_CASE_WINDOW_CONTACT =
+      By.xpath("//div[contains(@class, 'popupContent')]//input[@placeholder='Search...']");
+
+  public static final By SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION =
+      By.xpath("//div[contains(@class, 'popupContent')]//table//tbody//tr[1]");
+  public static final By SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON =
+      By.xpath(
+          "//div[contains(@class, 'popupContent')]//span[contains(text(), 'Confirm')]//ancestor::div[@id='commit']");
 }

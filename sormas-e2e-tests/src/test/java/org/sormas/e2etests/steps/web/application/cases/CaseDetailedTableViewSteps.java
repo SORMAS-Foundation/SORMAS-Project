@@ -91,43 +91,42 @@ public class CaseDetailedTableViewSteps implements En {
                   .get(CaseDetailedTableViewHeaders.RESPONSIBLE_REGION.toString())
                   .contains(RegionsValues.VoreingestellteBundeslander.getName()),
               "Responsible region is not correct");
-
           softly.assertTrue(
               detailedCaseDTableRow
                   .get(CaseDetailedTableViewHeaders.RESPONSIBLE_DISTRICT.toString())
                   .contains(DistrictsValues.VoreingestellterLandkreis.getName()),
               "Responsible district is not correct");
-
           softly.assertEquals(
               detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.HEALTH_FACILITY.toString()),
               "Standard Einrichtung - Details",
               "Health facility is not correct");
-
           softly.assertTrue(
               detailedCaseDTableRow
                   .get(CaseDetailedTableViewHeaders.DATE_OF_REPORT.toString())
                   .contains(
                       getDateOfReportDateTime(apiState.getCreatedCase().getReportDate().toString())
                           .replace("/0", "/")),
-              "Date of report is not correct");
-
+              "Date of report is not correct. Found: "
+                  + detailedCaseDTableRow.get(
+                      CaseDetailedTableViewHeaders.DATE_OF_REPORT.toString()
+                          + " and expecting to contain: "
+                          + getDateOfReportDateTime(
+                                  apiState.getCreatedCase().getReportDate().toString())
+                              .replace("/0", "/")));
           softly.assertTrue(
               detailedCaseDTableRow
                   .get(CaseDetailedTableViewHeaders.FOLLOW_UP_STATUS.toString())
                   .contains(ContactOutcome.FOLLOW_UP.getOutcome()),
               "Follow up status is not correct");
-
           softly.assertEquals(
               detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.FOLLOW_UP_UNTIL.toString()),
               getFollowUpUntilCaseDate(
                   getDateOfReportDateTime(apiState.getCreatedCase().getReportDate().toString())),
               "Follow up until message is not correct");
-
           softly.assertEquals(
               detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.NUMBER_OF_VISITS.toString()),
               "0 (0 missed)",
               "Number of visits is not correctly displayed");
-
           String completenessValue =
               detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.COMPLETENESS.toString());
           if (!completenessValue.equalsIgnoreCase("-")) {
