@@ -93,7 +93,7 @@ public class EditCasePage {
   public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
   public static final By CASE_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By EXTRA_COMMENT_INPUT =
-          By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
+      By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
   public static final By CREATE_DOCUMENT_BUTTON = By.cssSelector("[id='Create']");
   public static final By CREATE_QUARANTINE_ORDER_BUTTON =
       By.cssSelector(".popupContent [id='Create']");
@@ -101,5 +101,5 @@ public class EditCasePage {
       By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
   public static final By QUARANTINE_COMBOBOX = By.cssSelector("#quarantine div");
   public static final By QUARANTINE_ORDER_COMBOBOX =
-          By.cssSelector(".popupContent div[role='combobox'] div");
+      By.cssSelector(".popupContent div[role='combobox'] div");
 }
