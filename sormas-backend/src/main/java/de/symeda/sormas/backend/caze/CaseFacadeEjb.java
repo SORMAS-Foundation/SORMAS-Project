@@ -3854,7 +3854,7 @@ public class CaseFacadeEjb implements CaseFacade, CoreEntityFacade {
 	@Override
 	public void executeAutomaticDeletion(DeletionReference deletionReference, Date referenceDeletionDate){
 		CaseCriteria caseCriteria = new CaseCriteria();
-		caseCriteria.setReportDateTo(referenceDeletionDate);
+//		caseCriteria.setReportDateTo(referenceDeletionDate);
 		List<CaseIndexDto> caseDeletionList = getIndexList(caseCriteria, null, null, null);
 		caseDeletionList.stream().forEach(caseIndexDto -> {
 			try {

@@ -4,37 +4,39 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.security.RunAs;
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
+import javax.inject.Inject;
 
 import de.symeda.sormas.api.deletionconfiguration.CoreEntityFacade;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 
-// @LocalBean
+@LocalBean
 @Singleton
-@RunAs(UserRole._SYSTEM)
 public class CoreEntityDeletionService {
 
 	private final List<DataHelper.Pair<CoreEntityType, CoreEntityFacade>> coreEntityFacades = new ArrayList<>();
+
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacadeEjb;
 
 	@EJB
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacadeEjb;
 
-	@EJB
-	private CaseService caseService;
-
 	public CoreEntityDeletionService() {
-		coreEntityFacades.add(new DataHelper.Pair<>(CoreEntityType.CASE, caseService));
-		coreEntityFacades.add(new DataHelper.Pair<>(CoreEntityType.CONTACT, contactFacadeEjb));
+	}
 
+	@Inject
+	public CoreEntityDeletionService(CaseFacadeEjb.CaseFacadeEjbLocal caseFacadeEjb, ContactFacadeEjb.ContactFacadeEjbLocal contactFacadeEjb) {
+		this.caseFacadeEjb = caseFacadeEjb;
+		this.contactFacadeEjb = contactFacadeEjb;
+		coreEntityFacades.add(new DataHelper.Pair<>(CoreEntityType.CASE, caseFacadeEjb));
+		coreEntityFacades.add(new DataHelper.Pair<>(CoreEntityType.CONTACT, contactFacadeEjb));
 	}
 
 	public void executeAutomaticDeletion() {

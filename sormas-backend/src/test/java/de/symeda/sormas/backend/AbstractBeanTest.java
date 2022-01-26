@@ -24,6 +24,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import de.symeda.sormas.backend.common.DefaultEntitiesCreator;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityDeletionService;
+import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
 import de.symeda.sormas.backend.labmessage.LabMessageService;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.ReceivedCaseProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseDtoValidator;
@@ -785,5 +787,9 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public DefaultEntitiesCreator getDefaultEntitiesCreator() {
 		return getBean(DefaultEntitiesCreator.class);
+	}
+
+	public CoreEntityDeletionService getCoreEntityDeletionService(){
+		return getBean(CoreEntityDeletionService.class);
 	}
 }

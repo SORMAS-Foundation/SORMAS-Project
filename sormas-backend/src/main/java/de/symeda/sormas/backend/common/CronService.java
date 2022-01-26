@@ -79,7 +79,7 @@ public class CronService {
 	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacade;
 	@EJB
 	private CentralInfraSyncFacade centralInfraSyncFacade;
-
+	@EJB
 	private CoreEntityDeletionService coreEntityDeletionService;
 
 	@Schedule(hour = "*", minute = "*/" + TASK_UPDATE_INTERVAL, second = "0", persistent = false)
@@ -189,13 +189,8 @@ public class CronService {
 		centralInfraSyncFacade.syncAll();
 	}
 
-	@Schedule(hour = "1", minute =  "50", persistent = false)
+	@Schedule(hour = "1", minute =  "55", persistent = false)
 	public void deleteExpiredEntities(){
-//		caseFacade.executeAutomaticDeletion();
-//		contactFacade.executeAutomaticDeletion();
-
 		coreEntityDeletionService.executeAutomaticDeletion();
-
-
 	}
 }
