@@ -5,7 +5,8 @@ Feature: Contacts end to end tests
     Given I log in with National User
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
-    And I create a new contact
+    And I fill a new contact form
+    And I click SAVE a new contact
     Then I check the created data is correctly displayed on Edit Contact page
     Then I open Contact Person tab
     And I check the created data is correctly displayed on Edit Contact Person page
@@ -151,3 +152,24 @@ Feature: Contacts end to end tests
     And I click on the Create button from Contact Document Templates
     When I create a contact document from template
     Then I verify that the contact document is downloaded and correctly named
+
+    @issue=SORDEV-5470
+  Scenario: Create complex contact
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click CHOOSE CASE button
+    And I search for the last case uuid in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE Contact window
+    And I click SAVE a new contact
+    Then I check the linked case information is correctly displayed
+    And I check the created data for complex contact is correctly displayed on Edit Contact page
+    Then I open Contact Person tab
+    And I check the created data is correctly displayed on Edit Contact Person page
