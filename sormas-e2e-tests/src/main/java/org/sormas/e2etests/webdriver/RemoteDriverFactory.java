@@ -57,7 +57,7 @@ public class RemoteDriverFactory implements DriverFactory {
     log.info("Adding all chrome preferences");
     final ChromeOptions options = new ChromeOptions();
     final HashMap<String, Object> chromePreferences = new HashMap<>();
-    chromePreferences.put("download.default_directory", userDirectory + "\\downloads");
+    chromePreferences.put("download.default_directory", userDirectory + "/downloads");
     options.merge(desiredCapabilities);
     options.addArguments("--no-default-browser-check");
     options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.IGNORE);

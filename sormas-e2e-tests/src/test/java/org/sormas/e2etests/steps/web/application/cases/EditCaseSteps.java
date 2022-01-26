@@ -389,7 +389,7 @@ public class EditCaseSteps implements En {
           Path path =
               Paths.get(
                   userDirPath
-                      + "\\downloads\\"
+                      + "/downloads/"
                       + uuid.substring(0, 6)
                       + "-"
                       + aQuarantineOrder.getDocumentTemplate());
