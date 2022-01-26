@@ -170,7 +170,7 @@ Feature: Create events
 
 
   @issue=SORDEV-5491
-  Scenario: Add a participant to an event
+  Scenario: Add a participant to an event and create case
     Given I log in with National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button

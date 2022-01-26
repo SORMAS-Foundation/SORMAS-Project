@@ -106,9 +106,6 @@ public class EventDirectorySteps implements En {
     And(
         "I click Create Case for Event Participant",
         () ->
-            webDriverHelpers.clickWebElementByText(
-                By.xpath(
-                    "//*[@id=\"sormasui-1655777373\"]/div/div[2]/div/div[2]/div/div/div/div[3]/div/div/div[3]/div/div[3]/table/tbody/tr/td[8]/a"),
-                "Create"));
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_BUTTON));
   }
 }
