@@ -22,7 +22,6 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.nio.file.Files;
 import java.nio.file.Path;

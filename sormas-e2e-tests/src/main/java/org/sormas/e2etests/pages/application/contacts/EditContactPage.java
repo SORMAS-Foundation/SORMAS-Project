@@ -128,6 +128,5 @@ public class EditContactPage {
       By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
   public static final By QUARANTINE_ORDER_COMBOBOX =
       By.cssSelector(".popupContent div[role='combobox'] div");
-  public static final By CONTACT_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By CREATE_CASE_FROM_CONTACT_BUTTON = By.id("contactCreateContactCase");
 }
