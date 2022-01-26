@@ -40,6 +40,7 @@ import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.action.transformers.EventActionIndexDtoReasultTransformer;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.event.Event;
@@ -260,7 +261,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 	public List<EventActionIndexDto> getEventActionIndexList(EventCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<EventActionIndexDto> cq = cb.createQuery(EventActionIndexDto.class);
+		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Action> action = cq.from(getElementClass());
 
 		final ActionQueryContext actionQueryContext = new ActionQueryContext(cb, cq, action);
@@ -316,7 +317,10 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			lastModifiedBy.get(User.LAST_NAME),
 			creatorUser.get(User.UUID),
 			creatorUser.get(User.FIRST_NAME),
-			creatorUser.get(User.LAST_NAME));
+			creatorUser.get(User.LAST_NAME),
+			event.get(Event.CHANGE_DATE));
+
+		cq.distinct(true);
 
 		if (sortProperties != null && !sortProperties.isEmpty()) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
@@ -398,7 +402,9 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			cq.orderBy(cb.desc(event.get(Event.CHANGE_DATE)));
 		}
 
-		return QueryHelper.getResultList(em, cq, first, max);
+		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
+			.setResultTransformer(new EventActionIndexDtoReasultTransformer())
+			.getResultList();
 	}
 
 	public List<EventActionExportDto> getEventActionExportList(EventCriteria criteria, Integer first, Integer max) {
@@ -487,7 +493,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			cq.where(filter);
 		}
 
-		cq.select(cb.count(action.get(Action.UUID)));
+		cq.select(cb.countDistinct(action.get(Action.UUID)));
 
 		return em.createQuery(cq).getSingleResult();
 	}

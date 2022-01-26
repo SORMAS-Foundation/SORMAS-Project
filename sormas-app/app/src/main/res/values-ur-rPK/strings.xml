@@ -492,7 +492,7 @@
     <string name="main_menu_tasks">کام</string>
     <string name="main_menu_aggregate_reports">mSERS</string>
     <string name="message_already_saving">پہلے ہی محفوظ کر رہا ہے..</string>
-    <string name="message_case_infrastructure_data_changed">آپ نے اس کیس کا انفراسٹرکچر ڈیٹا تبدیل کر دیا ہے۔ کیا آپ کیس کو صحت کی نئے سہولت کار جگہ میں منتقل کرنا چاہتے ہیں (اسپتال میں داخے کا ڈیٹا اپ ڈیٹ کیا جائے گا) یا آپ صرف غلطی کو درست کرنے کے لیے ڈیٹا میں ترمیم کرنا چاہتے ہیں؟</string>
+    <string name="message_case_infrastructure_data_changed">آپ نے اس کیس کا انفراسٹرکچر ڈیٹا تبدیل کر دیا ہے۔ کیا آپ کیس کو صحت کی نئی سہولت گاہ میں منتقل کرنا چاہتے ہیں (اسپتال میں داخے کا ڈیٹا اپ ڈیٹ کیا جائے گا) یا آپ صرف غلطی کو درست کرنے کے لیے ڈیٹا میں ترمیم کرنا چاہتے ہیں؟</string>
     <string name="message_download_app_failed">نئے سورماس ورژن کا ڈاؤن لوڈ ناکام ہو گیا۔ براہ مہربانی یقینی بنائیں کہ آپ کے پاس ممکنہ طور پر بہترین انٹرنیٹ کنکشن ہے اور دوبارہ کوشش کریں یا کسی سپروائزر کو مطلع کریں اگر آپ اچھے انٹرنیٹ کنکشن کے باوجود یہ خرابی ملتی رہتی ہے۔</string>
     <string name="message_empty_password">براہ مہربانی پاس ورڈ درج کریں۔</string>
     <string name="message_empty_username">براہ مہربانی ایک صارفی نام درج کریں۔</string>
@@ -605,7 +605,7 @@
     <string name="value_disease_unknown">بیماری دستیاب نہیں ہے</string>
     <string name="value_event_unknown">تقریب موجود نہیں ہے</string>
     <string name="value_executing_clinician_unknown">ذمہ دارمعالج دستیاب نہیں</string>
-    <string name="value_facility_unknown">سہولت کار جگہ  دستیاب نہیں</string>
+    <string name="value_facility_unknown">سہولت گاہ  دستیاب نہیں</string>
     <string name="value_frequency_unknown">تعدد دستیاب نہیں ہے</string>
     <string name="value_sex_unknown">جنسی معلومات دستیاب نہیں ہے</string>
     <string name="value_heart_rate_unknown">دل کی دہڑکن کی شرح کی معلومات دستیاب نہیں ہے</string>
@@ -643,8 +643,8 @@
     <string name="no_camera_permission">کیمرے کی اجازت نہیں ہے</string>
     <string name="permission_camera_rationale">پتہ لگانے کے لیے کیمرے تک رسائی درکار ہے</string>
     <string name="scan_field_sample_id">فیلڈ سامپل آئی ڈی اسکین کریں</string>
-    <string name="caption_facility_type_group">سہولت کار جگہ کی قسم </string>
-    <string name="caption_facility_type">سہولت کار جگہ کی قسم </string>
+    <string name="caption_facility_type_group">سہولت گاہ کی قسم </string>
+    <string name="caption_facility_type">سہولت گاہ کی قسم </string>
     <string name="value_vaccine_date_unknown">ویکسینیشن کی تاریخ دستیاب نہیں ہے</string>
     <string name="value_vaccine_name_unknown">ویکسین دستیاب نہیں</string>
     <string name="value_vaccine_manufacturer_unknown">مینوفیکچرر دستیاب نہیں ہے</string>

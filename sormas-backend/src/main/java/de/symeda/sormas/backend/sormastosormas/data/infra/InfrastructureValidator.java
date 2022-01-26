@@ -164,9 +164,11 @@ public class InfrastructureValidator {
 		}
 		if (validationDirection == ValidationDirection.INCOMING) {
 			// try to look up the received infrastructure entity locally
-			REF_DTO match = facade.getReferenceByUuid(dto.getUuid());
-			if (match != null) {
-				onNoErrors.accept(match);
+			DTO match = facade.getByUuid(dto.getUuid());
+			if (match != null && match.isCentrallyManaged()) {
+				// todo AbstractBaseEjb::toRefDto is not part of the facade, so we load twice here, this will be fixed in the future
+				REF_DTO matchRef = facade.getReferenceByUuid(dto.getUuid());
+				onNoErrors.accept(matchRef);
 			} else {
 				validationErrors.add(new ValidationErrorGroup(groupNameTag), new ValidationErrorMessage(i18property, dto.getCaption()));
 			}
