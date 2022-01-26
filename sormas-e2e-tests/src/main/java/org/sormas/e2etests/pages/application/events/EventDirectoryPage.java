@@ -38,10 +38,6 @@ public class EventDirectoryPage {
   public static final By EVENT_ACTIONS_TABLE_DATA = By.tagName("td");
   public static final By FIRST_EVENT_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
 
-  /*public static By getByEventUuid(String eventUuid) {
-    return By.cssSelector("a[title=" + eventUuid + "]");
-  }*/
-
   public static By getByEventUuid(String eventUuid) {
     return By.xpath(String.format("//a[@title='%s']", eventUuid));
   }
