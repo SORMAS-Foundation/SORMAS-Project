@@ -20,6 +20,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
 public class VaccinationListEntryDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
@@ -88,5 +89,17 @@ public class VaccinationListEntryDto extends PseudonymizableIndexDto implements 
 
 	public void setNonRelevantMessage(String nonRelevantMessage) {
 		this.nonRelevantMessage = nonRelevantMessage;
+	}
+
+	public VaccinationReferenceDto toReference() {
+		return new VaccinationReferenceDto(uuid, toString());
+	}
+
+	@Override
+	public String toString() {
+		String date = DateFormatHelper.formatLocalDate(vaccinationDate);
+		String vaccine = vaccineName != Vaccine.OTHER ? vaccineName.toString() : otherVaccineName;
+
+		return (date.isEmpty() ? "" : date + " - ") + vaccine;
 	}
 }

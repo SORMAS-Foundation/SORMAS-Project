@@ -279,7 +279,7 @@ public class ContactDataView extends AbstractContactView {
 			layout.addComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
-		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, getContactRef(), documentList);
+		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, contactDto, documentList);
 
 		setContactEditPermission(container);
 	}

@@ -517,7 +517,7 @@ public class ContactsView extends AbstractView {
 								}
 
 								ControllerProvider.getDocGenerationController()
-									.showQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_CONTACT);
+									.showBulkQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_CONTACT);
 							})));
 				}
 
