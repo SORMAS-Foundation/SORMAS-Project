@@ -27,6 +27,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
@@ -101,6 +102,7 @@ public class SymptomsTabSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
+    // TODO refactor this to be provide the checkbox and select any option not only yes
     And(
         "I check Yes Option for Soar Throat on Symptoms tab page",
         () -> webDriverHelpers.clickOnWebElementBySelector(SORE_THROAT_YES_OPTION));
@@ -120,8 +122,8 @@ public class SymptomsTabSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(DISEASE_COLUMNS);
           Assert.assertEquals(
-              firstSymptom,
               getCaseClassificationColumn(),
+              CaseClassification.SUSPECT.getClassification(),
               "Case classification hasn't been changed");
         });
   }
@@ -302,6 +304,6 @@ public class SymptomsTabSteps implements En {
   }
 
   private String getCaseClassificationColumn() {
-    return webDriverHelpers.getValueOfListElement(CASE_CLASSIFICATION_COLUMNS, 0);
+    return webDriverHelpers.getTextFromListElement(CASE_CLASSIFICATION_COLUMNS, 0);
   }
 }

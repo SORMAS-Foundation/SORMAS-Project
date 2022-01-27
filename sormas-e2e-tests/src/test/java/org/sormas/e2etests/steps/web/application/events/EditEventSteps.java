@@ -329,12 +329,14 @@ public class EditEventSteps implements En {
           Path path =
               Paths.get(
                   userDirPath
-                      + "\\downloads\\"
+                      + "/downloads/"
                       + uuid.substring(0, 6)
                       + "-"
                       + aEventHandout.getDocumentTemplate());
           softly.assertTrue(
-              Files.exists(path), "The document with expected name was not downloaded");
+              Files.exists(path),
+              "The document with expected name was not downloaded. Searched after path: "
+                  + path.toAbsolutePath());
           softly.assertAll();
         });
   }

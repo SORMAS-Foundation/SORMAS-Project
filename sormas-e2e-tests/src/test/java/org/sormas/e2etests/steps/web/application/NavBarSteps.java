@@ -51,8 +51,10 @@ public class NavBarSteps implements En {
         "^I click on the Cases button from navbar$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CASES_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
         });
 
     When(
@@ -84,6 +86,7 @@ public class NavBarSteps implements En {
         "^I click on the Tasks button from navbar$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NavBarPage.TASKS_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.TASKS_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
         });

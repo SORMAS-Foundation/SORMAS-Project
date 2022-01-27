@@ -18,8 +18,10 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
+import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.GENERAL_SEARCH_INPUT;
 
 import cucumber.api.java8.En;
 import java.nio.file.Files;
@@ -28,6 +30,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
@@ -43,7 +46,6 @@ public class EditContactSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   public static Contact createdContact;
   public static Contact collectedContact;
-  public static Contact aContact;
   public static QuarantineOrder aQuarantineOrder;
   public static Contact editedContact;
   public static final String userDirPath = System.getProperty("user.dir");
@@ -84,6 +86,19 @@ public class EditContactSteps implements En {
         });
 
     When(
+        "I search created task by Contact first and last name",
+        () -> {
+          createdContact = CreateNewContactSteps.contact;
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              GENERAL_SEARCH_INPUT, 50);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              GENERAL_SEARCH_INPUT,
+              createdContact.getFirstName() + " " + createdContact.getLastName());
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
+
+    When(
         "I check the edited data is correctly displayed on Edit Contact page after editing",
         () -> {
           collectedContact = collectContactDataAfterEdit();
@@ -95,7 +110,6 @@ public class EditContactSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(CONTACT_PERSON_TAB);
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_PERSON_TAB);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
 
     When(
@@ -104,6 +118,12 @@ public class EditContactSteps implements En {
           webDriverHelpers.scrollToElement(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
+        });
+
+    When(
+        "I open the last created UI Contact",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID_BUTTON);
         });
 
     When(
@@ -191,13 +211,56 @@ public class EditContactSteps implements En {
           Path path =
               Paths.get(
                   userDirPath
-                      + "\\downloads\\"
+                      + "/downloads/"
                       + uuid.substring(0, 6)
                       + "-"
                       + aQuarantineOrder.getDocumentTemplate());
           softly.assertTrue(
-              Files.exists(path), "The document with expected name was not downloaded");
+              Files.exists(path),
+              "The document with expected name was not downloaded. Path used for check: "
+                  + path.toAbsolutePath());
           softly.assertAll();
+        });
+    When(
+        "^I click on ([^\"]*) radio button Contact Person tab$",
+        (String buttonName) ->
+            webDriverHelpers.clickWebElementByText(
+                CONTACT_CLASSIFICATION_RADIO_BUTTON, buttonName));
+
+    When(
+        "^I click SAVE button on Edit Contact Page$",
+        () -> {
+          webDriverHelpers.scrollToElement(SAVE_EDIT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_EDIT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_SAVED_POPUP);
+        });
+    When(
+        "^I click Create Case from Contact button$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.scrollToElement(CREATE_CASE_FROM_CONTACT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_FROM_CONTACT_BUTTON);
+        });
+    When(
+        "I check the created data for complex contact is correctly displayed on Edit Contact page",
+        () -> {
+          collectedContact = collectComplexContactData();
+          createdContact = CreateNewContactSteps.contact;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedContact,
+              createdContact,
+              List.of(
+                  "firstName",
+                  "lastName",
+                  "reportDate",
+                  "dateOfLastContact",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "additionalInformationOnContactType",
+                  "contactCategory",
+                  "relationshipWithCase",
+                  "descriptionOfHowContactTookPlace"));
         });
   }
 
@@ -525,6 +588,34 @@ public class EditContactSteps implements En {
         .firstName(contactInfos[0])
         .lastName(contactInfos[1])
         .dateOfBirth(localDate)
+        .build();
+  }
+
+  public Contact collectComplexContactData() {
+    String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
+    LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
+    String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
+    LocalDate parsedLastDateOfContact = LocalDate.parse(collectedLastDateOfContact, formatter);
+    Contact contactInfo = getContactInformation();
+
+    return Contact.builder()
+        .firstName(contactInfo.getFirstName())
+        .lastName(contactInfo.getLastName())
+        .reportDate(parsedDateOfReport)
+        .dateOfLastContact(parsedLastDateOfContact)
+        .responsibleRegion(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_REGION_COMBOBOX))
+        .responsibleDistrict(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX))
+        .responsibleCommunity(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX))
+        .additionalInformationOnContactType(
+            webDriverHelpers.getValueFromWebElement(
+                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
+        .contactCategory(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
+        .relationshipWithCase(
+            webDriverHelpers.getValueFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX))
+        .descriptionOfHowContactTookPlace(
+            webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .build();
   }
 

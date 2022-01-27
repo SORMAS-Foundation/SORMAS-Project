@@ -29,6 +29,7 @@ public abstract class ComparisonHelper {
 
   @SneakyThrows
   public static void compareEqualEntities(Object pojoToCompare, Object referencePojo) {
+    checkObjectsClassType(pojoToCompare, referencePojo);
     softly = new SoftAssert();
     for (String key : BeanUtils.describe(referencePojo).keySet()) {
       softly.assertEquals(
@@ -42,6 +43,7 @@ public abstract class ComparisonHelper {
   @SneakyThrows
   public static void compareEqualFieldsOfEntities(
       Object pojoToCompare, Object referencePojo, List<String> fieldsList) {
+    checkObjectsClassType(pojoToCompare, referencePojo);
     softly = new SoftAssert();
     for (String field : fieldsList) {
       softly.assertEquals(
@@ -54,6 +56,7 @@ public abstract class ComparisonHelper {
 
   @SneakyThrows
   public static void compareDifferentEntities(Object pojoToCompare, Object referencePojo) {
+    checkObjectsClassType(pojoToCompare, referencePojo);
     softly = new SoftAssert();
     for (String key : BeanUtils.describe(referencePojo).keySet()) {
       softly.assertNotEquals(
@@ -67,6 +70,7 @@ public abstract class ComparisonHelper {
   @SneakyThrows
   public static void compareDifferentFieldsOfEntities(
       Object pojoToCompare, Object referencePojo, List<String> fieldsList) {
+    checkObjectsClassType(pojoToCompare, referencePojo);
     softly = new SoftAssert();
     for (String field : fieldsList) {
       softly.assertNotEquals(
@@ -99,5 +103,13 @@ public abstract class ComparisonHelper {
     } catch (NullPointerException e) {
       return "Empty value";
     }
+  }
+
+  private static void checkObjectsClassType(Object obj1, Object obj2) throws Exception {
+    if (obj1.getClass() != obj2.getClass())
+      throw new Exception(
+          String.format(
+              "Unable to compare different Objects: [%s] with [%s]",
+              obj1.getClass(), obj2.getClass()));
   }
 }
