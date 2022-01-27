@@ -184,3 +184,54 @@ Feature: Create events
     Then I click Create Case for Event Participant
     And I fill all fields for a new case created for event participant
     And I click on save case button
+
+
+    @issue=SORDEV-5915
+  Scenario: Check all filters are work
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When I log in with National User
+    And I click on the Events button from navbar
+    Then I select Risk level filter "LOW" among the filter options
+    And I fill EVENT ID filter by API
+    And I apply on the APPLY FILTERS button
+    And I check that number of displayed Event results is 1
+    Then I select Risk level filter "HIGH" among the filter options
+    And I apply on the APPLY FILTERS button
+    And I check that number of displayed Event results is 0
+    And I click on the RESET FILTERS button
+    Then I select Disease filter "CORONAVIRUS" among the filter options
+    And I fill EVENT ID filter by API
+    And I apply on the APPLY FILTERS button
+    And I check that number of displayed Event results is 1
+    Then I select Disease filter "CHOLERA" among the filter options
+    And I apply on the APPLY FILTERS button
+    And I check that number of displayed Event results is 0
+    And I click on the RESET FILTERS button
+    Then I click on Show more filters
+    Then I select Source Type "NOT_APPLICABLE" among the filter options
+    And I fill EVENT ID filter by API
+    And I apply on the APPLY FILTERS button
+    And I check that number of displayed Event results is 1
+    Then I select Source Type "HOTLINE_PERSON" among the filter options
+    And I apply on the APPLY FILTERS button
+    And I check that number of displayed Event results is 0
+    And I click on the RESET FILTERS button
+    Then I click on Show more filters
+    Then I select Type of Place field "HOME" among the filter options
+    And I fill EVENT ID filter by API
+    And I apply on the APPLY FILTERS button
+    And I check that number of displayed Event results is 1
+    Then I select Type of Place field "FACILITY" among the filter options
+    And I apply on the APPLY FILTERS button
+    And I check that number of displayed Event results is 0
+    And I click on the RESET FILTERS button
+    Then I select Signal filter from quick filter
+    And I select Event filter from quick filter
+    And I select Screening filter from quick filter
+    And I select Cluster filter from quick filter
+    And I select Dropped filter from quick filter
+    And I click on the RESET FILTERS button
+
+

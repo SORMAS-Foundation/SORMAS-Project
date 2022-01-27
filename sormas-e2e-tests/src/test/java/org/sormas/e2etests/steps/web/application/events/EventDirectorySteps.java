@@ -18,6 +18,8 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_GRID_RESULTS_ROWS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_GRID_RESULTS_ROWS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.*;
 
@@ -25,10 +27,15 @@ import cucumber.api.java8.En;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.enums.*;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.Assert;
+import org.testng.Assert;
 
 public class EventDirectorySteps implements En {
 
@@ -36,13 +43,98 @@ public class EventDirectorySteps implements En {
   public EventDirectorySteps(
       WebDriverHelpers webDriverHelpers,
       ApiState apiState,
+      DataOperations dataOperations,
+      AssertHelpers assertHelpers,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
+
+    When(
+        "I fill EVENT ID filter by API",
+        () -> {
+          String eventUuid = apiState.getCreatedEvent().getUuid();
+          webDriverHelpers.fillInWebElement(
+              SEARCH_EVENT_BY_FREE_TEXT,
+              dataOperations.getPartialUuidFromAssociatedLink(eventUuid));
+        });
 
     When(
         "I click on the NEW EVENT button",
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 EventDirectoryPage.NEW_EVENT_BUTTON, TITLE_INPUT));
+    When(
+        "I select Risk level filter {string} among the filter options",
+        (String riskLevel) -> {
+          // String riskLevel = apiState.getCreatedEvent().getRiskLevel();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              FILTER_BY_RISK_LEVEL, RiskLevelValues.getCaptionForName(riskLevel));
+        });
+    When(
+        "I select Disease filter {string} among the filter options",
+        (String disease) -> {
+          // String disease = apiState.getCreatedEvent().getDisease();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              FILTER_BY_DISEASE, DiseasesValues.getCaptionForName(disease));
+        });
+
+    When(
+        "I click on Show more filters",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(
+                EventDirectoryPage.EVENT_SHOW_MORE_FILTERS));
+    When(
+        "I select Signal filter from quick filter",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          TimeUnit.SECONDS.sleep(5);
+          webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.EVENT_SIGNAL);
+        });
+    When(
+        "I select Event filter from quick filter",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          TimeUnit.SECONDS.sleep(5);
+          webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.EVENT_EVENT);
+        });
+    When(
+        "I select Screening filter from quick filter",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          TimeUnit.SECONDS.sleep(5);
+          webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.EVENT_SCREENING);
+        });
+    When(
+        "I select Cluster filter from quick filter",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          TimeUnit.SECONDS.sleep(5);
+          webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.EVENT_CLUSTER);
+        });
+    When(
+        "I select Dropped filter from quick filter",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          TimeUnit.SECONDS.sleep(5);
+          webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.EVENT_DROPPED);
+        });
+
+    When(
+        "I select Source Type {string} among the filter options",
+        (String sourceType) -> {
+          // String sourceType = apiState.getCreatedEvent().getSrcType();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              FILTER_BY_SOURCE_TYPE, SourceTypeValues.getCaptionForName((sourceType)));
+        });
+    When(
+        "I select Type of Place field {string} among the filter options",
+        (String sourceTypeOfPlace) -> {
+          // String sourceTypeOfPlace = apiState.getCreatedEvent().getTypeOfPlace();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              FILTER_BY_TYPE_OF_PLACE, TypeOfPlaceValues.getCaptionForName(sourceTypeOfPlace));
+        });
 
     When(
         "^I check if it appears under ([^\"]*) filter in event directory",
@@ -105,5 +197,14 @@ public class EventDirectorySteps implements En {
     And(
         "I click Create Case for Event Participant",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_BUTTON));
+      Then(
+              "I check that number of displayed Event results is {int}",
+              (Integer number) ->
+                      assertHelpers.assertWithPoll20Second(
+                              () ->
+                                      Assert.assertEquals(
+                                              webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
+                                              number.intValue(),
+                                              "Number of displayed cases is not correct")));
   }
 }
