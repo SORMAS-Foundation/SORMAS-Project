@@ -19,7 +19,7 @@ import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -30,7 +30,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
+public class LabMessageService extends AbstractDeletableAdoService<LabMessage> {
 
 	public LabMessageService() {
 		super(LabMessage.class);

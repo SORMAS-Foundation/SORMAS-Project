@@ -15,13 +15,14 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class CampaignService extends AbstractCoreAdoService<Campaign> {
+public class CampaignService extends AbstractDeletableAdoService<Campaign> {
 
 	public CampaignService() {
 		super(Campaign.class);

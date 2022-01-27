@@ -13,12 +13,6 @@ public interface BaseFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 
 	DTO save(@Valid DTO dto);
 
-	DTO save(@Valid DTO dtoToSave, boolean allowMerge);
-
-	void archive(String uuid);
-
-	void dearchive(String uuid);
-
 	long count(CRITERIA criteria);
 
 	DTO getByUuid(String uuid);

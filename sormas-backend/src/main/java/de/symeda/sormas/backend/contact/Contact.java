@@ -1087,4 +1087,9 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 	public void setQuarantineChangeComment(String quarantineChangeComment) {
 		this.quarantineChangeComment = quarantineChangeComment;
 	}
+
+	@Transient
+	public boolean isArchived() {
+		return false;
+	}
 }

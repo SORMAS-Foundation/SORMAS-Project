@@ -1,13 +1,13 @@
 package de.symeda.sormas.backend.travelentry;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.i18n.Captions;
@@ -26,6 +26,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractCoreEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
@@ -44,7 +45,9 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "TravelEntryFacade")
-public class TravelEntryFacadeEjb implements TravelEntryFacade {
+public class TravelEntryFacadeEjb
+	extends AbstractCoreEjb<TravelEntry, TravelEntryDto, TravelEntryIndexDto, TravelEntryReferenceDto, TravelEntryService, TravelEntryCriteria>
+	implements TravelEntryFacade {
 
 	@EJB
 	TravelEntryService travelEntryService;
@@ -52,8 +55,6 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	TravelEntryListService travelEntryListService;
 	@EJB
 	private PersonService personService;
-	@EJB
-	private UserService userService;
 	@EJB
 	private RegionService regionService;
 	@EJB
@@ -67,6 +68,14 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 
+	public TravelEntryFacadeEjb() {
+	}
+
+	@Inject
+	public TravelEntryFacadeEjb(TravelEntryService service, UserService userService) {
+		super(TravelEntry.class, TravelEntryDto.class, service, userService);
+	}
+
 	public static TravelEntryReferenceDto toReferenceDto(TravelEntry entity) {
 
 		if (entity == null) {
@@ -77,35 +86,6 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 			entity.getExternalId(),
 			entity.getPerson().getFirstName(),
 			entity.getPerson().getLastName());
-	}
-
-	@Override
-	public TravelEntryDto getByUuid(String uuid) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return convertToDto(travelEntryService.getByUuid(uuid), pseudonymizer);
-	}
-
-	@Override
-	public TravelEntryReferenceDto getReferenceByUuid(String uuid) {
-		return Optional.of(uuid).map(u -> travelEntryService.getByUuid(u)).map(TravelEntryFacadeEjb::toReferenceDto).orElse(null);
-	}
-
-	@Override
-	public void archive(String uuid) {
-		TravelEntry travelEntry = travelEntryService.getByUuid(uuid);
-		if (travelEntry != null) {
-			travelEntry.setArchived(true);
-			travelEntryService.ensurePersisted(travelEntry);
-		}
-	}
-
-	@Override
-	public void dearchive(String uuid) {
-		TravelEntry travelEntry = travelEntryService.getByUuid(uuid);
-		if (travelEntry != null) {
-			travelEntry.setArchived(false);
-			travelEntryService.ensurePersisted(travelEntry);
-		}
 	}
 
 	@Override
@@ -146,20 +126,7 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	}
 
 	@Override
-	public List<TravelEntryDto> getAllAfter(Date date) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return travelEntryService.getAllActiveAfter(date).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<TravelEntryDto> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return travelEntryService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<String> getAllUuids() {
-		return travelEntryService.getAllUuids();
+	protected void selectDtoFields(CriteriaQuery<TravelEntryDto> cq, Root<TravelEntry> root) {
 	}
 
 	@Override
@@ -186,33 +153,7 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	}
 
 	@Override
-	public TravelEntryDto save(TravelEntryDto dto, boolean allowMerge) {
-		TravelEntry existingTravelEntry = dto.getUuid() != null ? travelEntryService.getByUuid(dto.getUuid()) : null;
-		TravelEntryDto existingDto = toDto(existingTravelEntry);
-
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		restorePseudonymizedDto(dto, existingDto, existingTravelEntry, pseudonymizer);
-
-		validate(dto);
-
-		existingTravelEntry = fillOrBuildEntity(dto, existingTravelEntry);
-		travelEntryService.ensurePersisted(existingTravelEntry);
-
-		return convertToDto(existingTravelEntry, pseudonymizer);
-	}
-
-	@Override
-	public TravelEntryDto save(TravelEntryDto dto) {
-		return save(dto, false);
-	}
-
-	public TravelEntryDto convertToDto(TravelEntry source, Pseudonymizer pseudonymizer) {
-		TravelEntryDto dto = toDto(source);
-		pseudonimyzeDto(source, dto, pseudonymizer);
-		return dto;
-	}
-
-	private void pseudonimyzeDto(TravelEntry source, TravelEntryDto dto, Pseudonymizer pseudonymizer) {
+	protected void pseudonymizeDto(TravelEntry source, TravelEntryDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
 			boolean inJurisdiction = travelEntryService.inJurisdictionOrOwned(source);
 			pseudonymizer.pseudonymizeDto(TravelEntryDto.class, dto, inJurisdiction, c -> {
@@ -222,18 +163,14 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		}
 	}
 
-	private void restorePseudonymizedDto(TravelEntryDto dto, TravelEntryDto existingDto, TravelEntry travelEntry, Pseudonymizer pseudonymizer) {
+	@Override
+	protected void restorePseudonymizedDto(TravelEntryDto dto, TravelEntryDto existingDto, TravelEntry travelEntry, Pseudonymizer pseudonymizer) {
 		if (existingDto != null) {
 			final boolean inJurisdiction = travelEntryService.inJurisdictionOrOwned(travelEntry);
 			final User currentUser = userService.getCurrentUser();
 			pseudonymizer.restoreUser(travelEntry.getReportingUser(), currentUser, dto, dto::setReportingUser);
 			pseudonymizer.restorePseudonymizedValues(TravelEntryDto.class, dto, existingDto, inJurisdiction);
 		}
-	}
-
-	@Override
-	public boolean exists(String uuid) {
-		return travelEntryService.exists(uuid);
 	}
 
 	@Override
@@ -338,8 +275,14 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		return dto;
 	}
 
-	private TravelEntry fillOrBuildEntity(@NotNull TravelEntryDto source, TravelEntry target) {
-		target = DtoHelper.fillOrBuildEntity(source, target, TravelEntry::new, true);
+	@Override
+	public TravelEntryReferenceDto toRefDto(TravelEntry travelEntry) {
+		return null;
+	}
+
+	@Override
+	protected TravelEntry fillOrBuildEntity(@NotNull TravelEntryDto source, TravelEntry target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, TravelEntry::new, checkChangeDate);
 
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
 		target.setReportDate(source.getReportDate());
@@ -388,5 +331,13 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	@LocalBean
 	@Stateless
 	public static class TravelEntryFacadeEjbLocal extends TravelEntryFacadeEjb {
+
+		public TravelEntryFacadeEjbLocal() {
+		}
+
+		@Inject
+		public TravelEntryFacadeEjbLocal(TravelEntryService service, UserService userService) {
+			super(service, userService);
+		}
 	}
 }

@@ -43,19 +43,23 @@ public class ReceivedImmunizationProcessor
 	public ReceivedImmunizationProcessor() {
 	}
 
+	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacadeEjb;
+
 	@Inject
 	protected ReceivedImmunizationProcessor(
+		ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal facadeEjb,
 		ImmunizationService service,
 		UserService userService,
 		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade,
 		SormasToSormasImmunizationDtoValidator validator) {
 		super(service, userService, configFacade, validator);
+		this.immunizationFacadeEjb = facadeEjb;
 	}
 
 	@Override
 	public void handleReceivedData(SormasToSormasImmunizationDto sharedData, Immunization existingData) {
 		updateReportingUser(sharedData.getEntity(), existingData);
-		handleIgnoredProperties(sharedData.getEntity(), ImmunizationFacadeEjb.toDto(existingData));
+		handleIgnoredProperties(sharedData.getEntity(), immunizationFacadeEjb.toDto(existingData));
 
 		ImmunizationDto im = sharedData.getEntity();
 		im.getVaccinations().forEach(vaccination -> {

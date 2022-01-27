@@ -174,33 +174,6 @@ public class TravelEntryService extends BaseTravelEntryService {
 		return cb.and(cb.isFalse(root.get(TravelEntry.ARCHIVED)), cb.isFalse(root.get(TravelEntry.DELETED)));
 	}
 
-	public List<TravelEntry> getAllActiveAfter(Date date) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<TravelEntry> cq = cb.createQuery(getElementClass());
-		Root<TravelEntry> from = cq.from(getElementClass());
-
-		Predicate filter = createDefaultFilter(cb, from);
-
-		if (getCurrentUser() != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
-			if (userFilter != null) {
-				filter = cb.and(filter, userFilter);
-			}
-		}
-
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
-			if (dateFilter != null) {
-				filter = cb.and(filter, dateFilter);
-			}
-		}
-		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(TravelEntry.CHANGE_DATE)));
-		cq.distinct(true);
-
-		return em.createQuery(cq).getResultList();
-	}
-
 	public List<TravelEntry> getAllByResultingCase(Case caze) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

@@ -33,7 +33,7 @@ import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
@@ -56,14 +56,12 @@ import de.symeda.sormas.backend.vaccination.LastVaccineType;
 
 @Stateless
 @LocalBean
-public class DirectoryImmunizationService extends AbstractCoreAdoService<DirectoryImmunization> {
+public class DirectoryImmunizationService extends AbstractDeletableAdoService<DirectoryImmunization> {
 
 	@EJB
 	private UserService userService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
-	@EJB
-	private PersonService personService;
 
 	public DirectoryImmunizationService() {
 		super(DirectoryImmunization.class);

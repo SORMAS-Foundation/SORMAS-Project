@@ -18,6 +18,7 @@ import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.DtoHelper;
 
 public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, DTO extends InfrastructureDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, SRV extends AbstractInfrastructureAdoService<ADO, CRITERIA>, CRITERIA extends BaseCriteria>
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA>
@@ -40,6 +41,11 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 		super(adoClass, dtoClass, service, userService);
 		this.featureConfiguration = featureConfiguration;
 		this.duplicateErrorMessageProperty = duplicateErrorMessageProperty;
+	}
+
+	@Override
+	public DTO save(DTO dtoToSave) {
+		return save(dtoToSave, false);
 	}
 
 	public DTO save(DTO dto, boolean allowMerge) {
@@ -89,6 +95,19 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 		return persistEntity(dtoToSave, existingEntity, checkChangeDate);
 	}
 
+	protected DTO persistEntity(DTO dto, ADO entityToPersist, boolean checkChangeDate) {
+		entityToPersist = fillOrBuildEntity(dto, entityToPersist, checkChangeDate);
+		service.ensurePersisted(entityToPersist);
+		return toDto(entityToPersist);
+	}
+
+	protected DTO mergeAndPersist(DTO dtoToSave, List<ADO> duplicates, boolean checkChangeDate) {
+		ADO existingEntity = duplicates.get(0);
+		DTO existingDto = toDto(existingEntity);
+		DtoHelper.copyDtoValues(existingDto, dtoToSave, true);
+		return persistEntity(dtoToSave, existingEntity, checkChangeDate);
+	}
+
 	@Override
 	public void archive(String uuid) {
 		// todo this should be really in the parent but right now there the setter for archived is not available there
@@ -120,6 +139,9 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 	public long count(CRITERIA criteria) {
 		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}
+
+
+	protected abstract List<ADO> findDuplicates(DTO dto, boolean includeArchived);
 
 	// todo implement toDto() here
 }
