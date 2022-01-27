@@ -108,18 +108,6 @@ Feature: Create events
     And I open the Action recently created from Event tab
     And I check that Action created from Event tab is correctly displayed in Event Actions tab
 
-  Scenario: Add a New action from Event Actions tab and verify the fields.
-    Given API: I create a new event
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in with National User
-    Then I navigate to Event Action tab for created Event
-    And I click on New Action from Event Actions tab
-    And I create New Action from event tab
-    Then I navigate to Event Action tab for created Event
-    And I open the Action recently created from Event tab
-    And I check that Action created from Event tab is correctly displayed in Event Actions tab
-
   Scenario: Add a New action for an Event and verify the Action in EventActions table
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
