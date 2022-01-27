@@ -102,5 +102,8 @@ public class EventDirectorySteps implements En {
     When(
         "I open the first event from events list",
         () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_ID_BUTTON));
+    And(
+        "I click Create Case for Event Participant",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_BUTTON));
   }
 }
