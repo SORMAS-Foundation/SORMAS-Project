@@ -52,8 +52,6 @@ public class PersonDirectorySteps implements En {
       DataOperations dataOperations) {
     this.webDriverHelpers = webDriverHelpers;
 
-    // TODO refactor all BDD methods naming to be more explicit regarding where data comes from
-
     /** Avoid using this method until Person's performance is fixed */
     Then(
         "I open the last created person",
@@ -126,7 +124,7 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.selectFromCombobox(
               COMMUNITY_PERSON_COMBOBOX, CommunityValues.getValueFor(communityName));
         });
-    
+
     Then(
         "I check the result for UID for second person in grid PERSON ID column",
         () -> {
