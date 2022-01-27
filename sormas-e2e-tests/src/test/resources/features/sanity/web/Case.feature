@@ -87,7 +87,7 @@ Feature: Case end to end tests
     Then I set Vaccination Status as vaccinated
     Then I set Vaccination Status as unvaccinated
     Then I set Vaccination Status as unknown
-    And I click on save button in case edit
+    And I click on save button from Edit Case page
     Then I check if the specific data is correctly displayed
 
   Scenario: Delete created case
