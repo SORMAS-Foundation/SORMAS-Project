@@ -31,11 +31,10 @@ import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.PresentCondition;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.pojo.web.Person;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
@@ -88,6 +87,7 @@ public class PersonDirectorySteps implements En {
           String monthOfBirth = apiState.getLastCreatedPerson().getBirthdateMM().toString();
           webDriverHelpers.selectFromCombobox(BIRTH_MONTH_COMBOBOX, monthOfBirth);
         });
+
     Then(
         "I choose random value for Day of birth filter",
         () -> {
@@ -99,41 +99,34 @@ public class PersonDirectorySteps implements En {
         "I choose present condition field from specific range",
         () -> {
           String presentCondition = apiState.getLastCreatedPerson().getPresentCondition();
-          String capitalizeWord =
-              presentCondition.substring(0, 1).toUpperCase()
-                  + presentCondition.substring(1).toLowerCase();
-          webDriverHelpers.selectFromCombobox(PRESENT_CONDITION, capitalizeWord);
+          webDriverHelpers.selectFromCombobox(
+              PRESENT_CONDITION, PresentCondition.getValueFor(presentCondition));
         });
+
     Then(
         "I choose random value for Region",
         () -> {
-          String regionName =
-                  getConvertRegionUuidToName(apiState.getLastCreatedPerson().getAddress().getRegion());
-          webDriverHelpers.selectFromCombobox(REGIONS_COMBOBOX, regionName);
+          String regionName = apiState.getLastCreatedPerson().getAddress().getRegion();
+          webDriverHelpers.selectFromCombobox(
+              REGIONS_COMBOBOX, RegionsValues.getValueFor(regionName));
         });
 
     Then(
         "I choose random value for District",
         () -> {
-          String districtName =
-                  getConvertDistrictUuidToName(apiState.getLastCreatedPerson().getAddress().getDistrict());
-          webDriverHelpers.selectFromCombobox(DISTRICTS_COMBOBOX, districtName);
+          String districtName = apiState.getLastCreatedPerson().getAddress().getDistrict();
+          webDriverHelpers.selectFromCombobox(
+              DISTRICTS_COMBOBOX, DistrictsValues.getValueFor(districtName));
         });
 
     Then(
         "I choose random value for Community",
         () -> {
-          String communityName =
-                  getConvertCommunityUuidToName(apiState.getLastCreatedPerson().getAddress().getCommunity());
-          webDriverHelpers.selectFromCombobox(COMMUNITY_PERSON_COMBOBOX, communityName);
+          String communityName = apiState.getLastCreatedPerson().getAddress().getCommunity();
+          webDriverHelpers.selectFromCombobox(
+              COMMUNITY_PERSON_COMBOBOX, CommunityValues.getValueFor(communityName));
         });
-
-    Then(
-        "I fill a different Community field",
-        () -> {
-          webDriverHelpers.selectFromCombobox(COMMUNITY_PERSON_COMBOBOX, "Community2");
-        });
-
+    
     Then(
         "I check the result for UID for second person in grid PERSON ID column",
         () -> {
@@ -159,7 +152,7 @@ public class PersonDirectorySteps implements En {
                     Assert.assertEquals(
                         webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
                         number.intValue(),
-                        "Number of displayed cases is not correct")));
+                        "Number of displayed persons is not correct")));
 
     Then(
         "I check that number of displayed Persons results is {int}",
@@ -180,6 +173,7 @@ public class PersonDirectorySteps implements En {
         "I change Month of birth filter to {string}",
         (String monthOfBirth) ->
             webDriverHelpers.selectFromCombobox(BIRTH_MONTH_COMBOBOX, monthOfBirth));
+
     Then(
         "I change Day of birth filter to {string}",
         (String dayOfBirth) -> webDriverHelpers.selectFromCombobox(BIRTH_DAY_COMBOBOX, dayOfBirth));
@@ -196,6 +190,7 @@ public class PersonDirectorySteps implements En {
     Then(
         "I change DISTRICT filter to {string}",
         (String district) -> webDriverHelpers.selectFromCombobox(DISTRICTS_COMBOBOX, district));
+
     Then(
         "I change Community filter to {string}",
         (String community) ->
@@ -233,7 +228,8 @@ public class PersonDirectorySteps implements En {
         "I change id,full name,email,phone number, by {string}",
         (String searchCriteria) -> {
           String searchText = "";
-          String personUUID = "XCBJ2T-XYUGE3-QZK6PD-CWL6KBER";
+          String personUUID =
+              dataOperations.getPartialUuidFromAssociatedLink("XCBJ2T-XYUGE3-QZK6PD-CWL6KBER");
           switch (searchCriteria) {
             case "uuid":
               searchText = personUUID;
@@ -295,67 +291,5 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_BUTTON);
           TimeUnit.SECONDS.sleep(10);
         });
-
-    Then(
-        "I search after last created person from API by {string}",
-        (String searchCriteria) -> {
-          String searchText = "";
-          String personUUID = apiState.getLastCreatedPerson().getUuid();
-          switch (searchCriteria) {
-            case "uuid":
-              searchText = personUUID;
-              break;
-            case "full name":
-              searchText =
-                  apiState.getLastCreatedPerson().getLastName()
-                      + " "
-                      + apiState.getLastCreatedPerson().getFirstName();
-              break;
-              // etc
-          }
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
-
-          webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, searchText);
-          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-          By uuidLocator = By.cssSelector(String.format(PERSON_RESULTS_UUID_LOCATOR, personUUID));
-          webDriverHelpers.isElementVisibleWithTimeout(uuidLocator, 150);
-          webDriverHelpers.clickOnWebElementBySelector(uuidLocator);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
-          webDriverHelpers.isElementVisibleWithTimeout(UUID_INPUT, 20);
-        });
-
-    // TODO Michal, due to specific logic to filter only for this situation, create a method with a
-    // suggestive name, where you apply filters based on generated POJO data.
-    // We can't create multiple methods to reuse them in this case, but please keep in mind to
-    // create generic locators
-    // The above method will need to be finished by you (the switch to cover all search criteria)
   }
-    public String getConvertRegionUuidToName(String regionUuid) {
-        for (RegionsValues reg : RegionsValues.values()) {
-            if (reg.getUuid() == regionUuid) {
-                return reg.getName();
-            }
-        }
-        return null;
-    }
-
-    public String getConvertDistrictUuidToName(String districtUuid) {
-        for (DistrictsValues dis : DistrictsValues.values()) {
-            if (dis.getUuid() == districtUuid) {
-                return dis.getName();
-            }
-        }
-        return null;
-    }
-
-    public String getConvertCommunityUuidToName(String communityId) {
-        for (CommunityValues com : CommunityValues.values()) {
-            if (com.getUuid() == communityId) {
-                return com.getName();
-            }
-        }
-        return null;
-    }
 }
