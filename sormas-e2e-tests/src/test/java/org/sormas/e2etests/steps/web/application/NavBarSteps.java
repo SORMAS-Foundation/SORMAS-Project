@@ -51,6 +51,7 @@ public class NavBarSteps implements En {
         "^I click on the Cases button from navbar$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CASES_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
