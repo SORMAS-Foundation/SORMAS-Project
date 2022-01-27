@@ -21,7 +21,7 @@ package org.sormas.e2etests.pages.application.contacts;
 import org.openqa.selenium.By;
 
 public class ContactDirectoryPage {
-  public static final By NEW_CONTACT_BUTTON = By.id("contactNewContact");
+  public static final By NEW_CONTACT_PAGE_BUTTON = By.id("contactNewContact");
   public static final By LINE_LISTING = By.cssSelector("[id='lineListing']");
   public static final By MULTIPLE_OPTIONS_SEARCH_INPUT = By.cssSelector("#contactOrCaseLike");
   public static final By APPLY_FILTERS_BUTTON = By.id("actionApplyFilters");
@@ -48,4 +48,5 @@ public class ContactDirectoryPage {
   public static final By GRID_HEADERS = By.xpath("//thead//tr//th");
   public static final String RESULTS_GRID_HEADER = "//div[contains(text(), '%s')]";
   public static final By FIRST_CONTACT_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
+  public static final By EPIDEMIOLOGICAL_DATA_BUTTON = By.cssSelector("#tab-contacts-epidata");
 }
