@@ -91,6 +91,7 @@ public class CaseDirectorySteps implements En {
           By caseLocator = By.cssSelector(String.format(CASE_RESULTS_UUID_LOCATOR, caseUUID));
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(caseLocator);
           webDriverHelpers.clickOnWebElementBySelector(caseLocator);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
 
     Then(

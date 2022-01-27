@@ -20,6 +20,7 @@ package org.sormas.e2etests.enums;
 
 import java.util.Random;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum CaseClassification {
@@ -35,6 +36,15 @@ public enum CaseClassification {
 
   CaseClassification(String caseClassification) {
     classification = caseClassification;
+  }
+
+  @SneakyThrows
+  public static String getValueFor(String option) {
+    CaseClassification[] classifications = CaseClassification.values();
+    for (CaseClassification value : classifications) {
+      if (value.getClassification().equalsIgnoreCase(option)) return value.getClassification();
+    }
+    throw new Exception("Unable to find " + option + " value in CaseClassification Enum");
   }
 
   public static String getRandomClassification() {
