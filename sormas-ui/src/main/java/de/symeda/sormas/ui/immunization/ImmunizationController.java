@@ -80,15 +80,24 @@ public class ImmunizationController {
 
 			viewComponent.addCommitListener(() -> {
 				if (!createForm.getFieldGroup().isModified()) {
-
 					final ImmunizationDto dto = createForm.getValue();
-					final PersonDto person = createForm.getPerson();
-					ControllerProvider.getPersonController()
-						.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForImmunization), selectedPerson -> {
-							if (selectedPerson != null) {
-								selectOrCreateimmunizationForPerson(dto, selectedPerson);
-							}
-						}, true);
+					PersonDto searchedPerson = createForm.getSearchedPerson();
+					if (searchedPerson != null) {
+						dto.setPerson(searchedPerson.toReference());
+						selectOrCreateimmunizationForPerson(dto, searchedPerson.toReference());
+					} else {
+						final PersonDto person = createForm.getPerson();
+						ControllerProvider.getPersonController()
+							.selectOrCreatePerson(
+								person,
+								I18nProperties.getString(Strings.infoSelectOrCreatePersonForImmunization),
+								selectedPerson -> {
+									if (selectedPerson != null) {
+										selectOrCreateimmunizationForPerson(dto, selectedPerson);
+									}
+								},
+								true);
+					}
 				}
 			});
 			return viewComponent;

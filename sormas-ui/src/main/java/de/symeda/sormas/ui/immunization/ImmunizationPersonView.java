@@ -22,7 +22,7 @@ public class ImmunizationPersonView extends AbstractImmunizationView {
 		ImmunizationDto dto = FacadeProvider.getImmunizationFacade().getByUuid(getReference().getUuid());
 
 		CommitDiscardWrapperComponent<PersonEditForm> immunizationPersonComponent = ControllerProvider.getPersonController()
-			.getPersonEditComponent(PersonContext.TRAVEL_ENTRY, dto.getPerson().getUuid(), dto.getDisease(), null, UserRight.TRAVEL_ENTRY_EDIT, null);
+			.getPersonEditComponent(PersonContext.IMMUNIZATION, dto.getPerson().getUuid(), dto.getDisease(), null, UserRight.IMMUNIZATION_EDIT, null);
 		setSubComponent(immunizationPersonComponent);
 
 		setImmunizationEditPermission(immunizationPersonComponent);
