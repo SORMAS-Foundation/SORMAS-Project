@@ -48,21 +48,11 @@ public class EventDirectoryPage {
       By.cssSelector("[id='srcType'] [class='v-filterselect-button']");
   public static final By FILTER_BY_TYPE_OF_PLACE =
       By.cssSelector("[id='typeOfPlace'] [class='v-filterselect-button']");
-  public static final By EVENT_SIGNAL =
-      By.xpath(
-          "/html/body/div[1]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[2]/div/div/div[3]/div");
-  public static final By EVENT_EVENT =
-      By.xpath(
-          "/html/body/div[1]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[2]/div/div/div[5]/div");
-  public static final By EVENT_SCREENING =
-      By.xpath(
-          "/html/body/div[1]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[2]/div/div/div[7]/div");
-  public static final By EVENT_CLUSTER =
-      By.xpath(
-          "/html/body/div[1]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[2]/div/div/div[9]/div");
-  public static final By EVENT_DROPPED =
-      By.xpath(
-          "/html/body/div[1]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[2]/div/div/div[11]/div");
+  public static final By EVENT_SIGNAL = By.id("status-Signal");
+  public static final By EVENT_EVENT = By.id("status-Event");
+  public static final By EVENT_SCREENING = By.id("status-Screening");
+  public static final By EVENT_CLUSTER = By.id("status-Cluster");
+  public static final By EVENT_DROPPED = By.id("status-Dropped");
 
   /*public static By getByEventUuid(String eventUuid) {
     return By.cssSelector("a[title=" + eventUuid + "]");
