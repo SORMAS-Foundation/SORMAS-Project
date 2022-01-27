@@ -19,7 +19,6 @@
 package org.sormas.e2etests.steps.web.application.events;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_GRID_RESULTS_ROWS;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_GRID_RESULTS_ROWS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.*;
 
@@ -34,7 +33,6 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
 import org.sormas.e2etests.state.ApiState;
-import org.testng.Assert;
 import org.testng.Assert;
 
 public class EventDirectorySteps implements En {
@@ -197,14 +195,14 @@ public class EventDirectorySteps implements En {
     And(
         "I click Create Case for Event Participant",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_BUTTON));
-      Then(
-              "I check that number of displayed Event results is {int}",
-              (Integer number) ->
-                      assertHelpers.assertWithPoll20Second(
-                              () ->
-                                      Assert.assertEquals(
-                                              webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
-                                              number.intValue(),
-                                              "Number of displayed cases is not correct")));
+    Then(
+        "I check that number of displayed Event results is {int}",
+        (Integer number) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
+                        number.intValue(),
+                        "Number of displayed cases is not correct")));
   }
 }
