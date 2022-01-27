@@ -16,6 +16,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.vaadin.ui.Button;
+import de.symeda.sormas.ui.utils.PersonDependentEditForm;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -58,7 +60,7 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
-public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
+public class TravelEntryCreateForm extends PersonDependentEditForm<TravelEntryDto> {
 
 	private static final long serialVersionUID = 2160497736783946091L;
 
@@ -156,6 +158,10 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 
 		addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
+
+		Button searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
+		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
+
 		addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
 		addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
 
@@ -347,6 +353,19 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 			getField(PersonDto.PHONE).clear();
 			getField(PersonDto.EMAIL_ADDRESS).clear();
 		}
+	}
+
+	@Override
+	protected void enablePersonFields(Boolean enable) {
+		getField(PersonDto.FIRST_NAME).setEnabled(enable);
+		getField(PersonDto.LAST_NAME).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_DD).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_MM).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(enable);
+		getField(PersonDto.SEX).setEnabled(enable);
+		getField(PersonDto.PRESENT_CONDITION).setEnabled(enable);
+		getField(PersonDto.PHONE).setEnabled(enable);
+		getField(PersonDto.EMAIL_ADDRESS).setEnabled(enable);
 	}
 
 	public void setPersonalDetailsReadOnlyIfNotEmpty(boolean readOnly) {
