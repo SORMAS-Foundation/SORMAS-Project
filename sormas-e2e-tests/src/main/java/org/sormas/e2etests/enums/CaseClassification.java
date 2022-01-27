@@ -22,7 +22,7 @@ import java.util.Random;
 import lombok.Getter;
 
 @Getter
-public enum CaseClasification {
+public enum CaseClassification {
   NOT_CLASSIFIED("Not yet classified"),
   SUSPECT("Suspect case"),
   PROBABLE("Probable case"),
@@ -33,12 +33,12 @@ public enum CaseClasification {
 
   private final String classification;
 
-  CaseClasification(String caseClassification) {
+  CaseClassification(String caseClassification) {
     classification = caseClassification;
   }
 
   public static String getRandomClassification() {
     Random random = new Random();
-    return String.valueOf(CaseClasification.values()[random.nextInt(values().length)]);
+    return String.valueOf(CaseClassification.values()[random.nextInt(values().length)]);
   }
 }
