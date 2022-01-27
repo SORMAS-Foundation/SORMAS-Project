@@ -31,13 +31,17 @@ public class EventApiService {
   public Event buildGeneratedEvent() {
     return Event.builder()
         .uuid(UUID.randomUUID().toString())
+        .disease("CORONAVIRUS")
         .reportingUser(ReportingUser.builder().uuid("QLW4AN-TGWLRA-3UQVEM-WCDFCIVM").build())
         .eventStatus("SIGNAL")
+        .srcType("NOT_APPLICABLE")
         .eventInvestigationStatus("PENDING")
         .eventTitle(String.valueOf(System.currentTimeMillis()))
         .startDate(new Date())
         .reportDateTime(new Date())
         .eventLocation(EventLocation.builder().uuid(UUID.randomUUID().toString()).build())
+        .riskLevel("LOW")
+        .typeOfPlace("HOME")
         .build();
   }
 }
