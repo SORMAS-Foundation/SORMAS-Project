@@ -87,6 +87,7 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
@@ -735,31 +736,41 @@ public class CaseController {
 						saveCase(dto);
 					}
 				} else {
-					// look for potential duplicate
-					final PersonDto duplicatePerson = PersonDto.build();
-					transferDataToPerson(createForm, duplicatePerson);
 
-					ControllerProvider.getPersonController()
-						.selectOrCreatePerson(duplicatePerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
-							if (selectedPerson != null) {
-								dto.setPerson(selectedPerson);
-								selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
-									if (uuid == null) {
-										dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
-										saveCase(dto);
-										navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
-									} else {
-										navigateToView(CaseDataView.VIEW_NAME, uuid, null);
-									}
-								});
-							}
-						}, true);
+					PersonDto searchedPerson = createForm.getSearchedPerson();
+					if (searchedPerson != null) {
+						dto.setPerson(searchedPerson.toReference());
+						selectOrCreateCase(createForm, dto, searchedPerson.toReference());
+					} else {
+						// look for potential duplicate
+						final PersonDto duplicatePerson = PersonDto.build();
+						transferDataToPerson(createForm, duplicatePerson);
+						ControllerProvider.getPersonController()
+							.selectOrCreatePerson(duplicatePerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
+								if (selectedPerson != null) {
+									dto.setPerson(selectedPerson);
+									selectOrCreateCase(createForm, dto, selectedPerson);
+								}
+							}, true);
+					}
 				}
 			}
 		});
 
 		return editView;
 
+	}
+
+	private void selectOrCreateCase(CaseCreateForm createForm, CaseDataDto dto, PersonReferenceDto selectedPerson) {
+		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
+			if (uuid == null) {
+				dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
+				saveCase(dto);
+				navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
+			} else {
+				navigateToView(CaseDataView.VIEW_NAME, uuid, null);
+			}
+		});
 	}
 
 	private void transferDataToPerson(CaseCreateForm createForm, PersonDto person) {
