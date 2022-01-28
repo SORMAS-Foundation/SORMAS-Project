@@ -1186,6 +1186,10 @@ public interface Strings {
 	String notificationTaskAssociatedTravelEntryLink = "notificationTaskAssociatedTravelEntryLink";
 	String notificationTaskDueGeneral = "notificationTaskDueGeneral";
 	String notificationTaskDueSpecific = "notificationTaskDueSpecific";
+	String notificationTaskGeneralUpdatedAssigneeUserSource = "notificationTaskGeneralUpdatedAssigneeUserSource";
+	String notificationTaskGeneralUpdatedAssigneeUserTarget = "notificationTaskGeneralUpdatedAssigneeUserTarget";
+	String notificationTaskSpecificUpdatedAssigneeUserSource = "notificationTaskSpecificUpdatedAssigneeUserSource";
+	String notificationTaskSpecificUpdatedAssigneeUserTarget = "notificationTaskSpecificUpdatedAssigneeUserTarget";
 	String notificationTaskStartGeneral = "notificationTaskStartGeneral";
 	String notificationTaskStartSpecific = "notificationTaskStartSpecific";
 	String notificationVisitCompleted = "notificationVisitCompleted";
