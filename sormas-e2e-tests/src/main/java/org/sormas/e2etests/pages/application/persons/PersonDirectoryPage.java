@@ -24,11 +24,25 @@ public class PersonDirectoryPage {
 
   public static final By MULTIPLE_OPTIONS_SEARCH_INPUT =
       By.cssSelector("#nameAddressPhoneEmailLike");
-  public static final By APPLY_FILTERS_BUTTON = By.cssSelector("[id='actionApplyFilters']");
+  public static final By APPLY_FILTERS_BUTTON = By.cssSelector("#actionApplyFilters");
   public static final By RESET_FILTERS_BUTTON = By.cssSelector("[id='actionResetFilters']");
   public static final String PERSON_RESULTS_UUID_LOCATOR = "[title = '%s']";
   public static final By SEARCH_PERSON_BY_FREE_TEXT = By.id("nameAddressPhoneEmailLike");
   public static final By ALL_BUTTON = By.id("All");
+  public static final By BIRTH_YEAR_COMBOBOX =
+      By.cssSelector("[id='birthdateYYYY'] [class='v-filterselect-button']");
+  public static final By BIRTH_MONTH_COMBOBOX =
+      By.cssSelector("[id='birthdateMM'] [class='v-filterselect-button']");
+  public static final By BIRTH_DAY_COMBOBOX =
+      By.cssSelector("[id='birthdateDD'] [class='v-filterselect-button']");
+  public static final By PRESENT_CONDITION =
+      By.cssSelector("[id='presentCondition'] [class='v-filterselect-button']");
+  public static final By REGIONS_COMBOBOX =
+      By.cssSelector("[id='region'] [class='v-filterselect-button']");
+  public static final By DISTRICTS_COMBOBOX =
+      By.cssSelector("[id='district'] [class='v-filterselect-button']");
+  public static final By COMMUNITY_PERSON_COMBOBOX =
+      By.cssSelector("[id='community'] [class='v-filterselect-button']");
   public static final By CASE_PERSON_ID_COLUMN_HEADERS =
       By.cssSelector("v-grid-column-header-content v-grid-column-default-header-content");
 }
