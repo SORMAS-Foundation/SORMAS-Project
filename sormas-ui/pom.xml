@@ -16,7 +16,7 @@
 
 	<properties>
 		<m2e.jpa.activation>false</m2e.jpa.activation>
-	</properties>
+	</properties>  
 
 	<dependencies>
 
