@@ -245,7 +245,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 			// filedId
 			XSSFCell fieldIdCell = row.createCell(EntityColumn.FIELD_ID.ordinal());
-			fieldIdCell.setCellValue(i18nPrefix + "." + field.getName());
+			fieldIdCell.setCellValue(DataHelper.getHumanClassName(entityClass) + "." + field.getName());
 
 			// field name
 			XSSFCell fieldNameCell = row.createCell(EntityColumn.FIELD.ordinal());
