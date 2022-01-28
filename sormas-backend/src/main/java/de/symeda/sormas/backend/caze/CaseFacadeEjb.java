@@ -3673,7 +3673,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public String getFirstUuidNotShareableWithExternalReportingTools(List<String> caseUuids) {
+	public List<String> getUuidsNotShareableWithExternalReportingTools(List<String> caseUuids) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> caseRoot = cq.from(Case.class);
@@ -3690,7 +3690,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.UUID).in(caseUuids)));
 		cq.orderBy(cb.asc(caseRoot.get(AbstractDomainObject.CREATION_DATE)));
 
-		return QueryHelper.getFirstResult(em, cq);
+		return QueryHelper.getResultList(em, cq, null, null);
 	}
 
 	/**
