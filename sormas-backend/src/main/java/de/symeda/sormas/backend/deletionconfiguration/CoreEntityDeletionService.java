@@ -9,50 +9,66 @@ import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
 
-import de.symeda.sormas.api.deletionconfiguration.CoreEntityFacade;
-import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
-import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
-import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.event.EventFacadeEjb;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
+import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
+import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 
 @LocalBean
 @Singleton
 public class CoreEntityDeletionService {
 
-	private final List<DataHelper.Pair<CoreEntityType, CoreEntityFacade>> coreEntityFacades = new ArrayList<>();
+	private final List<EntityTypeFacadePair> coreEntityFacades = new ArrayList<>();
 
 	@EJB
-	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacadeEjb;
-
-	@EJB
-	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacadeEjb;
+	private DeletionConfigurationService deletionConfigurationService;
 
 	public CoreEntityDeletionService() {
 	}
 
 	@Inject
-	public CoreEntityDeletionService(CaseFacadeEjb.CaseFacadeEjbLocal caseFacadeEjb, ContactFacadeEjb.ContactFacadeEjbLocal contactFacadeEjb) {
-		this.caseFacadeEjb = caseFacadeEjb;
-		this.contactFacadeEjb = contactFacadeEjb;
-		coreEntityFacades.add(new DataHelper.Pair<>(CoreEntityType.CASE, caseFacadeEjb));
-		coreEntityFacades.add(new DataHelper.Pair<>(CoreEntityType.CONTACT, contactFacadeEjb));
+	public CoreEntityDeletionService(
+		CaseFacadeEjb.CaseFacadeEjbLocal caseFacadeEjb,
+		ContactFacadeEjb.ContactFacadeEjbLocal contactFacadeEjb,
+		EventFacadeEjb.EventFacadeEjbLocal eventFacadeEjb,
+		EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal eventParticipantFacadeEjb,
+		ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacadeEjb,
+		TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal travelEntryFacadeEjb) {
+		coreEntityFacades.add(EntityTypeFacadePair.of(CoreEntityType.CASE, caseFacadeEjb));
+		coreEntityFacades.add(EntityTypeFacadePair.of(CoreEntityType.CONTACT, contactFacadeEjb));
+		coreEntityFacades.add(EntityTypeFacadePair.of(CoreEntityType.EVENT, eventFacadeEjb));
+		coreEntityFacades.add(EntityTypeFacadePair.of(CoreEntityType.EVENT_PARTICIPANT, eventParticipantFacadeEjb));
+		coreEntityFacades.add(EntityTypeFacadePair.of(CoreEntityType.IMMUNIZATION, immunizationFacadeEjb));
+		coreEntityFacades.add(EntityTypeFacadePair.of(CoreEntityType.TRAVEL_ENTRY, travelEntryFacadeEjb));
 	}
 
 	public void executeAutomaticDeletion() {
 
-		coreEntityFacades.stream().forEach(coreEntityType -> {
+		coreEntityFacades.forEach(coreEntityType -> {
+			DeletionConfiguration coreEntityTypeConfig = deletionConfigurationService.getCoreEntityTypeConfig(coreEntityType.coreEntityType);
 
-//			DeletionConfiguration forEntityType = deletionConfigurationService.getForEntityType(coreEntityType.getElement0());
-			DeletionConfiguration forEntityType = new DeletionConfiguration();
-//			DeletionConfiguration forEntityType = new DeletionConfiguration();
-			forEntityType.setEntityType(CoreEntityType.CASE);
-			forEntityType.setDeletionReference(DeletionReference.CREATION);
+			Date referenceDeletionDate = DateHelper.subtractDays(new Date(), coreEntityTypeConfig.deletionPeriod);
 
-			coreEntityType.getElement1().executeAutomaticDeletion(forEntityType.deletionReference, new Date());
-
+			coreEntityType.entityFacade.executeAutomaticDeletion(coreEntityTypeConfig.deletionReference, referenceDeletionDate);
 		});
 
 	}
 
+	private static final class EntityTypeFacadePair {
+
+		private final CoreEntityType coreEntityType;
+		private final AbstractCoreEntityFacade<?> entityFacade;
+
+		private EntityTypeFacadePair(CoreEntityType coreEntityType, AbstractCoreEntityFacade<?> entityFacade) {
+			this.coreEntityType = coreEntityType;
+			this.entityFacade = entityFacade;
+		}
+
+		public static EntityTypeFacadePair of(CoreEntityType coreEntityType, AbstractCoreEntityFacade<?> entityFacade) {
+			return new EntityTypeFacadePair(coreEntityType, entityFacade);
+		}
+	}
 }

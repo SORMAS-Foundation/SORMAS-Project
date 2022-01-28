@@ -63,8 +63,6 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.deletionconfiguration.CoreEntityFacade;
-import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,6 +90,7 @@ import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
@@ -145,6 +144,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
+import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentService;
@@ -204,7 +204,7 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "ContactFacade")
-public class ContactFacadeEjb implements ContactFacade, CoreEntityFacade {
+public class ContactFacadeEjb extends AbstractCoreEntityFacade<Contact> implements ContactFacade {
 
 	private static final long SECONDS_30_DAYS = TimeUnit.DAYS.toSeconds(30L);
 
@@ -269,6 +269,10 @@ public class ContactFacadeEjb implements ContactFacade, CoreEntityFacade {
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@Resource
 	private ManagedScheduledExecutorService executorService;
+
+	public ContactFacadeEjb() {
+		super(Contact.class);
+	}
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -2125,7 +2129,17 @@ public class ContactFacadeEjb implements ContactFacade, CoreEntityFacade {
 
 	@Override
 	public void executeAutomaticDeletion(DeletionReference deletionReference, Date referenceDeletionDate) {
+		super.executeAutomaticDeletion(deletionReference, referenceDeletionDate);
+	}
 
+	@Override
+	protected String getDeleteReferenceField(DeletionReference deletionReference) {
+		return super.getDeleteReferenceField(deletionReference);
+	}
+
+	@Override
+	protected void permanentDelete(Contact entity) {
+		contactService.delete(entity);
 	}
 
 	private float calculateCompleteness(Contact contact) {

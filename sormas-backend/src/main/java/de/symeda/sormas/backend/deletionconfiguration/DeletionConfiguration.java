@@ -1,53 +1,71 @@
 package de.symeda.sormas.backend.deletionconfiguration;
 
-import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+
 @Entity(name = "deletionconfiguration")
+@Audited
 public class DeletionConfiguration extends AbstractDomainObject {
 
-    public static final String ENTITY_TYPE = "entityType";
+	private static final long serialVersionUID = 4027927530174727321L;
 
+	public static final String ENTITY_TYPE = "entityType";
+	public static final String DELETION_REFERENCE = "deletionReference";
+	public static final String DELETION_PERIOD = "deletionPeriod";
 
 	CoreEntityType entityType;
 	DeletionReference deletionReference;
 
 	@NotNull
-    @Size(min = 7)
+	@Min(value = 7, message = Validations.numberTooSmall)
+	@Max(value = Integer.MAX_VALUE, message = Validations.numberTooBig)
 	Integer deletionPeriod;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    public CoreEntityType getEntityType() {
-        return entityType;
-    }
+	public static DeletionConfiguration build(CoreEntityType coreEntityType, DeletionReference deletionReference, Integer deletionPeriod) {
+		DeletionConfiguration deletionConfiguration = new DeletionConfiguration();
+		deletionConfiguration.setEntityType(coreEntityType);
+		deletionConfiguration.setDeletionReference(deletionReference);
+		deletionConfiguration.setDeletionPeriod(deletionPeriod);
+		return deletionConfiguration;
+	}
 
-    public void setEntityType(CoreEntityType entityType) {
-        this.entityType = entityType;
-    }
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	public CoreEntityType getEntityType() {
+		return entityType;
+	}
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    public DeletionReference getDeletionReference() {
-        return deletionReference;
-    }
+	public void setEntityType(CoreEntityType entityType) {
+		this.entityType = entityType;
+	}
 
-    public void setDeletionReference(DeletionReference deletionReference) {
-        this.deletionReference = deletionReference;
-    }
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	public DeletionReference getDeletionReference() {
+		return deletionReference;
+	}
 
-    public Integer getDeletionPeriod() {
-        return deletionPeriod;
-    }
+	public void setDeletionReference(DeletionReference deletionReference) {
+		this.deletionReference = deletionReference;
+	}
 
-    public void setDeletionPeriod(Integer deletionPeriod) {
-        this.deletionPeriod = deletionPeriod;
-    }
+	@Column(nullable = false)
+	public Integer getDeletionPeriod() {
+		return deletionPeriod;
+	}
+
+	public void setDeletionPeriod(Integer deletionPeriod) {
+		this.deletionPeriod = deletionPeriod;
+	}
 }

@@ -792,4 +792,8 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	public CoreEntityDeletionService getCoreEntityDeletionService(){
 		return getBean(CoreEntityDeletionService.class);
 	}
+
+	public DeletionConfigurationService getDeletionConfigurationService(){
+		return getBean(DeletionConfigurationService.class);
+	}
 }

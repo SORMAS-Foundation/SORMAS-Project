@@ -9804,14 +9804,14 @@ CREATE TABLE deletionconfiguration(
                                      uuid varchar(36) not null unique,
                                      changedate timestamp not null,
                                      creationdate timestamp not null,
-                                     entity varchar(255),
+                                     entityType varchar(255),
                                      deletionReference varchar(255),
                                      deletionPeriod integer,
                                      sys_period tstzrange not null,
                                      primary key(id)
 );
 ALTER TABLE deletionconfiguration OWNER TO sormas_user;
-ALTER TABLE ONLY deletionconfiguration ADD CONSTRAINT deletionconfiguration_entity_key UNIQUE (entity);
+ALTER TABLE ONLY deletionconfiguration ADD CONSTRAINT deletionconfiguration_entity_key UNIQUE (entityType);
 
 CREATE TABLE deletionconfiguration_history (LIKE deletionconfiguration);
 CREATE TRIGGER versioning_trigger

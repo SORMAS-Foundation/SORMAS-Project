@@ -95,6 +95,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -125,7 +126,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.utils.EventJoins;
 
 @Stateless(name = "EventFacade")
-public class EventFacadeEjb implements EventFacade {
+public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements EventFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -160,6 +161,10 @@ public class EventFacadeEjb implements EventFacade {
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
 	@Resource
 	private ManagedScheduledExecutorService executorService;
+
+	public EventFacadeEjb() {
+		super(Event.class);
+	}
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -1338,5 +1343,10 @@ public class EventFacadeEjb implements EventFacade {
 	public Boolean isEventEditAllowed(String eventUuid) {
 		Event event = eventService.getByUuid(eventUuid);
 		return eventService.isEventEditAllowed(event);
+	}
+
+	@Override
+	protected void permanentDelete(Event entity) {
+		eventService.delete(entity);
 	}
 }

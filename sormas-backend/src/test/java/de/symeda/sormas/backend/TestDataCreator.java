@@ -445,6 +445,8 @@ public class TestDataCreator {
 		return caze;
 	}
 
+
+
 	public ImmunizationDto createImmunization(
 		Disease disease,
 		PersonReferenceDto person,

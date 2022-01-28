@@ -5,8 +5,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
+import de.symeda.sormas.backend.caze.Case;
+import org.apache.commons.lang3.time.DateUtils;
+import org.hibernate.internal.SessionImpl;
+import org.hibernate.query.spi.QueryImplementor;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 
@@ -27,8 +32,11 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 	@Test
 	public void testCaseAutomaticDeletion() {
 
+		createDeletionConfiguration();
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CASE);
+
 		final Date today = new Date();
-		final Date caseReportAndOnsetDate = new LocalDate().minusDays(10).toDate();
+		final Date tenYearsPlusAgo = DateUtils.addDays(today, (-1) * coreEntityTypeConfig.deletionPeriod - 1);
 
 		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator
@@ -40,14 +48,45 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 			Disease.EVD,
 			CaseClassification.PROBABLE,
 			InvestigationStatus.PENDING,
-			caseReportAndOnsetDate,
+			tenYearsPlusAgo,
 			rdcf);
 
-		assertEquals(1, getCaseFacade().getCaseSelectionList(new CaseCriteria()).size());
+		SessionImpl em = (SessionImpl) getEntityManager();
+		QueryImplementor query = em.createQuery("select c from cases c where c.uuid=:uuid");
+		query.setParameter("uuid", caze.getUuid());
+		Case singleResult = (Case) query.getSingleResult();
+		singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		em.save(singleResult);
+
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria.deleted(false);
+
+		assertEquals(1, getCaseFacade().count(caseCriteria));
 
 		getCoreEntityDeletionService().executeAutomaticDeletion();
 
-		assertEquals(0, getCaseFacade().getCaseSelectionList(new CaseCriteria()).size());
+		assertEquals(0, getCaseFacade().count(caseCriteria));
 
+	}
+
+	private void createDeletionConfiguration() {
+		build(CoreEntityType.CASE);
+		build(CoreEntityType.CONTACT);
+		build(CoreEntityType.EVENT);
+		build(CoreEntityType.EVENT_PARTICIPANT);
+		build(CoreEntityType.IMMUNIZATION);
+		build(CoreEntityType.TRAVEL_ENTRY);
+	}
+
+	private DeletionConfiguration build(CoreEntityType coreEntityType) {
+		DeletionConfigurationService deletionConfigurationService = getBean(DeletionConfigurationService.class);
+
+		DeletionConfiguration entity = new DeletionConfiguration();
+		entity.setEntityType(coreEntityType);
+		entity.setDeletionReference(coreEntityType.getDeletionReference());
+		entity.setDeletionPeriod(coreEntityType.getDeletionPeriod());
+		deletionConfigurationService.ensurePersisted(entity);
+		return entity;
 	}
 }

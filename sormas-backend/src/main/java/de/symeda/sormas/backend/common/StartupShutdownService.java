@@ -75,6 +75,7 @@ import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
 import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationService;
@@ -163,6 +164,8 @@ public class StartupShutdownService {
 	DefaultEntitiesCreator defaultEntitiesCreator;
 	@Inject
 	private Event<UserUpdateEvent> userUpdateEvent;
+	@EJB
+	private DeletionConfigurationService deletionConfigurationService;
 
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
@@ -218,6 +221,8 @@ public class StartupShutdownService {
 
 		featureConfigurationService.createMissingFeatureConfigurations();
 		featureConfigurationService.updateFeatureConfigurations();
+
+		deletionConfigurationService.createMissingDeletionConfiguration();
 
 		configFacade.validateAppUrls();
 		configFacade.validateExternalUrls();

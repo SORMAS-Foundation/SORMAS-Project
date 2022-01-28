@@ -69,8 +69,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.deletionconfiguration.CoreEntityFacade;
-import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -225,6 +223,7 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
+import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentService;
@@ -328,7 +327,7 @@ import de.symeda.sormas.backend.visit.VisitService;
 import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "CaseFacade")
-public class CaseFacadeEjb implements CaseFacade, CoreEntityFacade {
+public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements CaseFacade {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
 
@@ -455,6 +454,10 @@ public class CaseFacadeEjb implements CaseFacade, CoreEntityFacade {
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@Resource
 	private ManagedScheduledExecutorService executorService;
+
+	public CaseFacadeEjb() {
+		super(Case.class);
+	}
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -3852,18 +3855,8 @@ public class CaseFacadeEjb implements CaseFacade, CoreEntityFacade {
 	}
 
 	@Override
-	public void executeAutomaticDeletion(DeletionReference deletionReference, Date referenceDeletionDate){
-		CaseCriteria caseCriteria = new CaseCriteria();
-//		caseCriteria.setReportDateTo(referenceDeletionDate);
-		List<CaseIndexDto> caseDeletionList = getIndexList(caseCriteria, null, null, null);
-		caseDeletionList.stream().forEach(caseIndexDto -> {
-			try {
-				deleteCase(caseIndexDto.getUuid());
-			} catch (ExternalSurveillanceToolException e) {
-				e.printStackTrace();
-			}
-		});
-
+	protected void permanentDelete(Case entity) {
+		caseService.delete(entity);
 	}
 
 	@LocalBean

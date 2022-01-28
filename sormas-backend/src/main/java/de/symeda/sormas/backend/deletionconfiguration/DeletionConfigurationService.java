@@ -1,5 +1,11 @@
 package de.symeda.sormas.backend.deletionconfiguration;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -16,7 +22,7 @@ public class DeletionConfigurationService extends BaseAdoService<DeletionConfigu
 		super(DeletionConfiguration.class);
 	}
 
-	public DeletionConfiguration getForEntityType(CoreEntityType coreEntityType) {
+	public DeletionConfiguration getCoreEntityTypeConfig(CoreEntityType coreEntityType) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DeletionConfiguration> cq = cb.createQuery(getElementClass());
@@ -26,4 +32,22 @@ public class DeletionConfigurationService extends BaseAdoService<DeletionConfigu
 		return em.createQuery(cq).getSingleResult();
 	}
 
+	public void createMissingDeletionConfiguration() {
+		Map<CoreEntityType, DeletionConfiguration> configs = getServerDeletionConfigurations();
+		Arrays.stream(CoreEntityType.values()).forEach(coreEntityType -> {
+			DeletionConfiguration savedConfiguration = configs.get(coreEntityType);
+			if (savedConfiguration == null) {
+				DeletionConfiguration deletionConfiguration =
+					DeletionConfiguration.build(coreEntityType, coreEntityType.getDeletionReference(), coreEntityType.getDeletionPeriod());
+				ensurePersisted(deletionConfiguration);
+			}
+		});
+	}
+
+	private Map<CoreEntityType, DeletionConfiguration> getServerDeletionConfigurations() {
+		List<DeletionConfiguration> deletionConfigurations = getAll();
+		Map<CoreEntityType, DeletionConfiguration> deletionConfigurationMap =
+			deletionConfigurations.stream().collect(Collectors.toMap(DeletionConfiguration::getEntityType, Function.identity(), (e1, e2) -> e2));
+		return deletionConfigurationMap;
+	}
 }
