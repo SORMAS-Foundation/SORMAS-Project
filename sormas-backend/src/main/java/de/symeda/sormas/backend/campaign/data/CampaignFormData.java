@@ -45,7 +45,7 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
-@Entity(name = "campaignFormData")
+@Entity(name = "campaignformdata")
 @Audited
 public class CampaignFormData extends AbstractDomainObject {
 
