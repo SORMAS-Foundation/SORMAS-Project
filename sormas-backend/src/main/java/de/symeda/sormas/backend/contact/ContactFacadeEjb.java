@@ -2128,16 +2128,6 @@ public class ContactFacadeEjb extends AbstractCoreEntityFacade<Contact> implemen
 	}
 
 	@Override
-	public void executeAutomaticDeletion(DeletionReference deletionReference, Date referenceDeletionDate) {
-		super.executeAutomaticDeletion(deletionReference, referenceDeletionDate);
-	}
-
-	@Override
-	protected String getDeleteReferenceField(DeletionReference deletionReference) {
-		return super.getDeleteReferenceField(deletionReference);
-	}
-
-	@Override
 	protected void permanentDelete(Contact entity) {
 		contactService.delete(entity);
 	}
