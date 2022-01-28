@@ -18,7 +18,10 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CALCULATE_CASE_CLASSIFICATION_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLASSIFICATION_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_PERSON_TAB;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.*;
 
 import cucumber.api.java8.En;
@@ -26,9 +29,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.inject.Inject;
+import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Case;
+import org.testng.Assert;
 
 public class EditCasePersonSteps implements En {
 
@@ -56,6 +61,24 @@ public class EditCasePersonSteps implements En {
                   "sex",
                   "primaryEmailAddress",
                   "dateOfBirth"));
+        });
+
+    Then(
+        "From Case page I click on Calculate Case Classification button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CALCULATE_CASE_CLASSIFICATION_BUTTON);
+        });
+
+    Then(
+        "For the current Case the Case Classification value should be {string}",
+        (String expectedCaseClassification) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 30);
+          String caseClassificationValue =
+              webDriverHelpers.getValueFromWebElement(CASE_CLASSIFICATION_INPUT);
+          Assert.assertEquals(
+              caseClassificationValue,
+              CaseClassification.getValueFor(expectedCaseClassification),
+              "Case classification value is wrong");
         });
   }
 

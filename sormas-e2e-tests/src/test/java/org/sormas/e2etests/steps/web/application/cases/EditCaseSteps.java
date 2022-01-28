@@ -20,6 +20,7 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
+import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 
 import cucumber.api.java8.En;
@@ -65,12 +66,20 @@ public class EditCaseSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     And(
+        "I click on save button from Edit Case page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_SAVED_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+
+    And(
         "I navigate to follow-up tab",
-        () -> webDriverHelpers.clickOnWebElementBySelector(FOLLOW_UP_BUTTON));
+        () -> webDriverHelpers.clickOnWebElementBySelector(FOLLOW_UP_TAB));
 
     And(
         "I navigate to symptoms tab",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SYMPTOMS_BUTTON));
+        () -> webDriverHelpers.clickOnWebElementBySelector(SYMPTOMS_TAB));
 
     When(
         "I check the created data is correctly displayed on Edit case page",
@@ -295,13 +304,6 @@ public class EditCaseSteps implements En {
               VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX,
               CaseOutcome.getValueFor(vaccinationStatus));
           editedCase = editedCase.toBuilder().vaccinationStatus(vaccinationStatus).build();
-        });
-
-    When(
-        "I click on save button in case edit",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
         });
 
     When(
