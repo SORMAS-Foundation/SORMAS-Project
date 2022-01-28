@@ -25,6 +25,7 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.ContactsLineListing;
 import org.sormas.e2etests.services.ContactsLineListingService;
@@ -65,6 +66,13 @@ public class ContactsLineListingSteps implements En {
         "I save the new contact using line listing feature",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_ACTION_SAVE);
+          // TODO remove this logic once problem is investigated in Jenkins
+          // start
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              By.xpath("//*[@class='v-Notification-caption']"));
+          webDriverHelpers.clickOnWebElementBySelector(
+              By.xpath("//*[@class='v-Notification-caption']"));
+          // end
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(25);
         });
 

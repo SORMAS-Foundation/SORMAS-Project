@@ -27,6 +27,7 @@ import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.helpers.strings.ASCIIHelper;
 import org.sormas.e2etests.pojo.web.Contact;
 
 public class ContactService {
@@ -55,13 +56,15 @@ public class ContactService {
                 faker.number().numberBetween(1, 12),
                 faker.number().numberBetween(1, 27)))
         .sex(GenderValues.getRandomGender())
-        .primaryEmailAddress(firstName + "." + lastName + emailDomain)
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
         .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
         .returningTraveler("NO")
         .reportDate(LocalDate.now().minusDays(random.nextInt(10)))
         .diseaseOfSourceCase("COVID-19")
         .caseIdInExternalSystem(UUID.randomUUID().toString())
-        .dateOfLastContact(LocalDate.now().minusDays(random.nextInt(10)))
+        .dateOfFirstContact(LocalDate.now().minusDays(5))
+        .dateOfLastContact(LocalDate.now().minusDays(3))
         .caseOrEventInformation("Automated test dummy description")
         .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())

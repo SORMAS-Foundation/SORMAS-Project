@@ -15,24 +15,37 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+
 package org.sormas.e2etests.enums;
 
+import java.util.Random;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
-public enum YesNoUnknownOptions {
-  YES("YES"),
-  NO("NO"),
-  UNKNOWN("UNKNOWN");
+public enum PresentCondition {
+  ALIVE("Alive"),
+  DEAD("Dead"),
+  BURIED("Buried"),
+  UNKNOWN("Unknown");
 
-  private final String option;
+  private final String condition;
 
-  YesNoUnknownOptions(String option) {
-    this.option = option;
+  PresentCondition(String condition) {
+    this.condition = condition;
   }
 
-  @Override
-  public String toString() {
-    return this.option;
+  public static String getRandomPresentCondition() {
+    Random random = new Random();
+    return String.valueOf(PresentCondition.values()[random.nextInt(values().length)]);
+  }
+
+  @SneakyThrows
+  public static String getValueFor(String option) {
+    PresentCondition[] caseOutcomeOptions = PresentCondition.values();
+    for (PresentCondition value : caseOutcomeOptions) {
+      if (value.getCondition().equalsIgnoreCase(option)) return value.getCondition();
+    }
+    throw new Exception("Unable to find " + option + " value in PresentCondition Enum");
   }
 }

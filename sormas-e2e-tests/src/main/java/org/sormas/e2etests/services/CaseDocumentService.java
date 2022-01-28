@@ -15,32 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.pojo.api;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import java.util.List;
-import lombok.*;
-import lombok.Builder;
-import lombok.Value;
-import org.sormas.e2etests.pojo.api.chunks.Address;
+package org.sormas.e2etests.services;
 
-@Value
-@AllArgsConstructor
-@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-@Builder(toBuilder = true, builderClassName = "builder")
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class Person {
-  String firstName;
-  String lastName;
-  String emailAddress;
-  Integer birthdateDD;
-  Integer birthdateMM;
-  Integer birthdateYYYY;
-  String phone;
-  String sex;
-  String uuid;
-  Boolean covidCodeDelivered;
-  Address address;
-  List<Object> personContactDetails;
-  String presentCondition;
+import com.github.javafaker.Faker;
+import com.google.inject.Inject;
+import org.sormas.e2etests.enums.*;
+import org.sormas.e2etests.pojo.web.QuarantineOrder;
+
+public class CaseDocumentService {
+  private final Faker faker;
+
+  private final String emailDomain = "@CASE-DOCUMENT.com";
+
+  @Inject
+  public CaseDocumentService(Faker faker) {
+    this.faker = faker;
+  }
+
+  public QuarantineOrder buildQuarantineOrder() {
+    return QuarantineOrder.builder()
+        .documentTemplate("ExampleDocumentTemplateCases.docx")
+        .sample("")
+        .pathogenTest("")
+        .extraComment("This is a test comment")
+        .build();
+  }
 }

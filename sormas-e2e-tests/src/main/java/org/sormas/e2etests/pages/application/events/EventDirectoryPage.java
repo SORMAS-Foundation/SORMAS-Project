@@ -32,16 +32,15 @@ public class EventDirectoryPage {
       By.cssSelector("div#eventsViewSwitcher span:nth-child(2)");
   public static final By FILTER_BY_GENERAL_INPUT = By.cssSelector("input#freeText");
   public static final By EVENT_ACTIONS_COLUMN_HEADERS =
-      By.cssSelector("thead .v-grid-column-default-header-content");
+      By.cssSelector("thead" + " .v-grid-column-default-header-content");
   public static final By EVENT_ACTIONS_TABLE_ROW =
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By EVENT_ACTIONS_TABLE_DATA = By.tagName("td");
-
-  /*public static By getByEventUuid(String eventUuid) {
-    return By.cssSelector("a[title=" + eventUuid + "]");
-  }*/
+  public static final By FIRST_EVENT_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
+  public static final By CREATE_CASE_BUTTON =
+      By.xpath("//td//span[contains(@class, 'v-icon-edit')]");
 
   public static By getByEventUuid(String eventUuid) {
-    return By.cssSelector(String.format("a[title=%s]", eventUuid));
+    return By.xpath(String.format("//a[@title='%s']", eventUuid));
   }
 }

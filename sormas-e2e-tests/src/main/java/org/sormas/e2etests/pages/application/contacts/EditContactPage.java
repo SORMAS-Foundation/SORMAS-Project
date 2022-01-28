@@ -105,6 +105,7 @@ public class EditContactPage {
       By.cssSelector("tr[class*='v-grid-row-has-data']");
   public static final By CHANGE_CASE_BUTTON = By.id("contactChangeCase");
   public static final By CASE_ID_LABEL = By.id("caseIdLabel");
+  public static final By CONTACT_CLASSIFICATION_RADIO_BUTTON = By.cssSelector(".v-radiobutton");
   public static final By CASE_PERSON_LABEL =
       By.xpath(
           "//span[contains(text(), 'Case person')]/ancestor::div[@class='v-caption']/following-sibling::div");
@@ -117,4 +118,15 @@ public class EditContactPage {
   public static final By REMOVE_CASE_CTA_LINK = By.id("contactRemoveCase");
   public static final By CASE_CHANGE_POPUP_SUCCESS_MESSAGE =
       By.xpath("//*[contains(text(),'The source case of the contact has been changed')]");
+  public static final By CREATE_DOCUMENT_BUTTON = By.cssSelector("[id='Create']");
+  public static final By CONTACT_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
+  public static final By CREATE_QUARANTINE_ORDER_BUTTON =
+      By.cssSelector(".popupContent [id='Create']");
+  public static final By EXTRA_COMMENT_TEXTAREA =
+      By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
+  public static final By EXTRA_COMMENT_INPUT =
+      By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
+  public static final By QUARANTINE_ORDER_COMBOBOX =
+      By.cssSelector(".popupContent div[role='combobox'] div");
+  public static final By CREATE_CASE_FROM_CONTACT_BUTTON = By.id("contactCreateContactCase");
 }

@@ -108,6 +108,18 @@ Feature: Create events
     And I open the Action recently created from Event tab
     And I check that Action created from Event tab is correctly displayed in Event Actions tab
 
+  Scenario: Add a New action from Event Actions tab and verify the fields.
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    Then I navigate to Event Action tab for created Event
+    And I click on New Action from Event Actions tab
+    And I create New Action from event tab
+    Then I navigate to Event Action tab for created Event
+    And I open the Action recently created from Event tab
+    And I check that Action created from Event tab is correctly displayed in Event Actions tab
+
   Scenario: Add a New action for an Event and verify the Action in EventActions table
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -122,7 +134,7 @@ Feature: Create events
     And I collect the event actions from table view
     And I am checking if all the fields are correctly displayed in the Event directory Actions table
 
-  @issue=7189
+  @issue=SORDEV-5476
   Scenario: Add a Task from event and verify the fields
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -146,3 +158,29 @@ Feature: Create events
     And I create a new event group
     When I am accessing the event tab using the created event via api
     Then I am checking event group name and id is correctly displayed
+
+  @issue=SORDEV-5496
+  Scenario: Generate event document
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I open the first event from events list
+    And I click on the Create button from Event Document Templates
+    When I create an event document from template
+    And I verify that the event document is downloaded and correctly named
+
+
+  @issue=SORDEV-5491
+  Scenario: Add a participant to an event and create case
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    Then I add a participant to the event
+    Then I check if participant appears in the event participants list
+    Then I click Create Case for Event Participant
+    And I fill all fields for a new case created for event participant
+    And I click on save case button
