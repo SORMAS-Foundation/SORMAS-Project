@@ -49,7 +49,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Audited
 public class CampaignFormData extends AbstractDomainObject {
 
-	public static final String TABLE_NAME = "campaignFormData";
+	public static final String TABLE_NAME = "campaignformdata";
 
 	public static final String FORM_VALUES = "formValues";
 	public static final String CAMPAIGN = "campaign";
