@@ -776,4 +776,8 @@ public class WebDriverHelpers {
                 getAttributeFromWebElement(rowLocator, "class").contains("row-selected"),
                 String.format("Row element: %s wasn't selected within 20s", rowLocator)));
   }
+
+  public void sendFile(By selector, String filePath) {
+    baseSteps.getDriver().findElement(selector).sendKeys(filePath);
+  }
 }

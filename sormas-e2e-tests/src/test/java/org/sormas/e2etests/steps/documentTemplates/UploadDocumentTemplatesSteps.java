@@ -18,7 +18,6 @@
 
 package org.sormas.e2etests.steps.documentTemplates;
 
-
 import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.CONFIGURATION_DOCUMENT_TEMPLATES_TAB;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.*;
 
@@ -105,7 +104,7 @@ public class UploadDocumentTemplatesSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(UPLOAD_TEMPLATE_POPUP_BUTTON));
 
     When(
-        "I confirm the overwrite popup",
+        "I confirm the document template overwrite popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(TEMPLATE_OVERWRITE_CONFIRM_BUTTON));
 
     Then(

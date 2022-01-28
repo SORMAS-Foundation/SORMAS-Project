@@ -1,5 +1,5 @@
 @UI @Sanity @DocumentTemplates
-Feature: Create user
+Feature: Upload document template
 
   @issue=SORDEV-5497
   Scenario: Upload Case Document Template
@@ -9,7 +9,7 @@ Feature: Create user
     When I click on the UPLOAD TEMPLATE button from Document Templates Case
     And I pick the case document template file
     And I click on the UPLOAD TEMPLATE button from the popup
-    And I confirm the overwrite popup
+    And I confirm the document template overwrite popup
     Then I check that an upload success notification appears
 
   @issue=SORDEV-5497
@@ -20,7 +20,7 @@ Feature: Create user
     When I click on the UPLOAD TEMPLATE button from Document Templates Contact
     And I pick the contact document template file
     And I click on the UPLOAD TEMPLATE button from the popup
-    And I confirm the overwrite popup
+    And I confirm the document template overwrite popup
     Then I check that an upload success notification appears
 
   @issue=SORDEV-5497
@@ -31,7 +31,7 @@ Feature: Create user
     When I click on the UPLOAD TEMPLATE button from Document Templates Event Participant
     And I pick the event participant document template file
     And I click on the UPLOAD TEMPLATE button from the popup
-    And I confirm the overwrite popup
+    And I confirm the document template overwrite popup
     Then I check that an upload success notification appears
 
   @issue=SORDEV-5497
@@ -42,7 +42,7 @@ Feature: Create user
     When I click on the UPLOAD TEMPLATE button from Document Templates Travel Entry
     And I pick the travel entry document template file
     And I click on the UPLOAD TEMPLATE button from the popup
-    And I confirm the overwrite popup
+    And I confirm the document template overwrite popup
     Then I check that an upload success notification appears
 
   @issue=SORDEV-5497
@@ -53,6 +53,6 @@ Feature: Create user
     When I click on the UPLOAD TEMPLATE button from Document Templates Event
     And I pick the event document template file
     And I click on the UPLOAD TEMPLATE button from the popup
-    And I confirm the overwrite popup
+    And I confirm the document template overwrite popup
     Then I check that an upload success notification appears
 
