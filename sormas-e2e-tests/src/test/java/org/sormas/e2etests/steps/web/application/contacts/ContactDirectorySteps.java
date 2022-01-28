@@ -104,12 +104,12 @@ public class ContactDirectorySteps implements En {
     When(
         "I click on the Epidemiological Data button",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(EPIDEMIOLOGICAL_DATA_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EPIDEMIOLOGICAL_DATA_TAB);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
-        "I create a new Exposure for Epidemiological data tab in Contacts and fill all the data",
+        "I fill all the data in Exposure for Epidemiological data tab in Contacts",
         () -> {
           webDriverHelpers.clickWebElementByText(EXPOSURE_DETAILS_KNOWN_OPTIONS, "YES");
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPOSURE_DETAILS_NEW_ENTRY_BUTTON);

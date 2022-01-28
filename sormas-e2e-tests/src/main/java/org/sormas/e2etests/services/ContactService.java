@@ -136,7 +136,7 @@ public class ContactService {
     return Exposure.builder()
         .startOfExposure(LocalDate.now().minusDays(3))
         .endOfExposure(LocalDate.now().minusDays(1))
-        .exposureDescription("had coffee")
+        .exposureDescription(faker.medical().symptoms())
         .typeOfActivity(TypeOfActivityExposure.VISIT)
         .exposureDetailsRole(ExposureDetailsRole.MEDICAL_STAFF)
         .riskArea(YesNoUnknownOptions.NO)

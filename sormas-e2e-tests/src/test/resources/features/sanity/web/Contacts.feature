@@ -202,7 +202,7 @@ Feature: Contacts end to end tests
     And I click on the Epidemiological Data button
     And I click on Exposure details known with UNKNOWN option
     And I click on Exposure details known with NO option
-    Then I create a new Exposure for Epidemiological data tab in Contacts and fill all the data
+    Then I fill all the data in Exposure for Epidemiological data tab in Contacts
     Then I click on Residing or working in an area with high risk of transmission of the disease in Contact with UNKNOWN option
     And I click on Residing or working in an area with high risk of transmission of the disease in Contact with NO option
     And I click on Residing or working in an area with high risk of transmission of the disease in Contact with YES option
