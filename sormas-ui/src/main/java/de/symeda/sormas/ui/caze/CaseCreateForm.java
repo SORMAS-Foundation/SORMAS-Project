@@ -800,7 +800,9 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getEmailAddress());
 			((TextField) getField(PersonDto.PASSPORT_NUMBER)).setValue(person.getPassportNumber());
 			((TextField) getField(PersonDto.NATIONAL_HEALTH_ID)).setValue(person.getNationalHealthId());
-			homeAddressForm.setValue(person.getAddress());
+			if (showHomeAddressForm) {
+				homeAddressForm.setValue(person.getAddress());
+			}
 		} else {
 			getField(PersonDto.FIRST_NAME).clear();
 			getField(PersonDto.LAST_NAME).clear();
@@ -813,10 +815,12 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 			getField(PersonDto.EMAIL_ADDRESS).clear();
 			getField(PersonDto.PASSPORT_NUMBER).clear();
 			getField(PersonDto.NATIONAL_HEALTH_ID).clear();
-			homeAddressForm.clear();
+			if (showHomeAddressForm) {
+				homeAddressForm.clear();
+			}
 		}
 	}
-	
+
 	protected void enablePersonFields(Boolean enable) {
 		getField(PersonDto.FIRST_NAME).setEnabled(enable);
 		getField(PersonDto.LAST_NAME).setEnabled(enable);
