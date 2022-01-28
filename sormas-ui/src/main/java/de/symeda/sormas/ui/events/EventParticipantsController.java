@@ -92,6 +92,11 @@ public class EventParticipantsController {
 			if (!createForm.getFieldGroup().isModified()) {
 				final EventParticipantDto dto = createForm.getValue();
 
+				PersonDto searchedPerson = createForm.getSearchedPerson();
+				if (searchedPerson != null) {
+					dto.setPerson(searchedPerson);
+				}
+
 				if (dto.getPerson() == null) {
 					final PersonDto person = PersonDto.build();
 					person.setFirstName(createForm.getPersonFirstName());

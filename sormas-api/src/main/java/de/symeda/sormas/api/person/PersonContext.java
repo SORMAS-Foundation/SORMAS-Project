@@ -21,6 +21,7 @@ public enum PersonContext {
 	CONTACT,
 	EVENT_PARTICIPANT,
 	TRAVEL_ENTRY,
+	IMMUNIZATION,
 	OTHER;
 
 }

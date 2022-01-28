@@ -314,6 +314,7 @@ public class WebDriverHelpers {
           .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
           .untilAsserted(
               () -> {
+                scrollToElement(selector);
                 Assert.assertTrue(
                     baseSteps.getDriver().findElements(selector).get(index).isDisplayed(),
                     String.format("The element: %s is not displayed", selector));
@@ -581,17 +582,20 @@ public class WebDriverHelpers {
       if (selector instanceof WebElement) {
         WebElement element = (WebElement) selector;
         assertHelpers.assertWithPoll20Second(
-            () ->
-                Assert.assertTrue(
-                    element.isDisplayed(),
-                    String.format("Webelement: %s is not displayed within 20s", element)));
-
+            () -> {
+              scrollToElement(selector);
+              Assert.assertTrue(
+                  element.isDisplayed(),
+                  String.format("Webelement: %s is not displayed within 20s", element));
+            });
       } else {
         assertHelpers.assertWithPoll20Second(
-            () ->
-                Assert.assertTrue(
-                    baseSteps.getDriver().findElement((By) selector).isDisplayed(),
-                    String.format("Locator: %s is not displayed within 20s", selector)));
+            () -> {
+              scrollToElement(selector);
+              Assert.assertTrue(
+                  baseSteps.getDriver().findElement((By) selector).isDisplayed(),
+                  String.format("Locator: %s is not displayed within 20s", selector));
+            });
       }
     } catch (StaleElementReferenceException staleEx) {
       log.warn("StaleElement found at: {}", selector);
@@ -685,13 +689,19 @@ public class WebDriverHelpers {
   // style.substring(style.length() - 17) matches the width value for the selector. it will be used
   // to match the header and the rows by the length.
   public String getValueFromTableRowUsingTheHeader(String headerValue, int rowIndex) {
-    By header = By.xpath("//div[contains(text(), '" + headerValue + "')]/ancestor::th");
-    waitUntilIdentifiedElementIsPresent(header);
-    scrollToElement(header);
-    String style = getAttributeFromWebElement(header, "style");
-    By selector = By.cssSelector("[style*='" + style.substring(style.length() - 17) + "']");
-    waitUntilIdentifiedElementIsPresent(selector);
-    return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
+    // TODO remove try catch after Jenkins investigation
+    try {
+      By header = By.xpath("//div[contains(text(), '" + headerValue + "')]/ancestor::th");
+      waitUntilIdentifiedElementIsPresent(header);
+      scrollToElement(header);
+      String style = getAttributeFromWebElement(header, "style");
+      By selector = By.cssSelector("[style*='" + style.substring(style.length() - 17) + "']");
+      waitUntilIdentifiedElementIsPresent(selector);
+      return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
+    } catch (Exception e) {
+      Assert.fail("Failed due to: " + e.getMessage());
+    }
+    return null;
   }
 
   public boolean isElementDisplayedIn20SecondsOrThrowException(Object selector) {

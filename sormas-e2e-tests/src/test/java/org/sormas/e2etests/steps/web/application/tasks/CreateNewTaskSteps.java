@@ -26,11 +26,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.helpers.strings.ASCIIHelper;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Task;
 import org.sormas.e2etests.services.TaskService;
-import org.testng.Assert;
 
 public class CreateNewTaskSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
@@ -72,17 +70,6 @@ public class CreateNewTaskSteps implements En {
           task = taskService.buildEditTask("CASE", getStatus());
           fillAllFields(task);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-        });
-
-    // TODO delete after jenkins check
-    Then(
-        "I fill comments on task with NON ASCI",
-        () -> {
-          fillCommentsOnTask(ASCIIHelper.convertASCIIToLatin("Löwa Bürklein"));
-          Assert.assertEquals(
-              webDriverHelpers.getValueFromWebElement(COMMENTS_ON_TASK_TEXTAREA),
-              "Lowa Burklein",
-              "Ascii translation failed");
         });
   }
 

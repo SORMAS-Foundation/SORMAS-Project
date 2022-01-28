@@ -81,9 +81,14 @@ public class TravelEntryController {
 			if (!createForm.getFieldGroup().isModified()) {
 
 				final TravelEntryDto dto = createForm.getValue();
-				final PersonDto person = createForm.getPerson();
+
+				PersonDto searchedPerson = createForm.getSearchedPerson();
+				if (searchedPerson != null) {
+					dto.setPerson(searchedPerson.toReference());
+				}
 
 				if (dto.getPerson() == null) {
+					final PersonDto person = createForm.getPerson();
 					ControllerProvider.getPersonController()
 						.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
 							if (selectedPerson != null) {

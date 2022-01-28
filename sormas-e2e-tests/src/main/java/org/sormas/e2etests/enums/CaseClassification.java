@@ -20,9 +20,10 @@ package org.sormas.e2etests.enums;
 
 import java.util.Random;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
-public enum CaseClasification {
+public enum CaseClassification {
   NOT_CLASSIFIED("Not yet classified"),
   SUSPECT("Suspect case"),
   PROBABLE("Probable case"),
@@ -33,12 +34,21 @@ public enum CaseClasification {
 
   private final String classification;
 
-  CaseClasification(String caseClassification) {
+  CaseClassification(String caseClassification) {
     classification = caseClassification;
+  }
+
+  @SneakyThrows
+  public static String getValueFor(String option) {
+    CaseClassification[] classifications = CaseClassification.values();
+    for (CaseClassification value : classifications) {
+      if (value.getClassification().equalsIgnoreCase(option)) return value.getClassification();
+    }
+    throw new Exception("Unable to find " + option + " value in CaseClassification Enum");
   }
 
   public static String getRandomClassification() {
     Random random = new Random();
-    return String.valueOf(CaseClasification.values()[random.nextInt(values().length)]);
+    return String.valueOf(CaseClassification.values()[random.nextInt(values().length)]);
   }
 }
