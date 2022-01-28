@@ -668,6 +668,8 @@ public class CaseController {
 					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(convertedContact.getUuid());
 					// automatically change the contact status to "converted"
 					updatedContact.setContactStatus(ContactStatus.CONVERTED);
+					// automatically change the contact classification to "confirmed"
+					updatedContact.setContactClassification(ContactClassification.CONFIRMED);
 					// set resulting case on contact and save it
 					updatedContact.setResultingCase(dto.toReference());
 					FacadeProvider.getContactFacade().saveContact(updatedContact);
@@ -746,12 +748,16 @@ public class CaseController {
 						final PersonDto duplicatePerson = PersonDto.build();
 						transferDataToPerson(createForm, duplicatePerson);
 						ControllerProvider.getPersonController()
-							.selectOrCreatePerson(duplicatePerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
-								if (selectedPerson != null) {
-									dto.setPerson(selectedPerson);
-									selectOrCreateCase(createForm, dto, selectedPerson);
-								}
-							}, true);
+							.selectOrCreatePerson(
+								duplicatePerson,
+								I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase),
+								selectedPerson -> {
+									if (selectedPerson != null) {
+										dto.setPerson(selectedPerson);
+										selectOrCreateCase(createForm, dto, selectedPerson);
+									}
+								},
+								true);
 					}
 				}
 			}
