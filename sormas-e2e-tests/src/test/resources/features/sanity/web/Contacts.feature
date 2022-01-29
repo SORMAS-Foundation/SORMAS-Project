@@ -213,4 +213,41 @@ Feature: Contacts end to end tests
     Then I am checking all Exposure data is saved and displayed in Contacts
     And I am checking if options in checkbox for Contact are displayed correctly
 
+  @issue=SORDEV-5640
+  Scenario: Enter an exposure
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    Then I open the last created contact
+    And I click on the Epidemiological Data button
+    And I click on Exposure details known with NO option
+    And I click on Exposure details known with UNKNOWN option
+    And I click on Exposure details known with YES option
+    Then I click on New Entry button in Exposure Details Known
+    #And I select a type of activity from combobox in Exposure
+
+#    And I click on Indoors with "YES" option in Exposure Details dddd
+   #And I click on Done button in Exposure fffff
+
+   #And I select a type of activity "Other" in Exposure
+   # Then I fill a type of activity details in Exposure by "some text" TEXT
+    #Then I click on New Entry button in Exposure Details Known
+
+    #Then I select a type of activity "Other" in Exposure
+    #And I fill a type of activity details in Exposure by "some activity details" TEXT
+    Then I select a type of activity "Gathering" in Exposure
+    #And I select a type of gathering from combobox in Exposure
+    And I select a type of gathering "Other" from combobox in Exposure
+    And I fill a type of gathering details in Exposure by "some gathering details " TEXT
+    Then I select a type of place from combobox in Exposure
+
+
+
+    And  I check the created task is correctly displayed on Edit task page
+
 
