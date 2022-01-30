@@ -7,18 +7,19 @@ import javax.persistence.Enumerated;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
-@Entity(name = "deletionconfiguration")
+@Entity(name = DeletionConfiguration.TABLE_NAME)
 @Audited
 public class DeletionConfiguration extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 4027927530174727321L;
+
+	public static final String TABLE_NAME = "deletionconfiguration";
 
 	public static final String ENTITY_TYPE = "entityType";
 	public static final String DELETION_REFERENCE = "deletionReference";
