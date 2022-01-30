@@ -2,18 +2,26 @@ package de.symeda.sormas.ui.utils.components.automaticdeletion;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class AutomaticDeletionLabel extends Label {
+public class AutomaticDeletionLabel extends HorizontalLayout {
 
 	public AutomaticDeletionLabel() {
+		setMargin(false);
+		setSpacing(false);
+
+		Label infoIcon = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		infoIcon.addStyleName(CssStyles.VSPACE_TOP_4);
+		addComponent(infoIcon);
+
 		String infoText = String.format(I18nProperties.getString(Strings.infoAutomaticDeletion), "10/11/2031");
-		setValue(VaadinIcons.INFO_CIRCLE.getHtml() + " " + infoText);
-		setContentMode(ContentMode.HTML);
-		addStyleNames(CssStyles.VSPACE_TOP_4);
+		Label infoTextLabel = new Label(infoText, ContentMode.HTML);
+		infoTextLabel.addStyleName(CssStyles.VSPACE_TOP_4);
+		addComponent(infoTextLabel);
 	}
 }
