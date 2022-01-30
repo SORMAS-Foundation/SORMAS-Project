@@ -28,6 +28,7 @@ import de.symeda.sormas.ui.travelentry.components.TravelEntryCreateForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
@@ -123,6 +124,8 @@ public class TravelEntryController {
 			travelEntryEditForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_EDIT),
 			travelEntryEditForm.getFieldGroup());
+
+		editComponent.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel());
 
 		editComponent.addCommitListener(() -> {
 			if (!travelEntryEditForm.getFieldGroup().isModified()) {

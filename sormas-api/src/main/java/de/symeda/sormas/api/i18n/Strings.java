@@ -674,6 +674,7 @@ public interface Strings {
 	String infoArchivedTravelEntries = "infoArchivedTravelEntries";
 	String infoAssigneeMissingEmail = "infoAssigneeMissingEmail";
 	String infoAssigneeMissingEmailOrPhoneNumber = "infoAssigneeMissingEmailOrPhoneNumber";
+	String infoAutomaticDeletion = "infoAutomaticDeletion";
 	String infoBAGExport = "infoBAGExport";
 	String infoBasicExport = "infoBasicExport";
 	String infoCalculateCompleteness = "infoCalculateCompleteness";
