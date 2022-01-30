@@ -27,8 +27,13 @@ import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.enums.YesNoUnknownOptions;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 import org.sormas.e2etests.helpers.strings.ASCIIHelper;
 import org.sormas.e2etests.pojo.web.Contact;
+import org.sormas.e2etests.pojo.web.epidemiologicalData.Exposure;
 
 public class ContactService {
   private final Faker faker;
@@ -124,6 +129,31 @@ public class ContactService {
         .followUpStatusComment("dummy comment will resume, ofc")
         .responsibleContactOfficer("")
         .generalComment("last dummy comment here")
+        .build();
+  }
+
+  public Exposure buildGeneratedExposureDataForContact() {
+    return Exposure.builder()
+        .startOfExposure(LocalDate.now().minusDays(3))
+        .endOfExposure(LocalDate.now().minusDays(1))
+        .exposureDescription(faker.medical().symptoms())
+        .typeOfActivity(TypeOfActivityExposure.VISIT)
+        .exposureDetailsRole(ExposureDetailsRole.MEDICAL_STAFF)
+        .riskArea(YesNoUnknownOptions.NO)
+        .indoors(YesNoUnknownOptions.YES)
+        .outdoors(YesNoUnknownOptions.NO)
+        .wearingMask(YesNoUnknownOptions.NO)
+        .wearingPpe(YesNoUnknownOptions.NO)
+        .otherProtectiveMeasures(YesNoUnknownOptions.NO)
+        .shortDistance(YesNoUnknownOptions.YES)
+        .longFaceToFaceContact(YesNoUnknownOptions.YES)
+        .percutaneous(YesNoUnknownOptions.NO)
+        .contactToBodyFluids(YesNoUnknownOptions.NO)
+        .handlingSamples(YesNoUnknownOptions.NO)
+        .typeOfPlace(TypeOfPlace.HOME)
+        .continent("Africa")
+        .subcontinent("Central Africa")
+        .country("Cameroon")
         .build();
   }
 }
