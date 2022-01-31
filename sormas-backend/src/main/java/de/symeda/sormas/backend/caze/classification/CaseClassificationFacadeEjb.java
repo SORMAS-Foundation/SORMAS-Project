@@ -91,6 +91,8 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	@EJB
 	private PersonFacadeEjbLocal personFacade;
 	@EJB
+	private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
+	@EJB
 	private PathogenTestService pathogenTestService;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
@@ -114,7 +116,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			.stream()
 			.map(PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal::toDto)
 			.collect(Collectors.toList());
-		List<EventDto> caseEvents = eventService.getAllByCase(caze.getUuid()).stream().map(EventFacadeEjb::toDto).collect(Collectors.toList());
+		List<EventDto> caseEvents = eventService.getAllByCase(caze.getUuid()).stream().map(eventFacade::toDto).collect(Collectors.toList());
 		Date lastVaccinationDate = null;
 		if (caze.getDisease() == Disease.YELLOW_FEVER && caze.getVaccinationStatus() == VaccinationStatus.VACCINATED) {
 			lastVaccinationDate = immunizationService.getLastVaccinationDateBefore(person.getUuid(), caze.getDisease(), CaseLogic.getStartDate(caze));

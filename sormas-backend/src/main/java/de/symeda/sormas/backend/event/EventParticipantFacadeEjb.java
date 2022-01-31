@@ -286,7 +286,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			notifyEventResponsibleUsersOfCommonEventParticipant(entity, event);
 		}
 
-		onEventParticipantChanged(EventFacadeEjbLocal.toDto(entity.getEvent()), existingDto, entity, internal);
+		onEventParticipantChanged(eventFacade.toDto(entity.getEvent()), existingDto, entity, internal);
 
 		return convertToDto(entity, pseudonymizer);
 	}

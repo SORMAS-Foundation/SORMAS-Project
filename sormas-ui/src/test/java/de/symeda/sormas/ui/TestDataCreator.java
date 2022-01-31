@@ -454,7 +454,7 @@ public class TestDataCreator {
 			customSettings.accept(event);
 		}
 
-		event = FacadeProvider.getEventFacade().saveEvent(event);
+		event = FacadeProvider.getEventFacade().save(event);
 
 		return event;
 	}
@@ -487,7 +487,7 @@ public class TestDataCreator {
 		event.setResponsibleUser(responsibleUser);
 		event.setDisease(disease);
 
-		event = FacadeProvider.getEventFacade().saveEvent(event);
+		event = FacadeProvider.getEventFacade().save(event);
 
 		return event;
 	}

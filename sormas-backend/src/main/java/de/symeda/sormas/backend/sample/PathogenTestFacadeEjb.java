@@ -95,6 +95,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	@EJB
 	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 	@EJB
+	private EventFacadeEjbLocal eventFacade;
+	@EJB
 	private PathogenTestService pathogenTestService;
 	@EJB
 	private SampleService sampleService;
@@ -265,7 +267,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		EventParticipant associatedEventParticipant = pathogenTest.getSample().getAssociatedEventParticipant();
 		if (associatedEventParticipant != null) {
 			eventParticipantFacade.onEventParticipantChanged(
-				EventFacadeEjbLocal.toDto(associatedEventParticipant.getEvent()),
+				eventFacade.toDto(associatedEventParticipant.getEvent()),
 				EventParticipantFacadeEjbLocal.toDto(associatedEventParticipant),
 				associatedEventParticipant,
 				syncShares);

@@ -61,11 +61,11 @@ import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.action.ActionService;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
-import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -77,7 +77,6 @@ import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
-import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
@@ -94,7 +93,7 @@ import de.symeda.sormas.utils.EventJoins;
 
 @Stateless
 @LocalBean
-public class EventService extends AbstractDeletableAdoService<Event> {
+public class EventService extends AbstractCoreAdoService<Event> {
 
 	@EJB
 	private EventParticipantService eventParticipantService;
@@ -110,14 +109,13 @@ public class EventService extends AbstractDeletableAdoService<Event> {
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private ExternalShareInfoService externalShareInfoService;
-	@EJB
-	private SampleService sampleService;
 
 	public EventService() {
 		super(Event.class);
 	}
 
-	public List<Event> getAllActiveEventsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	@Override
+	public List<Event> getAllActiveAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
@@ -999,5 +997,4 @@ public class EventService extends AbstractDeletableAdoService<Event> {
 
 		return em.createQuery(cq).getSingleResult() > 0;
 	}
-
 }

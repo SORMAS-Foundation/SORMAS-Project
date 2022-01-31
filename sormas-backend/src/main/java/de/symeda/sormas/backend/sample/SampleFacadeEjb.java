@@ -162,6 +162,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 	@EJB
+	private EventFacadeEjbLocal eventFacade;
+	@EJB
 	private MessagingService messagingService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
@@ -989,7 +991,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		EventParticipant associatedEventParticipant = newSample.getAssociatedEventParticipant();
 		if (associatedEventParticipant != null) {
 			eventParticipantFacade.onEventParticipantChanged(
-				EventFacadeEjbLocal.toDto(associatedEventParticipant.getEvent()),
+				eventFacade.toDto(associatedEventParticipant.getEvent()),
 				EventParticipantFacadeEjbLocal.toDto(associatedEventParticipant),
 				associatedEventParticipant,
 				syncShares);

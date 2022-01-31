@@ -141,7 +141,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 		List<EventGroupReferenceDto> eventGroupReferences = entities.getEventGroupReferences();
 
 		try {
-			event = eventFacade.saveEvent(event);
+			event = eventFacade.save(event);
 
 			for (EventParticipantDto eventParticipant : eventParticipants) {
 				PersonDto existingPerson = personFacade.getPersonByUuid(eventParticipant.getPerson().getUuid());

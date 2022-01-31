@@ -1357,7 +1357,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		getVisitFacade().saveVisit(otherVisit);
 		EventDto event = creator.createEvent(otherUserReference);
 		event.setDisease(otherCase.getDisease());
-		getEventFacade().saveEvent(event);
+		getEventFacade().save(event);
 		EventParticipantDto otherCaseEventParticipant = creator.createEventParticipant(event.toReference(), otherPerson, otherUserReference);
 		otherCaseEventParticipant.setResultingCase(otherCaseReference);
 		getEventParticipantFacade().saveEventParticipant(otherCaseEventParticipant);

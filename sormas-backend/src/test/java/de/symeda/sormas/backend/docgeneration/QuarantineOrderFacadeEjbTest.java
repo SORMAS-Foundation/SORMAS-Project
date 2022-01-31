@@ -129,7 +129,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 
 		EventDto eventDto = creator.createEvent(userDto.toReference());
 		eventDto.setEventTitle("An event");
-		getEventFacade().saveEvent(eventDto);
+		getEventFacade().save(eventDto);
 		eventParticipantDto = creator.createEventParticipant(eventDto.toReference(), personDto, "participated", userDto.toReference());
 
 		sampleDto = SampleDto.build(userDto.toReference(), caseDataDto.toReference());

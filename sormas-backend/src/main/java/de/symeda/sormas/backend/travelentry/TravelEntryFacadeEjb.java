@@ -50,8 +50,6 @@ public class TravelEntryFacadeEjb
 	implements TravelEntryFacade {
 
 	@EJB
-	TravelEntryService travelEntryService;
-	@EJB
 	TravelEntryListService travelEntryListService;
 	@EJB
 	private PersonService personService;
@@ -90,25 +88,25 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	public boolean isDeleted(String travelEntryUuid) {
-		return travelEntryService.isDeleted(travelEntryUuid);
+		return service.isDeleted(travelEntryUuid);
 	}
 
 	@Override
 	public boolean isArchived(String travelEntryUuid) {
-		return travelEntryService.isArchived(travelEntryUuid);
+		return service.isArchived(travelEntryUuid);
 	}
 
 	@Override
 	public void archiveOrDearchiveTravelEntry(String travelEntryUuid, boolean archive) {
-		TravelEntry travelEntry = travelEntryService.getByUuid(travelEntryUuid);
+		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
 		travelEntry.setArchived(archive);
-		travelEntryService.ensurePersisted(travelEntry);
+		service.ensurePersisted(travelEntry);
 	}
 
 	@Override
 	public Boolean isTravelEntryEditAllowed(String travelEntryUuid) {
-		TravelEntry travelEntry = travelEntryService.getByUuid(travelEntryUuid);
-		return travelEntryService.isTravelEntryEditAllowed(travelEntry);
+		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
+		return service.isTravelEntryEditAllowed(travelEntry);
 	}
 
 	@Override
@@ -117,8 +115,8 @@ public class TravelEntryFacadeEjb
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete travel entries");
 		}
 
-		TravelEntry travelEntry = travelEntryService.getByUuid(travelEntryUuid);
-		travelEntryService.delete(travelEntry);
+		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
+		service.delete(travelEntry);
 
 		if (travelEntry.getResultingCase() != null) {
 			caseFacade.onCaseChanged(CaseFacadeEjb.toDto(travelEntry.getResultingCase()), travelEntry.getResultingCase());
@@ -131,7 +129,7 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	public List<DeaContentEntry> getDeaContentOfLastTravelEntry() {
-		final TravelEntry lastTravelEntry = travelEntryService.getLastTravelEntry();
+		final TravelEntry lastTravelEntry = service.getLastTravelEntry();
 
 		if (lastTravelEntry != null) {
 			Pseudonymizer aDefault = Pseudonymizer.getDefault(userService::hasRight);
@@ -149,13 +147,13 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	public long count(TravelEntryCriteria criteria, boolean ignoreUserFilter) {
-		return travelEntryService.count(criteria, ignoreUserFilter);
+		return service.count(criteria, ignoreUserFilter);
 	}
 
 	@Override
 	protected void pseudonymizeDto(TravelEntry source, TravelEntryDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
-			boolean inJurisdiction = travelEntryService.inJurisdictionOrOwned(source);
+			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
 			pseudonymizer.pseudonymizeDto(TravelEntryDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
 				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
@@ -164,18 +162,18 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	protected void restorePseudonymizedDto(TravelEntryDto dto, TravelEntryDto existingDto, TravelEntry travelEntry, Pseudonymizer pseudonymizer) {
+	protected void restorePseudonymizedDto(TravelEntryDto dto, TravelEntryDto existingDto, TravelEntry entity, Pseudonymizer pseudonymizer) {
 		if (existingDto != null) {
-			final boolean inJurisdiction = travelEntryService.inJurisdictionOrOwned(travelEntry);
+			final boolean inJurisdiction = service.inJurisdictionOrOwned(entity);
 			final User currentUser = userService.getCurrentUser();
-			pseudonymizer.restoreUser(travelEntry.getReportingUser(), currentUser, dto, dto::setReportingUser);
+			pseudonymizer.restoreUser(entity.getReportingUser(), currentUser, dto, dto::setReportingUser);
 			pseudonymizer.restorePseudonymizedValues(TravelEntryDto.class, dto, existingDto, inJurisdiction);
 		}
 	}
 
 	@Override
 	public List<TravelEntryIndexDto> getIndexList(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		List<TravelEntryIndexDto> resultList = travelEntryService.getIndexList(criteria, first, max, sortProperties);
+		List<TravelEntryIndexDto> resultList = service.getIndexList(criteria, first, max, sortProperties);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(TravelEntryIndexDto.class, resultList, TravelEntryIndexDto::isInJurisdiction, null);

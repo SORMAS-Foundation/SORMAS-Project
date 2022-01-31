@@ -925,7 +925,7 @@ public class TestDataCreator {
 			customSettings.accept(event);
 		}
 
-		event = beanTest.getEventFacade().saveEvent(event);
+		event = beanTest.getEventFacade().save(event);
 
 		return event;
 	}

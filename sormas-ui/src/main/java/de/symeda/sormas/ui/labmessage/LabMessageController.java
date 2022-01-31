@@ -466,7 +466,7 @@ public class LabMessageController {
 		editView.addCommitListener(() -> {
 			if (!eventCreateForm.getFieldGroup().isModified()) {
 				EventDto dto = eventCreateForm.getValue();
-				FacadeProvider.getEventFacade().saveEvent(dto);
+				FacadeProvider.getEventFacade().save(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Notification.Type.WARNING_MESSAGE);
 
 				createEventParticipant(dto, labMessageDto, person);

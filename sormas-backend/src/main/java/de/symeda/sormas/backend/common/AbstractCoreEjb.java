@@ -27,6 +27,9 @@ import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 public abstract class AbstractCoreEjb<ADO extends CoreAdo, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AbstractCoreAdoService<ADO>, CRITERIA extends BaseCriteria>
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA> {
 
@@ -63,7 +66,7 @@ public abstract class AbstractCoreEjb<ADO extends CoreAdo, DTO extends EntityDto
 	}
 
 	@Override
-	public DTO save(DTO dto) {
+	public DTO save(@Valid @NotNull DTO dto) {
 		ADO existingAdo = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 		DTO existingDto = toDto(existingAdo);
 
@@ -108,7 +111,7 @@ public abstract class AbstractCoreEjb<ADO extends CoreAdo, DTO extends EntityDto
 
 	protected abstract void pseudonymizeDto(ADO source, DTO dto, Pseudonymizer pseudonymizer);
 
-	protected abstract void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO immunization, Pseudonymizer pseudonymizer);
+	protected abstract void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer);
 
 	public abstract void validate(DTO dto) throws ValidationRuntimeException;
 }

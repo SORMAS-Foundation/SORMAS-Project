@@ -207,6 +207,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	@EJB
 	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 	@EJB
+	private EventFacadeEjbLocal eventFacade;
+	@EJB
 	private DistrictFacadeEjbLocal districtFacade;
 	@EJB
 	private CommunityFacadeEjbLocal communityFacade;
@@ -1093,7 +1095,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			for (EventParticipant personEventParticipant : personEventParticipants) {
 
 				eventParticipantFacade.onEventParticipantChanged(
-					EventFacadeEjbLocal.toDto(personEventParticipant.getEvent()),
+					eventFacade.toDto(personEventParticipant.getEvent()),
 					EventParticipantFacadeEjbLocal.toDto(personEventParticipant),
 					personEventParticipant,
 					syncShares);

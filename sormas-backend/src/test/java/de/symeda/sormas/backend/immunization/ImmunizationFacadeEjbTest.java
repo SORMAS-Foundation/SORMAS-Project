@@ -538,14 +538,14 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 
 		final PersonDto person = creator.createPerson("John", "Doe");
 
-		final ImmunizationDto immunization = creator.createImmunizationDto(
-			Disease.DENGUE,
-			person.toReference(),
-			nationalUser.toReference(),
-			ImmunizationStatus.PENDING,
-			MeansOfImmunization.VACCINATION,
-			ImmunizationManagementStatus.SCHEDULED,
-			rdcf1);
+		ImmunizationDto immunization = getImmunizationFacade().save(creator.createImmunizationDto(
+				Disease.DENGUE,
+				person.toReference(),
+				nationalUser.toReference(),
+				ImmunizationStatus.PENDING,
+				MeansOfImmunization.VACCINATION,
+				ImmunizationManagementStatus.SCHEDULED,
+				rdcf1));
 
 		immunization.setNumberOfDoses(2);
 		immunization.setStartDate(DateHelper.subtractDays(new Date(), 1));

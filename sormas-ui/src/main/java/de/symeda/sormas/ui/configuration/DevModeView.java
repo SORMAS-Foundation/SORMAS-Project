@@ -1320,7 +1320,7 @@ public class DevModeView extends AbstractConfigurationView {
 			// status
 			event.setEventStatus(EventStatus.EVENT);
 
-			FacadeProvider.getEventFacade().saveEvent(event);
+			FacadeProvider.getEventFacade().save(event);
 
 			// EventParticipants
 			int numParticipants = randomInt(config.getMinParticipantsPerEvent(), config.getMaxParticipantsPerEvent());

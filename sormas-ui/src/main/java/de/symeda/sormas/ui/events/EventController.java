@@ -419,7 +419,7 @@ public class EventController {
 			if (selectedIndexEvent != null) {
 				EventDto selectedEvent = FacadeProvider.getEventFacade().getEventByUuid(selectedIndexEvent.getUuid(), false);
 				selectedEvent.setSuperordinateEvent(superordinateEventRef);
-				FacadeProvider.getEventFacade().saveEvent(selectedEvent);
+				FacadeProvider.getEventFacade().save(selectedEvent);
 
 				navigateToData(superordinateEventRef.getUuid());
 				Notification.show(I18nProperties.getString(Strings.messageEventLinkedAsSubordinate), Type.TRAY_NOTIFICATION);
@@ -447,7 +447,7 @@ public class EventController {
 			EventIndexDto selectedEvent = selectionField.getValue();
 			if (selectedEvent != null) {
 				subordinateEvent.setSuperordinateEvent(selectedEvent.toReference());
-				FacadeProvider.getEventFacade().saveEvent(subordinateEvent);
+				FacadeProvider.getEventFacade().save(subordinateEvent);
 
 				navigateToData(subordinateEventRef.getUuid());
 				Notification.show(I18nProperties.getString(Strings.messageEventLinkedAsSuperordinate), Type.TRAY_NOTIFICATION);
@@ -473,7 +473,7 @@ public class EventController {
 
 	public void removeSuperordinateEvent(EventDto subordinateEvent, boolean reloadPage, String notificationMessage) {
 		subordinateEvent.setSuperordinateEvent(null);
-		FacadeProvider.getEventFacade().saveEvent(subordinateEvent);
+		FacadeProvider.getEventFacade().save(subordinateEvent);
 
 		if (reloadPage) {
 			navigateToData(subordinateEvent.getUuid());
@@ -590,7 +590,7 @@ public class EventController {
 		editView.addCommitListener(() -> {
 			if (!eventCreateForm.getFieldGroup().isModified()) {
 				EventDto dto = eventCreateForm.getValue();
-				FacadeProvider.getEventFacade().saveEvent(dto);
+				FacadeProvider.getEventFacade().save(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.WARNING_MESSAGE);
 
 				if (caseRef != null) {
@@ -624,7 +624,7 @@ public class EventController {
 		editView.addCommitListener(() -> {
 			if (!eventCreateForm.getFieldGroup().isModified()) {
 				EventDto dto = eventCreateForm.getValue();
-				FacadeProvider.getEventFacade().saveEvent(dto);
+				FacadeProvider.getEventFacade().save(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.WARNING_MESSAGE);
 
 				linkCasesToEvent(new EventReferenceDto(dto.getUuid()), finalCaseDataDtos);
@@ -651,7 +651,7 @@ public class EventController {
 		editView.addCommitListener(() -> {
 			if (!eventCreateForm.getFieldGroup().isModified()) {
 				EventDto dto = eventCreateForm.getValue();
-				FacadeProvider.getEventFacade().saveEvent(dto);
+				FacadeProvider.getEventFacade().save(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.WARNING_MESSAGE);
 
 				linkContactsToEvent(new EventReferenceDto(dto.getUuid()), finalContactDtos);
@@ -675,7 +675,7 @@ public class EventController {
 		editView.addCommitListener(() -> {
 			if (!eventCreateForm.getFieldGroup().isModified()) {
 				EventDto dto = eventCreateForm.getValue();
-				FacadeProvider.getEventFacade().saveEvent(dto);
+				FacadeProvider.getEventFacade().save(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.TRAY_NOTIFICATION);
 
 				EventReferenceDto createdEvent = new EventReferenceDto(dto.getUuid());
@@ -708,13 +708,13 @@ public class EventController {
 					newEvent.setSuperordinateEvent(superOrSubordinateEvent.toReference());
 				}
 
-				FacadeProvider.getEventFacade().saveEvent(newEvent);
+				FacadeProvider.getEventFacade().save(newEvent);
 
 				EventReferenceDto newEventRef = new EventReferenceDto(newEvent.getUuid());
 
 				if (createSuperordinateEvent) {
 					superOrSubordinateEvent.setSuperordinateEvent(newEventRef);
-					FacadeProvider.getEventFacade().saveEvent(superOrSubordinateEvent);
+					FacadeProvider.getEventFacade().save(superOrSubordinateEvent);
 				}
 
 				navigateToData(superOrSubordinateEvent.getUuid());
@@ -803,7 +803,7 @@ public class EventController {
 	}
 
 	private void saveEvent(Consumer<EventStatus> saveCallback, EventDto eventDto) {
-		eventDto = FacadeProvider.getEventFacade().saveEvent(eventDto);
+		eventDto = FacadeProvider.getEventFacade().save(eventDto);
 		Notification.show(I18nProperties.getString(Strings.messageEventSaved), Type.WARNING_MESSAGE);
 		SormasUI.refreshView();
 
@@ -852,7 +852,7 @@ public class EventController {
 						eventDto.setEventManagementStatus(updatedTempEvent.getEventManagementStatus());
 					}
 
-					FacadeProvider.getEventFacade().saveEvent(eventDto);
+					FacadeProvider.getEventFacade().save(eventDto);
 				}
 				popupWindow.close();
 				navigateToIndex();
