@@ -17,9 +17,3 @@ Feature: Edit Persons
     And I edit all Person primary contact details and save
     Then I click on save button from Edit Person page
     And I check that previous edited person is correctly displayed in Edit Person page
-
-
-
-
-
-

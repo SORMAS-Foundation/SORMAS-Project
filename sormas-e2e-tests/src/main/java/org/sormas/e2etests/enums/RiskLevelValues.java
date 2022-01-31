@@ -1,5 +1,6 @@
 package org.sormas.e2etests.enums;
 
+import java.util.Random;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -12,6 +13,7 @@ public enum RiskLevelValues {
 
   private final String riskLevelName;
   private final String riskLevelCaption;
+  private static Random random = new Random();
 
   RiskLevelValues(String riskLevelName, String riskLevelCaption) {
     this.riskLevelName = riskLevelName;
@@ -25,5 +27,14 @@ public enum RiskLevelValues {
       if (value.riskLevelName.equalsIgnoreCase(option)) return value.riskLevelCaption;
     }
     throw new Exception("Unable to find " + option + " value in RiskLevelValues Enum");
+  }
+  /** Returns values used for API tests */
+  public static String getRandomRiskLevelName() {
+    return String.valueOf(RiskLevelValues.values()[random.nextInt(values().length)].riskLevelName);
+  }
+  /** Returns values used for UI tests */
+  public static String getRandomRiskLevelCaption() {
+    return String.valueOf(
+        RiskLevelValues.values()[random.nextInt(values().length)].riskLevelCaption);
   }
 }

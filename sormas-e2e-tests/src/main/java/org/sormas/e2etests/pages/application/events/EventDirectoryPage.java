@@ -27,7 +27,6 @@ public class EventDirectoryPage {
   public static final By APPLY_FILTER = By.id("actionApplyFilters");
   public static final By EVENT_STATUS_FILTER_BUTTONS =
       By.xpath("//*[@id='status-Signal']/span/../../..//span[@class='v-button-wrap']/span/../..");
-
   public static final By EVENT_ACTIONS_RADIOBUTTON =
       By.cssSelector("div#eventsViewSwitcher span:nth-child(2)");
   public static final By FILTER_BY_GENERAL_INPUT = By.cssSelector("input#freeText");

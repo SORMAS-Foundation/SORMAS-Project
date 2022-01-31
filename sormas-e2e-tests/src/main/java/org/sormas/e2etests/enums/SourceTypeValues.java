@@ -1,5 +1,6 @@
 package org.sormas.e2etests.enums;
 
+import java.util.Random;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -13,6 +14,7 @@ public enum SourceTypeValues {
 
   private final String sourceTypeName;
   private final String sourceTypeCaption;
+  private static Random random = new Random();
 
   SourceTypeValues(String sourceTypeName, String sourceTypeCaption) {
     this.sourceTypeName = sourceTypeName;
@@ -26,5 +28,15 @@ public enum SourceTypeValues {
       if (value.getSourceTypeName().equalsIgnoreCase(option)) return value.getSourceTypeCaption();
     }
     throw new Exception("Unable to find " + option + " value in SourceTypeValues Enum");
+  }
+  /** Returns values used for API tests */
+  public static String getRandomSourceTypeName() {
+    return String.valueOf(
+        SourceTypeValues.values()[random.nextInt(values().length)].sourceTypeName);
+  }
+  /** Returns values used for UI tests */
+  public static String getRandomSourceTypeCaption() {
+    return String.valueOf(
+        SourceTypeValues.values()[random.nextInt(values().length)].sourceTypeCaption);
   }
 }
