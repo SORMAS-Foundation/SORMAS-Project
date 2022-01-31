@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.ui.utils.components.MultiSelect;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -163,7 +164,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		creatorComment.setImmediate(true);
 		addField(TaskDto.ASSIGNEE_REPLY, TextArea.class).setRows(4);
 
-		OptionGroup observerUsers = addField(TaskDto.OBSERVER_USERS, OptionGroup.class);
+		MultiSelect<UserReferenceDto> observerUsers = addField(TaskDto.OBSERVER_USERS, MultiSelect.class);
 		observerUsers.addValueChangeListener(e -> {
 			Collection<UserReferenceDto> userReferences = (Collection<UserReferenceDto>) e.getProperty().getValue();
 			for (UserReferenceDto userReference : userReferences) {
@@ -174,7 +175,6 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 					OBSERVER_MISSING_INFO);
 			}
 		});
-		observerUsers.setMultiSelect(true);
 		observerUsers.setImmediate(true);
 		CssStyles.style(observerUsers, CssStyles.OPTIONGROUP_MAX_HEIGHT_150);
 
@@ -259,7 +259,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 	private void updateObserversList() {
 		ComboBox assigneeField = getField(TaskDto.ASSIGNEE_USER);
-		OptionGroup observersField = getField(TaskDto.OBSERVER_USERS);
+		MultiSelect<UserReferenceDto> observersField = getField(TaskDto.OBSERVER_USERS);
 
 		Collection<UserReferenceDto> selectedObservers = (Collection<UserReferenceDto>) observersField.getValue();
 		if (selectedObservers == null) {
