@@ -45,6 +45,8 @@ public class Campaign extends PseudonymizableAdo {
 
 	public static final String TABLE_NAME = "campaigns";
 	public static final String I18N_PREFIX = "Campaign";
+	
+	//to-do
 
 	public static final String NAME = "name";
 	public static final String DESCRIPTION = "description";

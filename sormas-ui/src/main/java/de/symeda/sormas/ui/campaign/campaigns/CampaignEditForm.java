@@ -33,11 +33,15 @@ import org.apache.commons.collections.CollectionUtils;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -48,10 +52,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
-public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
+public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 
 	private static final long serialVersionUID = 7762204114905664597L;
 
@@ -61,12 +66,16 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 	private static final String CAMPAIGN_DATA_LOC = "campaignDataLoc";
 	private static final String CAMPAIGN_DASHBOARD_LOC = "campaignDashboardLoc";
 	private static final String SPACE_LOC = "spaceLoc";
+	
+	private OptionGroup clusterfieldx;
 
 	private static final String HTML_LAYOUT = loc(CAMPAIGN_BASIC_HEADING_LOC)
 		+ fluidRowLocs(CampaignDto.UUID, CampaignDto.CREATING_USER)
 		+ fluidRowLocs(CampaignDto.START_DATE, CampaignDto.END_DATE)
-		+ fluidRowLocs(CampaignDto.NAME)
+		+ fluidRowLocs(CampaignDto.NAME) 
+		+ fluidRowLocs(CampaignDto.CLUSTER)
 		+ fluidRowLocs(CampaignDto.DESCRIPTION)
+		+ fluidRowLocs(CampaignDto.CAMPAIGN_TYPES)
 		+ fluidRowLocs(USAGE_INFO)
 		+ fluidRowLocs(CAMPAIGN_DATA_LOC)
 		+ fluidRowLocs(CAMPAIGN_DASHBOARD_LOC)
@@ -131,13 +140,44 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 				I18nProperties.getValidationError(Validations.afterDate, endDate.getCaption(), startDate.getCaption())));
 
 		addField(CampaignDto.NAME);
+		
+		
+		//add textfied for cluster
+		ComboBox clusterfield = addField(CampaignDto.CLUSTER, ComboBox.class);
+		clusterfield.addItem("NID");
+		clusterfield.addItem("SID");
+		clusterfield.addItem("bOPV");
+		clusterfield.addItem("Campaign 1");
+		
+		
+		
+		//CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
+		
+		
+		
+		//CssStyles.style(clusterfieldx, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
+		//CssStyles.style(clusterfieldx, CssStyles.OPTIONGROUP_CAPTION_INLINE, CssStyles.FLOAT_RIGHT);
+		
+		
+		
 		TextArea description = addField(CampaignDto.DESCRIPTION, TextArea.class);
 		description.setRows(6);
+		
+		clusterfieldx = new OptionGroup();
+		
+		clusterfieldx.setDescription("Campaign Switch");
+		
+		clusterfieldx = addField(CampaignDto.CAMPAIGN_TYPES, OptionGroup.class);
+		CssStyles.style(clusterfieldx, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+		clusterfieldx.addItem("Pre-Campaign");
+		clusterfieldx.addItem("Intra-Campign");
+		clusterfieldx.addItem("Post-Campign");
+		clusterfieldx.setEnabled(false);
 
 		setReadOnly(true, CampaignDto.UUID, CampaignDto.CREATING_USER);
 		setVisible(!isCreateForm, CampaignDto.UUID, CampaignDto.CREATING_USER);
 
-		setRequired(true, CampaignDto.UUID, CampaignDto.CREATING_USER, CampaignDto.START_DATE, CampaignDto.END_DATE, CampaignDto.NAME);
+		setRequired(true, CampaignDto.UUID, CampaignDto.CREATING_USER, CampaignDto.START_DATE, CampaignDto.END_DATE, CampaignDto.CLUSTER, CampaignDto.CAMPAIGN_TYPES);
 
 		FieldHelper.addSoftRequiredStyle(description);
 

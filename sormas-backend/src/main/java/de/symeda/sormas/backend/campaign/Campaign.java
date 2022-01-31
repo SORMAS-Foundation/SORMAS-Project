@@ -35,6 +35,7 @@ public class Campaign extends CoreAdo {
 	public static final String CAMPAIGN_CAMPAIGNFORMMETA_TABLE_NAME = "campaign_campaignformmeta";
 
 	public static final String NAME = "name";
+	public static final String CLUSTER = "cluster";
 	public static final String DESCRIPTION = "description";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
@@ -44,6 +45,7 @@ public class Campaign extends CoreAdo {
 	public static final String ARCHIVED = "archived";
 
 	private String name;
+	private String cluster;
 	private String description;
 	private Date startDate;
 	private Date endDate;
@@ -59,6 +61,16 @@ public class Campaign extends CoreAdo {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	
+	@Column(length = 255)
+	public String getCluster() {
+		return cluster;
+	}
+
+	public void setCluster(String cluster) {
+		this.cluster = cluster;
 	}
 
 	@Column(length = 512)

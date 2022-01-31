@@ -298,6 +298,9 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				case CampaignFormDataIndexDto.FORM_DATE:
 					expression = root.get(sortProperty.propertyName);
 					break;
+				case CampaignFormDataIndexDto.FORM_TYPE:
+					expression = root.get(sortProperty.propertyName);
+					break;
 				case CampaignFormDataIndexDto.CAMPAIGN:
 					expression = campaignJoin.get(Campaign.NAME);
 					break;

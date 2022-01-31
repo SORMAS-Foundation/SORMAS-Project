@@ -33,6 +33,7 @@ public class CampaignFormDataCriteria extends BaseCriteria implements Serializab
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String FORM_DATE = "formDate";
+	public static final String FORM_TYPE = "formType";
 
 	private static final long serialVersionUID = 8124072093160133408L;
 
@@ -42,6 +43,7 @@ public class CampaignFormDataCriteria extends BaseCriteria implements Serializab
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
 	private Date formDate;
+	private String formType;
 
 	public CampaignReferenceDto getCampaign() {
 		return campaign;
@@ -120,4 +122,15 @@ public class CampaignFormDataCriteria extends BaseCriteria implements Serializab
 		this.formDate = formDate;
 		return this;
 	}
+
+	public String getFormType() {
+		return formType;
+	}
+
+	public void setFormType(String formType) {
+		this.formType = formType;
+	}
+	
+	
+	
 }

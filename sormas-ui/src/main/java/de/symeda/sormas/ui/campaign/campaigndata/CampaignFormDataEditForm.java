@@ -57,7 +57,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 	}
 
 	private static final String HTML_LAYOUT = fluidRowLocs(CampaignFormDataDto.CAMPAIGN, CampaignFormDataDto.FORM_DATE, CampaignFormDataEditForm.AREA)
-		+ fluidRowLocs(CampaignFormDataDto.REGION, CampaignFormDataDto.DISTRICT, CampaignFormDataDto.COMMUNITY)
+		+ fluidRowLocs(CampaignFormDataDto.REGION, CampaignFormDataDto.DISTRICT, CampaignFormDataDto.COMMUNITY, CampaignFormDataDto.FORM_TYPE)
 		+ loc(CAMPAIGN_FORM_LOC);
 
 	private static final long serialVersionUID = -8974009722689546941L;
@@ -81,6 +81,16 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		ComboBox cbRegion = addInfrastructureField(CampaignFormDataDto.REGION);
 		ComboBox cbDistrict = addInfrastructureField(CampaignFormDataDto.DISTRICT);
 		ComboBox cbCommunity = addInfrastructureField(CampaignFormDataDto.COMMUNITY);
+		
+		//addField(CampaignFormDataDto.FORM_TYPE);
+		
+		
+		ComboBox clusterfieldx = addField(CampaignFormDataDto.FORM_TYPE, ComboBox.class);
+		clusterfieldx.addItem("Pre-Campaign");
+		clusterfieldx.addItem("Intra-Campign");
+		clusterfieldx.addItem("Post-Campaign");
+		
+		
 
 		addField(CampaignFormDataDto.FORM_DATE, DateField.class);
 
@@ -91,6 +101,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			CampaignFormDataDto.REGION,
 			CampaignFormDataDto.DISTRICT,
 			CampaignFormDataDto.COMMUNITY);
+			//CampaignFormDataDto.FORM_TYPE);
 
 		addInfrastructureListeners(cbRegion, cbDistrict, cbCommunity);
 		cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
