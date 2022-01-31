@@ -185,13 +185,3 @@ Feature: Case end to end tests
     And I choose Vasopressors/Inotropes option as a Treatment type
     Then I click on the popup Save button
     Then I check if created data is correctly displayed in Treatment section
-
-
-
-
-
-
-
-
-
-

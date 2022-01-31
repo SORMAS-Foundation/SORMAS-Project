@@ -140,12 +140,10 @@ public class EditTherapySteps implements En {
   }
 
   private void selectPrescriptionType(String prescriptionType) {
-
     webDriverHelpers.selectFromCombobox(PRESCRIPTION_TYPE_COMBOBOX, prescriptionType);
   }
 
   private void selectTreatmentType(String treatmentType) {
-
     webDriverHelpers.selectFromCombobox(TREATMENT_TYPE_COMBOBOX, treatmentType);
   }
 
