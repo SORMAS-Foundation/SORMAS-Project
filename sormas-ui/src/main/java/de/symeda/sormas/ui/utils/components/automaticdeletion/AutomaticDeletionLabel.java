@@ -15,8 +15,11 @@ public class AutomaticDeletionLabel extends HorizontalLayout {
 		setMargin(false);
 		setSpacing(false);
 
+		String infoIconDesciption =
+			String.format(I18nProperties.getString(Strings.infoAutomaticDeletionTooltip), "10/11/2031", "09/11/2021", "10 years");
 		Label infoIcon = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
-		infoIcon.addStyleName(CssStyles.VSPACE_TOP_4);
+		infoIcon.setDescription(infoIconDesciption, ContentMode.HTML);
+		infoIcon.addStyleNames(CssStyles.VSPACE_TOP_4, CssStyles.HSPACE_RIGHT_4);
 		addComponent(infoIcon);
 
 		String infoText = String.format(I18nProperties.getString(Strings.infoAutomaticDeletion), "10/11/2031");
