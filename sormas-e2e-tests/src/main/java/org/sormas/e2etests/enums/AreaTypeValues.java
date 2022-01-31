@@ -20,12 +20,13 @@ package org.sormas.e2etests.enums;
 
 import java.util.Random;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum AreaTypeValues {
-  URBAN("URBAN"),
-  RURAL("RURAL"),
-  UNKNOWN("UNKNOWN");
+  URBAN("Urban"),
+  RURAL("Rural"),
+  UNKNOWN("Unknown");
 
   private final String areaType;
 
@@ -35,7 +36,20 @@ public enum AreaTypeValues {
     this.areaType = areaType;
   }
 
+  public String getArea() {
+    return areaType;
+  }
+
   public static String getRandomAreaType() {
-    return String.valueOf(AreaTypeValues.values()[random.nextInt(values().length)].areaType);
+    return String.valueOf(AreaTypeValues.values()[random.nextInt(values().length)]);
+  }
+
+  @SneakyThrows
+  public static String getValueFor(String option) {
+    AreaTypeValues[] areaTypeOptions = AreaTypeValues.values();
+    for (AreaTypeValues value : areaTypeOptions) {
+      if (value.name().equalsIgnoreCase(option)) return value.getAreaType();
+    }
+    throw new Exception("Unable to find " + option + " value in AreaType Enum");
   }
 }

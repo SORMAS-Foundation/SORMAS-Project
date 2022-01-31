@@ -240,14 +240,18 @@ Feature: Contacts end to end tests
 
     #Then I select a type of activity "Other" in Exposure
     #And I fill a type of activity details in Exposure by "some activity details" TEXT
-    Then I select a type of activity "Gathering" in Exposure
+   # Then I select a type of activity "Gathering" in Exposure
     #And I select a type of gathering from combobox in Exposure
-    And I select a type of gathering "Other" from combobox in Exposure
-    And I fill a type of gathering details in Exposure by "some gathering details " TEXT
+   # And I select a type of gathering "Other" from combobox in Exposure
+   # And I fill a type of gathering details in Exposure by "some gathering details " TEXT
     Then I select a type of place from combobox in Exposure
 
 
 
     And  I check the created task is correctly displayed on Edit task page
+
+    #Other
+    #Facility
+    #HOme .. etc the same
 
 

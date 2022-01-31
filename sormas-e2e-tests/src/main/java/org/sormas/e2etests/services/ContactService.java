@@ -23,11 +23,7 @@ import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.util.Random;
 import java.util.UUID;
-import org.sormas.e2etests.enums.CommunityValues;
-import org.sormas.e2etests.enums.DistrictsValues;
-import org.sormas.e2etests.enums.GenderValues;
-import org.sormas.e2etests.enums.RegionsValues;
-import org.sormas.e2etests.enums.YesNoUnknownOptions;
+import org.sormas.e2etests.enums.*;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
@@ -151,9 +147,15 @@ public class ContactService {
         .contactToBodyFluids(YesNoUnknownOptions.NO)
         .handlingSamples(YesNoUnknownOptions.NO)
         .typeOfPlace(TypeOfPlace.HOME)
-        .continent("Africa")
-        .subcontinent("Central Africa")
+        .continent(ContinentUUIDs.getRandomContinentUUIDsName())
+        .subcontinent(SubcontinentUUIDs.CentralEurope.toString())
         .country("Cameroon")
+        .street("Sun Street")
+        .houseNumber("2")
+        .additionalInformation("additional information")
+        .postalCode("GU16 7HF")
+        .city("Yaounde")
+        .areaType(AreaTypeValues.getRandomAreaType())
         .build();
   }
 }

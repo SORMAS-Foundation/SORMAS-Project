@@ -21,7 +21,8 @@ import lombok.Getter;
 
 @Getter
 public enum SubcontinentUUIDs {
-  WesternEurope("VMRXWX-EAGV7L-JFKP26-F3DBSBFU");
+  WesternEurope("VMRXWX-EAGV7L-JFKP26-F3DBSBFU"),
+  CentralEurope("WMRXWX-EAGV7L-JFKP26-F3DBSBFU");
 
   private final String option;
 
