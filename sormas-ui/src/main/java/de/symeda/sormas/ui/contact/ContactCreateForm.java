@@ -112,6 +112,7 @@ public class ContactCreateForm extends PersonDependentEditForm<ContactDto> {
 	private NullableOptionGroup contactCategory;
 	private TextField contactProximityDetails;
 	private ComboBox birthDateDay;
+	private Button searchPersonButton;
 
 	/**
 	 * TODO use disease and case relation information given in ContactDto
@@ -142,7 +143,7 @@ public class ContactCreateForm extends PersonDependentEditForm<ContactDto> {
 		TextField firstName = addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		TextField lastName = addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
 
-		Button searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
+		searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
 		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
 
 		addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
@@ -335,6 +336,8 @@ public class ContactCreateForm extends PersonDependentEditForm<ContactDto> {
 				personNameField.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON));
 				personNameField.setValue(getValue().getPerson().getCaption());
 				personNameField.setReadOnly(true);
+
+				searchPersonButton.setVisible(false);
 			}
 		});
 	}
@@ -509,6 +512,9 @@ public class ContactCreateForm extends PersonDependentEditForm<ContactDto> {
 			PersonDto.PASSPORT_NUMBER,
 			PersonDto.PHONE,
 			PersonDto.EMAIL_ADDRESS);
+
+
+		searchPersonButton.setEnabled(false);
 
 		setRequired(false, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.SEX);
 	}

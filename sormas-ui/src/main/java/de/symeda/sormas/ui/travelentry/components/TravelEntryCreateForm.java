@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.vaadin.ui.Button;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.PersonDependentEditForm;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -82,7 +83,7 @@ public class TravelEntryCreateForm extends PersonDependentEditForm<TravelEntryDt
 		+ fluidRowLocs(TravelEntryDto.REGION, TravelEntryDto.DISTRICT)
 		+ fluidRowLocs(TravelEntryDto.POINT_OF_ENTRY, TravelEntryDto.POINT_OF_ENTRY_DETAILS)
 			+ loc(DEA_CONTENT_LOC)
-		+ fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME)
+			+ LayoutUtil.fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC)
 		+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 		fluidRowLocs(PersonDto.SEX))
 		+ fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
@@ -342,6 +343,8 @@ public class TravelEntryCreateForm extends PersonDependentEditForm<TravelEntryDt
 			((ComboBox) getField(PersonDto.PRESENT_CONDITION)).setValue(person.getPresentCondition());
 			((TextField) getField(PersonDto.PHONE)).setValue(person.getPhone());
 			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getEmailAddress());
+			((TextField) getField(PersonDto.NATIONAL_HEALTH_ID)).setValue(person.getNationalHealthId());
+			((TextField) getField(PersonDto.PASSPORT_NUMBER)).setValue(person.getPassportNumber());
 		} else {
 			getField(PersonDto.FIRST_NAME).clear();
 			getField(PersonDto.LAST_NAME).clear();
@@ -352,6 +355,8 @@ public class TravelEntryCreateForm extends PersonDependentEditForm<TravelEntryDt
 			getField(PersonDto.PRESENT_CONDITION).clear();
 			getField(PersonDto.PHONE).clear();
 			getField(PersonDto.EMAIL_ADDRESS).clear();
+			getField(PersonDto.PASSPORT_NUMBER).clear();
+			getField(PersonDto.NATIONAL_HEALTH_ID).clear();
 		}
 	}
 

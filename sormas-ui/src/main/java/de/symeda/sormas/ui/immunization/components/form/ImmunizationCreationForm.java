@@ -427,6 +427,8 @@ public class ImmunizationCreationForm extends PersonDependentEditForm<Immunizati
 					PersonDto.PRESENT_CONDITION,
 					PersonDto.PHONE,
 					PersonDto.EMAIL_ADDRESS);
+
+				searchPersonButton.setVisible(false);
 			} else {
 				setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.SEX);
 			}
