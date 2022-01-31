@@ -21,8 +21,12 @@ package org.sormas.e2etests.steps.web.application.cases;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 
+import com.github.javafaker.Faker;
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
@@ -40,7 +44,8 @@ public class CaseDirectorySteps implements En {
       WebDriverHelpers webDriverHelpers,
       DataOperations dataOperations,
       ApiState apiState,
-      AssertHelpers assertHelpers) {
+      AssertHelpers assertHelpers,
+      Faker faker) {
 
     When(
         "^I click on the NEW CASE button$",
@@ -83,16 +88,26 @@ public class CaseDirectorySteps implements En {
           //                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(3);
         });
 
+    And(
+        "I filter by Random CaseID on Case directory page",
+        () -> {
+          String partialUuid =
+              dataOperations.getPartialUuidFromAssociatedLink(UUID.randomUUID().toString());
+          webDriverHelpers.fillAndSubmitInWebElement(
+              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
+          //                  webDriverHelpers.clickOnWebElementBySelector(
+          //                          CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
+          //                  TimeUnit.SECONDS.sleep(3); // needed for table refresh
+          //                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(3);
+        });
     When(
         "^I open the last created Case via API",
         () -> {
           String caseUUID = apiState.getCreatedCase().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);
           By caseLocator = By.cssSelector(String.format(CASE_RESULTS_UUID_LOCATOR, caseUUID));
-          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(caseLocator);
           webDriverHelpers.clickOnWebElementBySelector(caseLocator);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
 
     Then(
@@ -138,6 +153,24 @@ public class CaseDirectorySteps implements En {
           // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
 
         });
+    And(
+        "I apply Random Person Id filter",
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(
+              PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
+              faker.name().firstName() + " " + faker.name().lastName());
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Random Person Id filter",
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(
+              PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
+              faker.name().firstName() + " " + faker.name().lastName());
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
 
     Then(
         "I apply Outcome of case filter {string}",
@@ -151,7 +184,7 @@ public class CaseDirectorySteps implements En {
         (String caseClassification) -> {
           webDriverHelpers.selectFromCombobox(
               CASE_CLASSIFICATION_FILTER_COMBOBOX,
-              CaseClasification.getValueFor(caseClassification));
+              caseClassification);
           // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
 
         });
@@ -164,10 +197,11 @@ public class CaseDirectorySteps implements En {
 
         });
     And(
-        "I apply Present Condition filter {string}",
-        (String caseClassification) -> {
+        "I apply Present Condition filter",
+        () -> {
           webDriverHelpers.selectFromCombobox(
-              CASE_PRESENT_CONDITION_COMBOBOX, FollowUpStatus.getValueFor(caseClassification));
+              CASE_PRESENT_CONDITION_COMBOBOX,
+              PresentCondition.getValueFor(apiState.getLastCreatedPerson().getPresentCondition()));
           // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
 
         });
@@ -178,7 +212,6 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(
               CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
           TimeUnit.SECONDS.sleep(3); // needed for table refresh
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(3);
         });
 
     Then(
@@ -200,8 +233,7 @@ public class CaseDirectorySteps implements En {
     And(
         "I apply Region filter {string}",
         (String region) -> {
-          webDriverHelpers.selectFromCombobox(
-              CASE_REGION_FILTER_COMBOBOX, RegionsValues.getValueFor(region));
+          webDriverHelpers.selectFromCombobox(CASE_REGION_FILTER_COMBOBOX, region);
           // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
 
         });
@@ -220,9 +252,132 @@ public class CaseDirectorySteps implements En {
 
         });
     And(
-        "I apply Year filter {string}",
-        (String year) -> {
-          webDriverHelpers.selectFromCombobox(CASE_YEAR_FILTER, year);
+        "I apply Vaccination Status filter to {string}",
+        (String vaccinationStatus) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_VACCINATION_STATUS_FILTER_COMBOBOX, vaccinationStatus);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Quarantine filter to {string}",
+        (String quarantine) -> {
+          webDriverHelpers.selectFromCombobox(CASE_QUARANTINE_FILTER_COMBOBOX, quarantine);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Reinfection filter to {string}",
+        (String reinfection) -> {
+          webDriverHelpers.selectFromCombobox(CASE_REINFECTION_FILTER_COMBOBOX, reinfection);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Date type filter to {string}",
+        (String dataType) -> {
+          webDriverHelpers.selectFromCombobox(CASE_DATA_TYPE_FILTER_COMBOBOX, dataType);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+
+    And(
+        "I fill Cases from input to day before mocked case created",
+        () -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_FROM_COMBOBOX, formatter.format(LocalDate.now().minusDays(3)));
+        });
+    And(
+        "I fill Cases from input to days after before mocked case created",
+        () -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_FROM_COMBOBOX, formatter.format(LocalDate.now().plusDays(1)));
+        });
+    And(
+        "I click All button in Case Directory Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // needed for table refresh
+        });
+    And(
+        "I click on Investigation pending button on Case Directory Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(INVESTIGATION_PENDING_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // needed for table refresh
+        });
+    And(
+        "I click on Investigation done button on Case Directory Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(INVESTIGATION_DONE_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // needed for table refresh
+        });
+    And(
+        "I click on Investigation discarded button on Case Directory Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(INVESTIGATION_DISCARDED_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // needed for table refresh
+        });
+
+    And(
+        "I click {string} checkbox",
+        (String checkboxDescription) -> {
+          switch (checkboxDescription) {
+            case ("Only cases without geo coordinates"):
+              webDriverHelpers.clickOnWebElementBySelector(CASES_WITHOUT_GEO_COORDINATES_CHECKBOX);
+              break;
+            case ("Only cases without responsible officer"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CASES_WITHOUT_RESPONSIBLE_OFFICER_CHECKBOX);
+              break;
+            case ("Only cases with extended quarantine"):
+              webDriverHelpers.clickOnWebElementBySelector(CASES_WITH_EXTENDED_QUARANTINE_CHECKBOX);
+              break;
+            case ("Only cases with reduced quarantine"):
+              webDriverHelpers.clickOnWebElementBySelector(CASES_WITH_REDUCED_QUARANTINE_CHECKBOX);
+              break;
+            case ("Help needed in quarantine"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CASES_HELP_NEEDED_IN_QUARANTINE_CHECKBOX);
+              break;
+            case ("Only cases with events"):
+              webDriverHelpers.clickOnWebElementBySelector(CASES_WITH_EVENTS_CHECKBOX);
+              break;
+            case ("Only cases from other instances"):
+              webDriverHelpers.clickOnWebElementBySelector(CASES_FROM_OTHER_INSTANCES_CHECKBOX);
+              break;
+            case ("Only cases with reinfection"):
+              webDriverHelpers.clickOnWebElementBySelector(CASES_WITH_REINFECTION_CHECKBOX);
+              break;
+            case ("Include cases from other jurisdictions"):
+              webDriverHelpers.clickOnWebElementBySelector(CASES_FROM_OTHER_JURISDICTIONS_CHECKBOX);
+              break;
+            case ("Only cases with fulfilled reference definition"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CASES_WITH_FULFILLED_REFERENCE_DEFINITION_CHECKBOX);
+              break;
+            case ("Only port health cases without a facility"):
+              webDriverHelpers.clickOnWebElementBySelector(CASES_WITHOUT_FACILITY_CHECKBOX);
+              break;
+          }
+        });
+
+    And(
+        "I fill Cases to input to day after mocked case created",
+        () -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_TO_COMBOBOX, formatter.format(LocalDate.now().plusDays(5)));
+        });
+    And(
+        "I apply Year filter different than person has",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_YEAR_FILTER,
+              getRandomNumberForBirthDateDifferentThanCreated(
+                      apiState.getLastCreatedPerson().getBirthdateYYYY(), 1900, 2002)
+                  .toString());
           // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
 
         });
@@ -234,11 +389,22 @@ public class CaseDirectorySteps implements En {
           // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
 
         });
+    And(
+        "I apply {string} to combobox on Case Directory Page",
+        (String caseParameter) -> {
+          webDriverHelpers.selectFromCombobox(CASE_DISPLAY_FILTER_COMBOBOX, caseParameter);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
 
     And(
-        "I apply Month filter {string}",
-        (String month) -> {
-          webDriverHelpers.selectFromCombobox(CASE_MONTH_FILTER, month);
+        "I apply Month filter different than person has",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_MONTH_FILTER,
+              getRandomNumberForBirthDateDifferentThanCreated(
+                      apiState.getLastCreatedPerson().getBirthdateMM(), 1, 12)
+                  .toString());
           // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
 
         });
@@ -251,9 +417,13 @@ public class CaseDirectorySteps implements En {
 
         });
     And(
-        "I apply Day filter {string}",
-        (String day) -> {
-          webDriverHelpers.selectFromCombobox(CASE_DAY_FILTER, day);
+        "I apply Day filter different than person has",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_DAY_FILTER,
+              getRandomNumberForBirthDateDifferentThanCreated(
+                      apiState.getLastCreatedPerson().getBirthdateDD(), 1, 27)
+                  .toString());
           // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
 
         });
@@ -269,7 +439,22 @@ public class CaseDirectorySteps implements En {
         "I apply Facility category filter {string}",
         (String facilityCategory) -> {
           webDriverHelpers.selectFromCombobox(
-              CASE_REGION_FILTER_COMBOBOX, FacilityCategory.getValueFor(facilityCategory));
+              CASE_FACILITY_CATEGORY_FILTER_COMBOBOX,
+              FacilityCategory.getValueFor(facilityCategory));
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Facility type filter to {string}",
+        (String facilityType) -> {
+          webDriverHelpers.selectFromCombobox(CASE_FACILITY_TYPE_FILTER_COMBOBOX, facilityType);
+          // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+
+        });
+    And(
+        "I apply Facility filter to {string}",
+        (String facility) -> {
+          webDriverHelpers.selectFromCombobox(CASE_FACILITY_FILTER_COMBOBOX, facility);
           // webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
 
         });
@@ -337,5 +522,14 @@ public class CaseDirectorySteps implements En {
                           Integer.valueOf(
                               webDriverHelpers.getTextFromPresentWebElement(TOTAL_CASES_COUNTER))));
         });
+  }
+
+  private Number getRandomNumberForBirthDateDifferentThanCreated(Number created, int min, int max) {
+    Faker faker = new Faker();
+    Number replacement = created;
+    while (created.equals(replacement)) {
+      replacement = faker.number().numberBetween(min, max);
+    }
+    return replacement;
   }
 }

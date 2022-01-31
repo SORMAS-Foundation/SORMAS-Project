@@ -20,6 +20,7 @@ package org.sormas.e2etests.enums;
 
 import java.util.Random;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum FacilityType {
@@ -39,5 +40,14 @@ public enum FacilityType {
   public static String getRandomFacilityType() {
     Random random = new Random();
     return String.valueOf(FacilityType.values()[random.nextInt(values().length)].type);
+  }
+
+  @SneakyThrows
+  public static String getValueFor(String option) {
+    FacilityType[] facilityTypes = FacilityType.values();
+    for (FacilityType value : facilityTypes) {
+      if (value.getType().equalsIgnoreCase(option)) return value.getType();
+    }
+    throw new Exception("Unable to find " + option + " value in FacilityType Enum");
   }
 }

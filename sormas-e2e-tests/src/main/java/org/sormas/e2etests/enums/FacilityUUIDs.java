@@ -18,10 +18,12 @@
 package org.sormas.e2etests.enums;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum FacilityUUIDs {
-  OtherFacility("SORMAS-CONSTID-OTHERS-FACILITY");
+  OtherFacility("SORMAS-CONSTID-OTHERS-FACILITY"),
+  StandardEinrichtung("Standard Einrichtung");
 
   private final String option;
 
@@ -32,5 +34,14 @@ public enum FacilityUUIDs {
   @Override
   public String toString() {
     return this.option;
+  }
+
+  @SneakyThrows
+  public static String getValueFor(String option) {
+    FacilityUUIDs[] facilityTypes = FacilityUUIDs.values();
+    for (FacilityUUIDs value : facilityTypes) {
+      if (value.getOption().equalsIgnoreCase(option)) return value.getOption();
+    }
+    throw new Exception("Unable to find " + option + " value in FacilityUUIDs Enum");
   }
 }
