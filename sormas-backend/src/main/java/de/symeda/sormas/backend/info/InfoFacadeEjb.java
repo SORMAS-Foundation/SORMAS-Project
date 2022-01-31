@@ -178,6 +178,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	private enum EntityColumn {
 
+		FIELD_ID,
 		FIELD,
 		TYPE,
 		DATA_PROTECTION,
@@ -218,6 +219,7 @@ public class InfoFacadeEjb implements InfoFacade {
 		}
 
 		// column width
+		sheet.setColumnWidth(EntityColumn.FIELD_ID.ordinal(), 256 * 30);
 		sheet.setColumnWidth(EntityColumn.FIELD.ordinal(), 256 * 30);
 		sheet.setColumnWidth(EntityColumn.TYPE.ordinal(), 256 * 30);
 		sheet.setColumnWidth(EntityColumn.DATA_PROTECTION.ordinal(), 256 * 30);
@@ -240,6 +242,10 @@ public class InfoFacadeEjb implements InfoFacade {
 			if (java.lang.reflect.Modifier.isStatic(field.getModifiers()))
 				continue;
 			XSSFRow row = sheet.createRow(rowNumber++);
+
+			// filedId
+			XSSFCell fieldIdCell = row.createCell(EntityColumn.FIELD_ID.ordinal());
+			fieldIdCell.setCellValue(DataHelper.getHumanClassName(entityClass) + "." + field.getName());
 
 			// field name
 			XSSFCell fieldNameCell = row.createCell(EntityColumn.FIELD.ordinal());
