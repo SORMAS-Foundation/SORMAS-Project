@@ -24,31 +24,51 @@ import lombok.SneakyThrows;
 
 @Getter
 public enum CaseClassification {
-  NOT_CLASSIFIED("Not yet classified"),
-  SUSPECT("Suspect case"),
-  PROBABLE("Probable case"),
-  CONFIRMED("Confirmed case"),
-  CONFIRMED_NO_SYMPTOMS("Confirmed case with no symptoms"),
-  CONFIRMED_UNKNOWN_SYMPTOMS("Confirmed case with unknown symptoms"),
-  NO_CASE("Not a case");
+  NOT_CLASSIFIED("Not yet classified", "NOT_CLASSIFIED"),
+  SUSPECT("Suspect case", "SUSPECT"),
+  PROBABLE("Probable case", "PROBABLE"),
+  CONFIRMED("Confirmed case", "CONFIRMED"),
+  CONFIRMED_NO_SYMPTOMS("Confirmed case with no symptoms", "CONFIRMED_NO_SYMPTOMS"),
+  CONFIRMED_UNKNOWN_SYMPTOMS("Confirmed case with unknown symptoms", "CONFIRMED_UNKNOWN_SYMPTOMS"),
+  NO_CASE("Not a case", "NO_CASE");
 
-  private final String classification;
+  private final String classificationUIvalue;
+  private final String classificationAPIvalue;
 
-  CaseClassification(String caseClassification) {
-    classification = caseClassification;
+  CaseClassification(String uiValue, String APIvalue) {
+    classificationUIvalue = uiValue;
+    classificationAPIvalue = APIvalue;
   }
 
   @SneakyThrows
-  public static String getValueFor(String option) {
+  public static String getUIValueFor(String option) {
     CaseClassification[] classifications = CaseClassification.values();
     for (CaseClassification value : classifications) {
-      if (value.getClassification().equalsIgnoreCase(option)) return value.getClassification();
+      if (value.getClassificationUIvalue().equalsIgnoreCase(option))
+        return value.getClassificationUIvalue();
     }
     throw new Exception("Unable to find " + option + " value in CaseClassification Enum");
   }
 
-  public static String getRandomClassification() {
+  @SneakyThrows
+  public static String getAPIValueFor(String option) {
+    CaseClassification[] classifications = CaseClassification.values();
+    for (CaseClassification value : classifications) {
+      if (value.getClassificationAPIvalue().replaceAll("_", " ").contains(option.toUpperCase()))
+        return value.getClassificationAPIvalue();
+    }
+    throw new Exception("Unable to find " + option + " value in CaseClassification Enum");
+  }
+
+  public static String getRandomUIClassification() {
     Random random = new Random();
-    return String.valueOf(CaseClassification.values()[random.nextInt(values().length)]);
+    return String.valueOf(
+        CaseClassification.values()[random.nextInt(values().length)].classificationUIvalue);
+  }
+
+  public static String getRandomAPIClassification() {
+    Random random = new Random();
+    return String.valueOf(
+        CaseClassification.values()[random.nextInt(values().length)].classificationAPIvalue);
   }
 }

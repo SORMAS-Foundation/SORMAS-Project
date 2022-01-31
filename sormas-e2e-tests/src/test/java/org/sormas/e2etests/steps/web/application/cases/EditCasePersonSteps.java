@@ -77,7 +77,7 @@ public class EditCasePersonSteps implements En {
               webDriverHelpers.getValueFromWebElement(CASE_CLASSIFICATION_INPUT);
           Assert.assertEquals(
               caseClassificationValue,
-              CaseClassification.getValueFor(expectedCaseClassification),
+              CaseClassification.getUIValueFor(expectedCaseClassification),
               "Case classification value is wrong");
         });
   }

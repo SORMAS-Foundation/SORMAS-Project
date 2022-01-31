@@ -42,6 +42,7 @@ import org.sormas.e2etests.pojo.web.Case;
 import org.sormas.e2etests.pojo.web.QuarantineOrder;
 import org.sormas.e2etests.services.CaseDocumentService;
 import org.sormas.e2etests.services.CaseService;
+import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
 
 public class EditCaseSteps implements En {
@@ -62,6 +63,7 @@ public class EditCaseSteps implements En {
       CaseService caseService,
       CaseDocumentService caseDocumentService,
       SoftAssert softly,
+      ApiState apiState,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -412,6 +414,15 @@ public class EditCaseSteps implements En {
           String uuid = aCase.getUuid();
           webDriverHelpers.accessWebSite(environmentUrl + caseLinkPath + uuid);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(REPORT_DATE_INPUT);
+        });
+
+    When(
+        "I open last edited case by API via URL navigation",
+        () -> {
+          String caseLinkPath = "/sormas-ui/#!cases/data/";
+          String uuid = apiState.getCreatedCase().getUuid();
+          webDriverHelpers.accessWebSite(environmentUrl + caseLinkPath + uuid);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
 
     When(
