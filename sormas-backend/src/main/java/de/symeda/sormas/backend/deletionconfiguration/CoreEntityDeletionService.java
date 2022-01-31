@@ -50,9 +50,10 @@ public class CoreEntityDeletionService {
 		coreEntityFacades.forEach(coreEntityType -> {
 			DeletionConfiguration coreEntityTypeConfig = deletionConfigurationService.getCoreEntityTypeConfig(coreEntityType.coreEntityType);
 
-			Date referenceDeletionDate = DateHelper.subtractDays(new Date(), coreEntityTypeConfig.deletionPeriod);
-
-			coreEntityType.entityFacade.executeAutomaticDeletion(coreEntityTypeConfig.deletionReference, referenceDeletionDate);
+			if (coreEntityTypeConfig.deletionPeriod != null) {
+				Date referenceDeletionDate = DateHelper.subtractDays(new Date(), coreEntityTypeConfig.deletionPeriod);
+				coreEntityType.entityFacade.executeAutomaticDeletion(coreEntityTypeConfig.deletionReference, referenceDeletionDate);
+			}
 		});
 
 	}

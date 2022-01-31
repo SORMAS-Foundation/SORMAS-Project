@@ -28,7 +28,6 @@ public class DeletionConfiguration extends AbstractDomainObject {
 	CoreEntityType entityType;
 	DeletionReference deletionReference;
 
-	@NotNull
 	@Min(value = 7, message = Validations.numberTooSmall)
 	@Max(value = Integer.MAX_VALUE, message = Validations.numberTooBig)
 	Integer deletionPeriod;

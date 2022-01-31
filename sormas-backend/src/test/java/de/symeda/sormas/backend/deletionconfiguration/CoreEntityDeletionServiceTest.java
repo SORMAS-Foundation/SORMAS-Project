@@ -85,7 +85,7 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		DeletionConfiguration entity = new DeletionConfiguration();
 		entity.setEntityType(coreEntityType);
 		entity.setDeletionReference(coreEntityType.getDeletionReference());
-		entity.setDeletionPeriod(coreEntityType.getDeletionPeriod());
+		entity.setDeletionPeriod(3650);
 		deletionConfigurationService.ensurePersisted(entity);
 		return entity;
 	}

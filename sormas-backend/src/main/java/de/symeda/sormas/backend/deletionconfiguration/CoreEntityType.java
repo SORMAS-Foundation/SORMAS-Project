@@ -5,17 +5,17 @@ import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 public enum CoreEntityType {
 
 	//ENTITY LIST
-	CASE(DeletionReference.CREATION, 3650),
-	CONTACT(DeletionReference.CREATION, 3650),
-	EVENT(DeletionReference.CREATION, 3650),
-	EVENT_PARTICIPANT(DeletionReference.CREATION, 3650),
-	IMMUNIZATION(DeletionReference.CREATION, 3650),
-	TRAVEL_ENTRY(DeletionReference.ORIGIN, 14);
+	CASE(DeletionReference.CREATION, null),
+	CONTACT(DeletionReference.CREATION, null),
+	EVENT(DeletionReference.CREATION, null),
+	EVENT_PARTICIPANT(DeletionReference.CREATION, null),
+	IMMUNIZATION(DeletionReference.CREATION, null),
+	TRAVEL_ENTRY(DeletionReference.ORIGIN, null);
 
 	private final DeletionReference deletionReference;
-	private final int deletionPeriod;
+	private final Integer deletionPeriod;
 
-	CoreEntityType(DeletionReference deletionReference, int deletionPeriod) {
+	CoreEntityType(DeletionReference deletionReference, Integer deletionPeriod) {
 		this.deletionReference = deletionReference;
 		this.deletionPeriod = deletionPeriod;
 	}
@@ -24,7 +24,7 @@ public enum CoreEntityType {
 		return deletionReference;
 	}
 
-	public int getDeletionPeriod() {
+	public Integer getDeletionPeriod() {
 		return deletionPeriod;
 	}
 }
