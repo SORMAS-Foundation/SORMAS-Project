@@ -18,6 +18,7 @@ import de.symeda.sormas.backend.common.BaseAdoService;
 @LocalBean
 public class DeletionConfigurationService extends BaseAdoService<DeletionConfiguration> {
 
+
 	public DeletionConfigurationService() {
 		super(DeletionConfiguration.class);
 	}
