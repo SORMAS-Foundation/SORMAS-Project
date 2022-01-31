@@ -534,7 +534,7 @@ public class ImmunizationCreationForm extends PersonDependentEditForm<Immunizati
 			((ComboBox) getField(PersonDto.SEX)).setValue(person.getSex());
 			((TextField) getField(PersonDto.NATIONAL_HEALTH_ID)).setValue(person.getNationalHealthId());
 			((TextField) getField(PersonDto.PASSPORT_NUMBER)).setValue(person.getPassportNumber());
-			((ComboBox) getField(PersonDto.PRESENT_CONDITION)).setValue(person.getPresentCondition().toString());
+			((ComboBox) getField(PersonDto.PRESENT_CONDITION)).setValue(person.getPresentCondition());
 			((TextField) getField(PersonDto.PHONE)).setValue(person.getPhone());
 			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getEmailAddress());
 		} else {
