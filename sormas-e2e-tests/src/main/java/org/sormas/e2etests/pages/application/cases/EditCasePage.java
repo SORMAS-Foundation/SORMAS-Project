@@ -25,6 +25,7 @@ public class EditCasePage {
       By.id("caseClassificationCalculationButton");
   public static final By FOLLOW_UP_TAB = By.cssSelector("[id='tab-cases-visits'] a");
   public static final By SYMPTOMS_TAB = By.cssSelector("[id='tab-cases-symptoms']");
+  public static final By THERAPY_TAB = By.cssSelector("[id='tab-cases-therapy']");
   public static final By REGION_INPUT = By.cssSelector("#responsibleRegion input");
   public static final By DISTRICT_INPUT = By.cssSelector("#responsibleDistrict input");
   public static final By COMMUNITY_INPUT = By.cssSelector("#responsibleCommunity input");
