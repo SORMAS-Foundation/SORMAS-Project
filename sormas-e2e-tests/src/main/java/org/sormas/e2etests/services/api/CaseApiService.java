@@ -21,6 +21,7 @@ package org.sormas.e2etests.services.api;
 import com.google.inject.Inject;
 import java.util.Date;
 import java.util.UUID;
+import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
@@ -104,6 +105,13 @@ public class CaseApiService {
         .notACaseReasonOther(false)
         .dontShareWithReportingTool(false)
         .caseReferenceDefinition("NOT_FULFILLED")
+        .build();
+  }
+
+  public Case buildCaseWithClassification(Person person, String classification) {
+    Case caze = buildGeneratedCase(person);
+    return caze.toBuilder()
+        .caseClassification(CaseClassification.getAPIValueFor(classification))
         .build();
   }
 }
