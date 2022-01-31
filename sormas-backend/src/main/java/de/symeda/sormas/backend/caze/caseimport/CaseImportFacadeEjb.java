@@ -532,7 +532,6 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			} catch (ImportErrorException e) {
 				throw e;
 			} catch (Exception e) {
-				e.printStackTrace();
 				LOGGER.error("Unexpected error when trying to import a case: " + e.getMessage(), e);
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importCasesUnexpectedError));
 			}

@@ -14,8 +14,6 @@
  */
 package de.symeda.sormas.ui.events.eventparticipantimporter;
 
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
@@ -42,6 +40,8 @@ import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -135,11 +135,11 @@ public class EventParticipantImporter extends DataImporter {
 		ImportRelatedObjectsMapper.Builder relatedObjectsMapperBuilder = new ImportRelatedObjectsMapper.Builder();
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-		relatedObjectsMapperBuilder.addMapper(
-			VaccinationDto.class,
-			vaccinations,
-			() -> VaccinationDto.build(currentUser.toReference()),
-			this::insertColumnEntryIntoRelatedObject);
+			relatedObjectsMapperBuilder.addMapper(
+				VaccinationDto.class,
+				vaccinations,
+				() -> VaccinationDto.build(currentUser.toReference()),
+				this::insertColumnEntryIntoRelatedObject);
 		}
 
 		ImportRelatedObjectsMapper relatedMapper = relatedObjectsMapperBuilder.build();
