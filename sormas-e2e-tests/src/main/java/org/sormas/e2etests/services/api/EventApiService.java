@@ -21,6 +21,10 @@ package org.sormas.e2etests.services.api;
 import com.google.inject.Inject;
 import java.util.Date;
 import java.util.UUID;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.RiskLevelValues;
+import org.sormas.e2etests.enums.SourceTypeValues;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 import org.sormas.e2etests.pojo.api.*;
 
 public class EventApiService {
@@ -31,13 +35,17 @@ public class EventApiService {
   public Event buildGeneratedEvent() {
     return Event.builder()
         .uuid(UUID.randomUUID().toString())
+        .disease(DiseasesValues.getRandomDiseaseName())
         .reportingUser(ReportingUser.builder().uuid("QLW4AN-TGWLRA-3UQVEM-WCDFCIVM").build())
         .eventStatus("SIGNAL")
+        .srcType(SourceTypeValues.getRandomSourceTypeName())
         .eventInvestigationStatus("PENDING")
         .eventTitle(String.valueOf(System.currentTimeMillis()))
         .startDate(new Date())
         .reportDateTime(new Date())
         .eventLocation(EventLocation.builder().uuid(UUID.randomUUID().toString()).build())
+        .riskLevel(RiskLevelValues.getRandomRiskLevelName())
+        .typeOfPlace(TypeOfPlace.getRandomTypeOfPlace())
         .build();
   }
 }
