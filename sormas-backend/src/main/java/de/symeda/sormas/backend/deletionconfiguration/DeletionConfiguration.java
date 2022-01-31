@@ -6,7 +6,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
@@ -32,11 +31,9 @@ public class DeletionConfiguration extends AbstractDomainObject {
 	@Max(value = Integer.MAX_VALUE, message = Validations.numberTooBig)
 	Integer deletionPeriod;
 
-	public static DeletionConfiguration build(CoreEntityType coreEntityType, DeletionReference deletionReference, Integer deletionPeriod) {
+	public static DeletionConfiguration build(CoreEntityType coreEntityType) {
 		DeletionConfiguration deletionConfiguration = new DeletionConfiguration();
 		deletionConfiguration.setEntityType(coreEntityType);
-		deletionConfiguration.setDeletionReference(deletionReference);
-		deletionConfiguration.setDeletionPeriod(deletionPeriod);
 		return deletionConfiguration;
 	}
 

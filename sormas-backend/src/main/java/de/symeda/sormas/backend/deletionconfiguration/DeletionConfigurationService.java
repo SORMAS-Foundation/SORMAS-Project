@@ -37,8 +37,7 @@ public class DeletionConfigurationService extends BaseAdoService<DeletionConfigu
 		Arrays.stream(CoreEntityType.values()).forEach(coreEntityType -> {
 			DeletionConfiguration savedConfiguration = configs.get(coreEntityType);
 			if (savedConfiguration == null) {
-				DeletionConfiguration deletionConfiguration =
-					DeletionConfiguration.build(coreEntityType, coreEntityType.getDeletionReference(), coreEntityType.getDeletionPeriod());
+				DeletionConfiguration deletionConfiguration = DeletionConfiguration.build(coreEntityType);
 				ensurePersisted(deletionConfiguration);
 			}
 		});

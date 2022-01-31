@@ -1,18 +1,13 @@
 package de.symeda.sormas.backend.deletionconfiguration;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import java.sql.Timestamp;
 import java.util.Date;
 
-import de.symeda.sormas.backend.caze.Case;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
-import org.joda.time.LocalDate;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -20,12 +15,14 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.caze.Case;
 
 public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 
@@ -84,7 +81,7 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 
 		DeletionConfiguration entity = new DeletionConfiguration();
 		entity.setEntityType(coreEntityType);
-		entity.setDeletionReference(coreEntityType.getDeletionReference());
+		entity.setDeletionReference(DeletionReference.CREATION);
 		entity.setDeletionPeriod(3650);
 		deletionConfigurationService.ensurePersisted(entity);
 		return entity;
