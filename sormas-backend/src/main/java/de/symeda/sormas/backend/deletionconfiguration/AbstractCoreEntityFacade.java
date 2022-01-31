@@ -36,11 +36,11 @@ public abstract class AbstractCoreEntityFacade<T extends AbstractDomainObject> {
 		List<T> toDeleteEntities = QueryHelper.getResultList(em, cq, null, null);
 
 		toDeleteEntities.forEach(entity -> {
-			permanentDelete(entity);
+			delete(entity);
 		});
 	}
 
-	protected abstract void permanentDelete(T entity);
+	protected abstract void delete(T entity);
 
 	protected String getDeleteReferenceField(DeletionReference deletionReference) {
 		switch (deletionReference) {

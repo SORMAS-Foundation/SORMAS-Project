@@ -674,7 +674,7 @@ public class ImmunizationFacadeEjb extends AbstractCoreEntityFacade<Immunization
 	}
 
 	@Override
-	protected void permanentDelete(Immunization entity) {
+	protected void delete(Immunization entity) {
 		immunizationService.delete(entity);
 	}
 

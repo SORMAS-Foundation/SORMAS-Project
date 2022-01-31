@@ -1071,7 +1071,7 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 	}
 
 	@Override
-	protected void permanentDelete(EventParticipant entity) {
+	protected void delete(EventParticipant entity) {
 		eventParticipantService.delete(entity);
 	}
 }

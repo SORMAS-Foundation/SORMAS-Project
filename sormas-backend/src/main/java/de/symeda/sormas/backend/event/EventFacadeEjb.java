@@ -1346,7 +1346,7 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 	}
 
 	@Override
-	protected void permanentDelete(Event entity) {
+	protected void delete(Event entity) {
 		eventService.delete(entity);
 	}
 }

@@ -2128,7 +2128,7 @@ public class ContactFacadeEjb extends AbstractCoreEntityFacade<Contact> implemen
 	}
 
 	@Override
-	protected void permanentDelete(Contact entity) {
+	protected void delete(Contact entity) {
 		contactService.delete(entity);
 	}
 

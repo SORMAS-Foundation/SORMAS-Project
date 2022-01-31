@@ -400,7 +400,7 @@ public class TravelEntryFacadeEjb extends AbstractCoreEntityFacade<TravelEntry> 
 	}
 
 	@Override
-	protected void permanentDelete(TravelEntry entity) {
+	protected void delete(TravelEntry entity) {
 		travelEntryService.delete(entity);
 	}
 

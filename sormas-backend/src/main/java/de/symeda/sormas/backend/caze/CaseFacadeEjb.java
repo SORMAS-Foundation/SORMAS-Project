@@ -3855,7 +3855,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 	}
 
 	@Override
-	protected void permanentDelete(Case entity) {
+	protected void delete(Case entity) {
 		caseService.delete(entity);
 	}
 
