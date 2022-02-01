@@ -174,14 +174,14 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(6, getTaskFacade().getAllActiveUuids().size());
 
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
-		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), true);
+		getEventFacade().archive(event.getUuid());
 
 		// getAllActiveTasks and getAllUuids should return length 1
 		assertEquals(1, getTaskFacade().getAllActiveTasksAfter(null).size());
 		assertEquals(1, getTaskFacade().getAllActiveUuids().size());
 
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
-		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), false);
+		getEventFacade().dearchive(event.getUuid());
 
 		// getAllActiveTasks and getAllUuids should return length 5 + 1 (contact investigation)
 		assertEquals(6, getTaskFacade().getAllActiveTasksAfter(null).size());

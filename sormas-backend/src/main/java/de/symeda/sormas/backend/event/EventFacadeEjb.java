@@ -43,6 +43,8 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
@@ -226,16 +228,6 @@ public class EventFacadeEjb extends AbstractCoreEjb<Event, EventDto, EventIndexD
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery cq, Root root) {
-
-	}
-
-	@Override
-	public EventReferenceDto toRefDto(Event event) {
-		return toReferenceDto(event);
-	}
-
-	@Override
 	public EventReferenceDto getReferenceByEventParticipant(String uuid) {
 		return toReferenceDto(service.getEventReferenceByEventParticipant(uuid));
 	}
@@ -247,7 +239,6 @@ public class EventFacadeEjb extends AbstractCoreEjb<Event, EventDto, EventIndexD
 
 	public EventDto save(@NotNull EventDto dto, boolean checkChangeDate, boolean internal) {
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		Event existingEvent = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
 		if (internal && existingEvent != null && !service.isEventEditAllowed(existingEvent)) {
@@ -256,6 +247,7 @@ public class EventFacadeEjb extends AbstractCoreEjb<Event, EventDto, EventIndexD
 
 		EventDto existingDto = toDto(existingEvent);
 
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		restorePseudonymizedDto(dto, existingDto, existingEvent, pseudonymizer);
 
 		if (dto.getReportDateTime() == null) {
@@ -639,6 +631,11 @@ public class EventFacadeEjb extends AbstractCoreEjb<Event, EventDto, EventIndexD
 	}
 
 	@Override
+	protected void selectDtoFields(CriteriaQuery<EventDto> cq, Root<Event> root) {
+
+	}
+
+	@Override
 	public Page<EventIndexDto> getIndexPage(EventCriteria eventCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
 		List<EventIndexDto> eventIndexList = getIndexList(eventCriteria, offset, size, sortProperties);
 		long totalElementCount = count(eventCriteria);
@@ -879,14 +876,6 @@ public class EventFacadeEjb extends AbstractCoreEjb<Event, EventDto, EventIndexD
 	}
 
 	@Override
-	public void archiveOrDearchiveEvent(String eventUuid, boolean archive) {
-
-		Event event = service.getByUuid(eventUuid);
-		event.setArchived(archive);
-		service.ensurePersisted(event);
-	}
-
-	@Override
 	public List<String> getArchivedUuidsSince(Date since) {
 
 		User user = userService.getCurrentUser();
@@ -1087,6 +1076,11 @@ public class EventFacadeEjb extends AbstractCoreEjb<Event, EventDto, EventIndexD
 		return target;
 	}
 
+	@Override
+	public EventReferenceDto toRefDto(Event event) {
+		return null;
+	}
+
 	public EventDto convertToDto(Event source, Pseudonymizer pseudonymizer) {
 		EventDto eventDto = toDto(source);
 
@@ -1113,7 +1107,6 @@ public class EventFacadeEjb extends AbstractCoreEjb<Event, EventDto, EventIndexD
 		}
 	}
 
-	@Override
 	protected void restorePseudonymizedDto(EventDto dto, EventDto existingDto, Event event, Pseudonymizer pseudonymizer) {
 		if (existingDto != null) {
 			boolean inJurisdiction = service.inJurisdictionOrOwned(event);

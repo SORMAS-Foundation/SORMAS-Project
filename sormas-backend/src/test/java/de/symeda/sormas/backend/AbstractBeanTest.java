@@ -48,7 +48,6 @@ import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
-import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
@@ -326,7 +325,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(DashboardFacadeEjb.DashboardFacadeEjbLocal.class);
 	}
 
-	public EventFacade getEventFacade() {
+	public EventFacadeEjbLocal getEventFacade() {
 		return getBean(EventFacadeEjbLocal.class);
 	}
 

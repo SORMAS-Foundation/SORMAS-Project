@@ -60,8 +60,6 @@ public interface EventFacade extends CoreBaseFacade<EventDto, EventIndexDto, Eve
 
 	boolean isDeleted(String eventUuid);
 
-	void archiveOrDearchiveEvent(String eventUuid, boolean archive);
-
 	List<String> getArchivedUuidsSince(Date since);
 
 	List<String> getDeletedUuidsSince(Date since);

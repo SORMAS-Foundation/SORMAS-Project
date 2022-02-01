@@ -257,7 +257,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null).size());
 		assertEquals(1, getEventParticipantFacade().getAllActiveUuids().size());
 
-		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), true);
+		getEventFacade().archive(event.getUuid());
 
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 0
 		assertEquals(0, getEventFacade().getAllAfter(null).size());
@@ -268,7 +268,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		// getArchivedUuidsSince should return length 1
 		assertEquals(1, getEventFacade().getArchivedUuidsSince(testStartDate).size());
 
-		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), false);
+		getEventFacade().dearchive(event.getUuid());
 
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 1
 		assertEquals(1, getEventFacade().getAllAfter(null).size());
@@ -304,7 +304,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			Disease.ANTHRAX,
 			rdcf.district);
 		EventFacadeEjbLocal cut = getBean(EventFacadeEjbLocal.class);
-		cut.archiveOrDearchiveEvent(event1.getUuid(), true);
+		cut.archive(event1.getUuid());
 
 		// One other event
 		EventDto event2 = creator.createEvent(
