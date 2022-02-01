@@ -100,6 +100,13 @@ public class NavBarSteps implements En {
         });
 
     When(
+        "^I click on the Configuration button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CONFIGURATION_BUTTON);
+        });
+
+    When(
         "^I click on the Dashboard button from navbar and access Surveillance Dashboard$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
