@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.deletionconfiguration;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -9,7 +8,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
 
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
@@ -50,9 +48,8 @@ public class CoreEntityDeletionService {
 		coreEntityFacades.forEach(coreEntityType -> {
 			DeletionConfiguration coreEntityTypeConfig = deletionConfigurationService.getCoreEntityTypeConfig(coreEntityType.coreEntityType);
 
-			if (coreEntityTypeConfig.deletionReference!=null && coreEntityTypeConfig.deletionPeriod != null) {
-				Date referenceDeletionDate = DateHelper.subtractDays(new Date(), coreEntityTypeConfig.deletionPeriod);
-				coreEntityType.entityFacade.executeAutomaticDeletion(coreEntityTypeConfig.deletionReference, referenceDeletionDate);
+			if (coreEntityTypeConfig.deletionReference != null && coreEntityTypeConfig.deletionPeriod != null) {
+				coreEntityType.entityFacade.executeAutomaticDeletion(coreEntityTypeConfig);
 			}
 		});
 

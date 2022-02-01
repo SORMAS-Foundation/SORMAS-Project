@@ -10,11 +10,13 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
-public abstract class AbstractCoreEntityFacade<T extends AbstractDomainObject> {
+public abstract class AbstractCoreEntityFacade<T extends CoreAdo> {
 
 	private Class<T> entityClass;
 
@@ -25,13 +27,14 @@ public abstract class AbstractCoreEntityFacade<T extends AbstractDomainObject> {
 		this.entityClass = entityClass;
 	}
 
-	public void executeAutomaticDeletion(DeletionReference deletionReference, Date referenceDeletionDate) {
+	public void executeAutomaticDeletion(DeletionConfiguration entityConfig) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<T> cq = cb.createQuery(entityClass);
 		Root<T> from = cq.from(entityClass);
 
-		cq.where(cb.lessThanOrEqualTo(from.get(getDeleteReferenceField(deletionReference)), referenceDeletionDate));
+		Date referenceDeletionDate = DateHelper.subtractDays(new Date(), entityConfig.deletionPeriod);
+		cq.where(cb.lessThanOrEqualTo(from.get(getDeleteReferenceField(entityConfig.deletionReference)), referenceDeletionDate));
 
 		List<T> toDeleteEntities = QueryHelper.getResultList(em, cq, null, null);
 

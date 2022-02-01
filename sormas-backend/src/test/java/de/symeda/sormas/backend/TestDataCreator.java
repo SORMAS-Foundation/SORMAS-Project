@@ -445,8 +445,6 @@ public class TestDataCreator {
 		return caze;
 	}
 
-
-
 	public ImmunizationDto createImmunization(
 		Disease disease,
 		PersonReferenceDto person,
@@ -659,7 +657,6 @@ public class TestDataCreator {
 	public ContactDto createContact(RDCF rdcf, UserReferenceDto reportingUser, PersonReferenceDto contactPerson) {
 		return createContact(reportingUser, null, contactPerson, null, new Date(), null, null, rdcf);
 	}
-
 
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson) {
 		return createContact(reportingUser, null, contactPerson, null, new Date(), null, null, null);

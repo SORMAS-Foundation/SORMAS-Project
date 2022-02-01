@@ -48,7 +48,7 @@ public class DeletionConfiguration extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column()
 	public DeletionReference getDeletionReference() {
 		return deletionReference;
 	}
@@ -57,7 +57,7 @@ public class DeletionConfiguration extends AbstractDomainObject {
 		this.deletionReference = deletionReference;
 	}
 
-	@Column(nullable = false)
+	@Column()
 	public Integer getDeletionPeriod() {
 		return deletionPeriod;
 	}

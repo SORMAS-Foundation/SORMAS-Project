@@ -29,7 +29,7 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 	@Test
 	public void testCaseAutomaticDeletion() {
 
-		createDeletionConfiguration();
+		createDeletionConfigurations();
 		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CASE);
 
 		final Date today = new Date();
@@ -67,16 +67,16 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 
 	}
 
-	private void createDeletionConfiguration() {
-		build(CoreEntityType.CASE);
-		build(CoreEntityType.CONTACT);
-		build(CoreEntityType.EVENT);
-		build(CoreEntityType.EVENT_PARTICIPANT);
-		build(CoreEntityType.IMMUNIZATION);
-		build(CoreEntityType.TRAVEL_ENTRY);
+	private void createDeletionConfigurations() {
+		create(CoreEntityType.CASE);
+		create(CoreEntityType.CONTACT);
+		create(CoreEntityType.EVENT);
+		create(CoreEntityType.EVENT_PARTICIPANT);
+		create(CoreEntityType.IMMUNIZATION);
+		create(CoreEntityType.TRAVEL_ENTRY);
 	}
 
-	private DeletionConfiguration build(CoreEntityType coreEntityType) {
+	private DeletionConfiguration create(CoreEntityType coreEntityType) {
 		DeletionConfigurationService deletionConfigurationService = getBean(DeletionConfigurationService.class);
 
 		DeletionConfiguration entity = new DeletionConfiguration();
