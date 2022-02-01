@@ -39,6 +39,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -65,7 +66,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
-public class EventParticipantService extends AbstractDeletableAdoService<EventParticipant> {
+public class EventParticipantService extends AbstractCoreAdoService<EventParticipant> {
 
 	@EJB
 	private EventService eventService;
@@ -78,7 +79,13 @@ public class EventParticipantService extends AbstractDeletableAdoService<EventPa
 		super(EventParticipant.class);
 	}
 
-	public List<EventParticipant> getAllActiveEventParticipantsAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
+
+	@Override
+	public List<EventParticipant> getAllActiveAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+		return getAllActiveAfter(date, null, batchSize, lastSynchronizedUuid);
+	}
+
+	public List<EventParticipant> getAllActiveAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventParticipant> cq = cb.createQuery(getElementClass());

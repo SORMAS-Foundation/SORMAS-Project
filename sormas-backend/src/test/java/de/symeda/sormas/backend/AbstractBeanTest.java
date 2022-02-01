@@ -333,7 +333,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(EventService.class);
 	}
 
-	public EventParticipantFacade getEventParticipantFacade() {
+	public EventParticipantFacadeEjbLocal getEventParticipantFacade() {
 		return getBean(EventParticipantFacadeEjbLocal.class);
 	}
 
