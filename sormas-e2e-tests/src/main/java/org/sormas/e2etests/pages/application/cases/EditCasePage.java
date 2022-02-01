@@ -21,8 +21,11 @@ package org.sormas.e2etests.pages.application.cases;
 import org.openqa.selenium.By;
 
 public class EditCasePage {
-  public static final By FOLLOW_UP_BUTTON = By.cssSelector("[id='tab-cases-visits'] a");
-  public static final By SYMPTOMS_BUTTON = By.cssSelector("[id='tab-cases-symptoms']");
+  public static final By CALCULATE_CASE_CLASSIFICATION_BUTTON =
+      By.id("caseClassificationCalculationButton");
+  public static final By FOLLOW_UP_TAB = By.cssSelector("[id='tab-cases-visits'] a");
+  public static final By SYMPTOMS_TAB = By.cssSelector("[id='tab-cases-symptoms']");
+  public static final By THERAPY_TAB = By.cssSelector("[id='tab-cases-therapy']");
   public static final By REGION_INPUT = By.cssSelector("#responsibleRegion input");
   public static final By DISTRICT_INPUT = By.cssSelector("#responsibleDistrict input");
   public static final By COMMUNITY_INPUT = By.cssSelector("#responsibleCommunity input");
@@ -43,6 +46,7 @@ public class EditCasePage {
           "[location='samples'] [class='v-button v-widget link v-button-link compact v-button-compact']");
   public static final By REPORT_DATE_INPUT = By.cssSelector("#reportDate input");
   public static final By CASE_CLASSIFICATION_COMBOBOX = By.cssSelector("#caseClassification div");
+  public static final By CASE_CLASSIFICATION_INPUT = By.cssSelector("#caseClassification input");
   public static final By CLINICAL_CONFIRMATION_COMBOBOX =
       By.cssSelector("#clinicalConfirmation div");
   public static final By EPIDEMIOLOGICAL_CONFIRMATION_COMBOBOX =
@@ -124,7 +128,7 @@ public class EditCasePage {
       By.cssSelector("#nationalLevelDate input");
   public static final By GENERAL_COMMENT_TEXTAREA = By.cssSelector("textarea#additionalDetails");
   public static final By SAVE_BUTTON = By.id("commit");
-  public static final By ACTION_CANCEL = By.id("actionCancel");
+  public static final By ACTION_CANCEL = By.cssSelector(".popupContent #actionCancel");
   public static final By DELETE_BUTTON = By.id("delete");
   public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
   public static final By CASE_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
