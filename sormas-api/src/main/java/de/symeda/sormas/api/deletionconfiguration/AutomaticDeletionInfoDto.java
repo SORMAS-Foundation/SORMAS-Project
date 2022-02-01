@@ -2,13 +2,13 @@ package de.symeda.sormas.api.deletionconfiguration;
 
 import java.io.Serializable;
 
-public class AutomaticDeletionDto implements Serializable {
+public class AutomaticDeletionInfoDto implements Serializable {
 
 	private String deletionDate;
 	private String endOfProcessing;
 	private String deletionPeriod;
 
-	public AutomaticDeletionDto(String deletionDate, String endOfProcessing, String deletionPeriod) {
+	public AutomaticDeletionInfoDto(String deletionDate, String endOfProcessing, String deletionPeriod) {
 		this.deletionDate = deletionDate;
 		this.endOfProcessing = endOfProcessing;
 		this.deletionPeriod = deletionPeriod;

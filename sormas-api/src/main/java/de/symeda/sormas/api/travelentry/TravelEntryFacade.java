@@ -6,7 +6,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.BaseFacade;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionDto;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -34,5 +34,5 @@ public interface TravelEntryFacade extends BaseFacade<TravelEntryDto, TravelEntr
 
 	Page<TravelEntryIndexDto> getIndexPage(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	AutomaticDeletionDto getAutomaticDeletionInfo(String uuid);
+	AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid);
 }

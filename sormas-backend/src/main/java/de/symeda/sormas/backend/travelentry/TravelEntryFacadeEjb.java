@@ -10,7 +10,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionDto;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.Captions;
@@ -280,7 +280,7 @@ public class TravelEntryFacadeEjb extends AbstractCoreEntityFacade<TravelEntry> 
 	}
 
 	@Override
-	public AutomaticDeletionDto getAutomaticDeletionInfo(String uuid) {
+	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
 		return getAutomaticDeletionInfo(uuid, CoreEntityType.TRAVEL_ENTRY);
 	}
 

@@ -9,7 +9,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionDto;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -44,8 +44,8 @@ public abstract class AbstractCoreEntityFacade<T extends CoreAdo> {
 		});
 	}
 
-	public AutomaticDeletionDto getAutomaticDeletionInfo(String uuid, CoreEntityType coreEntityType) {
-		return new AutomaticDeletionDto("10/11/2031", "09/11/2021", "10 years");
+	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid, CoreEntityType coreEntityType) {
+		return new AutomaticDeletionInfoDto("10/11/2031", "09/11/2021", "10 years");
 	}
 
 	protected abstract void delete(T entity);
