@@ -73,6 +73,8 @@ public interface EventParticipantFacade {
 
 	boolean exists(String uuid);
 
+	boolean exists(String personUuid, String eventUUID);
+
 	EventParticipantReferenceDto getReferenceByUuid(String uuid);
 
 	EventParticipantReferenceDto getReferenceByEventAndPerson(String eventUuid, String personUuid);

@@ -827,6 +827,14 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	public boolean exists(String uuid) {
 		return eventParticipantService.exists(uuid);
 	}
+	
+	@Override
+	public boolean exists(String personUuid, String eventUuid) {
+		return eventParticipantService.exists(
+			(cb, root, cq) -> cb.and(
+				cb.equal(root.get(EventParticipant.PERSON).get(AbstractDomainObject.UUID), personUuid),
+				cb.equal(root.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID), eventUuid)));
+	}
 
 	@Override
 	public EventParticipantReferenceDto getReferenceByUuid(String uuid) {
