@@ -50,8 +50,9 @@ public class EpidemiologicalDataCaseSteps implements En {
 
     When(
         "I click on Exposure details known with ([^\"]*) option",
-        (String option) ->
-            webDriverHelpers.clickWebElementByText(EXPOSURE_DETAILS_KNOWN_OPTIONS, option));
+        (String option) -> {
+          webDriverHelpers.clickWebElementByText(EXPOSURE_DETAILS_KNOWN_OPTIONS, option);
+        });
 
     When(
         "I click on Activity details known with ([^\"]*) option",
