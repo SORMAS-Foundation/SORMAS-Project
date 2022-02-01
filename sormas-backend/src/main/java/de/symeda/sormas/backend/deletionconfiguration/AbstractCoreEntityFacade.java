@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.deletionconfiguration;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -24,6 +25,10 @@ public abstract class AbstractCoreEntityFacade<T extends CoreAdo> {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
 
+	@Inject
+	private DeletionConfigurationService deletionConfigurationService;
+
+	@Inject
 	protected AbstractCoreEntityFacade(Class<T> entityClass) {
 		this.entityClass = entityClass;
 	}
@@ -45,7 +50,12 @@ public abstract class AbstractCoreEntityFacade<T extends CoreAdo> {
 	}
 
 	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid, CoreEntityType coreEntityType) {
-		return new AutomaticDeletionInfoDto("10/11/2031", "09/11/2021", "10 years");
+		DeletionConfiguration deletionConfiguration = deletionConfigurationService.getCoreEntityTypeConfig(coreEntityType);
+		Object[] deletionData = getDeletionData(uuid, deletionConfiguration);
+		Date referenceDate = (Date) deletionData[0];
+		Date deletiondate = DateHelper.addDays(referenceDate, deletionConfiguration.deletionPeriod);
+		String endOfProcessingDate = DateHelper.formatShortDate((Date) deletionData[1]);
+		return new AutomaticDeletionInfoDto(DateHelper.formatShortDate(deletiondate), endOfProcessingDate, "10 years");
 	}
 
 	protected abstract void delete(T entity);
@@ -59,5 +69,17 @@ public abstract class AbstractCoreEntityFacade<T extends CoreAdo> {
 		default:
 			throw new IllegalArgumentException("deletion reference " + deletionReference + " not supported in " + getClass().getSimpleName());
 		}
+	}
+
+	private Object[] getDeletionData(String uuid, DeletionConfiguration entityConfig) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<T> from = cq.from(entityClass);
+
+		cq.multiselect(from.get(getDeleteReferenceField(entityConfig.deletionReference)), from.get(AbstractDomainObject.CHANGE_DATE));
+		cq.where(cb.equal(from.get(AbstractDomainObject.UUID), uuid));
+
+		return em.createQuery(cq).getSingleResult();
 	}
 }
