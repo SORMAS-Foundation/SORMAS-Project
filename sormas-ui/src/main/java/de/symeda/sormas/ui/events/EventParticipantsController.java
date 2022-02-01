@@ -144,6 +144,15 @@ public class EventParticipantsController {
 							},
 							true);
 				} else {
+					EventParticipantCriteria criteria = new EventParticipantCriteria();
+					criteria.withEvent(eventRef);
+					List<EventParticipantIndexDto> currentEventParticipants =
+						FacadeProvider.getEventParticipantFacade().getIndexList(criteria, null, null, null);
+					for (EventParticipantIndexDto participant : currentEventParticipants) {
+						if (dto.getPerson().getUuid().equals(participant.getPersonUuid())) {
+							throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
+						}
+					}
 					EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
 					Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
 					if (navigateOnCommit) {
