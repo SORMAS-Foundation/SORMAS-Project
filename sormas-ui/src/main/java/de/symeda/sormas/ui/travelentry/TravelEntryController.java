@@ -13,6 +13,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -116,6 +117,7 @@ public class TravelEntryController {
 	public CommitDiscardWrapperComponent<TravelEntryDataForm> getTravelEntryDataEditComponent(String travelEntryUuid) {
 
 		TravelEntryDto travelEntry = findTravelEntry(travelEntryUuid);
+		AutomaticDeletionDto automaticDeletionDto = FacadeProvider.getTravelEntryFacade().getAutomaticDeletionInfo(travelEntryUuid);
 
 		TravelEntryDataForm travelEntryEditForm = new TravelEntryDataForm(travelEntryUuid, travelEntry.isPseudonymized());
 		travelEntryEditForm.setValue(travelEntry);
@@ -125,7 +127,9 @@ public class TravelEntryController {
 			UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_EDIT),
 			travelEntryEditForm.getFieldGroup());
 
-		editComponent.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel());
+		if (automaticDeletionDto != null) {
+			editComponent.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionDto));
+		}
 
 		editComponent.addCommitListener(() -> {
 			if (!travelEntryEditForm.getFieldGroup().isModified()) {
