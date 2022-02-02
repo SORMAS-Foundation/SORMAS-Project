@@ -134,7 +134,7 @@ public class EventParticipantImporter extends DataImporter {
 
 		ImportRelatedObjectsMapper.Builder relatedObjectsMapperBuilder = new ImportRelatedObjectsMapper.Builder();
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED) && event.getDisease() != null) {
 			relatedObjectsMapperBuilder.addMapper(
 				VaccinationDto.class,
 				vaccinations,
