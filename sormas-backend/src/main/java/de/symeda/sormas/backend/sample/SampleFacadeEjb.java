@@ -981,7 +981,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	private void handleAssotiatedObjectChanges(Sample newSample, boolean syncShares) {
 		if (newSample.getAssociatedCase() != null) {
-			caseFacade.onCaseChanged(CaseFacadeEjb.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase(), syncShares);
+			caseFacade.onCaseChanged(caseFacade.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase(), syncShares);
 		}
 
 		if (newSample.getAssociatedContact() != null) {

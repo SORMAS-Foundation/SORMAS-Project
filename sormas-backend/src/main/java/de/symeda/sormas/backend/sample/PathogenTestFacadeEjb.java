@@ -254,7 +254,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		// Update case classification if necessary
 		final Case associatedCase = pathogenTest.getSample().getAssociatedCase();
 		if (associatedCase != null) {
-			caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(associatedCase), associatedCase, syncShares);
+			caseFacade.onCaseChanged(caseFacade.toDto(associatedCase), associatedCase, syncShares);
 		}
 
 		// update contact if necessary

@@ -53,6 +53,7 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -158,7 +159,7 @@ import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean
-public class CaseService extends AbstractDeletableAdoService<Case> {
+public class CaseService extends AbstractCoreAdoService<Case> {
 
 	private static final long SECONDS_30_DAYS = 30L * 24L * 60L * 60L;
 
@@ -1244,7 +1245,7 @@ public class CaseService extends AbstractDeletableAdoService<Case> {
 				statusChangedBySystem = true;
 			}
 		} else {
-			CaseDataDto caseDto = CaseFacadeEjbLocal.toDto(caze);
+			CaseDataDto caseDto = caseFacade.toDto(caze);
 			Date currentFollowUpUntil = caseDto.getFollowUpUntil();
 
 			Date earliestSampleDate = null;

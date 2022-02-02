@@ -20,15 +20,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.api.utils.criteria.BaseCriteria;
-import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.Pseudonymizer;
-
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
+import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 public abstract class AbstractCoreEjb<ADO extends CoreAdo, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AbstractCoreAdoService<ADO>, CRITERIA extends BaseCriteria>
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA> {
@@ -107,6 +114,37 @@ public abstract class AbstractCoreEjb<ADO extends CoreAdo, DTO extends EntityDto
 		DTO dto = toDto(source);
 		pseudonymizeDto(source, dto, pseudonymizer);
 		return dto;
+	}
+
+	public void executeAutomaticDeletion(DeletionConfiguration entityConfig) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ADO> cq = cb.createQuery(adoClass);
+		Root<ADO> from = cq.from(adoClass);
+
+		Date referenceDeletionDate = DateHelper.subtractDays(new Date(), entityConfig.getDeletionPeriod());
+		cq.where(cb.lessThanOrEqualTo(from.get(getDeleteReferenceField(entityConfig.getDeletionReference())), referenceDeletionDate));
+
+		List<ADO> toDeleteEntities = QueryHelper.getResultList(em, cq, null, null);
+
+		toDeleteEntities.forEach(entity -> {
+			delete(entity);
+		});
+	}
+
+	protected void delete(ADO entity) {
+		service.delete(entity);
+	}
+
+	protected String getDeleteReferenceField(DeletionReference deletionReference) {
+		switch (deletionReference) {
+			case CREATION:
+				return AbstractDomainObject.CREATION_DATE;
+			case END:
+				return AbstractDomainObject.CHANGE_DATE;
+			default:
+				throw new IllegalArgumentException("deletion reference " + deletionReference + " not supported in " + getClass().getSimpleName());
+		}
 	}
 
 	protected abstract void pseudonymizeDto(ADO source, DTO dto, Pseudonymizer pseudonymizer);

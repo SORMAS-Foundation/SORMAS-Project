@@ -52,8 +52,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.inject.Inject;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -210,6 +209,7 @@ import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb.ClinicalVisitFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.backend.common.AbstractCoreEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -219,11 +219,9 @@ import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
-import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentService;
@@ -327,27 +325,21 @@ import de.symeda.sormas.backend.visit.VisitService;
 import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "CaseFacade")
-public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements CaseFacade {
+public class CaseFacadeEjb extends AbstractCoreEjb<Case, CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseService, CaseCriteria>
+		implements CaseFacade {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
-
 	@EJB
 	private CaseClassificationFacadeEjbLocal caseClassificationFacade;
-	@EJB
-	private CaseService caseService;
 	@EJB
 	private CaseListCriteriaBuilder listQueryBuilder;
 	@EJB
 	private PersonService personService;
 	@EJB
 	private FacilityService facilityService;
-	@EJB
-	private UserService userService;
 	@EJB
 	private VisitService visitService;
 	@EJB
@@ -456,7 +448,11 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 	private ManagedScheduledExecutorService executorService;
 
 	public CaseFacadeEjb() {
-		super(Case.class);
+	}
+
+	@Inject
+	public CaseFacadeEjb(CaseService service, UserService userService) {
+		super(Case.class, CaseDataDto.class, service, userService);
 	}
 
 	@Override
@@ -485,21 +481,15 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return caseService.getAllActiveCasesAfter(date, includeExtendedChangeDateFilters, batchSize, lastSynchronizedUuid)
+		return service.getAllActiveCasesAfter(date, includeExtendedChangeDateFilters, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(c -> convertToDto(c, pseudonymizer))
 			.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<CaseDataDto> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return caseService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
-	}
+	protected void selectDtoFields(CriteriaQuery<CaseDataDto> cq, Root<Case> root) {
 
-	public CaseDataDto getByUuid(String uuid) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return convertToDto(caseService.getByUuid(uuid), pseudonymizer);
 	}
 
 	public Page<CaseIndexDto> getIndexPage(CaseCriteria caseCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
@@ -510,7 +500,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 
 	@Override
 	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm, CaseCriteria caseCriteria) {
-		return caseService.getUuidByUuidEpidNumberOrExternalId(searchTerm, caseCriteria);
+		return service.getUuidByUuidEpidNumberOrExternalId(searchTerm, caseCriteria);
 	}
 
 	@Override
@@ -535,11 +525,11 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 			if (caseCriteria != null) {
 				caseUserFilterCriteria.setIncludeCasesFromOtherJurisdictions(caseCriteria.getIncludeCasesFromOtherJurisdictions());
 			}
-			filter = caseService.createUserFilter(cb, cq, root, caseUserFilterCriteria);
+			filter = service.createUserFilter(cb, cq, root, caseUserFilterCriteria);
 		}
 
 		if (caseCriteria != null) {
-			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
+			Predicate criteriaFilter = service.createCriteriaFilter(caseCriteria, caseQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 		if (filter != null) {
@@ -655,7 +645,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 
 	@Override
 	public List<CaseSelectionDto> getCaseSelectionList(CaseCriteria caseCriteria) {
-		List<CaseSelectionDto> entries = caseService.getCaseSelectionList(caseCriteria);
+		List<CaseSelectionDto> entries = service.getCaseSelectionList(caseCriteria);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(CaseSelectionDto.class, entries, CaseSelectionDto::isInJurisdiction, null);
@@ -667,7 +657,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 	public List<CaseListEntryDto> getEntriesList(String personUuid, Integer first, Integer max) {
 
 		Long personId = personFacade.getPersonIdByUuid(personUuid);
-		List<CaseListEntryDto> entries = caseService.getEntriesList(personId, first, max);
+		List<CaseListEntryDto> entries = service.getEntriesList(personId, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(CaseListEntryDto.class, entries, CaseListEntryDto::isInJurisdiction, null);
@@ -798,15 +788,15 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 				joins.getFollowUpStatusChangeUser().get(User.ID),
 				caseRoot.get(Case.PREVIOUS_QUARANTINE_TO),
 				caseRoot.get(Case.QUARANTINE_CHANGE_COMMENT),
-				JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(caseQueryContext)));
+				JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(caseQueryContext)));
 		//@formatter:on
 
 		cq.distinct(true);
 
-		Predicate filter = caseService.createUserFilter(cb, cq, caseRoot);
+		Predicate filter = service.createUserFilter(cb, cq, caseRoot);
 
 		if (caseCriteria != null) {
-			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
+			Predicate criteriaFilter = service.createCriteriaFilter(caseCriteria, caseQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, caseRoot.get(Case.UUID));
@@ -1241,7 +1231,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 			return Collections.emptyList();
 		}
 
-		return caseService.getAllActiveUuids();
+		return service.getAllActiveUuids();
 	}
 
 	public Long countCasesForMap(
@@ -1254,7 +1244,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 
-		return caseService.countCasesForMap(region, district, disease, from, to, dateType);
+		return service.countCasesForMap(region, district, disease, from, to, dateType);
 	}
 
 	@Override
@@ -1269,7 +1259,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
 
-		List<MapCaseDto> cases = caseService.getCasesForMap(region, district, disease, from, to, dateType);
+		List<MapCaseDto> cases = service.getCasesForMap(region, district, disease, from, to, dateType);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		pseudonymizer.pseudonymizeDtoCollection(
@@ -1286,7 +1276,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 
-		return caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(personUuid)), false)
+		return service.findBy(new CaseCriteria().person(new PersonReferenceDto(personUuid)), false)
 			.stream()
 			.map(c -> convertToDto(c, pseudonymizer))
 			.collect(Collectors.toList());
@@ -1301,8 +1291,8 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 
-		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
-		filter = CriteriaBuilderHelper.and(cb, filter, caseService.createCriteriaFilter(criteria, caseQueryContext));
+		Predicate filter = service.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
+		filter = CriteriaBuilderHelper.and(cb, filter, service.createCriteriaFilter(criteria, caseQueryContext));
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -1321,7 +1311,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 	@Override
 	public List<CaseSelectionDto> getSimilarCases(CaseSimilarityCriteria criteria) {
 
-		List<CaseSelectionDto> entries = caseService.getSimilarCases(criteria);
+		List<CaseSelectionDto> entries = service.getSimilarCases(criteria);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(CaseSelectionDto.class, entries, CaseSelectionDto::isInJurisdiction, null);
@@ -1332,25 +1322,25 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 	@Override
 	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, boolean ignoreRegion) {
 
-		return caseService.getCasesForDuplicateMerging(criteria, ignoreRegion, configFacade.getNameSimilarityThreshold());
+		return service.getCasesForDuplicateMerging(criteria, ignoreRegion, configFacade.getNameSimilarityThreshold());
 	}
 
 	public void updateCompleteness(String caseUuid) {
-		caseService.updateCompleteness(caseUuid);
+		service.updateCompleteness(caseUuid);
 	}
 
 	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
-		return convertToDto(caseService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	private CaseDataDto getCaseDataWithoutPseudonyimization(String uuid) {
-		return toDto(caseService.getByUuid(uuid));
+		return toDto(service.getByUuid(uuid));
 	}
 
 	@Override
 	public CaseReferenceDto getReferenceByUuid(String uuid) {
-		return convertToReferenceDto(caseService.getByUuid(uuid));
+		return convertToReferenceDto(service.getByUuid(uuid));
 	}
 
 	@Override
@@ -1374,7 +1364,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 		throws ValidationRuntimeException {
 
 		for (String caseUuid : caseUuidList) {
-			Case caze = caseService.getByUuid(caseUuid);
+			Case caze = service.getByUuid(caseUuid);
 			CaseDataDto existingCaseDto = toDto(caze);
 
 			updateCaseWithBulkData(
@@ -1408,7 +1398,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 		}
 
 		for (String caseUuid : caseUuidList) {
-			Case caze = caseService.getByUuid(caseUuid);
+			Case caze = service.getByUuid(caseUuid);
 			CaseDataDto existingCaseDto = toDto(caze);
 
 			updateCaseWithBulkData(
@@ -1479,9 +1469,9 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal, Boolean systemSave)
 		throws ValidationRuntimeException {
 
-		Case existingCase = caseService.getByUuid(dto.getUuid());
+		Case existingCase = service.getByUuid(dto.getUuid());
 
-		if (!systemSave && internal && existingCase != null && !caseService.isCaseEditAllowed(existingCase)) {
+		if (!systemSave && internal && existingCase != null && !service.isCaseEditAllowed(existingCase)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorCaseNotEditable));
 		}
 
@@ -1500,7 +1490,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 		throws ValidationRuntimeException {
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
-		restorePseudonymizedDto(dto, existingCaze, existingCaseDto);
+		restorePseudonymizedDto(dto, existingCaseDto, existingCaze, Pseudonymizer.getDefault(userService::hasRight));
 
 		validate(dto);
 
@@ -1523,10 +1513,10 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 	}
 
 	private void doSave(Case caze, boolean handleChanges, CaseDataDto existingCaseDto, boolean syncShares) {
-		caseService.ensurePersisted(caze);
+		service.ensurePersisted(caze);
 		if (handleChanges) {
 			updateCaseVisitAssociations(existingCaseDto, caze);
-			caseService.updateFollowUpDetails(caze, existingCaseDto != null && caze.getFollowUpStatus() != existingCaseDto.getFollowUpStatus());
+			service.updateFollowUpDetails(caze, existingCaseDto != null && caze.getFollowUpStatus() != existingCaseDto.getFollowUpStatus());
 
 			onCaseChanged(existingCaseDto, caze, syncShares);
 		}
@@ -1564,7 +1554,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 
 		if (sourceContact != null) {
 			final Contact contact = contactService.getByUuid(sourceContact.getUuid());
-			final Case caze = caseService.getByUuid(cazeRef.getUuid());
+			final Case caze = service.getByUuid(cazeRef.getUuid());
 			contact.getSamples().forEach(sample -> sample.setAssociatedCase(caze));
 		}
 	}
@@ -1573,7 +1563,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 	public void setSampleAssociations(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef) {
 		if (sourceEventParticipant != null) {
 			final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
-			final Case caze = caseService.getByUuid(cazeRef.getUuid());
+			final Case caze = service.getByUuid(cazeRef.getUuid());
 			eventParticipant.getSamples().forEach(sample -> sample.setAssociatedCase(caze));
 		}
 	}
@@ -1581,7 +1571,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 	@Override
 	public void setSampleAssociationsUnrelatedDisease(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef) {
 		final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
-		final Case caze = caseService.getByUuid(cazeRef.getUuid());
+		final Case caze = service.getByUuid(cazeRef.getUuid());
 		final Disease disease = caze.getDisease();
 		eventParticipant.getSamples()
 			.stream()
@@ -1681,7 +1671,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 	@Override
 	public void archiveOrDearchiveCase(String caseUuid, boolean archive) {
 
-		caseService.updateArchived(Collections.singletonList(caseUuid), archive);
+		service.updateArchived(Collections.singletonList(caseUuid), archive);
 	}
 
 	/**
@@ -2085,7 +2075,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 
 			User taskAssignee = task.getAssigneeUser();
 
-			if (forceReassignment || taskAssignee == null || !caseService.inJurisdiction(caze, taskAssignee)) {
+			if (forceReassignment || taskAssignee == null || !service.inJurisdiction(caze, taskAssignee)) {
 				// if there is any mismatch between the jurisdiction of the case and the assigned user,
 				// we need to reassign the tasks
 				assignOfficerOrSupervisorToTask(caze, task);
@@ -2100,7 +2090,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 	public int updateCompleteness() {
 		List<String> getCompletenessCheckCaseList = getCompletenessCheckNeededCaseList();
 
-		IterableHelper.executeBatched(getCompletenessCheckCaseList, 10, caseCompletionBatch -> caseService.updateCompleteness(caseCompletionBatch));
+		IterableHelper.executeBatched(getCompletenessCheckCaseList, 10, caseCompletionBatch -> service.updateCompleteness(caseCompletionBatch));
 
 		return getCompletenessCheckCaseList.size();
 	}
@@ -2108,7 +2098,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 	@Override
 	public PreviousCaseDto getMostRecentPreviousCase(PersonReferenceDto person, Disease disease, Date startDate) {
 
-		return caseService.getMostRecentPreviousCase(person.getUuid(), disease, startDate);
+		return service.getMostRecentPreviousCase(person.getUuid(), disease, startDate);
 	}
 
 	private List<String> getCompletenessCheckNeededCaseList() {
@@ -2145,7 +2135,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 		}
 
 		// Generate a suffix number
-		String highestEpidNumber = caseService.getHighestEpidNumber(newEpidNumber, caseUuid, disease);
+		String highestEpidNumber = service.getHighestEpidNumber(newEpidNumber, caseUuid, disease);
 		if (highestEpidNumber == null || highestEpidNumber.endsWith("-")) {
 			// If there is not yet a case with a suffix for this epid number in the database, use 001
 			newEpidNumber = newEpidNumber + "001";
@@ -2270,7 +2260,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete cases.");
 		}
 
-		Case caze = caseService.getByUuid(caseUuid);
+		Case caze = service.getByUuid(caseUuid);
 		deleteCase(caze);
 	}
 
@@ -2283,7 +2273,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 			}
 		}
 
-		caseService.delete(caze);
+		service.delete(caze);
 	}
 
 	public List<String> deleteCases(List<String> caseUuids) {
@@ -2291,7 +2281,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete cases.");
 		}
 		List<String> deletedCasesUuids = new ArrayList<>();
-		List<Case> casesToBeDeleted = caseService.getByUuids(caseUuids);
+		List<Case> casesToBeDeleted = service.getByUuids(caseUuids);
 		if (casesToBeDeleted != null) {
 			casesToBeDeleted.forEach(caseToBeDeleted -> {
 				if (!caseToBeDeleted.isDeleted()) {
@@ -2310,10 +2300,10 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 	@Override
 	public void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) throws ExternalSurveillanceToolException {
 
-		Case caze = caseService.getByUuid(caseUuid);
-		Case duplicateOfCase = caseService.getByUuid(duplicateOfCaseUuid);
+		Case caze = service.getByUuid(caseUuid);
+		Case duplicateOfCase = service.getByUuid(duplicateOfCaseUuid);
 		caze.setDuplicateOf(duplicateOfCase);
-		caseService.ensurePersisted(caze);
+		service.ensurePersisted(caze);
 
 		deleteCase(caseUuid);
 	}
@@ -2325,7 +2315,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 			return Collections.emptyList();
 		}
 
-		return caseService.getArchivedUuidsSince(since);
+		return service.getArchivedUuidsSince(since);
 	}
 
 	@Override
@@ -2334,7 +2324,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
-		return caseService.getDeletedUuidsSince(since);
+		return service.getDeletedUuidsSince(since);
 	}
 
 	public static CaseReferenceDto toReferenceDto(Case entity) {
@@ -2346,18 +2336,9 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 		return entity.toReference();
 	}
 
-	public CaseDataDto convertToDto(Case source, Pseudonymizer pseudonymizer) {
-
-		CaseDataDto dto = toDto(source);
-
-		pseudonymizeDto(source, dto, pseudonymizer);
-
-		return dto;
-	}
-
-	private void pseudonymizeDto(Case source, CaseDataDto dto, Pseudonymizer pseudonymizer) {
+	public void pseudonymizeDto(Case source, CaseDataDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
-			boolean inJurisdiction = caseService.inJurisdictionOrOwned(source);
+			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
 
 			pseudonymizer.pseudonymizeDto(CaseDataDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
@@ -2388,10 +2369,10 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 		}
 	}
 
-	private void restorePseudonymizedDto(CaseDataDto dto, Case caze, CaseDataDto existingCaseDto) {
+	public void restorePseudonymizedDto(CaseDataDto dto, CaseDataDto existingCaseDto, Case caze , Pseudonymizer pseudonymizer) {
 		if (existingCaseDto != null) {
-			boolean inJurisdiction = caseService.inJurisdictionOrOwned(caze);
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+			boolean inJurisdiction = service.inJurisdictionOrOwned(caze);
+
 			User currentUser = userService.getCurrentUser();
 
 			pseudonymizer.restoreUser(caze.getReportingUser(), currentUser, dto, dto::setReportingUser);
@@ -2447,14 +2428,14 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 		CaseReferenceDto dto = toReferenceDto(source);
 
 		if (dto != null) {
-			boolean inJurisdiction = caseService.inJurisdictionOrOwned(source);
+			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
 			Pseudonymizer.getDefault(userService::hasRight).pseudonymizeDto(CaseReferenceDto.class, dto, inJurisdiction, null);
 		}
 
 		return dto;
 	}
 
-	public static CaseDataDto toDto(Case source) {
+	public CaseDataDto toDto(Case source) {
 
 		if (source == null) {
 			return null;
@@ -2619,6 +2600,11 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 		}
 
 		return target;
+	}
+
+	@Override
+	public CaseReferenceDto toRefDto(Case aCase) {
+		return convertToReferenceDto(aCase);
 	}
 
 	public Case fillOrBuildEntity(@NotNull CaseDataDto source, Case target, boolean checkChangeDate) {
@@ -3048,7 +3034,7 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 
 	@Override
 	public boolean doesExternalTokenExist(String externalToken, String caseUuid) {
-		return caseService.exists(
+		return service.exists(
 			(cb, caseRoot, cq) -> CriteriaBuilderHelper.and(
 				cb,
 				cb.equal(caseRoot.get(Case.EXTERNAL_TOKEN), externalToken),
@@ -3064,9 +3050,9 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 		Root<Case> caseRoot = cq.from(Case.class);
 		Root<District> districtRoot = cq.from(District.class);
 
-		Predicate filter = caseService.createDefaultFilter(cb, caseRoot);
+		Predicate filter = service.createDefaultFilter(cb, caseRoot);
 		if (fromDate != null || toDate != null) {
-			filter = caseService.createCaseRelevanceFilter(cb, caseRoot, fromDate, toDate);
+			filter = service.createCaseRelevanceFilter(cb, caseRoot, fromDate, toDate);
 		}
 
 		if (disease != null) {
@@ -3236,8 +3222,8 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 		}
 
 		// 2 Change CaseReference
-		Case leadCase = caseService.getByUuid(leadCaseData.getUuid());
-		Case otherCase = caseService.getByUuid(otherCaseData.getUuid());
+		Case leadCase = service.getByUuid(leadCaseData.getUuid());
+		Case otherCase = service.getByUuid(otherCaseData.getUuid());
 
 		// 2.1 Contacts
 		List<Contact> contacts = contactService.findBy(new ContactCriteria().caze(otherCase.toReference()), null);
@@ -3441,11 +3427,11 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 		Root<Case> from = cq.from(Case.class);
 
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
-		cq.where(cb.equal(from.get(Case.ARCHIVED), false), cb.not(caseService.createChangeDateFilter(cb, from, notChangedTimestamp, true)));
+		cq.where(cb.equal(from.get(Case.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp, true)));
 		cq.select(from.get(Case.UUID));
 		List<String> caseUuids = em.createQuery(cq).getResultList();
 
-		IterableHelper.executeBatched(caseUuids, ARCHIVE_BATCH_SIZE, batchedCaseUuids -> caseService.updateArchived(batchedCaseUuids, true));
+		IterableHelper.executeBatched(caseUuids, ARCHIVE_BATCH_SIZE, batchedCaseUuids -> service.updateArchived(batchedCaseUuids, true));
 		logger.debug(
 			"archiveAllArchivableCases() finished. caseCount = {}, daysAfterCaseGetsArchived = {}, {}ms",
 			caseUuids.size(),
@@ -3458,17 +3444,12 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 
 		long startTime = DateHelper.startTime();
 
-		IterableHelper.executeBatched(caseUuids, ARCHIVE_BATCH_SIZE, batchedCaseUuids -> caseService.updateArchived(batchedCaseUuids, archived));
+		IterableHelper.executeBatched(caseUuids, ARCHIVE_BATCH_SIZE, batchedCaseUuids -> service.updateArchived(batchedCaseUuids, archived));
 		logger.debug(
 			"updateArchived() finished. caseCount = {}, archived = {}, {}ms",
 			caseUuids.size(),
 			archived,
 			DateHelper.durationMillies(startTime));
-	}
-
-	@Override
-	public boolean exists(String uuid) {
-		return caseService.exists(uuid);
 	}
 
 	@Override
@@ -3511,10 +3492,10 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 			caze.get(Case.FOLLOW_UP_UNTIL),
 			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
 			caze.get(Case.DISEASE),
-			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(caseQueryContext)));
+			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(caseQueryContext)));
 
 		Predicate filter = CriteriaBuilderHelper
-			.and(cb, caseService.createUserFilter(cb, cq, caze), caseService.createCriteriaFilter(caseCriteria, caseQueryContext));
+			.and(cb, service.createUserFilter(cb, cq, caze), service.createCriteriaFilter(caseCriteria, caseQueryContext));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -3612,15 +3593,15 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 	}
 
 	public boolean isCaseEditAllowed(String caseUuid) {
-		Case caze = caseService.getByUuid(caseUuid);
+		Case caze = service.getByUuid(caseUuid);
 
-		return caseService.isCaseEditAllowed(caze);
+		return service.isCaseEditAllowed(caze);
 	}
 
 	@Override
 	public void sendMessage(List<String> caseUuids, String subject, String messageContent, MessageType... messageTypes) {
 		caseUuids.forEach(uuid -> {
-			final Case aCase = caseService.getByUuid(uuid);
+			final Case aCase = service.getByUuid(uuid);
 			final Person person = aCase.getPerson();
 
 			try {
@@ -3840,28 +3821,35 @@ public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements Cas
 
 	@Override
 	public List<CaseDataDto> getByPersonUuids(List<String> personUuids) {
-		return caseService.getByPersonUuids(personUuids).stream().map(CaseFacadeEjb::toDto).collect(Collectors.toList());
+		return service.getByPersonUuids(personUuids).stream().map(c->toDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<CaseDataDto> getByExternalId(String externalId) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return caseService.getByExternalId(externalId).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
+		return service.getByExternalId(externalId).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
-		caseService.updateExternalData(externalData);
+		service.updateExternalData(externalData);
 	}
 
 	@Override
 	protected void delete(Case entity) {
-		caseService.delete(entity);
+		service.delete(entity);
 	}
 
 	@LocalBean
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {
 
+		public CaseFacadeEjbLocal() {
+		}
+
+		@Inject
+		public CaseFacadeEjbLocal(CaseService service, UserService userService) {
+			super(service, userService);
+		}
 	}
 }

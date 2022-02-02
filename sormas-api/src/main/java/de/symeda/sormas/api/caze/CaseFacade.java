@@ -31,6 +31,7 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import de.symeda.sormas.api.CaseMeasure;
+import de.symeda.sormas.api.CoreBaseFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
@@ -52,7 +53,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
-public interface CaseFacade {
+public interface CaseFacade extends CoreBaseFacade<CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseCriteria> {
 
 	List<CaseDataDto> getAllActiveCasesAfter(Date date);
 
@@ -61,11 +62,7 @@ public interface CaseFacade {
 	 */
 	List<CaseDataDto> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters);
 
-	long count(CaseCriteria caseCriteria);
-
 	long count(CaseCriteria caseCriteria, boolean ignoreUserFilter);
-
-	List<CaseIndexDto> getIndexList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	List<CaseSelectionDto> getCaseSelectionList(CaseCriteria caseCriteria);
 
@@ -111,10 +108,6 @@ public interface CaseFacade {
 	List<String> getAllActiveUuids();
 
 	List<CaseDataDto> getAllActiveCasesAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
-
-	List<CaseDataDto> getByUuids(List<String> uuids);
-
-	CaseDataDto getByUuid(String uuid);
 
 	String getUuidByUuidEpidNumberOrExternalId(String searchTerm, CaseCriteria caseCriteria);
 

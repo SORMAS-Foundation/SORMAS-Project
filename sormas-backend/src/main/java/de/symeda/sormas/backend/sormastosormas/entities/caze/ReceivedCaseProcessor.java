@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.sormastosormas.entities.caze;
 
 import java.util.Optional;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -42,6 +43,9 @@ public class ReceivedCaseProcessor
 	extends
 	ReceivedDataProcessor<Case, CaseDataDto, SormasToSormasCaseDto, SormasToSormasCasePreview, Case, CaseService, SormasToSormasCaseDtoValidator> {
 
+	@EJB
+	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
+
 	public ReceivedCaseProcessor() {
 	}
 
@@ -56,7 +60,7 @@ public class ReceivedCaseProcessor
 
 	@Override
 	public void handleReceivedData(SormasToSormasCaseDto sharedData, Case existingCase) {
-		handleIgnoredProperties(sharedData.getEntity(), CaseFacadeEjb.toDto(existingCase));
+		handleIgnoredProperties(sharedData.getEntity(), caseFacade.toDto(existingCase));
 
 		handleIgnoredProperties(
 			sharedData.getPerson(),

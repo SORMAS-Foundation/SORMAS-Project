@@ -29,7 +29,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreEjb;
-import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
@@ -122,7 +121,7 @@ public class TravelEntryFacadeEjb
 		service.delete(travelEntry);
 
 		if (travelEntry.getResultingCase() != null) {
-			caseFacade.onCaseChanged(CaseFacadeEjb.toDto(travelEntry.getResultingCase()), travelEntry.getResultingCase());
+			caseFacade.onCaseChanged(caseFacade.toDto(travelEntry.getResultingCase()), travelEntry.getResultingCase());
 		}
 	}
 

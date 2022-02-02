@@ -9,6 +9,7 @@ import javax.ejb.Singleton;
 import javax.inject.Inject;
 
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.common.AbstractCoreEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
@@ -58,14 +59,14 @@ public class CoreEntityDeletionService {
 	private static final class EntityTypeFacadePair {
 
 		private final CoreEntityType coreEntityType;
-		private final AbstractCoreEntityFacade<?> entityFacade;
+		private final AbstractCoreEjb entityFacade;
 
-		private EntityTypeFacadePair(CoreEntityType coreEntityType, AbstractCoreEntityFacade<?> entityFacade) {
+		private EntityTypeFacadePair(CoreEntityType coreEntityType, AbstractCoreEjb entityFacade) {
 			this.coreEntityType = coreEntityType;
 			this.entityFacade = entityFacade;
 		}
 
-		public static EntityTypeFacadePair of(CoreEntityType coreEntityType, AbstractCoreEntityFacade<?> entityFacade) {
+		public static EntityTypeFacadePair of(CoreEntityType coreEntityType, AbstractCoreEjb entityFacade) {
 			return new EntityTypeFacadePair(coreEntityType, entityFacade);
 		}
 	}

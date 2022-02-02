@@ -627,7 +627,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		if (newVisit.getCaze() != null) {
 			// Update case symptoms
-			CaseDataDto caze = CaseFacadeEjb.toDto(newVisit.getCaze());
+			CaseDataDto caze = caseFacade.toDto(newVisit.getCaze());
 			SymptomsDto caseSymptoms = caze.getSymptoms();
 			SymptomsHelper.updateSymptoms(toDto(newVisit).getSymptoms(), caseSymptoms);
 			caseFacade.saveCase(caze, true);

@@ -98,7 +98,6 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
-import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -855,7 +854,7 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	public EventParticipantReferenceDto getReferenceByUuid(String uuid) {
-		EventParticipant eventParticipant = eventParticipantService.getByUuid(uuid);
+		EventParticipant eventParticipant = service.getByUuid(uuid);
 		return new EventParticipantReferenceDto(eventParticipant.getUuid());
 	}
 

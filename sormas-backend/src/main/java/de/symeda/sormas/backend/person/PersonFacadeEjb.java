@@ -1073,7 +1073,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			// Call onCaseChanged once for every case to update case classification
 			// Attention: this may lead to infinite recursion when not properly implemented
 			for (Case personCase : personCases) {
-				CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
+				CaseDataDto existingCase = caseFacade.toDto(personCase);
 				caseFacade.onCaseChanged(existingCase, personCase, syncShares);
 			}
 
@@ -1120,7 +1120,7 @@ public class PersonFacadeEjb implements PersonFacade {
 						&& personCase.getOutcome() != CaseOutcome.DECEASED
 						&& (personCase.getReportDate().before(DateHelper.addDays(newPerson.getDeathDate(), 30))
 							&& personCase.getReportDate().after(DateHelper.subtractDays(newPerson.getDeathDate(), 30)))) {
-						CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
+						CaseDataDto existingCase = caseFacade.toDto(personCase);
 						personCase.setOutcome(CaseOutcome.DECEASED);
 						personCase.setOutcomeDate(newPerson.getDeathDate());
 						caseFacade.onCaseChanged(existingCase, personCase, syncShares);
@@ -1138,7 +1138,7 @@ public class PersonFacadeEjb implements PersonFacade {
 					newPerson.setCauseOfDeathDisease(null);
 					// update the latest associated case, if it was set to deceased && and if the case-disease was also the causeofdeath-disease
 					if (personCase != null && personCase.getOutcome() == CaseOutcome.DECEASED) {
-						CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
+						CaseDataDto existingCase = caseFacade.toDto(personCase);
 						personCase.setOutcome(CaseOutcome.NO_OUTCOME);
 						personCase.setOutcomeDate(null);
 						caseFacade.onCaseChanged(existingCase, personCase, syncShares);
@@ -1154,7 +1154,7 @@ public class PersonFacadeEjb implements PersonFacade {
 				if (personCase != null
 					&& personCase.getOutcome() == CaseOutcome.DECEASED
 					&& newPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE) {
-					CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
+					CaseDataDto existingCase = caseFacade.toDto(personCase);
 					personCase.setOutcomeDate(newPerson.getDeathDate());
 					caseFacade.onCaseChanged(existingCase, personCase, syncShares);
 				}
@@ -1175,7 +1175,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			// Update case list after previous onCaseChanged
 			personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), true);
 			for (Case personCase : personCases) {
-				CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
+				CaseDataDto existingCase = caseFacade.toDto(personCase);
 				if (newPerson.getApproximateAge() == null) {
 					personCase.setCaseAge(null);
 				} else if (newPerson.getApproximateAgeType() == ApproximateAgeType.MONTHS) {
