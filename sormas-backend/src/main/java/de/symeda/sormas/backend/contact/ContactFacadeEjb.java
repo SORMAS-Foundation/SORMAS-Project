@@ -2129,14 +2129,11 @@ public class ContactFacadeEjb extends AbstractCoreEntityFacade<Contact> implemen
 	}
 
 	@Override
-<<<<<<< HEAD
 	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
 		return getAutomaticDeletionInfo(uuid, CoreEntityType.CONTACT);
 	}
 
 	@Override
-=======
->>>>>>> development
 	protected void delete(Contact entity) {
 		contactService.delete(entity);
 	}
