@@ -21,7 +21,7 @@ public class AutomaticDeletionLabel extends HorizontalLayout {
 			I18nProperties.getString(Strings.infoAutomaticDeletionTooltip),
 			DateFormatHelper.formatDate(automaticDeletionInfoDto.getDeletionDate()),
 			DateFormatHelper.formatDate(automaticDeletionInfoDto.getEndOfProcessing()),
-			automaticDeletionInfoDto.getDeletionPeriod());
+			formatDeletionPeriod(automaticDeletionInfoDto.getDeletionPeriod()));
 		Label infoIcon = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 		infoIcon.setDescription(infoIconDesciption, ContentMode.HTML);
 		infoIcon.addStyleNames(CssStyles.VSPACE_TOP_4, CssStyles.HSPACE_RIGHT_4);
@@ -32,5 +32,15 @@ public class AutomaticDeletionLabel extends HorizontalLayout {
 		Label infoTextLabel = new Label(infoText, ContentMode.HTML);
 		infoTextLabel.addStyleName(CssStyles.VSPACE_TOP_4);
 		addComponent(infoTextLabel);
+	}
+
+	private String formatDeletionPeriod(int deletionPeriod) {
+		if (deletionPeriod < 31) {
+			return String.format(I18nProperties.getString(Strings.infoAutomaticDeletionTooltipDays), deletionPeriod);
+		} else if (deletionPeriod < 366) {
+			return String.format(I18nProperties.getString(Strings.infoAutomaticDeletionTooltipMonths), deletionPeriod / 30);
+		} else {
+			return String.format(I18nProperties.getString(Strings.infoAutomaticDeletionTooltipYears), deletionPeriod / 365);
+		}
 	}
 }

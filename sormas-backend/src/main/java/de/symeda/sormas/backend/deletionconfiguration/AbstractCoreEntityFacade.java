@@ -54,7 +54,7 @@ public abstract class AbstractCoreEntityFacade<T extends CoreAdo> {
 		Object[] deletionData = getDeletionData(uuid, deletionConfiguration);
 		Date referenceDate = (Date) deletionData[0];
 		Date deletiondate = DateHelper.addDays(referenceDate, deletionConfiguration.deletionPeriod);
-		return new AutomaticDeletionInfoDto(deletiondate, (Date) deletionData[1], "10 years");
+		return new AutomaticDeletionInfoDto(deletiondate, (Date) deletionData[1], deletionConfiguration.deletionPeriod);
 	}
 
 	protected abstract void delete(T entity);

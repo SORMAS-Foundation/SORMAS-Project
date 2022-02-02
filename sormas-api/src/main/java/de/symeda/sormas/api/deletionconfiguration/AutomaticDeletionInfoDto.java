@@ -7,9 +7,9 @@ public class AutomaticDeletionInfoDto implements Serializable {
 
 	private Date deletionDate;
 	private Date endOfProcessing;
-	private String deletionPeriod;
+	private int deletionPeriod;
 
-	public AutomaticDeletionInfoDto(Date deletionDate, Date endOfProcessing, String deletionPeriod) {
+	public AutomaticDeletionInfoDto(Date deletionDate, Date endOfProcessing, int deletionPeriod) {
 		this.deletionDate = deletionDate;
 		this.endOfProcessing = endOfProcessing;
 		this.deletionPeriod = deletionPeriod;
@@ -31,11 +31,11 @@ public class AutomaticDeletionInfoDto implements Serializable {
 		this.endOfProcessing = endOfProcessing;
 	}
 
-	public String getDeletionPeriod() {
+	public int getDeletionPeriod() {
 		return deletionPeriod;
 	}
 
-	public void setDeletionPeriod(String deletionPeriod) {
+	public void setDeletionPeriod(int deletionPeriod) {
 		this.deletionPeriod = deletionPeriod;
 	}
 }
