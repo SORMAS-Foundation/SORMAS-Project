@@ -111,12 +111,12 @@ public class ContactDirectorySteps implements En {
         "^I click on Line Listing button$",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING));
 
-      When(
-              "I click on the Epidemiological Data button",
-              () -> {
-                  webDriverHelpers.clickOnWebElementBySelector(EPIDEMIOLOGICAL_DATA_TAB);
-                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-              });
+    When(
+        "I click on the Epidemiological Data button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EPIDEMIOLOGICAL_DATA_TAB);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
 
     When(
         "I click on New Entry in Exposure Details Known",
@@ -128,7 +128,7 @@ public class ContactDirectorySteps implements En {
         "I click on edit Exposure vision button",
         () -> {
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.clickOnWebElementBySelector(EDIT_EXPOSURE_VISION);
+          webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_EXPOSURE_BUTTON);
           TimeUnit.SECONDS.sleep(2);
         });
     When(

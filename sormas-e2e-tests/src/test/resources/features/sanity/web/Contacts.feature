@@ -243,8 +243,7 @@ Feature: Contacts end to end tests
     And I select Work option in Type of activity from Combobox in Exposure form
     Then I fill Location form for Type of place by Other option
     And I click on save button from Epidemiological Data
-
     And I click on edit Exposure vision button
     And I select Travel option in Type of activity from Combobox in Exposure form
-   Then I fill Location form for Type of place by Facility option
+    Then I fill Location form for Type of place by Facility option
     And I click on save button from Epidemiological Data

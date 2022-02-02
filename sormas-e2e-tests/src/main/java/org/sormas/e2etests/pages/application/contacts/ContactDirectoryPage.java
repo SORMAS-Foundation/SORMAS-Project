@@ -73,7 +73,4 @@ public class ContactDirectoryPage {
       By.cssSelector(".v-window input#contactPersonPhone");
   public static final By CONTACT_PERSON_EMAIL_ADRESS =
       By.cssSelector(".v-window input#contactPersonEmail");
-  public static final By EDIT_EXPOSURE_VISION =
-      By.xpath(
-          "/html/body/div[1]/div/div[2]/div/div[2]/div/div/div/div[3]/div/div[1]/div/div[2]/div/div/div[3]/div/div[2]/div/div[2]/div/div[2]/div[1]/table/tbody/tr/td[1]/div/div");
 }
