@@ -115,6 +115,8 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumValueService;
 import de.symeda.sormas.backend.dashboard.DashboardFacadeEjb;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityDeletionService;
+import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
 import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
@@ -776,11 +778,19 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(SormasToSormasSampleDtoValidator.class);
 	}
 
-	public SormasToSormasLabMessageDtoValidator getSormasToSormasLabMessageDtoValidator(){
+	public SormasToSormasLabMessageDtoValidator getSormasToSormasLabMessageDtoValidator() {
 		return getBean(SormasToSormasLabMessageDtoValidator.class);
 	}
 
 	public DefaultEntitiesCreator getDefaultEntitiesCreator() {
 		return getBean(DefaultEntitiesCreator.class);
+	}
+
+	public CoreEntityDeletionService getCoreEntityDeletionService() {
+		return getBean(CoreEntityDeletionService.class);
+	}
+
+	public DeletionConfigurationService getDeletionConfigurationService() {
+		return getBean(DeletionConfigurationService.class);
 	}
 }

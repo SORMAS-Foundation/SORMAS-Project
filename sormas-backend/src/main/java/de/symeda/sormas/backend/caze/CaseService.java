@@ -1884,5 +1884,4 @@ public class CaseService extends AbstractDeletableAdoService<Case> {
 		CriteriaQuery cq = caseQueryContext.getQuery();
 		cq.multiselect(listQueryBuilder.getCaseIndexSelections((Root<Case>) caseQueryContext.getRoot(), caseQueryContext));
 	}
-
 }

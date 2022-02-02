@@ -60,6 +60,8 @@ public interface EventParticipantFacade extends CoreBaseFacade<EventParticipantD
 
 	Map<String, Long> getContactCountPerEventParticipant(List<String> eventParticipantUuids, EventParticipantCriteria eventParticipantCriteria);
 
+	boolean exists(String personUuid, String eventUUID);
+
 	EventParticipantReferenceDto getReferenceByEventAndPerson(String eventUuid, String personUuid);
 
 	List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);

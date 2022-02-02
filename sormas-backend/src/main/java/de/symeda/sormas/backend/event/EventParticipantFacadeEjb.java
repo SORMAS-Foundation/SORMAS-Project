@@ -98,6 +98,7 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -845,6 +846,20 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
+	public boolean exists(String personUuid, String eventUuid) {
+		return service.exists(
+			(cb, root, cq) -> cb.and(
+				cb.equal(root.get(EventParticipant.PERSON).get(AbstractDomainObject.UUID), personUuid),
+				cb.equal(root.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID), eventUuid)));
+	}
+
+	@Override
+	public EventParticipantReferenceDto getReferenceByUuid(String uuid) {
+		EventParticipant eventParticipant = eventParticipantService.getByUuid(uuid);
+		return new EventParticipantReferenceDto(eventParticipant.getUuid());
+	}
+
+	@Override
 	public EventParticipantReferenceDto getReferenceByEventAndPerson(String eventUuid, String personUuid) {
 		return Optional.ofNullable(service.getByEventAndPerson(eventUuid, personUuid))
 			.map(eventParticipant -> new EventParticipantReferenceDto(eventParticipant.getUuid()))
@@ -1063,5 +1078,10 @@ public class EventParticipantFacadeEjb
 		public EventParticipantFacadeEjbLocal(EventParticipantService service, UserService userService) {
 			super(service, userService);
 		}
+	}
+
+	@Override
+	protected void delete(EventParticipant entity) {
+		service.delete(entity);
 	}
 }

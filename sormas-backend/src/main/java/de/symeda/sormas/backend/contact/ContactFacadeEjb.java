@@ -89,6 +89,7 @@ import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
@@ -143,6 +144,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
+import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentService;
@@ -2076,6 +2078,11 @@ public class ContactFacadeEjb extends AbstractCoreEjb<Contact, ContactDto, Conta
 		service.updateExternalData(externalData);
 	}
 
+	@Override
+	protected void delete(Contact entity) {
+		contactService.delete(entity);
+	}
+
 	private float calculateCompleteness(Contact contact) {
 
 		float completeness = 0f;
@@ -2111,7 +2118,7 @@ public class ContactFacadeEjb extends AbstractCoreEjb<Contact, ContactDto, Conta
 
 		return completeness;
 	}
-	
+
 	@LocalBean
 	@Stateless
 	public static class ContactFacadeEjbLocal extends ContactFacadeEjb {

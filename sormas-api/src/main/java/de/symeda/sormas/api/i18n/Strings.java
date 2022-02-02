@@ -617,6 +617,7 @@ public interface Strings {
 	String headingSecurityAlert = "headingSecurityAlert";
 	String headingSeeAllPersons = "headingSeeAllPersons";
 	String headingSelectCampaign = "headingSelectCampaign";
+	String headingSelectPerson = "headingSelectPerson";
 	String headingSelectSourceCase = "headingSelectSourceCase";
 	String headingSetOutbreakStatus = "headingSetOutbreakStatus";
 	String headingShareRequestCases = "headingShareRequestCases";
@@ -799,6 +800,7 @@ public interface Strings {
 	String infoSamplePathogenTesting = "infoSamplePathogenTesting";
 	String infoSaveOfTask = "infoSaveOfTask";
 	String infoSearchCaseForContact = "infoSearchCaseForContact";
+	String infoSearchPerson = "infoSearchPerson";
 	String infoSelectOrCreateContact = "infoSelectOrCreateContact";
 	String infoSelectOrCreateContactImport = "infoSelectOrCreateContactImport";
 	String infoSelectOrCreateEntry = "infoSelectOrCreateEntry";
@@ -1186,6 +1188,7 @@ public interface Strings {
 	String notificationTaskAssociatedTravelEntryLink = "notificationTaskAssociatedTravelEntryLink";
 	String notificationTaskDueGeneral = "notificationTaskDueGeneral";
 	String notificationTaskDueSpecific = "notificationTaskDueSpecific";
+	String notificationTaskObserverInformation = "notificationTaskObserverInformation";
 	String notificationTaskStartGeneral = "notificationTaskStartGeneral";
 	String notificationTaskStartSpecific = "notificationTaskStartSpecific";
 	String notificationVisitCompleted = "notificationVisitCompleted";

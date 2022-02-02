@@ -76,6 +76,9 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreEjb;
+import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
+import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
@@ -600,6 +603,11 @@ public class ImmunizationFacadeEjb
 
 		vaccinationFacade.copyExistingVaccinationsToNewImmunization(immunizationDto, newImmunization);
 		service.ensurePersisted(newImmunization);
+	}
+
+	@Override
+	protected void delete(Immunization entity) {
+		service.delete(entity);
 	}
 
 	@LocalBean

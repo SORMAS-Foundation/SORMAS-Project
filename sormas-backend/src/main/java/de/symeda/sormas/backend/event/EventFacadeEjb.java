@@ -97,6 +97,7 @@ import de.symeda.sormas.backend.common.AbstractCoreEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -1078,15 +1079,7 @@ public class EventFacadeEjb extends AbstractCoreEjb<Event, EventDto, EventIndexD
 
 	@Override
 	public EventReferenceDto toRefDto(Event event) {
-		return null;
-	}
-
-	public EventDto convertToDto(Event source, Pseudonymizer pseudonymizer) {
-		EventDto eventDto = toDto(source);
-
-		pseudonymizeDto(source, eventDto, pseudonymizer);
-
-		return eventDto;
+		return toReferenceDto(event);
 	}
 
 	public EventDto convertToDetailedReferenceDto(Event source, Pseudonymizer pseudonymizer) {
@@ -1321,5 +1314,10 @@ public class EventFacadeEjb extends AbstractCoreEjb<Event, EventDto, EventIndexD
 		public EventFacadeEjbLocal(EventService service, UserService userService) {
 			super(service, userService);
 		}
+	}
+
+	@Override
+	protected void delete(Event entity) {
+		service.delete(entity);
 	}
 }

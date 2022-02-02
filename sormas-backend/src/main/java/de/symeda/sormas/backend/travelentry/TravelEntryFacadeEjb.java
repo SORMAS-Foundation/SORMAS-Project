@@ -10,6 +10,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -27,6 +29,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreEjb;
+import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
@@ -181,6 +184,12 @@ public class TravelEntryFacadeEjb
 		return resultList;
 	}
 
+	public Page<TravelEntryIndexDto> getIndexPage(TravelEntryCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<TravelEntryIndexDto> travelEntryIndexList = service.getIndexList(criteria, offset, size, sortProperties);
+		long totalElementCount = count(criteria);
+		return new Page<>(travelEntryIndexList, offset, size, totalElementCount);
+	}
+
 	@Override
 	public List<TravelEntryListEntryDto> getEntriesList(TravelEntryListCriteria criteria, Integer first, Integer max) {
 		Long personId = null;
@@ -324,6 +333,19 @@ public class TravelEntryFacadeEjb
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 
 		return target;
+	}
+
+	@Override
+	protected String getDeleteReferenceField(DeletionReference deletionReference) {
+		if (deletionReference.equals(DeletionReference.ORIGIN)) {
+			return TravelEntry.REPORT_DATE;
+		}
+		return super.getDeleteReferenceField(deletionReference);
+	}
+
+	@Override
+	protected void delete(TravelEntry entity) {
+		service.delete(entity);
 	}
 
 	@LocalBean

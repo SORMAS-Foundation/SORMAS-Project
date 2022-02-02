@@ -6,6 +6,8 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.BaseFacade;
 import de.symeda.sormas.api.CoreBaseFacade;
+import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface TravelEntryFacade extends CoreBaseFacade<TravelEntryDto, TravelEntryIndexDto, TravelEntryReferenceDto, TravelEntryCriteria> {
@@ -27,4 +29,7 @@ public interface TravelEntryFacade extends CoreBaseFacade<TravelEntryDto, Travel
 	List<DeaContentEntry> getDeaContentOfLastTravelEntry();
 
 	List<TravelEntryListEntryDto> getEntriesList(TravelEntryListCriteria criteria, Integer first, Integer max);
+
+	Page<TravelEntryIndexDto> getIndexPage(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
 }

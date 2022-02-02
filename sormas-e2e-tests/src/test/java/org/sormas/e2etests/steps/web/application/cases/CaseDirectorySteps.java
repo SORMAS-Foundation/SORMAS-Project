@@ -89,8 +89,10 @@ public class CaseDirectorySteps implements En {
           String caseUUID = apiState.getCreatedCase().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);
           By caseLocator = By.cssSelector(String.format(CASE_RESULTS_UUID_LOCATOR, caseUUID));
+          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(caseLocator);
           webDriverHelpers.clickOnWebElementBySelector(caseLocator);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
 
     Then(
@@ -116,7 +118,7 @@ public class CaseDirectorySteps implements En {
                   + " "
                   + apiState.getLastCreatedPerson().getLastName());
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(70);
           webDriverHelpers.waitUntilAListOfElementsIsPresent(
               NAME_UUID_EPID_NUMBER_LIKE_INPUT, apiState.getCreatedCases().size());
           Assert.assertEquals(
