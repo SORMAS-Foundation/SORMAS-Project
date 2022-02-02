@@ -43,6 +43,7 @@ public class FollowUpStep implements En {
   public static Visit visit;
   public static Visit specificVisit;
   public static FollowUpVisit followUpVisit;
+  public static FollowUpVisit expectedVisitResults;
   public static Faker faker;
 
   @Inject
@@ -146,60 +147,34 @@ public class FollowUpStep implements En {
         "I check if created data is correctly displayed in Symptoms tab for Set cleared to ([^\"]*)",
         (String parameter) -> {
           followUpVisit = collectDataFromSymptomsTab();
-          softly.assertEquals(
-              followUpVisit.getChillsOrSweats(), parameter, "Incorrect value in getChillsOrSweats");
-          softly.assertEquals(
-              followUpVisit.getFeelingIll(), parameter, "Incorrect value in getFeelingIll");
-          softly.assertEquals(followUpVisit.getFever(), parameter, "Incorrect value in getFever");
-          softly.assertEquals(
-              followUpVisit.getHeadache(), parameter, "Incorrect value in getHeadache");
-          softly.assertEquals(
-              followUpVisit.getMusclePain(), parameter, "Incorrect value in getMusclePain");
-          softly.assertEquals(
-              followUpVisit.getShivering(), parameter, "Incorrect value in getShivering");
-          softly.assertEquals(
-              followUpVisit.getAcuteRespiratoryDistressSyndrome(),
-              parameter,
-              "getAcuteRespiratoryDistressSyndrome");
-          softly.assertEquals(followUpVisit.getCough(), parameter, "Incorrect value in getCough");
-          softly.assertEquals(
-              followUpVisit.getDifficultyBreathing(),
-              parameter,
-              "Incorrect value in getDifficultyBreathing");
-          softly.assertEquals(
-              followUpVisit.getOxygenSaturation94(),
-              parameter,
-              "Incorrect value in getOxygenSaturation94");
-          softly.assertEquals(
-              followUpVisit.getPneumoniaClinicalRadiologic(),
-              parameter,
-              "Incorrect value in getPneumoniaClinicalRadiologic");
-          softly.assertEquals(
-              followUpVisit.getRapidBreathing(), parameter, "Incorrect value in getRapidBreathing");
-          softly.assertEquals(
-              followUpVisit.getRespiratoryDiseaseRequiringVentilation(),
-              parameter,
-              "Incorrect value in getRespiratoryDiseaseRequiringVentilation");
-          softly.assertEquals(
-              followUpVisit.getRunnyNose(), parameter, "Incorrect value in getRunnyNose");
-          softly.assertEquals(
-              followUpVisit.getSoreThroatPharyngitis(),
-              parameter,
-              "Incorrect value in getSoreThroatPharyngitis");
-          softly.assertEquals(
-              followUpVisit.getFastHeartRate(), parameter, "Incorrect value in getFastHeartRate");
-          softly.assertEquals(
-              followUpVisit.getDiarrhea(), parameter, "Incorrect value in getDiarrhea");
-          softly.assertEquals(followUpVisit.getNausea(), parameter, "Incorrect value in getNausea");
-          softly.assertEquals(
-              followUpVisit.getNewLossOfSmell(), parameter, "Incorrect value in getNewLossOfSmell");
-          softly.assertEquals(
-              followUpVisit.getNewLossOfTaste(), parameter, "Incorrect value in getNewLossOfTaste");
-          softly.assertEquals(
-              followUpVisit.getOtherClinicalSymptoms(),
-              parameter,
-              "Incorrect value in getOtherClinicalSymptoms");
-          softly.assertAll();
+          expectedVisitResults = fillFollowUpVisitDataWithParameter(parameter);
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              followUpVisit,
+              expectedVisitResults,
+              List.of(
+                  "chillsOrSweats",
+                  "feelingIll",
+                  "fever",
+                  "headache",
+                  "musclePain",
+                  "shivering",
+                  "acuteRespiratoryDistressSyndrome",
+                  "cough",
+                  "difficultyBreathing",
+                  "oxygenSaturation94",
+                  "pneumoniaClinicalRadiologic",
+                  "rapidBreathing",
+                  "respiratoryDiseaseRequiringVentilation",
+                  "runnyNose",
+                  "soreThroatPharyngitis",
+                  "fastHeartRate",
+                  "diarrhea",
+                  "nausea",
+                  "newLossOfSmell",
+                  "newLossOfTaste",
+                  "otherClinicalSymptoms",
+                  "comments",
+                  "firstSymptom"));
         });
 
     When(
@@ -331,6 +306,32 @@ public class FollowUpStep implements En {
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_TASTE_OPTIONS))
         .otherClinicalSymptoms(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(OTHER_OPTIONS))
+        .build();
+  }
+
+  private FollowUpVisit fillFollowUpVisitDataWithParameter(String parameter) {
+    return FollowUpVisit.builder()
+        .chillsOrSweats(parameter)
+        .feelingIll(parameter)
+        .fever(parameter)
+        .headache(parameter)
+        .musclePain(parameter)
+        .shivering(parameter)
+        .acuteRespiratoryDistressSyndrome(parameter)
+        .cough(parameter)
+        .difficultyBreathing(parameter)
+        .oxygenSaturation94(parameter)
+        .pneumoniaClinicalRadiologic(parameter)
+        .rapidBreathing(parameter)
+        .respiratoryDiseaseRequiringVentilation(parameter)
+        .runnyNose(parameter)
+        .soreThroatPharyngitis(parameter)
+        .fastHeartRate(parameter)
+        .diarrhea(parameter)
+        .nausea(parameter)
+        .newLossOfSmell(parameter)
+        .newLossOfTaste(parameter)
+        .otherClinicalSymptoms(parameter)
         .build();
   }
 
