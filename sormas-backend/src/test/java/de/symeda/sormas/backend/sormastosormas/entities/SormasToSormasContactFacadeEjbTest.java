@@ -205,7 +205,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
 		getSormasToSormasContactFacade().saveSharedEntities(encryptedData);
 
-		ContactDto savedContact = getContactFacade().getContactByUuid(contact.getUuid());
+		ContactDto savedContact = getContactFacade().getByUuid(contact.getUuid());
 
 		assertThat(savedContact, is(notNullValue()));
 		assertThat(savedContact.getRegion(), is(rdcf.region));
@@ -241,7 +241,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
 		getSormasToSormasContactFacade().saveSharedEntities(encryptedData);
 
-		ContactDto savedContact = getContactFacade().getContactByUuid(contact.getUuid());
+		ContactDto savedContact = getContactFacade().getByUuid(contact.getUuid());
 		SampleDto savedSample = getSampleFacade().getSampleByUuid(sample.getEntity().getUuid());
 
 		assertThat(savedSample, is(notNullValue()));
@@ -294,7 +294,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		getSormasToSormasContactFacade().share(Collections.singletonList(contact.getUuid()), options);
 
 		// contact ownership should be lost
-		ContactDto sharedContact = getContactFacade().getContactByUuid(contact.getUuid());
+		ContactDto sharedContact = getContactFacade().getByUuid(contact.getUuid());
 		assertThat(sharedContact.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
 
 		// sample ownership should be lost
@@ -344,7 +344,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 
 		getSormasToSormasContactFacade().saveSharedEntities(encryptedData);
 
-		ContactDto returnedContact = getContactFacade().getContactByUuid(contact.getUuid());
+		ContactDto returnedContact = getContactFacade().getByUuid(contact.getUuid());
 		assertThat(returnedContact.getQuarantine(), is(QuarantineType.HOTEL));
 		assertThat(returnedContact.getReportingUser(), is(officer));
 

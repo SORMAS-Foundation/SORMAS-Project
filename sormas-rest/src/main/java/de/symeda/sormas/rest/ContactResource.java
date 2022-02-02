@@ -135,7 +135,7 @@ public class ContactResource extends EntityDtoResource {
 	@GET
 	@Path("/{uuid}")
 	public ContactDto getByUuid(@PathParam("uuid") String uuid) {
-		return FacadeProvider.getContactFacade().getContactByUuid(uuid);
+		return FacadeProvider.getContactFacade().getByUuid(uuid);
 	}
 
 }

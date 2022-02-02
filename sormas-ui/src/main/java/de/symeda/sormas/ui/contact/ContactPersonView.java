@@ -38,7 +38,7 @@ public class ContactPersonView extends AbstractContactView {
 	@Override
 	protected void initView(String params) {
 
-		ContactDto dto = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
+		ContactDto dto = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
 
 		CommitDiscardWrapperComponent<PersonEditForm> contactPersonComponent = ControllerProvider.getPersonController()
 			.getPersonEditComponent(PersonContext.CONTACT,dto.getPerson().getUuid(), dto.getDisease(), dto.getDiseaseDetails(), UserRight.CONTACT_EDIT, null);

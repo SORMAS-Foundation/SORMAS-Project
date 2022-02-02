@@ -113,7 +113,7 @@ public class ContactDataView extends AbstractContactView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
-		ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
+		ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
 
 		editComponent = ControllerProvider.getContactController()
 			.getContactDataEditComponent(getContactRef().getUuid(), ViewMode.NORMAL, contactDto.isPseudonymized());
@@ -159,9 +159,9 @@ public class ContactDataView extends AbstractContactView {
 							ControllerProvider.getContactController().openSelectCaseForContactWindow(selectedDisease, selectedCase -> {
 								if (selectedCase != null) {
 									((ContactDataForm) editComponent.getWrappedComponent()).setSourceCase(selectedCase.toReference());
-									ContactDto contactToChange = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
+									ContactDto contactToChange = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
 									contactToChange.setCaze(selectedCase.toReference());
-									FacadeProvider.getContactFacade().saveContact(contactToChange);
+									FacadeProvider.getContactFacade().save(contactToChange);
 									layout.addComponent(createCaseInfoLayout(selectedCase.getUuid()), CASE_LOC);
 									removeCaseButton.setVisible(true);
 									chooseCaseButton.setCaption(I18nProperties.getCaption(Captions.contactChangeCase));
@@ -191,9 +191,9 @@ public class ContactDataView extends AbstractContactView {
 								editComponent.discard();
 								layout.removeComponent(CASE_LOC);
 								((ContactDataForm) editComponent.getWrappedComponent()).setSourceCase(null);
-								ContactDto contactToChange = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
+								ContactDto contactToChange = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
 								contactToChange.setCaze(null);
-								FacadeProvider.getContactFacade().saveContact(contactToChange);
+								FacadeProvider.getContactFacade().save(contactToChange);
 								removeCaseButton.setVisible(false);
 								chooseCaseButton.setCaption(I18nProperties.getCaption(Captions.contactChooseSourceCase));
 								ControllerProvider.getContactController().navigateToData(contactDto.getUuid());

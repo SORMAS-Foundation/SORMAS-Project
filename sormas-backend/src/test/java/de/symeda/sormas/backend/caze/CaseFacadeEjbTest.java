@@ -340,7 +340,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// Follow-up status and duration should be set to no follow-up and null
 		// respectively because
 		// Measles does not require a follow-up
-		contact = getContactFacade().getContactByUuid(contact.getUuid());
+		contact = getContactFacade().getByUuid(contact.getUuid());
 		assertEquals(FollowUpStatus.NO_FOLLOW_UP, contact.getFollowUpStatus());
 		assertNull(contact.getFollowUpUntil());
 	}
@@ -888,7 +888,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// Database should contain the created case, contact, task and sample
 		assertNotNull(getCaseFacade().getCaseDataByUuid(caze.getUuid()));
-		assertNotNull(getContactFacade().getContactByUuid(contact.getUuid()));
+		assertNotNull(getContactFacade().getByUuid(contact.getUuid()));
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
 		assertNotNull(getSampleTestFacade().getByUuid(pathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));

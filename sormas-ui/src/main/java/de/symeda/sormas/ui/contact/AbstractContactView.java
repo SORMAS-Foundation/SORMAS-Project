@@ -67,7 +67,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 			return;
 		}
 
-		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getReference().getUuid());
+		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(getReference().getUuid());
 
 		menu.removeAllViews();
 		menu.addView(ContactsView.VIEW_NAME, I18nProperties.getCaption(Captions.contactContactsList));

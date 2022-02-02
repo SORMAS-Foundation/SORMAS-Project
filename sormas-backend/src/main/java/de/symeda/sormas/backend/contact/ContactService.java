@@ -45,6 +45,7 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -120,7 +121,7 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 
 @Stateless
 @LocalBean
-public class ContactService extends AbstractDeletableAdoService<Contact> {
+public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	@EJB
 	private CaseService caseService;
@@ -132,8 +133,6 @@ public class ContactService extends AbstractDeletableAdoService<Contact> {
 	private SampleService sampleService;
 	@EJB
 	private EpiDataService epiDataService;
-	@EJB
-	private HealthConditionsService healthConditionsService;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
@@ -173,7 +172,7 @@ public class ContactService extends AbstractDeletableAdoService<Contact> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Contact> getAllActiveContactsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<Contact> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());

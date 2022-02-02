@@ -211,7 +211,7 @@ public class TestDataCreator {
 			customConfig.accept(contact);
 		}
 
-		contact = FacadeProvider.getContactFacade().saveContact(contact);
+		contact = FacadeProvider.getContactFacade().save(contact);
 
 		return contact;
 	}
@@ -253,7 +253,7 @@ public class TestDataCreator {
 		contact.setReportDateTime(reportDateTime);
 		contact.setLastContactDate(lastContactDate);
 
-		contact = FacadeProvider.getContactFacade().saveContact(contact);
+		contact = FacadeProvider.getContactFacade().save(contact);
 
 		return contact;
 	}

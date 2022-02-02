@@ -146,12 +146,12 @@ public class PersonFacadeEjbUserFilterTest extends AbstractBeanTest {
 			creator.createContact(nationalUser.toReference(), null, person1.toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf1);
 		contactInJurisdiction1.setRegion(rdcf1.region);
 		contactInJurisdiction1.setDistrict(rdcf1.district);
-		getContactFacade().saveContact(contactInJurisdiction1);
+		getContactFacade().save(contactInJurisdiction1);
 		ContactDto contactInJurisdiction2 =
 			creator.createContact(nationalUser.toReference(), null, person2.toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
 		contactInJurisdiction2.setRegion(rdcf2.region);
 		contactInJurisdiction2.setDistrict(rdcf2.district);
-		getContactFacade().saveContact(contactInJurisdiction2);
+		getContactFacade().save(contactInJurisdiction2);
 
 		loginWith(districtUser1);
 		List<PersonIndexDto> indexListForDistrictUser1 = getPersonFacade().getIndexList(null, null, null, null);

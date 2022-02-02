@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.sormastosormas.entities.contact;
 
 import java.util.Optional;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -32,6 +33,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 import de.symeda.sormas.backend.user.UserService;
@@ -41,6 +43,10 @@ import de.symeda.sormas.backend.user.UserService;
 public class ReceivedContactProcessor
 	extends
 	ReceivedDataProcessor<Contact, ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview, Contact, ContactService, SormasToSormasContactDtoValidator> {
+
+	@EJB
+	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
+
 
 	public ReceivedContactProcessor() {
 	}
@@ -56,7 +62,7 @@ public class ReceivedContactProcessor
 
 	@Override
 	public void handleReceivedData(SormasToSormasContactDto sharedData, Contact existingData) {
-		handleIgnoredProperties(sharedData.getEntity(), ContactFacadeEjb.toDto(existingData));
+		handleIgnoredProperties(sharedData.getEntity(), contactFacade.toDto(existingData));
 		handleIgnoredProperties(
 			sharedData.getPerson(),
 			Optional.ofNullable(existingData).map(c -> PersonFacadeEjb.toDto(c.getPerson())).orElse(null));

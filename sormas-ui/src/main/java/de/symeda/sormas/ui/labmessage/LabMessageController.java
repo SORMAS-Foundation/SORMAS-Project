@@ -350,7 +350,7 @@ public class LabMessageController {
 						pickOrCreateSample(caseDto, labMessageDto, samples);
 					}
 				} else if (similarEntriesDto.getContact() != null) {
-					ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(similarEntriesDto.getContact().getUuid());
+					ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(similarEntriesDto.getContact().getUuid());
 					ContactReferenceDto contactRef = contactDto.toReference();
 
 					List<SampleDto> samples =

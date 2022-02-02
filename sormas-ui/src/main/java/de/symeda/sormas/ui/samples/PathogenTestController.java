@@ -268,7 +268,7 @@ public class PathogenTestController {
 		// a.2) If contact is not converted (or there already is a resulting case), ask user whether to update the sample pathogen test result
 		// b) Tested disease != contact disease: Ask user to create a new case for the tested disease
 
-		final ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(associatedContact.getUuid());
+		final ContactDto contact = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid());
 		final boolean equalDisease = dto.getTestedDisease() == contact.getDisease();
 
 		Runnable callback = () -> {

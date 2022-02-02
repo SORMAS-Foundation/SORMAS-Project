@@ -260,7 +260,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		// update contact if necessary
 		Contact associatedContact = pathogenTest.getSample().getAssociatedContact();
 		if (associatedContact != null) {
-			contactFacade.onContactChanged(ContactFacadeEjbLocal.toDto(associatedContact), syncShares);
+			contactFacade.onContactChanged(contactFacade.toDto(associatedContact), syncShares);
 		}
 
 		// update event participant if necessary

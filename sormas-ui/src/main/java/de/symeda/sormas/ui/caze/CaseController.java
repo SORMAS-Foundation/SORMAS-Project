@@ -230,7 +230,7 @@ public class CaseController {
 			if (uuid == null) {
 				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null, null, false);
 				caseCreateComponent.addCommitListener(() -> {
-					ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+					ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
 					if (contactDto.getResultingCase() != null) {
 						String caseUuid = contactDto.getResultingCase().getUuid();
 						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
@@ -245,11 +245,11 @@ public class CaseController {
 				selectedCase.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
 				FacadeProvider.getCaseFacade().saveCase(selectedCase);
 
-				ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+				ContactDto updatedContact = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
 				updatedContact.setContactStatus(ContactStatus.CONVERTED);
 				updatedContact.setResultingCase(selectedCase.toReference());
 				updatedContact.setResultingCaseUser(UserProvider.getCurrent().getUserReference());
-				FacadeProvider.getContactFacade().saveContact(updatedContact);
+				FacadeProvider.getContactFacade().save(updatedContact);
 
 				FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), selectedCase.toReference());
 
@@ -385,7 +385,7 @@ public class CaseController {
 				contact.setContactStatus(ContactStatus.CONVERTED);
 				contact.setResultingCase(caze.toReference());
 				contact.setResultingCaseUser(UserProvider.getCurrent().getUserReference());
-				FacadeProvider.getContactFacade().saveContact(contact);
+				FacadeProvider.getContactFacade().save(contact);
 			}
 		}
 
@@ -664,12 +664,12 @@ public class CaseController {
 
 					saveCase(dto);
 					// retrieve the contact just in case it has been changed during case saving
-					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(convertedContact.getUuid());
+					ContactDto updatedContact = FacadeProvider.getContactFacade().getByUuid(convertedContact.getUuid());
 					// automatically change the contact status to "converted"
 					updatedContact.setContactStatus(ContactStatus.CONVERTED);
 					// set resulting case on contact and save it
 					updatedContact.setResultingCase(dto.toReference());
-					FacadeProvider.getContactFacade().saveContact(updatedContact);
+					FacadeProvider.getContactFacade().save(updatedContact);
 					FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), dto.toReference());
 					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
 					if (!createdFromLabMessage) {

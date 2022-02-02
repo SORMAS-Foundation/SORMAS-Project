@@ -1209,7 +1209,7 @@ public class DevModeView extends AbstractConfigurationView {
 			contact.setDescription("Contact generated using DevMode on " + LocalDate.now());
 
 			FacadeProvider.getPersonFacade().savePerson(person);
-			contact = FacadeProvider.getContactFacade().saveContact(contact);
+			contact = FacadeProvider.getContactFacade().save(contact);
 
 			if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(contact.getDisease())) {
 				contact.setFollowUpStatus(random(FollowUpStatus.values()));
@@ -1370,7 +1370,7 @@ public class DevModeView extends AbstractConfigurationView {
 						contact.setReportingUser(UserProvider.getCurrent().getUserReference());
 						contact.setReportDateTime(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 						contact.setDescription("Contact generated using DevMode on " + LocalDate.now());
-						FacadeProvider.getContactFacade().saveContact(contact);
+						FacadeProvider.getContactFacade().save(contact);
 						generatedContacts++;
 					}
 				}

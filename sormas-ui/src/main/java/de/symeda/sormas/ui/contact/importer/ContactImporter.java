@@ -230,13 +230,13 @@ public class ContactImporter extends DataImporter {
 						}
 
 						if (ImportSimilarityResultOption.PICK.equals(resultOption)) {
-							newContact = FacadeProvider.getContactFacade().getContactByUuid(consumer.result.getMatchingContact().getUuid());
+							newContact = FacadeProvider.getContactFacade().getByUuid(consumer.result.getMatchingContact().getUuid());
 						}
 					}
 
 					// Workaround: Reset the change date to avoid OutdatedEntityExceptions
 					newContact.setChangeDate(new Date());
-					FacadeProvider.getContactFacade().saveContact(newContact, true, false);
+					FacadeProvider.getContactFacade().save(newContact, true, false);
 
 					consumer.result = null;
 					return ImportLineResult.SUCCESS;

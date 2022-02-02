@@ -68,7 +68,7 @@ public class EventListComponent extends VerticalLayout {
 
 	public EventListComponent(ContactReferenceDto contactRef) {
 
-		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
+		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
 
 		EventList eventList = new EventList(contact.getPerson());
 

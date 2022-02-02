@@ -740,7 +740,7 @@ public class TestDataCreator {
 			customConfig.accept(contact);
 		}
 
-		contact = beanTest.getContactFacade().saveContact(contact);
+		contact = beanTest.getContactFacade().save(contact);
 
 		return contact;
 	}
