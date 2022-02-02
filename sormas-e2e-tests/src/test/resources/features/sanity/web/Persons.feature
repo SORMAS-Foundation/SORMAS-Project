@@ -30,36 +30,38 @@ Feature: Edit Persons
     Then I choose random value for Year of birth filter in Persons for the last created person by API
     And I choose random value for Month of birth filter in Persons for the last created person by API
     And I choose random value for Day of birth filter in Persons for the last created person by API
-    Then I search after last created person from API by factor "uuid"
+    Then I fill Persons UUID for the last created person by API
     And I choose present condition field from specific range for the last created person by API
     And I choose random value of Region in Persons for the last created person by API
     And I choose random value of District in Persons for the last created person by API
     And I choose random value of Community in Persons for the last created person by API
     Then I click on the APPLY FILTERS button for Person
     And I check that number of displayed Person results is 1
-    And I change Year of birth filter to "1955" for Person
+    And I change Year of birth filter by random value for Person
     Then I click on the APPLY FILTERS button for Person
     And I check that number of displayed Person results is 0
     Then I choose random value for Year of birth filter in Persons for the last created person by API
     Then I click on the APPLY FILTERS button for Person
     And I check that number of displayed Person results is 1
-    And I change Month of birth filter to "4" for Person
+    And I change Month of birth filter  by random value for Person
     Then I click on the APPLY FILTERS button for Person
     And I check that number of displayed Person results is 0
     And I choose random value for Month of birth filter in Persons for the last created person by API
     Then I click on the APPLY FILTERS button for Person
     And I check that number of displayed Person results is 1
-    And I change Day of birth filter to "13" for Person
+    And I change Day of birth filter by random value for Person
     Then I click on the APPLY FILTERS button for Person
     And I check that number of displayed Person results is 0
     And I choose random value for Day of birth filter in Persons for the last created person by API
     Then I click on the APPLY FILTERS button for Person
+    And  I search after last created person from API by factor "full name"
+    And I click on the APPLY FILTERS button for Person
     And I check that number of displayed Person results is 1
-    Then I change "uuid" information data field for Person
+    Then I change "full name" information data field for Person
     And I click on the APPLY FILTERS button for Person
     And I check that number of displayed Person results is 0
-    And  I search after last created person from API by factor "uuid"
-    And I change present condition filter to "Unknown" for Person
+    Then I fill Persons UUID for the last created person by API
+    And I change present condition filter to random for Person
     And I click on the APPLY FILTERS button for Person
     And I check that number of displayed Person results is 0
     And I choose present condition field from specific range for the last created person by API
