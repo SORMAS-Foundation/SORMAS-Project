@@ -1327,7 +1327,7 @@ public class TestDataCreator {
 		campaign.setName("CampaignName");
 		campaign.setDescription("Campaign description");
 
-		campaign = beanTest.getCampaignFacade().saveCampaign(campaign);
+		campaign = beanTest.getCampaignFacade().save(campaign);
 
 		return campaign;
 	}

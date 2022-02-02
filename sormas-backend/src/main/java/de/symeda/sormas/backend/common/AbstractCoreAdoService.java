@@ -15,14 +15,9 @@
 
 package de.symeda.sormas.backend.common;
 
-import java.util.Date;
-import java.util.List;
-
 public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AbstractDeletableAdoService<ADO> {
 
 	public AbstractCoreAdoService(Class<ADO> elementClass) {
 		super(elementClass);
 	}
-
-	public abstract List<ADO> getAllActiveAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
 }

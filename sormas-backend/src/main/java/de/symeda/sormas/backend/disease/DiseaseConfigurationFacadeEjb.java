@@ -54,7 +54,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 
 	@Override
 	public List<DiseaseConfigurationDto> getAllAfter(Date date) {
-		return service.getAllAfter(date, null).stream().map(d -> toDto(d)).collect(Collectors.toList());
+		return service.getAllAfter(date).stream().map(d -> toDto(d)).collect(Collectors.toList());
 	}
 
 	@Override

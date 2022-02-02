@@ -160,7 +160,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			.build();
 	}
 
-	public List<Immunization> getAllActiveAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<Immunization> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Immunization> cq = cb.createQuery(getElementClass());

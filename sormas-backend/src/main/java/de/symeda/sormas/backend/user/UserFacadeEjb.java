@@ -499,7 +499,7 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	public List<UserDto> getAllAfter(Date date) {
-		return userService.getAllAfter(date, null).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return userService.getAllAfter(date).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
 	@Override

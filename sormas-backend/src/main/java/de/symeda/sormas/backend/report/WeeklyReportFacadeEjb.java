@@ -110,12 +110,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	@Override
 	public List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
-		User user = userService.getCurrentUser();
-		if (user == null) {
-			return Collections.emptyList();
-		}
-
-		return weeklyReportService.getAllAfter(date, user, batchSize, lastSynchronizedUuid)
+		return weeklyReportService.getAllAfter(date, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(WeeklyReportFacadeEjb::toDto)
 			.collect(Collectors.toList());

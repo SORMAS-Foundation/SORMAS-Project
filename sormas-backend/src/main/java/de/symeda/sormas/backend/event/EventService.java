@@ -115,7 +115,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	@Override
-	public List<Event> getAllActiveAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<Event> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());

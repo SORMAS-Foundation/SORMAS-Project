@@ -26,13 +26,13 @@ public class CampaignFacadeEjbTest extends AbstractBeanTest {
 		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
 		final CampaignDto campaign1 = creator.createCampaign(user);
 		campaign1.setStartDate(new Date(System.currentTimeMillis() - 7 * ONE_DAY_IN_MILLIS)); // last week
-		getCampaignFacade().saveCampaign(campaign1);
+		getCampaignFacade().save(campaign1);
 		final CampaignDto campaign2 = creator.createCampaign(user);
 		campaign2.setStartDate(new Date(System.currentTimeMillis() - ONE_DAY_IN_MILLIS)); // yesterday
-		getCampaignFacade().saveCampaign(campaign2);
+		getCampaignFacade().save(campaign2);
 		final CampaignDto campaign3 = creator.createCampaign(user);
 		campaign3.setStartDate(new Date(System.currentTimeMillis() + ONE_DAY_IN_MILLIS)); // tomorrow
-		getCampaignFacade().saveCampaign(campaign3);
+		getCampaignFacade().save(campaign3);
 
 		CampaignReferenceDto lastStartedCampaign = getCampaignFacade().getLastStartedCampaign();
 		Assert.assertEquals(campaign2.getUuid(), lastStartedCampaign.getUuid());

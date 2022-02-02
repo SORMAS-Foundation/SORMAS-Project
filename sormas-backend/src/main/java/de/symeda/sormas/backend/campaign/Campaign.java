@@ -15,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.sormas.backend.common.CoreAdo;
 import org.hibernate.annotations.Type;
 
 import de.symeda.auditlog.api.Audited;
@@ -27,7 +28,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 
 @Entity(name = "campaigns")
 @Audited
-public class Campaign extends DeletableAdo {
+public class Campaign extends CoreAdo {
 
 	private static final long serialVersionUID = -2744033662114826543L;
 
@@ -41,14 +42,12 @@ public class Campaign extends DeletableAdo {
 	public static final String CREATING_USER = "creatingUser";
 	public static final String CAMPAIGN_FORM_METAS = "campaignFormMetas";
 	public static final String CAMPAIGN_DASHBOARD_ELEMENTS = "dashboardElements";
-	public static final String ARCHIVED = "archived";
 
 	private String name;
 	private String description;
 	private Date startDate;
 	private Date endDate;
 	private User creatingUser;
-	private boolean archived;
 	private List<CampaignDashboardElement> dashboardElements;
 	private Set<CampaignFormMeta> campaignFormMetas = new HashSet<>();
 
@@ -96,15 +95,6 @@ public class Campaign extends DeletableAdo {
 
 	public void setCreatingUser(User creatingUser) {
 		this.creatingUser = creatingUser;
-	}
-
-	@Column
-	public boolean isArchived() {
-		return archived;
-	}
-
-	public void setArchived(boolean archived) {
-		this.archived = archived;
 	}
 
 	@Override

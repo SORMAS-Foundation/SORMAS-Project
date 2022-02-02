@@ -59,7 +59,7 @@ public abstract class AbstractCoreEjb<ADO extends CoreAdo, DTO extends EntityDto
 
 	public List<DTO> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultWithInaccessibleValuePlaceHolder(userService::hasRight);
-		return service.getAllActiveAfter(date, batchSize, lastSynchronizedUuid)
+		return service.getAllAfter(date, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(c -> convertToDto(c, pseudonymizer))
 			.collect(Collectors.toList());

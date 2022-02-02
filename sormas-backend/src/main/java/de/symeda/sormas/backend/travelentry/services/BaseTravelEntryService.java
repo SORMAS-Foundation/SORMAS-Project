@@ -77,7 +77,7 @@ public class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> 
 	}
 
 	@Override
-	public List<TravelEntry> getAllActiveAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<TravelEntry> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 		return getAllActiveAfter(date);
 	}
 }

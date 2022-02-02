@@ -48,7 +48,6 @@ import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
@@ -80,12 +79,11 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	}
 
 
-	@Override
-	public List<EventParticipant> getAllActiveAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-		return getAllActiveAfter(date, null, batchSize, lastSynchronizedUuid);
+	public List<EventParticipant> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+		return getAllAfter(date, null, batchSize, lastSynchronizedUuid);
 	}
 
-	public List<EventParticipant> getAllActiveAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
+	public List<EventParticipant> getAllAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventParticipant> cq = cb.createQuery(getElementClass());
