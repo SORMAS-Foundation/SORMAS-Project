@@ -18,20 +18,27 @@
 package org.sormas.e2etests.enums;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum SubcontinentUUIDs {
-  WesternEurope("VMRXWX-EAGV7L-JFKP26-F3DBSBFU"),
-  CentralEurope("WMRXWX-EAGV7L-JFKP26-F3DBSBFU");
+  WesternEurope("Western Europe", "VMRXWX-EAGV7L-JFKP26-F3DBSBFU"),
+  CentralEurope("Central Europe", "W2FUSQ-PXGMRZ-V6ZTOE-6EPIKCSI");
 
-  private final String option;
+  private final String name;
+  private final String uuid;
 
-  SubcontinentUUIDs(String option) {
-    this.option = option;
+  SubcontinentUUIDs(String name, String uuid) {
+    this.name = name;
+    this.uuid = uuid;
   }
 
-  @Override
-  public String toString() {
-    return this.option;
+  @SneakyThrows
+  public static String getCaptionFor(String option) {
+    SubcontinentUUIDs[] subcontinentOptions = SubcontinentUUIDs.values();
+    for (SubcontinentUUIDs value : subcontinentOptions) {
+      if (value.name.equalsIgnoreCase(option)) return value.name;
+    }
+    throw new Exception("Unable to find " + option + " value in DiseasesValues Enum");
   }
 }

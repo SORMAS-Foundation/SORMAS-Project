@@ -27,7 +27,7 @@ public enum FacilityType {
   CRUISE_SHIP("Cruise ship"),
   HOTEL_LODGE("Hotel, B&B, inn, lodge"),
   MASS_ACCOMMODATION("Mass accommodation (e.g. guest and harvest workers)"),
-  OTHER_ACCOMMODATION("Other Accommodation)");
+  OTHER_ACCOMMODATION("Other Accommodation");
 
   private final String type;
 

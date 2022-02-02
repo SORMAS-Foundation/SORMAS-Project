@@ -17,6 +17,7 @@
  */
 package org.sormas.e2etests.enums;
 
+import java.util.Random;
 import lombok.Getter;
 
 @Getter
@@ -25,9 +26,14 @@ public enum CommunityValues {
 
   private final String name;
   private final String uuid;
+  private static Random random = new Random();
 
   CommunityValues(String name, String uuid) {
     this.name = name;
     this.uuid = uuid;
+  }
+
+  public static String getRandomCommunityValuesName() {
+    return String.valueOf(CommunityValues.values()[random.nextInt(values().length)].getName());
   }
 }

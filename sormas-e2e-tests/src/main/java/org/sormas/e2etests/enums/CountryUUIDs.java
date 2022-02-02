@@ -17,6 +17,7 @@
  */
 package org.sormas.e2etests.enums;
 
+import java.util.Random;
 import lombok.Getter;
 
 @Getter
@@ -24,6 +25,7 @@ public enum CountryUUIDs {
   Germany("SUSZ6P-4YQIB3-WMSLMG-IAPRKJ4Y");
 
   private final String option;
+  private static Random random = new Random();
 
   CountryUUIDs(String option) {
     this.option = option;
@@ -32,5 +34,9 @@ public enum CountryUUIDs {
   @Override
   public String toString() {
     return this.option;
+  }
+
+  public static String getRandomCountryUUIDsName() {
+    return String.valueOf(CountryUUIDs.values()[random.nextInt(values().length)].name());
   }
 }

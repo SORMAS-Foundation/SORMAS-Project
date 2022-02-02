@@ -17,6 +17,7 @@
  */
 package org.sormas.e2etests.enums;
 
+import java.util.Random;
 import lombok.Getter;
 
 @Getter
@@ -25,9 +26,14 @@ public enum DistrictsValues {
 
   private final String name;
   private final String uuid;
+  private static Random random = new Random();
 
   DistrictsValues(String name, String uuid) {
     this.name = name;
     this.uuid = uuid;
+  }
+
+  public static String getRandomDistrictsValuesName() {
+    return String.valueOf(DistrictsValues.values()[random.nextInt(values().length)].getName());
   }
 }

@@ -214,44 +214,37 @@ Feature: Contacts end to end tests
     And I am checking if options in checkbox for Contact are displayed correctly
 
   @issue=SORDEV-5640
-  Scenario: Enter an exposure
-    When API: I create a new person
+  Scenario: Fill an exposure data
+    Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Then I log in with National User
     When I click on the Contacts button from navbar
     Then I open the last created contact
-    And I click on the Epidemiological Data button
+    And I click on the Epidemiological Data navbar field
     And I click on Exposure details known with NO option
     And I click on Exposure details known with UNKNOWN option
     And I click on Exposure details known with YES option
-    Then I click on New Entry button in Exposure Details Known
-    #And I select a type of activity from combobox in Exposure
+    Then I click on New Entry in Exposure Details Known
+    And I select all options in Type of activity from Combobox in Exposure form
+    Then  I select a Type of activity Other option in Exposure form
+    And I fill a Type of activity details in Exposure by some type of activity details TEXT
+    Then  I select a Type of activity Gathering option in Exposure form
+    And I check all Type of gathering from Combobox in Exposure form
+    And I select a type of gathering Other from Combobox in Exposure form
+    And I fill a type of gathering details in Exposure form by type of gathering details TEXT
+    Then  I check all Type of place from Combobox in Exposure form
+    Then I fill Location form for Type of place by options excluded Other and Facility
+    And I click on save button from Epidemiological Data
+    And I click on edit Exposure vision button
+    And I select Work option in Type of activity from Combobox in Exposure form
+    Then I fill Location form for Type of place by Other option
+    And I click on save button from Epidemiological Data
 
-#    And I click on Indoors with "YES" option in Exposure Details dddd
-   #And I click on Done button in Exposure fffff
-
-   #And I select a type of activity "Other" in Exposure
-   # Then I fill a type of activity details in Exposure by "some text" TEXT
-    #Then I click on New Entry button in Exposure Details Known
-
-    #Then I select a type of activity "Other" in Exposure
-    #And I fill a type of activity details in Exposure by "some activity details" TEXT
-   # Then I select a type of activity "Gathering" in Exposure
-    #And I select a type of gathering from combobox in Exposure
-   # And I select a type of gathering "Other" from combobox in Exposure
-   # And I fill a type of gathering details in Exposure by "some gathering details " TEXT
-    Then I select a type of place from combobox in Exposure
-
-
-
-    And  I check the created task is correctly displayed on Edit task page
-
-    #Other
-    #Facility
-    #HOme .. etc the same
-
-
+    And I click on edit Exposure vision button
+    And I select Travel option in Type of activity from Combobox in Exposure form
+   Then I fill Location form for Type of place by Facility option
+    And I click on save button from Epidemiological Data

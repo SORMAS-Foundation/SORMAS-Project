@@ -43,4 +43,16 @@ public class Exposure {
   String postalCode;
   String city;
   String areaType;
+  String latitude;
+  String longitude;
+  String latLonAccuracy;
+  String facility;
+  String facilityCategory;
+  String facilityType;
+  String facilityDetails;
+  String typeOfPlaceDetails;
+  String contactPersonFirstName;
+  String contactPersonLastName;
+  String contactPersonPhone;
+  String contactPersonEmail;
 }

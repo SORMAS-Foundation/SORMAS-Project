@@ -58,6 +58,7 @@ public class EpidemiologicalDataCasePage {
   public static final By DISTRICT_COMBOBOX = By.cssSelector(".v-window #district div");
   public static final By COMMUNITY_COMBOBOX = By.cssSelector(".v-window #community div");
   public static final By AREA_TYPE_COMBOBOX = By.cssSelector(".v-window #areaType div");
+  public static final By EXPOSURE_REGION_COMBOBOX = By.cssSelector(".v-window #region div");
   public static final By STREET_INPUT = By.cssSelector(".v-window input#street");
   public static final By HOUSE_NUMBER_INPUT = By.cssSelector(".v-window input#houseNumber");
   public static final By ADDITIONAL_INFORMATION_INPUT =
