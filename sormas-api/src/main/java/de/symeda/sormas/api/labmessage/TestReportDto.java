@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.labmessage;
 
+import de.symeda.sormas.api.sample.PCRTestSpecification;
 import java.util.Date;
 
 import javax.validation.constraints.Size;
@@ -36,6 +37,7 @@ public class TestReportDto extends EntityDto {
 	private String testLabCity;
 
 	private PathogenTestType testType;
+	private PCRTestSpecification pcrTestSpecification;
 	private Date testDateTime;
 	private PathogenTestResultType testResult;
 	private Boolean testResultVerified;
@@ -95,6 +97,14 @@ public class TestReportDto extends EntityDto {
 
 	public void setTestType(PathogenTestType testType) {
 		this.testType = testType;
+	}
+
+	public PCRTestSpecification getPcrTestSpecification() {
+		return pcrTestSpecification;
+	}
+
+	public void setPcrTestSpecification(PCRTestSpecification pcrTestSpecification) {
+		this.pcrTestSpecification = pcrTestSpecification;
 	}
 
 	public Date getTestDateTime() {
