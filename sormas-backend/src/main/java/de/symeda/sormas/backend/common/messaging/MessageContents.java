@@ -37,6 +37,7 @@ public final class MessageContents {
     public static final String CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_CONTACT = "notificationLabSampleShippedShortForContact";
     public static final String CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_EVENT_PARTICIPANT = "notificationLabSampleShippedShortForEventParticipant";
     public static final String CONTENT_CONTACT_SYMPTOMATIC = "notificationContactSymptomatic";
+    public static final String CONTENT_TASK_OBSERVER_INFORMATION = "notificationTaskObserverInformation";
     public static final String CONTENT_TASK_START_GENERAL = "notificationTaskStartGeneral";
     public static final String CONTENT_TASK_START_SPECIFIC = "notificationTaskStartSpecific";
     public static final String CONTENT_TASK_DUE_GENERAL = "notificationTaskDueGeneral";

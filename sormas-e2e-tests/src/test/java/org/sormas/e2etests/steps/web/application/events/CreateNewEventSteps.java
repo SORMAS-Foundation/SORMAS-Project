@@ -19,9 +19,10 @@
 package org.sormas.e2etests.steps.web.application.events;
 
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.*;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
 
-import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -41,16 +42,6 @@ public class CreateNewEventSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
-        "^I create a new event",
-        () -> {
-          String timestamp = String.valueOf(System.currentTimeMillis());
-          webDriverHelpers.fillInWebElement(
-              TITLE_INPUT, "EVENT_AUTOMATION" + timestamp + Faker.instance().name().name());
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CREATED_MESSAGE);
-        });
-
-    When(
         "^I create a new event with specific data$",
         () -> {
           newEvent = eventService.buildGeneratedEvent();
@@ -66,6 +57,9 @@ public class CreateNewEventSteps implements En {
           fillTitle(newEvent.getTitle());
           selectSourceType(newEvent.getSourceType());
           selectTypeOfPlace(newEvent.getEventLocation());
+          selectResponsibleRegion(newEvent.getRegion());
+          selectResponsibleDistrict(newEvent.getDistrict());
+          selectResponsibleCommunity(newEvent.getCommunity());
           newEvent =
               newEvent.toBuilder()
                   .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
@@ -139,5 +133,17 @@ public class CreateNewEventSteps implements En {
 
   private void fillDateOfReport(LocalDate date) {
     webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, DATE_FORMATTER.format(date));
+  }
+
+  private void selectResponsibleRegion(String selectResponsibleRegion) {
+    webDriverHelpers.selectFromCombobox(EVENT_REGION, selectResponsibleRegion);
+  }
+
+  private void selectResponsibleDistrict(String responsibleDistrict) {
+    webDriverHelpers.selectFromCombobox(EVENT_DISTRICT, responsibleDistrict);
+  }
+
+  private void selectResponsibleCommunity(String responsibleCommunity) {
+    webDriverHelpers.selectFromCombobox(EVENT_COMMUNITY, responsibleCommunity);
   }
 }

@@ -34,7 +34,6 @@ public class TaskService {
   }
 
   public Task buildGeneratedTask() {
-    long currentTimeMillis = System.currentTimeMillis();
     return Task.builder()
         .taskContext("GENERAL")
         .taskType("other task as described in comments")
