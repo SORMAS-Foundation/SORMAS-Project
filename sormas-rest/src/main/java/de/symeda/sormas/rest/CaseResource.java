@@ -19,6 +19,7 @@ package de.symeda.sormas.rest;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
@@ -87,6 +88,12 @@ public class CaseResource extends EntityDtoResource {
 	@Path("/push")
 	public List<PushResult> postCases(@Valid List<CaseDataDto> dtos) {
 		return savePushedDto(dtos, FacadeProvider.getCaseFacade()::saveCase);
+	}
+
+	@POST
+	@Path("/push-detailed")
+	public Map<String, Map<PushResult, String>> postCasesDetailed(@Valid List<CaseDataDto> dtos) {
+		return savePushedDetailedDto(dtos, FacadeProvider.getCaseFacade()::saveCase);
 	}
 
 	@GET

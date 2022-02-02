@@ -1657,4 +1657,9 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	public void setExternalData(Map<String, String> externalData) {
 		this.externalData = externalData;
 	}
+
+	@Override
+	public String toString() {
+		return this.getUuid() + " - " + this.getExternalID();
+	}
 }
