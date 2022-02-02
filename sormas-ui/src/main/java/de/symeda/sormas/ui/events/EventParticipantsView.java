@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.events;
 
 import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isDocGenerationAllowed;
 
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,8 +43,6 @@ import com.vaadin.ui.components.grid.MultiSelectionModelImpl;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
@@ -207,7 +206,7 @@ public class EventParticipantsView extends AbstractEventView {
 				bulkActions
 					.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkActionCreatDocuments), VaadinIcons.FILE_TEXT, mi -> {
 						grid.bulkActionHandler(items -> {
-							List<ReferenceDto> references = grid.asMultiSelect()
+							List<EventParticipantReferenceDto> references = grid.asMultiSelect()
 								.getSelectedItems()
 								.stream()
 								.map(EventParticipantIndexDto::toReference)
@@ -222,8 +221,10 @@ public class EventParticipantsView extends AbstractEventView {
 								return;
 							}
 
+							EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid(), false);
+
 							ControllerProvider.getDocGenerationController()
-								.showQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT);
+								.showBulkEventParticipantQuarantineOrderDocumentDialog(references, eventDto.getDisease());
 						});
 					}));
 			}

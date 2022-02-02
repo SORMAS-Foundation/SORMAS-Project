@@ -144,7 +144,7 @@
                   "type" : "array",
                   "items" : {
                     "type" : "string",
-                    "enum" : [ "OK", "TOO_OLD", "ERROR" ]
+                    "enum" : [ "OK", "TOO_OLD", "ERROR", "VALIDATION_EXCEPTION", "TRANSACTION_ROLLED_BACK_EXCEPTION" ]
                   }
                 }
               }

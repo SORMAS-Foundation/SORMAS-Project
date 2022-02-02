@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events.eventparticipantimporter;
 
+import de.symeda.sormas.api.event.EventDto;
 import java.io.IOException;
 
 import com.opencsv.exceptions.CsvValidationException;
@@ -52,8 +53,9 @@ public class EventParticipantImportLayout extends AbstractImportLayout {
 			resetDownloadErrorReportButton();
 
 			try {
+				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(event.getUuid(), false);
 				EventParticipantImporter importer =
-					new EventParticipantImporter(file, true, currentUser, event, (ValueSeparator) separator.getValue());
+					new EventParticipantImporter(file, currentUser, eventDto, (ValueSeparator) separator.getValue());
 				importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(

@@ -257,6 +257,7 @@ public interface Strings {
 	String errorDeletingDocument = "errorDeletingDocument";
 	String errorDeletingDocumentTemplate = "errorDeletingDocumentTemplate";
 	String errorDocumentGeneration = "errorDocumentGeneration";
+	String errorDocumentGenerationMultipleDiseasses = "errorDocumentGenerationMultipleDiseasses";
 	String errorEntityOutdated = "errorEntityOutdated";
 	String errorEventFromAnotherJurisdiction = "errorEventFromAnotherJurisdiction";
 	String errorEventNotEditable = "errorEventNotEditable";

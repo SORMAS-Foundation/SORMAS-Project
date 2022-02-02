@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.events;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +33,6 @@ import com.vaadin.v7.data.Validator;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
@@ -111,18 +109,7 @@ public class EventParticipantsController {
 							I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipant),
 							selectedPerson -> {
 								if (selectedPerson != null) {
-									EventParticipantCriteria criteria = new EventParticipantCriteria();
-									criteria.withEvent(eventRef);
-									List<EventParticipantIndexDto> currentEventParticipants =
-										FacadeProvider.getEventParticipantFacade().getIndexList(criteria, null, null, null);
-									Boolean alreadyParticipant = false;
-									for (EventParticipantIndexDto participant : currentEventParticipants) {
-										if (selectedPerson.getUuid().equals(participant.getPersonUuid())) {
-											alreadyParticipant = true;
-											break;
-										}
-									}
-									if (alreadyParticipant) {
+									if (FacadeProvider.getEventParticipantFacade().exists(dto.getPerson().getUuid(), eventRef.getUuid())) {
 										throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
 									} else {
 										dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
@@ -146,6 +133,9 @@ public class EventParticipantsController {
 							},
 							true);
 				} else {
+					if (FacadeProvider.getEventParticipantFacade().exists(dto.getPerson().getUuid(), eventRef.getUuid())) {
+						throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
+					}
 					EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
 					Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
 					if (navigateOnCommit) {

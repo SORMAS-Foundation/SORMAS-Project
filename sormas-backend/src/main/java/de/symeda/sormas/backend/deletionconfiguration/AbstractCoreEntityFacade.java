@@ -20,7 +20,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 public abstract class AbstractCoreEntityFacade<T extends CoreAdo> {
 
-	private Class<T> entityClass;
+	private final Class<T> entityClass;
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	protected EntityManager em;
@@ -44,9 +44,7 @@ public abstract class AbstractCoreEntityFacade<T extends CoreAdo> {
 
 		List<T> toDeleteEntities = QueryHelper.getResultList(em, cq, null, null);
 
-		toDeleteEntities.forEach(entity -> {
-			delete(entity);
-		});
+		toDeleteEntities.forEach(this::delete);
 	}
 
 	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid, CoreEntityType coreEntityType) {

@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.campaign.importer;
 
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
@@ -51,7 +52,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataSelectionField;
 import de.symeda.sormas.ui.importer.DataImporter;
-import de.symeda.sormas.ui.importer.ImportErrorException;
 import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 

@@ -17,6 +17,8 @@ package de.symeda.sormas.ui.docgeneration;
 
 import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isFileSizeLimitExceeded;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -46,6 +48,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
@@ -61,13 +64,15 @@ public class DocGenerationController {
 		ReferenceDto referenceDto,
 		DocumentWorkflow workflow,
 		SampleCriteria sampleCriteria,
+		VaccinationListCriteria vaccinationCriteria,
 		DocumentListComponent documentListComponent) {
 		showDialog(
 			new QuarantineOrderLayout(
 				workflow,
 				sampleCriteria,
+				vaccinationCriteria,
 				documentListComponent,
-				(templateFile, sample, pathogenTest, extraProperties, shouldUploadGeneratedDoc) -> {
+				(templateFile, sample, pathogenTest, vaccination, extraProperties, shouldUploadGeneratedDoc) -> {
 					QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
 
 					return new ByteArrayInputStream(
@@ -77,20 +82,35 @@ public class DocGenerationController {
 							referenceDto,
 							sample,
 							pathogenTest,
+							vaccination,
 							extraProperties,
 							shouldUploadGeneratedDoc));
 				},
 				(templateFile) -> getDocumentFileName(referenceDto, templateFile)));
 	}
 
-	public void showQuarantineOrderDocumentDialog(List<ReferenceDto> referenceDtos, DocumentWorkflow workflow) {
+	public void showBulkQuarantineOrderDocumentDialog(List<ReferenceDto> referenceDtos, DocumentWorkflow workflow) {
 		String filename = DownloadUtil.createFileNameWithCurrentDate(ExportEntityName.DOCUMENTS, ".zip");
 		showDialog(
-			new QuarantineOrderLayout(workflow, null, null, (templateFile, sample, pathogenTest, extraProperties, shouldUploadGeneratedDoc) -> {
+			new QuarantineOrderLayout(workflow, null, null, null, (templateFile, sample, pathogenTest, vaccination, extraProperties, shouldUploadGeneratedDoc) -> {
 				QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
 
 				Map<ReferenceDto, byte[]> generatedDocumentContents =
 					quarantineOrderFacade.getGeneratedDocuments(templateFile, workflow, referenceDtos, extraProperties, shouldUploadGeneratedDoc);
+
+				return generateZip(templateFile, shouldUploadGeneratedDoc, generatedDocumentContents);
+
+			}, (templateFile) -> filename));
+	}
+
+	public void showBulkEventParticipantQuarantineOrderDocumentDialog(List<EventParticipantReferenceDto> referenceDtos, Disease eventDisease) {
+		String filename = DownloadUtil.createFileNameWithCurrentDate(ExportEntityName.DOCUMENTS, ".zip");
+		showDialog(
+			new QuarantineOrderLayout(DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT, null, null, null, (templateFile, sample, pathogenTest, vaccination, extraProperties, shouldUploadGeneratedDoc) -> {
+				QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
+
+				Map<ReferenceDto, byte[]> generatedDocumentContents =
+					quarantineOrderFacade.getGeneratedDocumentsForEventParticipants(templateFile, referenceDtos, eventDisease, extraProperties, shouldUploadGeneratedDoc);
 
 				return generateZip(templateFile, shouldUploadGeneratedDoc, generatedDocumentContents);
 

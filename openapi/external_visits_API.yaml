@@ -300,6 +300,8 @@ paths:
                   - OK
                   - TOO_OLD
                   - ERROR
+                  - VALIDATION_EXCEPTION
+                  - TRANSACTION_ROLLED_BACK_EXCEPTION
   /visits-external/person/{personUuid}/status:
     post:
       summary: Save symptom journal status
