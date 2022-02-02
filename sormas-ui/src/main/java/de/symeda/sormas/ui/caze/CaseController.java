@@ -69,6 +69,7 @@ import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -130,6 +131,7 @@ import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
+import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
@@ -746,12 +748,16 @@ public class CaseController {
 						final PersonDto duplicatePerson = PersonDto.build();
 						transferDataToPerson(createForm, duplicatePerson);
 						ControllerProvider.getPersonController()
-							.selectOrCreatePerson(duplicatePerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
-								if (selectedPerson != null) {
-									dto.setPerson(selectedPerson);
-									selectOrCreateCase(createForm, dto, selectedPerson);
-								}
-							}, true);
+							.selectOrCreatePerson(
+								duplicatePerson,
+								I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase),
+								selectedPerson -> {
+									if (selectedPerson != null) {
+										dto.setPerson(selectedPerson);
+										selectOrCreateCase(createForm, dto, selectedPerson);
+									}
+								},
+								true);
 					}
 				}
 			}
@@ -867,6 +873,8 @@ public class CaseController {
 
 	public CommitDiscardWrapperComponent<CaseDataForm> getCaseDataEditComponent(final String caseUuid, final ViewMode viewMode) {
 		CaseDataDto caze = findCase(caseUuid);
+		AutomaticDeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getCaseFacade().getAutomaticDeletionInfo(caseUuid);
+
 		CaseDataForm caseEditForm = new CaseDataForm(
 			caseUuid,
 			FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()),
@@ -880,6 +888,10 @@ public class CaseController {
 			caseEditForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
 			caseEditForm.getFieldGroup());
+
+		if (automaticDeletionInfoDto != null) {
+			editView.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
+		}
 
 		editView.addCommitListener(() -> {
 			CaseDataDto oldCase = findCase(caseUuid);
