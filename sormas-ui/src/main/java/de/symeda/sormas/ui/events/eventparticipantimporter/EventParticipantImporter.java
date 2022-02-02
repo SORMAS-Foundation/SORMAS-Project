@@ -19,6 +19,7 @@ import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
@@ -34,15 +35,19 @@ import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.BirthDateDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
-import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
+import de.symeda.sormas.api.importexport.ImportRelatedObjectsMapper;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
@@ -55,8 +60,8 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.ui.importer.DataImporter;
-import de.symeda.sormas.ui.importer.ImportErrorException;
 import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 import de.symeda.sormas.ui.importer.ImporterPersonHelper;
@@ -78,17 +83,11 @@ public class EventParticipantImporter extends DataImporter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EventParticipantImporter.class);
 	private final PersonFacade personFacade;
 	private final EventParticipantFacade eventParticipantFacade;
-	private final EventReferenceDto event;
+	private final EventDto event;
 	private UI currentUI;
 
-	public EventParticipantImporter(
-		File inputFile,
-		boolean hasEntityClassRow,
-		UserDto currentUser,
-		EventReferenceDto event,
-		ValueSeparator csvSeparator)
-		throws IOException {
-		super(inputFile, hasEntityClassRow, currentUser, csvSeparator);
+	public EventParticipantImporter(File inputFile, UserDto currentUser, EventDto event, ValueSeparator csvSeparator) throws IOException {
+		super(inputFile, true, currentUser, csvSeparator);
 		this.event = event;
 
 		personFacade = FacadeProvider.getPersonFacade();
@@ -129,22 +128,40 @@ public class EventParticipantImporter extends DataImporter {
 		}
 
 		final PersonDto newPersonTemp = PersonDto.buildImportEntity();
-		final EventParticipantDto newEventParticipantTemp = EventParticipantDto.build(event, currentUser.toReference());
+		final EventParticipantDto newEventParticipantTemp = EventParticipantDto.build(event.toReference(), currentUser.toReference());
 		newEventParticipantTemp.setPerson(newPersonTemp);
+		final List<VaccinationDto> vaccinations = new ArrayList<>();
+
+		ImportRelatedObjectsMapper.Builder relatedObjectsMapperBuilder = new ImportRelatedObjectsMapper.Builder();
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED) && event.getDisease() != null) {
+			relatedObjectsMapperBuilder.addMapper(
+				VaccinationDto.class,
+				vaccinations,
+				() -> VaccinationDto.build(currentUser.toReference()),
+				this::insertColumnEntryIntoRelatedObject);
+		}
+
+		ImportRelatedObjectsMapper relatedMapper = relatedObjectsMapperBuilder.build();
 
 		boolean eventParticipantHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, true, importColumnInformation -> {
-			// If the cell entry is not empty, try to insert it into the current contact or person object
-			if (!StringUtils.isEmpty(importColumnInformation.getValue())) {
-				try {
-					insertColumnEntryIntoData(
-						newEventParticipantTemp,
-						newPersonTemp,
-						importColumnInformation.getValue(),
-						importColumnInformation.getEntityPropertyPath());
-				} catch (ImportErrorException | InvalidColumnException e) {
-					return e;
+			try {
+				if (!relatedMapper.map(importColumnInformation)) {
+					// If the cell entry is not empty, try to insert it into the current contact or person object
+					if (!StringUtils.isEmpty(importColumnInformation.getValue())) {
+
+						insertColumnEntryIntoData(
+							newEventParticipantTemp,
+							newPersonTemp,
+							importColumnInformation.getValue(),
+							importColumnInformation.getEntityPropertyPath());
+
+					}
 				}
+			} catch (ImportErrorException | InvalidColumnException e) {
+				return e;
 			}
+
 			return null;
 		});
 
@@ -203,7 +220,7 @@ public class EventParticipantImporter extends DataImporter {
 
 						// get first eventparticipant for event and person
 						EventParticipantCriteria eventParticipantCriteria =
-							new EventParticipantCriteria().withPerson(newPerson.toReference()).withEvent(event);
+							new EventParticipantCriteria().withPerson(newPerson.toReference()).withEvent(event.toReference());
 						EventParticipantDto pickedEventParticipant = eventParticipantFacade.getFirst(eventParticipantCriteria);
 
 						if (pickedEventParticipant != null) {
@@ -240,6 +257,16 @@ public class EventParticipantImporter extends DataImporter {
 					newEventParticipant.setPerson(savedPerson);
 					newEventParticipant.setChangeDate(new Date());
 					eventParticipantFacade.saveEventParticipant(newEventParticipant);
+
+					for (VaccinationDto vaccination : vaccinations) {
+						FacadeProvider.getVaccinationFacade()
+							.createWithImmunization(
+								vaccination,
+								newEventParticipant.getRegion(),
+								newEventParticipant.getDistrict(),
+								newEventParticipant.getPerson().toReference(),
+								event.getDisease());
+					}
 
 					consumer.result = null;
 					return ImportLineResult.SUCCESS;

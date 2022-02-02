@@ -43,6 +43,10 @@ public class DateFormatHelper {
 		return DateHelper.formatLocalDateTime(dateTime, I18nProperties.getUserLanguage());
 	}
 
+	public static String formatLocalDate(Date dateTime) {
+		return DateHelper.formatLocalDate(dateTime, I18nProperties.getUserLanguage());
+	}
+
 	public static String buildPeriodDateTimeString(Date startDate, Date endDate) {
 
 		Language userLanguage = I18nProperties.getUserLanguage();

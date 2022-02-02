@@ -23,16 +23,19 @@ import java.util.Properties;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.vaccination.VaccinationReferenceDto;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
 
@@ -58,12 +61,13 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		ReferenceDto rootEntityReference,
 		SampleReferenceDto sampleReference,
 		PathogenTestReferenceDto pathogenTestReference,
+		VaccinationReferenceDto vaccinationReference,
 		Properties extraProperties,
 		Boolean shouldUploadGeneratedDoc)
 		throws DocumentTemplateException {
 
 		DocumentTemplateEntities entities =
-			entitiesBuilder.getQuarantineOrderEntities(workflow, rootEntityReference, sampleReference, pathogenTestReference);
+			entitiesBuilder.getQuarantineOrderEntities(workflow, rootEntityReference, sampleReference, pathogenTestReference, vaccinationReference);
 		byte[] documentToSave = documentTemplateFacade.generateDocumentDocxFromEntities(workflow, templateName, entities, extraProperties);
 		if (shouldUploadGeneratedDoc) {
 			uploadDocument(templateName, rootEntityReference, documentToSave);
@@ -104,13 +108,43 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		Boolean shouldUploadGeneratedDoc)
 		throws DocumentTemplateException {
 
-		Map<ReferenceDto, byte[]> documents = new HashMap<>(rootEntityReferences.size());
-
 		Map<ReferenceDto, DocumentTemplateEntities> quarantineOrderEntities =
 			entitiesBuilder.getQuarantineOrderEntities(workflow, rootEntityReferences);
+
+		return getGeneratedDocuments(templateName, workflow, quarantineOrderEntities, extraProperties, shouldUploadGeneratedDoc);
+	}
+
+	@Override
+	public Map<ReferenceDto, byte[]> getGeneratedDocumentsForEventParticipants(
+		String templateName,
+		List<EventParticipantReferenceDto> rootEntityReferences,
+		Disease eventDisease,
+		Properties extraProperties,
+		Boolean shouldUploadGeneratedDoc)
+		throws DocumentTemplateException {
+
+		Map<ReferenceDto, DocumentTemplateEntities> quarantineOrderEntities =
+			entitiesBuilder.getEventParticipantQuarantineOrderEntities(rootEntityReferences, eventDisease);
+
+		return getGeneratedDocuments(templateName, DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT, quarantineOrderEntities, extraProperties, shouldUploadGeneratedDoc);
+	}
+
+	private Map<ReferenceDto, byte[]> getGeneratedDocuments(
+		String templateName,
+		DocumentWorkflow workflow,
+		Map<ReferenceDto, DocumentTemplateEntities> quarantineOrderEntities,
+		Properties extraProperties,
+		Boolean shouldUploadGeneratedDoc)
+		throws DocumentTemplateException {
+
+		Map<ReferenceDto, byte[]> documents = new HashMap<>(quarantineOrderEntities.size());
+
 		for (Map.Entry<ReferenceDto, DocumentTemplateEntities> entities : quarantineOrderEntities.entrySet()) {
-			byte[] documentContent =
-				documentTemplateFacade.generateDocumentDocxFromEntities(workflow, templateName, entities.getValue(), extraProperties);
+			byte[] documentContent = documentTemplateFacade.generateDocumentDocxFromEntities(
+				workflow,
+				templateName,
+				entities.getValue(),
+				extraProperties);
 			if (shouldUploadGeneratedDoc) {
 				uploadDocument(templateName, entities.getKey(), documentContent);
 			}

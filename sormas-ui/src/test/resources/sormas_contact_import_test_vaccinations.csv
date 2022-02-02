@@ -1,0 +1,5 @@
+Contact,Contact,Contact,Contact,Contact,Contact,Contact,Contact,Contact,Contact,Contact,Vaccination,Vaccination,Vaccination,Vaccination,Vaccination,Vaccination,Vaccination,Vaccination,Vaccination
+"caseIdExternalSystem","caseOrEventInformation","disease","diseaseDetails","reportDateTime","region","district","lastContactDate","person.firstName","person.lastName","person.sex",reportDate,vaccinationDate,vaccineName,vaccineManufacturer,healthConditions.chronicPulmonaryDisease,reportDate,vaccinationDate,vaccineName,vaccineManufacturer
+case1,,CORONAVIRUS,,03.14.2020,Abia,Umuahia North,,Number,One,MALE
+case2,,CORONAVIRUS,,03.15.2020,Abia,Umuahia North,,Number,Two,MALE,11/20/2018,11/20/2018,COMIRNATY,BIONTECH_PFIZER,
+case3,Other System,CORONAVIRUS,,03.16.2020,Abia,Umuahia North,,Number,Three,MALE,11/20/2018,11/20/2018,MRNA_1273,MODERNA,YES,12/20/2018,12/20/2018,MRNA_1273,MODERNA

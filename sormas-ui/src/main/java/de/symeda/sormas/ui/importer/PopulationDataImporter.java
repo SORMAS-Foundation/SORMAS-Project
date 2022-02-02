@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.importer;
 
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,17 +13,18 @@ import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ImportCellData;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.infrastructure.PopulationDataCriteria;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -138,8 +140,8 @@ public class PopulationDataImporter extends DataImporter {
 							// Ignore the region, district and community columns
 						} else if (RegionDto.GROWTH_RATE.equalsIgnoreCase(cellData.getEntityPropertyPath()[0])) {
 							// Update the growth rate of the region or district
-							if (!DataHelper.isNullOrEmpty(cellData.value)) {
-								Float growthRate = Float.parseFloat(cellData.value);
+							if (!DataHelper.isNullOrEmpty(cellData.getValue())) {
+								Float growthRate = Float.parseFloat(cellData.getValue());
 								if (finalCommunity != null) {
 									CommunityDto communityDto = FacadeProvider.getCommunityFacade().getByUuid(finalCommunity.getUuid());
 									communityDto.setGrowthRate(growthRate);

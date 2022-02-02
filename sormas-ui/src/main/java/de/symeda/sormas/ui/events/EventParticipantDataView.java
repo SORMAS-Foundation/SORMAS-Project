@@ -132,9 +132,10 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
 
+		SampleCriteria sampleCriteria = new SampleCriteria().eventParticipant(eventParticipantRef);
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
 			SampleListComponent sampleList = new SampleListComponent(
-				new SampleCriteria().eventParticipant(eventParticipantRef).sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT),
+				sampleCriteria.sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT),
 				e -> showNavigationConfirmPopupIfDirty(
 					() -> ControllerProvider.getSampleController().create(eventParticipantRef, event.getDisease())));
 
@@ -168,11 +169,14 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
+		VaccinationListCriteria vaccinationCriteria =
+			new VaccinationListCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease()).build();
 		QuarantineOrderDocumentsComponent.addComponentToLayout(
 			layout,
 			eventParticipantRef,
 			DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT,
-			new SampleCriteria().eventParticipant(eventParticipantRef));
+			sampleCriteria,
+			vaccinationCriteria);
 
 		boolean isEditAllowed = FacadeProvider.getEventParticipantFacade().isEventParticipantEditAllowed(eventParticipantRef.getUuid());
 		if (!isEditAllowed) {
@@ -188,8 +192,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 					new ImmunizationListCriteria.Builder(eventParticipant.getPerson().toReference()).wihDisease(event.getDisease()).build();
 				layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
 			} else {
-				VaccinationListCriteria criteria =
-					new VaccinationListCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease()).build();
+				VaccinationListCriteria criteria = vaccinationCriteria;
 				layout.addComponent(
 					new SideComponentLayout(
 						new VaccinationListComponent(
