@@ -83,4 +83,11 @@ public class Case {
   String quarantineOrderSet;
   String vaccinationStatus;
   String facilityNameAndDescription;
+  String street;
+  String houseNumber;
+  String additionalInformation;
+  String postalCode;
+  String city;
+  String areaType;
+  String country;
 }

@@ -185,3 +185,20 @@ Feature: Case end to end tests
     And I choose Vasopressors/Inotropes option as a Treatment type
     Then I click on the popup Save button
     Then I check if created data is correctly displayed in Treatment section
+
+    @issue=SORDEV-5518 @DE
+  Scenario: Fill the case person tab
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data
+    Then I check the created data is correctly displayed on Edit case page
+    And I check the created data is correctly displayed on Edit case person page
+    Then I set Present condition of Person to Dead
+    And I check if death data fields are available
+    Then I set Present condition of Person to Buried
+    And I check if buried data fields are available
+    Then I fill specific address data
+    Then I click on Geocode button to get GPS coordinates
+    And I click on save button
+    Then I check the created data
