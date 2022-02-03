@@ -17,4 +17,8 @@ public class UiUtil {
 	public static boolean permitted(UserRight userRight) {
 		return permitted(null, userRight);
 	}
+
+	public static boolean enabled(FeatureType featureType) {
+		return permitted(featureType, null);
+	}
 }
