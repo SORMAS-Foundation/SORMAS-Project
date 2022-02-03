@@ -133,7 +133,7 @@ import de.symeda.sormas.utils.EventParticipantJoins;
 @Stateless(name = "EventParticipantFacade")
 public class EventParticipantFacadeEjb
 	extends
-        AbstractCoreFacadeEjb<EventParticipant, EventParticipantDto, EventParticipantIndexDto, EventParticipantReferenceDto, EventParticipantService, EventParticipantCriteria>
+	AbstractCoreFacadeEjb<EventParticipant, EventParticipantDto, EventParticipantIndexDto, EventParticipantReferenceDto, EventParticipantService, EventParticipantCriteria>
 	implements EventParticipantFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -1063,7 +1063,7 @@ public class EventParticipantFacadeEjb
 		cq.where(cb.and(cb.equal(eventJoin.get(Event.UUID), eventUuid), cb.in(personJoin.get(EventParticipant.UUID)).value(personUuids)));
 
 		List<EventParticipant> resultList = em.createQuery(cq).getResultList();
-		return resultList.stream().map(ep -> toDto(ep)).collect(Collectors.toList());
+		return resultList.stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@LocalBean
@@ -1077,10 +1077,5 @@ public class EventParticipantFacadeEjb
 		public EventParticipantFacadeEjbLocal(EventParticipantService service, UserService userService) {
 			super(service, userService);
 		}
-	}
-
-	@Override
-	protected void delete(EventParticipant entity) {
-		service.delete(entity);
 	}
 }

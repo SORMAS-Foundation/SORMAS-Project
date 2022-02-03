@@ -231,7 +231,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
-	public EventDto save(@Valid @NotNull EventDto dto) {
+	public EventDto save(EventDto dto) {
 		return save(dto, true, true);
 	}
 
@@ -1296,10 +1296,5 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		public EventFacadeEjbLocal(EventService service, UserService userService) {
 			super(service, userService);
 		}
-	}
-
-	@Override
-	protected void delete(Event entity) {
-		service.delete(entity);
 	}
 }

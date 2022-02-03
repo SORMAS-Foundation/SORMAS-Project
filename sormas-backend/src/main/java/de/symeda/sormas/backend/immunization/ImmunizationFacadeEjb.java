@@ -108,7 +108,8 @@ import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb.VaccinationFaca
 
 @Stateless(name = "ImmunizationFacade")
 public class ImmunizationFacadeEjb
-	extends AbstractCoreFacadeEjb<Immunization, ImmunizationDto, ImmunizationIndexDto, ImmunizationReferenceDto, ImmunizationService, ImmunizationCriteria>
+	extends
+	AbstractCoreFacadeEjb<Immunization, ImmunizationDto, ImmunizationIndexDto, ImmunizationReferenceDto, ImmunizationService, ImmunizationCriteria>
 	implements ImmunizationFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(ImmunizationFacadeEjb.class);
@@ -587,11 +588,6 @@ public class ImmunizationFacadeEjb
 
 		vaccinationFacade.copyExistingVaccinationsToNewImmunization(immunizationDto, newImmunization);
 		service.ensurePersisted(newImmunization);
-	}
-
-	@Override
-	protected void delete(Immunization entity) {
-		service.delete(entity);
 	}
 
 	@LocalBean

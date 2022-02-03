@@ -326,7 +326,7 @@ import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "CaseFacade")
 public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseService, CaseCriteria>
-		implements CaseFacade {
+	implements CaseFacade {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
 
@@ -1344,12 +1344,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public CaseDataDto save(@Valid CaseDataDto dto) throws ValidationRuntimeException {
+	public CaseDataDto save(CaseDataDto dto) throws ValidationRuntimeException {
 		return save(dto, true, true, true, false);
 	}
 
 	@Override
-	public CaseDataDto save(@Valid CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException {
+	public CaseDataDto save(CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException {
 		return save(dto, true, true, true, systemSave);
 	}
 
@@ -2363,7 +2363,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
-	public void restorePseudonymizedDto(CaseDataDto dto, CaseDataDto existingCaseDto, Case caze , Pseudonymizer pseudonymizer) {
+	public void restorePseudonymizedDto(CaseDataDto dto, CaseDataDto existingCaseDto, Case caze, Pseudonymizer pseudonymizer) {
 		if (existingCaseDto != null) {
 			boolean inJurisdiction = service.inJurisdictionOrOwned(caze);
 
@@ -3472,8 +3472,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			caze.get(Case.DISEASE),
 			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(caseQueryContext)));
 
-		Predicate filter = CriteriaBuilderHelper
-			.and(cb, service.createUserFilter(cb, cq, caze), service.createCriteriaFilter(caseCriteria, caseQueryContext));
+		Predicate filter =
+			CriteriaBuilderHelper.and(cb, service.createUserFilter(cb, cq, caze), service.createCriteriaFilter(caseCriteria, caseQueryContext));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -3793,13 +3793,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public List<CasePersonDto> getDuplicates(@Valid CasePersonDto casePerson) {
+	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson) {
 		return getDuplicates(casePerson, 0);
 	}
 
 	@Override
 	public List<CaseDataDto> getByPersonUuids(List<String> personUuids) {
-		return service.getByPersonUuids(personUuids).stream().map(c->toDto(c)).collect(Collectors.toList());
+		return service.getByPersonUuids(personUuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -3809,13 +3809,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		service.updateExternalData(externalData);
-	}
-
-	@Override
-	protected void delete(Case entity) {
-		service.delete(entity);
 	}
 
 	@LocalBean

@@ -42,10 +42,10 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA>
 	implements CoreFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
 
-	public AbstractCoreFacadeEjb() {
+	protected AbstractCoreFacadeEjb() {
 	}
 
-	public AbstractCoreFacadeEjb(Class<ADO> adoClass, Class<DTO> dtoClass, SRV service, UserService userService) {
+	protected AbstractCoreFacadeEjb(Class<ADO> adoClass, Class<DTO> dtoClass, SRV service, UserService userService) {
 		super(adoClass, dtoClass, service, userService);
 	}
 
@@ -66,6 +66,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		return getAllAfter(date, null, null);
 	}
 
+	@Override
 	public List<DTO> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return service.getAllAfter(date, batchSize, lastSynchronizedUuid)
@@ -75,7 +76,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	}
 
 	@Override
-	public DTO save(@Valid @NotNull DTO dto) {
+	public DTO save(DTO dto) {
 		ADO existingAdo = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 		DTO existingDto = toDto(existingAdo);
 
@@ -90,6 +91,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		return convertToDto(existingAdo, pseudonymizer);
 	}
 
+	@Override
 	public boolean exists(String uuid) {
 		return service.exists(uuid);
 	}
@@ -103,6 +105,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		}
 	}
 
+	@Override
 	public void dearchive(String uuid) {
 		ADO ado = service.getByUuid(uuid);
 		if (ado != null) {
@@ -111,6 +114,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		}
 	}
 
+	@Override
 	public boolean isArchived(String uuid) {
 		return service.isArchived(uuid);
 	}
@@ -133,23 +137,21 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 		List<ADO> toDeleteEntities = QueryHelper.getResultList(em, cq, null, null);
 
-		toDeleteEntities.forEach(entity -> {
-			delete(entity);
-		});
+		toDeleteEntities.forEach(this::delete);
 	}
 
-	protected void delete(ADO entity) {
+	protected void delete(@Valid @NotNull ADO entity) {
 		service.delete(entity);
 	}
 
 	protected String getDeleteReferenceField(DeletionReference deletionReference) {
 		switch (deletionReference) {
-			case CREATION:
-				return AbstractDomainObject.CREATION_DATE;
-			case END:
-				return AbstractDomainObject.CHANGE_DATE;
-			default:
-				throw new IllegalArgumentException("deletion reference " + deletionReference + " not supported in " + getClass().getSimpleName());
+		case CREATION:
+			return AbstractDomainObject.CREATION_DATE;
+		case END:
+			return AbstractDomainObject.CHANGE_DATE;
+		default:
+			throw new IllegalArgumentException("deletion reference " + deletionReference + " not supported in " + getClass().getSimpleName());
 		}
 	}
 

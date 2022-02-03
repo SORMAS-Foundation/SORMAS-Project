@@ -202,7 +202,8 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "ContactFacade")
-public class ContactFacadeEjb extends AbstractCoreFacadeEjb<Contact, ContactDto, ContactIndexDto, ContactReferenceDto, ContactService, ContactCriteria>
+public class ContactFacadeEjb
+	extends AbstractCoreFacadeEjb<Contact, ContactDto, ContactIndexDto, ContactReferenceDto, ContactService, ContactCriteria>
 	implements ContactFacade {
 
 	private static final long SECONDS_30_DAYS = TimeUnit.DAYS.toSeconds(30L);
@@ -304,7 +305,7 @@ public class ContactFacadeEjb extends AbstractCoreFacadeEjb<Contact, ContactDto,
 	}
 
 	@Override
-	public ContactDto save(@Valid ContactDto dto) {
+	public ContactDto save(ContactDto dto) {
 		return save(dto, true, true);
 	}
 
@@ -2063,11 +2064,6 @@ public class ContactFacadeEjb extends AbstractCoreFacadeEjb<Contact, ContactDto,
 	@Override
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		service.updateExternalData(externalData);
-	}
-
-	@Override
-	protected void delete(Contact entity) {
-		service.delete(entity);
 	}
 
 	private float calculateCompleteness(Contact contact) {
