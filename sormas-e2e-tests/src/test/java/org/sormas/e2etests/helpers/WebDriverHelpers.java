@@ -314,6 +314,7 @@ public class WebDriverHelpers {
           .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
           .untilAsserted(
               () -> {
+                scrollToElement(selector);
                 Assert.assertTrue(
                     baseSteps.getDriver().findElements(selector).get(index).isDisplayed(),
                     String.format("The element: %s is not displayed", selector));
@@ -581,17 +582,20 @@ public class WebDriverHelpers {
       if (selector instanceof WebElement) {
         WebElement element = (WebElement) selector;
         assertHelpers.assertWithPoll20Second(
-            () ->
-                Assert.assertTrue(
-                    element.isDisplayed(),
-                    String.format("Webelement: %s is not displayed within 20s", element)));
-
+            () -> {
+              scrollToElement(selector);
+              Assert.assertTrue(
+                  element.isDisplayed(),
+                  String.format("Webelement: %s is not displayed within 20s", element));
+            });
       } else {
         assertHelpers.assertWithPoll20Second(
-            () ->
-                Assert.assertTrue(
-                    baseSteps.getDriver().findElement((By) selector).isDisplayed(),
-                    String.format("Locator: %s is not displayed within 20s", selector)));
+            () -> {
+              scrollToElement(selector);
+              Assert.assertTrue(
+                  baseSteps.getDriver().findElement((By) selector).isDisplayed(),
+                  String.format("Locator: %s is not displayed within 20s", selector));
+            });
       }
     } catch (StaleElementReferenceException staleEx) {
       log.warn("StaleElement found at: {}", selector);
@@ -781,5 +785,9 @@ public class WebDriverHelpers {
             Assert.assertTrue(
                 getAttributeFromWebElement(rowLocator, "class").contains("row-selected"),
                 String.format("Row element: %s wasn't selected within 20s", rowLocator)));
+  }
+
+  public void sendFile(By selector, String filePath) {
+    baseSteps.getDriver().findElement(selector).sendKeys(filePath);
   }
 }

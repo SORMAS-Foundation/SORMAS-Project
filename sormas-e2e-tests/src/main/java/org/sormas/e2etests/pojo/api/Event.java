@@ -27,12 +27,16 @@ import lombok.*;
 @Builder(toBuilder = true, builderClassName = "builder")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Event {
+  String disease;
   String eventTitle;
   EventLocation eventLocation;
   String eventStatus;
   ReportingUser reportingUser;
   String eventInvestigationStatus;
   Date reportDateTime;
+  String riskLevel;
+  String srcType;
+  String typeOfPlace;
   Boolean ownershipHandedOver;
   String uuid;
   Date startDate;

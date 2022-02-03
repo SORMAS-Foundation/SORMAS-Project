@@ -38,6 +38,7 @@ import static de.symeda.sormas.api.caze.CaseDataDto.RESPONSIBLE_DISTRICT;
 import static de.symeda.sormas.api.caze.CaseDataDto.RESPONSIBLE_REGION;
 import static de.symeda.sormas.api.caze.CaseDataDto.SYMPTOMS;
 
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import java.beans.PropertyDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -57,6 +58,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -97,6 +99,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportColumn;
@@ -135,6 +138,7 @@ import de.symeda.sormas.api.utils.ConstrainValidationHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.EnumService;
@@ -177,6 +181,8 @@ public class ImportFacadeEjb implements ImportFacade {
 		PersonDto.BURIAL_PLACE_DESCRIPTION,
 		PersonDto.ADDRESSES,
 		PersonDto.SYMPTOM_JOURNAL_STATUS);
+
+	private static final List<String> VACCINATION_COLUMNS_TO_REMOVE = Collections.singletonList(VaccinationDto.IMMUNIZATION);
 
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
@@ -233,6 +239,11 @@ public class ImportFacadeEjb implements ImportFacade {
 		appendListOfFields(importColumns, CaseDataDto.class, "", separator);
 		appendListOfFields(importColumns, SampleDto.class, "", separator);
 		appendListOfFields(importColumns, PathogenTestDto.class, "", separator);
+		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			appendListOfFields(importColumns, VaccinationDto.class, "", separator);
+		}
+
+		importColumns = importColumns.stream().filter(column -> keepColumn(column, "", VACCINATION_COLUMNS_TO_REMOVE)).collect(Collectors.toList());
 
 		writeTemplate(Paths.get(getCaseImportTemplateFilePath()), importColumns, true);
 	}
@@ -284,11 +295,16 @@ public class ImportFacadeEjb implements ImportFacade {
 		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.REGION, String.class, separator));
 		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.DISTRICT, String.class, separator));
 
-		appendListOfFields(importColumns, PersonDto.class, "person.", separator);
+		appendListOfFields(importColumns, PersonDto.class, PERSON_PREFIX, separator);
 		addPrimaryPhoneAndEmail(separator, importColumns);
 
-		importColumns =
-			importColumns.stream().filter(column -> keepColumn(column, PERSON_PREFIX, PERSON_COLUMNS_TO_REMOVE)).collect(Collectors.toList());
+		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			appendListOfFields(importColumns, VaccinationDto.class, "", separator);
+		}
+
+		importColumns = importColumns.stream()
+			.filter(column -> keepColumn(column, PERSON_PREFIX, PERSON_COLUMNS_TO_REMOVE) && keepColumn(column, "", VACCINATION_COLUMNS_TO_REMOVE))
+			.collect(Collectors.toList());
 
 		writeTemplate(Paths.get(getEventParticipantImportTemplateFilePath()), importColumns, true);
 	}
@@ -328,6 +344,10 @@ public class ImportFacadeEjb implements ImportFacade {
 		List<ImportColumn> importColumns = new ArrayList<>();
 		appendListOfFields(importColumns, ContactDto.class, "", separator);
 
+		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			appendListOfFields(importColumns, VaccinationDto.class, "", separator);
+		}
+
 		List<String> columnsToRemove = Arrays.asList(
 			ContactDto.CAZE,
 			ContactDto.DISEASE,
@@ -335,9 +355,11 @@ public class ImportFacadeEjb implements ImportFacade {
 			ContactDto.RESULTING_CASE,
 			ContactDto.CASE_ID_EXTERNAL_SYSTEM,
 			ContactDto.CASE_OR_EVENT_INFORMATION);
-		importColumns = importColumns.stream().filter(column -> !columnsToRemove.contains(column.getColumnName())).collect(Collectors.toList());
+		importColumns = importColumns.stream()
+				.filter(column -> keepColumn(column, "", columnsToRemove) && keepColumn(column, "", VACCINATION_COLUMNS_TO_REMOVE))
+				.collect(Collectors.toList());
 
-		writeTemplate(Paths.get(getCaseContactImportTemplateFilePath()), importColumns, false);
+		writeTemplate(Paths.get(getCaseContactImportTemplateFilePath()), importColumns, true);
 	}
 
 	@Override
@@ -349,10 +371,17 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		List<ImportColumn> importColumns = new ArrayList<>();
 		appendListOfFields(importColumns, ContactDto.class, "", separator);
-		List<String> columnsToRemove = Arrays.asList(ContactDto.CAZE, ContactDto.RESULTING_CASE);
-		importColumns = importColumns.stream().filter(column -> !columnsToRemove.contains(column.getColumnName())).collect(Collectors.toList());
 
-		writeTemplate(Paths.get(getContactImportTemplateFilePath()), importColumns, false);
+		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			appendListOfFields(importColumns, VaccinationDto.class, "", separator);
+		}
+
+		List<String> columnsToRemove = Arrays.asList(ContactDto.CAZE, ContactDto.RESULTING_CASE);
+		importColumns = importColumns.stream()
+				.filter(column -> keepColumn(column, "", columnsToRemove) && keepColumn(column, "", VACCINATION_COLUMNS_TO_REMOVE))
+				.collect(Collectors.toList());
+
+		writeTemplate(Paths.get(getContactImportTemplateFilePath()), importColumns, true);
 	}
 
 	@Override
@@ -882,7 +911,6 @@ public class ImportFacadeEjb implements ImportFacade {
 
 			return true;
 		}
-
 
 		return false;
 	}

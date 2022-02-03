@@ -42,6 +42,16 @@ public class CaseSteps implements En {
         });
 
     When(
+        "API: I create a new case classified as {string}",
+        (String caseClassification) -> {
+          Case caze =
+              caseApiService.buildCaseWithClassification(
+                  apiState.getLastCreatedPerson(), caseClassification);
+          caseHelper.createCase(caze);
+          apiState.setCreatedCase(caze);
+        });
+
+    When(
         "API: I create {int} cases",
         (Integer numberOfCases) -> {
           List<Case> casesList = new ArrayList<>();

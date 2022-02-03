@@ -420,23 +420,35 @@ public class ContactController {
 						});
 					}
 				} else {
-					final PersonDto person = PersonDto.build();
-					transferDataToPerson(createForm, person);
 
-					ControllerProvider.getPersonController()
-						.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact), selectedPerson -> {
-							if (selectedPerson != null) {
-								dto.setPerson(selectedPerson);
-
-								fillPersonAddressIfEmpty(dto, () -> FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
-
-								selectOrCreateContact(dto, person, selectedContactUuid -> {
-									if (selectedContactUuid != null) {
-										editData(selectedContactUuid);
-									}
-								});
+					PersonDto searchedPerson = createForm.getSearchedPerson();
+					if (searchedPerson != null) {
+						dto.setPerson(searchedPerson.toReference());
+						selectOrCreateContact(dto, searchedPerson, selectedContactUuid -> {
+							if (selectedContactUuid != null) {
+								editData(selectedContactUuid);
 							}
-						}, true);
+						});
+					} else {
+
+						final PersonDto person = PersonDto.build();
+						transferDataToPerson(createForm, person);
+
+						ControllerProvider.getPersonController()
+							.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact), selectedPerson -> {
+								if (selectedPerson != null) {
+									dto.setPerson(selectedPerson);
+
+									fillPersonAddressIfEmpty(dto, () -> FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
+
+									selectOrCreateContact(dto, person, selectedContactUuid -> {
+										if (selectedContactUuid != null) {
+											editData(selectedContactUuid);
+										}
+									});
+								}
+							}, true);
+					}
 				}
 			}
 		});

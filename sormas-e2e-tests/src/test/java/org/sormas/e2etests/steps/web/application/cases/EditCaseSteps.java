@@ -20,6 +20,7 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
+import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 
 import cucumber.api.java8.En;
@@ -29,6 +30,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.SneakyThrows;
@@ -41,6 +43,7 @@ import org.sormas.e2etests.pojo.web.Case;
 import org.sormas.e2etests.pojo.web.QuarantineOrder;
 import org.sormas.e2etests.services.CaseDocumentService;
 import org.sormas.e2etests.services.CaseService;
+import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
 
 public class EditCaseSteps implements En {
@@ -61,16 +64,34 @@ public class EditCaseSteps implements En {
       CaseService caseService,
       CaseDocumentService caseDocumentService,
       SoftAssert softly,
+      ApiState apiState,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
 
     And(
+        "I click on save button from Edit Case page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_SAVED_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+
+    When(
+        "I click on save button from Edit Case page with current hospitalization",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    And(
         "I navigate to follow-up tab",
-        () -> webDriverHelpers.clickOnWebElementBySelector(FOLLOW_UP_BUTTON));
+        () -> webDriverHelpers.clickOnWebElementBySelector(FOLLOW_UP_TAB));
 
     And(
         "I navigate to symptoms tab",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SYMPTOMS_BUTTON));
+        () -> webDriverHelpers.clickOnWebElementBySelector(SYMPTOMS_TAB));
 
     When(
         "I check the created data is correctly displayed on Edit case page",
@@ -298,13 +319,6 @@ public class EditCaseSteps implements En {
         });
 
     When(
-        "I click on save button in case edit",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
-        });
-
-    When(
         "I check if the specific data is correctly displayed",
         () -> {
           specificCaseData = collectSpecificData();
@@ -410,6 +424,15 @@ public class EditCaseSteps implements En {
           String uuid = aCase.getUuid();
           webDriverHelpers.accessWebSite(environmentUrl + caseLinkPath + uuid);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(REPORT_DATE_INPUT);
+        });
+
+    When(
+        "I open last edited case by API via URL navigation",
+        () -> {
+          String caseLinkPath = "/sormas-ui/#!cases/data/";
+          String uuid = apiState.getCreatedCase().getUuid();
+          webDriverHelpers.accessWebSite(environmentUrl + caseLinkPath + uuid);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
 
     When(

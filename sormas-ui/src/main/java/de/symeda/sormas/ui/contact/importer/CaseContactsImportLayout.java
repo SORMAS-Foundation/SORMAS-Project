@@ -37,7 +37,7 @@ public class CaseContactsImportLayout extends AbstractImportLayout {
 
 			resetDownloadErrorReportButton();
 			try {
-				ContactImporter importer = new ContactImporter(file, false, currentUser, caze, (ValueSeparator) separator.getValue());
+				ContactImporter importer = new ContactImporter(file, currentUser, caze, (ValueSeparator) separator.getValue());
 				importer.startImport(this::extendDownloadErrorReportButton, currentUI, false);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(

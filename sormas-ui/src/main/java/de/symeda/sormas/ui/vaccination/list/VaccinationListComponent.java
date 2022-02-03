@@ -43,7 +43,7 @@ public class VaccinationListComponent extends SideComponent {
 	private final AbstractDetailView<? extends ReferenceDto> view;
 
 	public VaccinationListComponent(VaccinationListCriteria criteria, AbstractDetailView<? extends ReferenceDto> view) {
-		this(criteria, maxDisplayedEntries -> FacadeProvider.getVaccinationFacade().getEntriesList(criteria, 0, maxDisplayedEntries), view);
+		this(criteria, maxDisplayedEntries -> FacadeProvider.getVaccinationFacade().getEntriesList(criteria, 0, maxDisplayedEntries, null), view);
 	}
 
 	public VaccinationListComponent(

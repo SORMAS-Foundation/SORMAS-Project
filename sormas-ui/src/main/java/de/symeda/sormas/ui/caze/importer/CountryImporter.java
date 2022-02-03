@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.caze.importer;
 
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
@@ -25,7 +26,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.importer.CountryImportProgressLayout;
-import de.symeda.sormas.ui.importer.ImportErrorException;
 import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportProgressLayout;
 import de.symeda.sormas.ui.importer.InfrastructureImporter;

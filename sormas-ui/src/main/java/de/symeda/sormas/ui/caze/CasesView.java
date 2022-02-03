@@ -723,7 +723,7 @@ public class CasesView extends AbstractView {
 									}
 
 									ControllerProvider.getDocGenerationController()
-										.showQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_CASE);
+										.showBulkQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_CASE);
 								});
 							}));
 					}

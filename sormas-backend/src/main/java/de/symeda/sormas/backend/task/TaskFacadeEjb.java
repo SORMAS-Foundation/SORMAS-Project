@@ -901,8 +901,9 @@ public class TaskFacadeEjb implements TaskFacade {
 						mapToReturn.put(task.getAssigneeUser(), message);
 					}
 					if (task.getObserverUsers() != null) {
+						String observerUserMessage = I18nProperties.getString(MessageContents.CONTENT_TASK_OBSERVER_INFORMATION) + "\n\n" + message;
 						for (User observerUser : task.getObserverUsers()) {
-							mapToReturn.put(observerUser, message);
+							mapToReturn.put(observerUser, observerUserMessage);
 						}
 					}
 				}
@@ -928,8 +929,9 @@ public class TaskFacadeEjb implements TaskFacade {
 						mapToReturn.put(task.getAssigneeUser(), message);
 					}
 					if (task.getObserverUsers() != null) {
+						String observerUserMessage = I18nProperties.getString(MessageContents.CONTENT_TASK_OBSERVER_INFORMATION) + "\n\n" + message;
 						for (User observerUser : task.getObserverUsers()) {
-							mapToReturn.put(observerUser, message);
+							mapToReturn.put(observerUser, observerUserMessage);
 						}
 					}
 				}
