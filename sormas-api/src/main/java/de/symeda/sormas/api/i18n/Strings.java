@@ -257,12 +257,13 @@ public interface Strings {
 	String errorDeletingDocument = "errorDeletingDocument";
 	String errorDeletingDocumentTemplate = "errorDeletingDocumentTemplate";
 	String errorDocumentGeneration = "errorDocumentGeneration";
+	String errorDocumentGenerationMultipleDiseasses = "errorDocumentGenerationMultipleDiseasses";
 	String errorEntityOutdated = "errorEntityOutdated";
 	String errorEventFromAnotherJurisdiction = "errorEventFromAnotherJurisdiction";
 	String errorEventNotEditable = "errorEventNotEditable";
 	String errorEventParticipantNotEditable = "errorEventParticipantNotEditable";
 	String errorEventUnlinkEventGroupFromAnotherJurisdiction = "errorEventUnlinkEventGroupFromAnotherJurisdiction";
-	String errorExternalSurveillanceToolCaseNotSharable = "errorExternalSurveillanceToolCaseNotSharable";
+	String errorExternalSurveillanceToolCasesNotSharable = "errorExternalSurveillanceToolCasesNotSharable";
 	String errorExternalSurveillanceToolEventNotOwned = "errorExternalSurveillanceToolEventNotOwned";
 	String errorExternalSurveillanceToolNonClusterEvent = "errorExternalSurveillanceToolNonClusterEvent";
 	String errorExternalSurveillanceToolNonCoronavirusCase = "errorExternalSurveillanceToolNonCoronavirusCase";
@@ -364,6 +365,7 @@ public interface Strings {
 	String headingCasesInQuarantine = "headingCasesInQuarantine";
 	String headingCasesPlacedInQuarantine = "headingCasesPlacedInQuarantine";
 	String headingCasesResultingFromContacts = "headingCasesResultingFromContacts";
+	String headingCasesSentToExternalSurveillanceTool = "headingCasesSentToExternalSurveillanceTool";
 	String headingCaseStatusMap = "headingCaseStatusMap";
 	String headingcasesWithReferenceDefinitionFulfilled = "headingcasesWithReferenceDefinitionFulfilled";
 	String headingCaution = "headingCaution";
@@ -891,6 +893,7 @@ public interface Strings {
 	String messageCasesEdited = "messageCasesEdited";
 	String messageCasesMerged = "messageCasesMerged";
 	String messageCasesNotDeletedReasonExternalSurveillanceTool = "messageCasesNotDeletedReasonExternalSurveillanceTool";
+	String messageCasesSentToExternalSurveillanceTool = "messageCasesSentToExternalSurveillanceTool";
 	String messageCaseTransfered = "messageCaseTransfered";
 	String messageChangePathogenTestResult = "messageChangePathogenTestResult";
 	String messageCheckInputData = "messageCheckInputData";

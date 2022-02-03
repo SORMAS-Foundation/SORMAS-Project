@@ -193,7 +193,7 @@ public interface CaseFacade extends CoreBaseFacade<CaseDataDto, CaseIndexDto, Ca
 
 	List<ManualMessageLogDto> getMessageLog(String caseUuid, MessageType messageType);
 
-	String getFirstUuidNotShareableWithExternalReportingTools(List<String> caseUuids);
+	List<String> getUuidsNotShareableWithExternalReportingTools(List<String> caseUuids);
 
 	void saveBulkCase(
 		List<String> caseUuidList,

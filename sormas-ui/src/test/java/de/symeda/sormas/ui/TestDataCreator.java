@@ -627,10 +627,20 @@ public class TestDataCreator {
 		DistrictReferenceDto district,
 		CommunityReferenceDto community) {
 
+		return createFacility(facilityName, FacilityType.HOSPITAL, region, district, community);
+	}
+
+	public FacilityDto createFacility(
+		String facilityName,
+		FacilityType facilityType,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		CommunityReferenceDto community) {
+
 		FacilityDto facility = FacilityDto.build();
 		facility.setUuid(DataHelper.createUuid());
 		facility.setName(facilityName);
-		facility.setType(FacilityType.HOSPITAL);
+		facility.setType(facilityType);
 		facility.setCommunity(community);
 		facility.setDistrict(district);
 		facility.setRegion(region);

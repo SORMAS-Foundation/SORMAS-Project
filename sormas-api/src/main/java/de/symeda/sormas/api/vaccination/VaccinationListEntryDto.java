@@ -15,11 +15,15 @@
 
 package de.symeda.sormas.api.vaccination;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.DataHelper;
 import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
 public class VaccinationListEntryDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
@@ -88,5 +92,23 @@ public class VaccinationListEntryDto extends PseudonymizableIndexDto implements 
 
 	public void setNonRelevantMessage(String nonRelevantMessage) {
 		this.nonRelevantMessage = nonRelevantMessage;
+	}
+
+	public VaccinationReferenceDto toReference() {
+		return new VaccinationReferenceDto(uuid, toString());
+	}
+
+	@Override
+	public String toString() {
+		String date = DateFormatHelper.formatLocalDate(vaccinationDate);
+
+		final String vaccine;
+		if(vaccineName != null) {
+			vaccine = vaccineName != Vaccine.OTHER ? vaccineName.toString() : otherVaccineName;
+		} else {
+			vaccine = I18nProperties.getString(Strings.labelNoVaccineName);
+		}
+
+		return (date.isEmpty() ? "" : date + " - ") + vaccine + " (" + DataHelper.getShortUuid(uuid) +")";
 	}
 }

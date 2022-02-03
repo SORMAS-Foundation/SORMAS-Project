@@ -18,21 +18,30 @@ package de.symeda.sormas.api.vaccination;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import java.util.List;
 
 public class VaccinationListCriteria extends BaseCriteria {
 
 	private static final long serialVersionUID = 577972890587599470L;
 
 	private final PersonReferenceDto personReferenceDto;
+	private final List<PersonReferenceDto> personReferences;
 	private final Disease disease;
 
 	public static class Builder {
 
 		private final PersonReferenceDto personReferenceDto;
+		private final List<PersonReferenceDto> personReferences;
 		private Disease disease;
 
 		public Builder(PersonReferenceDto personReferenceDto) {
 			this.personReferenceDto = personReferenceDto;
+			this.personReferences = null;
+		}
+
+		public Builder(List<PersonReferenceDto> personReferences) {
+			this.personReferences = personReferences;
+			this.personReferenceDto = null;
 		}
 
 		public VaccinationListCriteria.Builder withDisease(Disease disease) {
@@ -47,6 +56,7 @@ public class VaccinationListCriteria extends BaseCriteria {
 
 	private VaccinationListCriteria(VaccinationListCriteria.Builder builder) {
 		this.personReferenceDto = builder.personReferenceDto;
+		this.personReferences = builder.personReferences;
 		this.disease = builder.disease;
 	}
 
@@ -58,4 +68,7 @@ public class VaccinationListCriteria extends BaseCriteria {
 		return disease;
 	}
 
+	public List<PersonReferenceDto> getPersons() {
+		return personReferences;
+	}
 }

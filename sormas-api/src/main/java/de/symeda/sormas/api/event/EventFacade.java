@@ -76,7 +76,7 @@ public interface EventFacade extends CoreBaseFacade<EventDto, EventIndexDto, Eve
 
 	Set<String> getAllEventUuidsByEventGroupUuid(String eventGroupUuid);
 
-	String getFirstEventUuidWithOwnershipHandedOver(List<String> eventUuids);
+	List<String> getEventUuidsWithOwnershipHandedOver(List<String> eventUuids);
 
 	void validate(EventDto dto) throws ValidationRuntimeException;
 
