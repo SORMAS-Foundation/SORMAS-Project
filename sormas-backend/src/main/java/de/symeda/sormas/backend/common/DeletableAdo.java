@@ -12,19 +12,20 @@ import de.symeda.auditlog.api.Audited;
  */
 @MappedSuperclass
 @Audited
-public abstract class ArchivableAdo extends AbstractDomainObject {
+public abstract class DeletableAdo extends AbstractDomainObject {
 
-	public static final String ARCHIVED = "archived";
+	private static final long serialVersionUID = 6512756286608581221L;
 
-	private boolean archived;
+	public static final String DELETED = "deleted";
+
+	private boolean deleted;
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
 
 	@Column
-	public boolean isArchived() {
-		return archived;
+	public boolean isDeleted() {
+		return deleted;
 	}
-
-	public void setArchived(boolean archived) {
-		this.archived = archived;
-	}
-
 }
