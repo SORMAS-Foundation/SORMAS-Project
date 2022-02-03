@@ -20,12 +20,12 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.CoreBaseFacade;
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
-public interface ImmunizationFacade extends CoreBaseFacade<ImmunizationDto, ImmunizationIndexDto, ImmunizationReferenceDto, ImmunizationCriteria> {
+public interface ImmunizationFacade extends CoreFacade<ImmunizationDto, ImmunizationIndexDto, ImmunizationReferenceDto, ImmunizationCriteria> {
 
 	void validate(ImmunizationDto immunizationDto);
 

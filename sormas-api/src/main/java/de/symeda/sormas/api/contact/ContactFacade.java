@@ -25,7 +25,7 @@ import java.util.Map;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.CoreBaseFacade;
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
@@ -40,7 +40,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 
 @Remote
-public interface ContactFacade extends CoreBaseFacade<ContactDto, ContactIndexDto, ContactReferenceDto, ContactCriteria> {
+public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, ContactReferenceDto, ContactCriteria> {
 
 	ContactDto save(@Valid ContactDto dto, boolean handleChanges, boolean handleCaseChanges);
 

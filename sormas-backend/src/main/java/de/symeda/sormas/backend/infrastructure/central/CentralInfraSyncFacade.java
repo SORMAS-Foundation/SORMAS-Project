@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
-import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
+import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.continent.ContinentDto;
@@ -81,7 +81,7 @@ public class CentralInfraSyncFacade {
 	private <DTO extends InfrastructureDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, CRITERIA extends BaseCriteria> Date loadAndStore(
 		String type,
 		Class<DTO> clazz,
-		InfrastructureBaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> facade,
+		InfrastructureFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> facade,
 		Date lastSync) {
 		List<DTO> dtos;
 

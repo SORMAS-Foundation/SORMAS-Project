@@ -91,7 +91,7 @@ import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractCoreEjb;
+import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
@@ -125,7 +125,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.utils.EventJoins;
 
 @Stateless(name = "EventFacade")
-public class EventFacadeEjb extends AbstractCoreEjb<Event, EventDto, EventIndexDto, EventReferenceDto, EventService, EventCriteria>
+public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, EventIndexDto, EventReferenceDto, EventService, EventCriteria>
 	implements EventFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());

@@ -25,14 +25,14 @@ import java.util.Map;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.CoreBaseFacade;
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
-public interface EventParticipantFacade extends CoreBaseFacade<EventParticipantDto, EventParticipantIndexDto, EventParticipantReferenceDto, EventParticipantCriteria> {
+public interface EventParticipantFacade extends CoreFacade<EventParticipantDto, EventParticipantIndexDto, EventParticipantReferenceDto, EventParticipantCriteria> {
 
 	List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid);
 

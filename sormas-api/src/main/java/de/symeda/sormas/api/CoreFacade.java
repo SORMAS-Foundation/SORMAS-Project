@@ -22,7 +22,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
-public interface CoreBaseFacade<DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, CRITERIA extends BaseCriteria>
+public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, CRITERIA extends BaseCriteria>
         extends BaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
 
     void archive(String uuid);
