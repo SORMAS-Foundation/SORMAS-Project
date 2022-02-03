@@ -42,6 +42,10 @@ public final class MessageContents {
     public static final String CONTENT_TASK_START_SPECIFIC = "notificationTaskStartSpecific";
     public static final String CONTENT_TASK_DUE_GENERAL = "notificationTaskDueGeneral";
     public static final String CONTENT_TASK_DUE_SPECIFIC = "notificationTaskDueSpecific";
+    public static final String CONTENT_TASK_GENERAL_UPDATED_ASSIGNEE_SOURCE = "notificationTaskGeneralUpdatedAssigneeUserSource";
+    public static final String CONTENT_TASK_GENERAL_UPDATED_ASSIGNEE_TARGET = "notificationTaskGeneralUpdatedAssigneeUserTarget";
+    public static final String CONTENT_TASK_SPECIFIC_UPDATED_ASSIGNEE_SOURCE = "notificationTaskSpecificUpdatedAssigneeUserSource";
+    public static final String CONTENT_TASK_SPECIFIC_UPDATED_ASSIGNEE_TARGET = "notificationTaskSpecificUpdatedAssigneeUserTarget";
     public static final String CONTENT_VISIT_COMPLETED = "notificationVisitCompleted";
     public static final String CONTENT_DISEASE_CHANGED = "notificationDiseaseChanged";
     public static final String CONTENT_EVENT_GROUP_CREATED = "notificationEventGroupCreated";
