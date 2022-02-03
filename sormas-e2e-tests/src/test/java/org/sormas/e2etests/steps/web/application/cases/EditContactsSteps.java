@@ -82,6 +82,17 @@ public class EditContactsSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_CONTACT_BUTTON));
 
     When(
+        "I create a new contact from Cases Contacts tab base on Person created by API",
+        () -> {
+          fillFirstName(apiState.getLastCreatedPerson().getFirstName());
+          fillLastName(apiState.getLastCreatedPerson().getLastName());
+          String sex = apiState.getLastCreatedPerson().getSex();
+          selectSex(sex.substring(0, 1).toUpperCase() + sex.substring(1).toLowerCase());
+          fillPrimaryPhoneNumber(apiState.getLastCreatedPerson().getPhone());
+          fillPrimaryEmailAddress(apiState.getLastCreatedPerson().getEmailAddress());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+    When(
         "^I create a new contact from Cases Contacts tab$",
         () -> {
           contact = contactService.buildGeneratedContact();

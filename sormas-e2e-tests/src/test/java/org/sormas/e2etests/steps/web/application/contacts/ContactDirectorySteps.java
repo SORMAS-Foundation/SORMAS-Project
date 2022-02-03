@@ -78,6 +78,15 @@ public class ContactDirectorySteps implements En {
                 NEW_CONTACT_BUTTON, FIRST_NAME_OF_CONTACT_PERSON_INPUT));
 
     When(
+        "I search last create contact by UUID case",
+        () -> {
+          String caseUuid = apiState.getCreatedCase().getUuid();
+          webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, caseUuid);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+        });
+
+    When(
         "I click on the DETAILED radiobutton from Contact directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_DIRECTORY_DETAILED_RADIOBUTTON);
