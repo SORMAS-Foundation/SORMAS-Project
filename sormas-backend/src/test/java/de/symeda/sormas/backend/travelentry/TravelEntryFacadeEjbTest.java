@@ -130,8 +130,8 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 
 		TravelEntryDto notInJurisdictionTravelEntry = getTravelEntryFacade().getByUuid(notSeenTravelEntry.getUuid());
 		assertEquals(notInJurisdictionTravelEntry.getUuid(), notSeenTravelEntry.getUuid());
-		assertThat(notInJurisdictionTravelEntry.getPerson().getLastName(), is(CONFIDENTIAL));
-		assertThat(notInJurisdictionTravelEntry.getPerson().getFirstName(), is(CONFIDENTIAL));
+		assertThat(notInJurisdictionTravelEntry.getPerson().getLastName(), is(isEmptyString()));
+		assertThat(notInJurisdictionTravelEntry.getPerson().getFirstName(), is(isEmptyString()));
 		assertEquals(notInJurisdictionTravelEntry.getDisease(), notSeenTravelEntry.getDisease());
 	}
 

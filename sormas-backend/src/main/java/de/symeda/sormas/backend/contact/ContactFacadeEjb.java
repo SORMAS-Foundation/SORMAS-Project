@@ -1809,11 +1809,6 @@ public class ContactFacadeEjb extends AbstractCoreEjb<Contact, ContactDto, Conta
 	}
 
 	@Override
-	public boolean exists(String uuid) {
-		return this.service.exists(uuid);
-	}
-
-	@Override
 	public boolean doesExternalTokenExist(String externalToken, String contactUuid) {
 		return service.exists(
 			(cb, contactRoot, cq) -> CriteriaBuilderHelper.and(

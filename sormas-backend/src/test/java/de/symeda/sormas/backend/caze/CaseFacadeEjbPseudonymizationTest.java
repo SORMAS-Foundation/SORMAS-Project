@@ -414,11 +414,11 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(caze.getDistrict(), is(rdcf1.district));
 		assertThat(caze.getCommunity(), is(nullValue()));
 		assertThat(caze.getHealthFacility(), is(nullValue()));
-		assertThat(caze.getHealthFacilityDetails(), equalTo(CONFIDENTIAL));
+		assertThat(caze.getHealthFacilityDetails(), is(isEmptyString()));
 		assertThat(caze.getPointOfEntry(), is(nullValue()));
-		assertThat(caze.getPointOfEntryDetails(), equalTo(CONFIDENTIAL));
-		assertThat(caze.getPerson().getFirstName(), equalTo(CONFIDENTIAL));
-		assertThat(caze.getPerson().getLastName(), equalTo(CONFIDENTIAL));
+		assertThat(caze.getPointOfEntryDetails(), is(isEmptyString()));
+		assertThat(caze.getPerson().getFirstName(), is(isEmptyString()));
+		assertThat(caze.getPerson().getLastName(), is(isEmptyString()));
 
 		//sensitive data
 		assertThat(caze.getReportingUser(), is(nullValue()));

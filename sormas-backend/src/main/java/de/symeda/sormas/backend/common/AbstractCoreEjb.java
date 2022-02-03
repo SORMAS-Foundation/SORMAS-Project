@@ -49,13 +49,13 @@ public abstract class AbstractCoreEjb<ADO extends CoreAdo, DTO extends EntityDto
 
 	@Override
 	public DTO getByUuid(String uuid) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultWithInaccessibleValuePlaceHolder(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return convertToDto(service.getByUuid(uuid), pseudonymizer);
 	}
 
 	@Override
 	public List<DTO> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultWithInaccessibleValuePlaceHolder(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return service.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
@@ -65,7 +65,7 @@ public abstract class AbstractCoreEjb<ADO extends CoreAdo, DTO extends EntityDto
 	}
 
 	public List<DTO> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultWithInaccessibleValuePlaceHolder(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return service.getAllAfter(date, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(c -> convertToDto(c, pseudonymizer))

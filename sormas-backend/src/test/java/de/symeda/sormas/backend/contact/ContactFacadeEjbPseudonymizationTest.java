@@ -343,8 +343,8 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(contact.getPerson().getFirstName(), is("James"));
 		assertThat(contact.getPerson().getLastName(), is("Smith"));
 
-		assertThat(contact.getCaze().getFirstName(), caseInJurisdiction ? is("James") : equalTo(CONFIDENTIAL));
-		assertThat(contact.getCaze().getLastName(), caseInJurisdiction ? is("Smith") : equalTo(CONFIDENTIAL));
+		assertThat(contact.getCaze().getFirstName(), caseInJurisdiction ? is("James") : isEmptyString());
+		assertThat(contact.getCaze().getLastName(), caseInJurisdiction ? is("Smith") : isEmptyString());
 
 		// sensitive data
 		assertThat(contact.getReportingUser().getUuid(), is(user2.getUuid()));
@@ -358,11 +358,11 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private void assertPseudonymized(ContactDto contact) {
 
-		Assert.assertEquals(contact.getPerson().getFirstName(), CONFIDENTIAL);
-		Assert.assertEquals(contact.getPerson().getLastName(), CONFIDENTIAL);
+		assertThat(contact.getPerson().getFirstName(), isEmptyString());
+		assertThat(contact.getPerson().getLastName(), isEmptyString());
 
-		Assert.assertEquals(contact.getCaze().getLastName(), CONFIDENTIAL);
-		Assert.assertEquals(contact.getCaze().getLastName(), CONFIDENTIAL);
+		assertThat(contact.getCaze().getFirstName(), isEmptyString());
+		assertThat(contact.getCaze().getLastName(), isEmptyString());
 
 		// sensitive data
 		assertThat(contact.getReportingUser(), is(nullValue()));

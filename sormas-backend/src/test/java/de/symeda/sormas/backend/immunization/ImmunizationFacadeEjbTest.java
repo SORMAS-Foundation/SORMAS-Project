@@ -216,8 +216,8 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		// assert getting non seen immunization in grid is pseudonymized
 		ImmunizationDto byUuid = getImmunizationFacade().getByUuid(nonSeenImmunization.getUuid());
 		assertEquals(nonSeenImmunization.getUuid(), byUuid.getUuid());
-		assertEquals("Confidential", byUuid.getPerson().getLastName());
-		assertEquals("Confidential", byUuid.getPerson().getFirstName());
+		assertEquals("", byUuid.getPerson().getLastName());
+		assertEquals("", byUuid.getPerson().getFirstName());
 
 		List<PersonDto> allPersonsAfter = getPersonFacade().getPersonsAfter(new DateTime(new Date()).minusDays(1).toDate());
 		assertEquals(1, allPersonsAfter.size());
