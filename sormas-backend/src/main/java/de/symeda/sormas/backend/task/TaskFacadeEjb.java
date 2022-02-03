@@ -370,7 +370,7 @@ public class TaskFacadeEjb implements TaskFacade {
 				return mapToReturn;
 			}, MessageSubject.TASK_UPDATED_ASSIGNEE, MessageType.EMAIL, MessageType.SMS);
 		} catch (NotificationDeliveryFailedException e) {
-			logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a starting task."));
+			logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about an updated task assignee."));
 		}
 	}
 
