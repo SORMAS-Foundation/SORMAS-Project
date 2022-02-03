@@ -238,7 +238,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 		ContactImporter contactImporter = new ContactImporterExtension(csvFile, false, user, caze);
 		ImportResultStatus importResult = contactImporter.runImport();
 
-		List<ContactDto> contacts = getContactFacade().getAllActiveContactsAfter(null);
+		List<ContactDto> contacts = getContactFacade().getAllAfter(null);
 
 		assertEquals(3, contacts.size());
 

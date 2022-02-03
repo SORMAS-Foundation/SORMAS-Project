@@ -891,7 +891,7 @@ public class EventController {
 				640,
 				e -> {
 					if (e.booleanValue() == true) {
-						FacadeProvider.getEventFacade().archiveOrDearchiveEvent(eventUuid, true);
+						FacadeProvider.getEventFacade().archive(eventUuid);
 						Notification.show(
 							String.format(I18nProperties.getString(Strings.messageEventArchived), I18nProperties.getString(Strings.entityEvent)),
 							Type.ASSISTIVE_NOTIFICATION);
@@ -912,7 +912,7 @@ public class EventController {
 				640,
 				e -> {
 					if (e.booleanValue()) {
-						FacadeProvider.getEventFacade().archiveOrDearchiveEvent(eventUuid, false);
+						FacadeProvider.getEventFacade().dearchive(eventUuid);
 						Notification.show(
 							String.format(I18nProperties.getString(Strings.messageEventDearchived), I18nProperties.getString(Strings.entityEvent)),
 							Type.ASSISTIVE_NOTIFICATION);
@@ -1025,7 +1025,7 @@ public class EventController {
 				e -> {
 					if (e.booleanValue() == true) {
 						for (EventIndexDto selectedRow : selectedRows) {
-							FacadeProvider.getEventFacade().archiveOrDearchiveEvent(selectedRow.getUuid(), true);
+							FacadeProvider.getEventFacade().archive(selectedRow.getUuid());
 						}
 						callback.run();
 						new Notification(
@@ -1056,7 +1056,7 @@ public class EventController {
 				e -> {
 					if (e.booleanValue() == true) {
 						for (EventIndexDto selectedRow : selectedRows) {
-							FacadeProvider.getEventFacade().archiveOrDearchiveEvent(selectedRow.getUuid(), false);
+							FacadeProvider.getEventFacade().dearchive(selectedRow.getUuid());
 						}
 						callback.run();
 						new Notification(

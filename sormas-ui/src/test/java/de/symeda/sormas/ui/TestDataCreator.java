@@ -658,7 +658,7 @@ public class TestDataCreator {
 		campaign.setName("CampaignName");
 		campaign.setDescription("Campaign description");
 
-		campaign = FacadeProvider.getCampaignFacade().saveCampaign(campaign);
+		campaign = FacadeProvider.getCampaignFacade().save(campaign);
 
 		return campaign;
 	}
