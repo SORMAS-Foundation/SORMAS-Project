@@ -298,7 +298,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			}
 		});
 
-		if (sample.getSamplePurpose() != SamplePurpose.INTERNAL) {
+		if (sample.getSamplePurpose() != SamplePurpose.INTERNAL) { // this only works for already saved samples
 			setRequired(true, PathogenTestDto.LAB);
 		}
 		setRequired(true, PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TEST_RESULT);
