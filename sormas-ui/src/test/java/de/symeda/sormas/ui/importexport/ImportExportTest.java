@@ -284,10 +284,10 @@ public class ImportExportTest extends AbstractBeanTest {
 
 		List<String[]> rows = getCsvReader(exportStreamResource.getStreamSource().getStream()).readAll();
 
-		assertThat(rows, hasSize(3));
+		assertThat(rows, hasSize(4));
 
-		String[] columns = rows.get(0);
-		String[] values = rows.get(2);
+		String[] columns = rows.get(1);
+		String[] values = rows.get(3);
 		String importUuid = DataHelper.createUuid();
 
 		for (int i = 0, getLength = columns.length; i < getLength; i++) {

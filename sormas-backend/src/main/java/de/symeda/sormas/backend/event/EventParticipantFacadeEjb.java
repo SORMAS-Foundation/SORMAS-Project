@@ -98,6 +98,7 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -131,7 +132,7 @@ import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless(name = "EventParticipantFacade")
-public class EventParticipantFacadeEjb implements EventParticipantFacade {
+public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventParticipant> implements EventParticipantFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -162,6 +163,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
 	@EJB
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
+
+	public EventParticipantFacadeEjb() {
+		super(EventParticipant.class);
+	}
 
 	@Override
 	public List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid) {
@@ -827,6 +832,14 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	public boolean exists(String uuid) {
 		return eventParticipantService.exists(uuid);
 	}
+	
+	@Override
+	public boolean exists(String personUuid, String eventUuid) {
+		return eventParticipantService.exists(
+			(cb, root, cq) -> cb.and(
+				cb.equal(root.get(EventParticipant.PERSON).get(AbstractDomainObject.UUID), personUuid),
+				cb.equal(root.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID), eventUuid)));
+	}
 
 	@Override
 	public EventParticipantReferenceDto getReferenceByUuid(String uuid) {
@@ -1063,5 +1076,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		List<EventParticipant> resultList = em.createQuery(cq).getResultList();
 		return resultList.stream().map(EventParticipantFacadeEjb::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	protected void delete(EventParticipant entity) {
+		eventParticipantService.delete(entity);
 	}
 }

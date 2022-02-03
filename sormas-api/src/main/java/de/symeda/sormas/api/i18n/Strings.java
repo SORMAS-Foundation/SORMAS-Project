@@ -257,12 +257,13 @@ public interface Strings {
 	String errorDeletingDocument = "errorDeletingDocument";
 	String errorDeletingDocumentTemplate = "errorDeletingDocumentTemplate";
 	String errorDocumentGeneration = "errorDocumentGeneration";
+	String errorDocumentGenerationMultipleDiseasses = "errorDocumentGenerationMultipleDiseasses";
 	String errorEntityOutdated = "errorEntityOutdated";
 	String errorEventFromAnotherJurisdiction = "errorEventFromAnotherJurisdiction";
 	String errorEventNotEditable = "errorEventNotEditable";
 	String errorEventParticipantNotEditable = "errorEventParticipantNotEditable";
 	String errorEventUnlinkEventGroupFromAnotherJurisdiction = "errorEventUnlinkEventGroupFromAnotherJurisdiction";
-	String errorExternalSurveillanceToolCaseNotSharable = "errorExternalSurveillanceToolCaseNotSharable";
+	String errorExternalSurveillanceToolCasesNotSharable = "errorExternalSurveillanceToolCasesNotSharable";
 	String errorExternalSurveillanceToolEventNotOwned = "errorExternalSurveillanceToolEventNotOwned";
 	String errorExternalSurveillanceToolNonClusterEvent = "errorExternalSurveillanceToolNonClusterEvent";
 	String errorExternalSurveillanceToolNonCoronavirusCase = "errorExternalSurveillanceToolNonCoronavirusCase";
@@ -364,6 +365,7 @@ public interface Strings {
 	String headingCasesInQuarantine = "headingCasesInQuarantine";
 	String headingCasesPlacedInQuarantine = "headingCasesPlacedInQuarantine";
 	String headingCasesResultingFromContacts = "headingCasesResultingFromContacts";
+	String headingCasesSentToExternalSurveillanceTool = "headingCasesSentToExternalSurveillanceTool";
 	String headingCaseStatusMap = "headingCaseStatusMap";
 	String headingcasesWithReferenceDefinitionFulfilled = "headingcasesWithReferenceDefinitionFulfilled";
 	String headingCaution = "headingCaution";
@@ -617,6 +619,7 @@ public interface Strings {
 	String headingSecurityAlert = "headingSecurityAlert";
 	String headingSeeAllPersons = "headingSeeAllPersons";
 	String headingSelectCampaign = "headingSelectCampaign";
+	String headingSelectPerson = "headingSelectPerson";
 	String headingSelectSourceCase = "headingSelectSourceCase";
 	String headingSetOutbreakStatus = "headingSetOutbreakStatus";
 	String headingShareRequestCases = "headingShareRequestCases";
@@ -799,6 +802,7 @@ public interface Strings {
 	String infoSamplePathogenTesting = "infoSamplePathogenTesting";
 	String infoSaveOfTask = "infoSaveOfTask";
 	String infoSearchCaseForContact = "infoSearchCaseForContact";
+	String infoSearchPerson = "infoSearchPerson";
 	String infoSelectOrCreateContact = "infoSelectOrCreateContact";
 	String infoSelectOrCreateContactImport = "infoSelectOrCreateContactImport";
 	String infoSelectOrCreateEntry = "infoSelectOrCreateEntry";
@@ -889,6 +893,7 @@ public interface Strings {
 	String messageCasesEdited = "messageCasesEdited";
 	String messageCasesMerged = "messageCasesMerged";
 	String messageCasesNotDeletedReasonExternalSurveillanceTool = "messageCasesNotDeletedReasonExternalSurveillanceTool";
+	String messageCasesSentToExternalSurveillanceTool = "messageCasesSentToExternalSurveillanceTool";
 	String messageCaseTransfered = "messageCaseTransfered";
 	String messageChangePathogenTestResult = "messageChangePathogenTestResult";
 	String messageCheckInputData = "messageCheckInputData";
@@ -1186,6 +1191,7 @@ public interface Strings {
 	String notificationTaskAssociatedTravelEntryLink = "notificationTaskAssociatedTravelEntryLink";
 	String notificationTaskDueGeneral = "notificationTaskDueGeneral";
 	String notificationTaskDueSpecific = "notificationTaskDueSpecific";
+	String notificationTaskObserverInformation = "notificationTaskObserverInformation";
 	String notificationTaskStartGeneral = "notificationTaskStartGeneral";
 	String notificationTaskStartSpecific = "notificationTaskStartSpecific";
 	String notificationVisitCompleted = "notificationVisitCompleted";

@@ -21,17 +21,19 @@ import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_EVENT_PAR
 import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_TRAVEL_ENTRY;
 
 import java.util.AbstractMap;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -41,6 +43,9 @@ import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -50,15 +55,19 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
+import de.symeda.sormas.api.vaccination.VaccinationReferenceDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb.VaccinationFacadeEjbLocal;
 
 @Stateless
 @LocalBean
@@ -78,12 +87,17 @@ public class DocumentTemplateEntitiesBuilder {
 	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacadeEjb;
 	@EJB
 	private PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal pathogenTestFacade;
+	@EJB
+	private VaccinationFacadeEjbLocal vaccinationFacade;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public DocumentTemplateEntities getQuarantineOrderEntities(
 		DocumentWorkflow workflow,
 		ReferenceDto rootEntityRef,
 		SampleReferenceDto sampleRef,
-		PathogenTestReferenceDto pathogenTestRef)
+		PathogenTestReferenceDto pathogenTestRef,
+		VaccinationReferenceDto vaccinationRef)
 		throws DocumentTemplateException {
 
 		SampleDto sample = null;
@@ -96,28 +110,39 @@ public class DocumentTemplateEntitiesBuilder {
 			pathogenTest = pathogenTestFacade.getByUuid(pathogenTestRef.getUuid());
 		}
 
+		VaccinationDto vaccination = null;
+		if (vaccinationRef != null) {
+			vaccination = vaccinationFacade.getByUuid(vaccinationRef.getUuid());
+		}
+
 		String rootEntityUuid = rootEntityRef.getUuid();
 
 		switch (workflow) {
 		case QUARANTINE_ORDER_CASE:
 			CaseDataDto caseDataDto = caseFacade.getCaseDataByUuid(rootEntityUuid);
 
-			return buildEntities(RootEntityType.ROOT_CASE, caseDataDto, caseDataDto.getPerson(), sample, pathogenTest);
+			return buildEntities(RootEntityType.ROOT_CASE, caseDataDto, caseDataDto.getPerson(), sample, pathogenTest, vaccination);
 
 		case QUARANTINE_ORDER_CONTACT:
 			ContactDto contactDto = contactFacade.getContactByUuid(rootEntityUuid);
 
-			return buildEntities(ROOT_CONTACT, contactDto, contactDto.getPerson(), sample, pathogenTest);
+			return buildEntities(ROOT_CONTACT, contactDto, contactDto.getPerson(), sample, pathogenTest, vaccination);
 
 		case QUARANTINE_ORDER_EVENT_PARTICIPANT:
 			EventParticipantDto eventParticipantDto = eventParticipantFacade.getByUuid(rootEntityUuid);
 
-			return buildEntities(ROOT_EVENT_PARTICIPANT, eventParticipantDto, eventParticipantDto.getPerson().toReference(), sample, pathogenTest);
+			return buildEntities(
+				ROOT_EVENT_PARTICIPANT,
+				eventParticipantDto,
+				eventParticipantDto.getPerson().toReference(),
+				sample,
+				pathogenTest,
+				vaccination);
 
 		case QUARANTINE_ORDER_TRAVEL_ENTRY:
 			TravelEntryDto travelEntryDto = travelEntryFacade.getByUuid(rootEntityUuid);
 
-			return buildEntities(ROOT_TRAVEL_ENTRY, travelEntryDto, travelEntryDto.getPerson(), null, null);
+			return buildEntities(ROOT_TRAVEL_ENTRY, travelEntryDto, travelEntryDto.getPerson(), null, null, null);
 
 		default:
 			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorQuarantineOnlySupportedEntities));
@@ -127,8 +152,6 @@ public class DocumentTemplateEntitiesBuilder {
 	public Map<ReferenceDto, DocumentTemplateEntities> getQuarantineOrderEntities(DocumentWorkflow workflow, List<ReferenceDto> referenceDtos)
 		throws DocumentTemplateException {
 		List<String> entityUuids = referenceDtos.stream().map(ReferenceDto::getUuid).collect(Collectors.toList());
-
-		final Stream<AbstractMap.SimpleEntry<ReferenceDto, DocumentTemplateEntities>> entities;
 
 		final BulkEntitiesBuilder<? extends EntityDto> builder;
 		switch (workflow) {
@@ -141,14 +164,22 @@ public class DocumentTemplateEntitiesBuilder {
 
 			break;
 		case QUARANTINE_ORDER_EVENT_PARTICIPANT:
-			builder = createBulkEventParticipantEntitiesBuilder(entityUuids);
-
-			break;
+			throw new RuntimeException(
+				"getQuarantineOrderEntities should not be called for event participants; @see getEventParticipantQuarantineOrderEntities");
 		default:
 			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorQuarantineBulkOnlySupportedEntities));
 		}
 
 		return builder.build();
+	}
+
+	public Map<ReferenceDto, DocumentTemplateEntities> getEventParticipantQuarantineOrderEntities(
+		List<EventParticipantReferenceDto> referenceDtos,
+		Disease eventDisease)
+		throws DocumentTemplateException {
+		List<String> entityUuids = referenceDtos.stream().map(ReferenceDto::getUuid).collect(Collectors.toList());
+
+		return createBulkEventParticipantEntitiesBuilder(entityUuids, eventDisease).build();
 	}
 
 	private BulkEntitiesBuilder<CaseDataDto> createBulkCaseEntitiesBuilder(List<String> caseUuids) {
@@ -160,7 +191,8 @@ public class DocumentTemplateEntitiesBuilder {
 			CaseDataDto::getPerson,
 			new SampleCriteria().caseUuids(caseUuids),
 			Sample::getAssociatedCase,
-			SampleDto::getAssociatedCase);
+			SampleDto::getAssociatedCase,
+			CaseDataDto::getDisease);
 	}
 
 	private BulkEntitiesBuilder<ContactDto> createBulkContactEntitiesBuilder(List<String> contactUuids) {
@@ -172,10 +204,11 @@ public class DocumentTemplateEntitiesBuilder {
 			ContactDto::getPerson,
 			new SampleCriteria().contactUuids(contactUuids),
 			Sample::getAssociatedContact,
-			SampleDto::getAssociatedContact);
+			SampleDto::getAssociatedContact,
+			ContactDto::getDisease);
 	}
 
-	private BulkEntitiesBuilder<EventParticipantDto> createBulkEventParticipantEntitiesBuilder(List<String> eventParticipantUuids) {
+	private BulkEntitiesBuilder<EventParticipantDto> createBulkEventParticipantEntitiesBuilder(List<String> eventParticipantUuids, Disease disease) {
 
 		return new BulkEntitiesBuilder<>(
 			ROOT_EVENT_PARTICIPANT,
@@ -184,7 +217,8 @@ public class DocumentTemplateEntitiesBuilder {
 			(EventParticipantDto e) -> e.getPerson().toReference(),
 			new SampleCriteria().eventParticipantUuids(eventParticipantUuids),
 			Sample::getAssociatedEventParticipant,
-			SampleDto::getAssociatedEventParticipant);
+			SampleDto::getAssociatedEventParticipant,
+			(ep) -> disease);
 	}
 
 	final class BulkEntitiesBuilder<T extends EntityDto> {
@@ -196,6 +230,7 @@ public class DocumentTemplateEntitiesBuilder {
 		private final SampleCriteria sampleCriteria;
 		private final Function<Sample, AbstractDomainObject> sampleAssociatedObjectFn;
 		private final Function<SampleDto, ReferenceDto> sampleDtoAssociatedObjectFn;
+		private final Function<T, Disease> getEntityDisease;
 
 		private BulkEntitiesBuilder(
 			RootEntityType mainRootEntityType,
@@ -204,7 +239,8 @@ public class DocumentTemplateEntitiesBuilder {
 			Function<T, PersonReferenceDto> getEntityPerson,
 			SampleCriteria sampleCriteria,
 			Function<Sample, AbstractDomainObject> sampleAssociatedObjectFn,
-			Function<SampleDto, ReferenceDto> sampleDtoAssociatedObjectFn) {
+			Function<SampleDto, ReferenceDto> sampleDtoAssociatedObjectFn,
+			Function<T, Disease> getEntityDisease) {
 			this.mainRootEntityType = mainRootEntityType;
 			this.mainRootEntities = mainRootEntities;
 			this.createReference = createReference;
@@ -212,9 +248,10 @@ public class DocumentTemplateEntitiesBuilder {
 			this.sampleCriteria = sampleCriteria;
 			this.sampleAssociatedObjectFn = sampleAssociatedObjectFn;
 			this.sampleDtoAssociatedObjectFn = sampleDtoAssociatedObjectFn;
+			this.getEntityDisease = getEntityDisease;
 		}
 
-		Map<ReferenceDto, DocumentTemplateEntities> build() {
+		Map<ReferenceDto, DocumentTemplateEntities> build() throws DocumentTemplateException {
 			Map<String, SampleDto> samples = sampleFacadeEjb.getPositiveOrLatest(sampleCriteria, sampleAssociatedObjectFn)
 				.stream()
 				.collect(Collectors.toMap(s -> sampleDtoAssociatedObjectFn.apply(s).getUuid(), s -> s));
@@ -225,13 +262,30 @@ public class DocumentTemplateEntitiesBuilder {
 					.collect(Collectors.toMap(t -> t.getSample().getUuid(), s -> s))
 				: new HashMap<>(0);
 
+			Set<Disease> diseases = mainRootEntities.stream().map(getEntityDisease).collect(Collectors.toSet());
+			final Map<String, VaccinationDto> vaccinations;
+			if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+				if (diseases.size() > 1) {
+					throw new DocumentTemplateException(I18nProperties.getString(Strings.errorDocumentGenerationMultipleDiseasses));
+				} else if (!diseases.isEmpty()) {
+					vaccinations = vaccinationFacade.getLatestByPersons(
+						mainRootEntities.stream().map(getEntityPerson).collect(Collectors.toList()),
+						diseases.iterator().next());
+				} else {
+					vaccinations = Collections.emptyMap();
+				}
+			} else {
+				vaccinations = Collections.emptyMap();
+			}
+
 			return mainRootEntities.stream().map(e -> {
 				SampleDto sample = samples.get(e.getUuid());
 				PathogenTestDto pathogenTest = sample != null ? pathogenTests.get(sample.getUuid()) : null;
+				VaccinationDto vaccination = vaccinations.get(getEntityPerson.apply(e).getUuid());
 
 				return new AbstractMap.SimpleEntry<>(
 					createReference.apply(e),
-					buildEntities(mainRootEntityType, e, getEntityPerson.apply(e), sample, pathogenTest));
+					buildEntities(mainRootEntityType, e, getEntityPerson.apply(e), sample, pathogenTest, vaccination));
 			}).collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
 		}
 
@@ -242,7 +296,8 @@ public class DocumentTemplateEntitiesBuilder {
 		EntityDto mainRootEntity,
 		PersonReferenceDto person,
 		SampleDto sample,
-		PathogenTestDto pathogenTest) {
+		PathogenTestDto pathogenTest,
+		VaccinationDto vaccination) {
 		DocumentTemplateEntities entities = new DocumentTemplateEntities();
 
 		entities.addEntity(mainRootEntityType, mainRootEntity);
@@ -254,6 +309,10 @@ public class DocumentTemplateEntitiesBuilder {
 
 		if (pathogenTest != null) {
 			entities.addEntity(RootEntityType.ROOT_PATHOGEN_TEST, pathogenTest);
+		}
+
+		if (vaccination != null) {
+			entities.addEntity(RootEntityType.ROOT_VACCINATION, vaccination);
 		}
 
 		entities.addEntity(RootEntityType.ROOT_USER, userFacade.getCurrentUser());
