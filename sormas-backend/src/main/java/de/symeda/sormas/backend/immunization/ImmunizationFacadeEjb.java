@@ -257,18 +257,6 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	public boolean isArchived(String uuid) {
-		return service.isArchived(uuid);
-	}
-
-	@Override
-	public void archiveOrDearchiveImmunization(String uuid, boolean archive) {
-		Immunization immunization = service.getByUuid(uuid);
-		immunization.setArchived(archive);
-		service.ensurePersisted(immunization);
-	}
-
-	@Override
 	public boolean isImmunizationEditAllowed(String uuid) {
 		Immunization immunization = service.getByUuid(uuid);
 

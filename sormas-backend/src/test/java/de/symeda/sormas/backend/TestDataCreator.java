@@ -398,7 +398,7 @@ public class TestDataCreator {
 
 		final CaseDataDto aCase = createCase(user, cazePerson, disease, caseClassification, investigationStatus, reportAndOnsetDate, new RDCF(rdcf));
 		aCase.setHealthFacilityDetails(healthFacilityDetails);
-		return beanTest.getCaseFacade().saveCase(aCase);
+		return beanTest.getCaseFacade().save(aCase);
 	}
 
 	public CaseDataDto createCase(
@@ -440,7 +440,7 @@ public class TestDataCreator {
 			setCustomFields.accept(caze);
 		}
 
-		caze = beanTest.getCaseFacade().saveCase(caze);
+		caze = beanTest.getCaseFacade().save(caze);
 
 		return caze;
 	}

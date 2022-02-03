@@ -91,9 +91,7 @@ public interface CaseFacade extends CoreBaseFacade<CaseDataDto, CaseIndexDto, Ca
 
 	CaseDataDto getCaseDataByUuid(String uuid);
 
-	CaseDataDto saveCase(@Valid CaseDataDto dto) throws ValidationRuntimeException;
-
-	CaseDataDto saveCase(@Valid CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException;
+	CaseDataDto save(@Valid CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException;
 
 	void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef);
 
@@ -102,8 +100,6 @@ public interface CaseFacade extends CoreBaseFacade<CaseDataDto, CaseIndexDto, Ca
 	void setSampleAssociationsUnrelatedDisease(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef);
 
 	void validate(CaseDataDto dto) throws ValidationRuntimeException;
-
-	CaseReferenceDto getReferenceByUuid(String uuid);
 
 	List<String> getAllActiveUuids();
 
@@ -143,11 +139,7 @@ public interface CaseFacade extends CoreBaseFacade<CaseDataDto, CaseIndexDto, Ca
 
 	Date getOldestCaseOutcomeDate();
 
-	boolean isArchived(String caseUuid);
-
 	boolean isDeleted(String caseUuid);
-
-	void archiveOrDearchiveCase(String caseUuid, boolean archive);
 
 	List<String> getArchivedUuidsSince(Date since);
 
@@ -184,8 +176,6 @@ public interface CaseFacade extends CoreBaseFacade<CaseDataDto, CaseIndexDto, Ca
 	FollowUpPeriodDto calculateFollowUpUntilDate(CaseDataDto caseDto, boolean ignoreOverwrite);
 
 	boolean isCaseEditAllowed(String caseUuid);
-
-	boolean exists(String uuid);
 
 	boolean hasPositiveLabResult(String caseUuid);
 

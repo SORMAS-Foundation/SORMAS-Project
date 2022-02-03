@@ -221,17 +221,6 @@ public class TravelEntryService extends BaseTravelEntryService {
 		return count > 0;
 	}
 
-	public boolean isArchived(String travelEntryUuid) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<TravelEntry> from = cq.from(TravelEntry.class);
-
-		cq.where(cb.and(cb.equal(from.get(TravelEntry.ARCHIVED), true), cb.equal(from.get(AbstractDomainObject.UUID), travelEntryUuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
-	}
-
 	public TravelEntry getLastTravelEntry() {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<TravelEntry> query = cb.createQuery(TravelEntry.class);

@@ -1285,7 +1285,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getVisitFacade().getAllActiveVisitsAfter(null).size());
 		assertEquals(1, getVisitFacade().getAllActiveUuids().size());
 
-		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
+		getCaseFacade().archive(caze.getUuid());
 
 		// getAllActiveContacts and getAllUuids should return length 0
 		assertEquals(0, getContactFacade().getAllAfter(null).size());
@@ -1293,7 +1293,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(0, getVisitFacade().getAllActiveVisitsAfter(null).size());
 		assertEquals(0, getVisitFacade().getAllActiveUuids().size());
 
-		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
+		getCaseFacade().dearchive(caze.getUuid());
 
 		// getAllActiveContacts and getAllUuids should return length 1
 		assertEquals(1, getContactFacade().getAllAfter(null).size());

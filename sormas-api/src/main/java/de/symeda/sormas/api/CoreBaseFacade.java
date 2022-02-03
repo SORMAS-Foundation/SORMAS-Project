@@ -29,6 +29,8 @@ public interface CoreBaseFacade<DTO extends EntityDto, INDEX_DTO extends Seriali
 
     void dearchive(String uuid);
 
+    boolean isArchived(String uuid);
+
     boolean exists(String uuid);
 
     List<DTO> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid);

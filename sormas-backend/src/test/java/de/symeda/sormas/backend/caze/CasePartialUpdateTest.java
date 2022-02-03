@@ -201,7 +201,7 @@ public class CasePartialUpdateTest extends AbstractBeanTest {
 			rdcf);
 		caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 		caze.setAdditionalDetails("additional details");
-		caze = getCaseFacade().saveCase(caze);
+		caze = getCaseFacade().save(caze);
 
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode caseJson = mapper.convertValue(caze, JsonNode.class);

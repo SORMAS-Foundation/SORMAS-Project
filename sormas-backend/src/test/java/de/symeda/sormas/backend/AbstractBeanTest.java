@@ -281,7 +281,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(ConfigFacadeEjbLocal.class);
 	}
 
-	public CaseFacade getCaseFacade() {
+	public CaseFacadeEjbLocal getCaseFacade() {
 		return getBean(CaseFacadeEjbLocal.class);
 	}
 

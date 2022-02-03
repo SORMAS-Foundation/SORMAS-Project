@@ -668,7 +668,7 @@ public class CaseFacadeEjb extends AbstractCoreEjb<Case, CaseDataDto, CaseIndexD
 	public CaseDataDto postUpdate(String uuid, JsonNode caseDataDtoJson) {
 		CaseDataDto existingCaseDto = getCaseDataWithoutPseudonyimization(uuid);
 		PatchHelper.postUpdate(caseDataDtoJson, existingCaseDto);
-		return saveCase(existingCaseDto);
+		return this.save(existingCaseDto);
 
 	}
 
@@ -1344,13 +1344,13 @@ public class CaseFacadeEjb extends AbstractCoreEjb<Case, CaseDataDto, CaseIndexD
 	}
 
 	@Override
-	public CaseDataDto saveCase(@Valid CaseDataDto dto) throws ValidationRuntimeException {
-		return saveCase(dto, true, true, true, false);
+	public CaseDataDto save(@Valid CaseDataDto dto) throws ValidationRuntimeException {
+		return save(dto, true, true, true, false);
 	}
 
 	@Override
-	public CaseDataDto saveCase(@Valid CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException {
-		return saveCase(dto, true, true, true, systemSave);
+	public CaseDataDto save(@Valid CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException {
+		return save(dto, true, true, true, systemSave);
 	}
 
 	public void saveBulkCase(
@@ -1462,11 +1462,11 @@ public class CaseFacadeEjb extends AbstractCoreEjb<Case, CaseDataDto, CaseIndexD
 		}
 	}
 
-	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, Boolean systemSave) {
-		return saveCase(dto, handleChanges, checkChangeDate, true, systemSave);
+	public CaseDataDto save(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, Boolean systemSave) {
+		return save(dto, handleChanges, checkChangeDate, true, systemSave);
 	}
 
-	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal, Boolean systemSave)
+	public CaseDataDto save(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal, Boolean systemSave)
 		throws ValidationRuntimeException {
 
 		Case existingCase = service.getByUuid(dto.getUuid());
@@ -1666,12 +1666,6 @@ public class CaseFacadeEjb extends AbstractCoreEjb<Case, CaseDataDto, CaseIndexD
 				}
 			}
 		}
-	}
-
-	@Override
-	public void archiveOrDearchiveCase(String caseUuid, boolean archive) {
-
-		service.updateArchived(Collections.singletonList(caseUuid), archive);
 	}
 
 	/**
@@ -3170,22 +3164,6 @@ public class CaseFacadeEjb extends AbstractCoreEjb<Case, CaseDataDto, CaseIndexD
 	}
 
 	@Override
-	public boolean isArchived(String caseUuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Case> from = cq.from(Case.class);
-
-		// Workaround for probable bug in Eclipse Link/Postgre that throws a
-		// NoResultException when trying to
-		// query for a true Boolean result
-		cq.where(cb.and(cb.equal(from.get(Case.ARCHIVED), true), cb.equal(from.get(AbstractDomainObject.UUID), caseUuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
-	}
-
-	@Override
 	public boolean isDeleted(String caseUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -3210,7 +3188,7 @@ public class CaseFacadeEjb extends AbstractCoreEjb<Case, CaseDataDto, CaseIndexD
 		// 1.1 Case
 
 		copyDtoValues(leadCaseData, otherCaseData, cloning);
-		saveCase(leadCaseData, !cloning, true, true, false);
+		save(leadCaseData, !cloning, true, true, false);
 
 		// 1.2 Person - Only merge when the persons have different UUIDs
 		if (!cloning && !DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid())) {

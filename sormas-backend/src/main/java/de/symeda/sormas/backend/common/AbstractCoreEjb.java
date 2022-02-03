@@ -109,6 +109,10 @@ public abstract class AbstractCoreEjb<ADO extends CoreAdo, DTO extends EntityDto
 		}
 	}
 
+	public boolean isArchived(String uuid) {
+		return service.isArchived(uuid);
+	}
+
 	public DTO convertToDto(ADO source, Pseudonymizer pseudonymizer) {
 
 		DTO dto = toDto(source);

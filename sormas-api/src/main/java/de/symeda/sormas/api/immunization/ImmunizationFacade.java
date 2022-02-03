@@ -37,10 +37,6 @@ public interface ImmunizationFacade extends CoreBaseFacade<ImmunizationDto, Immu
 
 	List<String> deleteImmunizations(List<String> immunizationUuids);
 
-	boolean isArchived(String uuid);
-
-	void archiveOrDearchiveImmunization(String uuid, boolean archive);
-
 	boolean isImmunizationEditAllowed(String uuid);
 
 	List<ImmunizationDto> getSimilarImmunizations(ImmunizationSimilarityCriteria criteria);

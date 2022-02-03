@@ -94,11 +94,6 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	public boolean isArchived(String travelEntryUuid) {
-		return service.isArchived(travelEntryUuid);
-	}
-
-	@Override
 	public void archiveOrDearchiveTravelEntry(String travelEntryUuid, boolean archive) {
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
 		travelEntry.setArchived(archive);

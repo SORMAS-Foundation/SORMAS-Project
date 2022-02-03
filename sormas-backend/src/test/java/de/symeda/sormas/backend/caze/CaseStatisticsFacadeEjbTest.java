@@ -55,7 +55,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 		caze.setOutcomeDate(DateHelper.addWeeks(caze.getReportDate(), 2));
-		caze = getCaseFacade().saveCase(caze);
+		caze = getCaseFacade().save(caze);
 
 		StatisticsCaseCriteria criteria = new StatisticsCaseCriteria();
 		int year = DateHelper8.toLocalDate(caze.getSymptoms().getOnsetDate()).getYear();

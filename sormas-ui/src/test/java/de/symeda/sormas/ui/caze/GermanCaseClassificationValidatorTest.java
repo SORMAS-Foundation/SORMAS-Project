@@ -110,7 +110,7 @@ public class GermanCaseClassificationValidatorTest extends AbstractBeanTest {
 
 		// assert classifications when other symptoms & positive lab result
 		caze.getSymptoms().setFever(SymptomState.YES);
-		CaseDataDto savedCase1 = getCaseFacade().saveCase(caze);
+		CaseDataDto savedCase1 = getCaseFacade().save(caze);
 
 		valid(CaseClassification.NOT_CLASSIFIED, validator);
 		invalid(CaseClassification.SUSPECT, validator);
@@ -122,7 +122,7 @@ public class GermanCaseClassificationValidatorTest extends AbstractBeanTest {
 
 		// assert classifications when other & covid symptoms & positive lab result
 		savedCase1.getSymptoms().setPneumoniaClinicalOrRadiologic(SymptomState.YES);
-		CaseDataDto savedCase2 = getCaseFacade().saveCase(savedCase1);
+		CaseDataDto savedCase2 = getCaseFacade().save(savedCase1);
 
 		valid(CaseClassification.NOT_CLASSIFIED, validator);
 		valid(CaseClassification.SUSPECT, validator);

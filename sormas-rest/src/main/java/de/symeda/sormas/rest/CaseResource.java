@@ -86,7 +86,7 @@ public class CaseResource extends EntityDtoResource {
 	@POST
 	@Path("/push")
 	public List<PushResult> postCases(@Valid List<CaseDataDto> dtos) {
-		return savePushedDto(dtos, FacadeProvider.getCaseFacade()::saveCase);
+		return savePushedDto(dtos, FacadeProvider.getCaseFacade()::save);
 	}
 
 	@GET

@@ -16,8 +16,6 @@ public interface TravelEntryFacade extends CoreBaseFacade<TravelEntryDto, Travel
 
 	boolean isDeleted(String eventUuid);
 
-	boolean isArchived(String travelEntryUuid);
-
 	void archiveOrDearchiveTravelEntry(String travelEntryUuid, boolean archive);
 
 	Boolean isTravelEntryEditAllowed(String travelEntryUuid);

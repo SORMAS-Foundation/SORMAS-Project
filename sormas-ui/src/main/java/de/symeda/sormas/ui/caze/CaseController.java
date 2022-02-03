@@ -244,7 +244,7 @@ public class CaseController {
 			} else {
 				CaseDataDto selectedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(uuid);
 				selectedCase.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
-				FacadeProvider.getCaseFacade().saveCase(selectedCase);
+				FacadeProvider.getCaseFacade().save(selectedCase);
 
 				ContactDto updatedContact = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
 				updatedContact.setContactStatus(ContactStatus.CONVERTED);
@@ -474,7 +474,7 @@ public class CaseController {
 		CaseDataDto existingDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(cazeDto.getUuid());
 		onCaseChanged(existingDto, cazeDto);
 
-		CaseDataDto resultDto = FacadeProvider.getCaseFacade().saveCase(cazeDto);
+		CaseDataDto resultDto = FacadeProvider.getCaseFacade().save(cazeDto);
 
 		if (resultDto.getPlagueType() != cazeDto.getPlagueType()) {
 			// TODO would be much better to have a notification for this triggered in the backend
@@ -1157,7 +1157,7 @@ public class CaseController {
 					cazeDtoInner.setFacilityType(FacilityType.HOSPITAL);
 					cazeDtoInner.setHealthFacility(dto.getHealthFacility());
 					cazeDtoInner.setHealthFacilityDetails(dto.getHealthFacilityDetails());
-					FacadeProvider.getCaseFacade().saveCase(cazeDtoInner);
+					FacadeProvider.getCaseFacade().save(cazeDtoInner);
 					ControllerProvider.getCaseController().navigateToView(HospitalizationView.VIEW_NAME, caze.getUuid(), null);
 				});
 				VaadinUiUtil.showModalPopupWindow(wrapperComponent, I18nProperties.getString(Strings.headingPlaceOfStayInHospital));
@@ -1361,7 +1361,7 @@ public class CaseController {
 			if (!form.getFieldGroup().isModified()) {
 				CaseDataDto dto = form.getValue();
 				dto.getHospitalization().setAdmissionDate(new Date());
-				FacadeProvider.getCaseFacade().saveCase(dto);
+				FacadeProvider.getCaseFacade().save(dto);
 				window.close();
 				Notification.show(I18nProperties.getString(Strings.messageCaseReferredFromPoe), Type.ASSISTIVE_NOTIFICATION);
 				SormasUI.refreshView();
@@ -1391,7 +1391,7 @@ public class CaseController {
 				640,
 				e -> {
 					if (e.booleanValue() == true) {
-						FacadeProvider.getCaseFacade().archiveOrDearchiveCase(caseUuid, true);
+						FacadeProvider.getCaseFacade().archive(caseUuid);
 						Notification.show(
 							String.format(I18nProperties.getString(Strings.messageCaseArchived), I18nProperties.getString(Strings.entityCase)),
 							Type.ASSISTIVE_NOTIFICATION);
@@ -1412,7 +1412,7 @@ public class CaseController {
 				640,
 				e -> {
 					if (e.booleanValue()) {
-						FacadeProvider.getCaseFacade().archiveOrDearchiveCase(caseUuid, false);
+						FacadeProvider.getCaseFacade().dearchive(caseUuid);
 						Notification.show(
 							String.format(I18nProperties.getString(Strings.messageCaseDearchived), I18nProperties.getString(Strings.entityCase)),
 							Type.ASSISTIVE_NOTIFICATION);
@@ -1688,7 +1688,7 @@ public class CaseController {
 
 						selectOrCreateCase(newCase, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
 							if (uuid == null) {
-								FacadeProvider.getCaseFacade().saveCase(newCase);
+								FacadeProvider.getCaseFacade().save(newCase);
 								Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
 							}
 						});

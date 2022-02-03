@@ -15,9 +15,26 @@
 
 package de.symeda.sormas.backend.common;
 
+import de.symeda.sormas.backend.travelentry.TravelEntry;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
 public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AbstractDeletableAdoService<ADO> {
 
 	public AbstractCoreAdoService(Class<ADO> elementClass) {
 		super(elementClass);
+	}
+
+	public boolean isArchived(String uuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<ADO> from = cq.from(getElementClass());
+
+		cq.where(cb.and(cb.equal(from.get(CoreAdo.ARCHIVED), true), cb.equal(from.get(AbstractDomainObject.UUID), uuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
 	}
 }

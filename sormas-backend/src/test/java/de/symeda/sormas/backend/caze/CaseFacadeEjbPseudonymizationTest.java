@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.caze;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
@@ -267,7 +268,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		caze.setReportLon(null);
 		caze.setReportLatLonAccuracy(20F);
 
-		getCaseFacade().saveCase(caze);
+		getCaseFacade().save(caze);
 
 		assertPseudonymizedDataNotUpdated(caze, rdcf2, user2);
 	}
@@ -413,11 +414,11 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(caze.getDistrict(), is(rdcf1.district));
 		assertThat(caze.getCommunity(), is(nullValue()));
 		assertThat(caze.getHealthFacility(), is(nullValue()));
-		assertThat(caze.getHealthFacilityDetails(), is(isEmptyString()));
+		assertThat(caze.getHealthFacilityDetails(), equalTo(CONFIDENTIAL));
 		assertThat(caze.getPointOfEntry(), is(nullValue()));
-		assertThat(caze.getPointOfEntryDetails(), is(isEmptyString()));
-		assertThat(caze.getPerson().getFirstName(), is(isEmptyString()));
-		assertThat(caze.getPerson().getLastName(), is(isEmptyString()));
+		assertThat(caze.getPointOfEntryDetails(), equalTo(CONFIDENTIAL));
+		assertThat(caze.getPerson().getFirstName(), equalTo(CONFIDENTIAL));
+		assertThat(caze.getPerson().getLastName(), equalTo(CONFIDENTIAL));
 
 		//sensitive data
 		assertThat(caze.getReportingUser(), is(nullValue()));
@@ -448,7 +449,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		caze.setReportLon(23.234);
 		caze.setReportLatLonAccuracy(20F);
 
-		getCaseFacade().saveCase(caze);
+		getCaseFacade().save(caze);
 	}
 
 	private void assertPseudonymizedDataUpdated(CaseDataDto caze) {

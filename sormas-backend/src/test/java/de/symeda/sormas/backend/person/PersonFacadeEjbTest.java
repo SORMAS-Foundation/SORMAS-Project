@@ -313,7 +313,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		EventDto inactiveEvent = creator.createEvent(user.toReference());
 		creator.createEventParticipant(inactiveEvent.toReference(), person7, user.toReference());
 
-		getCaseFacade().archiveOrDearchiveCase(inactiveCase.getUuid(), true);
+		getCaseFacade().archive(inactiveCase.getUuid());
 		getEventFacade().archive(inactiveEvent.getUuid());
 
 		// Only persons that have active case, contact or event participant associations should be retrieved
@@ -327,7 +327,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			containsInAnyOrder(person1.getUuid(), person2.getUuid(), person3.getUuid(), person5.getUuid(), person6.getUuid(), person7.getUuid()));
 
 		creator.createCase(user.toReference(), person4.toReference(), rdcf);
-		getCaseFacade().archiveOrDearchiveCase(inactiveCase.getUuid(), false);
+		getCaseFacade().dearchive(inactiveCase.getUuid());
 		getEventFacade().archive(inactiveEvent.getUuid());
 
 		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().sex(Sex.MALE).birthdateYYYY(1980).birthdateMM(1).birthdateDD(1);
@@ -541,9 +541,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		case12.setFollowUpUntil(DateHelper.subtractDays(now, 8));
 		case2.setFollowUpUntil(now);
 
-		getCaseFacade().saveCase(case11);
-		getCaseFacade().saveCase(case12);
-		getCaseFacade().saveCase(case2);
+		getCaseFacade().save(case11);
+		getCaseFacade().save(case12);
+		getCaseFacade().save(case2);
 
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
@@ -610,11 +610,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		getContactFacade().save(contact2);
 		getContactFacade().save(contact3);
 		getContactFacade().save(contact4);
-		getCaseFacade().saveCase(case1);
-		getCaseFacade().saveCase(case2);
-		getCaseFacade().saveCase(case3);
-		getCaseFacade().saveCase(case4);
-		getCaseFacade().saveCase(case5);
+		getCaseFacade().save(case1);
+		getCaseFacade().save(case2);
+		getCaseFacade().save(case3);
+		getCaseFacade().save(case4);
+		getCaseFacade().save(case5);
 
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
@@ -813,7 +813,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	private void updateFollowUpStatus(CaseDataDto caze, FollowUpStatus status) {
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		caze.setFollowUpStatus(status);
-		getCaseFacade().saveCase(caze);
+		getCaseFacade().save(caze);
 	}
 
 	@Test

@@ -846,21 +846,6 @@ public class EventFacadeEjb extends AbstractCoreEjb<Event, EventDto, EventIndexD
 	}
 
 	@Override
-	public boolean isArchived(String eventUuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Event> from = cq.from(Event.class);
-
-		// Workaround for probable bug in Eclipse Link/Postgre that throws a NoResultException when trying to
-		// query for a true Boolean result
-		cq.where(cb.and(cb.equal(from.get(Event.ARCHIVED), true), cb.equal(from.get(AbstractDomainObject.UUID), eventUuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
-	}
-
-	@Override
 	public boolean isDeleted(String eventUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

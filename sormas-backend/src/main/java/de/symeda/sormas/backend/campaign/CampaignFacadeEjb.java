@@ -339,22 +339,6 @@ public class CampaignFacadeEjb extends AbstractCoreEjb<Campaign, CampaignDto, Ca
 	}
 
 	@Override
-	public boolean isArchived(String uuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Campaign> from = cq.from(Campaign.class);
-
-		// Workaround for probable bug in Eclipse Link/Postgre that throws a
-		// NoResultException when trying to
-		// query for a true Boolean result
-		cq.where(cb.and(cb.equal(from.get(Campaign.ARCHIVED), true), cb.equal(from.get(AbstractDomainObject.UUID), uuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
-	}
-
-	@Override
 	public void deleteCampaign(String campaignUuid) {
 
 		User user = userService.getCurrentUser();
