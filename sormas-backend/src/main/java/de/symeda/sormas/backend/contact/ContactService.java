@@ -82,11 +82,9 @@ import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
-import de.symeda.sormas.backend.clinicalcourse.HealthConditionsService;
-import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
-import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.ArchivableAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.transformers.ContactListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
@@ -1337,7 +1335,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	/**
 	 * Creates a filter that excludes all contacts that are either
-	 * {@link DeletableAdo#isDeleted()} or associated with cases that are
+	 * {@link ArchivableAdo#isDeleted()} or associated with cases that are
 	 * {@link Case#isArchived()}.
 	 */
 	public Predicate createActiveContactsFilter(CriteriaBuilder cb, Root<Contact> root) {
@@ -1356,7 +1354,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do
 	 * not use {@link ContactCriteria}. This essentially removes
-	 * {@link DeletableAdo#isDeleted()} contacts from the queries.
+	 * {@link ArchivableAdo#isDeleted()} contacts from the queries.
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, Contact> root) {
 		return cb.isFalse(root.get(Contact.DELETED));

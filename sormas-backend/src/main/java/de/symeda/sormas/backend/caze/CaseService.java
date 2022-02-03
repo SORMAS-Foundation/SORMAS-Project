@@ -107,10 +107,9 @@ import de.symeda.sormas.backend.caze.transformers.CaseSelectionDtoResultTransfor
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
-import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
-import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.ArchivableAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
@@ -866,7 +865,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	/**
-	 * Creates a filter that excludes all cases that are either {@link Case#archived} or {@link DeletableAdo#deleted}.
+	 * Creates a filter that excludes all cases that are either {@link Case#archived} or {@link ArchivableAdo#deleted}.
 	 */
 	public Predicate createActiveCasesFilter(CriteriaBuilder cb, Root<Case> root) {
 		return cb.and(cb.isFalse(root.get(Case.ARCHIVED)), cb.isFalse(root.get(Case.DELETED)));
@@ -878,7 +877,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do not use {@link CaseCriteria}.
-	 * This essentially removes {@link DeletableAdo#deleted} cases from the queries.
+	 * This essentially removes {@link ArchivableAdo#deleted} cases from the queries.
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, Case> root) {
 		return cb.isFalse(root.get(Case.DELETED));

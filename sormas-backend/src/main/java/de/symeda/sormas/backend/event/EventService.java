@@ -65,7 +65,7 @@ import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.ArchivableAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -786,14 +786,14 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	/**
-	 * Creates a filter that excludes all events that are either {@link Event#isArchived()} or {@link DeletableAdo#isDeleted()}.
+	 * Creates a filter that excludes all events that are either {@link Event#isArchived()} or {@link ArchivableAdo#isDeleted()}.
 	 */
 	public Predicate createActiveEventsFilter(CriteriaBuilder cb, Root<Event> root) {
 		return cb.and(cb.isFalse(root.get(Event.ARCHIVED)), cb.isFalse(root.get(Event.DELETED)));
 	}
 
 	/**
-	 * Creates a filter that excludes all events that are either {@link Event#isArchived()} or {@link DeletableAdo#isDeleted()}.
+	 * Creates a filter that excludes all events that are either {@link Event#isArchived()} or {@link ArchivableAdo#isDeleted()}.
 	 */
 	public Predicate createActiveEventsFilter(CriteriaBuilder cb, Path<Event> root) {
 		return cb.and(cb.isFalse(root.get(Event.ARCHIVED)), cb.isFalse(root.get(Event.DELETED)));
@@ -801,7 +801,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do not use {@link EventCriteria}.
-	 * This essentially removes {@link DeletableAdo#isDeleted()} events from the queries.
+	 * This essentially removes {@link ArchivableAdo#isDeleted()} events from the queries.
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Event> root) {
 		return cb.isFalse(root.get(Event.DELETED));

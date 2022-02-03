@@ -21,7 +21,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -38,7 +37,7 @@ public class LabMessageService extends AbstractDeletableAdoService<LabMessage> {
 
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do not use {@link LabMessageCriteria}.
-	 * This essentially removes {@link DeletableAdo#isDeleted()} lab messages from the queries.
+	 * This essentially removes {@link de.symeda.sormas.backend.common.CoreAdo#isDeleted()} lab messages from the queries.
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<LabMessage> root) {
 		return cb.isFalse(root.get(LabMessage.DELETED));

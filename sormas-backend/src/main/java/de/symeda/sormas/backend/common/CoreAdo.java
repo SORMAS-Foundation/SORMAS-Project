@@ -27,19 +27,21 @@ import de.symeda.auditlog.api.Audited;
  */
 @MappedSuperclass
 @Audited
-public class CoreAdo extends DeletableAdo {
+public class CoreAdo extends ArchivableAdo {
 
-    public static final String ARCHIVED = "archived";
+	private static final long serialVersionUID = 6512756286608581221L;
 
-    private boolean archived;
+	public static final String DELETED = "deleted";
 
-    @Column
-    public boolean isArchived() {
-        return archived;
-    }
+	private boolean deleted;
 
-    public void setArchived(boolean archived) {
-        this.archived = archived;
-    }
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	@Column
+	public boolean isDeleted() {
+		return deleted;
+	}
 
 }

@@ -42,6 +42,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import de.symeda.sormas.backend.common.CoreAdo;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.auditlog.api.Audited;
@@ -56,7 +57,7 @@ import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.ArchivableAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -67,7 +68,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "samples")
 @Audited
-public class Sample extends DeletableAdo implements SormasToSormasShareable {
+public class Sample extends CoreAdo implements SormasToSormasShareable {
 
     private static final long serialVersionUID = -7196712070188634978L;
 

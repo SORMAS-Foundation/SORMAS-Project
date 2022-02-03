@@ -80,7 +80,7 @@ import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.ArchivableAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
@@ -1047,7 +1047,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do not use {@link SampleCriteria}.
-	 * This essentially removes {@link DeletableAdo#isDeleted()} samples from the queries.
+	 * This essentially removes {@link ArchivableAdo#isDeleted()} samples from the queries.
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Sample> root) {
 		return cb.isFalse(root.get(Sample.DELETED));
