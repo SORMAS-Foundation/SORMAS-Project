@@ -25,7 +25,6 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -83,12 +82,12 @@ public class EditCasePersonSteps implements En {
         });
 
     When(
-        "I set Present condition of Person to ([^\"]*)",
+        "I set Present condition of Person to ([^\"]*) in Case Person tab",
         (String condition) ->
             webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_COMBOBOX, condition));
 
     When(
-        "I check if death data fields are available",
+        "I check if death data fields are available in Case Person tab",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(DATE_OF_DEATH_INPUT);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CASE_OF_DEATH);
@@ -97,7 +96,7 @@ public class EditCasePersonSteps implements En {
         });
 
     When(
-        "I check if buried data fields are available",
+        "I check if buried data fields are available in Case Person tab",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(DATE_OF_BURIAL_INPUT);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(BURIAL_CONDUCTOR_INPUT);
@@ -105,7 +104,7 @@ public class EditCasePersonSteps implements En {
         });
 
     When(
-        "I fill specific address data",
+        "I fill specific address data in Case Person tab",
         () -> {
           addressData = caseService.buildAddress();
           selectCountry(addressData.getCountry());
@@ -125,24 +124,22 @@ public class EditCasePersonSteps implements En {
         });
 
     When(
-        "I click on Geocode button to get GPS coordinates",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(GEOCODE_BUTTON);
-          TimeUnit.SECONDS.sleep(5);
-        });
+        "I click on Geocode button to get GPS coordinates in Case Person Tab",
+        () -> webDriverHelpers.clickOnWebElementBySelector(GEOCODE_BUTTON));
 
     When(
-        "I click on save button",
+        "I click on save button to Save Person data in Case Person Tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
-        "I check the created data",
+        "I check if saved Person data is correct",
         () -> {
           collectedCase =
-              collectSpecificCasePersonData(); // TODO: Get and check GPS coordinates for DE specific version
+              collectSpecificCasePersonData(); // TODO: Get and check GPS coordinates for DE
+                                               // specific version
           ComparisonHelper.compareEqualFieldsOfEntities(
               addressData,
               collectedCase,

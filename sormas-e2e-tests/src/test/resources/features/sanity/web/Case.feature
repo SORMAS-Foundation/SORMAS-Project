@@ -194,11 +194,11 @@ Feature: Case end to end tests
     When I create a new case with specific data
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
-    Then I set Present condition of Person to Dead
-    And I check if death data fields are available
-    Then I set Present condition of Person to Buried
-    And I check if buried data fields are available
-    Then I fill specific address data
-    Then I click on Geocode button to get GPS coordinates
-    And I click on save button
-    Then I check the created data
+    Then I set Present condition of Person to Dead in Case Person tab
+    And I check if death data fields are available in Case Person tab
+    Then I set Present condition of Person to Buried in Case Person tab
+    And I check if buried data fields are available in Case Person tab
+    Then I fill specific address data in Case Person tab
+    Then I click on Geocode button to get GPS coordinates in Case Person Tab
+    And I click on save button to Save Person data in Case Person Tab
+    Then I check if saved Person data is correct
