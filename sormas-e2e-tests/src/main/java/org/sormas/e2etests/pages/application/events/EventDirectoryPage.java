@@ -52,6 +52,7 @@ public class EventDirectoryPage {
   public static final By EVENT_SCREENING = By.id("status-Screening");
   public static final By EVENT_CLUSTER = By.id("status-Cluster");
   public static final By EVENT_DROPPED = By.id("status-Dropped");
+  public static final By CREATED_PARTICIPANT = By.cssSelector("[role='gridcell'] a");
 
   /*public static By getByEventUuid(String eventUuid) {
     return By.cssSelector("a[title=" + eventUuid + "]");

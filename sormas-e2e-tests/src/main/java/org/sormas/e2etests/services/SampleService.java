@@ -52,6 +52,19 @@ public class SampleService {
         .build();
   }
 
+  public Sample buildAlternateSample() {
+    long currentTimeMillis = System.currentTimeMillis();
+    return Sample.builder()
+        .purposeOfTheSample("INTERNAL/IN-HOUSE TESTING")
+        .dateOfCollection(LocalDate.now().minusDays(10))
+        .timeOfCollection(LocalTime.of(11, 30))
+        .sampleType("Blood")
+        .reasonForSample("Presence of symptoms")
+        .sampleID(faker.number().randomNumber(7, false))
+        .commentsOnSample(currentTimeMillis + "Comment on Create Sample requests or received")
+        .build();
+  }
+
   public Sample buildGeneratedSampleTestResult() {
     long currentTimeMillis = System.currentTimeMillis();
     return Sample.builder()
