@@ -158,7 +158,7 @@ public class TestDataCreator {
 		eventParticipant.setPerson(eventPerson);
 		eventParticipant.setInvolvementDescription(involvementDescription);
 
-		eventParticipant = FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+		eventParticipant = FacadeProviderMock.getEventParticipantFacade().saveEventParticipant(eventParticipant);
 		return eventParticipant;
 	}
 
@@ -211,7 +211,7 @@ public class TestDataCreator {
 			customConfig.accept(contact);
 		}
 
-		contact = FacadeProvider.getContactFacade().save(contact);
+		contact = FacadeProviderMock.getContactFacade().save(contact);
 
 		return contact;
 	}
@@ -233,7 +233,7 @@ public class TestDataCreator {
 			customSettings.accept(sample);
 		}
 
-		sample = FacadeProvider.getSampleFacade().saveSample(sample);
+		sample = FacadeProviderMock.getSampleFacade().saveSample(sample);
 
 		return sample;
 	}
@@ -253,7 +253,7 @@ public class TestDataCreator {
 		contact.setReportDateTime(reportDateTime);
 		contact.setLastContactDate(lastContactDate);
 
-		contact = FacadeProvider.getContactFacade().save(contact);
+		contact = FacadeProviderMock.getContactFacade().save(contact);
 
 		return contact;
 	}
@@ -299,7 +299,7 @@ public class TestDataCreator {
 		caze.setFacilityType(facility.getType());
 		caze.setHealthFacility(facility.toReference());
 
-		caze = FacadeProvider.getCaseFacade().save(caze);
+		caze = FacadeProviderMock.getCaseFacade().save(caze);
 
 		return caze;
 	}
@@ -454,7 +454,7 @@ public class TestDataCreator {
 			customSettings.accept(event);
 		}
 
-		event = FacadeProvider.getEventFacade().save(event);
+		event = FacadeProviderMock.getEventFacade().save(event);
 
 		return event;
 	}

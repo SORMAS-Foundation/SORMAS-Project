@@ -20,6 +20,9 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 public abstract class AbstractInfrastructureFacadeEjb<ADO extends InfrastructureAdo, DTO extends InfrastructureDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, SRV extends AbstractInfrastructureAdoService<ADO, CRITERIA>, CRITERIA extends BaseCriteria>
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA>
 	implements InfrastructureFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
@@ -44,7 +47,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	}
 
 	@Override
-	public DTO save(DTO dtoToSave) {
+	public DTO save(@Valid @NotNull DTO dtoToSave) {
 		return save(dtoToSave, false);
 	}
 

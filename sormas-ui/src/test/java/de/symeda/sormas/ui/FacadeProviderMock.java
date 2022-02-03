@@ -179,4 +179,29 @@ public final class FacadeProviderMock extends FacadeProvider {
 
 		return null;
 	}
+
+	public static CaseFacadeEjbLocal getCaseFacade() {
+		BeanProviderHelper bm = BeanProviderHelper.getInstance();
+		return bm.getBean(CaseFacadeEjbLocal.class);
+	}
+
+	public static ContactFacadeEjbLocal getContactFacade() {
+		BeanProviderHelper bm = BeanProviderHelper.getInstance();
+		return bm.getBean(ContactFacadeEjbLocal.class);
+	}
+
+	public static EventFacadeEjbLocal getEventFacade() {
+		BeanProviderHelper bm = BeanProviderHelper.getInstance();
+		return bm.getBean(EventFacadeEjbLocal.class);
+	}
+
+	public static EventParticipantFacadeEjbLocal getEventParticipantFacade() {
+		BeanProviderHelper bm = BeanProviderHelper.getInstance();
+		return bm.getBean(EventParticipantFacadeEjbLocal.class);
+	}
+
+	public static SampleFacadeEjbLocal getSampleFacade() {
+		BeanProviderHelper bm = BeanProviderHelper.getInstance();
+		return bm.getBean(SampleFacadeEjbLocal.class);
+	}
 }

@@ -24,8 +24,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
-import de.symeda.sormas.backend.util.Pseudonymizer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -45,12 +43,14 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
+import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "CampaignFacade")
@@ -67,7 +67,7 @@ public class CampaignFacadeEjb extends AbstractCoreFacadeEjb<Campaign, CampaignD
 	}
 
 	@Inject
-	public CampaignFacadeEjb( CampaignService service, UserService userService) {
+	public CampaignFacadeEjb(CampaignService service, UserService userService) {
 		super(Campaign.class, CampaignDto.class, service, userService);
 	}
 
@@ -158,7 +158,7 @@ public class CampaignFacadeEjb extends AbstractCoreFacadeEjb<Campaign, CampaignD
 	}
 
 	@Override
-	public CampaignDto save(@Valid CampaignDto dto) {
+	public CampaignDto save(@Valid @NotNull CampaignDto dto) {
 		validate(dto);
 		Campaign campaign = fillOrBuildEntity(dto, service.getByUuid(dto.getUuid()), true);
 		service.ensurePersisted(campaign);
@@ -360,10 +360,7 @@ public class CampaignFacadeEjb extends AbstractCoreFacadeEjb<Campaign, CampaignD
 
 	@Override
 	public List<CampaignDto> getAllAfter(Date date) {
-		return service.getAllAfter(date)
-			.stream()
-			.map(campaignFormMeta -> toDto(campaignFormMeta))
-			.collect(Collectors.toList());
+		return service.getAllAfter(date).stream().map(campaignFormMeta -> toDto(campaignFormMeta)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -396,6 +393,7 @@ public class CampaignFacadeEjb extends AbstractCoreFacadeEjb<Campaign, CampaignD
 	@LocalBean
 	@Stateless
 	public static class CampaignFacadeEjbLocal extends CampaignFacadeEjb {
+
 		public CampaignFacadeEjbLocal() {
 		}
 

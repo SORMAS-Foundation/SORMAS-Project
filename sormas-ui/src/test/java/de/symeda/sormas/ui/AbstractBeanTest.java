@@ -139,7 +139,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(PersonFacadeEjbLocal.class);
 	}
 
-	public CaseFacade getCaseFacade() {
+	public CaseFacadeEjbLocal getCaseFacade() {
 		return getBean(CaseFacadeEjbLocal.class);
 	}
 
@@ -151,7 +151,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal.class);
 	}
 
-	public ContactFacade getContactFacade() {
+	public ContactFacadeEjbLocal getContactFacade() {
 		return getBean(ContactFacadeEjbLocal.class);
 	}
 

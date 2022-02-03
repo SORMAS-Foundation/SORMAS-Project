@@ -1344,12 +1344,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public CaseDataDto save(@Valid CaseDataDto dto) throws ValidationRuntimeException {
+	public CaseDataDto save(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException {
 		return save(dto, true, true, true, false);
 	}
 
 	@Override
-	public CaseDataDto save(@Valid CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException {
+	public CaseDataDto save(@Valid @NotNull CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException {
 		return save(dto, true, true, true, systemSave);
 	}
 

@@ -279,11 +279,11 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	public ImmunizationDto save(ImmunizationDto dto) {
+	public ImmunizationDto save(@Valid @NotNull ImmunizationDto dto) {
 		return save(dto, true, true);
 	}
 
-	public ImmunizationDto save(@Valid ImmunizationDto dto, boolean checkChangeDate, boolean internal) {
+	public ImmunizationDto save(@Valid @NotNull ImmunizationDto dto, boolean checkChangeDate, boolean internal) {
 		Immunization existingImmunization = service.getByUuid(dto.getUuid());
 
 		if (internal && existingImmunization != null && !service.isImmunizationEditAllowed(existingImmunization)) {

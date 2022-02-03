@@ -91,7 +91,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	CaseDataDto getCaseDataByUuid(String uuid);
 
-	CaseDataDto save(@Valid CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException;
+	CaseDataDto save(@Valid @NotNull CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException;
 
 	void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef);
 

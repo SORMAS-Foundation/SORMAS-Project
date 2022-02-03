@@ -304,7 +304,7 @@ public class ContactFacadeEjb extends AbstractCoreFacadeEjb<Contact, ContactDto,
 	}
 
 	@Override
-	public ContactDto save(@Valid ContactDto dto) {
+	public ContactDto save(@Valid @NotNull ContactDto dto) {
 		return save(dto, true, true);
 	}
 
