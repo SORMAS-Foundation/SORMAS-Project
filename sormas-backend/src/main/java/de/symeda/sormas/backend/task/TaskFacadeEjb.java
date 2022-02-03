@@ -301,7 +301,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		User newAssignee = dto.getAssigneeUser() != null ? userService.getByUuid(dto.getAssigneeUser().getUuid()) : null;
 
-		this.notifyAboutNewAssignee(ado, newAssignee, oldAssignee);
+		notifyAboutNewAssignee(ado, newAssignee, oldAssignee);
 
 		// once we have to handle additional logic this should be moved to it's own function or even class 
 		if (ado.getTaskType() == TaskType.CASE_INVESTIGATION && ado.getCaze() != null) {
@@ -341,7 +341,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	private void notifyAboutNewAssignee(Task task, User newAssignee, User oldAssignee) {
-		if (Objects.equals(newAssignee, oldAssignee)) {
+		// oldAssignee == null => it means it's a new task, this notification should only be sent in case the assignee is changed
+		if (oldAssignee == null || Objects.equals(newAssignee, oldAssignee)) {
 			return;
 		}
 
@@ -353,12 +354,10 @@ public class TaskFacadeEjb implements TaskFacade {
 					? task.getCaze()
 					: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
 
-				if (oldAssignee != null) {
-					String oldAssigneeMessage = context == TaskContext.GENERAL
-						? String.format(I18nProperties.getString(MessageContents.CONTENT_TASK_GENERAL_UPDATED_ASSIGNEE_SOURCE), task.getTaskType().toString())
-						: buildSpecificTaskMessage(MessageContents.CONTENT_TASK_SPECIFIC_UPDATED_ASSIGNEE_SOURCE, task.getTaskType(), context, associatedEntity);
-					mapToReturn.put(oldAssignee, oldAssigneeMessage);
-				}
+				String oldAssigneeMessage = context == TaskContext.GENERAL
+					? String.format(I18nProperties.getString(MessageContents.CONTENT_TASK_GENERAL_UPDATED_ASSIGNEE_SOURCE), task.getTaskType().toString())
+					: buildSpecificTaskMessage(MessageContents.CONTENT_TASK_SPECIFIC_UPDATED_ASSIGNEE_SOURCE, task.getTaskType(), context, associatedEntity);
+				mapToReturn.put(oldAssignee, oldAssigneeMessage);
 
 				if (newAssignee != null) {
 					String newAssigneeMessage = context == TaskContext.GENERAL
