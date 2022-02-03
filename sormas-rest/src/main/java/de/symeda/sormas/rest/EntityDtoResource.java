@@ -12,6 +12,7 @@ import java.util.function.Function;
 
 import javax.ejb.EJB;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,6 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.api.utils.ValidationException;
-import jdk.internal.joptsimple.internal.Strings;
 
 public abstract class EntityDtoResource {
 
@@ -57,7 +57,7 @@ public abstract class EntityDtoResource {
 				result = PushResult.OK;
 
 				Map<PushResult, String> map = new EnumMap<>(PushResult.class);
-				map.put(result, Strings.EMPTY);
+				map.put(result, StringUtils.EMPTY);
 				results.put(dto.toString(), map);
 			} catch (Exception e) {
 				String errorMessage = createErrorMessage(dto);
