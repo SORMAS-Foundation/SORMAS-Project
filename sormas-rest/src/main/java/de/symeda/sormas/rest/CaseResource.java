@@ -93,7 +93,7 @@ public class CaseResource extends EntityDtoResource {
 	@POST
 	@Path("/push-detailed")
 	public Map<String, Map<PushResult, String>> postCasesDetailed(@Valid List<CaseDataDto> dtos) {
-		return savePushedDetailedDto(dtos, FacadeProvider.getCaseFacade()::saveCase);
+		return savePushedDetailedDto(dtos, FacadeProvider.getCaseFacade()::save);
 	}
 
 	@GET
