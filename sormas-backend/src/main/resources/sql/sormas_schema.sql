@@ -9821,4 +9821,11 @@ ALTER TABLE deletionconfiguration_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (437, 'Add configurations for each entity to trigger automated deletion #7008');
 
+-- 2022-02-02 Refactor CoreAdo to include archiving #7246
+
+ALTER TABLE contact ADD COLUMN archived BOOLEAN;
+ALTER TABLE contact_history ADD COLUMN archived BOOLEAN;
+
+INSERT INTO schema_version (version_number, comment) VALUES (438, 'Refactor CoreAdo to include archiving #7246');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
