@@ -23,7 +23,7 @@ public abstract class AbstractDeletableAdoService<ADO extends DeletableAdo> exte
 
 	protected <C> Predicate changeDateFilter(CriteriaBuilder cb, Timestamp date, From<?, C> path, String... joinFields) {
 		From<?, ?> parent = path;
-		for (int i = 0; i < joinFields.length; i++) {
+		for (String joinField : joinFields) {
 			parent = parent.join(joinFields[i], JoinType.LEFT);
 		}
 		return CriteriaBuilderHelper.greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), date);
