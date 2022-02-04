@@ -933,7 +933,7 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 	}
 
 	@Override
-	public String getFirstEventUuidWithOwnershipHandedOver(List<String> eventUuids) {
+	public List<String> getEventUuidsWithOwnershipHandedOver(List<String> eventUuids) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Event> eventRoot = cq.from(Event.class);
@@ -943,7 +943,7 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 		cq.where(cb.and(eventRoot.get(Event.UUID).in(eventUuids), cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
 		cq.orderBy(cb.asc(eventRoot.get(AbstractDomainObject.CREATION_DATE)));
 
-		return QueryHelper.getFirstResult(em, cq);
+		return QueryHelper.getResultList(em, cq, null, null);
 	}
 
 	@Override
