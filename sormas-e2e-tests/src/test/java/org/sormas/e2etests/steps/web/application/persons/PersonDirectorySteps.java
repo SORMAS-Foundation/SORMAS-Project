@@ -44,6 +44,7 @@ import org.testng.Assert;
 
 public class PersonDirectorySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
+  protected Person createdPerson;
 
   @Inject
   public PersonDirectorySteps(
