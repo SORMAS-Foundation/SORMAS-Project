@@ -14,8 +14,8 @@ public class LabMessageIndexDto implements Serializable {
 
 	public static final String UUID = "uuid";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
-	public static final String TEST_LAB_NAME = "labName";
-	public static final String TEST_LAB_POSTAL_CODE = "labPostalCode";
+	public static final String LAB_NAME = "labName";
+	public static final String LAB_POSTAL_CODE = "labPostalCode";
 	public static final String TESTED_DISEASE = "testedDisease";
 	public static final String SAMPLE_OVERALL_TEST_RESULT = "sampleOverallTestResult";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
@@ -99,19 +99,19 @@ public class LabMessageIndexDto implements Serializable {
 		this.messageDateTime = messageDateTime;
 	}
 
-	public String getlabName() {
+	public String getLabName() {
 		return labName;
 	}
 
-	public void setTestLabName(String labName) {
+	public void setLabName(String labName) {
 		this.labName = labName;
 	}
 
-	public String getlabPostalCode() {
+	public String getLabPostalCode() {
 		return labPostalCode;
 	}
 
-	public void setlabPostalCode(String testLabPostalCode) {
+	public void setLabPostalCode(String testLabPostalCode) {
 		this.labPostalCode = testLabPostalCode;
 	}
 

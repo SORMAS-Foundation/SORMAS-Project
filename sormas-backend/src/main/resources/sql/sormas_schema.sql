@@ -9798,4 +9798,27 @@ ALTER TABLE weeklyreportentry_history ALTER COLUMN creationdate TYPE timestamp(3
 
 INSERT INTO schema_version (version_number, comment) VALUES (436, 'Set timestamp precision to milliseconds #7303');
 
+-- 2022-01-25 Add configurations for each entity to trigger automated deletion #7008
+CREATE TABLE deletionconfiguration(
+                                     id bigint not null,
+                                     uuid varchar(36) not null unique,
+                                     changedate timestamp not null,
+                                     creationdate timestamp not null,
+                                     entityType varchar(255),
+                                     deletionReference varchar(255),
+                                     deletionPeriod integer,
+                                     sys_period tstzrange not null,
+                                     primary key(id)
+);
+ALTER TABLE deletionconfiguration OWNER TO sormas_user;
+ALTER TABLE ONLY deletionconfiguration ADD CONSTRAINT deletionconfiguration_entity_key UNIQUE (entityType);
+
+CREATE TABLE deletionconfiguration_history (LIKE deletionconfiguration);
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON deletionconfiguration
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'deletionconfiguration_history', true);
+ALTER TABLE deletionconfiguration_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (437, 'Add configurations for each entity to trigger automated deletion #7008');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

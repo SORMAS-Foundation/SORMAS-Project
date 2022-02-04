@@ -17,6 +17,7 @@ public interface Captions {
 	String aboutChangelog = "aboutChangelog";
 	String aboutCopyright = "aboutCopyright";
 	String aboutDataDictionary = "aboutDataDictionary";
+	String aboutDataProtectionDictionary = "aboutDataProtectionDictionary";
 	String aboutDocuments = "aboutDocuments";
 	String aboutExternalSurveillanceToolGateway = "aboutExternalSurveillanceToolGateway";
 	String aboutLabMessageAdapter = "aboutLabMessageAdapter";
@@ -1242,6 +1243,7 @@ public interface Captions {
 	String exposureTimePeriod = "exposureTimePeriod";
 	String ExternalSurveillanceToolGateway_confirmDelete = "ExternalSurveillanceToolGateway.confirmDelete";
 	String ExternalSurveillanceToolGateway_confirmSend = "ExternalSurveillanceToolGateway.confirmSend";
+	String ExternalSurveillanceToolGateway_excludeAndSend = "ExternalSurveillanceToolGateway.excludeAndSend";
 	String ExternalSurveillanceToolGateway_notTransferred = "ExternalSurveillanceToolGateway.notTransferred";
 	String ExternalSurveillanceToolGateway_send = "ExternalSurveillanceToolGateway.send";
 	String ExternalSurveillanceToolGateway_title = "ExternalSurveillanceToolGateway.title";

@@ -19,6 +19,7 @@ package org.sormas.e2etests.pojo.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
@@ -74,4 +75,9 @@ public class Case {
   Boolean notACaseReasonOther;
   Boolean dontShareWithReportingTool;
   String caseReferenceDefinition;
+  String vaccinationStatus;
+  String quarantine;
+  String reInfection;
+  String reinfectionStatus;
+  LinkedHashMap<String, Boolean> reinfectionDetails;
 }

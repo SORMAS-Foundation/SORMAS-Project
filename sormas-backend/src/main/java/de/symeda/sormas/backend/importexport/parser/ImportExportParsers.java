@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import de.symeda.sormas.backend.importexport.ImportErrorException;
+import de.symeda.sormas.api.importexport.ImportErrorException;
 
 public abstract class ImportExportParsers<T> {
 
