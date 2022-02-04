@@ -23,8 +23,10 @@ import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.enums.LaboratoryValues;
 import org.sormas.e2etests.enums.PathogenTestResults;
 import org.sormas.e2etests.enums.SpecimenConditions;
@@ -42,6 +44,49 @@ public class SamplesDirectorySteps implements En {
       @Named("ENVIRONMENT_URL") String environmentUrl,
       ApiState apiState,
       AssertHelpers assertHelpers) {
+
+    When(
+        "I click a apply button in Sample",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
+          TimeUnit.SECONDS.sleep(3);
+        });
+    When(
+        "fill a Full name of person from API",
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(
+              SAMPLE_SEARCH_INPUT,
+              apiState.getLastCreatedPerson().getFirstName()
+                  + " "
+                  + apiState.getLastCreatedPerson().getLastName());
+        });
+    When(
+        "I select Test result filter among the filter options from API",
+        () -> {
+          String testResult = apiState.getCreatedSample().getPathogenTestResult();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              TEST_RESULTS_SEARCH_COMBOBOX,
+              testResult.substring(0, 1).toUpperCase() + testResult.substring(1).toLowerCase());
+        });
+    When(
+        "I select Specimen condition filter among the filter options from API",
+        () -> {
+          String specimenCondition = apiState.getCreatedSample().getSpecimenCondition();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              SPECIMEN_CONDITION_SEARCH_COMBOBOX, SpecimenConditions.getForName(specimenCondition));
+        });
+    When(
+        "I select Case clasification filter among the filter options from API",
+        () -> {
+          String caseSpecification = apiState.getCreatedCase().getCaseClassification();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              SPECIMEN_CONDITION_SEARCH_COMBOBOX,
+              CaseClassification.getUIValueFor(caseSpecification));
+        });
 
     When(
         "^I search last created Sample by Case ID$",

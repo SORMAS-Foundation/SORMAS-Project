@@ -41,4 +41,6 @@ public class SamplesDirectoryPage {
       By.cssSelector(("tbody>tr:first-child>td:last-child"));
   public static final By EDIT_TEST_RESULTS_BUTTON =
       By.cssSelector("[location='pathogenTests'] [class='v-slot v-slot-s-list'] [role='button']");
+  public static final By CASE_CLASIFICATION_SEARCH_COMBOBOX =
+      By.cssSelector("[id='caseClassification'] [class='v-filterselect-button']");
 }
