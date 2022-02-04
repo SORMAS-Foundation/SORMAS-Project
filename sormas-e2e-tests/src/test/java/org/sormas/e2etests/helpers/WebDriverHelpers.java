@@ -666,8 +666,9 @@ public class WebDriverHelpers {
     while (!"".contentEquals(getValueFromWebElement(selector))) {
       log.debug("Deleted char: {}", getValueFromWebElement(selector));
       webElement.clear();
-      webElement.sendKeys(Keys.chord(Keys.SHIFT, Keys.END));
-      webElement.sendKeys(Keys.chord(Keys.BACK_SPACE));
+      webElement.sendKeys(Keys.LEFT_CONTROL);
+      webElement.sendKeys("A");
+      webElement.sendKeys((Keys.BACK_SPACE));
       webElement.click();
       if (Instant.now().isAfter(start.plus(1, ChronoUnit.MINUTES))) {
         throw new Error("The field didn't clear");
