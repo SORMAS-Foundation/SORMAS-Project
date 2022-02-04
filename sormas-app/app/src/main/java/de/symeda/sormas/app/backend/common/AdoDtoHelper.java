@@ -177,6 +177,11 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
 	public int handlePulledList(AbstractAdoDao<ADO> dao, List<DTO> result)
 		throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
+
+		if (result == null) {
+			return 0;
+		}
+
 		preparePulledResult(result);
 		dao.callBatchTasks((Callable<Void>) () -> {
 // 		boolean empty = dao.countOf() == 0;
