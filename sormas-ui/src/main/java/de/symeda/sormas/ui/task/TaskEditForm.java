@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.ui.utils.components.MultiSelect;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -40,7 +39,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.Disease;
@@ -67,6 +65,7 @@ import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.TaskStatusValidator;
+import de.symeda.sormas.ui.utils.components.MultiSelect;
 
 @SuppressWarnings("deprecation")
 public class TaskEditForm extends AbstractEditForm<TaskDto> {
@@ -284,7 +283,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		// As we removed everything from observers field, let's apply again its value
 		Set<UserReferenceDto> filteredObservers =
 			selectedObservers.stream().filter(userReferenceDto -> !userReferenceDto.equals(assigneeField.getValue())).collect(Collectors.toSet());
-		observersField.setValue(filteredObservers);
+		observersField.setValue(filteredObservers, true);
 	}
 
 	private void checkIfUserEmailOrPhoneIsProvided(

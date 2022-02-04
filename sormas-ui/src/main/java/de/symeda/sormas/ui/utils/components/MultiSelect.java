@@ -31,6 +31,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.CustomField;
 import com.vaadin.v7.ui.Select;
 
@@ -70,6 +71,11 @@ public class MultiSelect<T> extends CustomField<Set<T>> {
         });
 
         verticalLayout.addComponent(selectComponent);
+
+        if (isReadOnly()) {
+            selectComponent.setVisible(false);
+            selectComponent.setReadOnly(true);
+        }
 
         labelLayout.setMargin(false);
         verticalLayout.addComponent(labelLayout);
@@ -128,15 +134,17 @@ public class MultiSelect<T> extends CustomField<Set<T>> {
             label.setWidth("100%");
             itemLayout.addComponent(label);
 
-            Button removeButton = ButtonHelper.createIconButtonWithCaption(
-                  null,
-                  null,
-                  VaadinIcons.TRASH,
-                  e -> removeItem(itemEntry.getKey()),
-                  ValoTheme.BUTTON_ICON_ONLY,
-                  ValoTheme.BUTTON_BORDERLESS,
-                  ValoTheme.BUTTON_ICON_ALIGN_TOP);
-            itemLayout.addComponent(removeButton);
+            if (!isReadOnly()) {
+                Button removeButton = ButtonHelper.createIconButtonWithCaption(
+                      null,
+                      null,
+                      VaadinIcons.TRASH,
+                      e -> removeItem(itemEntry.getKey()),
+                      ValoTheme.BUTTON_ICON_ONLY,
+                      ValoTheme.BUTTON_BORDERLESS,
+                      ValoTheme.BUTTON_ICON_ALIGN_TOP);
+                itemLayout.addComponent(removeButton);
+            }
 
             labelLayout.addComponent(itemLayout);
 
@@ -150,5 +158,10 @@ public class MultiSelect<T> extends CustomField<Set<T>> {
         setValue(new HashSet<>(selectedItemsWithCaption.keySet()));
 
         listSelectedItems();
+    }
+
+    @Override
+    public void setValue(Set<T> newFieldValue, boolean ignoreReadOnly) throws ReadOnlyException, Converter.ConversionException {
+        super.setValue(newFieldValue, false, ignoreReadOnly);
     }
 }
