@@ -73,6 +73,10 @@ public abstract class AbstractCoreEntityFacade<T extends CoreAdo> {
 
 	private Object[] getDeletionData(String uuid, DeletionConfiguration entityConfig) {
 
+		if (entityConfig.deletionReference == null) {
+			return null;
+		}
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<T> from = cq.from(entityClass);
