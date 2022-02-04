@@ -109,7 +109,7 @@ public class EventParticipantsController {
 							I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipant),
 							selectedPerson -> {
 								if (selectedPerson != null) {
-									if (FacadeProvider.getEventParticipantFacade().exists(dto.getPerson().getUuid(), eventRef.getUuid())) {
+									if (FacadeProvider.getEventParticipantFacade().exists(selectedPerson.getUuid(), eventRef.getUuid())) {
 										throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
 									} else {
 										dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
