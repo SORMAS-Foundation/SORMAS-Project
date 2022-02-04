@@ -76,18 +76,6 @@ public class TravelEntryFacadeEjb
 		super(TravelEntry.class, TravelEntryDto.class, service, userService);
 	}
 
-	public static TravelEntryReferenceDto toReferenceDto(TravelEntry entity) {
-
-		if (entity == null) {
-			return null;
-		}
-		return new TravelEntryReferenceDto(
-			entity.getUuid(),
-			entity.getExternalId(),
-			entity.getPerson().getFirstName(),
-			entity.getPerson().getLastName());
-	}
-
 	@Override
 	public boolean isDeleted(String travelEntryUuid) {
 		return service.isDeleted(travelEntryUuid);
@@ -277,8 +265,15 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	public TravelEntryReferenceDto toRefDto(TravelEntry travelEntry) {
-		return null;
+	public TravelEntryReferenceDto toRefDto(TravelEntry entity) {
+		if (entity == null) {
+			return null;
+		}
+		return new TravelEntryReferenceDto(
+				entity.getUuid(),
+				entity.getExternalId(),
+				entity.getPerson().getFirstName(),
+				entity.getPerson().getLastName());
 	}
 
 	@Override

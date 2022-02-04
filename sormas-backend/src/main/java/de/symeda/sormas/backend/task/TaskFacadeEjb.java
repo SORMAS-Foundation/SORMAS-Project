@@ -145,6 +145,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private TravelEntryService travelEntryService;
+	@EJB
+	private TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal travelEntryFacade;
 
 	public Task fromDto(TaskDto source, boolean checkChangeDate) {
 
@@ -252,7 +254,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
 		target.setContact(ContactFacadeEjb.toReferenceDto(source.getContact()));
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
-		target.setTravelEntry(TravelEntryFacadeEjb.toReferenceDto(source.getTravelEntry()));
+		target.setTravelEntry(travelEntryFacade.toRefDto(source.getTravelEntry()));
 
 		target.setClosedLat(source.getClosedLat());
 		target.setClosedLon(source.getClosedLon());

@@ -1,5 +1,8 @@
 package de.symeda.sormas.backend.travelentry.services;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.ejb.EJB;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -9,15 +12,11 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
-import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
-
-import java.util.Date;
-import java.util.List;
 
 public class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 
