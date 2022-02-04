@@ -42,10 +42,6 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		this.userService = userService;
 	}
 
-	public abstract void archive(String uuid);
-
-	public abstract void dearchive(String uuid);
-
 	@Override
 	public DTO getByUuid(String uuid) {
 		return toDto(service.getByUuid(uuid));

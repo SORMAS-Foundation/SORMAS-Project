@@ -42,10 +42,10 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA>
 	implements CoreFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
 
-	public AbstractCoreFacadeEjb() {
+	protected AbstractCoreFacadeEjb() {
 	}
 
-	public AbstractCoreFacadeEjb(Class<ADO> adoClass, Class<DTO> dtoClass, SRV service, UserService userService) {
+	protected AbstractCoreFacadeEjb(Class<ADO> adoClass, Class<DTO> dtoClass, SRV service, UserService userService) {
 		super(adoClass, dtoClass, service, userService);
 	}
 

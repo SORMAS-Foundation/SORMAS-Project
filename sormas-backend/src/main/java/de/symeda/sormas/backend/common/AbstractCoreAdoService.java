@@ -15,15 +15,13 @@
 
 package de.symeda.sormas.backend.common;
 
-import de.symeda.sormas.backend.travelentry.TravelEntry;
-
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AbstractDeletableAdoService<ADO> {
 
-	public AbstractCoreAdoService(Class<ADO> elementClass) {
+	protected AbstractCoreAdoService(Class<ADO> elementClass) {
 		super(elementClass);
 	}
 

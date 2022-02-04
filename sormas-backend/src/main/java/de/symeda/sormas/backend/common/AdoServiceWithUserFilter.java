@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.common;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 

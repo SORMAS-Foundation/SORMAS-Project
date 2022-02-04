@@ -242,12 +242,6 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public List<EventParticipantDto> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
-	}
-
-	@Override
 	protected void selectDtoFields(CriteriaQuery<EventParticipantDto> cq, Root<EventParticipant> root) {
 
 	}
@@ -397,13 +391,6 @@ public class EventParticipantFacadeEjb
 
 		EventParticipant eventParticipant = service.getByReferenceDto(eventParticipantRef);
 		service.delete(eventParticipant);
-	}
-
-	@Override
-	public EventParticipantDto getByUuid(String uuid) {
-		return convertToDto(
-			service.getByUuid(uuid),
-			Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue)));
 	}
 
 	@Override

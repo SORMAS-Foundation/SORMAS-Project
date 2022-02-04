@@ -9,7 +9,7 @@ import javax.persistence.criteria.Predicate;
 
 public abstract class AbstractDeletableAdoService<ADO extends DeletableAdo> extends AdoServiceWithUserFilter<ADO> {
 
-	public AbstractDeletableAdoService(Class<ADO> elementClass) {
+	protected AbstractDeletableAdoService(Class<ADO> elementClass) {
 		super(elementClass);
 	}
 
@@ -24,7 +24,7 @@ public abstract class AbstractDeletableAdoService<ADO extends DeletableAdo> exte
 	protected <C> Predicate changeDateFilter(CriteriaBuilder cb, Timestamp date, From<?, C> path, String... joinFields) {
 		From<?, ?> parent = path;
 		for (String joinField : joinFields) {
-			parent = parent.join(joinFields[i], JoinType.LEFT);
+			parent = parent.join(joinField, JoinType.LEFT);
 		}
 		return CriteriaBuilderHelper.greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), date);
 	}
