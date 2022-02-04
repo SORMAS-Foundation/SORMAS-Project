@@ -207,6 +207,7 @@ public interface Strings {
 	String entityContactVisits = "entityContactVisits";
 	String entityCountries = "entityCountries";
 	String entityDataDictionary = "entityDataDictionary";
+	String entityDataProtectionDictionary = "entityDataProtectionDictionary";
 	String entityDistrict = "entityDistrict";
 	String entityDistricts = "entityDistricts";
 	String entityDocuments = "entityDocuments";
