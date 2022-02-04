@@ -188,9 +188,4 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
 		this.vaccinationStatus = vaccinationStatus;
 	}
-
-	@Transient
-	public boolean isArchived() {
-		return false;
-	}
 }
