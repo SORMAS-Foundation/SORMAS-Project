@@ -821,7 +821,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 			}
 		}
 	}
-	
+
 	protected void enablePersonFields(Boolean enable) {
 		getField(PersonDto.FIRST_NAME).setEnabled(enable);
 		getField(PersonDto.LAST_NAME).setEnabled(enable);
@@ -895,6 +895,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 			boolean isChecked = (boolean) e.getProperty().getValue();
 			addressHeader.setVisible(isChecked);
 			homeAddressForm.setVisible(isChecked);
+			homeAddressForm.clear();
 		});
 	}
 
