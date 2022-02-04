@@ -49,6 +49,9 @@ public abstract class AbstractCoreEntityFacade<T extends CoreAdo> {
 
 	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid, CoreEntityType coreEntityType) {
 		DeletionConfiguration deletionConfiguration = deletionConfigurationService.getCoreEntityTypeConfig(coreEntityType);
+		if (deletionConfiguration.deletionPeriod == null || deletionConfiguration.deletionReference == null) {
+			return null;
+		}
 		Object[] deletionData = getDeletionData(uuid, deletionConfiguration);
 		Date referenceDate = (Date) deletionData[0];
 		Date deletiondate = DateHelper.addDays(referenceDate, deletionConfiguration.deletionPeriod);
