@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.immunization;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -40,20 +41,19 @@ public class ReceivedImmunizationProcessor
 	extends
 	ReceivedDataProcessor<Immunization, ImmunizationDto, SormasToSormasImmunizationDto, PreviewNotImplementedDto, Immunization, ImmunizationService, SormasToSormasImmunizationDtoValidator> {
 
+	@EJB
+	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacadeEjb;
+
 	public ReceivedImmunizationProcessor() {
 	}
 
-	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacadeEjb;
-
 	@Inject
 	protected ReceivedImmunizationProcessor(
-		ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal facadeEjb,
 		ImmunizationService service,
 		UserService userService,
 		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade,
 		SormasToSormasImmunizationDtoValidator validator) {
 		super(service, userService, configFacade, validator);
-		this.immunizationFacadeEjb = facadeEjb;
 	}
 
 	@Override
