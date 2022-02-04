@@ -676,6 +676,11 @@ public interface Strings {
 	String infoArchivedTravelEntries = "infoArchivedTravelEntries";
 	String infoAssigneeMissingEmail = "infoAssigneeMissingEmail";
 	String infoAssigneeMissingEmailOrPhoneNumber = "infoAssigneeMissingEmailOrPhoneNumber";
+	String infoAutomaticDeletion = "infoAutomaticDeletion";
+	String infoAutomaticDeletionTooltip = "infoAutomaticDeletionTooltip";
+	String infoAutomaticDeletionTooltipDays = "infoAutomaticDeletionTooltipDays";
+	String infoAutomaticDeletionTooltipMonths = "infoAutomaticDeletionTooltipMonths";
+	String infoAutomaticDeletionTooltipYears = "infoAutomaticDeletionTooltipYears";
 	String infoBAGExport = "infoBAGExport";
 	String infoBasicExport = "infoBasicExport";
 	String infoCalculateCompleteness = "infoCalculateCompleteness";
