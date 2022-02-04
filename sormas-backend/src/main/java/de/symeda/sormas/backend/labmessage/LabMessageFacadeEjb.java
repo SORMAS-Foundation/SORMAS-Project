@@ -72,6 +72,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		LabMessageIndexDto.PERSON_FIRST_NAME,
 		LabMessageIndexDto.PERSON_LAST_NAME,
 		LabMessageIndexDto.PERSON_POSTAL_CODE,
+		LabMessageIndexDto.LAB_NAME,
 		LabMessageIndexDto.LAB_POSTAL_CODE,
 		LabMessageIndexDto.MESSAGE_DATE_TIME,
 		LabMessageIndexDto.STATUS,
