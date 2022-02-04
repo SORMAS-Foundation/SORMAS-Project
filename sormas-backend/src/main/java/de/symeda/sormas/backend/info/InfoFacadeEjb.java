@@ -36,6 +36,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.CellCopyPolicy;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -112,26 +113,30 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	@Override
 	public boolean isGenerateDataProtectionDictionaryAllowed() {
-		return new File(getDataProtectionFilePath()).exists();
+		return getDataProtectionFile().exists();
 	}
 
 	@Override
 	public String generateDataProtectionDictionary() throws IOException {
-		XSSFWorkbook dataProtectionInputWorkbook = new XSSFWorkbook(getDataProtectionFilePath());
+		try {
+			XSSFWorkbook dataProtectionInputWorkbook = new XSSFWorkbook(getDataProtectionFile());
+			XSSFSheet dataProtectionSheet = dataProtectionInputWorkbook.getSheetAt(0);
 
-		XSSFSheet dataProtectionSheet = dataProtectionInputWorkbook.getSheetAt(0);
+			List<ColumnData> dataProtectionColumns = getDataProtectionColumns(dataProtectionSheet);
+			Map<String, List<XSSFCell>> dataProtectionData = getDataProtectionCellData(dataProtectionSheet);
+			EnumSet<EntityColumn> entityColumns = EnumSet.allOf(EntityColumn.class);
+			entityColumns.remove(EntityColumn.IGNORED_COUNTRIES);
+			entityColumns.remove(EntityColumn.EXCLUSIVE_COUNTRIES);
 
-		List<ColumnData> dataProtectionColumns = getDataProtectionColumns(dataProtectionSheet);
-		Map<String, List<XSSFCell>> dataProtectionData = getDataProtectionCellData(dataProtectionSheet);
-		EnumSet<EntityColumn> entityColumns = EnumSet.allOf(EntityColumn.class);
-		entityColumns.remove(EntityColumn.IGNORED_COUNTRIES);
-		entityColumns.remove(EntityColumn.EXCLUSIVE_COUNTRIES);
+			return generateDataDictionary(entityColumns, dataProtectionColumns, dataProtectionData);
 
-		return generateDataDictionary(entityColumns, dataProtectionColumns, dataProtectionData);
+		} catch (InvalidFormatException e) {
+			throw new IOException(e);
+		}
 	}
 
-	private String getDataProtectionFilePath() {
-		return configFacade.getCustomFilesPath() + DATA_PROTECTION_FILE_NAME;
+	private File getDataProtectionFile() {
+		return new File(configFacade.getCustomFilesPath(), DATA_PROTECTION_FILE_NAME);
 	}
 
 	private Map<String, List<XSSFCell>> getDataProtectionCellData(XSSFSheet dataProtectionSheet) {
