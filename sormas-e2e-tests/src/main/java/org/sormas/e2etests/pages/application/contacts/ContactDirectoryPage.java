@@ -48,7 +48,7 @@ public class ContactDirectoryPage {
   public static final By GRID_HEADERS = By.xpath("//thead//tr//th");
   public static final String RESULTS_GRID_HEADER = "//div[contains(text(), '%s')]";
   public static final By FIRST_CONTACT_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
-  public static final By EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-contacts-epidata");
+  public static final By CONTACT_EPIDEMIOLOGICAL_DATA = By.cssSelector("#tab-contacts-epidata");
   public static final By CASE_LIKE = By.id("contactOrCaseLike");
   public static final By NEW_ENTRY_EPIDEMIOLOGICAL_DATA = By.id("actionNewEntry");
   public static final By TYPE_OF_ACTIVITY_DETAILS = By.id("exposureTypeDetails");

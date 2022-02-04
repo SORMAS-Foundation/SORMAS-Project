@@ -81,7 +81,7 @@ public class PersonApiService {
             .district(DistrictsValues.VoreingestellterLandkreis.getUuid())
             .community(CommunityValues.VoreingestellteGemeinde.getUuid())
             .city(faker.address().cityName())
-            .areaType(AreaTypeValues.getRandomAreaType())
+            .areaType(AreaTypeValues.getRandomAreaAPIType())
             .postalCode(faker.address().zipCode())
             .street(faker.address().streetName())
             .houseNumber(faker.address().buildingNumber())

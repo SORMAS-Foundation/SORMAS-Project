@@ -24,32 +24,45 @@ import lombok.SneakyThrows;
 
 @Getter
 public enum AreaTypeValues {
-  URBAN("Urban"),
-  RURAL("Rural"),
-  UNKNOWN("Unknown");
+  URBAN("Urban", "URBAN"),
+  RURAL("Rural", "RURAL"),
+  UNKNOWN("Unknown", "UNKNOWN");
 
-  private final String areaType;
+  private final String areaTypeUIvalue;
+  private final String areaTypeAPIvalue;
 
   private static Random random = new Random();
 
-  AreaTypeValues(String areaType) {
-    this.areaType = areaType;
-  }
-
-  public String getArea() {
-    return areaType;
-  }
-
-  public static String getRandomAreaType() {
-    return String.valueOf(AreaTypeValues.values()[random.nextInt(values().length)]);
+  AreaTypeValues(String uiValue, String apiValue) {
+    this.areaTypeUIvalue = uiValue;
+    this.areaTypeAPIvalue = apiValue;
   }
 
   @SneakyThrows
-  public static String getValueFor(String option) {
+  public static String getUIValueFor(String option) {
     AreaTypeValues[] areaTypeOptions = AreaTypeValues.values();
     for (AreaTypeValues value : areaTypeOptions) {
-      if (value.name().equalsIgnoreCase(option)) return value.getAreaType();
+      if (value.getAreaTypeUIvalue().equalsIgnoreCase(option)) return value.getAreaTypeUIvalue();
     }
     throw new Exception("Unable to find " + option + " value in AreaType Enum");
+  }
+
+  @SneakyThrows
+  public static String getAPIValueFor(String option) {
+    AreaTypeValues[] areaTypeOptions = AreaTypeValues.values();
+    for (AreaTypeValues value : areaTypeOptions) {
+      if (value.getAreaTypeAPIvalue().replaceAll("_", " ").contains(option.toUpperCase()))
+        return value.getAreaTypeAPIvalue();
+    }
+    throw new Exception("Unable to find " + option + " value in AreaType Enum");
+  }
+
+  public static String getRandomAreaUIType() {
+    return String.valueOf(AreaTypeValues.values()[random.nextInt(values().length)].areaTypeUIvalue);
+  }
+
+  public static String getRandomAreaAPIType() {
+    return String.valueOf(
+        AreaTypeValues.values()[random.nextInt(values().length)].areaTypeAPIvalue);
   }
 }

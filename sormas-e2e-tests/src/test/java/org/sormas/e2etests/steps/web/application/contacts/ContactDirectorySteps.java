@@ -27,7 +27,6 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.openqa.selenium.By;
@@ -114,27 +113,26 @@ public class ContactDirectorySteps implements En {
     When(
         "I click on the Epidemiological Data button",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(EPIDEMIOLOGICAL_DATA_TAB);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_EPIDEMIOLOGICAL_DATA);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
         "I click on New Entry in Exposure Details Known",
         () -> {
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NEW_ENTRY_EPIDEMIOLOGICAL_DATA);
-          TimeUnit.SECONDS.sleep(4);
         });
     When(
         "I click on edit Exposure vision button",
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_EXPOSURE_BUTTON);
-          TimeUnit.SECONDS.sleep(2);
         });
     When(
         "I click on the Epidemiological Data navbar field",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(EPIDEMIOLOGICAL_DATA_TAB);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_EPIDEMIOLOGICAL_DATA);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
     When(
@@ -147,29 +145,25 @@ public class ContactDirectorySteps implements En {
     When(
         "I select all options in Type of activity from Combobox in Exposure form",
         () -> {
-          loopByActivityTypes();
-          TimeUnit.SECONDS.sleep(2);
+          selectAllActivityTypes();
         });
 
     When(
         "I select ([^\"]*) option in Type of activity from Combobox in Exposure form",
         (String typeOfactivity) -> {
           webDriverHelpers.selectFromCombobox(TYPE_OF_ACTIVITY_COMBOBOX, typeOfactivity);
-          TimeUnit.SECONDS.sleep(2);
         });
 
     When(
-        "I check all Type of gathering from Combobox in Exposure form",
+        "I select all Type of gathering from Combobox in Exposure form",
         () -> {
-          loopByGatheringType();
-          TimeUnit.SECONDS.sleep(2);
+          selectAllGatheringType();
         });
 
     When(
         "I check all Type of place from Combobox in Exposure form",
         () -> {
-          loopByTypeOfPlace();
-          TimeUnit.SECONDS.sleep(2);
+          selectAllTypeOfPlace();
         });
 
     When(
@@ -189,7 +183,7 @@ public class ContactDirectorySteps implements En {
           fillLocation(exposureData);
           webDriverHelpers.fillInWebElement(
               TYPE_OF_PLACE_DETAILS, exposureData.getTypeOfPlaceDetails());
-          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
         });
 
@@ -216,36 +210,36 @@ public class ContactDirectorySteps implements En {
               CONTACT_PERSON_PHONE_NUMBER, exposureData.getContactPersonPhone());
           webDriverHelpers.fillInWebElement(
               CONTACT_PERSON_EMAIL_ADRESS, exposureData.getContactPersonEmail());
-          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
         });
 
     When(
         "I select a type of gathering ([^\"]*) from Combobox in Exposure form",
         (String option) -> {
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(TYPE_OF_GATHERING_COMBOBOX, option);
-          TimeUnit.SECONDS.sleep(2);
         });
 
     When(
         "I select a Type of activity ([^\"]*) option in Exposure form",
         (String option) -> {
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(TYPE_OF_ACTIVITY_COMBOBOX, option);
-          TimeUnit.SECONDS.sleep(2);
         });
 
     When(
         "I fill a Type of activity details in Exposure by ([^\"]*) TEXT",
         (String typeOfActivityDetails) -> {
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.fillInWebElement(TYPE_OF_ACTIVITY_DETAILS, typeOfActivityDetails);
-          TimeUnit.SECONDS.sleep(2);
         });
 
     When(
         "I fill a type of gathering details in Exposure form by ([^\"]*) TEXT",
         (String typeOfGatheringDetails) -> {
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.fillInWebElement(TYPE_OF_GATHERING_DETAILS, typeOfGatheringDetails);
-          TimeUnit.SECONDS.sleep(2);
         });
 
     When(
@@ -350,7 +344,7 @@ public class ContactDirectorySteps implements En {
     webDriverHelpers.fillInWebElement(POSTAL_CODE_INPUT, exposureData.getPostalCode());
     webDriverHelpers.fillInWebElement(CITY_INPUT, exposureData.getCity());
     webDriverHelpers.selectFromCombobox(
-        AREA_TYPE_COMBOBOX, AreaTypeValues.getValueFor(exposureData.getAreaType()));
+        AREA_TYPE_COMBOBOX, AreaTypeValues.getUIValueFor(exposureData.getAreaType()));
     webDriverHelpers.fillInWebElement(LATITUDE_INPUT, exposureData.getLatitude());
     webDriverHelpers.fillInWebElement(LONGITUDE_INPUT, exposureData.getLongitude());
     webDriverHelpers.fillInWebElement(LATLONACCURACY_INPUT, exposureData.getLatLonAccuracy());
@@ -469,7 +463,7 @@ public class ContactDirectorySteps implements En {
         .build();
   }
 
-  private void loopByActivityTypes() {
+  private void selectAllActivityTypes() {
     for (TypeOfActivity value : TypeOfActivity.values())
       if (value != TypeOfActivity.valueOf("GATHERING")
           && value != TypeOfActivity.valueOf("OTHER")) {
@@ -477,7 +471,7 @@ public class ContactDirectorySteps implements En {
       }
   }
 
-  private void loopByGatheringType() {
+  private void selectAllGatheringType() {
     for (TypeOfGathering value : TypeOfGathering.values()) {
       if (value != TypeOfGathering.valueOf("OTHER")) {
         webDriverHelpers.selectFromCombobox(TYPE_OF_GATHERING_COMBOBOX, value.toString());
@@ -485,7 +479,7 @@ public class ContactDirectorySteps implements En {
     }
   }
 
-  private void loopByTypeOfPlace() {
+  private void selectAllTypeOfPlace() {
     for (TypeOfPlace value : TypeOfPlace.values()) {
       webDriverHelpers.selectFromCombobox(
           TYPE_OF_PLACE_COMBOBOX, TypeOfPlace.getValueFor(value.toString()));

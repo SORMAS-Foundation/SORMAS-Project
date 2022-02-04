@@ -233,7 +233,7 @@ Feature: Contacts end to end tests
     Then  I select a Type of activity Other option in Exposure form
     And I fill a Type of activity details in Exposure by some type of activity details TEXT
     Then  I select a Type of activity Gathering option in Exposure form
-    And I check all Type of gathering from Combobox in Exposure form
+    And I select all Type of gathering from Combobox in Exposure form
     And I select a type of gathering Other from Combobox in Exposure form
     And I fill a type of gathering details in Exposure form by type of gathering details TEXT
     Then  I check all Type of place from Combobox in Exposure form

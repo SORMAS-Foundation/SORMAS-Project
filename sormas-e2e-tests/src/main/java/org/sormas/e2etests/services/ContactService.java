@@ -159,7 +159,7 @@ public class ContactService {
         .additionalInformation("Some additional information")
         .postalCode(faker.address().zipCode())
         .city(faker.address().cityName())
-        .areaType(AreaTypeValues.getRandomAreaType())
+        .areaType(AreaTypeValues.getRandomAreaAPIType())
         .latitude(faker.address().latitude())
         .longitude(faker.address().longitude())
         .latLonAccuracy(faker.address().latitude())

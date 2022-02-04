@@ -23,7 +23,7 @@ import lombok.SneakyThrows;
 @Getter
 public enum SubcontinentUUIDs {
   WesternEurope("Western Europe", "VMRXWX-EAGV7L-JFKP26-F3DBSBFU"),
-  CentralEurope("Central Europe", "W2FUSQ-PXGMRZ-V6ZTOE-6EPIKCSI");
+  CentralEurope("Central Europe", "SR2HAB-AY6ODA-SKBZFJ-ZMY4SJLE");
 
   private final String name;
   private final String uuid;
@@ -39,6 +39,6 @@ public enum SubcontinentUUIDs {
     for (SubcontinentUUIDs value : subcontinentOptions) {
       if (value.name.equalsIgnoreCase(option)) return value.name;
     }
-    throw new Exception("Unable to find " + option + " value in DiseasesValues Enum");
+    throw new Exception("Unable to find " + option + " value in SubcontinentUUIDs Enum");
   }
 }
