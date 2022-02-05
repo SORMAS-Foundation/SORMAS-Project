@@ -36,7 +36,7 @@ public class CaseApiService {
 
   public Case buildGeneratedCase(Person person) {
     return Case.builder()
-        .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
+        .disease(DiseasesValues.getRandomDiseaseName())
         .diseaseDetails("Test Disease")
         .pseudonymized(false)
         .uuid(UUID.randomUUID().toString())
@@ -58,7 +58,7 @@ public class CaseApiService {
                 .firstName(person.getFirstName())
                 .lastName(person.getLastName())
                 .build())
-        .caseClassification("NOT_CLASSIFIED")
+        .caseClassification(CaseClassification.getRandomAPIClassification())
         .investigationStatus("PENDING")
         .outcome("NO_OUTCOME")
         .epiData(EpiData.builder().uuid(UUID.randomUUID().toString()).build())

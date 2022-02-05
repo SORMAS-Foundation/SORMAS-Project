@@ -71,7 +71,7 @@ public enum DiseasesValues {
     for (DiseasesValues value : diseasesOptions) {
       if (value.getDiseaseName().equalsIgnoreCase(option)) return value.getDiseaseCaption();
     }
-    throw new Exception("Unable to find " + option + " value in SourceTypeValues Enum");
+    throw new Exception("Unable to find " + option + " value in DiseasesValues Enum");
   }
 
   /** Returns values used for API tests */
