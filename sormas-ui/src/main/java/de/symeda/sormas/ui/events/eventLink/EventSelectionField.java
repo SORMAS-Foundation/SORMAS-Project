@@ -166,7 +166,6 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		eventSelectionField.weekAndDateFilter.getDateFromFilter().addValueChangeListener(valueChangeEvent -> {
 			Date selectedFromDate = eventSelectionField.weekAndDateFilter.getDateFromFilter().getValue();
 			prepareSubordinateFilters(eventDto, eventSelectionField, selectedFromDate, eventSelectionField.weekAndDateFilter.getDateFromFilter());
-
 		});
 
 		eventSelectionField.weekAndDateFilter.getWeekFromFilter().addValueChangeListener(valueChangeEvent -> {
@@ -183,8 +182,11 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		EventSelectionField eventSelectionField,
 		Date selectedFromDate,
 		AbstractComponent component) {
-		boolean isSelectedDateBeforeEventDate =
-			selectedFromDate == null || selectedFromDate.after(EventHelper.getStartOrEndDate(eventDto.getStartDate(), eventDto.getEndDate()));
+		boolean isSelectedDateBeforeEventDate = true;
+		Date startOfEndEventDate = EventHelper.getStartOrEndDate(eventDto.getStartDate(), eventDto.getEndDate());
+		if (startOfEndEventDate != null) {
+			isSelectedDateBeforeEventDate = selectedFromDate == null || selectedFromDate.after(startOfEndEventDate);
+		}
 		eventSelectionField.applyButton.setEnabled(isSelectedDateBeforeEventDate);
 		if (isSelectedDateBeforeEventDate) {
 			component.setComponentError(null);
