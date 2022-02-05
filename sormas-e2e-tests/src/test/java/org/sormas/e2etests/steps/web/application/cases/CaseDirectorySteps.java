@@ -55,13 +55,20 @@ public class CaseDirectorySteps implements En {
 
     When(
         "^I open last created case",
-        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID_BUTTON));
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_CASE_ID_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID_BUTTON);
+        });
 
     When(
         "^Search for Case using Case UUID from the created Task",
-        () ->
-            webDriverHelpers.fillAndSubmitInWebElement(
-                NAME_UUID_EPID_NUMBER_LIKE_INPUT, EditCaseSteps.aCase.getUuid()));
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(
+              NAME_UUID_EPID_NUMBER_LIKE_INPUT, EditCaseSteps.aCase.getUuid());
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
     When(
         "I click on the DETAILED button from Case directory",
         () -> {

@@ -360,13 +360,13 @@ public class EditEventSteps implements En {
         .eventDate(eventDate)
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .eventStatus(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SELECTED_EVENT_STATUS))
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(EVENT_STATUS_OPTIONS))
         .investigationStatus(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                SELECTED_EVENT_INVESTIGATION_STATUS))
+                EVENT_INVESTIGATION_STATUS_OPTIONS))
         .eventManagementStatus(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                SELECTED_EVENT_MANAGEMENT_STATUS))
+                EVENT_MANAGEMENT_STATUS_OPTIONS))
         .riskLevel(webDriverHelpers.getValueFromWebElement(RISK_LEVEL_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
         .title(webDriverHelpers.getValueFromWebElement(TITLE_INPUT))

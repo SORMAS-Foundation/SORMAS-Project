@@ -23,7 +23,7 @@ import org.openqa.selenium.By;
 public class CreateNewTaskPage {
   public static final By TASK_POPUP = By.xpath("(//div[@class='popupContent'])[2]");
   public static final By TASK_TYPE_COMBOBOX = By.cssSelector(".v-window #taskType input+div");
-  public static final By TASK_TYPE_INPUT = By.cssSelector(".v-window #taskType input");
+  public static final By TASK_TYPE_INPUT = By.cssSelector(".v-window #taskType div");
   public static final By SUGGESTED_START_DATE_INPUT =
       By.cssSelector(".v-window #suggestedStart_date input");
   public static final By DUE_DATE_DATE_INPUT = By.cssSelector(".v-window #dueDate_date input");
@@ -44,6 +44,5 @@ public class CreateNewTaskPage {
   public static final By TASK_STATUS_OPTIONS =
       By.cssSelector(".v-window #taskStatus .v-radiobutton label");
   public static final By SAVE_BUTTON = By.cssSelector(".v-window #commit");
-  public static final By SELECTED_TASK_CONTEXT =
-      By.cssSelector(".v-window #taskContext input:checked");
+  public static final By SELECTED_TASK_CONTEXT = By.cssSelector(".v-window [id='taskContext']");
 }

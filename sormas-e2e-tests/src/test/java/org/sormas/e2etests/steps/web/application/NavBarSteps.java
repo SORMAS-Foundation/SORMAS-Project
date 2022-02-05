@@ -89,6 +89,7 @@ public class NavBarSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NavBarPage.TASKS_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.TASKS_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+          TimeUnit.SECONDS.sleep(2);
         });
 
     When(

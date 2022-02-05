@@ -30,13 +30,8 @@ public class EditEventPage {
   public static final By SAVE_BUTTON_FOR_POPUP_WINDOWS = By.cssSelector(".popupContent #commit");
   public static final By EVENT_STATUS_OPTIONS =
       By.cssSelector("#eventStatus .v-select-option label");
-  public static final By SELECTED_EVENT_STATUS = By.cssSelector("#eventStatus input:checked");
   public static final By RISK_LEVEL_INPUT = By.cssSelector(" #riskLevel input");
-  public static final By SELECTED_EVENT_MANAGEMENT_STATUS =
-      By.cssSelector("#eventManagementStatus input:checked");
   public static final By START_DATA_INPUT = By.cssSelector(" #startDate input");
-  public static final By SELECTED_EVENT_INVESTIGATION_STATUS =
-      By.cssSelector("#eventInvestigationStatus input:checked");
   public static final By DISEASE_INPUT = By.cssSelector("#disease input");
   public static final By SOURCE_TYPE_INPUT = By.cssSelector(" #srcType input");
   public static final By TYPE_OF_PLACE_INPUT = By.cssSelector("#typeOfPlace input");
