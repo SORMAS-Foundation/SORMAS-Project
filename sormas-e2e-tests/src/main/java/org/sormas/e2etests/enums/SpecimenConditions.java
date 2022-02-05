@@ -39,7 +39,7 @@ public enum SpecimenConditions {
     for (SpecimenConditions value : specimenConditionOptions) {
       if (value.condition.equalsIgnoreCase(option)) return value.condition;
     }
-    throw new Exception("Unable to find " + option + " value in RiskLevelValues Enum");
+    throw new Exception("Unable to find " + option + " value in SpecimenConditions Enum");
   }
 
   public static String getRandomCondition() {

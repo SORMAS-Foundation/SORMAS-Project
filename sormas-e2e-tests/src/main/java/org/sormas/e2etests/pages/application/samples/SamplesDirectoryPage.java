@@ -41,6 +41,16 @@ public class SamplesDirectoryPage {
       By.cssSelector(("tbody>tr:first-child>td:last-child"));
   public static final By EDIT_TEST_RESULTS_BUTTON =
       By.cssSelector("[location='pathogenTests'] [class='v-slot v-slot-s-list'] [role='button']");
-  public static final By CASE_CLASIFICATION_SEARCH_COMBOBOX =
+  public static final By SAMPLE_CLASIFICATION_SEARCH_COMBOBOX =
       By.cssSelector("[id='caseClassification'] [class='v-filterselect-button']");
+  public static final By SAMPLE_DISEASE_SEARCH_COMBOBOX =
+      By.cssSelector("[id='disease'] [class='v-filterselect-button']");
+  public static final By SAMPLE_REGION_SEARCH_COMBOBOX =
+      By.cssSelector("[id='region'] [class='v-filterselect-button']");
+  public static final By SAMPLE_DISTRICT_SEARCH_COMBOBOX =
+      By.cssSelector("[id='district'] [class='v-filterselect-button']");
+  public static final By SAMPLE_NOT_SHIPPED = By.id("sampleNotShipped");
+  public static final By SAMPLE_SHIPPED = By.id("sampleShipped");
+  public static final By SAMPLE_RECEIVED = By.id("sampleReceived");
+  public static final By SAMPLE_REFFERED_TO_OTHER_LAB = By.id("sampleReferred");
 }
