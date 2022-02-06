@@ -45,7 +45,8 @@ Feature: Sample Functionalities
     And I collect the contact person UUID displayed on Edit contact page
     And I click on New Sample
     When I collect the sample UUID displayed on create new sample page
-    And I create a new Sample with alternate purpose and save
+    And I create a new Sample with alternate purpose
+    And I save the created sample
     And I click on the Sample button from navbar
     And I search for Sample using Sample UUID from the created Sample
     When I open created Sample

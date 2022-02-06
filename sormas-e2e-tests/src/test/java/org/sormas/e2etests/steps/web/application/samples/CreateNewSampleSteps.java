@@ -69,7 +69,7 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
-        "^I create a new Sample with alternate purpose and save$",
+        "^I create a new Sample with alternate purpose$",
         () -> {
           sample = sampleService.buildAlternateSample();
           selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
@@ -79,6 +79,11 @@ public class CreateNewSampleSteps implements En {
           selectReasonForSample(sample.getReasonForSample());
           fillSampleID(sample.getSampleID());
           fillCommentsOnSample(sample.getCommentsOnSample());
+        });
+
+    When(
+        "^I save the created sample",
+        () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
         });
 
