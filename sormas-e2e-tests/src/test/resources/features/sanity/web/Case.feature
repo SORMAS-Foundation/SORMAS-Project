@@ -87,7 +87,7 @@ Feature: Case end to end tests
     Then I set Vaccination Status as vaccinated
     Then I set Vaccination Status as unvaccinated
     Then I set Vaccination Status as unknown
-    And I click on save button from Edit Case page
+    And I click on save button from Edit Case page with current hospitalization
     Then I check if the specific data is correctly displayed
 
   Scenario: Delete created case
@@ -139,3 +139,66 @@ Feature: Case end to end tests
     And I click on the Create button from Case Document Templates
     When I create a case document from template
     Then I verify that the case document is downloaded and correctly named
+
+  @issue=SORDEV-5527
+  Scenario: Fill the therapy tab
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I am accessing the Therapy tab of created case
+    And I create and fill Prescriptions with specific data for drug intake
+    And I choose Antimicrobial option as a Type of drug
+    And I choose Antiviral option as a Type of drug
+    And I choose Other option as a Type of drug
+    And I choose Other option as a Prescription type
+    Then I click on the popup Save button
+    Then I check if created data is correctly displayed in Perscription section
+    And I choose Oral rehydration salts option as a Prescription type
+    And I choose Blood transfusion option as a Prescription type
+    And I choose Renal replacement therapy option as a Prescription type
+    And I choose IV fluid therapy option as a Prescription type
+    And I choose Oxygen therapy option as a Prescription type
+    And I choose Invasive mechanical ventilation option as a Prescription type
+    And I choose Vasopressors/Inotropes option as a Prescription type
+    Then I click on the popup Save button
+    Then I check if created data is correctly displayed in Perscription section
+    And I click on the popup Save button
+    Then I create and fill Treatment with specific data for drug intake
+    And I choose Antimicrobial option as a Type of drug
+    And I choose Antiviral option as a Type of drug
+    And I choose Other option as a Type of drug
+    And I choose Other option as a Treatment type
+    Then I click on the popup Save button
+    Then I check if created data is correctly displayed in Treatment section
+    And I choose Oral rehydration salts option as a Treatment type
+    And I choose Blood transfusion option as a Treatment type
+    And I choose Renal replacement therapy option as a Treatment type
+    And I choose IV fluid therapy option as a Treatment type
+    And I choose Oxygen therapy option as a Treatment type
+    And I choose Invasive mechanical ventilation option as a Treatment type
+    And I choose Vasopressors/Inotropes option as a Treatment type
+    Then I click on the popup Save button
+    Then I check if created data is correctly displayed in Treatment section
+
+    @issue=SORDEV-5518 @DE
+  Scenario: Fill the case person tab
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data
+    Then I check the created data is correctly displayed on Edit case page
+    And I check the created data is correctly displayed on Edit case person page
+    Then I set Present condition of Person to Dead in Case Person tab
+    And I check if death data fields are available in Case Person tab
+    Then I set Present condition of Person to Buried in Case Person tab
+    And I check if buried data fields are available in Case Person tab
+    Then I fill specific address data in Case Person tab
+    Then I click on Geocode button to get GPS coordinates in Case Person Tab
+    And I click on save button to Save Person data in Case Person Tab
+    Then I check if saved Person data is correct

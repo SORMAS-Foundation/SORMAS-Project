@@ -108,6 +108,7 @@ public class EditContactSteps implements En {
     When(
         "I open Contact Person tab",
         () -> {
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.scrollToElement(CONTACT_PERSON_TAB);
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_PERSON_TAB);
         });

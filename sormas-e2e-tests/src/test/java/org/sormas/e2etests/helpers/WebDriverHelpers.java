@@ -267,7 +267,7 @@ public class WebDriverHelpers {
             + "') or starts-with(text(), '\" + text + \"') ]";
     waitUntilIdentifiedElementIsVisibleAndClickable(comboboxInput);
     comboboxInput.sendKeys(text);
-    waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestpopup"));
+    waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestmenu"));
     waitUntilANumberOfElementsAreVisibleAndClickable(By.xpath("//td[@role='listitem']/span"), 1);
     By dropDownValueXpath = By.xpath(comboBoxItemWithText);
     TimeUnit.MILLISECONDS.sleep(500);
@@ -666,8 +666,9 @@ public class WebDriverHelpers {
     while (!"".contentEquals(getValueFromWebElement(selector))) {
       log.debug("Deleted char: {}", getValueFromWebElement(selector));
       webElement.clear();
-      webElement.sendKeys(Keys.chord(Keys.SHIFT, Keys.END));
-      webElement.sendKeys(Keys.chord(Keys.BACK_SPACE));
+      webElement.sendKeys(Keys.LEFT_CONTROL);
+      webElement.sendKeys("A");
+      webElement.sendKeys((Keys.BACK_SPACE));
       webElement.click();
       if (Instant.now().isAfter(start.plus(1, ChronoUnit.MINUTES))) {
         throw new Error("The field didn't clear");
@@ -785,5 +786,9 @@ public class WebDriverHelpers {
             Assert.assertTrue(
                 getAttributeFromWebElement(rowLocator, "class").contains("row-selected"),
                 String.format("Row element: %s wasn't selected within 20s", rowLocator)));
+  }
+
+  public void sendFile(By selector, String filePath) {
+    baseSteps.getDriver().findElement(selector).sendKeys(filePath);
   }
 }

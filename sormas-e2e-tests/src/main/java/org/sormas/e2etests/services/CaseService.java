@@ -137,4 +137,23 @@ public class CaseService {
         .dateOfSymptomOnset(LocalDate.now().minusDays(1))
         .build();
   }
+
+  public Case buildAddress() {
+    return Case.builder()
+        .country("Germany")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .community(CommunityValues.VoreingestellteGemeinde.getName())
+        .facilityCategory("Accommodation")
+        .facilityType("Campsite")
+        .facility("Other facility")
+        .facilityNameAndDescription("Dummy description" + System.currentTimeMillis())
+        .street(faker.address().streetAddress())
+        .houseNumber(faker.address().buildingNumber())
+        .additionalInformation("Dummy description" + System.currentTimeMillis())
+        .postalCode(faker.address().zipCode())
+        .city(faker.address().cityName())
+        .areaType("Urban")
+        .build();
+  }
 }

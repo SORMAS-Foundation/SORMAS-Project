@@ -20,6 +20,7 @@ package org.sormas.e2etests.enums;
 
 import java.util.Random;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum FollowUpStatus {
@@ -38,5 +39,14 @@ public enum FollowUpStatus {
   public static String getRandomFallowUp() {
     Random random = new Random();
     return String.valueOf(FollowUpStatus.values()[random.nextInt(values().length)]);
+  }
+
+  @SneakyThrows
+  public static String getValueFor(String option) {
+    FollowUpStatus[] followUpOptions = FollowUpStatus.values();
+    for (FollowUpStatus value : followUpOptions) {
+      if (value.getFollowUp().equalsIgnoreCase(option)) return value.getFollowUp();
+    }
+    throw new Exception("Unable to find " + option + " value in FollowUpStatus Enum");
   }
 }

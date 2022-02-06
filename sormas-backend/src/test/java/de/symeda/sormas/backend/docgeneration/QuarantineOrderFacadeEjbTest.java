@@ -77,6 +77,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 	private QuarantineOrderFacade quarantineOrderFacadeEjb;
 	private CaseDataDto caseDataDto;
 	private ContactDto contactDto;
+	private EventDto eventDto;
 	private EventParticipantDto eventParticipantDto;
 	private TravelEntryDto travelEntryDto;
 
@@ -127,7 +128,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		contactDto.setQuarantineOrderedOfficialDocumentDate(parseDate("09/09/2020"));
 		getContactFacade().saveContact(contactDto);
 
-		EventDto eventDto = creator.createEvent(userDto.toReference());
+		eventDto = creator.createEvent(userDto.toReference());
 		eventDto.setEventTitle("An event");
 		getEventFacade().saveEvent(eventDto);
 		eventParticipantDto = creator.createEventParticipant(eventDto.toReference(), personDto, "participated", userDto.toReference());
@@ -233,9 +234,8 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		properties.setProperty("extra.remark.no3", "the third remark");
 
 		DocumentWorkflow workflow = DocumentWorkflow.QUARANTINE_ORDER_CASE;
-		Map<ReferenceDto, byte[]> documentContents =
-			quarantineOrderFacadeEjb
-				.getGeneratedDocuments("Quarantine.docx", workflow, Collections.singletonList(rootEntityReference), properties, false);
+		Map<ReferenceDto, byte[]> documentContents = quarantineOrderFacadeEjb
+			.getGeneratedDocuments("Quarantine.docx", workflow, Collections.singletonList(rootEntityReference), properties, false);
 
 		verifyGeneratedDocument(rootEntityReference, workflow, "QuarantineCase.cmp", documentContents.get(rootEntityReference));
 	}
@@ -249,25 +249,27 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		properties.setProperty("extra.remark.no3", "the third remark");
 
 		DocumentWorkflow workflow = DocumentWorkflow.QUARANTINE_ORDER_CONTACT;
-		Map<ReferenceDto, byte[]> documentContents =
-			quarantineOrderFacadeEjb
-				.getGeneratedDocuments("Quarantine.docx", workflow, Collections.singletonList(rootEntityReference), properties, false);
+		Map<ReferenceDto, byte[]> documentContents = quarantineOrderFacadeEjb
+			.getGeneratedDocuments("Quarantine.docx", workflow, Collections.singletonList(rootEntityReference), properties, false);
 
 		verifyGeneratedDocument(rootEntityReference, workflow, "QuarantineContact.cmp", documentContents.get(rootEntityReference));
 	}
 
 	@Test
 	public void testBulkEventParticipantDocumentCreation() throws DocumentTemplateException, IOException {
-		ReferenceDto rootEntityReference = eventParticipantDto.toReference();
+		EventParticipantReferenceDto rootEntityReference = eventParticipantDto.toReference();
 
 		Properties properties = new Properties();
 		properties.setProperty("extraremark1", "the first remark");
 		properties.setProperty("extra.remark.no3", "the third remark");
 
 		DocumentWorkflow workflow = DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT;
-		Map<ReferenceDto, byte[]> documentContents =
-			quarantineOrderFacadeEjb
-				.getGeneratedDocuments("Quarantine.docx", workflow, Collections.singletonList(rootEntityReference), properties, false);
+		Map<ReferenceDto, byte[]> documentContents = quarantineOrderFacadeEjb.getGeneratedDocumentsForEventParticipants(
+			"Quarantine.docx",
+			Collections.singletonList(rootEntityReference),
+			eventDto.getDisease(),
+			properties,
+			false);
 
 		verifyGeneratedDocument(rootEntityReference, workflow, "QuarantineEvent.cmp", documentContents.get(rootEntityReference));
 	}
@@ -289,15 +291,15 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 			rootEntityReference,
 			documentWorkflow,
 			comparisonFile,
-			quarantineOrderFacadeEjb
-				.getGeneratedDocument(
-					"Quarantine.docx",
-					documentWorkflow,
-					rootEntityReference,
-					sampleReference,
-					pathogenTest,
-					properties,
-					Boolean.FALSE));
+			quarantineOrderFacadeEjb.getGeneratedDocument(
+				"Quarantine.docx",
+				documentWorkflow,
+				rootEntityReference,
+				sampleReference,
+				pathogenTest,
+				null,
+				properties,
+				Boolean.FALSE));
 	}
 
 	private void verifyGeneratedDocument(

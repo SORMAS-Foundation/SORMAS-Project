@@ -331,22 +331,22 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			boolean creating = value.getCreationDate() == null;
 
 			UserDto user = UserProvider.getCurrent().getUser();
-			boolean creator = value.getCreatorUser() == null
-				? UserRole.getJurisdictionLevel(user.getUserRoles()) == JurisdictionLevel.NATION
-				: user.equals(value.getCreatorUser());
+			JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(user.getUserRoles());
+			boolean creator = value.getCreatorUser() != null && user.getUuid().equals(value.getCreatorUser().getUuid());
+			boolean nationalOrAdmin = jurisdictionLevel == null || jurisdictionLevel == JurisdictionLevel.NATION;
 			boolean supervisor = UserRole.isSupervisor(user.getUserRoles());
 			boolean assignee = user.equals(getFieldGroup().getField(TaskDto.ASSIGNEE_USER).getValue());
 
-			setVisible(!creating || assignee, TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
-			if (creating && !assignee) {
+			setVisible(!creating || assignee || nationalOrAdmin, TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
+			if (creating && !assignee && !nationalOrAdmin) {
 				discard(TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
 			}
 
 			if (UserProvider.getCurrent().hasUserRight(editOrCreateUserRight)) {
-				setReadOnly(!(assignee || creator), TaskDto.TASK_STATUS);
-				setReadOnly(!assignee, TaskDto.ASSIGNEE_REPLY);
+				setReadOnly(!(assignee || creator || nationalOrAdmin), TaskDto.TASK_STATUS);
+				setReadOnly(!(assignee || nationalOrAdmin), TaskDto.ASSIGNEE_REPLY);
 				setReadOnly(
-					!creator,
+					!(creator || nationalOrAdmin),
 					TaskDto.TASK_TYPE,
 					TaskDto.PRIORITY,
 					TaskDto.SUGGESTED_START,
@@ -355,7 +355,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 					TaskDto.CREATOR_COMMENT,
 					TaskDto.OBSERVER_USERS);
 				setReadOnly(
-					!(creator || supervisor),
+					!(creator || supervisor || nationalOrAdmin),
 					TaskDto.PRIORITY,
 					TaskDto.SUGGESTED_START,
 					TaskDto.DUE_DATE,

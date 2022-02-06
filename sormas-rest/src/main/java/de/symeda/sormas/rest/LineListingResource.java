@@ -11,6 +11,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -40,15 +41,16 @@ public class LineListingResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public void postFeatureConfigurations(@Valid List<FeatureConfigurationIndexDto> dtos) {
+	public Response postFeatureConfigurations(@Valid List<FeatureConfigurationIndexDto> dtos) {
 		FacadeProvider.getFeatureConfigurationFacade().saveFeatureConfigurations(dtos, FeatureType.LINE_LISTING);
-
+		return Response.ok("OK").build();
 	}
 
 	@POST
 	@Path("/delete")
-	public void deleteFeatureConfigurations(@Valid FeatureConfigurationCriteria criteria) {
+	public Response deleteFeatureConfigurations(@Valid FeatureConfigurationCriteria criteria) {
 		FacadeProvider.getFeatureConfigurationFacade().deleteAllFeatureConfigurations(criteria);
+		return Response.ok("OK").build();
 	}
 
 	@POST

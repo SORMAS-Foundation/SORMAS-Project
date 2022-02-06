@@ -15,9 +15,6 @@
 
 package de.symeda.sormas.backend.importexport;
 
-import de.symeda.sormas.backend.disease.DiseaseConfiguration;
-import de.symeda.sormas.backend.feature.FeatureConfiguration;
-import de.symeda.sormas.backend.report.WeeklyReportEntry;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
@@ -60,12 +57,15 @@ import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
+import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
+import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventGroup;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.exposure.Exposure;
+import de.symeda.sormas.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -87,6 +87,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonContactDetail;
 import de.symeda.sormas.backend.report.AggregateReport;
 import de.symeda.sormas.backend.report.WeeklyReport;
+import de.symeda.sormas.backend.report.WeeklyReportEntry;
 import de.symeda.sormas.backend.sample.AdditionalTest;
 import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.Sample;
@@ -191,6 +192,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.EXPORT_CONFIGURATIONS, new DatabaseExportConfiguration(ExportConfiguration.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.FEATURE_CONFIGURATIONS, new DatabaseExportConfiguration(FeatureConfiguration.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.DISEASE_CONFIGURATIONS, new DatabaseExportConfiguration(DiseaseConfiguration.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.DELETION_CONFIGURATIONS, new DatabaseExportConfiguration(DeletionConfiguration.TABLE_NAME));
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());

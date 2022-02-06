@@ -118,6 +118,12 @@ public class SymptomsTabSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CASE_TAB);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
         });
+
+    And(
+        "From Symptoms Tab I click on Clear All button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CLEAR_ALL_BUTTON);
+        });
   }
 
   private Symptoms collectSymptomsData() {

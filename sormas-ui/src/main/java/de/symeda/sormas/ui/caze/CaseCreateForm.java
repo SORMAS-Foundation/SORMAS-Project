@@ -123,6 +123,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 	private ComboBox pointOfEntryDistrictCombo;
 
 	private LocationEditForm homeAddressForm;
+	private Button searchPersonButton;
 
 	private final boolean showHomeAddressForm;
 
@@ -218,7 +219,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 		addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
 
-		Button searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
+		searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
 		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
 
 		addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
@@ -833,7 +834,9 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 		getField(PersonDto.EMAIL_ADDRESS).setEnabled(enable);
 		getField(PersonDto.PASSPORT_NUMBER).setEnabled(enable);
 		getField(PersonDto.NATIONAL_HEALTH_ID).setEnabled(enable);
-		homeAddressForm.setEnabled(enable);
+		if (showHomeAddressForm) {
+			homeAddressForm.setEnabled(enable);
+		}
 	}
 
 	public void setSymptoms(SymptomsDto symptoms) {
@@ -849,6 +852,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 
 		getField(PersonDto.FIRST_NAME).setEnabled(!readOnly);
 		getField(PersonDto.LAST_NAME).setEnabled(!readOnly);
+		searchPersonButton.setEnabled(!readOnly);
 		if (getField(PersonDto.SEX).getValue() != null) {
 			getField(PersonDto.SEX).setEnabled(!readOnly);
 		}
@@ -891,6 +895,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 			boolean isChecked = (boolean) e.getProperty().getValue();
 			addressHeader.setVisible(isChecked);
 			homeAddressForm.setVisible(isChecked);
+			homeAddressForm.clear();
 		});
 	}
 
