@@ -15,11 +15,14 @@
 
 package de.symeda.sormas.ui.person;
 
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
+import org.apache.commons.lang3.StringUtils;
 
 public class PersonSearchField extends PersonSelectionField {
 
@@ -31,7 +34,7 @@ public class PersonSearchField extends PersonSelectionField {
 	protected Component initContent() {
 		mainLayout = new VerticalLayout();
 		mainLayout.setSpacing(true);
-		mainLayout.setMargin(false);
+		mainLayout.setMargin(new MarginInfo(false, false, true, false));
 		mainLayout.setSizeUndefined();
 		mainLayout.setWidth(100, Unit.PERCENTAGE);
 

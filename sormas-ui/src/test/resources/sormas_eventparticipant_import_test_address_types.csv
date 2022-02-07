@@ -1,3 +1,4 @@
+EventParticipant,EventParticipant,EventParticipant,EventParticipant,EventParticipant,EventParticipant,EventParticipant,EventParticipant,EventParticipant,EventParticipant
 person.firstName,person.lastName,person.sex,involvementDescription,region,district,person.address.addressType,person.address.city,person.address.street,person.address.houseNumber
 Otto,Holtkohlen,MALE,description 1,Region,District,,Saarbrücken,Mainzer Str.,131
 Oskar,Holtkohlen,MALE,description 2,Region,District,HOME,Saarbrücken,Mainzer Str.,132

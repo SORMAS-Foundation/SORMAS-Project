@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.importexport;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.text.ParseException;

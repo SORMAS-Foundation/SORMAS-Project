@@ -90,7 +90,8 @@ public enum DatabaseTable {
 
 	EXPORT_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, null, "export_configurations"),
 	FEATURE_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, null, "feature_configurations"),
-	DISEASE_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, null, "disease_configurations");
+	DISEASE_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, null, "disease_configurations"),
+	DELETION_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, null, "deletion_configurations");
 
 	private final DatabaseTableType databaseTableType;
 	private final DatabaseTable parentTable;

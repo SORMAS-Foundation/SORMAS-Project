@@ -65,6 +65,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDetailedReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -95,6 +96,8 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -125,7 +128,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.utils.EventJoins;
 
 @Stateless(name = "EventFacade")
-public class EventFacadeEjb implements EventFacade {
+public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements EventFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -160,6 +163,10 @@ public class EventFacadeEjb implements EventFacade {
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
 	@Resource
 	private ManagedScheduledExecutorService executorService;
+
+	public EventFacadeEjb() {
+		super(Event.class);
+	}
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -926,7 +933,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public String getFirstEventUuidWithOwnershipHandedOver(List<String> eventUuids) {
+	public List<String> getEventUuidsWithOwnershipHandedOver(List<String> eventUuids) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Event> eventRoot = cq.from(Event.class);
@@ -936,7 +943,7 @@ public class EventFacadeEjb implements EventFacade {
 		cq.where(cb.and(eventRoot.get(Event.UUID).in(eventUuids), cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
 		cq.orderBy(cb.asc(eventRoot.get(AbstractDomainObject.CREATION_DATE)));
 
-		return QueryHelper.getFirstResult(em, cq);
+		return QueryHelper.getResultList(em, cq, null, null);
 	}
 
 	@Override
@@ -1329,6 +1336,11 @@ public class EventFacadeEjb implements EventFacade {
 		return eventService.hasAnyEventParticipantWithoutJurisdiction(eventUuid);
 	}
 
+	@Override
+	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
+		return getAutomaticDeletionInfo(uuid, CoreEntityType.EVENT);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class EventFacadeEjbLocal extends EventFacadeEjb {
@@ -1338,5 +1350,10 @@ public class EventFacadeEjb implements EventFacade {
 	public Boolean isEventEditAllowed(String eventUuid) {
 		Event event = eventService.getByUuid(eventUuid);
 		return eventService.isEventEditAllowed(event);
+	}
+
+	@Override
+	protected void delete(Event entity) {
+		eventService.delete(entity);
 	}
 }

@@ -23,4 +23,8 @@ import javax.ejb.Remote;
 public interface InfoFacade {
 
 	String generateDataDictionary() throws IOException;
+
+	boolean isGenerateDataProtectionDictionaryAllowed();
+
+	String generateDataProtectionDictionary() throws IOException;
 }

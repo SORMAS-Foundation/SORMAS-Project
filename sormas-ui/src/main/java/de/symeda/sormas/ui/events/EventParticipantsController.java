@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.events;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,8 +31,8 @@ import com.vaadin.ui.Window;
 import com.vaadin.v7.data.Validator;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
@@ -54,6 +53,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
@@ -109,18 +109,7 @@ public class EventParticipantsController {
 							I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipant),
 							selectedPerson -> {
 								if (selectedPerson != null) {
-									EventParticipantCriteria criteria = new EventParticipantCriteria();
-									criteria.withEvent(eventRef);
-									List<EventParticipantIndexDto> currentEventParticipants =
-										FacadeProvider.getEventParticipantFacade().getIndexList(criteria, null, null, null);
-									Boolean alreadyParticipant = false;
-									for (EventParticipantIndexDto participant : currentEventParticipants) {
-										if (selectedPerson.getUuid().equals(participant.getPersonUuid())) {
-											alreadyParticipant = true;
-											break;
-										}
-									}
-									if (alreadyParticipant) {
+									if (FacadeProvider.getEventParticipantFacade().exists(selectedPerson.getUuid(), eventRef.getUuid())) {
 										throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
 									} else {
 										dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
@@ -144,6 +133,9 @@ public class EventParticipantsController {
 							},
 							true);
 				} else {
+					if (FacadeProvider.getEventParticipantFacade().exists(dto.getPerson().getUuid(), eventRef.getUuid())) {
+						throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
+					}
 					EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
 					Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
 					if (navigateOnCommit) {
@@ -211,6 +203,7 @@ public class EventParticipantsController {
 	public CommitDiscardWrapperComponent<?> getEventParticipantDataEditComponent(String eventParticipantUuid) {
 		final EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
 		final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
+		AutomaticDeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEventParticipantFacade().getAutomaticDeletionInfo(eventParticipantUuid);
 
 		final EventParticipantEditForm editForm =
 			new EventParticipantEditForm(event, eventParticipant.isPseudonymized(), eventParticipant.getPerson().isPseudonymized());
@@ -218,6 +211,10 @@ public class EventParticipantsController {
 		editForm.setWidth(100, Unit.PERCENTAGE);
 
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> editComponent = createEventParticipantEditCommitWrapper(editForm, null);
+
+		if (automaticDeletionInfoDto != null) {
+			editComponent.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 			editComponent.addDeleteListener(() -> {
