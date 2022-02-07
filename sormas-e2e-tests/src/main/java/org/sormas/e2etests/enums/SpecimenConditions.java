@@ -46,4 +46,9 @@ public enum SpecimenConditions {
     Random random = new Random();
     return String.valueOf(SpecimenConditions.values()[random.nextInt(values().length)]);
   }
+
+  public static String getRandomConditionName() {
+    Random random = new Random();
+    return String.valueOf(SpecimenConditions.values()[random.nextInt(values().length)].condition);
+  }
 }
