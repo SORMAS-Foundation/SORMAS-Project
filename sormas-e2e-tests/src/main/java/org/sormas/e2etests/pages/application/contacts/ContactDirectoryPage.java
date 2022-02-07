@@ -21,7 +21,7 @@ package org.sormas.e2etests.pages.application.contacts;
 import org.openqa.selenium.By;
 
 public class ContactDirectoryPage {
-  public static final By NEW_CONTACT_BUTTON = By.id("contactNewContact");
+  public static final By NEW_CONTACT_PAGE_BUTTON = By.id("contactNewContact");
   public static final By LINE_LISTING = By.cssSelector("[id='lineListing']");
   public static final By MULTIPLE_OPTIONS_SEARCH_INPUT = By.cssSelector("#contactOrCaseLike");
   public static final By APPLY_FILTERS_BUTTON = By.id("actionApplyFilters");
@@ -37,14 +37,16 @@ public class ContactDirectoryPage {
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By CONTACTS_DETAILED_TABLE_DATA = By.cssSelector("[role=gridcell]");
   public static final By DISEASE_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(5)");
-  public static final By FIRST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(8)");
-  public static final By LAST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(9)");
+  public static final By FIRST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(9)");
+  public static final By LAST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(10)");
   public static final By TYPE_OF_CONTACT_COLUMNS =
-      By.cssSelector("[role=rowgroup] tr>td:nth-child(11)");
+      By.cssSelector("[role=rowgroup] tr>td:nth-child(12)");
   public static final By FOLLOW_UP_VISITS_BUTTON =
       By.cssSelector("#contactsViewSwitcher span:nth-child(3)");
   public static final By FROM_INPUT = By.cssSelector("#fromReferenceDateField input");
   public static final By TO_INPUT = By.cssSelector("#toReferenceDateField input");
   public static final By GRID_HEADERS = By.xpath("//thead//tr//th");
   public static final String RESULTS_GRID_HEADER = "//div[contains(text(), '%s')]";
+  public static final By FIRST_CONTACT_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
+  public static final By EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-contacts-epidata");
 }

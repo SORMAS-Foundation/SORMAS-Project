@@ -28,7 +28,7 @@ import org.sormas.e2etests.pojo.web.Person;
 public class PersonContactDetailsSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
-  protected Person person;
+  protected Person newGeneratedPerson;
 
   @Inject
   public PersonContactDetailsSteps(WebDriverHelpers webDriverHelpers) {
@@ -37,9 +37,11 @@ public class PersonContactDetailsSteps implements En {
     Then(
         "I complete all fields from Person Contact Details popup and save",
         () -> {
-          person = EditContactPersonSteps.newGeneratedPerson;
-          selectTypeOfContactDetails(person.getPersonContactDetailsTypeOfContactDetails());
-          fillContactInformationInput(person.getPersonContactDetailsContactInformation());
+          newGeneratedPerson = EditContactPersonSteps.newGeneratedPerson;
+          selectTypeOfContactDetails(
+              newGeneratedPerson.getPersonContactDetailsTypeOfContactDetails());
+          fillContactInformationInput(
+              newGeneratedPerson.getPersonContactDetailsContactInformation());
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
         });
   }

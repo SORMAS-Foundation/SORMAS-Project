@@ -35,6 +35,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -127,8 +128,9 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
 		initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getRegion());
 		initialCommunities = InfrastructureDaoHelper.loadCommunities(record.getDistrict());
-		initialFacilities = InfrastructureDaoHelper.loadFacilities(record.getDistrict(), record.getCommunity(), record.getFacilityType());
-		initialPointsOfEntry = InfrastructureDaoHelper.loadPointsOfEntry(record.getDistrict());
+		initialFacilities =
+			InfrastructureDaoHelper.loadFacilities(record.getResponsibleDistrict(), record.getResponsibleCommunity(), record.getFacilityType());
+		initialPointsOfEntry = InfrastructureDaoHelper.loadPointsOfEntry(record.getResponsibleDistrict());
 
 		facilityOrHomeList = DataUtils.toItems(TypeOfPlace.FOR_CASES, true);
 		facilityTypeGroupList = DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups(), true);
@@ -249,6 +251,12 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			if (e.getValue() == TypeOfPlace.FACILITY) {
 				contentBinding.facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
 				contentBinding.caseDataFacilityType.setValue(FacilityType.HOSPITAL);
+				User user = ConfigProvider.getUser();
+				boolean userHasFacilityJurisdictionLevel =
+					user.getUserRoles().stream().anyMatch(userRole -> userRole.getJurisdictionLevel().equals(JurisdictionLevel.HEALTH_FACILITY));
+				if (!userHasFacilityJurisdictionLevel) {
+					contentBinding.caseDataHealthFacility.setValue(null);
+				}
 			}
 		});
 	}

@@ -239,6 +239,7 @@
     <!-- ************************************************* -->
 
     <dimen name="dialog_panel_horizontal_padding">12dp</dimen>
+    <dimen name="dialog_three_buttons_panel_horizontal_padding">6dp</dimen>
     <dimen name="simple_dialog_button_horizontal_padding">24dp</dimen>
 
     <!-- List Layout Indicators -->

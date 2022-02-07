@@ -83,6 +83,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
+import de.symeda.sormas.ui.utils.components.popupmenu.PopupMenu;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -184,15 +185,7 @@ public class ContactsView extends AbstractView {
 		});
 		addHeaderComponent(contactsViewSwitcher);
 
-		final PopupButton moreButton = new PopupButton(I18nProperties.getCaption(Captions.moreActions));
-		moreButton.setId("more");
-		moreButton.setIcon(VaadinIcons.ELLIPSIS_DOTS_V);
-		final VerticalLayout moreLayout = new VerticalLayout();
-		moreLayout.setSpacing(true);
-		moreLayout.setMargin(true);
-		moreLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-		moreLayout.setWidth(250, Unit.PIXELS);
-		moreButton.setContent(moreLayout);
+		final PopupMenu moreButton = new PopupMenu(I18nProperties.getCaption(Captions.moreActions));
 
 		if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_IMPORT)) {
 			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
@@ -205,7 +198,7 @@ public class ContactsView extends AbstractView {
 			}, ValoTheme.BUTTON_PRIMARY);
 			importButton.setWidth(100, Unit.PERCENTAGE);
 
-			moreLayout.addComponent(importButton);
+			moreButton.addMenuEntry(importButton);
 		}
 
 		if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
@@ -295,7 +288,7 @@ public class ContactsView extends AbstractView {
 				btnEnterBulkEditMode.addStyleName(ValoTheme.BUTTON_PRIMARY);
 
 				btnEnterBulkEditMode.setWidth(100, Unit.PERCENTAGE);
-				moreLayout.addComponent(btnEnterBulkEditMode);
+				moreButton.addMenuEntry(btnEnterBulkEditMode);
 			}
 
 			Button btnLeaveBulkEditMode =
@@ -304,7 +297,7 @@ public class ContactsView extends AbstractView {
 				btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
 				btnLeaveBulkEditMode.setWidth(100, Unit.PERCENTAGE);
 
-				moreLayout.addComponent(btnLeaveBulkEditMode);
+				moreButton.addMenuEntry(btnLeaveBulkEditMode);
 			}
 
 			btnEnterBulkEditMode.addClickListener(e -> {
@@ -332,7 +325,7 @@ public class ContactsView extends AbstractView {
 				e -> ControllerProvider.getContactController().navigateToMergeContactsView(),
 				ValoTheme.BUTTON_PRIMARY);
 			mergeDuplicatesButton.setWidth(100, Unit.PERCENTAGE);
-			moreLayout.addComponent(mergeDuplicatesButton);
+			moreButton.addMenuEntry(mergeDuplicatesButton);
 		}
 
 		if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
@@ -348,7 +341,7 @@ public class ContactsView extends AbstractView {
 			addHeaderComponent(btnNewContact);
 		}
 
-		if (moreLayout.getComponentCount() > 0) {
+		if (moreButton.hasMenuEntries()) {
 			addHeaderComponent(moreButton);
 		}
 
@@ -524,7 +517,7 @@ public class ContactsView extends AbstractView {
 								}
 
 								ControllerProvider.getDocGenerationController()
-									.showQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_CONTACT);
+									.showBulkQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_CONTACT);
 							})));
 				}
 

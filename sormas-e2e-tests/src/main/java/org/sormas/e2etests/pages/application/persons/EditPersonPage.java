@@ -36,8 +36,6 @@ public class EditPersonPage {
   public static final By PRESENT_CONDITION_INPUT = By.cssSelector("#presentCondition input");
   public static final By PRESENT_CONDITION_COMBOBOX =
       By.cssSelector("#presentCondition input + div");
-  public static final By PASSPORT_NUMBER_INPUT = By.cssSelector("#passportNumber");
-  public static final By NATIONAL_HEALTH_ID_INPUT = By.cssSelector("#nationalHealthId");
   public static final By EXTERNAL_ID_INPUT = By.cssSelector("#externalId ");
   public static final By EXTERNAL_TOKEN_INPUT = By.cssSelector("#externalToken");
   public static final By TYPE_OF_OCCUPATION_COMBOBOX =
@@ -48,8 +46,6 @@ public class EditPersonPage {
       By.cssSelector("[location=armedForcesRelationType] input+div");
   public static final By STAFF_OF_ARMED_FORCES_INPUT =
       By.cssSelector("[location=armedForcesRelationType] input");
-  public static final By EDUCATION_COMBOBOX = By.cssSelector("[location=educationType] input+div");
-  public static final By EDUCATION_INPUT = By.cssSelector("[location=educationType] input");
   public static final By REGION_COMBOBOX = By.cssSelector("#region > div");
   public static final By REGION_INPUT = By.cssSelector("#region > input");
   public static final By DISTRICT_COMBOBOX = By.cssSelector("#district > div");
@@ -72,12 +68,7 @@ public class EditPersonPage {
   public static final By AREA_TYPE_INPUT = By.cssSelector("#areaType > input");
   public static final By CONTACT_PERSON_FIRST_NAME_INPUT = By.id("contactPersonFirstName");
   public static final By CONTACT_PERSON_LAST_NAME_INPUT = By.id("contactPersonLastName");
-  public static final By COMMUNITY_CONTACT_PERSON_INPUT = By.id("details");
   public static final By BIRTH_NAME_INPUT = By.id("birthName");
-  public static final By NICKNAME_INPUT = By.id("nickname");
-  public static final By MOTHER_MAIDEN_NAME_INPUT = By.id("mothersMaidenName");
-  public static final By MOTHER_NAME_INPUT = By.id("mothersName");
-  public static final By FATHER_NAME_INPUT = By.id("fathersName");
   public static final By NAMES_OF_GUARDIANS_INPUT = By.id("namesOfGuardians");
   public static final By SAVE_BUTTON = By.id("commit");
   public static final By PERSON_DATA_SAVED_POPUP = By.cssSelector(".v-Notification-caption");

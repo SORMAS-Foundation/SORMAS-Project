@@ -65,7 +65,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		super(PathogenTest.class);
 	}
 
-	public List<PathogenTest> getAllActivePathogenTestsAfter(Date date, User user) {
+	public List<PathogenTest> getAllActivePathogenTestsAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PathogenTest> cq = cb.createQuery(getElementClass());
@@ -79,15 +79,14 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
+			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
 			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		}
 
 		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(PathogenTest.CHANGE_DATE)));
 		cq.distinct(true);
 
-		return em.createQuery(cq).getResultList();
+		return getBatchedQueryResults(cb, cq, from, batchSize);
 	}
 
 	public List<String> getAllActiveUuids(User user) {

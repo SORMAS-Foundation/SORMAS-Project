@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.ui.utils;
 
 import java.util.Date;
@@ -30,7 +28,7 @@ import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect.NewItemHandler;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.CustomField;
-import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.PopupDateField;
 
 import de.symeda.sormas.api.utils.DateHelper;
 
@@ -39,8 +37,9 @@ public class DateTimeField extends CustomField<Date> {
 
 	private static final String CAPTION_PROPERTY_ID = "caption";
 
-	private DateField dateField;
+	private PopupDateField dateField;
 	private ComboBox timeField;
+	private String inputPrompt;
 
 	private Converter<Date, ?> converter;
 	boolean converterSet;
@@ -52,11 +51,12 @@ public class DateTimeField extends CustomField<Date> {
 		layout.setSpacing(true);
 		layout.setWidth(100, Unit.PERCENTAGE);
 
-		dateField = new DateField();
+		dateField = new PopupDateField();
 		dateField.setId(this.getId() + "_" + "date");
 		dateField.setWidth(100, Unit.PERCENTAGE);
 		dateField.setDateFormat(DateFormatHelper.getDateFormatPattern());
 		dateField.setLenient(true);
+		dateField.setInputPrompt(inputPrompt);
 		layout.addComponent(dateField);
 		layout.setExpandRatio(dateField, 0.5f);
 
@@ -91,7 +91,7 @@ public class DateTimeField extends CustomField<Date> {
 		layout.addComponent(timeField);
 		layout.setExpandRatio(timeField, 0.5f);
 
-		// value cn't be set on readOnly fields
+		// value can't be set on readOnly fields
 		dateField.setReadOnly(false);
 		timeField.setReadOnly(false);
 
@@ -106,6 +106,7 @@ public class DateTimeField extends CustomField<Date> {
 			@Override
 			public void valueChange(Property.ValueChangeEvent event) {
 				markAsDirty();
+				fireValueChange(false);
 			}
 		};
 		dateField.addValueChangeListener(validationValueChangeListener);
@@ -195,6 +196,17 @@ public class DateTimeField extends CustomField<Date> {
 		if (dateField != null) {
 			dateField.setConverter(converter);
 			converterSet = true;
+		}
+	}
+
+	public String getInputPrompt() {
+		return inputPrompt;
+	}
+
+	public void setInputPrompt(String inputPrompt) {
+		this.inputPrompt = inputPrompt;
+		if (dateField != null) {
+			dateField.setInputPrompt(inputPrompt);
 		}
 	}
 }

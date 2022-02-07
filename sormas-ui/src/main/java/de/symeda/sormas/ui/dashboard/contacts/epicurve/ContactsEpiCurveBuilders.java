@@ -1,7 +1,7 @@
 package de.symeda.sormas.ui.dashboard.contacts.epicurve;
 
+import de.symeda.sormas.api.dashboard.EpiCurveGrouping;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsEpiCurveMode;
-import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 
 public class ContactsEpiCurveBuilders {
 

@@ -19,11 +19,9 @@
 package org.sormas.e2etests.steps.web.application.contacts;
 
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.*;
-import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.RESPONSIBLE_COMMUNITY_COMBOBOX;
-import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.RESPONSIBLE_DISTRICT_COMBOBOX;
-import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.RESPONSIBLE_REGION_COMBOBOX;
-import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SEX_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CREATED_POPUP;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -34,6 +32,7 @@ import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Contact;
 import org.sormas.e2etests.services.ContactService;
+import org.sormas.e2etests.state.ApiState;
 
 public class CreateNewContactSteps implements En {
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
@@ -41,25 +40,26 @@ public class CreateNewContactSteps implements En {
   public static Contact contact;
 
   @Inject
-  public CreateNewContactSteps(WebDriverHelpers webDriverHelpers, ContactService contactService) {
+  public CreateNewContactSteps(
+      WebDriverHelpers webDriverHelpers, ContactService contactService, ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
-        "^I create a new contact$",
+        "^I fill a new contact form$",
         () -> {
           contact = contactService.buildGeneratedContact();
           fillFirstName(contact.getFirstName());
           fillLastName(contact.getLastName());
           fillDateOfBirth(contact.getDateOfBirth());
           selectSex(contact.getSex());
-          fillNationalHealthId(contact.getNationalHealthId());
-          fillPassportNumber(contact.getPassportNumber());
           fillPrimaryPhoneNumber(contact.getPrimaryPhoneNumber());
           fillPrimaryEmailAddress(contact.getPrimaryEmailAddress());
           selectReturningTraveler(contact.getReturningTraveler());
           fillDateOfReport(contact.getReportDate());
           fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
           fillCaseIdInExternalSystem(contact.getCaseIdInExternalSystem());
+          selectMultiDayContact();
+          fillDateOfFirstContact(contact.getDateOfFirstContact());
           fillDateOfLastContact(contact.getDateOfLastContact());
           fillCaseOrEventInformation(contact.getCaseOrEventInformation());
           selectResponsibleRegion(contact.getResponsibleRegion());
@@ -71,20 +71,46 @@ public class CreateNewContactSteps implements En {
           selectContactCategory(contact.getContactCategory().toUpperCase());
           fillRelationshipWithCase(contact.getRelationshipWithCase());
           fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
+        });
+    When(
+        "^I click CHOOSE CASE button$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CHOOSE_CASE_BUTTON));
+    When(
+        "^I search for the last case uuid in the CHOOSE SOURCE Contact window$",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              SOURCE_CASE_WINDOW_CONTACT, apiState.getCreatedCase().getUuid());
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+        });
+    When(
+        "^I open the first found result in the CHOOSE SOURCE Contact window$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitForRowToBeSelected(SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON);
+        });
+    When(
+        "^I click SAVE a new contact$",
+        () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
   }
 
-  public void fillFirstName(String firstName) {
+  private void fillFirstName(String firstName) {
     webDriverHelpers.fillInWebElement(FIRST_NAME_OF_CONTACT_PERSON_INPUT, firstName);
   }
 
-  public void fillLastName(String lastName) {
+  private void fillLastName(String lastName) {
     webDriverHelpers.fillInWebElement(LAST_NAME_OF_CONTACT_PERSON_INPUT, lastName);
   }
 
-  public void fillDateOfBirth(LocalDate localDate) {
+  private void fillDateOfBirth(LocalDate localDate) {
     webDriverHelpers.selectFromCombobox(
         DATE_OF_BIRTH_YEAR_COMBOBOX, String.valueOf(localDate.getYear()));
     webDriverHelpers.selectFromCombobox(
@@ -94,81 +120,81 @@ public class CreateNewContactSteps implements En {
         DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
   }
 
-  public void selectSex(String sex) {
+  private void selectSex(String sex) {
     webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
   }
 
-  public void fillNationalHealthId(String nationalHealthId) {
-    webDriverHelpers.fillInWebElement(NATIONAL_HEALTH_ID_INPUT, nationalHealthId);
-  }
-
-  public void fillPassportNumber(String passportNumber) {
-    webDriverHelpers.fillInWebElement(PASSPORT_NUMBER_INPUT, passportNumber);
-  }
-
-  public void fillPrimaryPhoneNumber(String primaryPhoneNumber) {
+  private void fillPrimaryPhoneNumber(String primaryPhoneNumber) {
     webDriverHelpers.fillInWebElement(PRIMARY_PHONE_NUMBER_INPUT, primaryPhoneNumber);
   }
 
-  public void fillPrimaryEmailAddress(String primaryEmail) {
+  private void fillPrimaryEmailAddress(String primaryEmail) {
     webDriverHelpers.fillInWebElement(PRIMARY_EMAIL_ADDRESS_INPUT, primaryEmail);
   }
 
-  public void selectReturningTraveler(String option) {
+  private void selectReturningTraveler(String option) {
     webDriverHelpers.clickWebElementByText(TYPE_OF_CONTACT_TRAVELER, option);
   }
 
-  public void fillDateOfReport(LocalDate date) {
+  private void fillDateOfReport(LocalDate date) {
     webDriverHelpers.clearAndFillInWebElement(DATE_OF_REPORT_INPUT, formatter.format(date));
   }
 
-  public void fillDiseaseOfSourceCase(String diseaseOrCase) {
+  private void fillDiseaseOfSourceCase(String diseaseOrCase) {
     webDriverHelpers.selectFromCombobox(DISEASE_OF_SOURCE_CASE_COMBOBOX, diseaseOrCase);
   }
 
-  public void fillCaseIdInExternalSystem(String externalId) {
+  private void fillCaseIdInExternalSystem(String externalId) {
     webDriverHelpers.fillInWebElement(CASE_ID_IN_EXTERNAL_SYSTEM_INPUT, externalId);
   }
 
-  public void fillDateOfLastContact(LocalDate date) {
+  private void fillDateOfLastContact(LocalDate date) {
     webDriverHelpers.fillInWebElement(DATE_OF_LAST_CONTACT_INPUT, formatter.format(date));
   }
 
-  public void fillCaseOrEventInformation(String caseOrEventInfo) {
+  private void fillCaseOrEventInformation(String caseOrEventInfo) {
     webDriverHelpers.fillInWebElement(CASE_OR_EVENT_INFORMATION_INPUT, caseOrEventInfo);
   }
 
-  public void selectResponsibleRegion(String selectResponsibleRegion) {
+  private void selectResponsibleRegion(String selectResponsibleRegion) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_REGION_COMBOBOX, selectResponsibleRegion);
   }
 
-  public void selectResponsibleDistrict(String responsibleDistrict) {
+  private void selectResponsibleDistrict(String responsibleDistrict) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX, responsibleDistrict);
   }
 
-  public void selectResponsibleCommunity(String responsibleCommunity) {
+  private void selectResponsibleCommunity(String responsibleCommunity) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX, responsibleCommunity);
   }
 
-  public void selectTypeOfContact(String typeOfContact) {
+  private void selectTypeOfContact(String typeOfContact) {
     webDriverHelpers.clickWebElementByText(TYPE_OF_CONTACT_OPTIONS, typeOfContact);
   }
 
-  public void selectContactCategory(String category) {
+  private void selectContactCategory(String category) {
     webDriverHelpers.clickWebElementByText(CONTACT_CATEGORY_OPTIONS, category);
   }
 
-  public void fillAdditionalInformationOnTheTypeOfContact(String description) {
+  private void fillAdditionalInformationOnTheTypeOfContact(String description) {
     webDriverHelpers.fillInWebElement(
         ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT, description);
   }
 
-  public void fillRelationshipWithCase(String relationshipWithCase) {
+  private void fillRelationshipWithCase(String relationshipWithCase) {
     webDriverHelpers.selectFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX, relationshipWithCase);
   }
 
-  public void fillDescriptionOfHowContactTookPlace(String descriptionOfHowContactTookPlace) {
+  private void fillDescriptionOfHowContactTookPlace(String descriptionOfHowContactTookPlace) {
     webDriverHelpers.fillInWebElement(
         DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT, descriptionOfHowContactTookPlace);
+  }
+
+  private void selectMultiDayContact() {
+    webDriverHelpers.clickOnWebElementBySelector(MULTI_DAY_CONTACT_LABEL);
+  }
+
+  public void fillDateOfFirstContact(LocalDate date) {
+    webDriverHelpers.clearAndFillInWebElement(FIRST_DAY_CONTACT_DATE, formatter.format(date));
   }
 }

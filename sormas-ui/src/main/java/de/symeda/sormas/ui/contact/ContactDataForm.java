@@ -35,6 +35,8 @@ import java.util.List;
 import org.joda.time.LocalDate;
 
 import com.google.common.collect.Sets;
+import com.vaadin.server.ErrorMessage;
+import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
@@ -68,6 +70,8 @@ import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -197,6 +201,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addFields();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
 
@@ -633,21 +638,45 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					lastContactDate.getValue(),
 					reportDate.getValue(),
 					FacadeProvider.getSampleFacade().getByContactUuids(Collections.singletonList(getValue().getUuid())));
-				Date minimumFollowUpUntilDate =
-					FollowUpLogic
-						.calculateFollowUpUntilDate(
-							followUpPeriod,
-							null,
-							FacadeProvider.getVisitFacade().getVisitsByContact(new ContactReferenceDto(getValue().getUuid())),
-							FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(getSelectedDisease()))
-						.getFollowUpEndDate();
-
-				dfFollowUpUntil.addValidator(
-					new DateRangeValidator(
-						I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
-						minimumFollowUpUntilDate,
+				Date minimumFollowUpUntilDate = FollowUpLogic
+					.calculateFollowUpUntilDate(
+						followUpPeriod,
 						null,
-						Resolution.DAY));
+						FacadeProvider.getVisitFacade().getVisitsByContact(new ContactReferenceDto(getValue().getUuid())),
+						FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(getSelectedDisease()),
+						FacadeProvider.getFeatureConfigurationFacade()
+							.isPropertyValueTrue(FeatureType.CONTACT_TRACING, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE))
+					.getFollowUpEndDate();
+
+				if (FacadeProvider.getFeatureConfigurationFacade()
+					.isPropertyValueTrue(FeatureType.CONTACT_TRACING, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE)) {
+					dfFollowUpUntil.addValueChangeListener(valueChangeEvent -> {
+
+						if (DateHelper.getEndOfDay(dfFollowUpUntil.getValue()).before(minimumFollowUpUntilDate)) {
+							dfFollowUpUntil.setComponentError(new ErrorMessage() {
+
+								@Override
+								public ErrorLevel getErrorLevel() {
+									return ErrorLevel.INFO;
+								}
+
+								@Override
+								public String getFormattedHtmlMessage() {
+									return I18nProperties.getValidationError(
+										Validations.contactFollowUpUntilDateSoftValidation,
+										I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.FOLLOW_UP_UNTIL));
+								}
+							});
+						}
+					});
+				} else {
+					dfFollowUpUntil.addValidator(
+						new DateRangeValidator(
+							I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
+							minimumFollowUpUntilDate,
+							null,
+							Resolution.DAY));
+				}
 			}
 
 			// Overwrite visibility for quarantine fields

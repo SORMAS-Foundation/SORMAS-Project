@@ -1,0 +1,14 @@
+# https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/defining-the-mergeability-of-pull-requests/troubleshooting-required-status-checks#handling-skipped-but-required-checks
+name: Skip Required Status
+
+on:
+  push:
+    branches: [development]
+
+jobs:
+  mergefreeze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Make mergefreeze pass if we want to commit external visits API spec to development
+        if: github.event_name == 'push' && github.ref == 'refs/heads/development'
+        run: 'echo "Skipping mergefreeze check for bot"'

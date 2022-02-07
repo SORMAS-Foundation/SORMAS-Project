@@ -37,6 +37,8 @@ public class ShareRequestInfo extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 6983296810004546738L;
 
+	public static final String TABLE_NAME = "sharerequestinfo";
+
 	public static final String SHARE_REQUEST_INFO_SHARE_INFO_TABLE = "sharerequestinfo_shareinfo";
 
 	public static final String SHARES = "shares";

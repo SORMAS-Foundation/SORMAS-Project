@@ -32,7 +32,9 @@ public class ActivityAsCaseDtoHelper extends AdoDtoHelper<ActivityAsCase, Activi
 	}
 
 	@Override
-	protected Call<List<ActivityAsCaseDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<ActivityAsCaseDto>> pullAllSince(long since,
+														 Integer size,
+														 String lastSynchronizedUuid) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 
@@ -110,5 +112,10 @@ public class ActivityAsCaseDtoHelper extends AdoDtoHelper<ActivityAsCase, Activi
 		target.setGatheringType(source.getGatheringType());
 		target.setHabitationDetails(source.getHabitationDetails());
 		target.setHabitationType(source.getHabitationType());
+	}
+
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return 0;
 	}
 }

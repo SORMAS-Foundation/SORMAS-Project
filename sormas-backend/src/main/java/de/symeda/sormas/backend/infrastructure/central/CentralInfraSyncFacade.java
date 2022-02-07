@@ -1,8 +1,23 @@
 package de.symeda.sormas.backend.infrastructure.central;
 
-import de.symeda.sormas.api.EntityDto;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
 import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
@@ -25,19 +40,6 @@ import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @LocalBean
 @Stateless
@@ -76,7 +78,7 @@ public class CentralInfraSyncFacade {
 	@EJB
 	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacadeEjb;
 
-	private <DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, CRITERIA extends BaseCriteria> Date loadAndStore(
+	private <DTO extends InfrastructureDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, CRITERIA extends BaseCriteria> Date loadAndStore(
 		String type,
 		Class<DTO> clazz,
 		InfrastructureBaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> facade,
@@ -92,6 +94,8 @@ public class CentralInfraSyncFacade {
 		logger.info("Loaded {} entities of type {}", dtos.size(), type);
 
 		List<DTO> newDtos = dtos.stream().filter(d -> d.getChangeDate().after(lastSync)).collect(Collectors.toList());
+		newDtos.forEach(d -> d.setCentrallyManaged(true));
+
 		logger.info("Importing {} entities of type {}", newDtos.size(), type);
 		if (newDtos.isEmpty()) {
 			return lastSync;
@@ -101,7 +105,11 @@ public class CentralInfraSyncFacade {
 		Date newestChangeDate = newDtos.stream().map(DTO::getChangeDate).max(Date::compareTo).orElse(lastSync);
 		logger.info("The newest change date is {}", newestChangeDate);
 
-		newDtos.forEach(facade::save);
+		newDtos.forEach(d -> {
+			logger.info("Processing: {} - {}", d, d.getUuid());
+			facade.saveFromCentral(d);
+		});
+		logger.info("Successfully imported all entities from central");
 		return newestChangeDate;
 	}
 

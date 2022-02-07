@@ -49,9 +49,9 @@ public class ContactList extends PaginationList<ContactListEntryDto> {
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			final ContactListEntryDto contactListEntryDto = displayedEntries.get(i);
 			final ContactListEntry listEntry = new ContactListEntry(contactListEntryDto);
-			if (currentUser != null && currentUser.hasUserRight(UserRight.CASE_EDIT)) {
-				listEntry.addEditListener(
-					i,
+			if (currentUser != null && currentUser.hasUserRight(UserRight.CONTACT_EDIT)) {
+				listEntry.addEditButton(
+					"edit-contact-" + i,
 					(Button.ClickListener) event -> ControllerProvider.getContactController()
 						.navigateToData(listEntry.getContactListEntryDto().getUuid()));
 			}

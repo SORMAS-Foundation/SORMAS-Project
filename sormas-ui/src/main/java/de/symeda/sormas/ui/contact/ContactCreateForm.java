@@ -25,23 +25,17 @@ import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.joda.time.LocalDate;
-
 import com.google.common.collect.Sets;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.data.Validator;
-import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.data.validator.EmailValidator;
-import com.vaadin.v7.shared.ui.datefield.Resolution;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -49,7 +43,6 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
@@ -72,9 +65,10 @@ import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.PersonDependentEditForm;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
-public class ContactCreateForm extends AbstractEditForm<ContactDto> {
+public class ContactCreateForm extends PersonDependentEditForm<ContactDto> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -86,7 +80,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			LayoutUtil.loc(PERSON_NAME_LOC) +
-			LayoutUtil.fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
+			LayoutUtil.fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC) +
 					LayoutUtil.fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 							fluidRowLocs(PersonDto.SEX)) +
 					LayoutUtil.fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER) +
@@ -115,10 +109,10 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private Disease disease;
 	private final Boolean hasCaseRelation;
 	private final boolean asSourceContact;
-	private CaseReferenceDto selectedCase;
 	private NullableOptionGroup contactCategory;
 	private TextField contactProximityDetails;
 	private ComboBox birthDateDay;
+	private Button searchPersonButton;
 
 	/**
 	 * TODO use disease and case relation information given in ContactDto
@@ -148,6 +142,10 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.DISEASE_DETAILS, TextField.class);
 		TextField firstName = addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		TextField lastName = addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
+
+		searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
+		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
+
 		addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
 		addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
 		TextField phone = addCustomField(PersonDto.PHONE, String.class, TextField.class);
@@ -272,7 +270,6 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			chooseCaseButton.addClickListener(e -> {
 				ControllerProvider.getContactController().openSelectCaseForContactWindow((Disease) cbDisease.getValue(), selectedCase -> {
 					if (selectedCase != null) {
-						this.selectedCase = selectedCase.toReference();
 						caseInfoLabel.setValue(
 							String.format(
 								I18nProperties.getString(Strings.infoContactCreationSourceCase),
@@ -282,7 +279,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 						removeCaseButton.setVisible(true);
 						chooseCaseButton.setCaption(I18nProperties.getCaption(Captions.contactChangeCase));
 
-						getValue().setCaze(this.selectedCase);
+						getValue().setCaze(selectedCase.toReference());
+						cbDisease.setValue(selectedCase.getDisease());
 						updateFieldVisibilitiesByCase(true);
 					}
 				});
@@ -290,8 +288,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			getContent().addComponent(chooseCaseButton, CHOOSE_CASE_LOC);
 
 			removeCaseButton.addClickListener(e -> {
-				this.selectedCase = null;
 				getValue().setCaze(null);
+				cbDisease.setValue(null);
 				caseInfoLabel.setValue(I18nProperties.getString(Strings.infoNoSourceCaseSelected));
 				caseInfoLabel.addStyleName(CssStyles.VSPACE_TOP_4);
 				removeCaseButton.setVisible(false);
@@ -338,6 +336,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 				personNameField.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON));
 				personNameField.setValue(getValue().getPerson().getCaption());
 				personNameField.setReadOnly(true);
+
+				searchPersonButton.setVisible(false);
 			}
 		});
 	}
@@ -377,31 +377,6 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private void updateFieldVisibilitiesByCase(boolean caseSelected) {
 		setVisible(!caseSelected, ContactDto.DISEASE, ContactDto.CASE_ID_EXTERNAL_SYSTEM, ContactDto.CASE_OR_EVENT_INFORMATION);
 		setRequired(!caseSelected, ContactDto.DISEASE, ContactDto.REGION, ContactDto.DISTRICT);
-	}
-
-	private void updateRelationDescriptionField(ComboBox relationToCase, TextField relationDescription) {
-		boolean otherContactRelation = relationToCase.getValue().equals(ContactRelation.OTHER);
-		relationDescription.setVisible(otherContactRelation);
-	}
-
-	protected void updateLastContactDateValidator() {
-		Field<?> dateField = getField(ContactDto.LAST_CONTACT_DATE);
-		for (Validator validator : dateField.getValidators()) {
-			if (validator instanceof DateRangeValidator) {
-				dateField.removeValidator(validator);
-			}
-		}
-		if (getValue() != null) {
-			dateField.addValidator(
-				new DateRangeValidator(
-					I18nProperties.getValidationError(
-						Validations.beforeDate,
-						I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.LAST_CONTACT_DATE),
-						I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REPORT_DATE_TIME)),
-					null,
-					new LocalDate(getValue().getReportDateTime()).toDate(),
-					Resolution.SECOND));
-		}
 	}
 
 	private void updateContactProximity() {
@@ -510,6 +485,20 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		}
 	}
 
+	@Override
+	protected void enablePersonFields(Boolean enable) {
+		getField(PersonDto.FIRST_NAME).setEnabled(enable);
+		getField(PersonDto.LAST_NAME).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_DD).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_MM).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(enable);
+		getField(PersonDto.SEX).setEnabled(enable);
+		getField(PersonDto.NATIONAL_HEALTH_ID).setEnabled(enable);
+		getField(PersonDto.PASSPORT_NUMBER).setEnabled(enable);
+		getField(PersonDto.PHONE).setEnabled(enable);
+		getField(PersonDto.EMAIL_ADDRESS).setEnabled(enable);
+	}
+
 	public void setPersonDetailsReadOnly() {
 		setEnabled(
 			false,
@@ -523,6 +512,9 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			PersonDto.PASSPORT_NUMBER,
 			PersonDto.PHONE,
 			PersonDto.EMAIL_ADDRESS);
+
+
+		searchPersonButton.setEnabled(false);
 
 		setRequired(false, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.SEX);
 	}

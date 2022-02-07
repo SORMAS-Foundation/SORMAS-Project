@@ -13,6 +13,8 @@ public class AggregateReportDto extends EntityDto {
 
 	private static final long serialVersionUID = 8293942361133853979L;
 
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 861;
+
 	public static final String I18N_PREFIX = "AggregateReport";
 
 	public static final String REPORTING_USER = "reportingUser";

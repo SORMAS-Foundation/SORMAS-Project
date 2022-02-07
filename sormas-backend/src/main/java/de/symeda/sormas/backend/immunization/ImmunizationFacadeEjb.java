@@ -43,8 +43,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -60,6 +59,7 @@ import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -75,6 +75,8 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -108,7 +110,7 @@ import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb.VaccinationFacadeEjbLocal;
 
 @Stateless(name = "ImmunizationFacade")
-public class ImmunizationFacadeEjb implements ImmunizationFacade {
+public class ImmunizationFacadeEjb extends AbstractCoreEntityFacade<Immunization> implements ImmunizationFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(ImmunizationFacadeEjb.class);
 
@@ -159,6 +161,10 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	@EJB
 	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
+	public ImmunizationFacadeEjb() {
+		super(Immunization.class);
+	}
+
 	public static ImmunizationReferenceDto toReferenceDto(Immunization entity) {
 		if (entity == null) {
 			return null;
@@ -199,8 +205,21 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@Override
 	public List<ImmunizationDto> getAllAfter(Date date) {
+		return getAllAfter(date, null, null);
+	}
+
+	@Override
+	public List<ImmunizationDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultWithInaccessibleValuePlaceHolder(userService::hasRight);
-		return immunizationService.getAllActiveAfter(date).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
+		return immunizationService.getAllActiveAfter(date, batchSize, lastSynchronizedUuid)
+			.stream()
+			.map(c -> convertToDto(c, pseudonymizer))
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
+		return getAutomaticDeletionInfo(uuid, CoreEntityType.IMMUNIZATION);
 	}
 
 	@Override
@@ -306,7 +325,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 		validate(dto);
 
-		Immunization immunization = fillOrBuildEntity(dto, existingImmunization, checkChangeDate);
+		Immunization immunization = fillOrBuildEntity(dto, existingImmunization, checkChangeDate, false);
 
 		immunizationService.updateImmunizationStatusBasedOnVaccinations(immunization);
 
@@ -319,10 +338,10 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 					.findAny()
 					.orElse(null);
 			}
-			Date existingVaccinationDate = existingVaccination != null ? existingVaccination.getVaccinationDate() : null;
+			Date oldVaccinationDate = existingVaccination != null ? existingVaccination.getVaccinationDate() : null;
 			vaccinationFacade.updateVaccinationStatuses(
 				vaccination.getVaccinationDate(),
-				existingVaccinationDate,
+				oldVaccinationDate,
 				immunization.getPersonId(),
 				immunization.getDisease());
 		});
@@ -490,12 +509,14 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		return dto;
 	}
 
-	private Immunization fillOrBuildEntity(@NotNull ImmunizationDto source, Immunization target, boolean checkChangeDate) {
+	private Immunization fillOrBuildEntity(@NotNull ImmunizationDto source, Immunization target, boolean checkChangeDate, boolean immunizationCopy) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Immunization::new, checkChangeDate);
 
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
-		target.setPerson(personService.getByReferenceDto(source.getPerson()));
+		if (!immunizationCopy) {
+			target.setPerson(personService.getByReferenceDto(source.getPerson()));
+		}
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setArchived(source.isArchived());
@@ -525,10 +546,12 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		target.setRelatedCase(caseService.getByReferenceDto(source.getRelatedCase()));
 
 		List<Vaccination> vaccinationEntities = new ArrayList<>();
-		for (VaccinationDto vaccinationDto : source.getVaccinations()) {
-			Vaccination vaccination = vaccinationFacade.fromDto(vaccinationDto, checkChangeDate);
-			vaccination.setImmunization(target);
-			vaccinationEntities.add(vaccination);
+		if (!immunizationCopy) {
+			for (VaccinationDto vaccinationDto : source.getVaccinations()) {
+				Vaccination vaccination = vaccinationFacade.fromDto(vaccinationDto, checkChangeDate);
+				vaccination.setImmunization(target);
+				vaccinationEntities.add(vaccination);
+			}
 		}
 		target.getVaccinations().clear();
 		target.getVaccinations().addAll(vaccinationEntities);
@@ -644,6 +667,22 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 				logger.error("Failed to sync shares of immunization", e);
 			}
 		}, 5, TimeUnit.SECONDS);
+	}
+
+	public void copyImmunizationsToLeadPerson(ImmunizationDto immunizationDto, PersonDto leadPerson) {
+		Immunization newImmunization = new Immunization();
+		newImmunization.setUuid(DataHelper.createUuid());
+		newImmunization = fillOrBuildEntity(immunizationDto, newImmunization, false, true);
+
+		newImmunization.setPerson(personService.getByReferenceDto(leadPerson.toReference()));
+
+		vaccinationFacade.copyExistingVaccinationsToNewImmunization(immunizationDto, newImmunization);
+		immunizationService.ensurePersisted(newImmunization);
+	}
+
+	@Override
+	protected void delete(Immunization entity) {
+		immunizationService.delete(entity);
 	}
 
 	@LocalBean

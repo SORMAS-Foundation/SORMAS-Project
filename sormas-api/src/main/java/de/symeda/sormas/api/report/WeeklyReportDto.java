@@ -32,6 +32,8 @@ public class WeeklyReportDto extends EntityDto {
 
 	private static final long serialVersionUID = -2884998571593631851L;
 
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 2683;
+
 	public static final String I18N_PREFIX = "WeeklyReport";
 
 	public static final String REPORTING_USER = "reportingUser";

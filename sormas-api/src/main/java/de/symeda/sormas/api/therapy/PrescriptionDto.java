@@ -31,6 +31,8 @@ public class PrescriptionDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -5028702472324192079L;
 
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 2214;
+
 	public static final String I18N_PREFIX = "Prescription";
 
 	public static final String PRESCRIPTION_DATE = "prescriptionDate";

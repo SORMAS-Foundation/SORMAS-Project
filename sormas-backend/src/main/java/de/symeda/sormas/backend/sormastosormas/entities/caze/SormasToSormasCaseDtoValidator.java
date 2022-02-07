@@ -9,10 +9,13 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePrevie
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.data.validation.ValidationDirection;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
 
 @Stateless
 @LocalBean
@@ -27,21 +30,23 @@ public class SormasToSormasCaseDtoValidator extends SormasToSormasDtoValidator<C
 	}
 
 	@Override
-	public ValidationErrors validateIncoming(SormasToSormasCaseDto sharedData) {
+	public ValidationErrors validate(SormasToSormasCaseDto sharedData, ValidationDirection direction) {
 		CaseDataDto caze = sharedData.getEntity();
-		ValidationErrors validationErrors = new ValidationErrors();
+		ValidationErrors validationErrors = new ValidationErrors(buildCaseValidationGroupName(caze));
 
-		ValidationErrors personValidationErrors = validatePerson(sharedData.getPerson());
+		ValidationErrors personValidationErrors = validatePerson(sharedData.getPerson(), direction);
 		validationErrors.addAll(personValidationErrors);
 
 		final String groupNameTag = Captions.CaseData;
-		infraValidator.validateResponsibleRegion(caze.getResponsibleRegion(), groupNameTag, validationErrors, caze::setResponsibleRegion);
-		infraValidator.validateResponsibleDistrict(caze.getResponsibleDistrict(), groupNameTag, validationErrors, caze::setResponsibleDistrict);
-		infraValidator.validateResponsibleCommunity(caze.getResponsibleCommunity(), groupNameTag, validationErrors, caze::setResponsibleCommunity);
+		infraValidator.validateResponsibleRegion(caze.getResponsibleRegion(), groupNameTag, validationErrors, caze::setResponsibleRegion, direction);
+		infraValidator
+			.validateResponsibleDistrict(caze.getResponsibleDistrict(), groupNameTag, validationErrors, caze::setResponsibleDistrict, direction);
+		infraValidator
+			.validateResponsibleCommunity(caze.getResponsibleCommunity(), groupNameTag, validationErrors, caze::setResponsibleCommunity, direction);
 
-		infraValidator.validateRegion(caze.getRegion(), groupNameTag, validationErrors, caze::setRegion);
-		infraValidator.validateDistrict(caze.getDistrict(), groupNameTag, validationErrors, caze::setDistrict);
-		infraValidator.validateCommunity(caze.getCommunity(), groupNameTag, validationErrors, caze::setCommunity);
+		infraValidator.validateRegion(caze.getRegion(), groupNameTag, validationErrors, caze::setRegion, direction);
+		infraValidator.validateDistrict(caze.getDistrict(), groupNameTag, validationErrors, caze::setDistrict, direction);
+		infraValidator.validateCommunity(caze.getCommunity(), groupNameTag, validationErrors, caze::setCommunity, direction);
 
 		infraValidator.validateFacility(
 			caze.getHealthFacility(),
@@ -61,28 +66,28 @@ public class SormasToSormasCaseDtoValidator extends SormasToSormasDtoValidator<C
 
 		final HospitalizationDto hospitalization = caze.getHospitalization();
 		if (hospitalization != null) {
-			hospitalization.getPreviousHospitalizations().forEach(ph -> validatePreviousHospitalization(validationErrors, ph));
+			hospitalization.getPreviousHospitalizations().forEach(ph -> validatePreviousHospitalization(validationErrors, ph, direction));
 		}
 
 		final MaternalHistoryDto maternalHistory = caze.getMaternalHistory();
 		if (maternalHistory != null) {
-			validateMaternalHistory(validationErrors, maternalHistory);
+			validateMaternalHistory(validationErrors, maternalHistory, direction);
 		}
 
-		validateEpiData(caze.getEpiData(), validationErrors);
+		validateEpiData(caze.getEpiData(), validationErrors, direction);
 
 		return validationErrors;
 	}
 
 	@Override
-	public ValidationErrors validateIncomingPreview(SormasToSormasCasePreview preview) {
-		ValidationErrors validationErrors = new ValidationErrors();
-		validationErrors.addAll(validatePersonPreview(preview.getPerson()));
+	public ValidationErrors validatePreview(SormasToSormasCasePreview preview, ValidationDirection direction) {
+		ValidationErrors validationErrors = new ValidationErrors(buildCaseValidationGroupName(preview));
+		validationErrors.addAll(validatePersonPreview(preview.getPerson(), direction));
 
 		final String groupNameTag = Captions.CaseData;
-		infraValidator.validateRegion(preview.getRegion(), groupNameTag, validationErrors, preview::setRegion);
-		infraValidator.validateDistrict(preview.getDistrict(), groupNameTag, validationErrors, preview::setDistrict);
-		infraValidator.validateCommunity(preview.getCommunity(), groupNameTag, validationErrors, preview::setCommunity);
+		infraValidator.validateRegion(preview.getRegion(), groupNameTag, validationErrors, preview::setRegion, direction);
+		infraValidator.validateDistrict(preview.getDistrict(), groupNameTag, validationErrors, preview::setDistrict, direction);
+		infraValidator.validateCommunity(preview.getCommunity(), groupNameTag, validationErrors, preview::setCommunity, direction);
 		infraValidator.validateFacility(
 			preview.getHealthFacility(),
 			preview.getFacilityType(),
@@ -95,16 +100,6 @@ public class SormasToSormasCaseDtoValidator extends SormasToSormasDtoValidator<C
 			});
 
 		return validationErrors;
-	}
-
-	@Override
-	public ValidationErrors validateOutgoing(SormasToSormasCaseDto sharedData) {
-		return null;
-	}
-
-	@Override
-	public ValidationErrors validateOutgoingPreview(SormasToSormasCasePreview preview) {
-		return null;
 	}
 
 }

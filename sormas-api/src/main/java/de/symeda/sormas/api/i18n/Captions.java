@@ -17,10 +17,14 @@ public interface Captions {
 	String aboutChangelog = "aboutChangelog";
 	String aboutCopyright = "aboutCopyright";
 	String aboutDataDictionary = "aboutDataDictionary";
+	String aboutDataProtectionDictionary = "aboutDataProtectionDictionary";
 	String aboutDocuments = "aboutDocuments";
-	String aboutSormasVersion = "aboutSormasVersion";
+	String aboutExternalSurveillanceToolGateway = "aboutExternalSurveillanceToolGateway";
+	String aboutLabMessageAdapter = "aboutLabMessageAdapter";
+	String aboutServiceNotAvailable = "aboutServiceNotAvailable";
 	String aboutSormasWebsite = "aboutSormasWebsite";
 	String aboutTechnicalManual = "aboutTechnicalManual";
+	String aboutVersion = "aboutVersion";
 	String aboutWhatsNew = "aboutWhatsNew";
 	String Action = "Action";
 	String Action_actionContext = "Action.actionContext";
@@ -93,6 +97,9 @@ public interface Captions {
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
 	String actionSaveAndContinue = "actionSaveAndContinue";
+	String actionSaveAndOpenCase = "actionSaveAndOpenCase";
+	String actionSaveAndOpenContact = "actionSaveAndOpenContact";
+	String actionSaveAndOpenEventParticipant = "actionSaveAndOpenEventParticipant";
 	String actionSaveAndOpenHospitalization = "actionSaveAndOpenHospitalization";
 	String actionSaveChanges = "actionSaveChanges";
 	String actionSearch = "actionSearch";
@@ -175,6 +182,8 @@ public interface Captions {
 	String areaActiveAreas = "areaActiveAreas";
 	String areaAllAreas = "areaAllAreas";
 	String areaArchivedAreas = "areaArchivedAreas";
+	String assign = "assign";
+	String assignToMe = "assignToMe";
 	String BAGExport = "BAGExport";
 	String bulkActionCreatDocuments = "bulkActionCreatDocuments";
 	String bulkActions = "bulkActions";
@@ -187,6 +196,7 @@ public interface Captions {
 	String bulkDelete = "bulkDelete";
 	String bulkDisease = "bulkDisease";
 	String bulkEdit = "bulkEdit";
+	String bulkEditAssignee = "bulkEditAssignee";
 	String bulkEventInvestigationStatus = "bulkEventInvestigationStatus";
 	String bulkEventManagementStatus = "bulkEventManagementStatus";
 	String bulkEventParticipantsToContacts = "bulkEventParticipantsToContacts";
@@ -371,6 +381,7 @@ public interface Captions {
 	String CaseData_region = "CaseData.region";
 	String CaseData_regionLevelDate = "CaseData.regionLevelDate";
 	String CaseData_reInfection = "CaseData.reInfection";
+	String CaseData_reinfectionStatus = "CaseData.reinfectionStatus";
 	String CaseData_reportDate = "CaseData.reportDate";
 	String CaseData_reportingDistrict = "CaseData.reportingDistrict";
 	String CaseData_reportingUser = "CaseData.reportingUser";
@@ -401,6 +412,7 @@ public interface Captions {
 	String CaseData_vaccinationStatus = "CaseData.vaccinationStatus";
 	String CaseData_visits = "CaseData.visits";
 	String CaseData_wasInQuarantineBeforeIsolation = "CaseData.wasInQuarantineBeforeIsolation";
+	String caseDataEnterHomeAddressNow = "caseDataEnterHomeAddressNow";
 	String caseDefaultView = "caseDefaultView";
 	String caseDetailedView = "caseDetailedView";
 	String caseDocuments = "caseDocuments";
@@ -466,6 +478,7 @@ public interface Captions {
 	String caseFilterOnlyCasesWithDontShareWithExternalSurvTool = "caseFilterOnlyCasesWithDontShareWithExternalSurvTool";
 	String caseFilterOnlyCasesWithFulfilledReferenceDefinition = "caseFilterOnlyCasesWithFulfilledReferenceDefinition";
 	String caseFilterOnlyFromOtherInstances = "caseFilterOnlyFromOtherInstances";
+	String caseFilterOnlyQuarantineHelpNeeded = "caseFilterOnlyQuarantineHelpNeeded";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterRelatedToEvent = "caseFilterRelatedToEvent";
 	String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
@@ -496,6 +509,7 @@ public interface Captions {
 	String caseMinusDays = "caseMinusDays";
 	String caseNewCase = "caseNewCase";
 	String caseNewCaseDate = "caseNewCaseDate";
+	String caseNoDiseaseVariant = "caseNoDiseaseVariant";
 	String caseNumberOfDuplicatesDetected = "caseNumberOfDuplicatesDetected";
 	String caseOpenCasesGuide = "caseOpenCasesGuide";
 	String caseOpenMergeGuide = "caseOpenMergeGuide";
@@ -944,6 +958,7 @@ public interface Captions {
 	String DocumentTemplate = "DocumentTemplate";
 	String DocumentTemplate_buttonUploadTemplate = "DocumentTemplate.buttonUploadTemplate";
 	String DocumentTemplate_documentTemplateGuide = "DocumentTemplate.documentTemplateGuide";
+	String DocumentTemplate_documentUploadWarning = "DocumentTemplate.documentUploadWarning";
 	String DocumentTemplate_EventHandout = "DocumentTemplate.EventHandout";
 	String DocumentTemplate_EventHandout_create = "DocumentTemplate.EventHandout.create";
 	String DocumentTemplate_exampleTemplateCases = "DocumentTemplate.exampleTemplateCases";
@@ -951,10 +966,14 @@ public interface Captions {
 	String DocumentTemplate_exampleTemplateEventHandout = "DocumentTemplate.exampleTemplateEventHandout";
 	String DocumentTemplate_exampleTemplateEventParticipants = "DocumentTemplate.exampleTemplateEventParticipants";
 	String DocumentTemplate_exampleTemplateTravelEntries = "DocumentTemplate.exampleTemplateTravelEntries";
+	String DocumentTemplate_fileTooBig = "DocumentTemplate.fileTooBig";
+	String DocumentTemplate_notUploaded = "DocumentTemplate.notUploaded";
 	String DocumentTemplate_plural = "DocumentTemplate.plural";
 	String DocumentTemplate_QuarantineOrder = "DocumentTemplate.QuarantineOrder";
 	String DocumentTemplate_QuarantineOrder_create = "DocumentTemplate.QuarantineOrder.create";
 	String DocumentTemplate_QuarantineOrder_templates = "DocumentTemplate.QuarantineOrder.templates";
+	String DocumentTemplate_uploadGeneratedDocumentsToEntities = "DocumentTemplate.uploadGeneratedDocumentsToEntities";
+	String DocumentTemplate_uploadGeneratedDocumentToEntity = "DocumentTemplate.uploadGeneratedDocumentToEntity";
 	String DocumentTemplate_uploadTemplate = "DocumentTemplate.uploadTemplate";
 	String DocumentTemplate_uploadWorkflowTemplate = "DocumentTemplate.uploadWorkflowTemplate";
 	String documentUploadDocument = "documentUploadDocument";
@@ -1224,6 +1243,7 @@ public interface Captions {
 	String exposureTimePeriod = "exposureTimePeriod";
 	String ExternalSurveillanceToolGateway_confirmDelete = "ExternalSurveillanceToolGateway.confirmDelete";
 	String ExternalSurveillanceToolGateway_confirmSend = "ExternalSurveillanceToolGateway.confirmSend";
+	String ExternalSurveillanceToolGateway_excludeAndSend = "ExternalSurveillanceToolGateway.excludeAndSend";
 	String ExternalSurveillanceToolGateway_notTransferred = "ExternalSurveillanceToolGateway.notTransferred";
 	String ExternalSurveillanceToolGateway_send = "ExternalSurveillanceToolGateway.send";
 	String ExternalSurveillanceToolGateway_title = "ExternalSurveillanceToolGateway.title";
@@ -1358,6 +1378,7 @@ public interface Captions {
 	String info = "info";
 	String infrastructureImportAllowOverwrite = "infrastructureImportAllowOverwrite";
 	String LabMessage = "LabMessage";
+	String LabMessage_assignee = "LabMessage.assignee";
 	String labMessage_deleteNewlyCreatedCase = "labMessage.deleteNewlyCreatedCase";
 	String labMessage_deleteNewlyCreatedContact = "labMessage.deleteNewlyCreatedContact";
 	String labMessage_deleteNewlyCreatedEventParticipant = "labMessage.deleteNewlyCreatedEventParticipant";
@@ -1368,6 +1389,7 @@ public interface Captions {
 	String LabMessage_labPostalCode = "LabMessage.labPostalCode";
 	String LabMessage_labSampleId = "LabMessage.labSampleId";
 	String LabMessage_messageDateTime = "LabMessage.messageDateTime";
+	String LabMessage_personBirthDate = "LabMessage.personBirthDate";
 	String LabMessage_personBirthDateDD = "LabMessage.personBirthDateDD";
 	String LabMessage_personBirthDateMM = "LabMessage.personBirthDateMM";
 	String LabMessage_personBirthDateYYYY = "LabMessage.personBirthDateYYYY";
@@ -1386,8 +1408,13 @@ public interface Captions {
 	String LabMessage_specimenCondition = "LabMessage.specimenCondition";
 	String LabMessage_status = "LabMessage.status";
 	String LabMessage_testedDisease = "LabMessage.testedDisease";
+	String LabMessageCriteria_birthDateFrom = "LabMessageCriteria.birthDateFrom";
+	String LabMessageCriteria_birthDateTo = "LabMessageCriteria.birthDateTo";
+	String LabMessageCriteria_messageDateFrom = "LabMessageCriteria.messageDateFrom";
+	String LabMessageCriteria_messageDateTo = "LabMessageCriteria.messageDateTo";
 	String labMessageFetch = "labMessageFetch";
 	String labMessageForwardedMessageFound = "labMessageForwardedMessageFound";
+	String labMessageLabMessagesList = "labMessageLabMessagesList";
 	String labMessageNoDisease = "labMessageNoDisease";
 	String labMessageNoNewMessages = "labMessageNoNewMessages";
 	String labMessageProcess = "labMessageProcess";
@@ -1924,6 +1951,7 @@ public interface Captions {
 	String statisticsExchange = "statisticsExchange";
 	String statisticsIncidenceDivisor = "statisticsIncidenceDivisor";
 	String statisticsMapType = "statisticsMapType";
+	String statisticsOpenSormasStats = "statisticsOpenSormasStats";
 	String statisticsRemoveFilter = "statisticsRemoveFilter";
 	String statisticsResetFilters = "statisticsResetFilters";
 	String statisticsShowCaseIncidence = "statisticsShowCaseIncidence";
@@ -2273,6 +2301,7 @@ public interface Captions {
 	String TreatmentExport_caseUuid = "TreatmentExport.caseUuid";
 	String treatmentNewTreatment = "treatmentNewTreatment";
 	String treatmentOpenPrescription = "treatmentOpenPrescription";
+	String unassigned = "unassigned";
 	String unknown = "unknown";
 	String User = "User";
 	String User_active = "User.active";

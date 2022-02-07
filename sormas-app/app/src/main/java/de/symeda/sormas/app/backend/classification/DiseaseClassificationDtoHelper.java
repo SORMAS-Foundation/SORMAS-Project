@@ -42,7 +42,7 @@ public class DiseaseClassificationDtoHelper extends AdoDtoHelper<DiseaseClassifi
 	}
 
 	@Override
-	protected Call<List<DiseaseClassificationCriteriaDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<DiseaseClassificationCriteriaDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		return RetroProvider.getClassificationFacade().pullAllSince(since);
 	}
 
@@ -84,4 +84,9 @@ public class DiseaseClassificationDtoHelper extends AdoDtoHelper<DiseaseClassifi
 	public void fillInnerFromAdo(DiseaseClassificationCriteriaDto target, DiseaseClassificationCriteria source) {
 		throw new UnsupportedOperationException("Entity is read-only");
 	}
+
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
+    }
 }

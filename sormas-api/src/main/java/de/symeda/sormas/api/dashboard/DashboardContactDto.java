@@ -44,7 +44,7 @@ public class DashboardContactDto implements Serializable {
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
 	private Disease disease;
-	private Map<VisitStatus, Long> visitStatusMap = new HashMap<>();
+	private Map<VisitStatus, Integer> visitStatusMap = new HashMap<>();
 
 	private DashboardQuarantineDataDto dashboardQuarantineDataDto;
 
@@ -149,11 +149,11 @@ public class DashboardContactDto implements Serializable {
 		this.disease = disease;
 	}
 
-	public Map<VisitStatus, Long> getVisitStatusMap() {
+	public Map<VisitStatus, Integer> getVisitStatusMap() {
 		return visitStatusMap;
 	}
 
-	public void setVisitStatusMap(Map<VisitStatus, Long> visitStatusMap) {
+	public void setVisitStatusMap(Map<VisitStatus, Integer> visitStatusMap) {
 		this.visitStatusMap = visitStatusMap;
 	}
 

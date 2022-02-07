@@ -70,17 +70,14 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.TestDataCreator.RDCF;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 import de.symeda.sormas.backend.user.User;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest {
+public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareContact() throws SormasToSormasException {
-		RDCF rdcf = creator.createRDCF();
-
 		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson();
@@ -133,8 +130,6 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 
 	@Test
 	public void testShareContactWithSamples() throws SormasToSormasException {
-		RDCF rdcf = creator.createRDCF();
-
 		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson();
@@ -197,13 +192,11 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 
 	@Test
 	public void testSaveSharedContact() throws SormasToSormasException, SormasToSormasValidationException {
-		MappableRdcf rdcf = createRDCF(false);
-
-		PersonDto person = createPersonDto(rdcf.centralRdcf);
+		PersonDto person = createPersonDto(rdcf);
 		person.setFirstName("James");
 		person.setLastName("Smith");
 
-		ContactDto contact = createRemoteContactDto(rdcf.centralRdcf, person);
+		ContactDto contact = createRemoteContactDto(rdcf, person);
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
 		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
@@ -215,9 +208,9 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 		ContactDto savedContact = getContactFacade().getContactByUuid(contact.getUuid());
 
 		assertThat(savedContact, is(notNullValue()));
-		assertThat(savedContact.getRegion(), is(rdcf.centralRdcf.region));
-		assertThat(savedContact.getDistrict(), is(rdcf.centralRdcf.district));
-		assertThat(savedContact.getCommunity(), is(rdcf.centralRdcf.community));
+		assertThat(savedContact.getRegion(), is(rdcf.region));
+		assertThat(savedContact.getDistrict(), is(rdcf.district));
+		assertThat(savedContact.getCommunity(), is(rdcf.community));
 		assertThat(savedContact.getEpiData().getExposures().get(0).getAnimalCondition(), is(AnimalCondition.PROCESSED));
 
 		assertThat(savedContact.getSormasToSormasOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ID));
@@ -225,9 +218,9 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 
 		PersonDto savedPerson = getPersonFacade().getPersonByUuid(savedContact.getPerson().getUuid());
 		assertThat(savedPerson, is(notNullValue()));
-		assertThat(savedPerson.getAddress().getRegion(), is(rdcf.centralRdcf.region));
-		assertThat(savedPerson.getAddress().getDistrict(), is(rdcf.centralRdcf.district));
-		assertThat(savedPerson.getAddress().getCommunity(), is(rdcf.centralRdcf.community));
+		assertThat(savedPerson.getAddress().getRegion(), is(rdcf.region));
+		assertThat(savedPerson.getAddress().getDistrict(), is(rdcf.district));
+		assertThat(savedPerson.getAddress().getCommunity(), is(rdcf.community));
 		assertThat(savedPerson.getFirstName(), is("James"));
 		assertThat(savedPerson.getLastName(), is("Smith"));
 
@@ -235,11 +228,10 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 
 	@Test
 	public void testSaveSharedContactWithSamples() throws SormasToSormasException, SormasToSormasValidationException {
-		MappableRdcf rdcf = createRDCF(false);
-		PersonDto person = createPersonDto(rdcf.centralRdcf);
+		PersonDto person = createPersonDto(rdcf);
 
-		ContactDto contact = createRemoteContactDto(rdcf.centralRdcf, person);
-		SormasToSormasSampleDto sample = createRemoteSampleDtoWithTests(rdcf.centralRdcf, null, contact.toReference());
+		ContactDto contact = createRemoteContactDto(rdcf, person);
+		SormasToSormasSampleDto sample = createRemoteSampleDtoWithTests(rdcf, null, contact.toReference());
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
 		shareData.setOriginInfo(createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false));
@@ -253,7 +245,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 		SampleDto savedSample = getSampleFacade().getSampleByUuid(sample.getEntity().getUuid());
 
 		assertThat(savedSample, is(notNullValue()));
-		assertThat(savedSample.getLab(), is(rdcf.centralRdcf.facility));
+		assertThat(savedSample.getLab(), is(rdcf.facility));
 
 		assertThat(getPathogenTestFacade().getAllBySample(savedSample.toReference()), hasSize(1));
 		assertThat(getAdditionalTestFacade().getAllBySample(savedSample.getUuid()), hasSize(1));
@@ -263,8 +255,6 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 
 	@Test
 	public void testReturnContact() throws SormasToSormasException {
-		RDCF rdcf = creator.createRDCF();
-
 		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson();
@@ -314,14 +304,12 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 
 	@Test
 	public void testSaveReturnedContact() throws SormasToSormasException, SormasToSormasValidationException {
-		MappableRdcf rdcf = createRDCF(false);
-
-		UserReferenceDto officer = creator.createUser(rdcf.centralRdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 
 		PersonDto contactPerson = creator.createPerson();
-		ContactDto contact = creator.createContact(officer, contactPerson.toReference());
-		SampleDto sharedSample = creator.createSample(contact.toReference(), officer, rdcf.centralRdcf.facility, null);
-		SampleDto newSample = createRemoteSample(contact.toReference(), officer, rdcf.centralRdcf.facility);
+		ContactDto contact = creator.createContact(rdcf, officer, contactPerson.toReference());
+		SampleDto sharedSample = creator.createSample(contact.toReference(), officer, rdcf.facility, null);
+		SampleDto newSample = createRemoteSample(contact.toReference(), officer, rdcf.facility);
 
 		User officerUser = getUserService().getByReferenceDto(officer);
 		getShareRequestInfoService().persist(
@@ -374,13 +362,11 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 
 	@Test
 	public void testSyncContacts() throws SormasToSormasValidationException, SormasToSormasException {
-		MappableRdcf rdcf = createRDCF(false);
-
-		UserReferenceDto officer = creator.createUser(rdcf.centralRdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
 
 		PersonDto contactPerson = creator.createPerson();
-		ContactDto contact = creator
-			.createContact(officer, officer, contactPerson.toReference(), null, new Date(), new Date(), Disease.CORONAVIRUS, rdcf.centralRdcf, c -> {
+		ContactDto contact =
+			creator.createContact(officer, officer, contactPerson.toReference(), null, new Date(), new Date(), Disease.CORONAVIRUS, rdcf, c -> {
 				SormasToSormasOriginInfoDto originInfo = new SormasToSormasOriginInfoDto();
 				originInfo.setSenderName("Test Name");
 				originInfo.setSenderEmail("test@email.com");

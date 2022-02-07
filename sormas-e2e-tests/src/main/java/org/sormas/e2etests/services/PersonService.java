@@ -22,10 +22,19 @@ import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.util.UUID;
+import org.sormas.e2etests.enums.CommunityValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.GenderValues;
+import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.helpers.strings.ASCIIHelper;
 import org.sormas.e2etests.pojo.web.Person;
 
 public class PersonService {
   private final Faker faker;
+
+  private String firstName;
+  private String lastName;
+  private final String emailDomain = "@PERSON.com";
 
   @Inject
   public PersonService(Faker faker) {
@@ -33,66 +42,54 @@ public class PersonService {
   }
 
   public Person updateExistentPerson(
-      Person person,
-      String firstName,
-      String lastName,
-      String uuid,
-      String passportNumber,
-      String nationalHealthId,
-      String email,
-      String phone) {
+      Person person, String firstName, String lastName, String uuid, String email, String phone) {
     return person.toBuilder()
         .firstName(firstName)
         .lastName(lastName)
         .uuid(uuid)
-        .passportNumber(passportNumber)
-        .nationalHealthId(nationalHealthId)
-        .emailAddress(email)
+        .emailAddress(ASCIIHelper.convertASCIIToLatin(email))
         .phoneNumber(phone)
         .build();
   }
 
   public Person buildGeneratedPerson() {
-    String firstName = faker.name().firstName();
-    String lastName = faker.name().lastName();
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
     return Person.builder()
         .firstName(firstName)
         .lastName(lastName)
         .salutation("Dear Sir")
-        .dateOfBirth(LocalDate.of(1904, 3, 7))
-        .sex("Male")
-        .emailAddress(faker.internet().emailAddress())
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGender())
+        .emailAddress(ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
         .phoneNumber(faker.phoneNumber().phoneNumber())
         .presentConditionOfPerson("Alive")
-        .nationalHealthId(UUID.randomUUID().toString())
-        .passportNumber(String.valueOf(System.currentTimeMillis()))
         .externalId(UUID.randomUUID().toString())
         .externalToken(UUID.randomUUID().toString())
         .typeOfOccupation("Farmer")
         .staffOfArmedForces("Unknown")
-        .education("Primary")
-        .region("Voreingestellte Bundesl\u00E4nder")
-        .district("Voreingestellter Landkreis")
-        .community("Voreingestellte Gemeinde")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .community(CommunityValues.VoreingestellteGemeinde.getName())
         .facilityCategory("Accommodation")
         .facilityType("Campsite")
         .facility("Other facility")
-        .facilityNameAndDescription("Dummy description")
+        .facilityNameAndDescription("Dummy description" + System.currentTimeMillis())
         .street(faker.address().streetAddress())
         .houseNumber(faker.address().buildingNumber())
-        .additionalInformation("Dummy description")
+        .additionalInformation("Dummy description" + System.currentTimeMillis())
         .postalCode(faker.address().zipCode())
         .city(faker.address().cityName())
         .areaType("Urban")
         .contactPersonFirstName(faker.name().firstName())
         .contactPersonLastName(faker.name().lastName())
-        .communityContactPerson(faker.name().firstName() + " " + faker.name().lastName())
         .birthName(firstName + " " + lastName)
-        .nickname(firstName + "pie")
-        .motherMaidenName(faker.name().firstName() + " " + faker.name().lastName())
-        .motherName(faker.name().firstName() + " " + faker.name().lastName())
-        .fatherName(faker.name().firstName() + " " + faker.name().lastName())
-        .nameOfGuardians(faker.name().firstName())
+        .nameOfGuardians(faker.name().firstName() + "Guardian")
         .personContactDetailsTypeOfContactDetails("Other")
         .personContactDetailsContactInformation(faker.funnyName().name())
         .build();

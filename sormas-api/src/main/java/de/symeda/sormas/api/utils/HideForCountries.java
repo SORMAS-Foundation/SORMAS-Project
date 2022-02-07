@@ -8,7 +8,9 @@ import java.lang.annotation.Target;
 import de.symeda.sormas.api.CountryHelper;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Target({
+		ElementType.FIELD,
+		ElementType.METHOD })
 public @interface HideForCountries {
 
 	String[] countries() default {

@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.importer;
 
+import de.symeda.sormas.api.importexport.ImportCellData;
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.BufferedReader;
@@ -708,5 +710,45 @@ public abstract class DataImporter {
 
 	protected Path getErrorReportFolderPath() {
 		return Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
+	}
+
+	/**
+	 * Inserts the entry of a single cell into a related object
+	 */
+	protected void insertColumnEntryIntoRelatedObject(Object currentElement, String entry, String[] entryHeaderPath)
+			throws InvalidColumnException, de.symeda.sormas.api.importexport.ImportErrorException {
+		for (int i = 0; i < entryHeaderPath.length; i++) {
+			String headerPathElementName = entryHeaderPath[i];
+
+			try {
+				if (i != entryHeaderPath.length - 1) {
+					currentElement = new PropertyDescriptor(headerPathElementName, currentElement.getClass()).getReadMethod().invoke(currentElement);
+				} else {
+					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
+					Class<?> propertyType = pd.getPropertyType();
+
+					// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
+					// according to the types of the sample or pathogen test fields
+					if (executeDefaultInvoke(pd, currentElement, entry, entryHeaderPath)) {
+						continue;
+					} else {
+						throw new UnsupportedOperationException(
+								I18nProperties.getValidationError(Validations.importCasesPropertyTypeNotAllowed, propertyType.getName()));
+					}
+				}
+			} catch (IntrospectionException e) {
+				throw new InvalidColumnException(buildEntityProperty(entryHeaderPath));
+			} catch (InvocationTargetException | IllegalAccessException e) {
+				throw new ImportErrorException(
+						I18nProperties.getValidationError(Validations.importErrorInColumn, buildEntityProperty(entryHeaderPath)));
+			} catch (IllegalArgumentException e) {
+				throw new ImportErrorException(entry, buildEntityProperty(entryHeaderPath));
+			} catch (ImportErrorException e) {
+				throw e;
+			} catch (Exception e) {
+				logger.error("Unexpected error when trying to import related object data data for {}: {}", entryHeaderPath, e.getMessage());
+				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importCasesUnexpectedError));
+			}
+		}
 	}
 }

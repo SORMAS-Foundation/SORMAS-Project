@@ -42,8 +42,8 @@ public class ClinicalVisitDtoHelper extends AdoDtoHelper<ClinicalVisit, Clinical
 	}
 
 	@Override
-	protected Call<List<ClinicalVisitDto>> pullAllSince(long since) throws NoConnectionException {
-		return RetroProvider.getClinicalVisitFacade().pullAllSince(since);
+	protected Call<List<ClinicalVisitDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+		return RetroProvider.getClinicalVisitFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
 	@Override
@@ -90,5 +90,10 @@ public class ClinicalVisitDtoHelper extends AdoDtoHelper<ClinicalVisit, Clinical
 		target.setVisitingPerson(source.getVisitingPerson());
 
 		target.setPseudonymized(source.isPseudonymized());
+	}
+
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return ClinicalVisitDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
 	}
 }

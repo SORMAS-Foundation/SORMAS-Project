@@ -13,6 +13,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -28,6 +29,7 @@ import de.symeda.sormas.ui.travelentry.components.TravelEntryCreateForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
@@ -81,9 +83,14 @@ public class TravelEntryController {
 			if (!createForm.getFieldGroup().isModified()) {
 
 				final TravelEntryDto dto = createForm.getValue();
-				final PersonDto person = createForm.getPerson();
+
+				PersonDto searchedPerson = createForm.getSearchedPerson();
+				if (searchedPerson != null) {
+					dto.setPerson(searchedPerson.toReference());
+				}
 
 				if (dto.getPerson() == null) {
+					final PersonDto person = createForm.getPerson();
 					ControllerProvider.getPersonController()
 						.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
 							if (selectedPerson != null) {
@@ -110,6 +117,7 @@ public class TravelEntryController {
 	public CommitDiscardWrapperComponent<TravelEntryDataForm> getTravelEntryDataEditComponent(String travelEntryUuid) {
 
 		TravelEntryDto travelEntry = findTravelEntry(travelEntryUuid);
+		AutomaticDeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getTravelEntryFacade().getAutomaticDeletionInfo(travelEntryUuid);
 
 		TravelEntryDataForm travelEntryEditForm = new TravelEntryDataForm(travelEntryUuid, travelEntry.isPseudonymized());
 		travelEntryEditForm.setValue(travelEntry);
@@ -119,6 +127,10 @@ public class TravelEntryController {
 			UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_EDIT),
 			travelEntryEditForm.getFieldGroup());
 
+		if (automaticDeletionInfoDto != null) {
+			editComponent.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
+		}
+
 		editComponent.addCommitListener(() -> {
 			if (!travelEntryEditForm.getFieldGroup().isModified()) {
 				TravelEntryDto travelEntryDto = travelEntryEditForm.getValue();
@@ -127,6 +139,8 @@ public class TravelEntryController {
 				SormasUI.refreshView();
 			}
 		});
+
+		editComponent.addDiscardListener(() -> travelEntryEditForm.onDiscard());
 
 		// Initialize 'Delete' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)) {

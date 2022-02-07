@@ -61,6 +61,14 @@ public class EditEventPage {
       By.xpath("//*[contains(text(),'Group id')]/../following-sibling::input[1]");
   public static final By NEW_GROUP_EVENT_CREATED_MESSAGE =
       By.xpath("//*[contains(text(),'New event group created')]");
+  public static final By CREATE_DOCUMENT_BUTTON = By.cssSelector("[id='Create']");
+  public static final By EVENT_HANDOUT_COMBOBOX =
+      By.cssSelector(".popupContent div[role='combobox'] div");
+  public static final By EVENT_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
+  public static final By CREATE_EVENT_HANDOUT_BUTTON =
+      By.cssSelector(".popupContent [id='Create']");
+  public static final By CANCEL_EVENT_HANDOUT_BUTTON =
+      By.cssSelector(".popupContent [id='Cancel']");
 
   public static By getGroupEventName(String groupEventName) {
     return By.xpath("//*[contains(text(),'" + groupEventName + "')]");

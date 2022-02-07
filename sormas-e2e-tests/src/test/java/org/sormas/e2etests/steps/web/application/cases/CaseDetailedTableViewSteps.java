@@ -14,9 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.WebElement;
-import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.enums.CaseOutcome;
 import org.sormas.e2etests.enums.ContactOutcome;
 import org.sormas.e2etests.enums.DiseasesValues;
@@ -26,6 +24,7 @@ import org.sormas.e2etests.enums.TestDataUser;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.asserts.SoftAssert;
 
 @Slf4j
 public class CaseDetailedTableViewSteps implements En {
@@ -38,8 +37,7 @@ public class CaseDetailedTableViewSteps implements En {
       WebDriverHelpers webDriverHelpers,
       BaseSteps baseSteps,
       ApiState apiState,
-      DataOperations dataOperations,
-      SoftAssertions softly) {
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
 
@@ -48,101 +46,99 @@ public class CaseDetailedTableViewSteps implements En {
         () -> {
           List<Map<String, String>> tableRowsData = getTableRowsData();
           Map<String, String> detailedCaseDTableRow = tableRowsData.get(0);
-          softly
-              .assertThat(detailedCaseDTableRow.size())
-              .isEqualTo(41)
-              .withFailMessage("Detailed view table wasn't correctly displayed");
-          softly
-              .assertThat(
-                  detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.CASE_ID.toString()))
-              .containsIgnoringCase(
-                  dataOperations.getPartialUuidFromAssociatedLink(
-                      apiState.getCreatedCase().getUuid()));
-          softly
-              .assertThat(
-                  detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.DISEASE.toString()))
-              .containsIgnoringCase(DiseasesValues.CORONAVIRUS.getDiseaseCaption());
-          softly
-              .assertThat(
-                  detailedCaseDTableRow.get(
-                      CaseDetailedTableViewHeaders.CASE_CLASSIFICATION.toString()))
-              .containsIgnoringCase(CaseOutcome.NOT_YET_CLASSIFIED.getName());
-          softly
-              .assertThat(
-                  detailedCaseDTableRow.get(
-                      CaseDetailedTableViewHeaders.OUTCOME_OF_CASE.toString()))
-              .containsIgnoringCase(CaseOutcome.NO_OUTCOME.getName());
-          softly
-              .assertThat(
-                  detailedCaseDTableRow.get(
-                      CaseDetailedTableViewHeaders.INVESTIGATION_STATUS.toString()))
-              .containsIgnoringCase(apiState.getCreatedCase().getInvestigationStatus());
-          softly
-              .assertThat(
-                  detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.FIRST_NAME.toString()))
-              .containsIgnoringCase(apiState.getLastCreatedPerson().getFirstName());
-          softly
-              .assertThat(
-                  detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.LAST_NAME.toString()))
-              .containsIgnoringCase(apiState.getLastCreatedPerson().getLastName());
-          softly
-              .assertThat(
-                  detailedCaseDTableRow.get(
-                      CaseDetailedTableViewHeaders.NUMBER_OF_EVENTS.toString()))
-              .containsIgnoringCase("0");
-          softly
-              .assertThat(
-                  detailedCaseDTableRow.get(
-                      CaseDetailedTableViewHeaders.RESPONSIBLE_REGION.toString()))
-              .containsIgnoringCase(RegionsValues.VoreingestellteBundeslander.getName());
-          softly
-              .assertThat(
-                  detailedCaseDTableRow.get(
-                      CaseDetailedTableViewHeaders.RESPONSIBLE_DISTRICT.toString()))
-              .containsIgnoringCase(DistrictsValues.VoreingestellterLandkreis.getName());
-          softly
-              .assertThat(
-                  detailedCaseDTableRow.get(
-                      CaseDetailedTableViewHeaders.HEALTH_FACILITY.toString()))
-              .containsIgnoringCase("Standard Einrichtung - Details");
-          softly
-              .assertThat(
-                  detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.DATE_OF_REPORT.toString()))
-              .containsIgnoringCase(
-                  getDateOfReportDateTime(apiState.getCreatedCase().getReportDate().toString())
-                      .replace(
-                          "/0",
-                          "/")); // fix for dates between 1-10 where 0 is missing in front of them
-          softly
-              .assertThat(
-                  detailedCaseDTableRow.get(
-                      CaseDetailedTableViewHeaders.FOLLOW_UP_STATUS.toString()))
-              .containsIgnoringCase(ContactOutcome.FOLLOW_UP.getOutcome());
-          softly
-              .assertThat(
-                  detailedCaseDTableRow.get(
-                      CaseDetailedTableViewHeaders.FOLLOW_UP_UNTIL.toString()))
-              .containsIgnoringCase(
-                  getFollowUpUntilCaseDate(
-                      getDateOfReportDateTime(
-                          apiState.getCreatedCase().getReportDate().toString())));
-          softly
-              .assertThat(
-                  detailedCaseDTableRow.get(
-                      CaseDetailedTableViewHeaders.NUMBER_OF_VISITS.toString()))
-              .containsIgnoringCase("0 (0 missed)");
+          softly.assertEquals(
+              detailedCaseDTableRow.size(), 41, "Case table rows count is not correct");
+
+          softly.assertTrue(
+              detailedCaseDTableRow
+                  .get(CaseDetailedTableViewHeaders.DISEASE.toString())
+                  .contains(DiseasesValues.CORONAVIRUS.getDiseaseCaption()),
+              "Disease is not correct");
+
+          softly.assertTrue(
+              detailedCaseDTableRow
+                  .get(CaseDetailedTableViewHeaders.CASE_CLASSIFICATION.toString())
+                  .contains(CaseOutcome.NOT_YET_CLASSIFIED.getName()),
+              "Case Classification is not correct");
+
+          softly.assertTrue(
+              detailedCaseDTableRow
+                  .get(CaseDetailedTableViewHeaders.OUTCOME_OF_CASE.toString())
+                  .contains(CaseOutcome.NO_OUTCOME.getName()),
+              "Outcome is not correct");
+          softly.assertTrue(
+              detailedCaseDTableRow
+                  .get(CaseDetailedTableViewHeaders.INVESTIGATION_STATUS.toString())
+                  .contains(apiState.getCreatedCase().getInvestigationStatus().toLowerCase()),
+              "Investigation status is not correct");
+          softly.assertTrue(
+              detailedCaseDTableRow
+                  .get(CaseDetailedTableViewHeaders.FIRST_NAME.toString())
+                  .contains(apiState.getLastCreatedPerson().getFirstName()),
+              "First Name is not correct");
+          softly.assertTrue(
+              detailedCaseDTableRow
+                  .get(CaseDetailedTableViewHeaders.LAST_NAME.toString())
+                  .contains(apiState.getLastCreatedPerson().getLastName()),
+              "Last name is not correct");
+          softly.assertTrue(
+              detailedCaseDTableRow
+                  .get(CaseDetailedTableViewHeaders.NUMBER_OF_EVENTS.toString())
+                  .contains("0"),
+              "Number of events is not correctly displayed");
+          softly.assertTrue(
+              detailedCaseDTableRow
+                  .get(CaseDetailedTableViewHeaders.RESPONSIBLE_REGION.toString())
+                  .contains(RegionsValues.VoreingestellteBundeslander.getName()),
+              "Responsible region is not correct");
+          softly.assertTrue(
+              detailedCaseDTableRow
+                  .get(CaseDetailedTableViewHeaders.RESPONSIBLE_DISTRICT.toString())
+                  .contains(DistrictsValues.VoreingestellterLandkreis.getName()),
+              "Responsible district is not correct");
+          softly.assertEquals(
+              detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.HEALTH_FACILITY.toString()),
+              "Standard Einrichtung - Details",
+              "Health facility is not correct");
+          softly.assertTrue(
+              detailedCaseDTableRow
+                  .get(CaseDetailedTableViewHeaders.DATE_OF_REPORT.toString())
+                  .contains(
+                      getDateOfReportDateTime(apiState.getCreatedCase().getReportDate().toString())
+                          .replace("/0", "/")),
+              "Date of report is not correct. Found: "
+                  + detailedCaseDTableRow.get(
+                      CaseDetailedTableViewHeaders.DATE_OF_REPORT.toString()
+                          + " and expecting to contain: "
+                          + getDateOfReportDateTime(
+                                  apiState.getCreatedCase().getReportDate().toString())
+                              .replace("/0", "/")));
+          softly.assertTrue(
+              detailedCaseDTableRow
+                  .get(CaseDetailedTableViewHeaders.FOLLOW_UP_STATUS.toString())
+                  .contains(ContactOutcome.FOLLOW_UP.getOutcome()),
+              "Follow up status is not correct");
+          softly.assertEquals(
+              detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.FOLLOW_UP_UNTIL.toString()),
+              getFollowUpUntilCaseDate(
+                  getDateOfReportDateTime(apiState.getCreatedCase().getReportDate().toString())),
+              "Follow up until message is not correct");
+          softly.assertEquals(
+              detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.NUMBER_OF_VISITS.toString()),
+              "0 (0 missed)",
+              "Number of visits is not correctly displayed");
           String completenessValue =
               detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.COMPLETENESS.toString());
           if (!completenessValue.equalsIgnoreCase("-")) {
-            softly
-                .assertThat(
-                    detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.COMPLETENESS.toString()))
-                .containsIgnoringCase("10 %");
+            softly.assertEquals(
+                detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.COMPLETENESS.toString()),
+                "10 %",
+                "Completeness is not correctly displayed");
           }
-          softly
-              .assertThat(
-                  detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.REPORTING_USER.toString()))
-              .containsIgnoringCase(TestDataUser.REST_AUTOMATION.getUserRole());
+          softly.assertEquals(
+              detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.REPORTING_USER.toString()),
+              TestDataUser.REST_AUTOMATION.getUserRole(),
+              "Reporting user is not correct");
           softly.assertAll();
         });
   }
@@ -200,7 +196,7 @@ public class CaseDetailedTableViewSteps implements En {
   <parameter> dateTimeString: represents the date time value read from Case created through API <parameter>
   */
 
-  public String getDateOfReportDateTime(String dateTimeString) {
+  private String getDateOfReportDateTime(String dateTimeString) {
     SimpleDateFormat outputFormat = new SimpleDateFormat("M/dd/yyyy h:mm a");
     // because API request is sending local GMT and UI displays GMT+2 (server GMT)
     outputFormat.setTimeZone(TimeZone.getTimeZone("GMT+1"));
@@ -217,7 +213,7 @@ public class CaseDetailedTableViewSteps implements En {
     return outputFormat.format(parsedDate);
   }
 
-  public String getFollowUpUntilCaseDate(String dateOfReportDateDateTime) {
+  private String getFollowUpUntilCaseDate(String dateOfReportDateDateTime) {
     SimpleDateFormat outputFormat = new SimpleDateFormat("M/dd/yyyy");
     DateFormat inputFormat = new SimpleDateFormat("MM/dd/yyyy h:mm a");
     ZoneId defaultZoneId = ZoneId.systemDefault();

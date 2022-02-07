@@ -20,10 +20,12 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
@@ -35,7 +37,8 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
 @LocalBean
-public class SampleShareDataBuilder implements ShareDataBuilder<SampleDto, Sample, SormasToSormasSampleDto, Void> {
+public class SampleShareDataBuilder
+	extends ShareDataBuilder<SampleDto, Sample, SormasToSormasSampleDto, PreviewNotImplementedDto, SormasToSormasSampleDtoValidator> {
 
 	@EJB
 	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
@@ -46,8 +49,16 @@ public class SampleShareDataBuilder implements ShareDataBuilder<SampleDto, Sampl
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
 
+	@Inject
+	public SampleShareDataBuilder(SormasToSormasSampleDtoValidator validator) {
+		super(validator);
+	}
+
+	public SampleShareDataBuilder() {
+	}
+
 	@Override
-	public SormasToSormasSampleDto buildShareData(Sample data, ShareRequestInfo requestInfo) {
+	protected SormasToSormasSampleDto doBuildShareData(Sample data, ShareRequestInfo requestInfo) {
 		Pseudonymizer pseudonymizer =
 			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 
@@ -63,7 +74,7 @@ public class SampleShareDataBuilder implements ShareDataBuilder<SampleDto, Sampl
 	}
 
 	@Override
-	public Void buildShareDataPreview(Sample data, ShareRequestInfo requestInfo) {
+	public PreviewNotImplementedDto doBuildShareDataPreview(Sample data, ShareRequestInfo requestInfo) {
 		throw new RuntimeException("Samples preview not yet implemented");
 	}
 }

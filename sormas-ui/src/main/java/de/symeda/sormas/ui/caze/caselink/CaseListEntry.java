@@ -1,17 +1,13 @@
 package de.symeda.sormas.ui.caze.caselink;
 
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
@@ -20,7 +16,6 @@ public class CaseListEntry extends SideComponentField {
 
 	public static final String SEPARATOR = ": ";
 	private final CaseListEntryDto caseListEntryDto;
-	private Button editButton;
 
 	public CaseListEntry(CaseListEntryDto caseListEntryDto) {
 		this.caseListEntryDto = caseListEntryDto;
@@ -63,24 +58,6 @@ public class CaseListEntry extends SideComponentField {
 		diseaseClassificationLayout.setComponentAlignment(classificationLabel, Alignment.MIDDLE_RIGHT);
 		addComponentToField(diseaseClassificationLayout);
 
-	}
-
-	public void addEditListener(int rowIndex, Button.ClickListener editClickListener) {
-		if (editButton == null) {
-			editButton = ButtonHelper.createIconButtonWithCaption(
-				"edit-participant-" + rowIndex,
-				null,
-				VaadinIcons.PENCIL,
-				null,
-				ValoTheme.BUTTON_LINK,
-				CssStyles.BUTTON_COMPACT);
-
-			addComponent(editButton);
-			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);
-			setExpandRatio(editButton, 0);
-		}
-
-		editButton.addClickListener(editClickListener);
 	}
 
 	public CaseListEntryDto getCaseListEntryDto() {

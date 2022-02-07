@@ -1,10 +1,6 @@
 package de.symeda.sormas.app.backend.feature;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
@@ -12,7 +8,11 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
-import android.util.Log;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -93,7 +93,13 @@ public class FeatureConfigurationDao extends AbstractAdoDao<FeatureConfiguration
 			where.eq(FeatureConfiguration.FEATURE_TYPE, featureType);
 			builder.selectColumns(FeatureConfiguration.PROPERTIES);
 
-			propertyObjectMap = ((FeatureConfiguration) builder.queryForFirst()).getPropertiesMap();
+			FeatureConfiguration featureConfiguration = (FeatureConfiguration) builder.queryForFirst();
+
+			if (featureConfiguration != null && featureConfiguration.getPropertiesJson() != null) {
+				propertyObjectMap = featureConfiguration.getPropertiesMap();
+			} else {
+				return featureType.getSupportedPropertyDefaults().get(property) == Boolean.TRUE;
+			}
 
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform isPropertyValueTrue");

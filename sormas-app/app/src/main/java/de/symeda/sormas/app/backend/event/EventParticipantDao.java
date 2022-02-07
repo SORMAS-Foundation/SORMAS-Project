@@ -47,7 +47,6 @@ public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
 	public EventParticipant build() {
 
 		EventParticipant eventParticipant = super.build();
-
 		eventParticipant.setReportingUser(ConfigProvider.getUser());
 
 		return eventParticipant;

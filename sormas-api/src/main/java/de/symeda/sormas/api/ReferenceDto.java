@@ -30,6 +30,7 @@ import de.symeda.sormas.api.utils.Required;
 public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<ReferenceDto> {
 
 	public static final String CAPTION = "caption";
+	public static final String NO_REFERENCE_UUID = "SORMAS-CONSTID-NO-REFERENCE";
 
 	@Required
 	@Pattern(regexp = UUID_REGEX, message = Validations.uuidPatternNotMatching)

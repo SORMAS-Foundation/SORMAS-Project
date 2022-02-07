@@ -1,16 +1,20 @@
 package de.symeda.sormas.backend.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.Map;
 
 import org.junit.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.ReinfectionDetail;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
@@ -24,6 +28,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class DtoHelperTest extends AbstractBeanTest {
@@ -184,6 +189,43 @@ public class DtoHelperTest extends AbstractBeanTest {
 			SampleDto targetDto = SampleDto.build(user.toReference(), targetCaseDto.toReference());
 			DtoHelper.copyDtoValues(targetDto, sourceDto, false);
 			assertEquals(2, targetDto.getRequestedPathogenTests().size());
+		}
+
+		// test map
+		{
+			TestDataCreator.RDCF caseRdcf = creator.createRDCF();
+
+			Map<ReinfectionDetail, Boolean> map1 = new EnumMap<>(ReinfectionDetail.class);
+			map1.put(ReinfectionDetail.GENOME_SEQUENCE_CURRENT_INFECTION_KNOWN, true);
+			map1.put(ReinfectionDetail.PREVIOUS_ASYMPTOMATIC_INFECTION, true);
+			map1.put(ReinfectionDetail.LAST_PCR_DETECTION_NOT_RECENT, false);
+
+			PersonDto person = creator.createPerson();
+			CaseDataDto sourceCase = creator.createCase(user.toReference(), person.toReference(), caseRdcf);
+			CaseDataDto targetCase = creator.createCase(user.toReference(), person.toReference(), caseRdcf);
+
+			// Map must not be persisted because H2 can't map it to JSON
+			sourceCase.setReinfectionDetails(map1);
+
+			DtoHelper.copyDtoValues(targetCase, sourceCase, false);
+			assertEquals(3, targetCase.getReinfectionDetails().size());
+
+			sourceCase.getReinfectionDetails().put(ReinfectionDetail.PREVIOUS_ASYMPTOMATIC_INFECTION, false);
+			sourceCase.getReinfectionDetails().put(ReinfectionDetail.TESTED_NEGATIVE_AFTER_PREVIOUS_INFECTION, true);
+
+			DtoHelper.copyDtoValues(targetCase, sourceCase, false);
+			assertEquals(4, targetCase.getReinfectionDetails().size());
+			assertTrue(targetCase.getReinfectionDetails().get(ReinfectionDetail.PREVIOUS_ASYMPTOMATIC_INFECTION));
+
+			DtoHelper.copyDtoValues(targetCase, sourceCase, true);
+			assertEquals(4, targetCase.getReinfectionDetails().size());
+			assertFalse(targetCase.getReinfectionDetails().get(ReinfectionDetail.PREVIOUS_ASYMPTOMATIC_INFECTION));
+
+			sourceCase.setReinfectionDetails(null);
+			DtoHelper.copyDtoValues(targetCase, sourceCase, false);
+			assertEquals(4, targetCase.getReinfectionDetails().size());
+			DtoHelper.copyDtoValues(targetCase, sourceCase, true);
+			assertEquals(4, targetCase.getReinfectionDetails().size());
 		}
 	}
 }

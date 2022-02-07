@@ -23,10 +23,16 @@ import static org.sormas.e2etests.enums.DiseasesValues.getRandomDiseaseCaption;
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.GenderValues;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.pojo.web.ContactsLineListing;
 
 public class ContactsLineListingService {
   private final Faker faker;
+
+  private String firstName;
+  private String lastName;
 
   @Inject
   public ContactsLineListingService(Faker faker) {
@@ -34,37 +40,23 @@ public class ContactsLineListingService {
   }
 
   public ContactsLineListing buildGeneratedLineListingContacts() {
-    long currentTimeMillis = System.currentTimeMillis();
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
     return ContactsLineListing.builder()
         .disease(getRandomDiseaseCaption())
-        .region("Voreingestellte")
-        .district("Voreingestellter Landkreis")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
         .dateOfReport(LocalDate.now().minusDays(5))
         .dateOfLastContact(LocalDate.now().minusDays(8))
         .typeOfContact("Was in same room or house with source case")
         .relationshipWithCase("Live in the same household")
-        .firstName(faker.name().firstName())
-        .lastName(faker.name().lastName())
-        .birthYear("1991")
+        .firstName(firstName)
+        .lastName(lastName)
+        .birthYear(String.valueOf(faker.number().numberBetween(1900, 2008)))
         .birthMonth("May")
-        .birthDay("15")
-        .sex("Male")
-        .build();
-  }
-
-  public ContactsLineListing buildGeneratedSecondLine() {
-    long currentTimeMillis = System.currentTimeMillis();
-    return ContactsLineListing.builder()
-        .dateOfReport(LocalDate.now().minusDays(6))
-        .dateOfLastContact(LocalDate.now().minusDays(9))
-        .typeOfContact("Airplane, sitting up to two rows in front or behind the source case ")
-        .relationshipWithCase("Work in the same environment")
-        .firstName(faker.name().firstName())
-        .lastName(faker.name().lastName())
-        .birthYear("1992")
-        .birthMonth("April")
-        .birthDay("25")
-        .sex("Female")
+        .birthDay(String.valueOf(faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGender())
         .build();
   }
 }

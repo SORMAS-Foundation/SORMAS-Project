@@ -183,7 +183,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 329;
+	public static final int DATABASE_VERSION = 331;
 
 	private static DatabaseHelper instance = null;
 
@@ -2923,6 +2923,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						+ "modified, snapshot, uuid, validFrom, validUntil, facilityType, healthFacility_id, healthFacilityDetails FROM tmp_immunization;");
 				getDao(Immunization.class).executeRaw("DROP TABLE tmp_immunization");
 
+			case 329:
+				currentVersion = 329;
+
+				if (columnDoesNotExist("vaccination", "snapshot")) {
+					getDao(Vaccination.class).executeRaw("ALTER TABLE vaccination ADD COLUMN snapshot SMALLINT DEFAULT 0;");
+				}
+
+			case 330:
+				currentVersion = 330;
+				getDao(EventParticipant.class).executeRaw(
+					"UPDATE eventParticipants SET reportingUser_id = (SELECT reportingUser_id FROM events WHERE events.id = eventParticipants.event_id) WHERE reportingUser_id IS NULL;");
+
 				// ATTENTION: break should only be done after last version
 				break;
 
@@ -3028,8 +3040,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			}
 		}
 
-		// Retrieve the latest case of each person for each disease
-		Comparator<Object[]> comparator = (c1, c2) -> new Date((Long) c1[9]).compareTo(new Date((Long) c2[9]));
+		// Retrieve earlier cases of each person for each disease
+		Comparator<Object[]> comparator = Comparator.comparing(c -> new Date((Long) c[9]));
 		List<Object[]> filteredCaseInfo = new ArrayList<>();
 		Map<Disease, List<Object[]>> caseInfoByDisease = caseInfoList.stream().collect(Collectors.groupingBy(c -> Disease.valueOf((String) c[2])));
 		caseInfoByDisease.keySet().forEach(d -> {
@@ -3046,18 +3058,73 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							r -> new ArrayList<>(r.values()))));
 		});
 
-		// Replace vaccination date with the first vaccination date of the earliest entity with vaccination info
 		filteredCaseInfo.forEach(objects -> {
+			// Retrieve all cases of the case person with the respective disease
+			final Object caseId = objects[0];
+			final Object personId = objects[1];
+			final List<Object[]> objectList = caseInfoByDisease.get(Disease.valueOf((String) objects[2]))
+				.stream()
+				.filter(
+					c -> ((BigInteger) c[0]).intValue() != ((BigInteger) caseId).intValue()
+						&& ((BigInteger) c[1]).intValue() == ((BigInteger) personId).intValue())
+				.collect(Collectors.toList());
+
+			// set earliest report date
+			Comparator<Object[]> reportDateComparator = Comparator.comparing(c -> new Date((Long) c[4]));
+			objectList.stream().min(reportDateComparator).ifPresent(earliestObject -> {
+				objects[4] = earliestObject[4];
+			});
+			// set earliest first vaccination date
 			if (objects[10] == null) {
-				caseInfoByDisease.get(Disease.valueOf((String) objects[2]))
-					.stream()
-					.sorted(comparator.reversed())
-					.findFirst()
-					.ifPresent(earliestObject -> {
-						if (earliestObject[12] != null && objects[12] != null && (int) earliestObject[12] <= (int) objects[12]) {
-							objects[10] = earliestObject[10] == null ? earliestObject[4] : earliestObject[10];
-						}
-					});
+				Comparator<Object[]> firstVacDateComparator = Comparator.comparing(c -> new Date((Long) c[10]));
+				objectList.stream().filter(c -> c[10] != null).max(firstVacDateComparator).ifPresent(earliestObject -> {
+					objects[10] = earliestObject[10];
+				});
+			}
+			// set latest last vaccination date
+			if (objects[11] == null) {
+				Comparator<Object[]> lastVacDateComparator = Comparator.comparing(c -> new Date((Long) c[11]));
+				objectList.stream().filter(c -> c[11] != null).min(lastVacDateComparator).ifPresent(earliestObject -> {
+					objects[11] = earliestObject[11];
+				});
+			}
+			// set latest available vaccine name
+			if (objects[13] == null) {
+				objectList.stream().filter(c -> c[13] != null).min(comparator).ifPresent(latestObject -> {
+					objects[13] = latestObject[13];
+					objects[14] = latestObject[14];
+				});
+			}
+			// set latest available vaccine
+			if (objects[15] == null) {
+				objectList.stream().filter(c -> c[15] != null).min(comparator).ifPresent(latestObject -> objects[15] = latestObject[15]);
+			}
+			// set latest available vaccine manufacturer
+			if (objects[16] == null) {
+				objectList.stream().filter(c -> c[16] != null).min(comparator).ifPresent(latestObject -> {
+					objects[16] = latestObject[16];
+					objects[17] = latestObject[17];
+				});
+			}
+			// set latest available vaccination info source
+			if (objects[18] == null) {
+				objectList.stream().filter(c -> c[18] != null).min(comparator).ifPresent(latestObject -> objects[18] = latestObject[18]);
+			}
+			// set latest available INN
+			if (objects[19] == null) {
+				objectList.stream().filter(c -> c[19] != null).min(comparator).ifPresent(latestObject -> objects[19] = latestObject[19]);
+			}
+			// set latest available batch number
+			if (objects[20] == null) {
+				objectList.stream().filter(c -> c[20] != null).min(comparator).ifPresent(latestObject -> objects[20] = latestObject[20]);
+			}
+			// set latest available UNII code
+			if (objects[21] == null) {
+				objectList.stream().filter(c -> c[21] != null).min(comparator).ifPresent(latestObject -> objects[21] = latestObject[21]);
+			}
+			// set latest available ATC code
+			if (objects[22] == null) {
+				objectList.stream().filter(c -> c[22] != null).min(comparator).ifPresent(latestObject -> objects[22] = latestObject[22]);
 			}
 		});
 
@@ -3113,11 +3180,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			? (caseInfo[13].equals("ASTRA_ZENECA_COMIRNATY")
 				? Vaccine.COMIRNATY
 				: (caseInfo[13].equals("ASTRA_ZENECA_MRNA_1273")) ? Vaccine.MRNA_1273 : Vaccine.valueOf((String) caseInfo[13]))
-			: Vaccine.OTHER;
-		String otherVaccineName = vaccineName == Vaccine.OTHER ? (String) caseInfo[14] : (String) caseInfo[15];
+			: (caseInfo[15] != null ? Vaccine.OTHER : null);
+		String otherVaccineName = vaccineName == Vaccine.OTHER && caseInfo[15] == null ? (String) caseInfo[14] : (String) caseInfo[15];
 		VaccineManufacturer vaccineManufacturer = "ASTRA_ZENECA_COMIRNATY".equals(caseInfo[13])
 			? VaccineManufacturer.BIONTECH_PFIZER
-			: ("ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13])) ? VaccineManufacturer.MODERNA : VaccineManufacturer.valueOf((String) caseInfo[16]);
+			: ("ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13]))
+				? VaccineManufacturer.MODERNA
+				: (caseInfo[16] != null ? VaccineManufacturer.valueOf((String) caseInfo[16]) : null);
 		insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, vaccinationDate);
 	}
 

@@ -41,6 +41,8 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -8368155805122562791L;
 
+	public static final String TABLE_NAME = "sormastosormasshareinfo";
+
 	public static final String CAZE = "caze";
 	public static final String CONTACT = "contact";
 	public static final String SAMPLE = "sample";

@@ -138,7 +138,7 @@
     <string name="caption_case_tasks">Fall Aufgaben</string>
     <string name="caption_case_events">Fallereignisse</string>
     <string name="caption_case_immunizations">Fall Immunisierungen</string>
-    <string name="caption_case_vaccinations">Case Vaccinations</string>
+    <string name="caption_case_vaccinations">Fall-Impfungen</string>
     <string name="caption_case_treatments">Behandlungen</string>
     <string name="caption_case_similarity_create">Neuen Fall erstellen</string>
     <string name="caption_changed_data_lost">Geänderte Daten beim erneuten Synchronisieren verloren.</string>
@@ -155,7 +155,7 @@
     <string name="caption_contact_epidemiological_data">Epidemiologische Info</string>
     <string name="caption_contact_visits">Follow-Up/Nachverfolgung Informationen</string>
     <string name="caption_contact_immunizations">Kontakt Immunisierungen</string>
-    <string name="caption_contact_vaccinations">Contact Vaccinations</string>
+    <string name="caption_contact_vaccinations">Kontakt-Impfungen</string>
     <string name="caption_converted_to_case">In Fall konvertiert</string>
     <string name="caption_date_of_birth">Geburtsdatum (Jahr / Monat / Tag)</string>
     <string name="caption_date_of_sampling">Datum der Probenentnahme</string>
@@ -169,7 +169,7 @@
     <string name="caption_event_information">Ereignisinformation</string>
     <string name="caption_event_participants">Beteiligte Personen</string>
     <string name="caption_event_participant_immunizations">Ereignisteilnehmer Immunisierungen</string>
-    <string name="caption_event_participant_vaccinations">Event participant Vaccinations</string>
+    <string name="caption_event_participant_vaccinations">Ereignisteilnehmer-Impfungen</string>
     <string name="caption_event_tasks">Ereignis-Aufgaben</string>
     <string name="caption_executed_by">Ausgeführt von</string>
     <string name="caption_facility_or_home">Aufenthaltsort</string>
@@ -646,6 +646,6 @@
     <string name="caption_facility_type_group">Kategorie der Einrichtung</string>
     <string name="caption_facility_type">Art der Einrichtung</string>
     <string name="value_vaccine_date_unknown">Impfdatum N/A</string>
-    <string name="value_vaccine_name_unknown">Vaccine N/A</string>
-    <string name="value_vaccine_manufacturer_unknown">Manufacturer N/A</string>
+    <string name="value_vaccine_name_unknown">Impfstoff N/A</string>
+    <string name="value_vaccine_manufacturer_unknown">Hersteller N/A</string>
 </resources>

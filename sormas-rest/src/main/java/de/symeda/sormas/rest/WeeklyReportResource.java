@@ -48,6 +48,16 @@ public class WeeklyReportResource extends EntityDtoResource {
 		return FacadeProvider.getWeeklyReportFacade().getAllWeeklyReportsAfter(new Date(since));
 	}
 
+	@GET
+	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
+	public List<WeeklyReportDto> getAllWeeklyReports(
+		@Context SecurityContext sc,
+		@PathParam("since") long since,
+		@PathParam("size") int size,
+		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		return FacadeProvider.getWeeklyReportFacade().getAllWeeklyReportsAfter(new Date(since), size, lastSynchronizedUuid);
+	}
+
 	@POST
 	@Path("/query")
 	public List<WeeklyReportDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {

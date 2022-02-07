@@ -386,9 +386,10 @@ public class InfrastructureFieldsDependencyHandler {
 					facilityDetailsField.setVisibility(GONE);
 				} else if (TypeOfPlace.HOME.equals(selectedType)) {
 					typeGroupField.setSpinnerData(null);
+					typeField.setSpinnerData(null);
 					Facility noneFacility = DatabaseHelper.getFacilityDao().queryUuid(FacilityDto.NONE_FACILITY_UUID);
-					facilityField.setSpinnerData(DataUtils.toItems(Arrays.asList(noneFacility)));
-					facilityField.setValue(noneFacility);
+					facilityField.setSpinnerData(DataUtils.toItems(Arrays.asList(noneFacility)), noneFacility);
+					facilityDetailsField.setValue(null);
 					if (caze != null) {
 						caze.setHealthFacility(noneFacility);
 						caze.setFacilityType(null);

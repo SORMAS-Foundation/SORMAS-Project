@@ -30,7 +30,7 @@ public class VaccinationReducedListAdapter extends BindingPagedListAdapter<Vacci
 			pageHolder.setOnListItemClickListener(this.mOnListItemClickListener);
 
 			Date vaccinationDate = pageHolder.binding.getData().getVaccinationDate();
-			pageHolder.binding.setVariable(BR.fontColorGrey, vaccinationDate != null && vaccinationGrayoutDate.before(vaccinationDate));
+			pageHolder.binding.setVariable(BR.fontColorGrey, vaccinationDate == null || vaccinationGrayoutDate.before(vaccinationDate));
 		}
 	}
 }

@@ -9,13 +9,18 @@ import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonDto;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryResult;
 import de.symeda.sormas.api.person.PersonDto;
-
+import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 
 @Stateless(name = "ExternalJournalFacade")
 public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 
 	@EJB
 	private ExternalJournalService externalJournalService;
+	@EJB
+	private PatientDiaryClient patientDiaryClient;
+	@EJB
+	private PersonFacadeEjbLocal personFacade;
 
 	@Override
 	public String getSymptomJournalAuthToken() {
@@ -23,13 +28,13 @@ public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 	}
 
 	@Override
-	public String getPatientDiaryAuthToken() {
-		return externalJournalService.getPatientDiaryAuthToken();
+	public String getPatientDiaryAuthToken(boolean frontendRequest) {
+		return patientDiaryClient.getPatientDiaryAuthToken(frontendRequest);
 	}
 
 	@Override
 	public PatientDiaryPersonDto getPatientDiaryPerson(String personUuid) {
-		return externalJournalService.getPatientDiaryPerson(personUuid).orElse(null);
+		return patientDiaryClient.getPatientDiaryPerson(personUuid).orElse(null);
 	}
 
 	@Override
@@ -39,7 +44,10 @@ public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 
 	@Override
 	public PatientDiaryResult registerPatientDiaryPerson(PersonDto person) {
-		return externalJournalService.registerPatientDiaryPerson(person);
+		return patientDiaryClient.registerPatientDiaryPerson(person.getUuid(), () -> {
+			person.setSymptomJournalStatus(SymptomJournalStatus.REGISTERED);
+			personFacade.savePerson(person);
+		});
 	}
 
 	@Override
@@ -49,7 +57,10 @@ public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 
 	@Override
 	public PatientDiaryResult cancelPatientDiaryFollowUp(PersonDto person) {
-		return externalJournalService.deletePatientDiaryPerson(person);
+		return patientDiaryClient.deletePatientDiaryPerson(person.getUuid(), () -> {
+			person.setSymptomJournalStatus(SymptomJournalStatus.DELETED);
+			personFacade.savePerson(person);
+		});
 	}
 
 	@Override

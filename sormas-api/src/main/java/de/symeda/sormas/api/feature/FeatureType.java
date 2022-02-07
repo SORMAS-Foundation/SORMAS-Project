@@ -31,13 +31,17 @@ public enum FeatureType {
 	// FEATURE MODULES
 	AGGREGATE_REPORTING(true, true, null, null),
 	CAMPAIGNS(true, false, null, null),
-	CASE_SURVEILANCE(true, true, null, null),
+	CASE_SURVEILANCE(true, true, null, ImmutableMap.of(FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT, Boolean.TRUE)),
 	CLINICAL_MANAGEMENT(true, true, null, null),
 	CONTACT_TRACING(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-		null),
+		ImmutableMap.of(
+			FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT,
+			Boolean.TRUE,
+			FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE,
+			Boolean.FALSE)),
 	EVENT_SURVEILLANCE(true, true, null, null),
 	SAMPLES_LAB(true,
 		true,
@@ -55,6 +59,8 @@ public enum FeatureType {
 	IMMUNIZATION_MANAGEMENT(true, true, null, ImmutableMap.of(FeatureTypeProperty.REDUCED, Boolean.FALSE)),
 	TRAVEL_ENTRIES(true, false, null, null),
 
+	DASHBOARD(true, true, null, null),
+
 	// FEATURE EXTENSIONS
 	ASSIGN_TASKS_TO_HIGHER_LEVEL(true,
 		true,
@@ -65,7 +71,7 @@ public enum FeatureType {
 		false,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-		null),
+		ImmutableMap.of(FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE, Boolean.FALSE)),
 	DOCUMENTS(true,
 		false,
 		new FeatureType[] {

@@ -260,7 +260,8 @@ public final class InfrastructureDaoHelper {
 		final ControlPropertyField healthFacilityDetailsField) {
 		setHealthFacilityDetailsFieldVisibility(healthFacilityField, healthFacilityDetailsField);
 		healthFacilityField
-			.addValueChangedListener(field -> setHealthFacilityDetailsFieldVisibility(healthFacilityField, healthFacilityDetailsField));
+			.addValueChangedListener(field ->
+					setHealthFacilityDetailsFieldVisibility(healthFacilityField, healthFacilityDetailsField));
 	}
 
 	public static void setHealthFacilityDetailsFieldVisibility(

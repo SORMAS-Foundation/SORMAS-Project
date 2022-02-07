@@ -1,5 +1,18 @@
 package de.symeda.sormas.backend.common;
 
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+
 import de.symeda.sormas.api.BaseFacade;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
@@ -7,18 +20,6 @@ import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AdoServiceWithUserFilter<ADO>, CRITERIA extends BaseCriteria>
 	implements BaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
@@ -83,21 +84,21 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	// todo find a better name, it is not clear what it does
 	protected abstract void selectDtoFields(CriteriaQuery<DTO> cq, Root<ADO> root);
 
-	protected DTO persistEntity(DTO dto, ADO entityToPersist) {
-		entityToPersist = fillOrBuildEntity(dto, entityToPersist, true);
+	protected DTO persistEntity(DTO dto, ADO entityToPersist, boolean checkChangeDate) {
+		entityToPersist = fillOrBuildEntity(dto, entityToPersist, checkChangeDate);
 		service.ensurePersisted(entityToPersist);
 		return toDto(entityToPersist);
 	}
 
-	protected DTO mergeAndPersist(DTO dtoToSave, List<ADO> duplicates) {
+	protected DTO mergeAndPersist(DTO dtoToSave, List<ADO> duplicates, boolean checkChangeDate) {
 		ADO existingEntity = duplicates.get(0);
 		DTO existingDto = toDto(existingEntity);
 		DtoHelper.copyDtoValues(existingDto, dtoToSave, true);
-		return persistEntity(dtoToSave, existingEntity);
+		return persistEntity(dtoToSave, existingEntity, checkChangeDate);
 
 	}
 
-	protected abstract List<ADO> findDuplicates(DTO dto);
+	protected abstract List<ADO> findDuplicates(DTO dto, boolean includeArchived);
 
 	protected abstract ADO fillOrBuildEntity(@NotNull DTO source, ADO target, boolean checkChangeDate);
 

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.67.0-SNAPSHOT</version>
+	<version>1.68.0-SNAPSHOT</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -17,23 +18,23 @@
 		<pushHotfixes>true</pushHotfixes>
 
 		<!-- *** Payara module versions *** -->
-		<jackson.version>2.10.2</jackson.version>
+		<jackson.version>2.12.4</jackson.version>
 		<jakarta.activation.version>1.2.1</jakarta.activation.version>
 		<javaee.version>8.0.1</javaee.version>
-		<jersey.version>2.30</jersey.version>
+		<jersey.version>2.34</jersey.version>
 		<!-- Payara version used for release. Overwrite them in settings.xml for local development with different versions -->
-		<payara.version>5.2020.2</payara.version>
+		<payara.version>5.2021.10</payara.version>
 
 		<!-- *** Other dependency versions *** -->
 		<glassfish.jaxb.version>2.3.3</glassfish.jaxb.version>
 		<slf4j.version>1.7.30</slf4j.version>
-		<logback.version>1.1.7</logback.version>
+		<logback.version>1.2.9</logback.version>
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
 		<vaadin.version>8.14.1</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<swagger.version>2.1.6</swagger.version>
 		<bouncycastle.version>1.67</bouncycastle.version>
-		<keycloak.version>12.0.4</keycloak.version>
+		<keycloak.version>16.1.0</keycloak.version>
 		<resteasy.version>3.15.1.Final</resteasy.version>
 		<xdocreport.version>2.0.2</xdocreport.version>
 		<docx4j.version>8.3.1</docx4j.version>
@@ -180,7 +181,7 @@
 			<dependency>
 				<groupId>fish.payara.security.connectors</groupId>
 				<artifactId>security-connector-oidc-client</artifactId>
-				<version>1.1.0</version>
+				<version>2.2.0</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -216,17 +217,9 @@
 			</dependency>
 
 			<dependency>
-				<groupId>net.minidev</groupId>
-				<artifactId>accessors-smart</artifactId>
-				<version>1.2</version>
-				<scope>provided</scope>
-				<!-- Avoid problems with finding the dependencies in Maven repos fixed by Payara -->
-			</dependency>
-
-			<dependency>
 				<groupId>org.eclipse.microprofile.config</groupId>
 				<artifactId>microprofile-config-api</artifactId>
-				<version>1.4</version>
+				<version>2.0</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -272,9 +265,8 @@
 			<dependency>
 				<groupId>org.glassfish.soteria</groupId>
 				<artifactId>javax.security.enterprise</artifactId>
-				<version>1.0</version>
+				<version>1.1-b01.payara-p4</version>
 				<scope>provided</scope>
-				<!-- Avoid problems with finding the dependencies in Maven repos fixed by Payara -->
 			</dependency>
 
 			<dependency>
@@ -287,14 +279,14 @@
 			<dependency>
 				<groupId>org.jboss.logging</groupId>
 				<artifactId>jboss-logging</artifactId>
-				<version>3.3.2.Final</version>
+				<version>3.4.2.Final</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>org.yaml</groupId>
 				<artifactId>snakeyaml</artifactId>
-				<version>1.25</version>
+				<version>1.28</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -699,6 +691,16 @@
 				<artifactId>keycloak-core</artifactId>
 				<version>${keycloak.version}</version>
 				<!-- No Domain lib, because it ran with Ant into problem, see https://stackoverflow.com/questions/64857838/invalid-jdk-version-in-profile-compile-java8-release-flag-unbounded-range-9 -->
+			</dependency>
+			<dependency>
+				<groupId>org.keycloak</groupId>
+				<artifactId>keycloak-server-spi</artifactId>
+				<version>${keycloak.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.keycloak</groupId>
+				<artifactId>keycloak-server-spi-private</artifactId>
+				<version>${keycloak.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.keycloak</groupId>
@@ -1210,6 +1212,15 @@
 			<name>Open Source Geospatial Foundation Repository</name>
 			<url>https://repo.osgeo.org/repository/release/</url>
 		</repository>
+
+		<repository>
+			<!-- Needed for patched dependencies from Payara -->
+			<!-- It's readonly since 2021 and only listed for artifacts that are not found elsewhere -->
+			<id>payara-patched-externals</id>
+			<name>Payara Patched Externals</name>
+			<url>https://raw.github.com/payara/Payara_PatchedProjects/master</url>
+		</repository>
+
 		<repository>
 			<!-- this repo is readOnly since 2021 and only listed for older artifacts that may not be found elsewhere -->
 			<id>bintray</id>
@@ -1258,17 +1269,6 @@
 			</activation>
 			<modules>
 				<module>../sormas-app</module>
-			</modules>
-		</profile>
-
-		<profile>
-			<!-- Profile to build the keycloak hash provider -->
-			<id>with-keycloak</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-			<modules>
-				<module>../sormas-keycloak-service-provider</module>
 			</modules>
 		</profile>
 
@@ -1357,6 +1357,7 @@
 		<module>../sormas-api</module>
 		<module>../sormas-backend</module>
 		<module>../sormas-ear</module>
+		<module>../sormas-keycloak-service-provider</module>
 		<module>../sormas-rest</module>
 		<module>../sormas-ui</module>
 		<module>./dependencies/serverlibs.pom</module>

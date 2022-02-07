@@ -81,6 +81,7 @@ import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.location.LocationDto;
@@ -125,6 +126,7 @@ import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipant
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
@@ -210,6 +212,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private CommunityFacadeEjbLocal communityFacade;
 	@EJB
 	private FacilityFacadeEjbLocal facilityFacade;
+	@EJB
+	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacade;
 
 	@Override
 	public List<String> getAllUuids() {
@@ -248,11 +252,16 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public List<PersonDto> getPersonsAfter(Date date) {
+		return getPersonsAfter(date, null, null);
+	}
+
+	@Override
+	public List<PersonDto> getPersonsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 		final User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}
-		return toPseudonymizedDtos(personService.getAllAfter(date, user));
+		return toPseudonymizedDtos(personService.getAllAfter(date, user, batchSize, lastSynchronizedUuid));
 	}
 
 	@Override
@@ -1189,19 +1198,6 @@ public class PersonFacadeEjb implements PersonFacade {
 			newPerson.setSymptomJournalStatus(SymptomJournalStatus.UNREGISTERED);
 		}
 
-		// Update case pregnancy information if sex has changed
-		if (existingPerson != null && existingPerson.getSex() != newPerson.getSex()) {
-			if (newPerson.getSex() != Sex.FEMALE) {
-				for (Case personCase : personCases) {
-					CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
-					personCase.setPregnant(null);
-					personCase.setTrimester(null);
-					personCase.setPostpartum(null);
-					caseFacade.onCaseChanged(existingCase, personCase, syncShares);
-				}
-			}
-		}
-
 		cleanUp(newPerson);
 	}
 
@@ -1679,6 +1675,12 @@ public class PersonFacadeEjb implements PersonFacade {
 				contactDetailDto.setPrimaryContact(false);
 			}
 		}
+		if (!leadPerson.getUuid().equals(otherPerson.getUuid())) {
+			for (ImmunizationDto immunizationDto : immunizationFacade.getByPersonUuids(Collections.singletonList(otherPerson.getUuid()))) {
+				immunizationFacade.copyImmunizationsToLeadPerson(immunizationDto, leadPerson);
+			}
+		}
+
 		DtoHelper.copyDtoValues(leadPerson, otherPerson, overrideValues);
 		savePerson(leadPerson, skipValidation);
 	}

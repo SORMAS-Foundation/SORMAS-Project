@@ -20,8 +20,8 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
@@ -74,7 +74,7 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<ClinicalVisit> getAllActiveClinicalVisitsAfter(Date date) {
+	public List<ClinicalVisit> getAllActiveClinicalVisitsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ClinicalVisit> cq = cb.createQuery(getElementClass());
@@ -91,15 +91,14 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
+			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
 			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		}
 
 		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(ClinicalVisit.CHANGE_DATE)));
 		cq.distinct(true);
 
-		return em.createQuery(cq).getResultList();
+		return getBatchedQueryResults(cb, cq, from, batchSize);
 	}
 
 	public List<String> getAllActiveUuids(User user) {
@@ -136,12 +135,18 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 	}
 
 	@Override
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ClinicalVisit> path, Timestamp date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ClinicalVisit> clinicalVisits, Timestamp date) {
+		return createChangeDateFilter(cb, clinicalVisits, date, null);
+	}
 
-		Predicate dateFilter = cb.greaterThan(path.get(ClinicalVisit.CHANGE_DATE), date);
+	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ClinicalVisit> clinicalVisits, Timestamp date, String lastSynchronizedUuid) {
 
-		Join<ClinicalVisit, Symptoms> symptoms = path.join(ClinicalVisit.SYMPTOMS, JoinType.LEFT);
-		return  cb.or(dateFilter, cb.greaterThan(symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
+		Join<ClinicalVisit, Symptoms> symptoms = clinicalVisits.join(ClinicalVisit.SYMPTOMS, JoinType.LEFT);
+
+		ChangeDateFilterBuilder changeDateFilterBuilder = lastSynchronizedUuid == null
+			? new ChangeDateFilterBuilder(cb, date)
+			: new ChangeDateFilterBuilder(cb, date, clinicalVisits, lastSynchronizedUuid);
+		return changeDateFilterBuilder.add(clinicalVisits).add(symptoms).build();
 	}
 
 	@SuppressWarnings("rawtypes")

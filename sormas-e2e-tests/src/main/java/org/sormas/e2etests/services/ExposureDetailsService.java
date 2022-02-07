@@ -52,7 +52,6 @@ public class ExposureDetailsService {
         .postalCode(faker.address().zipCode())
         .city(faker.address().city())
         .areaType("Urban")
-        .communityContactPerson(faker.name().toString())
         .gpsLatitude(String.valueOf(faker.number().numberBetween(-90, 90)))
         .gpsLongitude(String.valueOf(faker.number().numberBetween(-180, 180)))
         .gpsAccuracy(String.valueOf(faker.number().numberBetween(-180, 180)))

@@ -1,20 +1,17 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 package de.symeda.sormas.api.contact;
 
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
@@ -29,7 +26,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
@@ -44,7 +40,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
@@ -54,16 +50,16 @@ import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
-public class ContactDto extends PseudonymizableDto implements SormasToSormasShareableDto {
+public class ContactDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -7764607075875188799L;
+
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 96657;
 
 	public static final String I18N_PREFIX = "Contact";
 
@@ -144,7 +140,6 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasShar
 	public static final String VACCINATION_INFO = "vaccinationInfo";
 	public static final String PREVIOUS_QUARANTINE_TO = "previousQuarantineTo";
 	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
-
 
 	private CaseReferenceDto caze;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -301,9 +296,6 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasShar
 	private EpiDataDto epiData;
 	@Valid
 	private HealthConditionsDto healthConditions;
-	@Valid
-	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
-	private boolean ownershipHandedOver;
 	private YesNoUnknown returningTraveler;
 
 	@HideForCountriesExcept(countries = {
@@ -414,10 +406,12 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasShar
 		this.reportDateTime = reportDateTime;
 	}
 
+	@Override
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
 	}
 
+	@Override
 	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
 	}
@@ -905,26 +899,6 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasShar
 
 	public void setHealthConditions(HealthConditionsDto healthConditions) {
 		this.healthConditions = healthConditions;
-	}
-
-	@Override
-	@ImportIgnore
-	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
-		return sormasToSormasOriginInfo;
-	}
-
-	@Override
-	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
-		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
-	}
-
-	@Override
-	public boolean isOwnershipHandedOver() {
-		return ownershipHandedOver;
-	}
-
-	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
-		this.ownershipHandedOver = ownershipHandedOver;
 	}
 
 	public EndOfQuarantineReason getEndOfQuarantineReason() {

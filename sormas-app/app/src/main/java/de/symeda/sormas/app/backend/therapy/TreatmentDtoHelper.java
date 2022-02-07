@@ -41,8 +41,8 @@ public class TreatmentDtoHelper extends AdoDtoHelper<Treatment, TreatmentDto> {
 	}
 
 	@Override
-	protected Call<List<TreatmentDto>> pullAllSince(long since) throws NoConnectionException {
-		return RetroProvider.getTreatmentFacade().pullAllSince(since);
+	protected Call<List<TreatmentDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+		return RetroProvider.getTreatmentFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
 	@Override
@@ -94,4 +94,9 @@ public class TreatmentDtoHelper extends AdoDtoHelper<Treatment, TreatmentDto> {
 
 		target.setPseudonymized(source.isPseudonymized());
 	}
+
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return TreatmentDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+    }
 }

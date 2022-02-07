@@ -30,8 +30,11 @@ import retrofit2.http.Path;
  */
 public interface ContactFacadeRetro {
 
-	@GET("contacts/all/{since}")
-	Call<List<ContactDto>> pullAllSince(@Path("since") long since);
+	@GET("contacts/all/{since}/{size}/{lastSynchronizedUuid}")
+	Call<List<ContactDto>> pullAllSince(
+			@Path("since") long since,
+			@Path("size") int size,
+			@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
 
 	@POST("contacts/query")
 	Call<List<ContactDto>> pullByUuids(@Body List<String> uuids);

@@ -239,7 +239,7 @@ public class ExternalJournalUtil {
 
 	private static void openPatientDiaryPage(String personUuid) {
 		String url = FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl();
-		String authToken = externalJournalFacade.getPatientDiaryAuthToken();
+		String authToken = externalJournalFacade.getPatientDiaryAuthToken(true);
 		url += "/data?q=" + personUuid + "&queryKey=sicFieldIdentifier" + "&token=" + authToken;
 		UI.getCurrent().getPage().open(url, "_blank");
 	}

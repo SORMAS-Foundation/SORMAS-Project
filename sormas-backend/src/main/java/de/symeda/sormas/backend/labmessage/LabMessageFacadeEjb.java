@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -21,15 +20,22 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -47,11 +53,13 @@ import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventType;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -63,6 +71,9 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		LabMessageIndexDto.UUID,
 		LabMessageIndexDto.PERSON_FIRST_NAME,
 		LabMessageIndexDto.PERSON_LAST_NAME,
+		LabMessageIndexDto.PERSON_POSTAL_CODE,
+		LabMessageIndexDto.LAB_NAME,
+		LabMessageIndexDto.LAB_POSTAL_CODE,
 		LabMessageIndexDto.MESSAGE_DATE_TIME,
 		LabMessageIndexDto.STATUS,
 		LabMessageIndexDto.SAMPLE_OVERALL_TEST_RESULT,
@@ -83,6 +94,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	private SyncFacadeEjb.SyncFacadeEjbLocal syncFacadeEjb;
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private UserService userService;
 
 	LabMessage fromDto(@NotNull LabMessageDto source, LabMessage target, boolean checkChangeDate) {
 
@@ -124,7 +137,11 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		}
 		target.setReportId(source.getReportId());
 		target.setSampleOverallTestResult(source.getSampleOverallTestResult());
-
+		if (source.getAssignee() != null) {
+			target.setAssignee(userService.getByReferenceDto(source.getAssignee()));
+		} else {
+			target.setAssignee(null);
+		}
 		if (source.getSample() != null) {
 			target.setSample(sampleService.getByReferenceDto(source.getSample()));
 		}
@@ -184,6 +201,9 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		if (source.getSample() != null) {
 			target.setSample(source.getSample().toReference());
 		}
+		if (source.getAssignee() != null) {
+			target.setAssignee(source.getAssignee().toReference());
+		}
 
 		return target;
 	}
@@ -206,6 +226,16 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			if (labMessage.getStatus() != LabMessageStatus.PROCESSED) {
 				labMessageService.delete(labMessage);
 			}
+		}
+	}
+
+	@Override
+	public void bulkAssignLabMessages(List<String> uuids, UserReferenceDto userRef) {
+		List<LabMessage> labMessages = labMessageService.getByUuids(uuids);
+		User user = userService.getByReferenceDto(userRef);
+		for (LabMessage labMessage : labMessages) {
+			labMessage.setAssignee(user);
+			labMessageService.ensurePersisted(labMessage);
 		}
 	}
 
@@ -240,21 +270,16 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<LabMessage> labMessage = cq.from(LabMessage.class);
 
-		criteriaHandler(criteria, cb, cq, labMessage);
-
-		cq.select(cb.countDistinct(labMessage));
-		return em.createQuery(cq).getSingleResult();
-	}
-
-	private <T> void criteriaHandler(LabMessageCriteria criteria, CriteriaBuilder cb, CriteriaQuery<T> cq, Root<LabMessage> labMessage) {
 		Predicate filter = null;
 		if (criteria != null) {
-			Predicate statusFilter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
-			filter = CriteriaBuilderHelper.and(cb, null, statusFilter);
+			filter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
 		}
 		if (filter != null) {
 			cq.where(filter);
 		}
+
+		cq.select(cb.countDistinct(labMessage));
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	@Override
@@ -262,37 +287,53 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<LabMessageIndexDto> cq = cb.createQuery(LabMessageIndexDto.class);
 		Root<LabMessage> labMessage = cq.from(LabMessage.class);
+		Join<LabMessage, User> userJoin = labMessage.join(LabMessage.ASSIGNEE, JoinType.LEFT);
 
 		cq.multiselect(
 			labMessage.get(LabMessage.UUID),
 			labMessage.get(LabMessage.MESSAGE_DATE_TIME),
-			labMessage.get(LabMessage.TEST_LAB_NAME),
-			labMessage.get(LabMessage.TEST_LAB_POSTAL_CODE),
+			labMessage.get(LabMessage.LAB_NAME),
+			labMessage.get(LabMessage.LAB_POSTAL_CODE),
 			labMessage.get(LabMessage.TESTED_DISEASE),
 			labMessage.get(LabMessage.SAMPLE_OVERALL_TEST_RESULT),
 			labMessage.get(LabMessage.PERSON_FIRST_NAME),
 			labMessage.get(LabMessage.PERSON_LAST_NAME),
+			labMessage.get(LabMessage.PERSON_BIRTH_DATE_YYYY),
+			labMessage.get(LabMessage.PERSON_BIRTH_DATE_MM),
+			labMessage.get(LabMessage.PERSON_BIRTH_DATE_DD),
 			labMessage.get(LabMessage.PERSON_POSTAL_CODE),
-			labMessage.get(LabMessage.STATUS));
+			labMessage.get(LabMessage.STATUS),
+			userJoin.get(User.UUID),
+			userJoin.get(User.FIRST_NAME),
+			userJoin.get(User.LAST_NAME));
 
-		criteriaHandler(criteria, cb, cq, labMessage);
+		Predicate whereFilter = null;
+		if (criteria != null) {
+			whereFilter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
+		}
+
+		cq.where(whereFilter);
 
 		// Distinct is necessary here to avoid duplicate results due to the user role join in taskService.createAssigneeFilter
 		cq.distinct(true);
 
-		// remove deleted entities from result
-		Predicate filter = labMessageService.createDefaultFilter(cb, labMessage);
-		cq.where(filter);
+		List<Order> order = new ArrayList<>();
 
-		List<Order> order = Optional.ofNullable(sortProperties)
-			.orElseGet(ArrayList::new)
-			.stream()
-			.filter(sortProperty -> VALID_SORT_PROPERTY_NAMES.contains(sortProperty.propertyName))
-			.map(sortProperty -> {
-				Expression<?> expression = labMessage.get(sortProperty.propertyName);
-				return sortProperty.ascending ? cb.asc(expression) : cb.desc(expression);
-			})
-			.collect(toList());
+		if (!CollectionUtils.isEmpty(sortProperties)) {
+			for (SortProperty sortProperty : sortProperties) {
+				if (LabMessageIndexDto.PERSON_BIRTH_DATE.equals(sortProperty.propertyName)) {
+					Expression<?> birthdateYYYY = labMessage.get(LabMessage.PERSON_BIRTH_DATE_YYYY);
+					order.add(sortProperty.ascending ? cb.asc(birthdateYYYY) : cb.desc(birthdateYYYY));
+					Expression<?> birthdateMM = labMessage.get(LabMessage.PERSON_BIRTH_DATE_MM);
+					order.add(sortProperty.ascending ? cb.asc(birthdateMM) : cb.desc(birthdateMM));
+					Expression<?> birthdateDD = labMessage.get(LabMessage.PERSON_BIRTH_DATE_DD);
+					order.add(sortProperty.ascending ? cb.asc(birthdateDD) : cb.desc(birthdateDD));
+				} else if (VALID_SORT_PROPERTY_NAMES.contains(sortProperty.propertyName)) {
+					Expression<?> expression = labMessage.get(sortProperty.propertyName);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+				}
+			}
+		}
 
 		order.add(cb.desc(labMessage.get(LabMessage.MESSAGE_DATE_TIME)));
 		cq.orderBy(order);
@@ -343,6 +384,11 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	protected ExternalMessageResult<List<LabMessageDto>> fetchExternalMessages(Date since) throws NamingException {
+		ExternalLabResultsFacade labResultsFacade = getExternalLabResultsFacade();
+		return labResultsFacade.getExternalLabMessages(since);
+	}
+
+	private ExternalLabResultsFacade getExternalLabResultsFacade() throws NamingException {
 		InitialContext ic = new InitialContext();
 		String jndiName = configFacade.getDemisJndiName();
 
@@ -350,8 +396,13 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			throw new CannotProceedException(I18nProperties.getValidationError(Validations.externalMessageConfigError));
 		}
 
-		ExternalLabResultsFacade labResultsFacade = (ExternalLabResultsFacade) ic.lookup(jndiName);
-		return labResultsFacade.getExternalLabMessages(since);
+		return (ExternalLabResultsFacade) ic.lookup(jndiName);
+	}
+
+	@Override
+	public String getLabMessagesAdapterVersion() throws NamingException {
+		ExternalLabResultsFacade labResultsFacade = getExternalLabResultsFacade();
+		return labResultsFacade.getVersion();
 	}
 
 	private LabMessageFetchResult getSuccessfulFetchResult(ExternalMessageResult<List<LabMessageDto>> externalMessageResult) {
@@ -369,6 +420,19 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@Override
 	public boolean exists(String uuid) {
 		return labMessageService.exists(uuid);
+	}
+
+	@Override
+	public boolean existsLabMessageForEntity(ReferenceDto entityRef) {
+		if (CaseReferenceDto.class.equals(entityRef.getClass())) {
+			return labMessageService.countForCase(entityRef.getUuid()) > 0;
+		} else if (ContactReferenceDto.class.equals(entityRef.getClass())) {
+			return labMessageService.countForContact(entityRef.getUuid()) > 0;
+		} else if (EventParticipantReferenceDto.class.equals(entityRef.getClass())) {
+			return labMessageService.countForEventParticipant(entityRef.getUuid()) > 0;
+		} else {
+			throw new UnsupportedOperationException("Reference class" + entityRef.getClass() + " is not supported.");
+		}
 	}
 
 	@Override

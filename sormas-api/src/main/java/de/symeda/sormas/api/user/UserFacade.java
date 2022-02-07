@@ -17,13 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
@@ -31,6 +31,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.task.TaskContextIndex;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
@@ -62,7 +63,6 @@ public interface UserFacade {
 	long count(UserCriteria userCriteria);
 
 	/**
-	 * 
 	 * @param district
 	 * @param includeSupervisors
 	 *            independent from the district
@@ -105,4 +105,8 @@ public interface UserFacade {
 	List<UserReferenceDto> getUsersHavingEventInJurisdiction(EventReferenceDto event);
 
 	List<UserReferenceDto> getUsersHavingTravelEntryInJurisdiction(TravelEntryReferenceDto travelEntryReferenceDto);
+
+	List<UserReferenceWithTaskNumbersDto> getAssignableUsersWithTaskNumbers(@NotNull TaskContextIndex taskContextIndex);
+
+	List<UserReferenceDto> getUsersByRegionAndRight(RegionReferenceDto region, UserRight userRight);
 }

@@ -54,6 +54,8 @@ public interface PersonFacade {
 
 	PersonDto getPersonByUuid(String uuid);
 
+	List<PersonDto> getPersonsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
+
 	List<PersonDto> getByUuids(List<String> uuids);
 
 	/**

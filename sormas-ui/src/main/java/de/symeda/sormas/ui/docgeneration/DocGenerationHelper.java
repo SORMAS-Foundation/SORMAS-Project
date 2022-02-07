@@ -24,4 +24,12 @@ public class DocGenerationHelper {
 		UserProvider currentUser = UserProvider.getCurrent();
 		return currentUser != null && currentUser.hasUserRight(UserRight.QUARANTINE_ORDER_CREATE);
 	}
+
+	public static boolean isFileSizeLimitExceeded(long length, long fileSizeLimitMb) {
+		long fileSizeLimitBytes = fileSizeLimitMb * 1_000_000;
+		if (length > fileSizeLimitBytes) {
+			return true;
+		}
+		return false;
+	}
 }

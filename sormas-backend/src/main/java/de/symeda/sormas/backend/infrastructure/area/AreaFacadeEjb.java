@@ -14,8 +14,9 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.area.AreaCriteria;
@@ -29,7 +30,6 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
-import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "AreaFacade")
 public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, AreaDto, AreaReferenceDto, AreaService, AreaCriteria>
@@ -40,7 +40,7 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, Area
 
 	@Inject
 	protected AreaFacadeEjb(AreaService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(Area.class, AreaDto.class, service, featureConfiguration, userService);
+		super(Area.class, AreaDto.class, service, featureConfiguration, userService, Validations.importAreaAlreadyExists);
 	}
 
 	@Override
@@ -84,13 +84,8 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, Area
 	}
 
 	@Override
-	public AreaDto save(AreaDto dtoToSave, boolean allowMerge) {
-		return save(dtoToSave, allowMerge, Validations.importAreaAlreadyExists);
-	}
-
-	@Override
-	protected List<Area> findDuplicates(AreaDto dto) {
-		return service.getByName(dto.getName(), true);
+	protected List<Area> findDuplicates(AreaDto dto, boolean includeArchived) {
+		return service.getByName(dto.getName(), includeArchived);
 	}
 
 	@Override
@@ -111,10 +106,10 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, Area
 	@Override
 	public Area fillOrBuildEntity(@NotNull AreaDto source, Area target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Area::new, checkChangeDate);
-
 		target.setName(source.getName());
 		target.setExternalId(source.getExternalId());
 		target.setArchived(source.isArchived());
+		target.setCentrallyManaged(source.isCentrallyManaged());
 		return target;
 	}
 
@@ -125,18 +120,18 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, Area
 	}
 
 	@Override
-	public AreaDto toDto(Area source) {
-		if (source == null) {
+	public AreaDto toDto(Area entity) {
+		if (entity == null) {
 			return null;
 		}
-		AreaDto target = new AreaDto();
-		DtoHelper.fillDto(target, source);
+		AreaDto dto = new AreaDto();
+		DtoHelper.fillDto(dto, entity);
 
-		target.setName(source.getName());
-		target.setExternalId(source.getExternalId());
-		target.setArchived(source.isArchived());
-
-		return target;
+		dto.setName(entity.getName());
+		dto.setExternalId(entity.getExternalId());
+		dto.setArchived(entity.isArchived());
+		dto.setCentrallyManaged(entity.isCentrallyManaged());
+		return dto;
 	}
 
 	@Override

@@ -170,11 +170,14 @@ public class KeycloakService {
             logger.warn("Cannot obtain keycloak instance. Will not update user in keycloak");
             return;
         }
-
+        
+        User oldUser = userUpdateEvent.getOldUser();
         User newUser = userUpdateEvent.getNewUser();
-
+        
+		String existingUsername = oldUser != null ? oldUser.getUserName() : newUser.getUserName();
+        
         try {
-            Optional<UserRepresentation> userRepresentation = updateUser(keycloak.get(), newUser);
+            Optional<UserRepresentation> userRepresentation = updateUser(keycloak.get(), existingUsername, newUser);
             if (!userRepresentation.isPresent()) {
                 logger.debug("Cannot find user in Keycloak. Will try to create it");
                 createUser(keycloak.get(), newUser);
@@ -279,8 +282,8 @@ public class KeycloakService {
         return userId;
     }
 
-    private Optional<UserRepresentation> updateUser(Keycloak keycloak, User newUser) {
-        Optional<UserRepresentation> userRepresentation = getUserByUsername(keycloak, newUser.getUserName());
+    private Optional<UserRepresentation> updateUser(Keycloak keycloak, String existingUsername, User newUser) {
+        Optional<UserRepresentation> userRepresentation = getUserByUsername(keycloak, existingUsername);
 
         if (!userRepresentation.isPresent()) {
             logger.warn("Cannot find user to update for username {}", newUser.getUserName());

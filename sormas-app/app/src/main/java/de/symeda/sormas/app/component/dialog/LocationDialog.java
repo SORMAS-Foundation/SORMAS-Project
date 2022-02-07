@@ -27,15 +27,17 @@ import org.apache.commons.lang3.StringUtils;
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
+
 import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
+
 import de.symeda.sormas.api.CountryHelper;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.area.AreaType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -49,6 +51,7 @@ import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
+import de.symeda.sormas.app.component.validation.ValidationHelper;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
@@ -266,6 +269,9 @@ public class LocationDialog extends FormDialog {
 				}
 			}
 		});
+
+		ValidationHelper.initEmailValidator(contentBinding.locationContactPersonEmail);
+		ValidationHelper.initPhoneNumberValidator(contentBinding.locationContactPersonPhone);
 	}
 
 	private void overrideLocationDetailsWithFacilityOnes(Facility facility) {

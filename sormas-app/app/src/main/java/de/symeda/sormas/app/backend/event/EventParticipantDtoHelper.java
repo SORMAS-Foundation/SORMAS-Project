@@ -21,9 +21,10 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDependentDtoHelper;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
@@ -35,7 +36,7 @@ import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
-public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, EventParticipantDto> {
+public class EventParticipantDtoHelper extends PersonDependentDtoHelper<EventParticipant, EventParticipantDto> {
 
 	private PersonDtoHelper personHelper = new PersonDtoHelper();
 
@@ -52,8 +53,8 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 	}
 
 	@Override
-	protected Call<List<EventParticipantDto>> pullAllSince(long since) throws NoConnectionException {
-		return RetroProvider.getEventParticipantFacade().pullAllSince(since);
+	protected Call<List<EventParticipantDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+		return RetroProvider.getEventParticipantFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
 	@Override
@@ -153,12 +154,22 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 		target.setPseudonymized(source.isPseudonymized());
 	}
 
-	public static EventParticipantReferenceDto toReferenceDto(EventParticipant ado) {
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return EventParticipantDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+    }
+
+    public static EventParticipantReferenceDto toReferenceDto(EventParticipant ado) {
 		if (ado == null) {
 			return null;
 		}
 		EventParticipantReferenceDto dto = new EventParticipantReferenceDto(ado.getUuid());
 
 		return dto;
+	}
+
+	@Override
+	protected PersonReferenceDto getPerson(EventParticipantDto dto) {
+		return dto.getPerson().toReference();
 	}
 }

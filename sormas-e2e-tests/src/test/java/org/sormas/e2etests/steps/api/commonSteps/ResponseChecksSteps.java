@@ -17,10 +17,10 @@
  */
 package org.sormas.e2etests.steps.api.commonSteps;
 
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.Assert;
 
 public class ResponseChecksSteps implements En {
 
@@ -31,14 +31,18 @@ public class ResponseChecksSteps implements En {
         "API: I check that POST call body is {string}",
         (String expectedBody) -> {
           String responseBody = apiState.getResponse().getBody().asString();
-          Truth.assertThat(expectedBody.equals(String.valueOf(responseBody)));
+          Assert.assertEquals(
+              String.valueOf(responseBody).replaceAll("[^a-zA-Z0-9]", ""),
+              expectedBody,
+              "Request response body is not correct");
         });
 
     Then(
         "API: I check that POST call status code is {int}",
         (Integer expectedStatus) -> {
           int responseStatusCode = apiState.getResponse().getStatusCode();
-          Truth.assertThat(responseStatusCode).isEqualTo(expectedStatus);
+          Assert.assertEquals(
+              responseStatusCode, expectedStatus.intValue(), "Request status code is not correct");
         });
   }
 }
