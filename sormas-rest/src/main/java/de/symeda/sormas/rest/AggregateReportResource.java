@@ -50,8 +50,7 @@ public class AggregateReportResource extends EntityDtoResource {
 	@POST
 	@Path("/indexList")
 	public List<AggregatedCaseCountDto> getIndexList(AggregateReportCriteria criteria) {
-		List<AggregatedCaseCountDto> result = FacadeProvider.getAggregateReportFacade().getIndexList(criteria);
-		return result;
+		return FacadeProvider.getAggregateReportFacade().getIndexList(criteria);
 	}
 
 	@GET
