@@ -261,8 +261,6 @@ public class EventParticipantImporter extends DataImporter {
 						newEventParticipant = pickedEventParticipant;
 					}
 
-
-
 					PersonDto savedPersonDto;
 					if (selectedPersonUuid != null) {
 						// Workaround: Reset the change date to avoid OutdatedEntityExceptions

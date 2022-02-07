@@ -257,7 +257,6 @@ public class ContactImporter extends DataImporter {
 						}
 					}
 
-					// Workaround: Reset the change date to avoid OutdatedEntityExceptions
 					PersonReferenceDto personReferenceDto;
 					if (selectedPersonUuid != null) {
 						FacadeProvider.getPersonFacade().mergePerson(importPerson, newPersonTemp, true, skipPersonValidation);
@@ -265,6 +264,7 @@ public class ContactImporter extends DataImporter {
 					} else {
 						personReferenceDto = FacadeProvider.getPersonFacade().savePerson(newPersonTemp, skipPersonValidation).toReference();
 					}
+					// Workaround: Reset the change date to avoid OutdatedEntityExceptions
 					newContact.setChangeDate(new Date());
 					newContact.setPerson(personReferenceDto);
 					FacadeProvider.getContactFacade().saveContact(newContact, true, false);

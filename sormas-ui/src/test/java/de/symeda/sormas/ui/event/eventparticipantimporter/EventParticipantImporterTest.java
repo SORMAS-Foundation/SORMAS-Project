@@ -21,14 +21,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import de.symeda.sormas.api.caze.Vaccine;
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.vaccination.VaccinationDto;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -52,6 +46,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -68,6 +63,8 @@ import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator.RDCF;
@@ -140,7 +137,8 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			user.toReference(),
 			Disease.EVD);
 		EventReferenceDto eventRef = event.toReference();
-		PersonDto person = creator.createPerson("Günther", "Heinz");
+		final String EXISTING_PERSON_LAST_NAME = "Heinz";
+		PersonDto person = creator.createPerson("Günther", EXISTING_PERSON_LAST_NAME);
 		creator.createCase(
 			user.toReference(),
 			person.toReference(),
@@ -184,7 +182,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		assertEquals(1, eventParticipantFacade.count(new EventParticipantCriteria().withEvent(eventRef)));
 		assertEquals(person.getUuid(), importedEventParticipant.getPersonUuid());
 		assertEquals(person.getFirstName(), importedPerson.getFirstName());
-		assertEquals("Heinze", importedPerson.getLastName());
+		assertNotEquals(EXISTING_PERSON_LAST_NAME, importedPerson.getLastName());
 
 		assertEquals(1, getPersonFacade().getAllUuids().size());
 	}
