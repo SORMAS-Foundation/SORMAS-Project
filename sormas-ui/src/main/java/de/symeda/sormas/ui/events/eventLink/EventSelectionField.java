@@ -183,9 +183,9 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		Date selectedFromDate,
 		AbstractComponent component) {
 		boolean isSelectedDateBeforeEventDate = true;
-		Date startOfEndEventDate = EventHelper.getStartOrEndDate(eventDto.getStartDate(), eventDto.getEndDate());
-		if (startOfEndEventDate != null) {
-			isSelectedDateBeforeEventDate = selectedFromDate == null || selectedFromDate.after(startOfEndEventDate);
+		Date eventStartOrEndDate = EventHelper.getStartOrEndDate(eventDto.getStartDate(), eventDto.getEndDate());
+		if (eventStartOrEndDate != null) {
+			isSelectedDateBeforeEventDate = selectedFromDate == null || selectedFromDate.after(eventStartOrEndDate);
 		}
 		eventSelectionField.applyButton.setEnabled(isSelectedDateBeforeEventDate);
 		if (isSelectedDateBeforeEventDate) {
