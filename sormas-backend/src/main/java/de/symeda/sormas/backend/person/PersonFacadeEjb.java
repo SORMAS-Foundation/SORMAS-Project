@@ -103,7 +103,6 @@ import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -224,12 +223,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public List<SimilarPersonDto> getSimilarPersonDtos(UserReferenceDto userRef, PersonSimilarityCriteria criteria) {
-
-		User user = userService.getByReferenceDto(userRef);
-		if (user == null) {
-			return Collections.emptyList();
-		}
+	public List<SimilarPersonDto> getSimilarPersonDtos(PersonSimilarityCriteria criteria) {
 
 		return personService.getSimilarPersonDtos(criteria, null);
 	}
