@@ -139,7 +139,7 @@ public class EditCasePersonSteps implements En {
         () -> {
           collectedCase =
               collectSpecificCasePersonData(); // TODO: Get and check GPS coordinates for DE
-                                               // specific version
+          // specific version
           ComparisonHelper.compareEqualFieldsOfEntities(
               addressData,
               collectedCase,
