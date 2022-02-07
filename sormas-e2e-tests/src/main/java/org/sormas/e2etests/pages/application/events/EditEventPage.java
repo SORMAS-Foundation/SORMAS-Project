@@ -69,6 +69,7 @@ public class EditEventPage {
       By.cssSelector(".popupContent [id='Create']");
   public static final By CANCEL_EVENT_HANDOUT_BUTTON =
       By.cssSelector(".popupContent [id='Cancel']");
+  public static final By TOTAL_ACTIONS_COUNTER = By.cssSelector(".badge");
 
   public static By getGroupEventName(String groupEventName) {
     return By.xpath("//*[contains(text(),'" + groupEventName + "')]");
