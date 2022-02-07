@@ -207,6 +207,7 @@ public interface Strings {
 	String entityContactVisits = "entityContactVisits";
 	String entityCountries = "entityCountries";
 	String entityDataDictionary = "entityDataDictionary";
+	String entityDataProtectionDictionary = "entityDataProtectionDictionary";
 	String entityDistrict = "entityDistrict";
 	String entityDistricts = "entityDistricts";
 	String entityDocuments = "entityDocuments";
@@ -676,6 +677,11 @@ public interface Strings {
 	String infoArchivedTravelEntries = "infoArchivedTravelEntries";
 	String infoAssigneeMissingEmail = "infoAssigneeMissingEmail";
 	String infoAssigneeMissingEmailOrPhoneNumber = "infoAssigneeMissingEmailOrPhoneNumber";
+	String infoAutomaticDeletion = "infoAutomaticDeletion";
+	String infoAutomaticDeletionTooltip = "infoAutomaticDeletionTooltip";
+	String infoAutomaticDeletionTooltipDays = "infoAutomaticDeletionTooltipDays";
+	String infoAutomaticDeletionTooltipMonths = "infoAutomaticDeletionTooltipMonths";
+	String infoAutomaticDeletionTooltipYears = "infoAutomaticDeletionTooltipYears";
 	String infoBAGExport = "infoBAGExport";
 	String infoBasicExport = "infoBasicExport";
 	String infoCalculateCompleteness = "infoCalculateCompleteness";
@@ -1191,7 +1197,11 @@ public interface Strings {
 	String notificationTaskAssociatedTravelEntryLink = "notificationTaskAssociatedTravelEntryLink";
 	String notificationTaskDueGeneral = "notificationTaskDueGeneral";
 	String notificationTaskDueSpecific = "notificationTaskDueSpecific";
+	String notificationTaskGeneralUpdatedAssigneeUserSource = "notificationTaskGeneralUpdatedAssigneeUserSource";
+	String notificationTaskGeneralUpdatedAssigneeUserTarget = "notificationTaskGeneralUpdatedAssigneeUserTarget";
 	String notificationTaskObserverInformation = "notificationTaskObserverInformation";
+	String notificationTaskSpecificUpdatedAssigneeUserSource = "notificationTaskSpecificUpdatedAssigneeUserSource";
+	String notificationTaskSpecificUpdatedAssigneeUserTarget = "notificationTaskSpecificUpdatedAssigneeUserTarget";
 	String notificationTaskStartGeneral = "notificationTaskStartGeneral";
 	String notificationTaskStartSpecific = "notificationTaskStartSpecific";
 	String notificationVisitCompleted = "notificationVisitCompleted";

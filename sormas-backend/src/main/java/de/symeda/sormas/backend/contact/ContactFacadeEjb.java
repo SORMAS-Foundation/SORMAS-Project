@@ -90,7 +90,7 @@ import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
-import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
@@ -145,6 +145,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentService;
@@ -392,16 +393,10 @@ public class ContactFacadeEjb extends AbstractCoreEntityFacade<Contact> implemen
 			final boolean dropped = entity.getContactStatus() == ContactStatus.DROPPED
 				&& (existingContactDto == null || existingContactDto.getContactStatus() != ContactStatus.DROPPED);
 			if (dropped || convertedToCase) {
-				StringBuilder sb = new StringBuilder();
-				if (entity.getFollowUpComment() != null) {
-					sb.append(entity.getFollowUpComment()).append(" ");
-				}
 				contactService.cancelFollowUp(
 					entity,
-					sb.append(
-						I18nProperties
-							.getString(convertedToCase ? Strings.messageSystemFollowUpCanceled : Strings.messageSystemFollowUpCanceledByDropping))
-						.toString());
+					I18nProperties
+						.getString(convertedToCase ? Strings.messageSystemFollowUpCanceled : Strings.messageSystemFollowUpCanceledByDropping));
 			} else {
 				contactService.updateFollowUpDetails(
 					entity,
@@ -2125,6 +2120,11 @@ public class ContactFacadeEjb extends AbstractCoreEntityFacade<Contact> implemen
 	@Override
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		contactService.updateExternalData(externalData);
+	}
+
+	@Override
+	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
+		return getAutomaticDeletionInfo(uuid, CoreEntityType.CONTACT);
 	}
 
 	@Override

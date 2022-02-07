@@ -27,6 +27,7 @@ import javax.validation.Valid;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
@@ -102,4 +103,6 @@ public interface EventParticipantFacade {
 	List<EventParticipantDto> getByPersonUuids(List<String> personUuids);
 
 	List<EventParticipantDto> getByEventAndPersons(String eventUuid, List<String> personUuids);
+
+	AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid);
 }
