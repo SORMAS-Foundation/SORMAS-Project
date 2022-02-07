@@ -9821,4 +9821,115 @@ ALTER TABLE deletionconfiguration_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (437, 'Add configurations for each entity to trigger automated deletion #7008');
 
+-- 2022-02-04 Create missing history tables for entities #7113
+ALTER TABLE community ADD COLUMN sys_period tstzrange;
+UPDATE community SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE community ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE community_history (LIKE community);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON community
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'community_history', true);
+ALTER TABLE community_history OWNER TO sormas_user;
+
+ALTER TABLE continent ADD COLUMN sys_period tstzrange;
+UPDATE continent SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE continent ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE continent_history (LIKE continent);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON continent
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'continent_history', true);
+ALTER TABLE continent_history OWNER TO sormas_user;
+
+ALTER TABLE country ADD COLUMN sys_period tstzrange;
+UPDATE country SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE country ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE country_history (LIKE country);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON country
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'country_history', true);
+ALTER TABLE country_history OWNER TO sormas_user;
+
+ALTER TABLE district ADD COLUMN sys_period tstzrange;
+UPDATE district SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE district ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE district_history (LIKE district);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON district
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'district_history', true);
+ALTER TABLE district_history OWNER TO sormas_user;
+
+ALTER TABLE documents ADD COLUMN sys_period tstzrange;
+UPDATE documents SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE documents ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE documents_history (LIKE documents);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON documents
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'documents_history', true);
+ALTER TABLE documents_history OWNER TO sormas_user;
+
+ALTER TABLE externalshareinfo ADD COLUMN sys_period tstzrange;
+UPDATE externalshareinfo SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE externalshareinfo ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE externalshareinfo_history (LIKE externalshareinfo);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON externalshareinfo
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'externalshareinfo_history', true);
+ALTER TABLE externalshareinfo_history OWNER TO sormas_user;
+
+ALTER TABLE facility ADD COLUMN sys_period tstzrange;
+UPDATE facility SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE facility ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE facility_history (LIKE facility);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON facility
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'facility_history', true);
+ALTER TABLE facility_history OWNER TO sormas_user;
+
+ALTER TABLE manualmessagelog ADD COLUMN sys_period tstzrange;
+UPDATE manualmessagelog SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE manualmessagelog ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE manualmessagelog_history (LIKE manualmessagelog);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON manualmessagelog
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'manualmessagelog_history', true);
+ALTER TABLE manualmessagelog_history OWNER TO sormas_user;
+
+ALTER TABLE pointofentry ADD COLUMN sys_period tstzrange;
+UPDATE pointofentry SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE pointofentry ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE pointofentry_history (LIKE pointofentry);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON pointofentry
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'pointofentry_history', true);
+ALTER TABLE pointofentry_history OWNER TO sormas_user;
+
+ALTER TABLE populationdata ADD COLUMN sys_period tstzrange;
+UPDATE populationdata SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE populationdata ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE populationdata_history (LIKE populationdata);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON populationdata
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'populationdata_history', true);
+ALTER TABLE populationdata_history OWNER TO sormas_user;
+
+ALTER TABLE region ADD COLUMN sys_period tstzrange;
+UPDATE region SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE region ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE region_history (LIKE region);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON region
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'region_history', true);
+ALTER TABLE region_history OWNER TO sormas_user;
+
+ALTER TABLE subcontinent ADD COLUMN sys_period tstzrange;
+UPDATE subcontinent SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE subcontinent ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE subcontinent_history (LIKE subcontinent);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON subcontinent
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'subcontinent_history', true);
+ALTER TABLE subcontinent_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (438, 'Create missing history tables for entities #7113');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
