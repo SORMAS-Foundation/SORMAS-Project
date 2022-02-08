@@ -34,11 +34,11 @@ public enum DistrictsValues {
 
   @SneakyThrows
   public static String getValueFor(String option) {
-    DistrictsValues[] districtsValues = DistrictsValues.values();
-    for (DistrictsValues value : districtsValues) {
-      if (value.getName().equalsIgnoreCase(option)) return value.getName();
+    DistrictsValues[] districtValuesOptions = DistrictsValues.values();
+    for (DistrictsValues value : districtValuesOptions) {
+      if (value.uuid.equalsIgnoreCase(option)) return value.name;
     }
-    throw new Exception("Unable to find " + option + " value in DistrictsValues Enum");
+    throw new Exception("Unable to find " + option + " value in District Enum");
   }
 
   @SneakyThrows
