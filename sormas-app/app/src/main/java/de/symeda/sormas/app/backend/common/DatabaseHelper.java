@@ -3640,13 +3640,27 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			formatRawResultString(gathering, 3, true);
 			formatRawResultDate(gathering, 2);
 
+			String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 			String gatheringQuery =
-				"INSERT INTO exposures(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, startDate, endDate, "
-					+ "description, exposureType, pseudonymized, modified, snapshot) VALUES ('" + DataHelper.createUuid()
-					+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-					+ gathering[0] + ", " + gathering[1] + ", " + gathering[2] + ", " + gathering[2] + ", " + gathering[3]
-					+ ", 'GATHERING', 0, 0, 0);";
-			getDao(Exposure.class).executeRaw(gatheringQuery);
+				  "INSERT INTO exposures"
+				+ "(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, startDate, endDate, "
+				+ "		description, exposureType, pseudonymized, modified, snapshot"
+				+ ")"
+				+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+			getDao(Exposure.class).executeRaw(gatheringQuery,
+				DataHelper.createUuid(),
+				"0",
+				Objects.toString(gathering[0], null),
+				Objects.toString(gathering[1], null),
+				Objects.toString(gathering[2], null),
+				Objects.toString(gathering[2], null),
+				Objects.toString(gathering[3], null),
+				"GATHERING",
+				"0",
+				"0",
+				"0"
+			);
 		}
 
 		GenericRawResults<Object[]> newTravels = getDao(EpiData.class).queryRaw(
