@@ -86,18 +86,14 @@ public class ClinicalCourseTabCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
     And(
-        "I set Date and Time of visit",
+        "I set Date and Time of visit  on Clinical Course form",
         () -> {
           LocalTime time = LocalTime.of(faker.number().numberBetween(10, 23), 30);
           LocalDate date = LocalDate.now().minusDays(faker.number().numberBetween(1, 10));
           fillDateOfVisit(date);
           fillTimeOfVisit(time);
         });
-    //    When(
-    //        "I clear Clinical Signs and Symptoms list",
-    //        () -> {
-    //          webDriverHelpers.clickOnWebElementBySelector(CLEAR_ALL_OPTION);
-    //        });
+
     When(
         "I fill the specific data of clinical visit with ([^\"]*) option to all symptoms",
         (String parameter) -> {
