@@ -3019,17 +3019,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		List<Object[]> caseInfoList = caseInfoResult.getResults();
 
 		for (Object[] caseInfo : caseInfoList) {
-			formatRawResultString(caseInfo, 3, true);
-			formatRawResultString(caseInfo, 14, true);
-			formatRawResultString(caseInfo, 15, true);
-			formatRawResultString(caseInfo, 17, true);
-			formatRawResultString(caseInfo, 18, false);
-			formatRawResultString(caseInfo, 19, true);
-			formatRawResultString(caseInfo, 20, true);
-			formatRawResultString(caseInfo, 21, true);
-			formatRawResultString(caseInfo, 22, true);
-			formatRawResultString(caseInfo, 23, false);
-			formatRawResultString(caseInfo, 24, false);
+			doNullCheckOnString(caseInfo, 3);
+			doNullCheckOnString(caseInfo, 14);
+			doNullCheckOnString(caseInfo, 15);
+			doNullCheckOnString(caseInfo, 17);
+			doNullCheckOnString(caseInfo, 19);
+			doNullCheckOnString(caseInfo, 20);
+			doNullCheckOnString(caseInfo, 21);
+			doNullCheckOnString(caseInfo, 22);
 			formatRawResultDate(caseInfo, 4);
 			formatRawResultDate(caseInfo, 9);
 			formatRawResultDate(caseInfo, 10);
@@ -3353,9 +3350,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				DataType.DATE_LONG });
 
 		for (Object[] result : lastExposureInfo) {
-			formatRawResultString(result, 2, true);
-			formatRawResultString(result, 3, false);
-			formatRawResultString(result, 5, false);
+			doNullCheckOnString(result, 2);
 			formatRawResultDate(result, 1);
 			formatRawResultDate(result, 6);
 
@@ -3441,8 +3436,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				DataType.STRING });
 
 		for (Object[] result : epiDataInfo) {
-			formatRawResultString(result, 3, true);
-			formatRawResultString(result, 4, true);
+			doNullCheckOnString(result, 3);
+			doNullCheckOnString(result, 4);
 			formatRawResultDate(result, 1);
 			formatRawResultDate(result, 2);
 
@@ -3496,10 +3491,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				DataType.STRING });
 
 		for (Object[] pcd : newPersons) {
-			formatRawResultString(pcd, 1, false);
-			formatRawResultString(pcd, 2, false);
-			formatRawResultString(pcd, 3, false);
-			formatRawResultString(pcd, 4, false);
 
 			final String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 			final String insertQuery =
@@ -3586,10 +3577,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				DataType.DATE_LONG });
 
 		for (Object[] burial : newBurials) {
-			formatRawResultString(burial, 2, true);
-			formatRawResultString(burial, 3, true);
-			formatRawResultString(burial, 4, false);
-			formatRawResultString(burial, 5, false);
+			doNullCheckOnString(burial, 2);
+			doNullCheckOnString(burial, 3);
 			formatRawResultDate(burial, 6);
 			formatRawResultDate(burial, 7);
 
@@ -3629,7 +3618,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				DataType.STRING });
 
 		for (Object[] gathering : newGatherings) {
-			formatRawResultString(gathering, 3, true);
+			doNullCheckOnString(gathering, 3);
 			formatRawResultDate(gathering, 2);
 
 			String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
