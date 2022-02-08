@@ -59,6 +59,7 @@ public class EventDirectoryPage {
   public static final By FIRST_EVENT_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
   public static final By CREATE_CASE_BUTTON =
       By.xpath("//td//span[contains(@class, 'v-icon-edit')]");
+  public static final By TOTAL_EVENTS_COUNTER = By.cssSelector(".badge");
 
   public static By getByEventUuid(String eventUuid) {
     return By.xpath(String.format("//a[@title='%s']", eventUuid));
