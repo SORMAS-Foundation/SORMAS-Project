@@ -1766,11 +1766,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 					doNullCheckOnString(result, 4);
 
-					String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 					String query =
 						  "INSERT INTO location "
 						+ "(uuid, changeDate, localChangeDate, creationDate, region_id, district_id, community_id, facility_id, facilityDetails, facilityType, addressType, person_id, pseudonymized, modified, snapshot) "
-						+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+						+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 					getDao(Location.class).executeRaw(query,
 						DataHelper.createUuid(),
@@ -2980,6 +2979,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
+	private String generateDateNowSQL() {
+		return "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
+	}
+
 	private void migrateVaccinationInfo() throws SQLException {
 		// Retrieve all new unsynchronized cases with vaccinationStatus == VACCINATED from the database
 		GenericRawResults<Object[]> caseInfoResult = getDao(Case.class).queryRaw(
@@ -3134,7 +3137,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		// Create immunizations and vaccinations for each case
 		for (Object[] caseInfo : filteredCaseInfo) {
 			// Create immunization
-			String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 			String immunizationInsertQuery =
 				  "INSERT INTO immunization "
 				+ "("
@@ -3143,7 +3145,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				+ "		responsibleRegion_id, responsibleDistrict_id, responsibleCommunity_id, startDate, endDate, numberOfDoses, pseudonymized,"
 				+ "		modified, snapshot"
 				+ ")"
-				+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 			getDao(Immunization.class).executeRaw(immunizationInsertQuery,
 				DataHelper.createUuid(),
@@ -3248,7 +3250,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		Long healthConditionsId = getDao(HealthConditions.class).queryRawValue("SELECT MAX(id) FROM healthConditions;");
 		String vaccineNameString = vaccineName != null ? vaccineName.name() : null;
 		String vaccineManufacturerString = vaccineManufacturer != null ? vaccineManufacturer.name() : null;
-		String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 		String vaccinationInsertQuery =
 			  "INSERT INTO vaccination"
 			+ "("
@@ -3257,7 +3258,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			+ "		vaccinationInfoSource, vaccineInn, vaccineBatchNumber, vaccineUniiCode, vaccineAtcCode, pregnant, trimester, pseudonymized, "
 			+ "		modified, snapshot"
 			+ ")"
-			+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		getDao(Vaccination.class).executeRaw(vaccinationInsertQuery,
 			DataHelper.createUuid(),
@@ -3357,14 +3358,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			Long locationId = insertLocation((String) result[2]);
 			VaccinationStatus vaccinationStatus = result[4] != null ? VaccinationStatus.valueOf((String) result[4]) : null;
 
-			String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 			String exposureQuery =
 				  "INSERT INTO exposures"
 				+ "("
 				+ "		uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, exposureType, "
 				+ "		startDate, endDate, animalCondition, animalVaccinated, prophylaxis, prophylaxisDate, description, pseudonymized, modified, snapshot"
 				+ ")"
-				+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 			getDao(Exposure.class).executeRaw(exposureQuery,
 				DataHelper.createUuid(),
@@ -3443,13 +3443,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			Long locationId = insertLocation((String) result[4]);
 
-			String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 			String exposureQuery =
 				"INSERT INTO exposures"
 				+ "("
 				+ "		uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, exposureType, "
 				+ 		exposuresFieldName + ", " + "startDate, endDate, description, pseudonymized, modified, snapshot"
-				+ ") VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				+ ") VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 			getDao(Exposure.class).executeRaw(exposureQuery,
 				DataHelper.createUuid(),
@@ -3469,11 +3468,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	private long insertLocation(String locationDetails) throws SQLException {
-		String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 		String locationQuery =
 			  "INSERT INTO location "
 			+ "(uuid, changeDate, localChangeDate, creationDate, details, pseudonymized, modified, snapshot) "
-			+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?);";
+			+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?);";
 
 		getDao(Location.class).executeRaw(locationQuery, DataHelper.createUuid(), "0", locationDetails, "0", "0", "0");
 
@@ -3492,7 +3490,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 		for (Object[] pcd : newPersons) {
 
-			final String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 			final String insertQuery =
 				  "INSERT INTO personContactDetail "
 				+ "("
@@ -3500,7 +3497,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				+ "		personContactDetailType, phoneNumberType, contactInformation, additionalInformation, "
 				+ "		thirdParty, thirdPartyRole, thirdPartyName, snapshot"
 				+ ") "
-				+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+				+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 			BigInteger personId = (BigInteger) pcd[0];
 			String phone = (String) pcd[1];
@@ -3582,14 +3579,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			formatRawResultDate(burial, 6);
 			formatRawResultDate(burial, 7);
 
-			String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 			String burialQuery =
 				  "INSERT INTO exposures"
 				+ "("
 				+ "		uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, deceasedPersonName, deceasedPersonRelation, "
 				+ "		physicalContactWithBody, deceasedPersonIll, startDate, endDate, exposureType, pseudonymized, modified, snapshot"
 				+ ")"
-				+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 			getDao(Exposure.class).executeRaw(burialQuery,
 				DataHelper.createUuid(),
@@ -3621,13 +3617,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			doNullCheckOnString(gathering, 3);
 			formatRawResultDate(gathering, 2);
 
-			String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 			String gatheringQuery =
 				  "INSERT INTO exposures"
 				+ "(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, startDate, endDate, "
 				+ "		description, exposureType, pseudonymized, modified, snapshot"
 				+ ")"
-				+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 			getDao(Exposure.class).executeRaw(gatheringQuery,
 				DataHelper.createUuid(),
@@ -3661,11 +3656,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				.filter(Objects::nonNull)
 				.collect(Collectors.joining(", "));
 
-			String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 			String locationQuery =
 				  "INSERT INTO location"
 				+ "(uuid, changeDate, localChangeDate, creationDate, details, pseudonymized, modified, snapshot)"
-				+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?)";
+				+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?)";
 
 			getDao(Location.class).executeRaw(locationQuery,
 				DataHelper.createUuid(),
@@ -3684,7 +3678,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				+ "		uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, startDate, endDate, exposureType, "
 				+ "		pseudonymized, modified, snapshot"
 				+ ")"
-				+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?, ?, ?, ?, ?)";
+				+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?)";
 
 			getDao(Exposure.class).executeRaw(travelQuery,
 				DataHelper.createUuid(),
