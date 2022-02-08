@@ -3601,14 +3601,31 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			formatRawResultDate(burial, 6);
 			formatRawResultDate(burial, 7);
 
+			String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 			String burialQuery =
-				"INSERT INTO exposures(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, deceasedPersonName, deceasedPersonRelation, "
-					+ "physicalContactWithBody, deceasedPersonIll, startDate, endDate, exposureType, pseudonymized, modified, snapshot) VALUES ('"
-					+ DataHelper.createUuid()
-					+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-					+ burial[0] + ", " + burial[1] + ", " + burial[2] + ", " + burial[3] + ", " + burial[4] + ", " + burial[5] + ", " + burial[6]
-					+ ", " + burial[7] + ", 'BURIAL', 0, 0, 0);";
-			getDao(Exposure.class).executeRaw(burialQuery);
+				  "INSERT INTO exposures"
+				+ "("
+				+ "		uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, deceasedPersonName, deceasedPersonRelation, "
+				+ "		physicalContactWithBody, deceasedPersonIll, startDate, endDate, exposureType, pseudonymized, modified, snapshot"
+				+ ")"
+				+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+			getDao(Exposure.class).executeRaw(burialQuery,
+				DataHelper.createUuid(),
+				"0",
+				Objects.toString(burial[0], null),
+				Objects.toString(burial[1], null),
+				Objects.toString(burial[2], null),
+				Objects.toString(burial[3], null),
+				Objects.toString(burial[4], null),
+				Objects.toString(burial[5], null),
+				Objects.toString(burial[6], null),
+				Objects.toString(burial[7], null),
+				"BURIAL",
+				"0",
+				"0",
+				"0"
+			);
 		}
 
 		GenericRawResults<Object[]> newGatherings = getDao(EpiData.class).queryRaw(
