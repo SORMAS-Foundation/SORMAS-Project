@@ -1771,20 +1771,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						+ "(uuid, changeDate, localChangeDate, creationDate, region_id, district_id, community_id, facility_id, facilityDetails, facilityType, addressType, person_id, pseudonymized, modified, snapshot) "
 						+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-					getDao(Location.class).executeRaw(query,
+					executeRaw(Location.class, query,
 						DataHelper.createUuid(),
-						"0",
-						Objects.toString(result[0], null),
-						Objects.toString(result[1], null),
-						Objects.toString(result[2], null),
-						Objects.toString(result[3], null),
-						Objects.toString(result[4], null),
-						Objects.toString(result[5], null),
+						0,
+						result[0],
+						result[1],
+						result[2],
+						result[3],
+						result[4],
+						result[5],
 						"PLACE_OF_WORK",
-						Objects.toString(result[6], null),
-						"0",
-						"0",
-						"0"
+						result[6],
+						0,
+						0,
+						0
 					);
 				}
 
@@ -3155,26 +3155,26 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				+ ")"
 				+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-			getDao(Immunization.class).executeRaw(immunizationInsertQuery,
+			executeRaw(Immunization.class, immunizationInsertQuery,
 				DataHelper.createUuid(),
-				"0",
-				Objects.toString(caseInfo[1], null),
-				Objects.toString(caseInfo[2], null),
-				Objects.toString(caseInfo[3], null),
-				Objects.toString(caseInfo[4], null),
-				Objects.toString(caseInfo[5], null),
+				0,
+				caseInfo[1],
+				caseInfo[2],
+				caseInfo[3],
+				caseInfo[4],
+				caseInfo[5],
 				ImmunizationStatus.ACQUIRED.name(),
 				MeansOfImmunization.VACCINATION.name(),
 				ImmunizationManagementStatus.COMPLETED.name(),
-				Objects.toString(caseInfo[6], null),
-				Objects.toString(caseInfo[7], null),
-				Objects.toString(caseInfo[8], null),
-				Objects.toString(caseInfo[10], null),
-				Objects.toString(caseInfo[11], null),
-				Objects.toString(caseInfo[12], null),
-				"0",
-				"1",
-				"0"
+				caseInfo[6],
+				caseInfo[7],
+				caseInfo[8],
+				caseInfo[10],
+				caseInfo[11],
+				caseInfo[12],
+				0,
+				1,
+				0
 			);
 
 			if (caseInfo[12] == null) {
@@ -3239,9 +3239,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	private void cloneHealthConditions(Object healthConditionsId) throws SQLException {
-		getDao(HealthConditions.class)
-			.executeRaw("CREATE TEMPORARY TABLE tmp AS SELECT * FROM healthConditions WHERE id = ?;", Objects.toString(healthConditionsId));
-		getDao(HealthConditions.class).executeRaw("UPDATE tmp SET id = NULL, uuid = ?;", DataHelper.createUuid());
+		executeRaw(HealthConditions.class, "CREATE TEMPORARY TABLE tmp AS SELECT * FROM healthConditions WHERE id = ?;", healthConditionsId);
+		executeRaw(HealthConditions.class, "UPDATE tmp SET id = NULL, uuid = ?;", DataHelper.createUuid());
 		getDao(HealthConditions.class).executeRaw("INSERT INTO healthConditions SELECT * FROM tmp;");
 		getDao(HealthConditions.class).executeRaw("DROP TABLE tmp;");
 	}
@@ -3268,28 +3267,28 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			+ ")"
 			+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-		getDao(Vaccination.class).executeRaw(vaccinationInsertQuery,
+		executeRaw(Vaccination.class, vaccinationInsertQuery,
 			DataHelper.createUuid(),
-			"0",
-			Objects.toString(immunizationId, null),
-			Objects.toString(healthConditionsId, null),
-			Objects.toString(caseInfo[4], null),
-			Objects.toString(caseInfo[5], null),
-			Objects.toString(vaccinationDate, null),
+			0,
+			immunizationId,
+			healthConditionsId,
+			caseInfo[4],
+			caseInfo[5],
+			vaccinationDate,
 			vaccineNameString,
 			otherVaccineName,
 			vaccineManufacturerString,
-			Objects.toString(caseInfo[17], null),
-			Objects.toString(caseInfo[18], null),
-			Objects.toString(caseInfo[19], null),
-			Objects.toString(caseInfo[20], null),
-			Objects.toString(caseInfo[21], null),
-			Objects.toString(caseInfo[22], null),
-			Objects.toString(caseInfo[23], null),
-			Objects.toString(caseInfo[24], null),
-			"0",
-			"1",
-			"0"
+			caseInfo[17],
+			caseInfo[18],
+			caseInfo[19],
+			caseInfo[20],
+			caseInfo[21],
+			caseInfo[22],
+			caseInfo[23],
+			caseInfo[24],
+			0,
+			1,
+			0
 		);
 	}
 
@@ -3374,15 +3373,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				+ ")"
 				+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-			getDao(Exposure.class).executeRaw(exposureQuery,
+			executeRaw(Exposure.class, exposureQuery,
 				DataHelper.createUuid(),
-				"0",
-				Objects.toString(result[0], null),
-				Objects.toString(locationId, null),
+				0,
+				result[0],
+				locationId,
 				ExposureType.ANIMAL_CONTACT.name(),
-				Objects.toString(result[1], null),
-				Objects.toString(result[1], null),
-				Objects.toString(result[3], null),
+				result[1],
+				result[1],
+				result[3],
 				(vaccinationStatus == VaccinationStatus.VACCINATED
 					? YesNoUnknown.YES.name()
 					: vaccinationStatus == VaccinationStatus.UNVACCINATED
@@ -3390,12 +3389,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						: vaccinationStatus == VaccinationStatus.UNKNOWN
 							? YesNoUnknown.UNKNOWN.name()
 							: null),
-				Objects.toString(result[5], null),
-				Objects.toString(result[6], null),
+				result[5],
+				result[6],
 				"Automatic epi data migration based on last exposure details; this exposure may be merged with another exposure with animal contact",
-				"0",
-				"0",
-				"0"
+				0,
+				0,
+				0
 			);
 		}
 
@@ -3458,19 +3457,19 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				+ 		exposuresFieldName + ", " + "startDate, endDate, description, pseudonymized, modified, snapshot"
 				+ ") VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-			getDao(Exposure.class).executeRaw(exposureQuery,
+			executeRaw(Exposure.class, exposureQuery,
 				DataHelper.createUuid(),
-				"0",
-				Objects.toString(result[0], null),
-				Objects.toString(locationId, null),
+				0,
+				result[0],
+				locationId,
 				exposureType.name(),
 				exposuresFieldValue.name(),
-				Objects.toString(result[1], null),
-				Objects.toString(result[2], null),
-				Objects.toString(result[3], null),
-				"0",
-				"0",
-				"0"
+				result[1],
+				result[2],
+				result[3],
+				0,
+				0,
+				0
 			);
 		}
 	}
@@ -3481,7 +3480,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			+ "(uuid, changeDate, localChangeDate, creationDate, details, pseudonymized, modified, snapshot) "
 			+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?);";
 
-		getDao(Location.class).executeRaw(locationQuery, DataHelper.createUuid(), "0", locationDetails, "0", "0", "0");
+		executeRaw(Location.class, locationQuery, DataHelper.createUuid(), 0, locationDetails, 0, 0, 0);
 
 		return getDao(Location.class).queryRawValue("SELECT MAX(id) FROM location;");
 	}
@@ -3515,53 +3514,53 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			if (StringUtils.isNotEmpty(phone)) {
 				boolean phoneOwnerEmpty = StringUtils.isEmpty(phoneOwner);
-				getDao(PersonContactDetail.class).executeRaw(insertQuery,
+				executeRaw(PersonContactDetail.class, insertQuery,
 					DataHelper.createUuid(),
-					"0",
-					Objects.toString(personId, null),
-					(phoneOwnerEmpty ? "1" : "0"),
+					0,
+					personId,
+					(phoneOwnerEmpty ? 1 : 0),
 					PersonContactDetailType.PHONE.name(),
 					null,
 					phone,
 					null,
-					(phoneOwnerEmpty ? "0" : "1"),
+					(phoneOwnerEmpty ? 0 : 1),
 					null,
-					(phoneOwnerEmpty ? "null" : phoneOwner),
-					"0"
+					(phoneOwnerEmpty ? null : phoneOwner),
+					0
 				);
 			}
 
 			if (StringUtils.isNotEmpty(emailAddress)) {
-				getDao(PersonContactDetail.class).executeRaw(insertQuery,
+				executeRaw(PersonContactDetail.class, insertQuery,
 					DataHelper.createUuid(),
-					"0",
-					Objects.toString(personId, null),
-					"1",
+					0,
+					personId,
+					1,
 					PersonContactDetailType.EMAIL.name(),
 					null,
 					emailAddress,
 					null,
-					"0",
+					0,
 					null,
 					null,
-					"0"
+					0
 				);
 			}
 
 			if (StringUtils.isNotEmpty(generalPractitionerDetails)) {
-				getDao(PersonContactDetail.class).executeRaw(insertQuery,
+				executeRaw(PersonContactDetail.class, insertQuery,
 					DataHelper.createUuid(),
-					"0",
-					Objects.toString(personId, null),
-					"0",
+					0,
+					personId,
+					0,
 					PersonContactDetailType.OTHER.name(),
 					null,
 					null,
 					generalPractitionerDetails,
-					"1",
+					1,
 					"General practitioner",
 					generalPractitionerDetails,
-					"0"
+					0
 				);
 			}
 		}
@@ -3595,21 +3594,21 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				+ ")"
 				+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-			getDao(Exposure.class).executeRaw(burialQuery,
+			executeRaw(Exposure.class, burialQuery,
 				DataHelper.createUuid(),
-				"0",
-				Objects.toString(burial[0], null),
-				Objects.toString(burial[1], null),
-				Objects.toString(burial[2], null),
-				Objects.toString(burial[3], null),
-				Objects.toString(burial[4], null),
-				Objects.toString(burial[5], null),
-				Objects.toString(burial[6], null),
-				Objects.toString(burial[7], null),
+				0,
+				burial[0],
+				burial[1],
+				burial[2],
+				burial[3],
+				burial[4],
+				burial[5],
+				burial[6],
+				burial[7],
 				"BURIAL",
-				"0",
-				"0",
-				"0"
+				0,
+				0,
+				0
 			);
 		}
 
@@ -3632,18 +3631,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				+ ")"
 				+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-			getDao(Exposure.class).executeRaw(gatheringQuery,
+			executeRaw(Exposure.class, gatheringQuery,
 				DataHelper.createUuid(),
-				"0",
-				Objects.toString(gathering[0], null),
-				Objects.toString(gathering[1], null),
-				Objects.toString(gathering[2], null),
-				Objects.toString(gathering[2], null),
-				Objects.toString(gathering[3], null),
+				0,
+				gathering[0],
+				gathering[1],
+				gathering[2],
+				gathering[2],
+				gathering[3],
 				"GATHERING",
-				"0",
-				"0",
-				"0"
+				0,
+				0,
+				0
 			);
 		}
 
@@ -3669,13 +3668,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				+ "(uuid, changeDate, localChangeDate, creationDate, details, pseudonymized, modified, snapshot)"
 				+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?)";
 
-			getDao(Location.class).executeRaw(locationQuery,
+			executeRaw(Location.class, locationQuery,
 				DataHelper.createUuid(),
-				"0",
+				0,
 				detailsString,
-				"0",
-				"0",
-				"0"
+				0,
+				0,
+				0
 			);
 
 			Long locationId = getDao(Location.class).queryRawValue("SELECT MAX(id) FROM location;");
@@ -3688,17 +3687,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				+ ")"
 				+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?)";
 
-			getDao(Exposure.class).executeRaw(travelQuery,
+			executeRaw(Exposure.class, travelQuery,
 				DataHelper.createUuid(),
-				"0",
-				Objects.toString(travel[0], null),
-				Objects.toString(locationId, null),
-				Objects.toString(travel[1], null),
-				Objects.toString(travel[2], null),
+				0,
+				travel[0],
+				locationId,
+				travel[1],
+				travel[2],
 				"TRAVEL",
-				"0",
-				"0",
-				"0"
+				0,
+				0,
+				0
 			);
 		}
 	}
