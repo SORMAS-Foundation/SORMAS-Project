@@ -69,9 +69,35 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "^I create a new Sample with alternate purpose$",
+        () -> {
+          sample = sampleService.buildAlternateSample();
+          selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
+          fillDateOfCollection(sample.getDateOfCollection());
+          fillTimeOfCollection(sample.getTimeOfCollection());
+          selectSampleType(sample.getSampleType());
+          selectReasonForSample(sample.getReasonForSample());
+          fillSampleID(sample.getSampleID());
+          fillCommentsOnSample(sample.getCommentsOnSample());
+        });
+
+    When(
+        "^I save the created sample",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
         "^I check the created Sample is correctly displayed on Edit Sample page",
         () -> {
           final Sample actualSample = collectSampleData();
+          ComparisonHelper.compareEqualEntities(sample, actualSample);
+        });
+
+    When(
+        "^I check the alternate Sample is correctly displayed on Edit Sample page",
+        () -> {
+          final Sample actualSample = collectAlternateSampleData();
           ComparisonHelper.compareEqualEntities(sample, actualSample);
         });
 
@@ -271,6 +297,18 @@ public class CreateNewSampleSteps implements En {
         .received(getReceivedOption())
         .receivedDate(getReceivedDate())
         .specimenCondition(getSpecimenCondition())
+        .commentsOnSample(getCommentsOnSample())
+        .build();
+  }
+
+  private Sample collectAlternateSampleData() {
+    return Sample.builder()
+        .purposeOfTheSample(getPurposeOfSample())
+        .dateOfCollection(getDateOfCollection())
+        .timeOfCollection(getTimeOfCollection())
+        .sampleType(getSampleType())
+        .reasonForSample(getReasonForSample())
+        .sampleID(Long.parseLong(getSampleID()))
         .commentsOnSample(getCommentsOnSample())
         .build();
   }
