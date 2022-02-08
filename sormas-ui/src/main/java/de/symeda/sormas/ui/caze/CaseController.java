@@ -671,6 +671,8 @@ public class CaseController {
 					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(convertedContact.getUuid());
 					// automatically change the contact status to "converted"
 					updatedContact.setContactStatus(ContactStatus.CONVERTED);
+					// automatically change the contact classification to "confirmed"
+					updatedContact.setContactClassification(ContactClassification.CONFIRMED);
 					// set resulting case on contact and save it
 					updatedContact.setResultingCase(dto.toReference());
 					FacadeProvider.getContactFacade().saveContact(updatedContact);
