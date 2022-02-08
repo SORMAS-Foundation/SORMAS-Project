@@ -3241,8 +3241,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	private void cloneHealthConditions(Object healthConditionsId) throws SQLException {
 		getDao(HealthConditions.class)
-			.executeRaw("CREATE TEMPORARY TABLE tmp AS SELECT * FROM healthConditions WHERE id = " + healthConditionsId + ";");
-		getDao(HealthConditions.class).executeRaw("UPDATE tmp SET id = NULL, uuid = '" + DataHelper.createUuid() + "';");
+			.executeRaw("CREATE TEMPORARY TABLE tmp AS SELECT * FROM healthConditions WHERE id = ?;", Objects.toString(healthConditionsId));
+		getDao(HealthConditions.class).executeRaw("UPDATE tmp SET id = NULL, uuid = ?;", DataHelper.createUuid());
 		getDao(HealthConditions.class).executeRaw("INSERT INTO healthConditions SELECT * FROM tmp;");
 		getDao(HealthConditions.class).executeRaw("DROP TABLE tmp;");
 	}
