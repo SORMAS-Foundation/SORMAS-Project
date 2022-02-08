@@ -9932,4 +9932,8 @@ ALTER TABLE subcontinent_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (438, 'Create missing history tables for entities #7113');
 
+ALTER TABLE testreport ADD COLUMN testpcrtestspecification varchar(255);
+ALTER TABLE testreport_history ADD COLUMN testpcrtestspecification varchar(255);
+INSERT INTO schema_version (version_number, comment) VALUES (439, 'Map variant specific Nucleic acid detection methods #5285');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

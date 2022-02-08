@@ -1,22 +1,24 @@
 package de.symeda.sormas.backend.labmessage;
 
-import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
-import de.symeda.sormas.api.labmessage.TestReportDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.sample.PathogenTestService;
-import junit.framework.TestCase;
+import static org.mockito.Mockito.when;
+
+import java.sql.Timestamp;
+import java.util.Date;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.Timestamp;
-import java.util.Date;
-
-import static org.mockito.Mockito.when;
+import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
+import de.symeda.sormas.api.labmessage.TestReportDto;
+import de.symeda.sormas.api.sample.PCRTestSpecification;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.sample.PathogenTestService;
+import junit.framework.TestCase;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestReportFacadeEjbMappingTest extends TestCase {
@@ -58,6 +60,7 @@ public class TestReportFacadeEjbMappingTest extends TestCase {
 		source.setTestResult(PathogenTestResultType.POSITIVE);
 		source.setTestResultVerified(true);
 		source.setTestResultText("Test result text");
+		source.setTestPcrTestSpecification(PCRTestSpecification.VARIANT_SPECIFIC);
 
 		TestReport result = sut.fromDto(source, true);
 
@@ -74,6 +77,7 @@ public class TestReportFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getTestResult(), result.getTestResult());
 		assertEquals(source.isTestResultVerified(), result.isTestResultVerified());
 		assertEquals(source.getTestResultText(), result.getTestResultText());
+		assertEquals(source.getTestPcrTestSpecification(), result.getTestPcrTestSpecification());
 
 	}
 
@@ -98,6 +102,7 @@ public class TestReportFacadeEjbMappingTest extends TestCase {
 		source.setTestResult(PathogenTestResultType.POSITIVE);
 		source.setTestResultVerified(true);
 		source.setTestResultText("Test result text");
+		source.setTestPcrTestSpecification(PCRTestSpecification.VARIANT_SPECIFIC);
 
 		TestReportDto result = sut.toDto(source);
 
@@ -114,6 +119,7 @@ public class TestReportFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getTestResult(), result.getTestResult());
 		assertEquals(source.isTestResultVerified(), result.isTestResultVerified());
 		assertEquals(source.getTestResultText(), result.getTestResultText());
+		assertEquals(source.getTestPcrTestSpecification(), result.getTestPcrTestSpecification());
 
 	}
 }
