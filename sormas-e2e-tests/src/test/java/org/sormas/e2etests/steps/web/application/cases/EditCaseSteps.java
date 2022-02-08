@@ -75,6 +75,9 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_SAVED_POPUP);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
+    Then(
+        "I click on Clinical Course tab from Edit Case page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CLINICAL_COURSE_TAB));
 
     When(
         "I click on save button from Edit Case page with current hospitalization",
@@ -92,6 +95,10 @@ public class EditCaseSteps implements En {
     And(
         "I navigate to symptoms tab",
         () -> webDriverHelpers.clickOnWebElementBySelector(SYMPTOMS_TAB));
+
+    When(
+        "I navigate to Hospitalization tab in Cases",
+        () -> webDriverHelpers.clickOnWebElementBySelector(HOSPITALIZATION_TAB));
 
     When(
         "I check the created data is correctly displayed on Edit case page",
