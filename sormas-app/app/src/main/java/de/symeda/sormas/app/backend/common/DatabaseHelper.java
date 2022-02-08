@@ -1771,13 +1771,27 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					if (!DataHelper.isNullOrEmpty((String) result[5])) {
 						Array.set(result, 5, "'" + result[5] + "'");
 					}
+					String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 					String query =
-						"INSERT INTO location (uuid, changeDate, localChangeDate, creationDate, region_id, district_id, community_id, facility_id, facilityDetails, facilityType, addressType, person_id, pseudonymized, modified, snapshot) VALUES ('"
-							+ DataHelper.createUuid()
-							+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-							+ result[0] + ", " + result[1] + ", " + result[2] + ", " + result[3] + ", " + result[4] + ", " + result[5]
-							+ ", 'PLACE_OF_WORK', " + result[6] + ", 0, 0, 0);";
-					getDao(Location.class).executeRaw(query);
+						  "INSERT INTO location "
+						+ "(uuid, changeDate, localChangeDate, creationDate, region_id, district_id, community_id, facility_id, facilityDetails, facilityType, addressType, person_id, pseudonymized, modified, snapshot) "
+						+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+					getDao(Location.class).executeRaw(query,
+						DataHelper.createUuid(),
+						"0",
+						Objects.toString(result[0], null),
+						Objects.toString(result[1], null),
+						Objects.toString(result[2], null),
+						Objects.toString(result[3], null),
+						Objects.toString(result[4], null),
+						Objects.toString(result[5], null),
+						"PLACE_OF_WORK",
+						Objects.toString(result[6], null),
+						"0",
+						"0",
+						"0"
+					);
 				}
 
 				Cursor personDbCursor = db.query(Person.TABLE_NAME, null, null, null, null, null, null);
