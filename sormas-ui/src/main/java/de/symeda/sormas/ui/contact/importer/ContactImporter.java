@@ -288,11 +288,8 @@ public class ContactImporter extends DataImporter {
 	protected void handleContactSimilarity(ContactDto newContact, PersonDto person, Consumer<ContactImportSimilarityResult> resultConsumer) {
 
 		currentUI.accessSynchronously(() -> {
-			ContactSelectionField contactSelection = new ContactSelectionField(
-				newContact,
-				I18nProperties.getString(Strings.infoSelectOrCreateContactImport),
-				person.getFirstName(),
-				person.getLastName());
+			ContactSelectionField contactSelection =
+				new ContactSelectionField(newContact, person, I18nProperties.getString(Strings.infoSelectOrCreateContactImport));
 			contactSelection.setWidth(1024, Unit.PIXELS);
 
 			if (contactSelection.hasMatches()) {
