@@ -3367,23 +3367,41 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			formatRawResultDate(result, 1);
 			formatRawResultDate(result, 6);
 
-			long locationId = insertLocation((String) result[2]);
+			Long locationId = insertLocation((String) result[2]);
 			VaccinationStatus vaccinationStatus = result[4] != null ? VaccinationStatus.valueOf((String) result[4]) : null;
 
-			String exposureQuery = "INSERT INTO exposures(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, exposureType, "
-				+ "startDate, endDate, animalCondition, animalVaccinated, prophylaxis, prophylaxisDate, description, pseudonymized, modified, snapshot) VALUES ('"
-				+ DataHelper.createUuid()
-				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-				+ result[0] + ", " + locationId + ", '" + ExposureType.ANIMAL_CONTACT.name() + "', " + result[1] + ", " + result[1] + ", " + result[3]
-				+ ", "
-				+ (vaccinationStatus == VaccinationStatus.VACCINATED
-					? "'" + YesNoUnknown.YES.name() + "'"
+			String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
+			String exposureQuery =
+				  "INSERT INTO exposures"
+				+ "("
+				+ "		uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, exposureType, "
+				+ "		startDate, endDate, animalCondition, animalVaccinated, prophylaxis, prophylaxisDate, description, pseudonymized, modified, snapshot"
+				+ ")"
+				+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+			getDao(Exposure.class).executeRaw(exposureQuery,
+				DataHelper.createUuid(),
+				"0",
+				Objects.toString(result[0], null),
+				Objects.toString(locationId, null),
+				ExposureType.ANIMAL_CONTACT.name(),
+				Objects.toString(result[1], null),
+				Objects.toString(result[1], null),
+				Objects.toString(result[3], null),
+				(vaccinationStatus == VaccinationStatus.VACCINATED
+					? YesNoUnknown.YES.name()
 					: vaccinationStatus == VaccinationStatus.UNVACCINATED
-						? "'" + YesNoUnknown.NO.name() + "'"
-						: vaccinationStatus == VaccinationStatus.UNKNOWN ? "'" + YesNoUnknown.UNKNOWN.name() + "'" : null)
-				+ ", " + result[5] + ", " + result[6] + ", "
-				+ "'Automatic epi data migration based on last exposure details; this exposure may be merged with another exposure with animal contact', 0, 0, 0);";
-			getDao(Exposure.class).executeRaw(exposureQuery);
+						? YesNoUnknown.NO.name()
+						: vaccinationStatus == VaccinationStatus.UNKNOWN
+							? YesNoUnknown.UNKNOWN.name()
+							: null),
+				Objects.toString(result[5], null),
+				Objects.toString(result[6], null),
+				"Automatic epi data migration based on last exposure details; this exposure may be merged with another exposure with animal contact",
+				"0",
+				"0",
+				"0"
+			);
 		}
 
 		getDao(Exposure.class).executeRaw(
