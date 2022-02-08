@@ -3145,16 +3145,38 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		// Create immunizations and vaccinations for each case
 		for (Object[] caseInfo : filteredCaseInfo) {
 			// Create immunization
-			String immunizationInsertQuery = "INSERT INTO immunization(uuid, changeDate, localChangeDate, creationDate, person_id,"
-				+ "disease, diseaseDetails, reportDate, reportingUser_id, immunizationStatus, meansOfImmunization, immunizationManagementStatus,"
-				+ "responsibleRegion_id, responsibleDistrict_id, responsibleCommunity_id, startDate, endDate, numberOfDoses, pseudonymized,"
-				+ "modified, snapshot) VALUES ('" + DataHelper.createUuid()
-				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-				+ "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), " + caseInfo[1] + ", '" + caseInfo[2] + "', " + caseInfo[3] + ", "
-				+ caseInfo[4] + ", " + caseInfo[5] + ", '" + ImmunizationStatus.ACQUIRED.name() + "', '" + MeansOfImmunization.VACCINATION.name()
-				+ "', '" + ImmunizationManagementStatus.COMPLETED.name() + "', " + caseInfo[6] + ", " + caseInfo[7] + ", " + caseInfo[8] + ", "
-				+ caseInfo[10] + ", " + caseInfo[11] + ", " + caseInfo[12] + ", 0, 1, 0);";
-			getDao(Immunization.class).executeRaw(immunizationInsertQuery);
+			String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
+			String immunizationInsertQuery =
+				  "INSERT INTO immunization "
+				+ "("
+				+ "		uuid, changeDate, localChangeDate, creationDate, person_id,"
+				+ "		disease, diseaseDetails, reportDate, reportingUser_id, immunizationStatus, meansOfImmunization, immunizationManagementStatus,"
+				+ "		responsibleRegion_id, responsibleDistrict_id, responsibleCommunity_id, startDate, endDate, numberOfDoses, pseudonymized,"
+				+ "		modified, snapshot"
+				+ ")"
+				+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+			getDao(Immunization.class).executeRaw(immunizationInsertQuery,
+				DataHelper.createUuid(),
+				"0",
+				Objects.toString(caseInfo[1], null),
+				Objects.toString(caseInfo[2], null),
+				Objects.toString(caseInfo[3], null),
+				Objects.toString(caseInfo[4], null),
+				Objects.toString(caseInfo[5], null),
+				ImmunizationStatus.ACQUIRED.name(),
+				MeansOfImmunization.VACCINATION.name(),
+				ImmunizationManagementStatus.COMPLETED.name(),
+				Objects.toString(caseInfo[6], null),
+				Objects.toString(caseInfo[7], null),
+				Objects.toString(caseInfo[8], null),
+				Objects.toString(caseInfo[10], null),
+				Objects.toString(caseInfo[11], null),
+				Objects.toString(caseInfo[12], null),
+				"0",
+				"1",
+				"0"
+			);
 
 			if (caseInfo[12] == null) {
 				// No vaccination doses specified
