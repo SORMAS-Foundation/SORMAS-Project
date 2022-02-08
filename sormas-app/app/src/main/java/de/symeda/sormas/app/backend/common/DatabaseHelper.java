@@ -3680,18 +3680,24 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				.filter(Objects::nonNull)
 				.collect(Collectors.joining(", "));
 
+			String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 			if (detailsString != null) {
 				detailsString = "'" + detailsString + "'";
 			}
 
 			String locationQuery =
-				"INSERT INTO location (uuid, changeDate, localChangeDate, creationDate, details, pseudonymized, modified, snapshot) VALUES ('"
-					+ DataHelper.createUuid()
-					+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-					+ detailsString + ", 0, 0, 0);";
-			getDao(Location.class).executeRaw(locationQuery);
+				  "INSERT INTO location"
+				+ "(uuid, changeDate, localChangeDate, creationDate, details, pseudonymized, modified, snapshot)"
+				+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?)";
 
-			long locationId = getDao(Location.class).queryRawValue("SELECT MAX(id) FROM location;");
+			getDao(Location.class).executeRaw(locationQuery,
+				DataHelper.createUuid(),
+				"0",
+				detailsString,
+				"0",
+				"0",
+				"0"
+			);
 
 			String travelQuery =
 				"INSERT INTO exposures(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, startDate, endDate, exposureType, "
