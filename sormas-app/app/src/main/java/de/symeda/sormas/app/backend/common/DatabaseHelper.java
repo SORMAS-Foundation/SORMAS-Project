@@ -1763,14 +1763,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						DataType.INTEGER });
 
 				for (Object[] result : rawResult) {
-					if (DataHelper.isNullOrEmpty((String) result[4])) {
-						Array.set(result, 4, null);
-					} else {
-						Array.set(result, 4, "'" + result[4] + "'");
-					}
-					if (!DataHelper.isNullOrEmpty((String) result[5])) {
-						Array.set(result, 5, "'" + result[5] + "'");
-					}
+
+					doNullCheckOnString(result, 4);
+
 					String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 					String query =
 						  "INSERT INTO location "
@@ -2968,12 +2963,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return tableColumns.getResults().stream().noneMatch(columnRowData -> columnName.equals(columnRowData[nameColumnIndex]));
 	}
 
-	private void formatRawResultString(Object[] result, int index, boolean doNullCheck) {
-		if (doNullCheck && DataHelper.isNullOrEmpty((String) result[index])) {
+	private void doNullCheckOnString(Object[] result, int index) {
+		if (DataHelper.isNullOrEmpty((String) result[index])) {
 			Array.set(result, index, null);
-		}
-		if (!DataHelper.isNullOrEmpty((String) result[index])) {
-			Array.set(result, index, "'" + result[index] + "'");
 		}
 	}
 
@@ -3257,8 +3249,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 		Long immunizationId = getDao(Immunization.class).queryRawValue("SELECT MAX(id) FROM immunization;");
 		Long healthConditionsId = getDao(HealthConditions.class).queryRawValue("SELECT MAX(id) FROM healthConditions;");
-		String vaccineNameString = vaccineName != null ? "'" + vaccineName.name() + "'" : null;
-		String vaccineManufacturerString = vaccineManufacturer != null ? "'" + vaccineManufacturer.name() + "'" : null;
+		String vaccineNameString = vaccineName != null ? vaccineName.name() : null;
+		String vaccineManufacturerString = vaccineManufacturer != null ? vaccineManufacturer.name() : null;
 		String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 		String vaccinationInsertQuery =
 			  "INSERT INTO vaccination"
@@ -3681,10 +3673,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				.collect(Collectors.joining(", "));
 
 			String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
-			if (detailsString != null) {
-				detailsString = "'" + detailsString + "'";
-			}
-
 			String locationQuery =
 				  "INSERT INTO location"
 				+ "(uuid, changeDate, localChangeDate, creationDate, details, pseudonymized, modified, snapshot)"
