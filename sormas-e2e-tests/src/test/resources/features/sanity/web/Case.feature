@@ -202,3 +202,64 @@ Feature: Case end to end tests
     Then I click on Geocode button to get GPS coordinates in Case Person Tab
     And I click on save button to Save Person data in Case Person Tab
     Then I check if saved Person data is correct
+
+  @issue=SORDEV-5529
+  Scenario: Fill the clinical course tab
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I click on Clinical Course tab from Edit Case page
+    And I click on New Clinical Assesement button on Clinical Course page
+    And I fill the specific data of clinical visit with Set cleared to No option to all symptoms
+    Then I click Save button in New Clinical Assessement popup
+    Then I navigate to symptoms tab
+    And I check if created data is correctly displayed in Symptoms tab for Set cleared to NO
+    Then I clear Clinical Signs and Symptoms list
+    Then I click on Clinical Course tab from Edit Case page
+    And I am saving clear Clinical Signs and Symptoms list
+    And I click on Edit Clinical Visit button
+    And I fill the specific data of clinical visit with Set cleared to Unknown option to all symptoms
+    Then I click Save button in New Clinical Assessement popup
+    Then I navigate to symptoms tab
+    And I check if created data is correctly displayed in Symptoms tab for Set cleared to Unknown
+    Then I click on Clinical Course tab from Edit Case page
+    And I set Diabetes radio button to YES
+    And I set Diabetes radio button to NO
+    And I set Diabetes radio button to UNKNOWN
+    And I set Diabetes radio button to UNKNOWN
+    And I set Immunodeficiency including HIV radio button to YES
+    And I set Immunodeficiency including HIV radio button to NO
+    And I set Immunodeficiency including HIV radio button to UNKNOWN
+    And I set Immunodeficiency including HIV radio button to UNKNOWN
+    And I set Liver disease radio button to YES
+    And I set Liver disease radio button to NO
+    And I set Liver disease radio button to UNKNOWN
+    And I set Liver disease radio button to UNKNOWN
+    And I set Malignancy radio button to YES
+    And I set Malignancy radio button to NO
+    And I set Malignancy radio button to UNKNOWN
+    And I set Malignancy radio button to UNKNOWN
+    And I set Chronic pulmonary disease radio button to YES
+    And I set Chronic pulmonary disease radio button to NO
+    And I set Chronic pulmonary disease radio button to UNKNOWN
+    And I set Chronic pulmonary disease radio button to UNKNOWN
+    And I set Renal disease radio button to YES
+    And I set Renal disease radio button to NO
+    And I set Renal disease radio button to UNKNOWN
+    And I set Renal disease radio button to UNKNOWN
+    And I set Chronic neurological/neuromuscular disease radio button to YES
+    And I set Chronic neurological/neuromuscular disease radio button to NO
+    And I set Chronic neurological/neuromuscular disease radio button to UNKNOWN
+    And I set Chronic neurological/neuromuscular disease radio button to UNKNOWN
+    And I set Cardiovascular disease including hypertension radio button to YES
+    And I set Cardiovascular disease including hypertension radio button to NO
+    And I set Cardiovascular disease including hypertension radio button to UNKNOWN
+    And I set Cardiovascular disease including hypertension radio button to UNKNOWN
+    Then I click Save button on Clinical Course Tab
+    And I check if Case saved popup appeared and close it

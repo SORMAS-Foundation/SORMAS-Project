@@ -141,4 +141,5 @@ public class EditCasePage {
       By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
   public static final By QUARANTINE_ORDER_COMBOBOX =
       By.cssSelector(".popupContent div[role='combobox'] div");
+  public static final By CLINICAL_COURSE_TAB = By.id("tab-cases-clinicalcourse");
 }

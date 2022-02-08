@@ -75,6 +75,9 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_SAVED_POPUP);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
+    Then(
+        "I click on Clinical Course tab from Edit Case page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CLINICAL_COURSE_TAB));
 
     When(
         "I click on save button from Edit Case page with current hospitalization",
