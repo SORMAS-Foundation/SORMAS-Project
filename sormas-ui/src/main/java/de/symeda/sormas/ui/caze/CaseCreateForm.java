@@ -896,6 +896,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 			addressHeader.setVisible(isChecked);
 			homeAddressForm.setVisible(isChecked);
 			homeAddressForm.clear();
+			homeAddressForm.setFacilityFieldsVisible(isChecked, true);
 		});
 	}
 

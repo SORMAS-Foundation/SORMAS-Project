@@ -15,7 +15,7 @@ import de.symeda.sormas.api.utils.Required;
 
 public class TestReportDto extends EntityDto {
 
-	public static final String I18N_PREFIX = "TestResult";
+	public static final String I18N_PREFIX = "TestReport";
 
 	public static final String TEST_LAB_NAME = "testLabName";
 	public static final String TEST_LAB_EXTERNAL_ID = "testLabExternalId";

@@ -248,6 +248,12 @@ public class EventDirectorySteps implements En {
         });
 
     When(
+        "I click on the created event participant from the list",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATED_PARTICIPANT);
+        });
+
+    When(
         "I click on New Task from event tab",
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_TASK_BUTTON));
 

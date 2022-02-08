@@ -26,6 +26,7 @@ public class EditCasePage {
   public static final By FOLLOW_UP_TAB = By.cssSelector("[id='tab-cases-visits'] a");
   public static final By SYMPTOMS_TAB = By.cssSelector("[id='tab-cases-symptoms']");
   public static final By THERAPY_TAB = By.cssSelector("[id='tab-cases-therapy']");
+  public static final By HOSPITALIZATION_TAB = By.cssSelector("[id='tab-cases-hospitalization']");
   public static final By REGION_INPUT = By.cssSelector("#responsibleRegion input");
   public static final By DISTRICT_INPUT = By.cssSelector("#responsibleDistrict input");
   public static final By COMMUNITY_INPUT = By.cssSelector("#responsibleCommunity input");
@@ -141,4 +142,5 @@ public class EditCasePage {
       By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
   public static final By QUARANTINE_ORDER_COMBOBOX =
       By.cssSelector(".popupContent div[role='combobox'] div");
+  public static final By CLINICAL_COURSE_TAB = By.id("tab-cases-clinicalcourse");
 }
