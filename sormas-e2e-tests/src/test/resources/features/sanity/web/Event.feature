@@ -108,6 +108,7 @@ Feature: Create events
     And I open the Action recently created from Event tab
     And I check that Action created from Event tab is correctly displayed in Event Actions tab
 
+    @issue=SORDEV-5520
   Scenario: Add a New action from Event Actions tab and verify the fields.
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -119,6 +120,8 @@ Feature: Create events
     Then I navigate to Event Action tab for created Event
     And I open the Action recently created from Event tab
     And I check that Action created from Event tab is correctly displayed in Event Actions tab
+    Then I open the last created event via api
+    And I check that number of actions in Edit Event Tab is 1
 
   Scenario: Add a New action for an Event and verify the Action in EventActions table
     Given API: I create a new event
