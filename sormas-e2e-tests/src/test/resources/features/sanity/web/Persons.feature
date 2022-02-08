@@ -18,6 +18,7 @@ Feature: Edit Persons
     Then I click on save button from Edit Person page
     And I check that previous edited person is correctly displayed in Edit Person page
 
+  @issue=SORDEV-8466
   Scenario: Check Filters on Person page work as expected
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -54,7 +55,7 @@ Feature: Edit Persons
     And I check that number of displayed Person results is 0
     And I choose random value for Day of birth filter in Persons for the last created person by API
     Then I click on the APPLY FILTERS button for Person
-    And  I search after last created person from API by factor "full name"
+    And  I search after last created person from API by factor "full name" in Person directory
     And I click on the APPLY FILTERS button for Person
     And I check that number of displayed Person results is 1
     Then I change "full name" information data field for Person

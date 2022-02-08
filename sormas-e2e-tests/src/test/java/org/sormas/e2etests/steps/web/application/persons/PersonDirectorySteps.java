@@ -107,7 +107,6 @@ public class PersonDirectorySteps implements En {
           String personUUID =
               dataOperations.getPartialUuidFromAssociatedLink(
                   apiState.getLastCreatedPerson().getUuid());
-          System.out.println(personUUID);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, personUUID);
         });
@@ -253,7 +252,7 @@ public class PersonDirectorySteps implements En {
         });
 
     Then(
-        "I search after last created person from API by {string}",
+        "I search after last created person from API by {string} in Person directory",
         (String searchCriteria) -> {
           String searchText = "";
           String personUUID = apiState.getLastCreatedPerson().getUuid();
@@ -267,7 +266,12 @@ public class PersonDirectorySteps implements En {
                       + " "
                       + apiState.getLastCreatedPerson().getFirstName();
               break;
-              // etc
+              case "phone number":
+                  searchText = apiState.getLastCreatedPerson().getPhone();
+                  break;
+              case "email":
+                  searchText = apiState.getLastCreatedPerson().getEmailAddress();
+                  break;
           }
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON);
@@ -282,7 +286,7 @@ public class PersonDirectorySteps implements En {
         });
 
     Then(
-        "I search after last created person from API by factor {string}",
+        "I search after last created person from API by factor {string} in Person directory",
         (String searchCriteria) -> {
           String searchText = "";
           String personUUID = apiState.getLastCreatedPerson().getUuid();
