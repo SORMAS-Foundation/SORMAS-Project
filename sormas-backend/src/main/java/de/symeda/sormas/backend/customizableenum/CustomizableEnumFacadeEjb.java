@@ -120,7 +120,9 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 		return buildCustomizableEnum(type, value, language, enumClass);
 	}
 
+	@Lock(LockType.READ)
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T extends CustomizableEnum> T getEnumValue(CustomizableEnumType type, String value, Disease disease) throws CustomEnumNotFoundException {
 		return (T) getEnumValues(type, disease).stream()
 			.filter((e) -> e.getValue().equals(value))
