@@ -234,3 +234,22 @@ Feature: Create events
     And I select Cluster filter from quick filter
     And I select Dropped filter from quick filter
     And I click on the RESET FILTERS button
+
+  @issue=SORDEV-5570
+  Scenario: Testing Event screen Impact
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Events button from navbar
+    Then I open the last created event via api
+    And I click on link event group
+    And I choose select event group Radiobutton
+    And I select the first row from table and I click on save button
+    And I click on link event group
+    And I create a new event group
+    Then I unlinked the first chosen group by click on Unlink event group button
+    And I click on edit event group button from event groups box
+    And I click on Edit event button to back Event form
+    And I click on the Navigate to event directory filtered on this event group
+    And I check that number of displayed Event results is 1

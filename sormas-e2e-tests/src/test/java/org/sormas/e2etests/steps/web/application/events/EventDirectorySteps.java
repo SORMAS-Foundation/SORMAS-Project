@@ -92,9 +92,9 @@ public class EventDirectorySteps implements En {
     When(
         "I select random Disease filter among the filter options",
         () -> {
+          String disease = DiseasesValues.getRandomDiseaseCaption();
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(
-              FILTER_BY_DISEASE, DiseasesValues.getRandomDiseaseCaption());
+          webDriverHelpers.selectFromCombobox(FILTER_BY_DISEASE, disease);
         });
 
     When(
@@ -168,6 +168,7 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.selectFromCombobox(
               FILTER_BY_TYPE_OF_PLACE, TypeOfPlace.getValueFor(sourceTypeOfPlace));
         });
+
     When(
         "I select random Type of Place field among the filter options",
         () -> {
@@ -260,16 +261,19 @@ public class EventDirectorySteps implements En {
     When(
         "I open the first event from events list",
         () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_ID_BUTTON));
+
     And(
         "I click Create Case for Event Participant",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_BUTTON));
+
     Then(
         "I check that number of displayed Event results is {int}",
         (Integer number) ->
             assertHelpers.assertWithPoll20Second(
                 () ->
                     Assert.assertEquals(
-                        webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
+                        Integer.parseInt(
+                            webDriverHelpers.getTextFromPresentWebElement(TOTAL_EVENTS_COUNTER)),
                         number.intValue(),
                         "Number of displayed cases is not correct")));
   }
