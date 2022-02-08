@@ -35,40 +35,40 @@ Feature: Sample filter functionality
     And I select Region filter among the filter options from API
     And I select District filter among the filter options from API
     And I select Laboratory filter among the filter options from API
-    And I click a apply button in Sample
+    And I click a apply button on Sample
     And I check that number of displayed sample results is 1
     Then I select random Test result filter among the filter options
-    And I click a apply button in Sample
+    And I click a apply button on Sample
     And I check that number of displayed sample results is 0
     And I select Test result filter among the filter options from API
     Then I select "Not adequate" Specimen condition option among the filter options
-    And I click a apply button in Sample
+    And I click a apply button on Sample
     And I check that number of displayed sample results is 0
     And I select Specimen condition filter among the filter options from API
     Then I select random Case clasification filter among the filter options
-    And I click a apply button in Sample
+    And I click a apply button on Sample
     And I check that number of displayed sample results is 0
     And I select Case clasification filter among the filter options from API
     Then I select random Disease filter among the filter options in Sample directory
-    And I click a apply button in Sample
+    And I click a apply button on Sample
     And I check that number of displayed sample results is 0
     And I select Disease filter among the filter options from API
     Then I change Region filter to "Berlin" option in Sample directory
-    And I click a apply button in Sample
+    And I click a apply button on Sample
     And I check that number of displayed sample results is 0
     And I select Region filter among the filter options from API
     Then I change Region filter to "Region1" option in Sample directory
     And I change District filter to "District11" option in Sample directory
-    And I click a apply button in Sample
+    And I click a apply button on Sample
     And I check that number of displayed sample results is 0
     And I select Region filter among the filter options from API
     And I select District filter among the filter options from API
     Then I change Labolatory filter to "Other facility" option in Sample directory
-    And I click a apply button in Sample
+    And I click a apply button on Sample
     And I check that number of displayed sample results is 0
-    And I click a Reset button in Sample
+    And I click a Reset button on Sample
     Then I select "Not shipped" filter from quick filter
     And I select "Shipped" filter from quick filter
     And I select "Received" filter from quick filter
     And I select "Referred to other lab" filter from quick filter
-    And I click a Reset button in Sample
+    And I click a Reset button on Sample

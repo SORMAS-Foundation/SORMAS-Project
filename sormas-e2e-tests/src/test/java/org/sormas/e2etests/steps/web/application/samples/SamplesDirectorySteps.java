@@ -42,14 +42,14 @@ public class SamplesDirectorySteps implements En {
       AssertHelpers assertHelpers) {
 
     When(
-        "I click a apply button in Sample",
+        "I click a apply button on Sample",
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
         });
 
     When(
-        "I click a Reset button in Sample",
+        "I click a Reset button on Sample",
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER_BUTTON);
@@ -158,7 +158,7 @@ public class SamplesDirectorySteps implements En {
           String district = apiState.getCreatedCase().getDistrict().getUuid();
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
-              SAMPLE_DISTRICT_SEARCH_COMBOBOX, DistrictsValues.getValueFor(district));
+              SAMPLE_DISTRICT_SEARCH_COMBOBOX, DistrictsValues.getNameFor(district));
         });
 
     When(
