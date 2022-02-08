@@ -69,6 +69,30 @@ public class HospitalizationTabSteps implements En {
           Hospitalization actualHospitalization = collectHospitalizationData();
           ComparisonHelper.compareEqualEntities(actualHospitalization, hospitalization);
         });
+
+    When(
+        "I set Patient Admitted at the facility as an inpatient as ([^\"]*)",
+        (String option) -> {
+          webDriverHelpers.clickWebElementByText(PATIENT_ADMITTED_AT_FACILITY_OPTIONS, option);
+        });
+
+    When(
+        "I set specific Date of visit or admission",
+        () -> {
+          fillDateOfVisitOrAdmission(LocalDate.now().minusDays(1));
+        });
+
+    When(
+        "I save data in Hospitalization",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    When(
+        "I check if error in Hospitalization data is available",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(BLUE_ERROR_EXCLAMATION_MARK);
+        });
   }
 
   @SneakyThrows
