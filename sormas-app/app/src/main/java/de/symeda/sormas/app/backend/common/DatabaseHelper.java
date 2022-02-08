@@ -3699,12 +3699,28 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				"0"
 			);
 
+			Long locationId = getDao(Location.class).queryRawValue("SELECT MAX(id) FROM location;");
+
 			String travelQuery =
-				"INSERT INTO exposures(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, startDate, endDate, exposureType, "
-					+ "pseudonymized, modified, snapshot) VALUES ('" + DataHelper.createUuid()
-					+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-					+ travel[0] + ", " + locationId + ", " + travel[1] + ", " + travel[2] + ", 'TRAVEL', 0, 0, 0);";
-			getDao(Exposure.class).executeRaw(travelQuery);
+				"INSERT INTO exposures"
+				+ "("
+				+ "		uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, startDate, endDate, exposureType, "
+				+ "		pseudonymized, modified, snapshot"
+				+ ")"
+				+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?, ?, ?, ?, ?)";
+
+			getDao(Exposure.class).executeRaw(travelQuery,
+				DataHelper.createUuid(),
+				"0",
+				Objects.toString(travel[0], null),
+				Objects.toString(locationId, null),
+				Objects.toString(travel[1], null),
+				Objects.toString(travel[2], null),
+				"TRAVEL",
+				"0",
+				"0",
+				"0"
+			);
 		}
 	}
 
