@@ -3255,21 +3255,44 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		Object vaccinationDate)
 		throws SQLException {
 
-		long immunizationId = getDao(Immunization.class).queryRawValue("SELECT MAX(id) FROM immunization;");
-		long healthConditionsId = getDao(HealthConditions.class).queryRawValue("SELECT MAX(id) FROM healthConditions;");
+		Long immunizationId = getDao(Immunization.class).queryRawValue("SELECT MAX(id) FROM immunization;");
+		Long healthConditionsId = getDao(HealthConditions.class).queryRawValue("SELECT MAX(id) FROM healthConditions;");
 		String vaccineNameString = vaccineName != null ? "'" + vaccineName.name() + "'" : null;
 		String vaccineManufacturerString = vaccineManufacturer != null ? "'" + vaccineManufacturer.name() + "'" : null;
+		String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 		String vaccinationInsertQuery =
-			"INSERT INTO vaccination(uuid, changeDate, localChangeDate, creationDate, immunization_id, healthConditions_id, "
-				+ "reportDate, reportingUser_id, vaccinationDate, vaccineName, otherVaccineName, vaccineManufacturer, otherVaccineManufacturer, "
-				+ "vaccinationInfoSource, vaccineInn, vaccineBatchNumber, vaccineUniiCode, vaccineAtcCode, pregnant, trimester, pseudonymized, "
-				+ "modified, snapshot) VALUES ('" + DataHelper.createUuid()
-				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-				+ "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), " + immunizationId + ", " + healthConditionsId + ", "
-				+ caseInfo[4] + ", " + caseInfo[5] + ", " + vaccinationDate + ", " + vaccineNameString + ", " + otherVaccineName + ", "
-				+ vaccineManufacturerString + ", " + caseInfo[17] + ", " + caseInfo[18] + ", " + caseInfo[19] + ", " + caseInfo[20] + ", "
-				+ caseInfo[21] + ", " + caseInfo[22] + ", " + caseInfo[23] + ", " + caseInfo[24] + ", 0, 1, 0);";
-		getDao(Vaccination.class).executeRaw(vaccinationInsertQuery);
+			  "INSERT INTO vaccination"
+			+ "("
+			+ "		uuid, changeDate, localChangeDate, creationDate, immunization_id, healthConditions_id, "
+			+ "		reportDate, reportingUser_id, vaccinationDate, vaccineName, otherVaccineName, vaccineManufacturer, otherVaccineManufacturer, "
+			+ "		vaccinationInfoSource, vaccineInn, vaccineBatchNumber, vaccineUniiCode, vaccineAtcCode, pregnant, trimester, pseudonymized, "
+			+ "		modified, snapshot"
+			+ ")"
+			+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		getDao(Vaccination.class).executeRaw(vaccinationInsertQuery,
+			DataHelper.createUuid(),
+			"0",
+			Objects.toString(immunizationId, null),
+			Objects.toString(healthConditionsId, null),
+			Objects.toString(caseInfo[4], null),
+			Objects.toString(caseInfo[5], null),
+			Objects.toString(vaccinationDate, null),
+			vaccineNameString,
+			otherVaccineName,
+			vaccineManufacturerString,
+			Objects.toString(caseInfo[17], null),
+			Objects.toString(caseInfo[18], null),
+			Objects.toString(caseInfo[19], null),
+			Objects.toString(caseInfo[20], null),
+			Objects.toString(caseInfo[21], null),
+			Objects.toString(caseInfo[22], null),
+			Objects.toString(caseInfo[23], null),
+			Objects.toString(caseInfo[24], null),
+			"0",
+			"1",
+			"0"
+		);
 	}
 
 	private void migrateEpiData() throws SQLException {
