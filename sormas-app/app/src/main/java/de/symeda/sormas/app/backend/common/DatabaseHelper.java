@@ -2983,6 +2983,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 	}
 
+	private <T> int executeRaw (Class<T> clazz, String statement, Object... parameters) throws SQLException {
+		String[] parametersStringed = Arrays.stream(parameters)
+											.map(parameter -> Objects.toString(parameter, null))
+											.toArray(String[]::new);
+
+		return getDao(clazz).executeRaw(statement, parametersStringed);
+	}
+
 	private void migrateVaccinationInfo() throws SQLException {
 		// Retrieve all new unsynchronized cases with vaccinationStatus == VACCINATED from the database
 		GenericRawResults<Object[]> caseInfoResult = getDao(Case.class).queryRaw(
