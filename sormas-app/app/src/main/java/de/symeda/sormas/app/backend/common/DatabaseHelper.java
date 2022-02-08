@@ -3454,15 +3454,30 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			formatRawResultDate(result, 1);
 			formatRawResultDate(result, 2);
 
-			long locationId = insertLocation((String) result[4]);
+			Long locationId = insertLocation((String) result[4]);
 
-			String exposureQuery = "INSERT INTO exposures(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, exposureType, "
-				+ exposuresFieldName + ", " + "startDate, endDate, description, pseudonymized, modified, snapshot) VALUES ('"
-				+ DataHelper.createUuid()
-				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-				+ result[0] + ", " + locationId + ", '" + exposureType.name() + "', '" + exposuresFieldValue.name() + "', " + result[1] + ", "
-				+ result[2] + ", " + result[3] + ", 0, 0, 0);";
-			getDao(Exposure.class).executeRaw(exposureQuery);
+			String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
+			String exposureQuery =
+				"INSERT INTO exposures"
+				+ "("
+				+ "		uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, exposureType, "
+				+ 		exposuresFieldName + ", " + "startDate, endDate, description, pseudonymized, modified, snapshot"
+				+ ") VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+			getDao(Exposure.class).executeRaw(exposureQuery,
+				DataHelper.createUuid(),
+				"0",
+				Objects.toString(result[0], null),
+				Objects.toString(locationId, null),
+				exposureType.name(),
+				exposuresFieldValue.name(),
+				Objects.toString(result[1], null),
+				Objects.toString(result[2], null),
+				Objects.toString(result[3], null),
+				"0",
+				"0",
+				"0"
+			);
 		}
 	}
 
