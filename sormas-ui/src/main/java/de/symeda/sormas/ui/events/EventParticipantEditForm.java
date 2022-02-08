@@ -60,7 +60,7 @@ public class EventParticipantEditForm extends PersonDependentEditForm<EventParti
 	private final boolean isPseudonymized;
 
 	private final boolean isPersonPseudonymized;
-	PersonEditForm pef;
+	private PersonEditForm pef;
 	private PersonDto originalPerson;
 	private Button searchPersonButton;
 
