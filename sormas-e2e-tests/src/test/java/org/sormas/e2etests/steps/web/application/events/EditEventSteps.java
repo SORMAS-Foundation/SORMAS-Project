@@ -37,7 +37,6 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.sormas.e2etests.enums.DistrictsValues;
@@ -255,8 +254,8 @@ public class EditEventSteps implements En {
     When(
         "I select the first row from table and I click on save button",
         () -> {
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(FIRST_GROUP_ID);
-          TimeUnit.SECONDS.sleep(3);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
         });
 
@@ -269,7 +268,7 @@ public class EditEventSteps implements En {
         });
 
     When(
-        "I click on edit event group button from event groups box",
+        "I click on Edit event group button from event groups box",
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.scrollToElement(EDIT_EVENT_GROUP_BUTTON);
@@ -278,7 +277,7 @@ public class EditEventSteps implements En {
         });
 
     When(
-        "I click on Edit event button to back Event form",
+        "I click on Edit event button for the first event in Events section",
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(EDIT_EVENT_GROUP_BUTTON);

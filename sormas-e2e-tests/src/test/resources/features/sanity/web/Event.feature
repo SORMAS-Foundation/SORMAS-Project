@@ -249,7 +249,7 @@ Feature: Create events
     And I click on link event group
     And I create a new event group
     Then I unlinked the first chosen group by click on Unlink event group button
-    And I click on edit event group button from event groups box
-    And I click on Edit event button to back Event form
+    And I click on Edit event group button from event groups box
+    And I click on Edit event button for the first event in Events section
     And I click on the Navigate to event directory filtered on this event group
     And I check that number of displayed Event results is 1
