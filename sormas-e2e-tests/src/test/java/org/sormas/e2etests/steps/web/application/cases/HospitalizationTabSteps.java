@@ -91,7 +91,6 @@ public class HospitalizationTabSteps implements En {
     When(
         "I check if error in Hospitalization data is available",
         () -> {
-          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(BLUE_ERROR_EXCLAMATION_MARK);
         });
   }

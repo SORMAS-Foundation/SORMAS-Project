@@ -111,7 +111,7 @@ public class FollowUpVisitService {
         .build();
   }
 
-  public Visit buildSpecifiedSymptoms() {
+  public Visit buildTemperatureOnlySymptoms() {
     return Visit.builder()
         .currentBodyTemperature("36.6")
         .sourceOfBodyTemperature(getRandomTemperature())

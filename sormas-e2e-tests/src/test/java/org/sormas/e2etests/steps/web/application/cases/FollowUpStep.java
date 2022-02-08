@@ -114,7 +114,7 @@ public class FollowUpStep implements En {
         () -> {
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
     When(
@@ -122,7 +122,7 @@ public class FollowUpStep implements En {
         () -> {
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
     When(
@@ -154,7 +154,7 @@ public class FollowUpStep implements En {
     When(
         "I fill specific data of symptoms with ([^\"]*) option to all Clinical Signs and Symptoms",
         (String parameter) -> {
-          visit = followUpVisitService.buildSpecifiedSymptoms();
+          visit = followUpVisitService.buildTemperatureOnlySymptoms();
           selectCurrentTemperature(visit.getCurrentBodyTemperature());
           selectSourceOfTemperature(visit.getSourceOfBodyTemperature());
           webDriverHelpers.clickOnWebElementBySelector(CLEAR_ALL);
@@ -177,10 +177,14 @@ public class FollowUpStep implements En {
         });
 
     When(
-        "I set specific Symptoms to ([^\"]*)",
-        (String parameter) -> {
-          setSpecificSymptoms(parameter);
-        });
+        "I set Feeling Ill Symptoms to ([^\"]*)",
+        (String parameter) -> setFeelingIllSymptoms(parameter));
+
+    When(
+        "I set Chills and Sweats Symptoms to ([^\"]*)",
+        (String parameter) -> setChillsSweatsSymptoms(parameter));
+
+    When("I set Fever Symptoms to ([^\"]*)", (String parameter) -> setFeverSymptoms(parameter));
 
     When(
         "I set First Symptom as ([^\"]*)",
@@ -295,9 +299,15 @@ public class FollowUpStep implements En {
         DATE_OF_ONSET_INPUT, DATE_FORMATTER.format(dateOfSymptom));
   }
 
-  private void setSpecificSymptoms(String parameter) {
+  private void setFeelingIllSymptoms(String parameter) {
     webDriverHelpers.clickWebElementByText(FEELING_ILL_OPTIONS, parameter.toUpperCase());
+  }
+
+  private void setChillsSweatsSymptoms(String parameter) {
     webDriverHelpers.clickWebElementByText(CHILLS_SWEATS_OPTIONS, parameter.toUpperCase());
+  }
+
+  private void setFeverSymptoms(String parameter) {
     webDriverHelpers.clickWebElementByText(FEVER_OPTIONS, parameter.toUpperCase());
   }
 
