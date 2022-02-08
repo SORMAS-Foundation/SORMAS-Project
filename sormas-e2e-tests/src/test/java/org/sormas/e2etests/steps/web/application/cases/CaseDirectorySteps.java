@@ -51,30 +51,7 @@ public class CaseDirectorySteps implements En {
       Faker faker) {
 
     When(
-        "I search last create case by UUID",
-        () -> {
-          String caseUUID = apiState.getCreatedCase().getUuid();
-          webDriverHelpers.fillAndSubmitInWebElement(NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
-        });
-    When(
-        "I click Save button in Pick or create person form",
-        () -> {
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
-        });
-
-    When(
-        "I pick Create a new person box in Pick or create person form",
-        () -> {
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIO_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
-        });
-
-    When(
-        "I search last create case by UUID",
+        "I search last create case by UUID in Contact Directory",
         () -> {
           String caseUUID = apiState.getCreatedCase().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);

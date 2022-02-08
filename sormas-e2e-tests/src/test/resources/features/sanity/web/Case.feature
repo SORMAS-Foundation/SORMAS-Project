@@ -201,11 +201,11 @@ Feature: Case end to end tests
     Then I pick Create a new person box in Pick or create person form
     And I click Save button in Pick or create person form
     Then I click on the Contacts button from navbar
-    And I search last create contact by UUID case
-    Then I check that number of displayed cases results is 2
+    And I search last create contact by UUID case in Contact Directory
+    Then I check that number of displayed cases results is 1
     Then I click on the Cases button from navbar
-    And I search last create case by UUID
-    Then I check that number of displayed cases results is 2
+    And I search last create case by UUID in Contact Directory
+    Then I check that number of displayed cases results is 1
 
     @issue=SORDEV-5518 @DE
   Scenario: Fill the case person tab
