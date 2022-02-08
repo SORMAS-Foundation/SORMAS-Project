@@ -3510,9 +3510,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			formatRawResultString(pcd, 4, false);
 
 			final String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
-			final String insertPart =
-				"INSERT INTO personContactDetail(uuid, changeDate, localChangeDate, creationDate, person_id, primaryContact, personContactDetailType, phoneNumberType, "
-					+ "contactInformation, additionalInformation, thirdParty, thirdPartyRole, thirdPartyName, snapshot) ";
+			final String insertQuery =
+				  "INSERT INTO personContactDetail "
+				+ "("
+				+ "		uuid, changeDate, localChangeDate, creationDate, person_id, primaryContact, "
+				+ "		personContactDetailType, phoneNumberType, contactInformation, additionalInformation, "
+				+ "		thirdParty, thirdPartyRole, thirdPartyName, snapshot"
+				+ ") "
+				+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 			BigInteger personId = (BigInteger) pcd[0];
 			String phone = (String) pcd[1];
@@ -3522,25 +3527,54 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			if (StringUtils.isNotEmpty(phone)) {
 				boolean phoneOwnerEmpty = StringUtils.isEmpty(phoneOwner);
-				getDao(PersonContactDetail.class).executeRaw(
-					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
-						+ (phoneOwnerEmpty ? "1" : "0") + ", \'" + PersonContactDetailType.PHONE.name() + "\', " + "null" + ", " + phone + ", "
-						+ "null" + ", " + (phoneOwnerEmpty ? "0" : "1") + ", " + "null" + ", " + (phoneOwnerEmpty ? "null" : phoneOwner) + ", "
-						+ "0);");
+				getDao(PersonContactDetail.class).executeRaw(insertQuery,
+					DataHelper.createUuid(),
+					"0",
+					Objects.toString(personId, null),
+					(phoneOwnerEmpty ? "1" : "0"),
+					PersonContactDetailType.PHONE.name(),
+					null,
+					phone,
+					null,
+					(phoneOwnerEmpty ? "0" : "1"),
+					null,
+					(phoneOwnerEmpty ? "null" : phoneOwner),
+					"0"
+				);
 			}
 
 			if (StringUtils.isNotEmpty(emailAddress)) {
-				getDao(PersonContactDetail.class).executeRaw(
-					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
-						+ "1" + ", \'" + PersonContactDetailType.EMAIL.name() + "\', " + "null" + ", " + emailAddress + ", " + "null" + ", " + "0"
-						+ ", " + "null" + ", " + "null" + ", " + "0);");
+				getDao(PersonContactDetail.class).executeRaw(insertQuery,
+					DataHelper.createUuid(),
+					"0",
+					Objects.toString(personId, null),
+					"1",
+					PersonContactDetailType.EMAIL.name(),
+					null,
+					emailAddress,
+					null,
+					"0",
+					null,
+					null,
+					"0"
+				);
 			}
 
 			if (StringUtils.isNotEmpty(generalPractitionerDetails)) {
-				getDao(PersonContactDetail.class).executeRaw(
-					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
-						+ "0" + ", \'" + PersonContactDetailType.OTHER.name() + "\', " + "null" + ", " + "null" + ", " + generalPractitionerDetails
-						+ ", " + "1" + ", " + "\'General practitioner\'" + ", " + generalPractitionerDetails + ", " + "0);");
+				getDao(PersonContactDetail.class).executeRaw(insertQuery,
+					DataHelper.createUuid(),
+					"0",
+					Objects.toString(personId, null),
+					"0",
+					PersonContactDetailType.OTHER.name(),
+					null,
+					null,
+					generalPractitionerDetails,
+					"1",
+					"General practitioner",
+					generalPractitionerDetails,
+					"0"
+				);
 			}
 		}
 	}
