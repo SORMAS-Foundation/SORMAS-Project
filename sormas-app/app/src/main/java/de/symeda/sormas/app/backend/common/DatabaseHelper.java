@@ -3482,12 +3482,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	private long insertLocation(String locationDetails) throws SQLException {
+		String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
 		String locationQuery =
-			"INSERT INTO location (uuid, changeDate, localChangeDate, creationDate, details, pseudonymized, modified, snapshot) VALUES ('"
-				+ DataHelper.createUuid()
-				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-				+ locationDetails + ", 0, 0, 0);";
-		getDao(Location.class).executeRaw(locationQuery);
+			  "INSERT INTO location "
+			+ "(uuid, changeDate, localChangeDate, creationDate, details, pseudonymized, modified, snapshot) "
+			+ "VALUES (?, ?, " + dateNowString + ", " + dateNowString + ", ?, ?, ?, ?);";
+
+		getDao(Location.class).executeRaw(locationQuery, DataHelper.createUuid(), "0", locationDetails, "0", "0", "0");
 
 		return getDao(Location.class).queryRawValue("SELECT MAX(id) FROM location;");
 	}
