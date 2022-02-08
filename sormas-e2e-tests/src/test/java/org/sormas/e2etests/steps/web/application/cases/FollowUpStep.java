@@ -154,7 +154,7 @@ public class FollowUpStep implements En {
     When(
         "I fill specific data of symptoms with ([^\"]*) option to all Clinical Signs and Symptoms",
         (String parameter) -> {
-          visit = followUpVisitService.buildTemperatureOnlySymptoms();
+          visit = followUpVisitService.buildTemperatureOnlySymptoms("36.6");
           selectCurrentTemperature(visit.getCurrentBodyTemperature());
           selectSourceOfTemperature(visit.getSourceOfBodyTemperature());
           webDriverHelpers.clickOnWebElementBySelector(CLEAR_ALL);
