@@ -48,4 +48,5 @@ public class HospitalizationTabPage {
   public static final By SUCCESSFUL_SAVE_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By BLUE_ERROR_EXCLAMATION_MARK =
       By.xpath("//span[@class='v-errorindicator v-errorindicator-info']");
+  public static final By BLUE_ERROR_EXCLAMATION_MARK_TEXT = By.xpath("//div[@class='gwt-HTML']");
 }
