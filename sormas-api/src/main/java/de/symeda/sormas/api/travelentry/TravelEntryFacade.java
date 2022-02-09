@@ -29,6 +29,4 @@ public interface TravelEntryFacade extends CoreFacade<TravelEntryDto, TravelEntr
 	List<TravelEntryListEntryDto> getEntriesList(TravelEntryListCriteria criteria, Integer first, Integer max);
 
 	Page<TravelEntryIndexDto> getIndexPage(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
-
-	AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid);
 }

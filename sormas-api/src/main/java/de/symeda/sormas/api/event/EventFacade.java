@@ -90,6 +90,4 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 	boolean hasRegionAndDistrict(String eventUuid);
 
 	boolean hasAnyEventParticipantWithoutJurisdiction(String eventUuid);
-
-	AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid);
 }

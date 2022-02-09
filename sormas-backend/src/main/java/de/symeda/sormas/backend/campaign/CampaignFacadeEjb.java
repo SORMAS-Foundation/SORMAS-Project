@@ -24,6 +24,8 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -388,6 +390,16 @@ public class CampaignFacadeEjb extends AbstractCoreFacadeEjb<Campaign, CampaignD
 		}
 		CampaignReferenceDto dto = new CampaignReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
+	}
+
+	@Override
+	protected CoreEntityType getCoreEntityType() {
+		return CoreEntityType.CAMPAIGN;
+	}
+
+	@Override
+	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
+		return null; // campaigns do not support automatic deletion yet
 	}
 
 	@LocalBean

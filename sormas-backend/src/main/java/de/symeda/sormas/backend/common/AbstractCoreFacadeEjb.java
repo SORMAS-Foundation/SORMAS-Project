@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -29,11 +30,14 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
+import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -41,6 +45,9 @@ import de.symeda.sormas.backend.util.QueryHelper;
 public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AbstractCoreAdoService<ADO>, CRITERIA extends BaseCriteria>
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA>
 	implements CoreFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
+
+	@Inject
+	private DeletionConfigurationService deletionConfigurationService;
 
 	protected AbstractCoreFacadeEjb() {
 	}
@@ -133,9 +140,19 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 		List<ADO> toDeleteEntities = QueryHelper.getResultList(em, cq, null, null);
 
-		toDeleteEntities.forEach(entity -> {
-			delete(entity);
-		});
+		toDeleteEntities.forEach(this::delete);
+	}
+
+	@Override
+	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
+		DeletionConfiguration deletionConfiguration = deletionConfigurationService.getCoreEntityTypeConfig(getCoreEntityType());
+		if (deletionConfiguration.getDeletionPeriod() == null || deletionConfiguration.getDeletionReference() == null) {
+			return null;
+		}
+		Object[] deletionData = getDeletionData(uuid, deletionConfiguration);
+		Date referenceDate = (Date) deletionData[0];
+		Date deletiondate = DateHelper.addDays(referenceDate, deletionConfiguration.getDeletionPeriod());
+		return new AutomaticDeletionInfoDto(deletiondate, (Date) deletionData[1], deletionConfiguration.getDeletionPeriod());
 	}
 
 	protected void delete(ADO entity) {
@@ -152,6 +169,24 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 				throw new IllegalArgumentException("deletion reference " + deletionReference + " not supported in " + getClass().getSimpleName());
 		}
 	}
+
+	private Object[] getDeletionData(String uuid, DeletionConfiguration entityConfig) {
+
+		if (entityConfig.getDeletionReference() == null) {
+			return null;
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<ADO> from = cq.from(adoClass);
+
+		cq.multiselect(from.get(getDeleteReferenceField(entityConfig.getDeletionReference())), from.get(AbstractDomainObject.CHANGE_DATE));
+		cq.where(cb.equal(from.get(AbstractDomainObject.UUID), uuid));
+
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	protected abstract CoreEntityType getCoreEntityType();
 
 	protected abstract void pseudonymizeDto(ADO source, DTO dto, Pseudonymizer pseudonymizer);
 

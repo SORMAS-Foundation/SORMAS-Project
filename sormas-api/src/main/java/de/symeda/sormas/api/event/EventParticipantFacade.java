@@ -88,6 +88,4 @@ public interface EventParticipantFacade extends CoreFacade<EventParticipantDto, 
 	List<EventParticipantDto> getByPersonUuids(List<String> personUuids);
 
 	List<EventParticipantDto> getByEventAndPersons(String eventUuid, List<String> personUuids);
-
-	AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid);
 }
