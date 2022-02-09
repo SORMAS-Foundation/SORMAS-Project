@@ -70,7 +70,7 @@ public class SubMenu extends CssLayout {
 		CssLayout tabItem = new CssLayout();
 		tabItem.setId("tab-" + name.replaceAll("/", "-"));
 		tabItem.setSizeUndefined();
-		tabItem.setPrimaryStyleName("v-tabsheet-tabitem");
+	tabItem.setPrimaryStyleName("v-tabsheet-tabitem");
 		if (isBackNavigation) {
 			tabItem.addStyleName("back");
 		}

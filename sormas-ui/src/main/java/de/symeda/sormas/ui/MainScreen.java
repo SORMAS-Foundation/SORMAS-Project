@@ -35,8 +35,11 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -84,9 +87,12 @@ import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
 import de.symeda.sormas.ui.statistics.StatisticsView;
 import de.symeda.sormas.ui.task.TasksView;
 import de.symeda.sormas.ui.travelentry.TravelEntriesView;
+import de.symeda.sormas.ui.user.UserSettingsForm;
 import de.symeda.sormas.ui.user.UsersView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 /**
  * Content of the UI when the user is logged in.
@@ -148,7 +154,7 @@ public class MainScreen extends HorizontalLayout {
 				CampaignDashboardView.class,
 				AbstractDashboardView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuDashboard),
-				VaadinIcons.DASHBOARD);
+				VaadinIcons.GRID_SMALL_O);
 		}
 
 		if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
@@ -242,9 +248,25 @@ public class MainScreen extends HorizontalLayout {
 				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS) ? OutbreaksView.class : RegionsView.class,
 				AbstractConfigurationView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuConfiguration),
-				VaadinIcons.COGS);
+				VaadinIcons.COG_O);
 		}
-		menu.addView(AboutView.class, AboutView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAbout), VaadinIcons.INFO_CIRCLE);
+		
+		menu.addView(AboutView.class, AboutView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAbout), VaadinIcons.INFO_CIRCLE_O);
+		
+		menu.addView(AboutView.class, "XDX", I18nProperties.getCaption(Captions.actionSettings), VaadinIcons.GLOBE_WIRE);
+		
+		
+		
+		/* settings menu item
+			//	MenuBar settingsMenu = new MenuBar();
+			//	settingsMenu.setId(Captions.actionSettings);
+			//	settingsMenu.addItem(I18nProperties.getCaption(Captions.actionSettings), VaadinIcons.GLOBE_WIRE,
+			//			(Command) selectedItem -> showSettingsPopup());
+
+			//	settingsMenu.addStyleNames("user-menu", "settings-menu");
+			//	menu.addComponent(settingsMenu);
+				
+				*/
 
 		navigator.addViewChangeListener(viewChangeListener);
 
@@ -304,6 +326,20 @@ public class MainScreen extends HorizontalLayout {
 		setSizeFull();
 	}
 
+	
+	private void showSettingsPopup() {
+
+		Window window = VaadinUiUtil.createPopupWindow();
+		window.setCaption(I18nProperties.getString(Strings.headingUserSettings));
+		window.setModal(true);
+
+		CommitDiscardWrapperComponent<UserSettingsForm> component = ControllerProvider.getUserController()
+				.getUserSettingsComponent(() -> window.close());
+
+		window.setContent(component);
+		UI.getCurrent().addWindow(window);
+	}
+	
 	private static Set<String> initKnownViews() {
 		final Set<String> views = new HashSet<>(
 			Arrays.asList(
