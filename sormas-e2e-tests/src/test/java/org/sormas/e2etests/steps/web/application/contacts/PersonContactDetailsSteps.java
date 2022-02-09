@@ -46,18 +46,22 @@ public class PersonContactDetailsSteps implements En {
         });
 
     Then(
-        "I enter an incorrect phone number and confirm",
+        "I enter an incorrect phone number in Person Contact Details popup",
         () -> {
           selectTypeOfContactDetails("Phone");
           fillContactInformationInput("ABCdef!@#.");
-          webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
         });
 
     Then(
-        "I enter an incorrect email and confirm",
+        "I enter an incorrect email in Person Contact Details popup",
         () -> {
           selectTypeOfContactDetails("Email");
           fillContactInformationInput("1234567890");
+        });
+
+    Then(
+        "I click the Done button in Person Contact Details popup",
+        () -> {
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
         });
   }

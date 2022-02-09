@@ -165,7 +165,7 @@ public class EditPersonSteps implements En {
         });
 
     Then(
-        "I fill in the home address, facility category and type",
+        "I fill in the home address, facility category and type in the Home Address section of the Edit Person Page",
         () -> {
           newGeneratedPerson = personService.buildGeneratedPerson();
           selectFacilityCategory(newGeneratedPerson.getFacilityCategory());
@@ -179,7 +179,7 @@ public class EditPersonSteps implements En {
         });
 
     When(
-        "^I check that the empty district highlight appears$",
+        "^I check that an empty district highlight appears above the facility combobox$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(ERROR_INDICATOR);
