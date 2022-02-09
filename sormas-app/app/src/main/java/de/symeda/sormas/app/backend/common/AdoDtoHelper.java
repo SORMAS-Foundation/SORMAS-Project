@@ -175,6 +175,10 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 		return 0;
 	}
 
+	/**
+	 * Calls handlePulledDto for each DTO that has been pulled from the server, and returns the
+	 * number of pulled DTOs.
+	 */
 	public int handlePulledList(AbstractAdoDao<ADO> dao, List<DTO> result)
 		throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
 
