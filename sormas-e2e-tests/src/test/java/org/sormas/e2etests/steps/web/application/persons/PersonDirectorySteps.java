@@ -106,6 +106,16 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
         });
+    When(
+        "I navigate to the last created via api Person page via URL",
+        () -> {
+          String createdPersonUUID = apiState.getLastCreatedPerson().getUuid();
+          String LAST_CREATED_PERSON_PAGE_URL =
+              environmentUrl + "/sormas-webdriver/#!persons/data/" + createdPersonUUID;
+          webDriverHelpers.accessWebSite(LAST_CREATED_PERSON_PAGE_URL);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
+        });
 
     When(
         "I search for specific person in person directory",
