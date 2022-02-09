@@ -671,7 +671,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 
 		final Set<UserRole> userRoles = source.getUserRoles();
-		target.setUserRoles(new HashSet<UserRole>(userRoles));
+		target.setUserRoles(new HashSet<>(userRoles));
 		target.updateJurisdictionLevel();
 
 		return target;
@@ -705,7 +705,7 @@ public class UserFacadeEjb implements UserFacade {
 		User user = userService.getByUserName(userName);
 		if (user != null && user.isActive()) {
 			if (DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
-				return new HashSet<UserRole>(user.getUserRoles());
+				return new HashSet<>(user.getUserRoles());
 			}
 		}
 		return null;

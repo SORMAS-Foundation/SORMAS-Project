@@ -245,7 +245,6 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 	 */
 	@Test
 	public void testGetIndexListFilteredAndOrderedByAddress() {
-
 		List<UserDto> result =
 			getUserFacade().getIndexList(new UserCriteria().freeText("min"), 0, 100, Collections.singletonList(new SortProperty(UserDto.ADDRESS)));
 
@@ -255,12 +254,10 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetValidLoginRoles() {
-
 		AuthProvider authProvider = mock(AuthProvider.class);
 
 		MockedStatic<AuthProvider> mockAuthProvider = mockStatic(AuthProvider.class);
 		Mockito.when(AuthProvider.getProvider(any())).thenReturn(authProvider);
-		when(authProvider.isUsernameCaseSensitive()).thenReturn(true);
 
 		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, SURVEILLANCE_SUPERVISOR);
