@@ -23,6 +23,10 @@ import org.openqa.selenium.By;
 public class EventDirectoryPage {
   public static final By NEW_EVENT_BUTTON = By.id("eventNewEvent");
   public static final By SEARCH_EVENT_BY_FREE_TEXT_INPUT = By.id("freeText");
+  public static final By SEARCH_EVENT_BY_FREE_TEXT_EVENT_PARTICIPANTS_INPUT =
+      By.id("freeTextEventParticipants");
+  public static final By SEARCH_EVENT_BY_FREE_TEXT_EVENT_GROUPS_INPUT =
+      By.id("freeTextEventGroups");
   public static final By RESET_FILTER = By.id("actionResetFilters");
   public static final By APPLY_FILTER = By.id("actionApplyFilters");
   public static final By EVENT_STATUS_FILTER_BUTTONS =
@@ -60,6 +64,8 @@ public class EventDirectoryPage {
   public static final By FIRST_EVENT_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
   public static final By CREATE_CASE_BUTTON =
       By.xpath("//td//span[contains(@class, 'v-icon-edit')]");
+  public static final By EVENT_GROUPS_RADIOBUTTON =
+      By.cssSelector("div#eventsViewSwitcher span:nth-child(3)");
 
   public static By getByEventUuid(String eventUuid) {
     return By.xpath(String.format("//a[@title='%s']", eventUuid));

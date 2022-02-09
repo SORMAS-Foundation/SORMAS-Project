@@ -49,6 +49,25 @@ public class EventDirectorySteps implements En {
       @Named("ENVIRONMENT_URL") String environmentUrl) {
 
     When(
+        "I click on radio button Groups in Event directory",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUPS_RADIOBUTTON);
+        });
+    //I fill {string} option filter by API in Event Group Directory
+      When(
+              "I fill {string} option filter by API in Event Group Directory",
+              (String searchCriteria) -> {
+                  String searchString = "";
+                 switch (searchCriteria){
+//                     case "GROUP_ID":
+//                         searchString = apiState.getCreatedEvent().
+                     case "GROUP_TITLE":
+                         //searchString = apiState.getCreatedEvent();
+                 }
+              });
+
+    When(
         "I fill EVENT ID filter by API",
         () -> {
           String eventUuid = apiState.getCreatedEvent().getUuid();

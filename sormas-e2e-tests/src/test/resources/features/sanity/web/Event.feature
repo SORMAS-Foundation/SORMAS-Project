@@ -234,3 +234,25 @@ Feature: Create events
     And I select Cluster filter from quick filter
     And I select Dropped filter from quick filter
     And I click on the RESET FILTERS button
+
+  @issue=SORDEV-5569
+  Scenario: Event groups view
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When I log in with National User
+    And I click on the Events button from navbar
+    And I click on radio button Groups in Event directory
+    #And I fill EVENT ID filter by API
+    Then I fill {string} option filter by API in Event Group Directory
+
+    # groups view !!!!
+    # add to Title or Id filter
+  #  And I fill EventId, title,
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 1
+
+
+
+
+    Then I am checking if all the fields are correctly displayed in the Task Management table
