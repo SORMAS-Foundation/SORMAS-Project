@@ -35,6 +35,7 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Person;
 import org.sormas.e2etests.services.PersonService;
+import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
@@ -51,6 +52,7 @@ public class EditPersonSteps implements En {
       WebDriverHelpers webDriverHelpers,
       PersonService personService,
       BaseSteps baseSteps,
+      ApiState apiState,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -119,6 +121,38 @@ public class EditPersonSteps implements En {
           fillContactPersonLastName(newGeneratedPerson.getContactPersonLastName());
           fillBirthName(newGeneratedPerson.getBirthName());
           fillNamesOfGuardians(newGeneratedPerson.getNameOfGuardians());
+        });
+    Then(
+        "I click on See Cases for this Person button from Edit Person page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SEE_CASES_FOR_PERSON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+        });
+    Then(
+        "I click on See CONTACTS for this Person button from Edit Person page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SEE_CONTACTS_FOR_PERSON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+        });
+
+    Then(
+        "I click on Edit Case button from Cases card on Edit Person page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_CASES);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+        });
+    Then(
+        "I click on Edit Contact button from Contacts card on Edit Person page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_CONTACTS);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+        });
+    Then(
+        "I click on Edit Immunization button from Immunization card on Edit Person page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              getByImmunizationUuid(apiState.getCreatedImmunization().getUuid()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
         });
 
     Then(
